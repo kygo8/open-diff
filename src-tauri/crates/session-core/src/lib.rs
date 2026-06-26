@@ -202,6 +202,34 @@ impl SessionStore {
         Ok(session)
     }
 
+    pub fn save_workspace(
+        &self,
+        workspace: &WorkspaceDocument,
+    ) -> Result<PathBuf, SessionStoreError> {
+        let path = self.workspace_path();
+
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        let json = serde_json::to_string_pretty(workspace)?;
+        std::fs::write(&path, json)?;
+
+        Ok(path)
+    }
+
+    pub fn load_workspace(&self) -> Result<Option<WorkspaceDocument>, SessionStoreError> {
+        let path = self.workspace_path();
+
+        if !path.exists() {
+            return Ok(None);
+        }
+
+        let json = std::fs::read_to_string(path)?;
+
+        Ok(Some(serde_json::from_str(&json)?))
+    }
+
     pub fn named_session_path(&self, name: &str) -> Result<PathBuf, SessionStoreError> {
         let mut path = self.root.join("sessions");
         let segments = sanitized_name_segments(name)?;
@@ -217,6 +245,10 @@ impl SessionStore {
 
     pub fn auto_save_path(&self) -> PathBuf {
         self.root.join("autosave").join("recent-sessions.json")
+    }
+
+    pub fn workspace_path(&self) -> PathBuf {
+        self.root.join("workspace").join("current-workspace.json")
     }
 }
 
@@ -341,6 +373,73 @@ pub struct SessionMetadata {
     pub created_at: Option<String>,
     pub updated_at: Option<String>,
     pub last_opened_at: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkspaceDocument {
+    pub id: String,
+    pub tabs: Vec<WorkspaceTab>,
+    pub active_tab_id: String,
+    pub sessions: Vec<SessionDocument>,
+    pub window: WorkspaceWindow,
+}
+
+impl WorkspaceDocument {
+    pub fn new(
+        id: impl Into<String>,
+        tabs: Vec<WorkspaceTab>,
+        active_tab_id: impl Into<String>,
+        sessions: Vec<SessionDocument>,
+    ) -> Self {
+        Self {
+            id: id.into(),
+            tabs,
+            active_tab_id: active_tab_id.into(),
+            sessions,
+            window: WorkspaceWindow::default(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkspaceTab {
+    pub id: String,
+    pub route: String,
+    pub session_id: Option<String>,
+}
+
+impl WorkspaceTab {
+    pub fn new(
+        id: impl Into<String>,
+        route: impl Into<String>,
+        session_id: Option<String>,
+    ) -> Self {
+        Self {
+            id: id.into(),
+            route: route.into(),
+            session_id,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkspaceWindow {
+    pub width: u32,
+    pub height: u32,
+    pub maximized: bool,
+}
+
+impl Default for WorkspaceWindow {
+    fn default() -> Self {
+        Self {
+            width: 1280,
+            height: 820,
+            maximized: false,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -492,6 +591,38 @@ mod tests {
             .right
             .as_ref()
             .is_some_and(|location| location.read_only));
+
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn saves_and_reads_workspace_with_tabs_and_sessions() {
+        let root = unique_temp_dir("workspace");
+        let store = SessionStore::new(&root);
+        let session = SessionDocument::new(
+            "session-1",
+            "Compare files",
+            SessionType::TextCompare,
+            SessionLocations::default(),
+        );
+        let workspace = WorkspaceDocument::new(
+            "workspace-1",
+            vec![
+                WorkspaceTab::new("home", "/", None),
+                WorkspaceTab::new("tab-1", "/compare/text", Some("session-1".to_string())),
+            ],
+            "tab-1",
+            vec![session],
+        );
+
+        store.save_workspace(&workspace).unwrap();
+
+        let restored = store.load_workspace().unwrap().unwrap();
+
+        assert_eq!(restored.id, "workspace-1");
+        assert_eq!(restored.active_tab_id, "tab-1");
+        assert_eq!(restored.tabs.len(), 2);
+        assert_eq!(restored.sessions[0].id, "session-1");
 
         std::fs::remove_dir_all(root).unwrap();
     }

@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import type { DiffLine } from '@/types/diff'
+import type { DiffLine, InlineDiffSegment } from '@/types/diff'
 
 defineProps<{
   lines: DiffLine[]
 }>()
+
+const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSegment[] => {
+  const segments = line.inlineSegments[side]
+
+  if (segments.length > 0) {
+    return segments
+  }
+
+  return [{ text: side === 'left' ? line.leftText : line.rightText, changed: false }]
+}
 </script>
 
 <template>
@@ -20,9 +30,19 @@ defineProps<{
         :class="line.kind"
       >
         <div class="gutter">{{ line.leftNumber ?? '' }}</div>
-        <pre class="cell">{{ line.leftText }}</pre>
+        <pre class="cell"><span
+          v-for="(segment, segmentIndex) in getInlineSegments(line, 'left')"
+            :key="`left-${segmentIndex}`"
+            class="inline-segment"
+            :class="{ 'inline-segment-changed': segment.changed }"
+        >{{ segment.text }}</span></pre>
         <div class="gutter">{{ line.rightNumber ?? '' }}</div>
-        <pre class="cell">{{ line.rightText }}</pre>
+        <pre class="cell"><span
+          v-for="(segment, segmentIndex) in getInlineSegments(line, 'right')"
+            :key="`right-${segmentIndex}`"
+            class="inline-segment"
+            :class="{ 'inline-segment-changed': segment.changed }"
+        >{{ segment.text }}</span></pre>
       </div>
     </div>
   </div>
@@ -93,5 +113,11 @@ defineProps<{
   padding: 3px 8px;
   overflow: hidden;
   white-space: pre;
+}
+
+.inline-segment-changed {
+  border-radius: 3px;
+  background: color-mix(in srgb, currentcolor 22%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, currentcolor 16%, transparent);
 }
 </style>

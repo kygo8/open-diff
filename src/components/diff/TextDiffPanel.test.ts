@@ -31,4 +31,34 @@ describe('TextDiffPanel', () => {
     expect(wrapper.text()).toContain('new')
     expect(wrapper.find('.modified').exists()).toBe(true)
   })
+
+  it('renders changed inline segments as highlighted spans', () => {
+    const lines: DiffLine[] = [
+      {
+        leftNumber: 1,
+        rightNumber: 1,
+        leftText: 'old value',
+        rightText: 'new value',
+        kind: 'modified',
+        inlineSegments: {
+          left: [
+            { text: 'old', changed: true },
+            { text: ' value', changed: false },
+          ],
+          right: [
+            { text: 'new', changed: true },
+            { text: ' value', changed: false },
+          ],
+        },
+      },
+    ]
+
+    const wrapper = mount(TextDiffPanel, { props: { lines } })
+    const changedSegments = wrapper.findAll('.inline-segment-changed')
+
+    expect(changedSegments).toHaveLength(2)
+    expect(changedSegments.map((segment) => segment.text())).toEqual(['old', 'new'])
+    expect(wrapper.text()).toContain('old value')
+    expect(wrapper.text()).toContain('new value')
+  })
 })

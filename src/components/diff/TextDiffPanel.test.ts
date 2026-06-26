@@ -220,4 +220,39 @@ describe('TextDiffPanel', () => {
     expect(body.element.scrollTop).toBe(24 * 4)
     wrapper.unmount()
   })
+
+  it('filters to differences with surrounding context', async () => {
+    const lines: DiffLine[] = Array.from({ length: 12 }, (_, index) => {
+      const lineNumber = index + 1
+      const kind: DiffLine['kind'] = lineNumber === 6 ? 'modified' : 'equal'
+
+      return {
+        leftNumber: lineNumber,
+        rightNumber: lineNumber,
+        leftText: `left ${String(lineNumber)}`,
+        rightText: `right ${String(lineNumber)}`,
+        kind,
+        inlineSegments: { left: [], right: [] },
+      }
+    })
+
+    const wrapper = mount(TextDiffPanel, { props: { lines } })
+
+    expect(wrapper.text()).toContain('left 1')
+    expect(wrapper.text()).toContain('left 12')
+
+    await wrapper.find('[data-testid="text-diff-show-differences"]').trigger('click')
+    await nextTick()
+
+    expect(wrapper.text()).toContain('left 4')
+    expect(wrapper.text()).toContain('left 5')
+    expect(wrapper.text()).toContain('left 6')
+    expect(wrapper.text()).toContain('left 7')
+    expect(wrapper.text()).toContain('left 8')
+    expect(wrapper.text()).not.toContain('left 1')
+    expect(wrapper.text()).not.toContain('left 12')
+    expect(wrapper.find('[data-testid="text-diff-show-all"]').classes()).toContain(
+      'diff-filter-button',
+    )
+  })
 })

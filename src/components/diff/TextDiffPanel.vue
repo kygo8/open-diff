@@ -6,9 +6,13 @@ const textDiffRowHeightPx = 24
 const textDiffRowHeight = `${String(textDiffRowHeightPx)}px`
 const overscanRowCount = 12
 const defaultViewportHeight = 480
+const differenceContextRows = 2
+
+type DiffDisplayMode = 'all' | 'differences'
 
 interface VisibleDiffRow {
   index: number
+  sourceIndex: number
   line: DiffLine
 }
 
@@ -25,8 +29,37 @@ const props = defineProps<{
 const scrollContainer = ref<HTMLElement | null>(null)
 const scrollTop = ref(0)
 const viewportHeight = ref(defaultViewportHeight)
+const displayMode = ref<DiffDisplayMode>('all')
 
-const totalHeight = computed(() => props.lines.length * textDiffRowHeightPx)
+const displayRows = computed((): VisibleDiffRow[] => {
+  if (displayMode.value === 'all') {
+    return props.lines.map((line, index) => ({ index, sourceIndex: index, line }))
+  }
+
+  const visibleSourceIndexes = new Set<number>()
+
+  for (const [index, line] of props.lines.entries()) {
+    if (line.kind === 'equal') {
+      continue
+    }
+
+    const start = Math.max(0, index - differenceContextRows)
+    const end = Math.min(props.lines.length - 1, index + differenceContextRows)
+
+    for (let sourceIndex = start; sourceIndex <= end; sourceIndex += 1) {
+      visibleSourceIndexes.add(sourceIndex)
+    }
+  }
+
+  return [...visibleSourceIndexes]
+    .sort((left, right) => left - right)
+    .map((sourceIndex, index) => ({
+      index,
+      sourceIndex,
+      line: props.lines[sourceIndex],
+    }))
+})
+const totalHeight = computed(() => displayRows.value.length * textDiffRowHeightPx)
 const visibleRowCount = computed(
   () => Math.ceil(viewportHeight.value / textDiffRowHeightPx) + overscanRowCount * 2,
 )
@@ -34,25 +67,17 @@ const startIndex = computed(() =>
   Math.max(0, Math.floor(scrollTop.value / textDiffRowHeightPx) - overscanRowCount),
 )
 const endIndex = computed(() =>
-  Math.min(props.lines.length, startIndex.value + visibleRowCount.value),
+  Math.min(displayRows.value.length, startIndex.value + visibleRowCount.value),
 )
-const visibleRows = computed(() =>
-  props.lines.slice(startIndex.value, endIndex.value).map(
-    (line, index): VisibleDiffRow => ({
-      index: startIndex.value + index,
-      line,
-    }),
-  ),
-)
+const visibleRows = computed(() => displayRows.value.slice(startIndex.value, endIndex.value))
 const topOffset = computed(() => startIndex.value * textDiffRowHeightPx)
 const diffMarkers = computed<DiffMarker[]>(() =>
-  props.lines
-    .map((line, index) => ({ line, index }))
+  displayRows.value
     .filter(({ line }) => line.kind !== 'equal')
     .map(({ line, index }) => ({
       index,
       kind: line.kind,
-      top: props.lines.length <= 1 ? 0 : (index / (props.lines.length - 1)) * 100,
+      top: displayRows.value.length <= 1 ? 0 : (index / (displayRows.value.length - 1)) * 100,
     })),
 )
 
@@ -76,6 +101,11 @@ const jumpToLine = (index: number): void => {
     scrollContainer.value.scrollTop = nextScrollTop
     viewportHeight.value = scrollContainer.value.clientHeight || defaultViewportHeight
   }
+}
+
+const setDisplayMode = (mode: DiffDisplayMode): void => {
+  displayMode.value = mode
+  jumpToLine(0)
 }
 
 const getCurrentLineIndex = (): number => Math.floor(scrollTop.value / textDiffRowHeightPx)
@@ -147,30 +177,55 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
     <div class="diff-header">
       <span>Left</span>
       <span>Right</span>
-      <div
-        class="diff-navigation"
-        aria-label="Difference navigation"
-      >
-        <button
-          type="button"
-          class="diff-navigation-button"
-          data-testid="text-diff-previous-diff"
-          :disabled="diffMarkers.length === 0"
-          aria-label="Previous difference"
-          @click="jumpToPreviousDiff"
+      <div class="diff-tools">
+        <div
+          class="diff-filter"
+          aria-label="Diff display mode"
         >
-          Previous
-        </button>
-        <button
-          type="button"
-          class="diff-navigation-button"
-          data-testid="text-diff-next-diff"
-          :disabled="diffMarkers.length === 0"
-          aria-label="Next difference"
-          @click="jumpToNextDiff"
+          <button
+            type="button"
+            class="diff-filter-button"
+            :class="{ 'diff-filter-button-active': displayMode === 'all' }"
+            data-testid="text-diff-show-all"
+            @click="setDisplayMode('all')"
+          >
+            Show All
+          </button>
+          <button
+            type="button"
+            class="diff-filter-button"
+            :class="{ 'diff-filter-button-active': displayMode === 'differences' }"
+            data-testid="text-diff-show-differences"
+            @click="setDisplayMode('differences')"
+          >
+            Show Differences
+          </button>
+        </div>
+        <div
+          class="diff-navigation"
+          aria-label="Difference navigation"
         >
-          Next
-        </button>
+          <button
+            type="button"
+            class="diff-navigation-button"
+            data-testid="text-diff-previous-diff"
+            :disabled="diffMarkers.length === 0"
+            aria-label="Previous difference"
+            @click="jumpToPreviousDiff"
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            class="diff-navigation-button"
+            data-testid="text-diff-next-diff"
+            :disabled="diffMarkers.length === 0"
+            aria-label="Next difference"
+            @click="jumpToNextDiff"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
     <div
@@ -189,8 +244,8 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
           :style="{ transform: `translateY(${String(topOffset)}px)` }"
         >
           <div
-            v-for="{ line, index } in visibleRows"
-            :key="index"
+            v-for="{ line, sourceIndex } in visibleRows"
+            :key="sourceIndex"
             class="diff-row"
             :class="line.kind"
             :style="{ '--text-diff-row-height': textDiffRowHeight }"
@@ -262,6 +317,34 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
 .diff-navigation {
   display: flex;
   gap: 4px;
+}
+
+.diff-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.diff-filter {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+}
+
+.diff-filter-button {
+  height: 22px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--app-text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.diff-filter-button-active {
+  background: var(--app-surface);
+  color: var(--app-text);
 }
 
 .diff-navigation-button {

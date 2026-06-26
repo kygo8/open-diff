@@ -6,7 +6,7 @@ const textDiffRowHeightPx = 24
 const textDiffRowHeight = `${String(textDiffRowHeightPx)}px`
 const overscanRowCount = 12
 const defaultViewportHeight = 480
-const differenceContextRows = 2
+const defaultDifferenceContextRows = 2
 
 type DiffDisplayMode = 'all' | 'differences'
 
@@ -30,6 +30,7 @@ const scrollContainer = ref<HTMLElement | null>(null)
 const scrollTop = ref(0)
 const viewportHeight = ref(defaultViewportHeight)
 const displayMode = ref<DiffDisplayMode>('all')
+const differenceContextRows = ref(defaultDifferenceContextRows)
 
 const displayRows = computed((): VisibleDiffRow[] => {
   if (displayMode.value === 'all') {
@@ -43,8 +44,8 @@ const displayRows = computed((): VisibleDiffRow[] => {
       continue
     }
 
-    const start = Math.max(0, index - differenceContextRows)
-    const end = Math.min(props.lines.length - 1, index + differenceContextRows)
+    const start = Math.max(0, index - differenceContextRows.value)
+    const end = Math.min(props.lines.length - 1, index + differenceContextRows.value)
 
     for (let sourceIndex = start; sourceIndex <= end; sourceIndex += 1) {
       visibleSourceIndexes.add(sourceIndex)
@@ -105,6 +106,23 @@ const jumpToLine = (index: number): void => {
 
 const setDisplayMode = (mode: DiffDisplayMode): void => {
   displayMode.value = mode
+  jumpToLine(0)
+}
+
+const setDifferenceContextRows = (event: Event): void => {
+  const target = event.currentTarget
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  const nextValue = Number.parseInt(target.value, 10)
+
+  if (Number.isNaN(nextValue)) {
+    return
+  }
+
+  differenceContextRows.value = Math.min(99, Math.max(0, nextValue))
   jumpToLine(0)
 }
 
@@ -201,6 +219,19 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
             Show Differences
           </button>
         </div>
+        <label class="diff-context-control">
+          Context
+          <input
+            class="diff-context-input"
+            data-testid="text-diff-context-lines"
+            type="number"
+            min="0"
+            max="99"
+            step="1"
+            :value="differenceContextRows"
+            @input="setDifferenceContextRows"
+          />
+        </label>
         <div
           class="diff-navigation"
           aria-label="Difference navigation"
@@ -345,6 +376,24 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
 .diff-filter-button-active {
   background: var(--app-surface);
   color: var(--app-text);
+}
+
+.diff-context-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.diff-context-input {
+  width: 48px;
+  height: 22px;
+  padding: 0 4px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font: inherit;
 }
 
 .diff-navigation-button {

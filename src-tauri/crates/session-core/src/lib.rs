@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::fmt::{Display, Formatter};
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "kebab-case")]
@@ -92,6 +94,123 @@ impl SessionLocation {
             read_only: false,
         }
     }
+}
+
+#[derive(Debug, Clone)]
+pub struct SessionStore {
+    root: PathBuf,
+}
+
+impl SessionStore {
+    pub fn new(root: impl AsRef<Path>) -> Self {
+        Self {
+            root: root.as_ref().to_path_buf(),
+        }
+    }
+
+    pub fn save_named(
+        &self,
+        name: impl AsRef<str>,
+        session: &SessionDocument,
+    ) -> Result<PathBuf, SessionStoreError> {
+        let path = self.named_session_path(name.as_ref())?;
+
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        let json = serde_json::to_string_pretty(session)?;
+        std::fs::write(&path, json)?;
+
+        Ok(path)
+    }
+
+    pub fn load_named(&self, name: impl AsRef<str>) -> Result<SessionDocument, SessionStoreError> {
+        let path = self.named_session_path(name.as_ref())?;
+        let json = std::fs::read_to_string(path)?;
+
+        Ok(serde_json::from_str(&json)?)
+    }
+
+    pub fn named_session_path(&self, name: &str) -> Result<PathBuf, SessionStoreError> {
+        let mut path = self.root.join("sessions");
+        let segments = sanitized_name_segments(name)?;
+
+        for segment in segments {
+            path.push(segment);
+        }
+
+        path.set_extension("open-diff-session.json");
+
+        Ok(path)
+    }
+}
+
+#[derive(Debug)]
+pub enum SessionStoreError {
+    EmptyName,
+    InvalidName(String),
+    Io(std::io::Error),
+    Json(serde_json::Error),
+}
+
+impl Display for SessionStoreError {
+    fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::EmptyName => write!(formatter, "session name cannot be empty"),
+            Self::InvalidName(name) => {
+                write!(formatter, "session name contains invalid segment: {name}")
+            }
+            Self::Io(error) => write!(formatter, "{error}"),
+            Self::Json(error) => write!(formatter, "{error}"),
+        }
+    }
+}
+
+impl std::error::Error for SessionStoreError {}
+
+impl From<std::io::Error> for SessionStoreError {
+    fn from(error: std::io::Error) -> Self {
+        Self::Io(error)
+    }
+}
+
+impl From<serde_json::Error> for SessionStoreError {
+    fn from(error: serde_json::Error) -> Self {
+        Self::Json(error)
+    }
+}
+
+fn sanitized_name_segments(name: &str) -> Result<Vec<String>, SessionStoreError> {
+    let mut segments = Vec::new();
+
+    for raw_segment in name.split(['/', '\\']) {
+        let segment = raw_segment.trim();
+
+        if segment.is_empty() {
+            continue;
+        }
+
+        if segment == "." || segment == ".." {
+            return Err(SessionStoreError::InvalidName(segment.to_string()));
+        }
+
+        let sanitized: String = segment
+            .chars()
+            .map(|character| match character {
+                '<' | '>' | ':' | '"' | '|' | '?' | '*' => '_',
+                _ => character,
+            })
+            .collect();
+
+        segments.push(sanitized);
+    }
+
+    if segments.is_empty() {
+        return Err(SessionStoreError::EmptyName);
+    }
+
+    Ok(segments)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -207,5 +326,47 @@ mod tests {
         session.mark_dirty();
 
         assert!(!session.metadata.dirty);
+    }
+
+    #[test]
+    fn saves_reads_and_overwrites_named_session_file() {
+        let root = unique_temp_dir("named-session");
+        let store = SessionStore::new(&root);
+        let mut session = SessionDocument::new(
+            "session-1",
+            "Compare files",
+            SessionType::TextCompare,
+            SessionLocations::two_way(
+                SessionLocation::local_path("left.txt"),
+                SessionLocation::local_path("right.txt"),
+            ),
+        );
+
+        store.save_named("folder/compare-files", &session).unwrap();
+        let saved = store.load_named("folder/compare-files").unwrap();
+        assert_eq!(saved, session);
+
+        session.name = "Updated compare".to_string();
+        store.save_named("folder/compare-files", &session).unwrap();
+
+        assert_eq!(
+            store.load_named("folder/compare-files").unwrap().name,
+            "Updated compare"
+        );
+
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    fn unique_temp_dir(label: &str) -> std::path::PathBuf {
+        let mut path = std::env::temp_dir();
+        path.push(format!(
+            "open-diff-{label}-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+
+        path
     }
 }

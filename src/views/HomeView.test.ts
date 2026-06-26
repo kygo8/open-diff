@@ -152,4 +152,24 @@ describe('HomeView', () => {
       undefined,
     )
   })
+
+  it('prompts to save when closing a dirty session', async () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="change-rules-session-sample-text"]').trigger('click')
+    await wrapper.find('[data-testid="delete-session-sample-text"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="save-prompt"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Save changes before closing Compare sample text?')
+  })
 })

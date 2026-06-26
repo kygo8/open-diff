@@ -10,6 +10,7 @@ const emit = defineEmits<{
   copy: [id: string]
   move: [id: string]
   delete: [id: string]
+  'change-rules': [id: string]
 }>()
 </script>
 
@@ -29,6 +30,7 @@ const emit = defineEmits<{
           @copy="emit('copy', $event)"
           @move="emit('move', $event)"
           @delete="emit('delete', $event)"
+          @change-rules="emit('change-rules', $event)"
         />
       </ul>
     </template>
@@ -41,6 +43,15 @@ const emit = defineEmits<{
       <span>{{ node.name }}</span>
       <small>{{ node.session.sessionType }}</small>
       <div class="node-actions">
+        <button
+          type="button"
+          title="Change rules"
+          :data-testid="`change-rules-session-${node.id}`"
+          :disabled="node.session.metadata.locked"
+          @click="emit('change-rules', node.id)"
+        >
+          Δ
+        </button>
         <button
           type="button"
           title="Rename"

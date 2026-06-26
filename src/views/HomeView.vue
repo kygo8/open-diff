@@ -142,7 +142,22 @@ function moveSavedSession(id: string): void {
 }
 
 function deleteSavedSession(id: string): void {
-  savedSessions.deleteSession(id)
+  savedSessions.requestDeleteSession(id)
+}
+
+function changeSavedSessionRules(id: string): void {
+  savedSessions.updateSessionRules(id, { comparison: { whitespace: 'ignore' } })
+}
+
+function saveAndClosePendingSession(): void {
+  const pending = savedSessions.pendingSavePrompt
+
+  if (!pending) {
+    return
+  }
+
+  savedSessions.markSessionSaved(pending.id)
+  savedSessions.requestDeleteSession(pending.id)
 }
 </script>
 
@@ -264,8 +279,22 @@ function deleteSavedSession(id: string): void {
             @copy="copySavedSession"
             @move="moveSavedSession"
             @delete="deleteSavedSession"
+            @change-rules="changeSavedSessionRules"
           />
         </ul>
+        <div
+          v-if="savedSessions.pendingSavePrompt"
+          class="save-prompt"
+          data-testid="save-prompt"
+        >
+          <span>Save changes before closing {{ savedSessions.pendingSavePrompt.name }}?</span>
+          <button
+            type="button"
+            @click="saveAndClosePendingSession"
+          >
+            Save
+          </button>
+        </div>
       </aside>
     </div>
   </section>
@@ -488,6 +517,29 @@ h1 {
   gap: 2px;
   margin: 0;
   padding: 0;
+}
+
+.save-prompt {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid var(--diff-modified-fg);
+  border-radius: 6px;
+  background: var(--diff-modified-bg);
+  color: var(--app-text);
+  font-size: 12px;
+}
+
+.save-prompt button {
+  justify-self: start;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 5px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  cursor: pointer;
 }
 
 @media (width <= 640px) {

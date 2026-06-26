@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { sampleSavedSessions } from '@/app/savedSessions'
-import type { SessionDocument } from '@/types/session'
+import type { SessionDocument, SessionRules } from '@/types/session'
 
 export const useSavedSessionsStore = defineStore('savedSessions', () => {
   const sessions = ref<SessionDocument[]>(cloneSessions(sampleSavedSessions))
+  const pendingSavePrompt = ref<SessionDocument>()
 
   function renameSession(id: string, name: string): boolean {
     const session = findSession(id)
@@ -59,6 +60,22 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     return true
   }
 
+  function requestDeleteSession(id: string): boolean {
+    const session = findSession(id)
+
+    if (!session || session.metadata.locked) {
+      return false
+    }
+
+    if (session.metadata.dirty) {
+      pendingSavePrompt.value = cloneSession(session)
+
+      return false
+    }
+
+    return deleteSession(id)
+  }
+
   function overwriteSession(id: string, nextSession: SessionDocument): boolean {
     const index = sessions.value.findIndex((session) => session.id === id)
 
@@ -83,6 +100,40 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     return true
   }
 
+  function updateSessionRules(id: string, rules: Partial<SessionRules>): boolean {
+    const session = findSession(id)
+
+    if (!session || session.metadata.locked) {
+      return false
+    }
+
+    session.rules = {
+      ...session.rules,
+      ...rules,
+      filters: rules.filters ?? session.rules.filters,
+      comparison: rules.comparison ?? session.rules.comparison,
+    }
+    session.metadata.dirty = true
+
+    return true
+  }
+
+  function markSessionSaved(id: string): boolean {
+    const session = findSession(id)
+
+    if (!session) {
+      return false
+    }
+
+    session.metadata.dirty = false
+
+    if (pendingSavePrompt.value?.id === id) {
+      pendingSavePrompt.value = undefined
+    }
+
+    return true
+  }
+
   function snapshot(): SessionDocument[] {
     return cloneSessions(sessions.value)
   }
@@ -101,8 +152,12 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     copySession,
     moveSession,
     deleteSession,
+    requestDeleteSession,
     overwriteSession,
     setSessionLocked,
+    updateSessionRules,
+    markSessionSaved,
+    pendingSavePrompt,
     snapshot,
   }
 })

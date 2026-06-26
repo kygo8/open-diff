@@ -56,4 +56,23 @@ describe('useSavedSessionsStore', () => {
     expect(copy.metadata.locked).toBe(false)
     expect(copy.name).toBe('Compare sample text Copy')
   })
+
+  it('marks sessions dirty after rule changes and prompts before closing', () => {
+    const store = useSavedSessionsStore()
+
+    store.updateSessionRules('sample-text', { comparison: { whitespace: 'ignore' } })
+
+    expect(store.sessions.find((session) => session.id === 'sample-text')?.metadata.dirty).toBe(
+      true,
+    )
+    expect(store.requestDeleteSession('sample-text')).toBe(false)
+    expect(store.pendingSavePrompt?.id).toBe('sample-text')
+
+    store.markSessionSaved('sample-text')
+
+    expect(store.sessions.find((session) => session.id === 'sample-text')?.metadata.dirty).toBe(
+      false,
+    )
+    expect(store.requestDeleteSession('sample-text')).toBe(true)
+  })
 })

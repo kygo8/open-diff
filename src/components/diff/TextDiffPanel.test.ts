@@ -288,4 +288,39 @@ describe('TextDiffPanel', () => {
     expect(wrapper.text()).toContain('left 7')
     expect(wrapper.text()).not.toContain('left 8')
   })
+
+  it('toggles visible markers for spaces and tabs', async () => {
+    const lines: DiffLine[] = [
+      {
+        leftNumber: 1,
+        rightNumber: 1,
+        leftText: 'left value\t1',
+        rightText: 'right value\t1',
+        kind: 'modified',
+        inlineSegments: {
+          left: [
+            { text: 'left value', changed: false },
+            { text: '\t1', changed: true },
+          ],
+          right: [
+            { text: 'right value', changed: false },
+            { text: '\t1', changed: true },
+          ],
+        },
+      },
+    ]
+
+    const wrapper = mount(TextDiffPanel, { props: { lines } })
+
+    expect(wrapper.findAll('.visible-whitespace')).toHaveLength(0)
+
+    await wrapper.find('[data-testid="text-diff-toggle-whitespace"]').trigger('click')
+    await nextTick()
+
+    const markers = wrapper.findAll('.visible-whitespace')
+
+    expect(markers.length).toBeGreaterThan(0)
+    expect(markers.map((marker) => marker.text())).toContain('·')
+    expect(markers.map((marker) => marker.text())).toContain('→')
+  })
 })

@@ -22,6 +22,12 @@ interface DiffMarker {
   top: number
 }
 
+interface DisplaySegmentPart {
+  text: string
+  changed: boolean
+  whitespace: boolean
+}
+
 const props = defineProps<{
   lines: DiffLine[]
 }>()
@@ -31,6 +37,7 @@ const scrollTop = ref(0)
 const viewportHeight = ref(defaultViewportHeight)
 const displayMode = ref<DiffDisplayMode>('all')
 const differenceContextRows = ref(defaultDifferenceContextRows)
+const showWhitespace = ref(false)
 
 const displayRows = computed((): VisibleDiffRow[] => {
   if (displayMode.value === 'all') {
@@ -126,6 +133,10 @@ const setDifferenceContextRows = (event: Event): void => {
   jumpToLine(0)
 }
 
+const toggleWhitespace = (): void => {
+  showWhitespace.value = !showWhitespace.value
+}
+
 const getCurrentLineIndex = (): number => Math.floor(scrollTop.value / textDiffRowHeightPx)
 
 const jumpToNextDiff = (): void => {
@@ -188,6 +199,30 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
 
   return [{ text: side === 'left' ? line.leftText : line.rightText, changed: false }]
 }
+
+const splitTextByGrapheme = (text: string): string[] => {
+  const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+
+  return Array.from(segmenter.segment(text), ({ segment }) => segment)
+}
+
+const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[] => {
+  if (!showWhitespace.value) {
+    return [{ text: segment.text, changed: segment.changed, whitespace: false }]
+  }
+
+  return splitTextByGrapheme(segment.text).map((character): DisplaySegmentPart => {
+    if (character === ' ') {
+      return { text: '·', changed: segment.changed, whitespace: true }
+    }
+
+    if (character === '\t') {
+      return { text: '→', changed: segment.changed, whitespace: true }
+    }
+
+    return { text: character, changed: segment.changed, whitespace: false }
+  })
+}
 </script>
 
 <template>
@@ -232,6 +267,15 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
             @input="setDifferenceContextRows"
           />
         </label>
+        <button
+          type="button"
+          class="diff-option-button"
+          :class="{ 'diff-option-button-active': showWhitespace }"
+          data-testid="text-diff-toggle-whitespace"
+          @click="toggleWhitespace"
+        >
+          Whitespace
+        </button>
         <div
           class="diff-navigation"
           aria-label="Difference navigation"
@@ -287,14 +331,22 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
                 :key="`left-${segmentIndex}`"
                 class="inline-segment"
                 :class="{ 'inline-segment-changed': segment.changed }"
-            >{{ segment.text }}</span></pre>
+            ><span
+              v-for="(part, partIndex) in getDisplaySegmentParts(segment)"
+              :key="`left-${segmentIndex}-${partIndex}`"
+              :class="{ 'visible-whitespace': part.whitespace }"
+            >{{ part.text }}</span></span></pre>
             <div class="gutter">{{ line.rightNumber ?? '' }}</div>
             <pre class="cell"><span
               v-for="(segment, segmentIndex) in getInlineSegments(line, 'right')"
                 :key="`right-${segmentIndex}`"
                 class="inline-segment"
                 :class="{ 'inline-segment-changed': segment.changed }"
-            >{{ segment.text }}</span></pre>
+            ><span
+              v-for="(part, partIndex) in getDisplaySegmentParts(segment)"
+              :key="`right-${segmentIndex}-${partIndex}`"
+              :class="{ 'visible-whitespace': part.whitespace }"
+            >{{ part.text }}</span></span></pre>
           </div>
         </div>
       </div>
@@ -374,6 +426,22 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
 }
 
 .diff-filter-button-active {
+  background: var(--app-surface);
+  color: var(--app-text);
+}
+
+.diff-option-button {
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--app-text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.diff-option-button-active {
   background: var(--app-surface);
   color: var(--app-text);
 }
@@ -477,6 +545,10 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
   border-radius: 3px;
   background: color-mix(in srgb, currentcolor 22%, transparent);
   box-shadow: 0 0 0 1px color-mix(in srgb, currentcolor 16%, transparent);
+}
+
+.visible-whitespace {
+  color: var(--app-text-muted);
 }
 
 .diff-minimap {

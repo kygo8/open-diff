@@ -1,9 +1,26 @@
 use shared_types::{DiffLine, DiffLineKind, DiffStats, TextDiffRequest, TextDiffResponse};
+use std::collections::BTreeMap;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TextDiffAlgorithm {
+    Myers,
+    Patience,
+}
 
 pub fn diff_text(request: &TextDiffRequest) -> TextDiffResponse {
+    diff_text_with_algorithm(request, TextDiffAlgorithm::Myers)
+}
+
+pub fn diff_text_with_algorithm(
+    request: &TextDiffRequest,
+    algorithm: TextDiffAlgorithm,
+) -> TextDiffResponse {
     let left_lines = split_lines(&request.left);
     let right_lines = split_lines(&request.right);
-    let edits = diff_lines(&left_lines, &right_lines);
+    let edits = match algorithm {
+        TextDiffAlgorithm::Myers => diff_lines(&left_lines, &right_lines),
+        TextDiffAlgorithm::Patience => patience_diff_lines(&left_lines, &right_lines),
+    };
     let rows = rows_from_edits(&edits, &left_lines, &right_lines);
     let stats = stats_for(&rows);
 
@@ -61,6 +78,148 @@ fn diff_lines(left_lines: &[String], right_lines: &[String]) -> Vec<Edit> {
     }
 
     edits
+}
+
+fn patience_diff_lines(left_lines: &[String], right_lines: &[String]) -> Vec<Edit> {
+    patience_diff_range(
+        left_lines,
+        right_lines,
+        0,
+        left_lines.len(),
+        0,
+        right_lines.len(),
+    )
+}
+
+fn patience_diff_range(
+    left_lines: &[String],
+    right_lines: &[String],
+    left_start: usize,
+    left_end: usize,
+    right_start: usize,
+    right_end: usize,
+) -> Vec<Edit> {
+    let anchors = patience_anchors(
+        &left_lines[left_start..left_end],
+        &right_lines[right_start..right_end],
+        left_start,
+        right_start,
+    );
+
+    if anchors.is_empty() {
+        return offset_edits(
+            diff_lines(
+                &left_lines[left_start..left_end],
+                &right_lines[right_start..right_end],
+            ),
+            left_start,
+            right_start,
+        );
+    }
+
+    let mut edits = Vec::new();
+    let mut current_left = left_start;
+    let mut current_right = right_start;
+
+    for (anchor_left, anchor_right) in anchors {
+        edits.extend(patience_diff_range(
+            left_lines,
+            right_lines,
+            current_left,
+            anchor_left,
+            current_right,
+            anchor_right,
+        ));
+        edits.push(Edit::Equal {
+            left_index: anchor_left,
+            right_index: anchor_right,
+        });
+        current_left = anchor_left + 1;
+        current_right = anchor_right + 1;
+    }
+
+    edits.extend(patience_diff_range(
+        left_lines,
+        right_lines,
+        current_left,
+        left_end,
+        current_right,
+        right_end,
+    ));
+
+    edits
+}
+
+fn patience_anchors(
+    left_lines: &[String],
+    right_lines: &[String],
+    left_offset: usize,
+    right_offset: usize,
+) -> Vec<(usize, usize)> {
+    let left_unique = unique_line_positions(left_lines);
+    let right_unique = unique_line_positions(right_lines);
+    let mut pairs: Vec<(usize, usize)> = left_unique
+        .into_iter()
+        .filter_map(|(line, left_index)| {
+            right_unique
+                .get(&line)
+                .map(|right_index| (left_index + left_offset, *right_index + right_offset))
+        })
+        .collect();
+
+    pairs.sort_by_key(|(left_index, right_index)| (*left_index, *right_index));
+    longest_increasing_pairs(pairs)
+}
+
+fn unique_line_positions(lines: &[String]) -> BTreeMap<String, usize> {
+    let mut counts = BTreeMap::<String, (usize, usize)>::new();
+
+    for (index, line) in lines.iter().enumerate() {
+        counts
+            .entry(line.clone())
+            .and_modify(|entry| entry.0 += 1)
+            .or_insert((1, index));
+    }
+
+    counts
+        .into_iter()
+        .filter_map(|(line, (count, index))| (count == 1).then_some((line, index)))
+        .collect()
+}
+
+fn longest_increasing_pairs(pairs: Vec<(usize, usize)>) -> Vec<(usize, usize)> {
+    let mut sequence = Vec::<(usize, usize)>::new();
+    let mut last_right = None;
+
+    for pair in pairs {
+        if last_right.is_none_or(|right| pair.1 > right) {
+            last_right = Some(pair.1);
+            sequence.push(pair);
+        }
+    }
+
+    sequence
+}
+
+fn offset_edits(edits: Vec<Edit>, left_offset: usize, right_offset: usize) -> Vec<Edit> {
+    edits
+        .into_iter()
+        .map(|edit| match edit {
+            Edit::Equal {
+                left_index,
+                right_index,
+            } => Edit::Equal {
+                left_index: left_index + left_offset,
+                right_index: right_index + right_offset,
+            },
+            Edit::Delete { left_index } => Edit::Delete {
+                left_index: left_index + left_offset,
+            },
+            Edit::Add { right_index } => Edit::Add {
+                right_index: right_index + right_offset,
+            },
+        })
+        .collect()
 }
 
 fn lcs_table(left_lines: &[String], right_lines: &[String]) -> Vec<Vec<usize>> {
@@ -243,5 +402,21 @@ mod tests {
         );
         assert_eq!(result.stats.modified, 0);
         assert_eq!(result.stats.added, 1);
+    }
+
+    #[test]
+    fn patience_uses_unique_lines_as_readable_anchors() {
+        let request = TextDiffRequest {
+            left: "repeat\nalpha\nalpha\nshared-anchor\nbeta\nbeta\nrepeat".to_owned(),
+            right: "repeat\nbeta\nbeta\nshared-anchor\nalpha\nalpha\nrepeat".to_owned(),
+        };
+
+        let result = diff_text_with_algorithm(&request, TextDiffAlgorithm::Patience);
+        let anchor = result
+            .lines
+            .iter()
+            .find(|line| line.left_text == "shared-anchor" && line.right_text == "shared-anchor");
+
+        assert!(anchor.is_some_and(|line| line.kind == DiffLineKind::Equal));
     }
 }

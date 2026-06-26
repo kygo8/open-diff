@@ -132,6 +132,42 @@ impl SessionStore {
         Ok(serde_json::from_str(&json)?)
     }
 
+    pub fn save_auto_saved_sessions(
+        &self,
+        sessions: &[SessionDocument],
+    ) -> Result<PathBuf, SessionStoreError> {
+        let path = self.auto_save_path();
+
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        let auto_saved: Vec<SessionDocument> = sessions
+            .iter()
+            .cloned()
+            .map(|mut session| {
+                session.metadata.auto_saved = true;
+                session
+            })
+            .collect();
+        let json = serde_json::to_string_pretty(&auto_saved)?;
+        std::fs::write(&path, json)?;
+
+        Ok(path)
+    }
+
+    pub fn load_auto_saved_sessions(&self) -> Result<Vec<SessionDocument>, SessionStoreError> {
+        let path = self.auto_save_path();
+
+        if !path.exists() {
+            return Ok(Vec::new());
+        }
+
+        let json = std::fs::read_to_string(path)?;
+
+        Ok(serde_json::from_str(&json)?)
+    }
+
     pub fn named_session_path(&self, name: &str) -> Result<PathBuf, SessionStoreError> {
         let mut path = self.root.join("sessions");
         let segments = sanitized_name_segments(name)?;
@@ -143,6 +179,10 @@ impl SessionStore {
         path.set_extension("open-diff-session.json");
 
         Ok(path)
+    }
+
+    pub fn auto_save_path(&self) -> PathBuf {
+        self.root.join("autosave").join("recent-sessions.json")
     }
 }
 
@@ -353,6 +393,38 @@ mod tests {
             store.load_named("folder/compare-files").unwrap().name,
             "Updated compare"
         );
+
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn saves_and_reads_auto_saved_session_list() {
+        let root = unique_temp_dir("auto-save");
+        let store = SessionStore::new(&root);
+        let mut first = SessionDocument::new(
+            "session-1",
+            "First",
+            SessionType::TextCompare,
+            SessionLocations::default(),
+        );
+        let second = SessionDocument::new(
+            "session-2",
+            "Second",
+            SessionType::FolderCompare,
+            SessionLocations::default(),
+        );
+
+        first.metadata.dirty = true;
+        store
+            .save_auto_saved_sessions(&[first.clone(), second.clone()])
+            .unwrap();
+
+        let restored = store.load_auto_saved_sessions().unwrap();
+
+        assert_eq!(restored.len(), 2);
+        assert_eq!(restored[0].id, "session-1");
+        assert!(restored[0].metadata.auto_saved);
+        assert!(restored[1].metadata.auto_saved);
 
         std::fs::remove_dir_all(root).unwrap();
     }

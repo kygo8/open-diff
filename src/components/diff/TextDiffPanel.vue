@@ -1,11 +1,54 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import type { DiffLine, InlineDiffSegment } from '@/types/diff'
 
-const textDiffRowHeight = '24px'
+const textDiffRowHeightPx = 24
+const textDiffRowHeight = `${String(textDiffRowHeightPx)}px`
+const overscanRowCount = 12
+const defaultViewportHeight = 480
 
-defineProps<{
+interface VisibleDiffRow {
+  index: number
+  line: DiffLine
+}
+
+const props = defineProps<{
   lines: DiffLine[]
 }>()
+
+const scrollTop = ref(0)
+const viewportHeight = ref(defaultViewportHeight)
+
+const totalHeight = computed(() => props.lines.length * textDiffRowHeightPx)
+const visibleRowCount = computed(
+  () => Math.ceil(viewportHeight.value / textDiffRowHeightPx) + overscanRowCount * 2,
+)
+const startIndex = computed(() =>
+  Math.max(0, Math.floor(scrollTop.value / textDiffRowHeightPx) - overscanRowCount),
+)
+const endIndex = computed(() =>
+  Math.min(props.lines.length, startIndex.value + visibleRowCount.value),
+)
+const visibleRows = computed(() =>
+  props.lines.slice(startIndex.value, endIndex.value).map(
+    (line, index): VisibleDiffRow => ({
+      index: startIndex.value + index,
+      line,
+    }),
+  ),
+)
+const topOffset = computed(() => startIndex.value * textDiffRowHeightPx)
+
+const handleScroll = (event: Event): void => {
+  const target = event.currentTarget
+
+  if (!(target instanceof HTMLElement)) {
+    return
+  }
+
+  scrollTop.value = target.scrollTop
+  viewportHeight.value = target.clientHeight || defaultViewportHeight
+}
 
 const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSegment[] => {
   const segments = line.inlineSegments[side]
@@ -27,28 +70,40 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
     <div
       class="diff-body diff-body-synchronized"
       data-testid="text-diff-scroll-container"
+      @scroll="handleScroll"
     >
       <div
-        v-for="(line, index) in lines"
-        :key="index"
-        class="diff-row"
-        :class="line.kind"
-        :style="{ '--text-diff-row-height': textDiffRowHeight }"
+        class="diff-virtual-spacer"
+        data-testid="text-diff-virtual-spacer"
+        :style="{ height: `${String(totalHeight)}px` }"
       >
-        <div class="gutter">{{ line.leftNumber ?? '' }}</div>
-        <pre class="cell"><span
-          v-for="(segment, segmentIndex) in getInlineSegments(line, 'left')"
-            :key="`left-${segmentIndex}`"
-            class="inline-segment"
-            :class="{ 'inline-segment-changed': segment.changed }"
-        >{{ segment.text }}</span></pre>
-        <div class="gutter">{{ line.rightNumber ?? '' }}</div>
-        <pre class="cell"><span
-          v-for="(segment, segmentIndex) in getInlineSegments(line, 'right')"
-            :key="`right-${segmentIndex}`"
-            class="inline-segment"
-            :class="{ 'inline-segment-changed': segment.changed }"
-        >{{ segment.text }}</span></pre>
+        <div
+          class="diff-virtual-window"
+          :style="{ transform: `translateY(${String(topOffset)}px)` }"
+        >
+          <div
+            v-for="{ line, index } in visibleRows"
+            :key="index"
+            class="diff-row"
+            :class="line.kind"
+            :style="{ '--text-diff-row-height': textDiffRowHeight }"
+          >
+            <div class="gutter">{{ line.leftNumber ?? '' }}</div>
+            <pre class="cell"><span
+              v-for="(segment, segmentIndex) in getInlineSegments(line, 'left')"
+                :key="`left-${segmentIndex}`"
+                class="inline-segment"
+                :class="{ 'inline-segment-changed': segment.changed }"
+            >{{ segment.text }}</span></pre>
+            <div class="gutter">{{ line.rightNumber ?? '' }}</div>
+            <pre class="cell"><span
+              v-for="(segment, segmentIndex) in getInlineSegments(line, 'right')"
+                :key="`right-${segmentIndex}`"
+                class="inline-segment"
+                :class="{ 'inline-segment-changed': segment.changed }"
+            >{{ segment.text }}</span></pre>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -82,6 +137,18 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
   overflow: auto;
   font-family: var(--font-mono);
   font-size: 13px;
+}
+
+.diff-virtual-spacer {
+  position: relative;
+  min-width: 0;
+}
+
+.diff-virtual-window {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
 }
 
 .diff-row {

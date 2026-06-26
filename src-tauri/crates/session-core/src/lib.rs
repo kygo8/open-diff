@@ -56,6 +56,13 @@ impl SessionDocument {
             self.metadata.dirty = true;
         }
     }
+
+    pub fn apply_shared_read_only(&mut self) {
+        self.metadata.shared = true;
+        self.metadata.locked = true;
+        self.metadata.dirty = false;
+        self.locations.mark_all_read_only();
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default)]
@@ -74,6 +81,24 @@ impl SessionLocations {
             right: Some(right),
             center: None,
             output: None,
+        }
+    }
+
+    pub fn mark_all_read_only(&mut self) {
+        if let Some(location) = &mut self.left {
+            location.read_only = true;
+        }
+
+        if let Some(location) = &mut self.right {
+            location.read_only = true;
+        }
+
+        if let Some(location) = &mut self.center {
+            location.read_only = true;
+        }
+
+        if let Some(location) = &mut self.output {
+            location.read_only = true;
         }
     }
 }
@@ -166,6 +191,15 @@ impl SessionStore {
         let json = std::fs::read_to_string(path)?;
 
         Ok(serde_json::from_str(&json)?)
+    }
+
+    pub fn load_shared_file(path: impl AsRef<Path>) -> Result<SessionDocument, SessionStoreError> {
+        let json = std::fs::read_to_string(path)?;
+        let mut session: SessionDocument = serde_json::from_str(&json)?;
+
+        session.apply_shared_read_only();
+
+        Ok(session)
     }
 
     pub fn named_session_path(&self, name: &str) -> Result<PathBuf, SessionStoreError> {
@@ -425,6 +459,39 @@ mod tests {
         assert_eq!(restored[0].id, "session-1");
         assert!(restored[0].metadata.auto_saved);
         assert!(restored[1].metadata.auto_saved);
+
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn loads_shared_session_as_read_only_model() {
+        let root = unique_temp_dir("shared-session");
+        let store = SessionStore::new(&root);
+        let session = SessionDocument::new(
+            "shared-1",
+            "Shared review",
+            SessionType::FolderCompare,
+            SessionLocations::two_way(
+                SessionLocation::local_path("left"),
+                SessionLocation::local_path("right"),
+            ),
+        );
+        let path = store.save_named("team/shared-review", &session).unwrap();
+
+        let shared = SessionStore::load_shared_file(&path).unwrap();
+
+        assert!(shared.metadata.shared);
+        assert!(shared.metadata.locked);
+        assert!(shared
+            .locations
+            .left
+            .as_ref()
+            .is_some_and(|location| location.read_only));
+        assert!(shared
+            .locations
+            .right
+            .as_ref()
+            .is_some_and(|location| location.read_only));
 
         std::fs::remove_dir_all(root).unwrap();
     }

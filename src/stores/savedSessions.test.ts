@@ -100,4 +100,36 @@ describe('useSavedSessionsStore', () => {
     expect(store.sessions.some((session) => session.id === 'autosaved-text')).toBe(true)
     expect(store.recoveryCandidates).toHaveLength(0)
   })
+
+  it('loads shared sessions as read-only and edits through a copy', () => {
+    const store = useSavedSessionsStore()
+    const baseSession = store.sessions.at(0)
+
+    if (!baseSession) {
+      throw new Error('Expected the sample session list to contain at least one session.')
+    }
+
+    store.loadSharedSession({
+      ...baseSession,
+      id: 'shared-text',
+      name: 'Shared text',
+      metadata: { ...baseSession.metadata, shared: true },
+    })
+
+    const shared = store.sessions.find((session) => session.id === 'shared-text')
+
+    expect(shared?.metadata.shared).toBe(true)
+    expect(shared?.metadata.locked).toBe(true)
+    expect(store.updateSessionRules('shared-text', { comparison: { whitespace: 'ignore' } })).toBe(
+      false,
+    )
+
+    const editable = store.saveSharedSessionAsCopy('shared-text')
+
+    expect(editable.metadata.shared).toBe(false)
+    expect(editable.metadata.locked).toBe(false)
+    expect(store.updateSessionRules(editable.id, { comparison: { whitespace: 'ignore' } })).toBe(
+      true,
+    )
+  })
 })

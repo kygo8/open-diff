@@ -37,6 +37,22 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     return copy
   }
 
+  function saveSharedSessionAsCopy(id: string): SessionDocument {
+    const copy = copySession(id)
+
+    copy.id = `${id}-editable-${String(nextEditableCopyIndex())}`
+    copy.name = `${copy.name} Editable`
+    copy.metadata = {
+      ...copy.metadata,
+      shared: false,
+      locked: false,
+      dirty: false,
+    }
+    copy.locations = markLocationsWritable(copy.locations)
+
+    return copy
+  }
+
   function moveSession(id: string, folder: string | undefined): boolean {
     const session = findSession(id)
 
@@ -149,6 +165,20 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     recoveryCandidates.value = []
   }
 
+  function loadSharedSession(session: SessionDocument): void {
+    const shared = cloneSession(session)
+
+    shared.metadata = {
+      ...shared.metadata,
+      shared: true,
+      locked: true,
+      dirty: false,
+    }
+    shared.locations = markLocationsReadOnly(shared.locations)
+
+    sessions.value.push(shared)
+  }
+
   function snapshot(): SessionDocument[] {
     return cloneSessions(sessions.value)
   }
@@ -161,10 +191,15 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     return sessions.value.filter((session) => session.id.includes('-copy-')).length + 1
   }
 
+  function nextEditableCopyIndex(): number {
+    return sessions.value.filter((session) => session.id.includes('-editable-')).length + 1
+  }
+
   return {
     sessions,
     renameSession,
     copySession,
+    saveSharedSessionAsCopy,
     moveSession,
     deleteSession,
     requestDeleteSession,
@@ -176,6 +211,7 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     recoveryCandidates,
     detectRecoverySessions,
     restoreRecoverySessions,
+    loadSharedSession,
     snapshot,
   }
 })
@@ -201,5 +237,27 @@ function cloneSession(session: SessionDocument): SessionDocument {
       profileId: session.rules.profileId,
     },
     metadata: { ...session.metadata },
+  }
+}
+
+function markLocationsReadOnly(
+  locations: SessionDocument['locations'],
+): SessionDocument['locations'] {
+  return {
+    left: locations.left ? { ...locations.left, readOnly: true } : undefined,
+    right: locations.right ? { ...locations.right, readOnly: true } : undefined,
+    center: locations.center ? { ...locations.center, readOnly: true } : undefined,
+    output: locations.output ? { ...locations.output, readOnly: true } : undefined,
+  }
+}
+
+function markLocationsWritable(
+  locations: SessionDocument['locations'],
+): SessionDocument['locations'] {
+  return {
+    left: locations.left ? { ...locations.left, readOnly: false } : undefined,
+    right: locations.right ? { ...locations.right, readOnly: false } : undefined,
+    center: locations.center ? { ...locations.center, readOnly: false } : undefined,
+    output: locations.output ? { ...locations.output, readOnly: false } : undefined,
   }
 }

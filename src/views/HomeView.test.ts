@@ -99,4 +99,30 @@ describe('HomeView', () => {
 
     expect(wrapper.text()).not.toContain('Review release folder')
   })
+
+  it('applies saved session management actions from the tree', async () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="rename-session-sample-text"]').trigger('click')
+    expect(wrapper.text()).toContain('Compare sample text Renamed')
+
+    await wrapper.find('[data-testid="copy-session-sample-text"]').trigger('click')
+    expect(wrapper.text()).toContain('Compare sample text Renamed Copy')
+
+    await wrapper.find('[data-testid="move-session-sample-text"]').trigger('click')
+    expect(wrapper.text()).toContain('Archive')
+
+    await wrapper.find('[data-testid="delete-session-sample-folder"]').trigger('click')
+    expect(wrapper.text()).not.toContain('Review release folder')
+  })
 })

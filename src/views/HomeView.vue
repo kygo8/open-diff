@@ -2,14 +2,11 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { classifyDropInputs } from '@/app/dropInput'
-import {
-  buildSavedSessionTree,
-  filterSavedSessions,
-  sampleSavedSessions,
-} from '@/app/savedSessions'
+import { buildSavedSessionTree, filterSavedSessions } from '@/app/savedSessions'
 import { selectSessionForDrop } from '@/app/sessionAutoSelect'
 import { sessionCatalog, sessionPriorities } from '@/app/sessionCatalog'
 import SavedSessionNode from '@/components/session/SavedSessionNode.vue'
+import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { useTabsStore } from '@/stores/tabs'
 import type { DropClassification, DropInput } from '@/app/dropInput'
 import type { SessionSelection } from '@/app/sessionAutoSelect'
@@ -18,6 +15,7 @@ import type { SessionType } from '@/types/session'
 
 const router = useRouter()
 const tabs = useTabsStore()
+const savedSessions = useSavedSessionsStore()
 const dropResult = ref<DropClassification>({
   kind: 'invalid',
   reason: 'Drop exactly two files or folders.',
@@ -27,10 +25,10 @@ const isDragging = ref(false)
 const sessionSearch = ref('')
 const selectedSessionTypes = ref<Set<SessionType>>(new Set())
 const savedSessionTypes = computed(() =>
-  Array.from(new Set(sampleSavedSessions.map((session) => session.sessionType))),
+  Array.from(new Set(savedSessions.sessions.map((session) => session.sessionType))),
 )
 const filteredSavedSessions = computed(() =>
-  filterSavedSessions(sampleSavedSessions, {
+  filterSavedSessions(savedSessions.sessions, {
     query: sessionSearch.value,
     types: selectedSessionTypes.value,
   }),
@@ -123,6 +121,28 @@ function toggleSessionType(type: SessionType, selected: boolean): void {
   }
 
   selectedSessionTypes.value = next
+}
+
+function renameSavedSession(id: string): void {
+  const session = savedSessions.sessions.find((item) => item.id === id)
+
+  if (!session) {
+    return
+  }
+
+  savedSessions.renameSession(id, `${session.name} Renamed`)
+}
+
+function copySavedSession(id: string): void {
+  savedSessions.copySession(id)
+}
+
+function moveSavedSession(id: string): void {
+  savedSessions.moveSession(id, 'Archive')
+}
+
+function deleteSavedSession(id: string): void {
+  savedSessions.deleteSession(id)
 }
 </script>
 
@@ -240,6 +260,10 @@ function toggleSessionType(type: SessionType, selected: boolean): void {
             v-for="node in savedSessionTree"
             :key="node.id"
             :node="node"
+            @rename="renameSavedSession"
+            @copy="copySavedSession"
+            @move="moveSavedSession"
+            @delete="deleteSavedSession"
           />
         </ul>
       </aside>

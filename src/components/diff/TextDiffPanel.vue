@@ -16,6 +16,7 @@ const props = defineProps<{
   lines: DiffLine[]
 }>()
 
+const scrollContainer = ref<HTMLElement | null>(null)
 const scrollTop = ref(0)
 const viewportHeight = ref(defaultViewportHeight)
 
@@ -38,6 +39,16 @@ const visibleRows = computed(() =>
   ),
 )
 const topOffset = computed(() => startIndex.value * textDiffRowHeightPx)
+const diffMarkers = computed(() =>
+  props.lines
+    .map((line, index) => ({ line, index }))
+    .filter(({ line }) => line.kind !== 'equal')
+    .map(({ line, index }) => ({
+      index,
+      kind: line.kind,
+      top: props.lines.length <= 1 ? 0 : (index / (props.lines.length - 1)) * 100,
+    })),
+)
 
 const handleScroll = (event: Event): void => {
   const target = event.currentTarget
@@ -48,6 +59,17 @@ const handleScroll = (event: Event): void => {
 
   scrollTop.value = target.scrollTop
   viewportHeight.value = target.clientHeight || defaultViewportHeight
+}
+
+const jumpToLine = (index: number): void => {
+  const nextScrollTop = index * textDiffRowHeightPx
+
+  scrollTop.value = nextScrollTop
+
+  if (scrollContainer.value) {
+    scrollContainer.value.scrollTop = nextScrollTop
+    viewportHeight.value = scrollContainer.value.clientHeight || defaultViewportHeight
+  }
 }
 
 const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSegment[] => {
@@ -68,6 +90,7 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
       <span>Right</span>
     </div>
     <div
+      ref="scrollContainer"
       class="diff-body diff-body-synchronized"
       data-testid="text-diff-scroll-container"
       @scroll="handleScroll"
@@ -106,11 +129,29 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
         </div>
       </div>
     </div>
+    <div
+      class="diff-minimap"
+      aria-label="Difference map"
+      data-testid="text-diff-minimap"
+    >
+      <button
+        v-for="marker in diffMarkers"
+        :key="`${marker.kind}-${marker.index}`"
+        type="button"
+        class="diff-minimap-marker"
+        :class="`diff-minimap-marker-${marker.kind}`"
+        :style="{ top: `${String(marker.top)}%` }"
+        data-testid="text-diff-minimap-marker"
+        :aria-label="`Jump to diff line ${String(marker.index + 1)}`"
+        @click="jumpToLine(marker.index)"
+      />
+    </div>
   </div>
 </template>
 
 <style scoped>
 .diff-panel {
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -134,6 +175,7 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
 
 .diff-body {
   height: calc(100% - 30px);
+  margin-right: 14px;
   overflow: auto;
   font-family: var(--font-mono);
   font-size: 13px;
@@ -196,5 +238,38 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
   border-radius: 3px;
   background: color-mix(in srgb, currentcolor 22%, transparent);
   box-shadow: 0 0 0 1px color-mix(in srgb, currentcolor 16%, transparent);
+}
+
+.diff-minimap {
+  position: absolute;
+  top: 32px;
+  right: 4px;
+  bottom: 4px;
+  width: 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--app-text-muted) 12%, transparent);
+}
+
+.diff-minimap-marker {
+  position: absolute;
+  left: 0;
+  width: 8px;
+  height: 5px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.diff-minimap-marker-added {
+  background: var(--diff-added-fg);
+}
+
+.diff-minimap-marker-deleted {
+  background: var(--diff-deleted-fg);
+}
+
+.diff-minimap-marker-modified {
+  background: var(--diff-modified-fg);
 }
 </style>

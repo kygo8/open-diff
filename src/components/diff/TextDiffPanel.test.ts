@@ -124,4 +124,46 @@ describe('TextDiffPanel', () => {
     expect(wrapper.text()).toContain('left 50001')
     expect(wrapper.text()).not.toContain('left 1')
   })
+
+  it('renders a diff minimap and jumps to selected diff markers', async () => {
+    const lines: DiffLine[] = Array.from({ length: 120 }, (_, index) => {
+      const lineNumber = index + 1
+      let kind: DiffLine['kind'] = 'equal'
+
+      if (lineNumber === 10) {
+        kind = 'added'
+      }
+
+      if (lineNumber === 60) {
+        kind = 'modified'
+      }
+
+      return {
+        leftNumber: kind === 'added' ? null : lineNumber,
+        rightNumber: lineNumber,
+        leftText: kind === 'added' ? '' : `left ${String(lineNumber)}`,
+        rightText: `right ${String(lineNumber)}`,
+        kind,
+        inlineSegments: { left: [], right: [] },
+      }
+    })
+
+    const wrapper = mount(TextDiffPanel, { props: { lines } })
+    const body = wrapper.find('[data-testid="text-diff-scroll-container"]')
+
+    Object.defineProperty(body.element, 'clientHeight', { configurable: true, value: 240 })
+
+    const markers = wrapper.findAll('[data-testid="text-diff-minimap-marker"]')
+
+    expect(markers).toHaveLength(2)
+    expect(markers[0]?.classes()).toContain('diff-minimap-marker-added')
+    expect(markers[1]?.classes()).toContain('diff-minimap-marker-modified')
+    expect(markers[1]?.attributes('style')).toContain('top:')
+
+    await markers[1]?.trigger('click')
+    await nextTick()
+
+    expect(body.element.scrollTop).toBe(24 * 59)
+    expect(wrapper.text()).toContain('left 60')
+  })
 })

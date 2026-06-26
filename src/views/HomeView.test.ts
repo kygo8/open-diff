@@ -3,6 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import HomeView from './HomeView.vue'
 import { sessionCatalog } from '@/app/sessionCatalog'
+import { useSavedSessionsStore } from '@/stores/savedSessions'
 
 const push = vi.fn()
 
@@ -171,5 +172,43 @@ describe('HomeView', () => {
 
     expect(wrapper.find('[data-testid="save-prompt"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('Save changes before closing Compare sample text?')
+  })
+
+  it('shows a recovery entry for auto-saved sessions', async () => {
+    const store = useSavedSessionsStore()
+    const baseSession = store.sessions.at(0)
+
+    if (!baseSession) {
+      throw new Error('Expected the sample session list to contain at least one session.')
+    }
+
+    store.detectRecoverySessions([
+      {
+        ...baseSession,
+        id: 'autosaved-text',
+        name: 'Recovered text',
+        metadata: { ...baseSession.metadata, autoSaved: true },
+      },
+    ])
+
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.find('[data-testid="recovery-entry"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Recovered text')
+
+    await wrapper.find('[data-testid="restore-recovery"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="recovery-entry"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Recovered text')
   })
 })

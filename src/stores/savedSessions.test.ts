@@ -75,4 +75,29 @@ describe('useSavedSessionsStore', () => {
     )
     expect(store.requestDeleteSession('sample-text')).toBe(true)
   })
+
+  it('detects and restores auto-saved recovery candidates', () => {
+    const store = useSavedSessionsStore()
+    const baseSession = store.sessions.at(0)
+
+    if (!baseSession) {
+      throw new Error('Expected the sample session list to contain at least one session.')
+    }
+
+    store.detectRecoverySessions([
+      {
+        ...baseSession,
+        id: 'autosaved-text',
+        name: 'Recovered text',
+        metadata: { ...baseSession.metadata, autoSaved: true },
+      },
+    ])
+
+    expect(store.recoveryCandidates).toHaveLength(1)
+
+    store.restoreRecoverySessions()
+
+    expect(store.sessions.some((session) => session.id === 'autosaved-text')).toBe(true)
+    expect(store.recoveryCandidates).toHaveLength(0)
+  })
 })

@@ -250,6 +250,20 @@ function saveAndClosePendingSession(): void {
           <h2>Saved Sessions</h2>
           <span>{{ filteredSavedSessions.length }}</span>
         </div>
+        <div
+          v-if="savedSessions.recoveryCandidates.length > 0"
+          class="recovery-entry"
+          data-testid="recovery-entry"
+        >
+          <span>Recover {{ savedSessions.recoveryCandidates[0]?.name }}</span>
+          <button
+            type="button"
+            data-testid="restore-recovery"
+            @click="savedSessions.restoreRecoverySessions"
+          >
+            Restore Recent
+          </button>
+        </div>
         <div class="saved-session-filters">
           <input
             v-model="sessionSearch"
@@ -491,6 +505,29 @@ h1 {
   display: grid;
   gap: 8px;
   margin-bottom: 12px;
+}
+
+.recovery-entry {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid #2563eb;
+  border-radius: 6px;
+  background: rgb(37 99 235 / 0.08);
+  color: var(--app-text);
+  font-size: 12px;
+}
+
+.recovery-entry button {
+  justify-self: start;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 5px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  cursor: pointer;
 }
 
 .saved-session-filters input[type='search'] {

@@ -6,6 +6,7 @@ import type { SessionDocument, SessionRules } from '@/types/session'
 export const useSavedSessionsStore = defineStore('savedSessions', () => {
   const sessions = ref<SessionDocument[]>(cloneSessions(sampleSavedSessions))
   const pendingSavePrompt = ref<SessionDocument>()
+  const recoveryCandidates = ref<SessionDocument[]>([])
 
   function renameSession(id: string, name: string): boolean {
     const session = findSession(id)
@@ -134,6 +135,20 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     return true
   }
 
+  function detectRecoverySessions(candidates: SessionDocument[]): void {
+    recoveryCandidates.value = cloneSessions(
+      candidates.filter((session) => session.metadata.autoSaved),
+    )
+  }
+
+  function restoreRecoverySessions(): void {
+    const existingIds = new Set(sessions.value.map((session) => session.id))
+    const restored = recoveryCandidates.value.filter((session) => !existingIds.has(session.id))
+
+    sessions.value = [...sessions.value, ...cloneSessions(restored)]
+    recoveryCandidates.value = []
+  }
+
   function snapshot(): SessionDocument[] {
     return cloneSessions(sessions.value)
   }
@@ -158,6 +173,9 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     updateSessionRules,
     markSessionSaved,
     pendingSavePrompt,
+    recoveryCandidates,
+    detectRecoverySessions,
+    restoreRecoverySessions,
     snapshot,
   }
 })

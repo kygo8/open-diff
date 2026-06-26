@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct TextDiffRequest {
     pub left: String,
     pub right: String,
+    pub algorithm: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]

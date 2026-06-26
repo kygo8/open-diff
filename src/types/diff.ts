@@ -11,7 +11,10 @@ export interface DiffLine {
 export interface TextDiffRequest {
   left: string
   right: string
+  algorithm?: TextDiffAlgorithm
 }
+
+export type TextDiffAlgorithm = 'myers' | 'patience' | 'histogram'
 
 export interface TextDiffResponse {
   lines: DiffLine[]

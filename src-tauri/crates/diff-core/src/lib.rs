@@ -9,7 +9,18 @@ pub enum TextDiffAlgorithm {
 }
 
 pub fn diff_text(request: &TextDiffRequest) -> TextDiffResponse {
-    diff_text_with_algorithm(request, TextDiffAlgorithm::Myers)
+    diff_text_with_algorithm(
+        request,
+        algorithm_from_request(request.algorithm.as_deref()),
+    )
+}
+
+fn algorithm_from_request(value: Option<&str>) -> TextDiffAlgorithm {
+    match value {
+        Some("patience") => TextDiffAlgorithm::Patience,
+        Some("histogram") => TextDiffAlgorithm::Histogram,
+        _ => TextDiffAlgorithm::Myers,
+    }
 }
 
 pub fn diff_text_with_algorithm(
@@ -489,6 +500,7 @@ mod tests {
         let request = TextDiffRequest {
             left: "one\ntwo".to_owned(),
             right: "one\n2".to_owned(),
+            algorithm: None,
         };
 
         let result = diff_text(&request);
@@ -503,6 +515,7 @@ mod tests {
         let request = TextDiffRequest {
             left: "one".to_owned(),
             right: "one\ntwo".to_owned(),
+            algorithm: None,
         };
 
         let result = diff_text(&request);
@@ -516,6 +529,7 @@ mod tests {
         let request = TextDiffRequest {
             left: "a\nb\nc".to_owned(),
             right: "a\nx\nb\nc".to_owned(),
+            algorithm: None,
         };
 
         let result = diff_text(&request);
@@ -539,6 +553,7 @@ mod tests {
         let request = TextDiffRequest {
             left: "repeat\nalpha\nalpha\nshared-anchor\nbeta\nbeta\nrepeat".to_owned(),
             right: "repeat\nbeta\nbeta\nshared-anchor\nalpha\nalpha\nrepeat".to_owned(),
+            algorithm: None,
         };
 
         let result = diff_text_with_algorithm(&request, TextDiffAlgorithm::Patience);
@@ -555,6 +570,7 @@ mod tests {
         let request = TextDiffRequest {
             left: "noise\nnoise\nleft-only\nrare-anchor\nnoise\ncommon\nnoise".to_owned(),
             right: "noise\nnoise\nright-only\nrare-anchor\nnoise\ncommon\nnoise".to_owned(),
+            algorithm: None,
         };
 
         let result = diff_text_with_algorithm(&request, TextDiffAlgorithm::Histogram);

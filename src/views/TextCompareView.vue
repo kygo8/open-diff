@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { diffText } from '@/api/diff'
-import type { TextDiffResponse } from '@/types/diff'
+import type { TextDiffAlgorithm, TextDiffResponse } from '@/types/diff'
 import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
 
 const left = ref('line one\nline two\nline four')
 const right = ref('line one\nline 2\nline three\nline four')
+const algorithm = ref<TextDiffAlgorithm>('myers')
 const result = ref<TextDiffResponse | null>(null)
 const loading = ref(false)
 const error = ref('')
@@ -23,7 +24,11 @@ async function runDiff(): Promise<void> {
   loading.value = true
   error.value = ''
   try {
-    result.value = await diffText({ left: left.value, right: right.value })
+    result.value = await diffText({
+      left: left.value,
+      right: right.value,
+      algorithm: algorithm.value,
+    })
   } catch (event) {
     error.value = String(event)
   } finally {
@@ -38,10 +43,20 @@ async function runDiff(): Promise<void> {
       <strong>Text Compare</strong>
       <span class="stats">{{ statsLabel }}</span>
       <div class="spacer" />
+      <select
+        v-model="algorithm"
+        class="algorithm-select"
+        data-testid="algorithm-select"
+      >
+        <option value="myers">Myers</option>
+        <option value="patience">Patience</option>
+        <option value="histogram">Histogram</option>
+      </select>
       <NButton
         size="small"
         type="primary"
         :loading="loading"
+        data-testid="run-diff"
         @click="runDiff"
         >Run Diff</NButton
       >
@@ -103,6 +118,16 @@ async function runDiff(): Promise<void> {
 
 .spacer {
   flex: 1;
+}
+
+.algorithm-select {
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 12px;
 }
 
 .input-row {

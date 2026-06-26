@@ -59,4 +59,22 @@ describe('HomeView', () => {
 
     expect(push).toHaveBeenCalledWith('/compare/text')
   })
+
+  it('shows saved sessions grouped by folder', () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            template: '<button :disabled="disabled"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.find('[data-testid="saved-sessions"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Saved Sessions')
+    expect(wrapper.text()).toContain('Work')
+    expect(wrapper.text()).toContain('Compare sample text')
+  })
 })

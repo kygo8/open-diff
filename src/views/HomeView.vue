@@ -2,8 +2,10 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { classifyDropInputs } from '@/app/dropInput'
+import { buildSavedSessionTree, sampleSavedSessions } from '@/app/savedSessions'
 import { selectSessionForDrop } from '@/app/sessionAutoSelect'
 import { sessionCatalog, sessionPriorities } from '@/app/sessionCatalog'
+import SavedSessionNode from '@/components/session/SavedSessionNode.vue'
 import { useTabsStore } from '@/stores/tabs'
 import type { DropClassification, DropInput } from '@/app/dropInput'
 import type { SessionSelection } from '@/app/sessionAutoSelect'
@@ -17,6 +19,7 @@ const dropResult = ref<DropClassification>({
 })
 const selectedDropSession = ref<SessionSelection>()
 const isDragging = ref(false)
+const savedSessionTree = computed(() => buildSavedSessionTree(sampleSavedSessions))
 
 const groupedEntries = computed(() =>
   sessionPriorities.map((priority) => ({
@@ -136,43 +139,62 @@ function openSelectedDropSession(): void {
       </NButton>
     </section>
 
-    <div class="priority-groups">
-      <section
-        v-for="group in groupedEntries"
-        :key="group.priority"
-        class="priority-group"
-        data-testid="session-priority"
-      >
-        <div class="priority-title">
-          <span>{{ group.priority }}</span>
-          <strong>{{ priorityLabel(group.priority) }}</strong>
-        </div>
+    <div class="home-content">
+      <div class="priority-groups">
+        <section
+          v-for="group in groupedEntries"
+          :key="group.priority"
+          class="priority-group"
+          data-testid="session-priority"
+        >
+          <div class="priority-title">
+            <span>{{ group.priority }}</span>
+            <strong>{{ priorityLabel(group.priority) }}</strong>
+          </div>
 
-        <div class="session-grid">
-          <article
-            v-for="entry in group.entries"
-            :key="entry.type"
-            class="session-entry"
-            :class="{ disabled: !entry.implemented }"
-            data-testid="session-entry"
-            :data-session-type="entry.type"
-          >
-            <div class="entry-copy">
-              <h2>{{ entry.title }}</h2>
-              <p>{{ entry.summary }}</p>
-            </div>
-            <NButton
-              size="small"
-              :type="entry.implemented ? 'primary' : 'default'"
-              :secondary="!entry.implemented"
-              :disabled="!entry.implemented"
-              @click="openSession(entry)"
+          <div class="session-grid">
+            <article
+              v-for="entry in group.entries"
+              :key="entry.type"
+              class="session-entry"
+              :class="{ disabled: !entry.implemented }"
+              data-testid="session-entry"
+              :data-session-type="entry.type"
             >
-              {{ entry.implemented ? 'Open' : 'Planned' }}
-            </NButton>
-          </article>
+              <div class="entry-copy">
+                <h2>{{ entry.title }}</h2>
+                <p>{{ entry.summary }}</p>
+              </div>
+              <NButton
+                size="small"
+                :type="entry.implemented ? 'primary' : 'default'"
+                :secondary="!entry.implemented"
+                :disabled="!entry.implemented"
+                @click="openSession(entry)"
+              >
+                {{ entry.implemented ? 'Open' : 'Planned' }}
+              </NButton>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <aside
+        class="saved-sessions"
+        data-testid="saved-sessions"
+      >
+        <div class="saved-sessions-header">
+          <h2>Saved Sessions</h2>
+          <span>{{ sampleSavedSessions.length }}</span>
         </div>
-      </section>
+        <ul class="saved-session-tree">
+          <SavedSessionNode
+            v-for="node in savedSessionTree"
+            :key="node.id"
+            :node="node"
+          />
+        </ul>
+      </aside>
     </div>
   </section>
 </template>
@@ -228,14 +250,22 @@ h1 {
   font-size: 12px;
 }
 
-.priority-groups {
+.home-content {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
   gap: 22px;
   margin-top: 22px;
 }
 
+.priority-groups {
+  display: grid;
+  gap: 22px;
+}
+
 .drop-zone {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
   min-height: 92px;
   margin-top: 18px;
   padding: 16px;
@@ -330,6 +360,39 @@ h1 {
   line-height: 1.4;
 }
 
+.saved-sessions {
+  align-self: start;
+  padding: 14px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.saved-sessions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.saved-sessions-header h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.saved-sessions-header span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.saved-session-tree {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+}
+
 @media (width <= 640px) {
   .home-view {
     padding: 18px;
@@ -344,6 +407,11 @@ h1 {
   }
 
   .session-entry {
+    grid-template-columns: 1fr;
+  }
+
+  .home-content,
+  .drop-zone {
     grid-template-columns: 1fr;
   }
 }

@@ -77,4 +77,26 @@ describe('HomeView', () => {
     expect(wrapper.text()).toContain('Work')
     expect(wrapper.text()).toContain('Compare sample text')
   })
+
+  it('filters saved sessions by search keyword and session type', async () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            template: '<button :disabled="disabled"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="session-search"]').setValue('release')
+
+    expect(wrapper.text()).toContain('Review release folder')
+    expect(wrapper.text()).not.toContain('Compare sample text')
+
+    await wrapper.find('[data-testid="type-filter-text-compare"]').setValue(true)
+
+    expect(wrapper.text()).not.toContain('Review release folder')
+  })
 })

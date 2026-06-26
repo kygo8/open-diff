@@ -2,7 +2,11 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { classifyDropInputs } from '@/app/dropInput'
-import { buildSavedSessionTree, sampleSavedSessions } from '@/app/savedSessions'
+import {
+  buildSavedSessionTree,
+  filterSavedSessions,
+  sampleSavedSessions,
+} from '@/app/savedSessions'
 import { selectSessionForDrop } from '@/app/sessionAutoSelect'
 import { sessionCatalog, sessionPriorities } from '@/app/sessionCatalog'
 import SavedSessionNode from '@/components/session/SavedSessionNode.vue'
@@ -10,6 +14,7 @@ import { useTabsStore } from '@/stores/tabs'
 import type { DropClassification, DropInput } from '@/app/dropInput'
 import type { SessionSelection } from '@/app/sessionAutoSelect'
 import type { SessionCatalogEntry, SessionPriority } from '@/app/sessionCatalog'
+import type { SessionType } from '@/types/session'
 
 const router = useRouter()
 const tabs = useTabsStore()
@@ -19,7 +24,18 @@ const dropResult = ref<DropClassification>({
 })
 const selectedDropSession = ref<SessionSelection>()
 const isDragging = ref(false)
-const savedSessionTree = computed(() => buildSavedSessionTree(sampleSavedSessions))
+const sessionSearch = ref('')
+const selectedSessionTypes = ref<Set<SessionType>>(new Set())
+const savedSessionTypes = computed(() =>
+  Array.from(new Set(sampleSavedSessions.map((session) => session.sessionType))),
+)
+const filteredSavedSessions = computed(() =>
+  filterSavedSessions(sampleSavedSessions, {
+    query: sessionSearch.value,
+    types: selectedSessionTypes.value,
+  }),
+)
+const savedSessionTree = computed(() => buildSavedSessionTree(filteredSavedSessions.value))
 
 const groupedEntries = computed(() =>
   sessionPriorities.map((priority) => ({
@@ -95,6 +111,18 @@ function openSelectedDropSession(): void {
     dirty: false,
   })
   void router.push(selectedDropSession.value.route)
+}
+
+function toggleSessionType(type: SessionType, selected: boolean): void {
+  const next = new Set(selectedSessionTypes.value)
+
+  if (selected) {
+    next.add(type)
+  } else {
+    next.delete(type)
+  }
+
+  selectedSessionTypes.value = next
 }
 </script>
 
@@ -185,7 +213,27 @@ function openSelectedDropSession(): void {
       >
         <div class="saved-sessions-header">
           <h2>Saved Sessions</h2>
-          <span>{{ sampleSavedSessions.length }}</span>
+          <span>{{ filteredSavedSessions.length }}</span>
+        </div>
+        <div class="saved-session-filters">
+          <input
+            v-model="sessionSearch"
+            data-testid="session-search"
+            type="search"
+            placeholder="Search sessions"
+          />
+          <label
+            v-for="type in savedSessionTypes"
+            :key="type"
+          >
+            <input
+              :data-testid="`type-filter-${type}`"
+              type="checkbox"
+              :checked="selectedSessionTypes.has(type)"
+              @change="toggleSessionType(type, ($event.target as HTMLInputElement).checked)"
+            />
+            <span>{{ type }}</span>
+          </label>
         </div>
         <ul class="saved-session-tree">
           <SavedSessionNode
@@ -382,6 +430,31 @@ h1 {
 }
 
 .saved-sessions-header span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.saved-session-filters {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.saved-session-filters input[type='search'] {
+  width: 100%;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-size: 13px;
+}
+
+.saved-session-filters label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: var(--app-text-muted);
   font-size: 12px;
 }

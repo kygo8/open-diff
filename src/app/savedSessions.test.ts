@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildSavedSessionTree } from './savedSessions'
+import { buildSavedSessionTree, filterSavedSessions } from './savedSessions'
 import type { SessionDocument } from '@/types/session'
 
 const baseSession: SessionDocument = {
@@ -60,5 +60,31 @@ describe('buildSavedSessionTree', () => {
     expect(buildSavedSessionTree([rootSession])).toEqual([
       { kind: 'session', id: 'root-session', name: 'Compare app source', session: rootSession },
     ])
+  })
+
+  it('filters sessions by keyword and type together', () => {
+    const sessions: SessionDocument[] = [
+      baseSession,
+      {
+        ...baseSession,
+        id: 'folder-session',
+        name: 'Release folder',
+        sessionType: 'folder-compare',
+        metadata: { ...baseSession.metadata, folder: 'Work/Release' },
+      },
+    ]
+
+    expect(
+      filterSavedSessions(sessions, {
+        query: 'release',
+        types: new Set(['folder-compare']),
+      }),
+    ).toHaveLength(1)
+    expect(
+      filterSavedSessions(sessions, {
+        query: 'release',
+        types: new Set(['text-compare']),
+      }),
+    ).toHaveLength(0)
   })
 })

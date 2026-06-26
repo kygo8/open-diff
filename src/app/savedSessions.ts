@@ -1,4 +1,10 @@
 import type { SessionDocument } from '@/types/session'
+import type { SessionType } from '@/types/session'
+
+export interface SavedSessionFilter {
+  query: string
+  types: Set<SessionType>
+}
 
 export interface SavedSessionFolderNode {
   kind: 'folder'
@@ -90,6 +96,28 @@ export function buildSavedSessionTree(sessions: SessionDocument[]): SavedSession
   }
 
   return sortTree(roots)
+}
+
+export function filterSavedSessions(
+  sessions: SessionDocument[],
+  filter: SavedSessionFilter,
+): SessionDocument[] {
+  const query = filter.query.trim().toLowerCase()
+
+  return sessions.filter((session) => {
+    const matchesType = filter.types.size === 0 || filter.types.has(session.sessionType)
+    const searchable = [
+      session.name,
+      session.sessionType,
+      session.metadata.folder ?? '',
+      session.metadata.description ?? '',
+    ]
+      .join(' ')
+      .toLowerCase()
+    const matchesQuery = query.length === 0 || searchable.includes(query)
+
+    return matchesType && matchesQuery
+  })
 }
 
 function ensureFolderPath(

@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { classifyDropInputs } from '@/app/dropInput'
 import { sessionCatalog, sessionPriorities } from '@/app/sessionCatalog'
 import { useTabsStore } from '@/stores/tabs'
+import type { DropClassification, DropInput } from '@/app/dropInput'
 import type { SessionCatalogEntry, SessionPriority } from '@/app/sessionCatalog'
 
 const router = useRouter()
 const tabs = useTabsStore()
+const dropResult = ref<DropClassification>({
+  kind: 'invalid',
+  reason: 'Drop exactly two files or folders.',
+})
+const isDragging = ref(false)
 
 const groupedEntries = computed(() =>
   sessionPriorities.map((priority) => ({
@@ -34,6 +41,40 @@ function openSession(entry: SessionCatalogEntry): void {
   tabs.openTab({ title: entry.title, route: entry.route, dirty: false })
   void router.push(entry.route)
 }
+
+function handleDragOver(event: DragEvent): void {
+  event.preventDefault()
+  isDragging.value = true
+}
+
+function handleDragLeave(): void {
+  isDragging.value = false
+}
+
+function handleDrop(event: DragEvent): void {
+  event.preventDefault()
+  isDragging.value = false
+  dropResult.value = classifyDropInputs(inputsFromDataTransfer(event.dataTransfer))
+}
+
+function inputsFromDataTransfer(dataTransfer: DataTransfer | null): DropInput[] {
+  if (!dataTransfer) {
+    return []
+  }
+
+  const fileInputs = [...dataTransfer.files].map<DropInput>((file) => ({
+    path: file.webkitRelativePath || file.name,
+    kind: 'file',
+  }))
+
+  if (fileInputs.length > 0) {
+    return fileInputs
+  }
+
+  return [...dataTransfer.items]
+    .filter((item) => item.kind === 'file')
+    .map<DropInput>((item) => ({ path: item.type || 'Unknown item', kind: 'unknown' }))
+}
 </script>
 
 <template>
@@ -48,6 +89,23 @@ function openSession(entry: SessionCatalogEntry): void {
         <span>session types</span>
       </div>
     </header>
+
+    <section
+      class="drop-zone"
+      :class="{ dragging: isDragging }"
+      @dragover="handleDragOver"
+      @dragleave="handleDragLeave"
+      @drop="handleDrop"
+    >
+      <div>
+        <strong>Drop two files or folders</strong>
+        <span v-if="dropResult.kind === 'invalid'">{{ dropResult.reason }}</span>
+        <span v-else>
+          {{ dropResult.kind }} detected: {{ dropResult.left.displayName }} and
+          {{ dropResult.right.displayName }}
+        </span>
+      </div>
+    </section>
 
     <div class="priority-groups">
       <section
@@ -145,6 +203,37 @@ h1 {
   display: grid;
   gap: 22px;
   margin-top: 22px;
+}
+
+.drop-zone {
+  display: grid;
+  min-height: 92px;
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px dashed var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+  place-items: center;
+  text-align: center;
+}
+
+.drop-zone.dragging {
+  border-color: #2563eb;
+  background: rgb(37 99 235 / 0.08);
+}
+
+.drop-zone div {
+  display: grid;
+  gap: 6px;
+}
+
+.drop-zone strong {
+  font-size: 15px;
+}
+
+.drop-zone span {
+  color: var(--app-text-muted);
+  font-size: 13px;
 }
 
 .priority-group {

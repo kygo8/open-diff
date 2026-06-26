@@ -8,8 +8,15 @@ export interface AppTab {
   dirty: boolean
 }
 
+export interface WorkspaceTabsSnapshot {
+  tabs: AppTab[]
+  activeTabId: string
+}
+
+const homeTab: AppTab = { id: 'home', title: 'Home', route: '/', dirty: false }
+
 export const useTabsStore = defineStore('tabs', () => {
-  const tabs = ref<AppTab[]>([{ id: 'home', title: 'Home', route: '/', dirty: false }])
+  const tabs = ref<AppTab[]>([{ ...homeTab }])
   const activeTabId = ref('home')
 
   const activeTab = computed(
@@ -50,5 +57,33 @@ export const useTabsStore = defineStore('tabs', () => {
     }
   }
 
-  return { tabs, activeTabId, activeTab, openTab, closeTab }
+  function workspaceSnapshot(): WorkspaceTabsSnapshot {
+    return {
+      tabs: tabs.value.map((tab) => ({ ...tab })),
+      activeTabId: activeTabId.value,
+    }
+  }
+
+  function restoreWorkspaceTabs(snapshot: WorkspaceTabsSnapshot): void {
+    const restoredTabs = snapshot.tabs.map((tab) => ({ ...tab }))
+
+    if (!restoredTabs.some((tab) => tab.id === 'home')) {
+      restoredTabs.unshift({ ...homeTab })
+    }
+
+    tabs.value = restoredTabs
+    activeTabId.value = restoredTabs.some((tab) => tab.id === snapshot.activeTabId)
+      ? snapshot.activeTabId
+      : 'home'
+  }
+
+  return {
+    tabs,
+    activeTabId,
+    activeTab,
+    openTab,
+    closeTab,
+    workspaceSnapshot,
+    restoreWorkspaceTabs,
+  }
 })

@@ -210,5 +210,6 @@ describe('HomeView', () => {
 
     expect(wrapper.find('[data-testid="recovery-entry"]').exists()).toBe(false)
     expect(wrapper.text()).toContain('Recovered text')
+    expect(push).toHaveBeenCalledWith('/compare/text')
   })
 })

@@ -159,6 +159,25 @@ function saveAndClosePendingSession(): void {
   savedSessions.markSessionSaved(pending.id)
   savedSessions.requestDeleteSession(pending.id)
 }
+
+function restoreWorkspaceFromRecovery(): void {
+  const first = savedSessions.recoveryCandidates.at(0)
+
+  savedSessions.restoreRecoverySessions()
+
+  if (!first) {
+    return
+  }
+
+  const entry = sessionCatalog.find((item) => item.type === first.sessionType)
+
+  if (!entry?.implemented || !entry.route) {
+    return
+  }
+
+  tabs.openTab({ title: first.name, route: entry.route, dirty: first.metadata.dirty })
+  void router.push(entry.route)
+}
 </script>
 
 <template>
@@ -259,7 +278,7 @@ function saveAndClosePendingSession(): void {
           <button
             type="button"
             data-testid="restore-recovery"
-            @click="savedSessions.restoreRecoverySessions"
+            @click="restoreWorkspaceFromRecovery"
           >
             Restore Recent
           </button>

@@ -1,4 +1,7 @@
-use shared_types::{DiffLine, DiffLineKind, DiffStats, TextDiffRequest, TextDiffResponse};
+use shared_types::{
+    DiffLine, DiffLineKind, DiffStats, InlineDiffSegment, InlineDiffSegments, TextDiffRequest,
+    TextDiffResponse,
+};
 use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -482,13 +485,85 @@ fn line(
     right_text: &str,
     kind: DiffLineKind,
 ) -> DiffLine {
+    let inline_segments = inline_segments_for(left_text, right_text, &kind);
+
     DiffLine {
         left_number,
         right_number,
         left_text: left_text.to_owned(),
         right_text: right_text.to_owned(),
         kind,
+        inline_segments,
     }
+}
+
+fn inline_segments_for(
+    left_text: &str,
+    right_text: &str,
+    kind: &DiffLineKind,
+) -> InlineDiffSegments {
+    if *kind != DiffLineKind::Modified {
+        return InlineDiffSegments::default();
+    }
+
+    let left_chars: Vec<char> = left_text.chars().collect();
+    let right_chars: Vec<char> = right_text.chars().collect();
+    let mut prefix_len = 0;
+
+    while prefix_len < left_chars.len()
+        && prefix_len < right_chars.len()
+        && left_chars[prefix_len] == right_chars[prefix_len]
+    {
+        prefix_len += 1;
+    }
+
+    let mut suffix_len = 0;
+
+    while suffix_len + prefix_len < left_chars.len()
+        && suffix_len + prefix_len < right_chars.len()
+        && left_chars[left_chars.len() - suffix_len - 1]
+            == right_chars[right_chars.len() - suffix_len - 1]
+    {
+        suffix_len += 1;
+    }
+
+    InlineDiffSegments {
+        left: build_inline_segments(&left_chars, prefix_len, suffix_len),
+        right: build_inline_segments(&right_chars, prefix_len, suffix_len),
+    }
+}
+
+fn build_inline_segments(
+    chars: &[char],
+    prefix_len: usize,
+    suffix_len: usize,
+) -> Vec<InlineDiffSegment> {
+    let mut segments = Vec::new();
+
+    if prefix_len > 0 {
+        segments.push(InlineDiffSegment {
+            text: chars[..prefix_len].iter().collect(),
+            changed: false,
+        });
+    }
+
+    let changed_end = chars.len().saturating_sub(suffix_len);
+
+    if changed_end > prefix_len {
+        segments.push(InlineDiffSegment {
+            text: chars[prefix_len..changed_end].iter().collect(),
+            changed: true,
+        });
+    }
+
+    if suffix_len > 0 {
+        segments.push(InlineDiffSegment {
+            text: chars[changed_end..].iter().collect(),
+            changed: false,
+        });
+    }
+
+    segments
 }
 
 #[cfg(test)]
@@ -580,5 +655,29 @@ mod tests {
             .find(|line| line.left_text == "rare-anchor" && line.right_text == "rare-anchor");
 
         assert!(anchor.is_some_and(|line| line.kind == DiffLineKind::Equal));
+    }
+
+    #[test]
+    fn modified_lines_include_inline_character_segments() {
+        let request = TextDiffRequest {
+            left: "line two".to_owned(),
+            right: "line too".to_owned(),
+            algorithm: None,
+        };
+
+        let result = diff_text(&request);
+        let modified = &result.lines[0];
+
+        assert_eq!(modified.kind, DiffLineKind::Modified);
+        assert!(modified
+            .inline_segments
+            .left
+            .iter()
+            .any(|segment| segment.changed));
+        assert!(modified
+            .inline_segments
+            .right
+            .iter()
+            .any(|segment| segment.changed));
     }
 }

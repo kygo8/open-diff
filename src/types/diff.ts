@@ -6,6 +6,17 @@ export interface DiffLine {
   leftText: string
   rightText: string
   kind: DiffLineKind
+  inlineSegments: InlineDiffSegments
+}
+
+export interface InlineDiffSegments {
+  left: InlineDiffSegment[]
+  right: InlineDiffSegment[]
+}
+
+export interface InlineDiffSegment {
+  text: string
+  changed: boolean
 }
 
 export interface TextDiffRequest {

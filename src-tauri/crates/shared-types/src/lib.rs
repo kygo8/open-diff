@@ -23,6 +23,21 @@ pub struct DiffLine {
     pub left_text: String,
     pub right_text: String,
     pub kind: DiffLineKind,
+    pub inline_segments: InlineDiffSegments,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct InlineDiffSegments {
+    pub left: Vec<InlineDiffSegment>,
+    pub right: Vec<InlineDiffSegment>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct InlineDiffSegment {
+    pub text: String,
+    pub changed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]

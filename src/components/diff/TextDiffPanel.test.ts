@@ -6,8 +6,22 @@ import type { DiffLine } from '@/types/diff'
 describe('TextDiffPanel', () => {
   it('renders line numbers and diff text', () => {
     const lines: DiffLine[] = [
-      { leftNumber: 1, rightNumber: 1, leftText: 'same', rightText: 'same', kind: 'equal' },
-      { leftNumber: 2, rightNumber: 2, leftText: 'old', rightText: 'new', kind: 'modified' },
+      {
+        leftNumber: 1,
+        rightNumber: 1,
+        leftText: 'same',
+        rightText: 'same',
+        kind: 'equal',
+        inlineSegments: { left: [], right: [] },
+      },
+      {
+        leftNumber: 2,
+        rightNumber: 2,
+        leftText: 'old',
+        rightText: 'new',
+        kind: 'modified',
+        inlineSegments: { left: [], right: [] },
+      },
     ]
 
     const wrapper = mount(TextDiffPanel, { props: { lines } })

@@ -166,4 +166,58 @@ describe('TextDiffPanel', () => {
     expect(body.element.scrollTop).toBe(24 * 59)
     expect(wrapper.text()).toContain('left 60')
   })
+
+  it('jumps to next and previous diffs from buttons and keyboard shortcuts', async () => {
+    const lines: DiffLine[] = Array.from({ length: 80 }, (_, index) => {
+      const lineNumber = index + 1
+      let kind: DiffLine['kind'] = 'equal'
+
+      if (lineNumber === 5 || lineNumber === 40) {
+        kind = 'modified'
+      }
+
+      return {
+        leftNumber: lineNumber,
+        rightNumber: lineNumber,
+        leftText: `left ${String(lineNumber)}`,
+        rightText: `right ${String(lineNumber)}`,
+        kind,
+        inlineSegments: { left: [], right: [] },
+      }
+    })
+
+    const wrapper = mount(TextDiffPanel, {
+      attachTo: document.body,
+      props: { lines },
+    })
+    const body = wrapper.find('[data-testid="text-diff-scroll-container"]')
+
+    Object.defineProperty(body.element, 'clientHeight', { configurable: true, value: 240 })
+
+    await wrapper.find('[data-testid="text-diff-next-diff"]').trigger('click')
+    await nextTick()
+
+    expect(body.element.scrollTop).toBe(24 * 4)
+
+    await wrapper.find('[data-testid="text-diff-next-diff"]').trigger('click')
+    await nextTick()
+
+    expect(body.element.scrollTop).toBe(24 * 39)
+
+    await wrapper.find('[data-testid="text-diff-previous-diff"]').trigger('click')
+    await nextTick()
+
+    expect(body.element.scrollTop).toBe(24 * 4)
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F7' }))
+    await nextTick()
+
+    expect(body.element.scrollTop).toBe(24 * 39)
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F7', shiftKey: true }))
+    await nextTick()
+
+    expect(body.element.scrollTop).toBe(24 * 4)
+    wrapper.unmount()
+  })
 })

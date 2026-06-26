@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import type { DiffLine, InlineDiffSegment } from '@/types/diff'
 
 const textDiffRowHeightPx = 24
@@ -10,6 +10,12 @@ const defaultViewportHeight = 480
 interface VisibleDiffRow {
   index: number
   line: DiffLine
+}
+
+interface DiffMarker {
+  index: number
+  kind: DiffLine['kind']
+  top: number
 }
 
 const props = defineProps<{
@@ -39,7 +45,7 @@ const visibleRows = computed(() =>
   ),
 )
 const topOffset = computed(() => startIndex.value * textDiffRowHeightPx)
-const diffMarkers = computed(() =>
+const diffMarkers = computed<DiffMarker[]>(() =>
   props.lines
     .map((line, index) => ({ line, index }))
     .filter(({ line }) => line.kind !== 'equal')
@@ -72,6 +78,59 @@ const jumpToLine = (index: number): void => {
   }
 }
 
+const getCurrentLineIndex = (): number => Math.floor(scrollTop.value / textDiffRowHeightPx)
+
+const jumpToNextDiff = (): void => {
+  if (diffMarkers.value.length === 0) {
+    return
+  }
+
+  const currentLineIndex = getCurrentLineIndex()
+  const nextMarker =
+    diffMarkers.value.find((marker) => marker.index > currentLineIndex) ?? diffMarkers.value[0]
+
+  jumpToLine(nextMarker.index)
+}
+
+const jumpToPreviousDiff = (): void => {
+  if (diffMarkers.value.length === 0) {
+    return
+  }
+
+  const currentLineIndex = getCurrentLineIndex()
+  const previousMarker =
+    [...diffMarkers.value].reverse().find((marker) => marker.index < currentLineIndex) ??
+    diffMarkers.value.at(-1)
+
+  if (previousMarker) {
+    jumpToLine(previousMarker.index)
+  }
+}
+
+const handleKeydown = (event: KeyboardEvent): void => {
+  if (event.key !== 'F7') {
+    return
+  }
+
+  event.preventDefault()
+
+  if (event.shiftKey) {
+    jumpToPreviousDiff()
+
+    return
+  }
+
+  jumpToNextDiff()
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', handleKeydown)
+})
+
 const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSegment[] => {
   const segments = line.inlineSegments[side]
 
@@ -88,6 +147,31 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
     <div class="diff-header">
       <span>Left</span>
       <span>Right</span>
+      <div
+        class="diff-navigation"
+        aria-label="Difference navigation"
+      >
+        <button
+          type="button"
+          class="diff-navigation-button"
+          data-testid="text-diff-previous-diff"
+          :disabled="diffMarkers.length === 0"
+          aria-label="Previous difference"
+          @click="jumpToPreviousDiff"
+        >
+          Previous
+        </button>
+        <button
+          type="button"
+          class="diff-navigation-button"
+          data-testid="text-diff-next-diff"
+          :disabled="diffMarkers.length === 0"
+          aria-label="Next difference"
+          @click="jumpToNextDiff"
+        >
+          Next
+        </button>
+      </div>
     </div>
     <div
       ref="scrollContainer"
@@ -162,15 +246,38 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
 
 .diff-header {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr auto;
   align-items: center;
+  gap: 8px;
   height: 30px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
   font-size: 12px;
   font-weight: 700;
+  padding-right: 18px;
   padding-left: 52px;
+}
+
+.diff-navigation {
+  display: flex;
+  gap: 4px;
+}
+
+.diff-navigation-button {
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.diff-navigation-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .diff-body {

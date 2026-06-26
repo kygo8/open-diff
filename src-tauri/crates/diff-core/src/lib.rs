@@ -5,6 +5,7 @@ use std::collections::BTreeMap;
 pub enum TextDiffAlgorithm {
     Myers,
     Patience,
+    Histogram,
 }
 
 pub fn diff_text(request: &TextDiffRequest) -> TextDiffResponse {
@@ -20,6 +21,7 @@ pub fn diff_text_with_algorithm(
     let edits = match algorithm {
         TextDiffAlgorithm::Myers => diff_lines(&left_lines, &right_lines),
         TextDiffAlgorithm::Patience => patience_diff_lines(&left_lines, &right_lines),
+        TextDiffAlgorithm::Histogram => histogram_diff_lines(&left_lines, &right_lines),
     };
     let rows = rows_from_edits(&edits, &left_lines, &right_lines);
     let stats = stats_for(&rows);
@@ -89,6 +91,134 @@ fn patience_diff_lines(left_lines: &[String], right_lines: &[String]) -> Vec<Edi
         0,
         right_lines.len(),
     )
+}
+
+fn histogram_diff_lines(left_lines: &[String], right_lines: &[String]) -> Vec<Edit> {
+    histogram_diff_range(
+        left_lines,
+        right_lines,
+        0,
+        left_lines.len(),
+        0,
+        right_lines.len(),
+    )
+}
+
+fn histogram_diff_range(
+    left_lines: &[String],
+    right_lines: &[String],
+    left_start: usize,
+    left_end: usize,
+    right_start: usize,
+    right_end: usize,
+) -> Vec<Edit> {
+    let anchors = histogram_anchors(
+        &left_lines[left_start..left_end],
+        &right_lines[right_start..right_end],
+        left_start,
+        right_start,
+    );
+
+    if anchors.is_empty() {
+        return offset_edits(
+            diff_lines(
+                &left_lines[left_start..left_end],
+                &right_lines[right_start..right_end],
+            ),
+            left_start,
+            right_start,
+        );
+    }
+
+    let mut edits = Vec::new();
+    let mut current_left = left_start;
+    let mut current_right = right_start;
+
+    for (anchor_left, anchor_right) in anchors {
+        edits.extend(histogram_diff_range(
+            left_lines,
+            right_lines,
+            current_left,
+            anchor_left,
+            current_right,
+            anchor_right,
+        ));
+        edits.push(Edit::Equal {
+            left_index: anchor_left,
+            right_index: anchor_right,
+        });
+        current_left = anchor_left + 1;
+        current_right = anchor_right + 1;
+    }
+
+    edits.extend(histogram_diff_range(
+        left_lines,
+        right_lines,
+        current_left,
+        left_end,
+        current_right,
+        right_end,
+    ));
+
+    edits
+}
+
+fn histogram_anchors(
+    left_lines: &[String],
+    right_lines: &[String],
+    left_offset: usize,
+    right_offset: usize,
+) -> Vec<(usize, usize)> {
+    let left_positions = line_positions(left_lines);
+    let right_positions = line_positions(right_lines);
+    let mut candidates = Vec::<(usize, usize, usize)>::new();
+
+    for (line, left_indexes) in left_positions {
+        let Some(right_indexes) = right_positions.get(&line) else {
+            continue;
+        };
+        let frequency = left_indexes.len() + right_indexes.len();
+
+        for left_index in left_indexes {
+            for right_index in right_indexes {
+                candidates.push((
+                    frequency,
+                    left_index + left_offset,
+                    *right_index + right_offset,
+                ));
+            }
+        }
+    }
+
+    candidates.sort_by_key(|(frequency, left_index, right_index)| {
+        (*frequency, *left_index, *right_index)
+    });
+
+    let mut anchors = Vec::<(usize, usize)>::new();
+    let mut last_left = None;
+    let mut last_right = None;
+
+    for (_, left_index, right_index) in candidates {
+        if last_left.is_none_or(|left| left_index > left)
+            && last_right.is_none_or(|right| right_index > right)
+        {
+            last_left = Some(left_index);
+            last_right = Some(right_index);
+            anchors.push((left_index, right_index));
+        }
+    }
+
+    anchors
+}
+
+fn line_positions(lines: &[String]) -> BTreeMap<String, Vec<usize>> {
+    let mut positions = BTreeMap::<String, Vec<usize>>::new();
+
+    for (index, line) in lines.iter().enumerate() {
+        positions.entry(line.clone()).or_default().push(index);
+    }
+
+    positions
 }
 
 fn patience_diff_range(
@@ -416,6 +546,22 @@ mod tests {
             .lines
             .iter()
             .find(|line| line.left_text == "shared-anchor" && line.right_text == "shared-anchor");
+
+        assert!(anchor.is_some_and(|line| line.kind == DiffLineKind::Equal));
+    }
+
+    #[test]
+    fn histogram_uses_low_frequency_lines_as_anchors() {
+        let request = TextDiffRequest {
+            left: "noise\nnoise\nleft-only\nrare-anchor\nnoise\ncommon\nnoise".to_owned(),
+            right: "noise\nnoise\nright-only\nrare-anchor\nnoise\ncommon\nnoise".to_owned(),
+        };
+
+        let result = diff_text_with_algorithm(&request, TextDiffAlgorithm::Histogram);
+        let anchor = result
+            .lines
+            .iter()
+            .find(|line| line.left_text == "rare-anchor" && line.right_text == "rare-anchor");
 
         assert!(anchor.is_some_and(|line| line.kind == DiffLineKind::Equal));
     }

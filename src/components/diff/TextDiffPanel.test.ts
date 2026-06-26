@@ -61,4 +61,32 @@ describe('TextDiffPanel', () => {
     expect(wrapper.text()).toContain('old value')
     expect(wrapper.text()).toContain('new value')
   })
+
+  it('keeps left and right cells in fixed-height synchronized rows', () => {
+    const lines: DiffLine[] = Array.from({ length: 3 }, (_, index) => {
+      const lineNumber = index + 1
+
+      return {
+        leftNumber: lineNumber,
+        rightNumber: lineNumber,
+        leftText: `left ${String(lineNumber)}`,
+        rightText: `right ${String(lineNumber)}`,
+        kind: 'equal',
+        inlineSegments: { left: [], right: [] },
+      }
+    })
+
+    const wrapper = mount(TextDiffPanel, { props: { lines } })
+    const body = wrapper.find('[data-testid="text-diff-scroll-container"]')
+    const rows = wrapper.findAll('.diff-row')
+
+    expect(body.exists()).toBe(true)
+    expect(body.classes()).toContain('diff-body-synchronized')
+    expect(rows).toHaveLength(3)
+
+    for (const row of rows) {
+      expect(row.attributes('style')).toContain('--text-diff-row-height: 24px')
+      expect(row.findAll('.cell')).toHaveLength(2)
+    }
+  })
 })

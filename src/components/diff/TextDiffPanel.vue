@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { DiffLine, InlineDiffSegment } from '@/types/diff'
 
+const textDiffRowHeight = '24px'
+
 defineProps<{
   lines: DiffLine[]
 }>()
@@ -22,12 +24,16 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
       <span>Left</span>
       <span>Right</span>
     </div>
-    <div class="diff-body">
+    <div
+      class="diff-body diff-body-synchronized"
+      data-testid="text-diff-scroll-container"
+    >
       <div
         v-for="(line, index) in lines"
         :key="index"
         class="diff-row"
         :class="line.kind"
+        :style="{ '--text-diff-row-height': textDiffRowHeight }"
       >
         <div class="gutter">{{ line.leftNumber ?? '' }}</div>
         <pre class="cell"><span
@@ -81,7 +87,9 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
 .diff-row {
   display: grid;
   grid-template-columns: 52px minmax(0, 1fr) 52px minmax(0, 1fr);
-  min-height: 24px;
+  height: var(--text-diff-row-height);
+  min-height: var(--text-diff-row-height);
+  max-height: var(--text-diff-row-height);
   border-bottom: 1px solid rgb(128 128 128 / 0.12);
 }
 
@@ -104,6 +112,7 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
   padding: 3px 8px;
   background: var(--diff-gutter-bg);
   color: var(--app-text-muted);
+  line-height: 18px;
   text-align: right;
   user-select: none;
 }
@@ -112,6 +121,7 @@ const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSe
   margin: 0;
   padding: 3px 8px;
   overflow: hidden;
+  line-height: 18px;
   white-space: pre;
 }
 

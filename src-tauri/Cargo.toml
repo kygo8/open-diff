@@ -2,6 +2,7 @@
 members = [
   ".",
   "crates/diff-core",
+  "crates/session-core",
   "crates/shared-types"
 ]
 resolver = "2"

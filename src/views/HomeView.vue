@@ -2,9 +2,11 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { classifyDropInputs } from '@/app/dropInput'
+import { selectSessionForDrop } from '@/app/sessionAutoSelect'
 import { sessionCatalog, sessionPriorities } from '@/app/sessionCatalog'
 import { useTabsStore } from '@/stores/tabs'
 import type { DropClassification, DropInput } from '@/app/dropInput'
+import type { SessionSelection } from '@/app/sessionAutoSelect'
 import type { SessionCatalogEntry, SessionPriority } from '@/app/sessionCatalog'
 
 const router = useRouter()
@@ -13,6 +15,7 @@ const dropResult = ref<DropClassification>({
   kind: 'invalid',
   reason: 'Drop exactly two files or folders.',
 })
+const selectedDropSession = ref<SessionSelection>()
 const isDragging = ref(false)
 
 const groupedEntries = computed(() =>
@@ -55,6 +58,8 @@ function handleDrop(event: DragEvent): void {
   event.preventDefault()
   isDragging.value = false
   dropResult.value = classifyDropInputs(inputsFromDataTransfer(event.dataTransfer))
+  selectedDropSession.value =
+    dropResult.value.kind === 'invalid' ? undefined : selectSessionForDrop(dropResult.value)
 }
 
 function inputsFromDataTransfer(dataTransfer: DataTransfer | null): DropInput[] {
@@ -74,6 +79,19 @@ function inputsFromDataTransfer(dataTransfer: DataTransfer | null): DropInput[] 
   return [...dataTransfer.items]
     .filter((item) => item.kind === 'file')
     .map<DropInput>((item) => ({ path: item.type || 'Unknown item', kind: 'unknown' }))
+}
+
+function openSelectedDropSession(): void {
+  if (!selectedDropSession.value?.enabled || !selectedDropSession.value.route) {
+    return
+  }
+
+  tabs.openTab({
+    title: selectedDropSession.value.title,
+    route: selectedDropSession.value.route,
+    dirty: false,
+  })
+  void router.push(selectedDropSession.value.route)
 }
 </script>
 
@@ -104,7 +122,18 @@ function inputsFromDataTransfer(dataTransfer: DataTransfer | null): DropInput[] 
           {{ dropResult.kind }} detected: {{ dropResult.left.displayName }} and
           {{ dropResult.right.displayName }}
         </span>
+        <span v-if="selectedDropSession">
+          Suggested: {{ selectedDropSession.title }}
+          {{ selectedDropSession.enabled ? '' : '(planned)' }}
+        </span>
       </div>
+      <NButton
+        size="small"
+        :disabled="!selectedDropSession?.enabled"
+        @click="openSelectedDropSession"
+      >
+        Open Suggested View
+      </NButton>
     </section>
 
     <div class="priority-groups">

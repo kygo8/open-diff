@@ -122,7 +122,34 @@ describe('HomeView', () => {
     await wrapper.find('[data-testid="move-session-sample-text"]').trigger('click')
     expect(wrapper.text()).toContain('Archive')
 
-    await wrapper.find('[data-testid="delete-session-sample-folder"]').trigger('click')
-    expect(wrapper.text()).not.toContain('Review release folder')
+    await wrapper.find('[data-testid="delete-session-sample-text"]').trigger('click')
+    expect(wrapper.find('[data-testid="delete-session-sample-text"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Compare sample text Renamed Copy')
+  })
+
+  it('disables overwrite actions for locked sessions', () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            template: '<button :disabled="disabled"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(
+      wrapper.find('[data-testid="rename-session-sample-folder"]').attributes('disabled'),
+    ).toBe('')
+    expect(wrapper.find('[data-testid="move-session-sample-folder"]').attributes('disabled')).toBe(
+      '',
+    )
+    expect(
+      wrapper.find('[data-testid="delete-session-sample-folder"]').attributes('disabled'),
+    ).toBe('')
+    expect(wrapper.find('[data-testid="copy-session-sample-folder"]').attributes('disabled')).toBe(
+      undefined,
+    )
   })
 })

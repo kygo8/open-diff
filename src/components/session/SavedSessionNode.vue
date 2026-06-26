@@ -45,6 +45,7 @@ const emit = defineEmits<{
           type="button"
           title="Rename"
           :data-testid="`rename-session-${node.id}`"
+          :disabled="node.session.metadata.locked"
           @click="emit('rename', node.id)"
         >
           R
@@ -61,6 +62,7 @@ const emit = defineEmits<{
           type="button"
           title="Move"
           :data-testid="`move-session-${node.id}`"
+          :disabled="node.session.metadata.locked"
           @click="emit('move', node.id)"
         >
           M
@@ -69,6 +71,7 @@ const emit = defineEmits<{
           type="button"
           title="Delete"
           :data-testid="`delete-session-${node.id}`"
+          :disabled="node.session.metadata.locked"
           @click="emit('delete', node.id)"
         >
           D
@@ -135,6 +138,11 @@ const emit = defineEmits<{
 
 .node-actions button:hover {
   color: var(--app-text);
+}
+
+.node-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .node-children {

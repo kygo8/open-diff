@@ -65,7 +65,7 @@ export const sampleSavedSessions: SessionDocument[] = [
     rules: { filters: [], comparison: {} },
     metadata: {
       folder: 'Work/Folders',
-      locked: false,
+      locked: true,
       dirty: false,
       autoSaved: false,
       shared: false,

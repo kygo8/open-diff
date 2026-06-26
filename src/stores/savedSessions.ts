@@ -6,14 +6,16 @@ import type { SessionDocument } from '@/types/session'
 export const useSavedSessionsStore = defineStore('savedSessions', () => {
   const sessions = ref<SessionDocument[]>(cloneSessions(sampleSavedSessions))
 
-  function renameSession(id: string, name: string): void {
+  function renameSession(id: string, name: string): boolean {
     const session = findSession(id)
 
-    if (!session) {
-      return
+    if (!session || session.metadata.locked) {
+      return false
     }
 
     session.name = name
+
+    return true
   }
 
   function copySession(id: string): SessionDocument {
@@ -27,24 +29,58 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
 
     copy.id = `${session.id}-copy-${String(nextCopyIndex())}`
     copy.name = `${session.name} Copy`
-    copy.metadata = { ...copy.metadata, dirty: false }
+    copy.metadata = { ...copy.metadata, dirty: false, locked: false }
     sessions.value.push(copy)
 
     return copy
   }
 
-  function moveSession(id: string, folder: string | undefined): void {
+  function moveSession(id: string, folder: string | undefined): boolean {
     const session = findSession(id)
 
-    if (!session) {
-      return
+    if (!session || session.metadata.locked) {
+      return false
     }
 
     session.metadata.folder = folder
+
+    return true
   }
 
-  function deleteSession(id: string): void {
+  function deleteSession(id: string): boolean {
+    const session = findSession(id)
+
+    if (!session || session.metadata.locked) {
+      return false
+    }
+
     sessions.value = sessions.value.filter((session) => session.id !== id)
+
+    return true
+  }
+
+  function overwriteSession(id: string, nextSession: SessionDocument): boolean {
+    const index = sessions.value.findIndex((session) => session.id === id)
+
+    if (index < 0 || sessions.value[index]?.metadata.locked) {
+      return false
+    }
+
+    sessions.value[index] = cloneSession(nextSession)
+
+    return true
+  }
+
+  function setSessionLocked(id: string, locked: boolean): boolean {
+    const session = findSession(id)
+
+    if (!session) {
+      return false
+    }
+
+    session.metadata.locked = locked
+
+    return true
   }
 
   function snapshot(): SessionDocument[] {
@@ -65,6 +101,8 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     copySession,
     moveSession,
     deleteSession,
+    overwriteSession,
+    setSessionLocked,
     snapshot,
   }
 })

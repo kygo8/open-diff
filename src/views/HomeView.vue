@@ -1,67 +1,91 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { sessionCatalog, sessionPriorities } from '@/app/sessionCatalog'
 import { useTabsStore } from '@/stores/tabs'
+import type { SessionCatalogEntry, SessionPriority } from '@/app/sessionCatalog'
 
 const router = useRouter()
 const tabs = useTabsStore()
 
-function openTextCompare(): void {
-  tabs.openTab({ title: 'Text Compare', route: '/compare/text', dirty: false })
-  void router.push('/compare/text')
+const groupedEntries = computed(() =>
+  sessionPriorities.map((priority) => ({
+    priority,
+    entries: sessionCatalog.filter((entry) => entry.priority === priority),
+  })),
+)
+
+function priorityLabel(priority: SessionPriority): string {
+  const labels: Record<SessionPriority, string> = {
+    P0: 'Core',
+    P1: 'Primary',
+    P2: 'Advanced',
+    P3: 'Extended',
+  }
+
+  return labels[priority]
+}
+
+function openSession(entry: SessionCatalogEntry): void {
+  if (!entry.implemented || !entry.route) {
+    return
+  }
+
+  tabs.openTab({ title: entry.title, route: entry.route, dirty: false })
+  void router.push(entry.route)
 }
 </script>
 
 <template>
   <section class="home-view">
-    <div class="hero">
-      <p class="eyebrow">Local-first diff workspace</p>
-      <h1>Compare, merge, and understand changes.</h1>
-      <p class="intro">
-        Open Diff is being built around a Rust core and a compact Vue desktop interface. Naive UI
-        powers the shell, while the diff surfaces stay custom-built for professional comparison
-        workflows.
-      </p>
-      <div class="actions">
-        <NButton
-          type="primary"
-          @click="openTextCompare"
-          >Start Text Compare</NButton
-        >
-        <NButton
-          secondary
-          disabled
-          >Folder Compare</NButton
-        >
-        <NButton
-          secondary
-          disabled
-          >Table Compare</NButton
-        >
+    <header class="home-header">
+      <div>
+        <p class="eyebrow">Session launcher</p>
+        <h1>Choose a comparison workspace</h1>
       </div>
-    </div>
+      <div class="home-summary">
+        <strong>{{ sessionCatalog.length }}</strong>
+        <span>session types</span>
+      </div>
+    </header>
 
-    <div class="feature-grid">
-      <article>
-        <h2>Rust Core</h2>
-        <p>
-          Heavy comparison, scanning, merge, and sync work belongs in Rust crates with testable
-          boundaries.
-        </p>
-      </article>
-      <article>
-        <h2>Custom Diff Views</h2>
-        <p>
-          Text, folder, table, image, and hex comparison surfaces are purpose-built instead of
-          generic data tables.
-        </p>
-      </article>
-      <article>
-        <h2>Desktop UX</h2>
-        <p>
-          The shell uses compact controls, stable panels, progress feedback, and local-first
-          defaults for ordinary users.
-        </p>
-      </article>
+    <div class="priority-groups">
+      <section
+        v-for="group in groupedEntries"
+        :key="group.priority"
+        class="priority-group"
+        data-testid="session-priority"
+      >
+        <div class="priority-title">
+          <span>{{ group.priority }}</span>
+          <strong>{{ priorityLabel(group.priority) }}</strong>
+        </div>
+
+        <div class="session-grid">
+          <article
+            v-for="entry in group.entries"
+            :key="entry.type"
+            class="session-entry"
+            :class="{ disabled: !entry.implemented }"
+            data-testid="session-entry"
+            :data-session-type="entry.type"
+          >
+            <div class="entry-copy">
+              <h2>{{ entry.title }}</h2>
+              <p>{{ entry.summary }}</p>
+            </div>
+            <NButton
+              size="small"
+              :type="entry.implemented ? 'primary' : 'default'"
+              :secondary="!entry.implemented"
+              :disabled="!entry.implemented"
+              @click="openSession(entry)"
+            >
+              {{ entry.implemented ? 'Open' : 'Planned' }}
+            </NButton>
+          </article>
+        </div>
+      </section>
     </div>
   </section>
 </template>
@@ -69,64 +93,140 @@ function openTextCompare(): void {
 <style scoped>
 .home-view {
   height: 100%;
-  padding: 40px;
+  padding: 28px;
   overflow: auto;
 }
 
-.hero {
-  max-width: 760px;
+.home-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .eyebrow {
+  margin: 0 0 8px;
   color: #2563eb;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
 h1 {
   margin: 0;
-  font-size: 42px;
-  line-height: 1.08;
+  font-size: 24px;
+  line-height: 1.2;
 }
 
-.intro {
-  max-width: 680px;
-  color: var(--app-text-muted);
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 24px;
-}
-
-.feature-grid {
+.home-summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
-  margin-top: 42px;
+  min-width: 108px;
+  padding: 10px 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+  text-align: right;
 }
 
-article {
-  padding: 18px;
+.home-summary strong {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.home-summary span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.priority-groups {
+  display: grid;
+  gap: 22px;
+  margin-top: 22px;
+}
+
+.priority-group {
+  display: grid;
+  gap: 12px;
+}
+
+.priority-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.priority-title span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 22px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-weight: 700;
+}
+
+.session-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.session-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 86px;
+  padding: 14px;
   border: 1px solid var(--app-border);
   border-radius: 8px;
   background: var(--app-surface);
 }
 
-article h2 {
-  margin: 0 0 8px;
-  font-size: 16px;
+.session-entry.disabled {
+  background: var(--app-surface-muted);
 }
 
-article p {
+.entry-copy {
+  min-width: 0;
+}
+
+.entry-copy h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.entry-copy p {
   margin: 0;
   color: var(--app-text-muted);
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (width <= 640px) {
+  .home-view {
+    padding: 18px;
+  }
+
+  .home-header {
+    display: grid;
+  }
+
+  .home-summary {
+    text-align: left;
+  }
+
+  .session-entry {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

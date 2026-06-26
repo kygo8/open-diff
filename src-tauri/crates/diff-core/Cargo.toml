@@ -1,0 +1,9 @@
+[package]
+name = "diff-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+shared-types = { path = "../shared-types" }

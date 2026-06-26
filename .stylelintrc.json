@@ -1,0 +1,97 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-config-recommended-vue"],
+  "plugins": ["stylelint-order"],
+  "overrides": [
+    {
+      "files": ["**/*.vue"],
+      "customSyntax": "postcss-html"
+    }
+  ],
+  "rules": {
+    "alpha-value-notation": "number",
+    "color-function-notation": "modern",
+    "color-hex-length": "long",
+    "declaration-block-no-redundant-longhand-properties": true,
+    "declaration-block-single-line-max-declarations": 1,
+    "font-family-name-quotes": "always-where-recommended",
+    "function-url-quotes": "always",
+    "hue-degree-notation": "angle",
+    "length-zero-no-unit": true,
+    "media-feature-range-notation": "context",
+    "no-descending-specificity": null,
+    "number-max-precision": 4,
+    "order/properties-order": [
+      "content",
+      "position",
+      "inset",
+      "top",
+      "right",
+      "bottom",
+      "left",
+      "z-index",
+      "display",
+      "grid",
+      "grid-template",
+      "grid-template-columns",
+      "grid-template-rows",
+      "grid-column",
+      "grid-row",
+      "flex",
+      "flex-direction",
+      "flex-wrap",
+      "align-items",
+      "justify-content",
+      "gap",
+      "width",
+      "min-width",
+      "max-width",
+      "height",
+      "min-height",
+      "max-height",
+      "margin",
+      "padding",
+      "overflow",
+      "overflow-x",
+      "overflow-y",
+      "border",
+      "border-top",
+      "border-right",
+      "border-bottom",
+      "border-left",
+      "border-radius",
+      "background",
+      "background-color",
+      "color",
+      "font",
+      "font-family",
+      "font-size",
+      "font-weight",
+      "line-height",
+      "text-align",
+      "text-decoration",
+      "white-space",
+      "cursor",
+      "user-select",
+      "transform",
+      "transition",
+      "animation",
+      "opacity"
+    ],
+    "property-no-vendor-prefix": true,
+    "selector-class-pattern": [
+      "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+      {
+        "message": "Class selectors must use kebab-case."
+      }
+    ],
+    "selector-max-id": 0,
+    "selector-no-vendor-prefix": true,
+    "value-keyword-case": [
+      "lower",
+      {
+        "ignoreKeywords": ["BlinkMacSystemFont"]
+      }
+    ],
+    "value-no-vendor-prefix": true
+  }
+}

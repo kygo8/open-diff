@@ -1,0 +1,2 @@
+corepack pnpm lint-staged
+corepack pnpm quality

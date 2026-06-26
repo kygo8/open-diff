@@ -1,0 +1,66 @@
+:root {
+  color-scheme: light dark;
+
+  --app-bg: #f4f6f8;
+  --app-surface: #ffffff;
+  --app-surface-muted: #eef1f5;
+  --app-border: #d8dee8;
+  --app-text: #18202f;
+  --app-text-muted: #657085;
+  --diff-added-bg: #eaf7ef;
+  --diff-added-fg: #137333;
+  --diff-deleted-bg: #fdecec;
+  --diff-deleted-fg: #b42318;
+  --diff-modified-bg: #fff7df;
+  --diff-modified-fg: #8a5a00;
+  --diff-gutter-bg: #edf1f6;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', consolas, monospace;
+}
+
+html[data-theme='dark'] {
+  --app-bg: #14171f;
+  --app-surface: #1d222d;
+  --app-surface-muted: #252b37;
+  --app-border: #343b49;
+  --app-text: #e7ebf3;
+  --app-text-muted: #9aa4b5;
+  --diff-added-bg: rgb(39 174 96 / 0.14);
+  --diff-added-fg: #67d391;
+  --diff-deleted-bg: rgb(231 76 60 / 0.14);
+  --diff-deleted-fg: #ff8a80;
+  --diff-modified-bg: rgb(245 158 11 / 0.16);
+  --diff-modified-fg: #f5c56b;
+  --diff-gutter-bg: #202631;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+/* stylelint-disable-next-line selector-max-id -- Vue mounts into the root app element. */
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}

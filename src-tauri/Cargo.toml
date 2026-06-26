@@ -1,0 +1,46 @@
+[workspace]
+members = [
+  ".",
+  "crates/diff-core",
+  "crates/shared-types"
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Open Diff Contributors"]
+license = "TBD"
+
+[workspace.dependencies]
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+tauri = { version = "2.11.3", features = [] }
+tauri-build = "2.6.3"
+tokio = { version = "1.52.3", features = ["rt-multi-thread", "macros"] }
+
+[package]
+name = "open-diff-app"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+default-run = "open-diff-app"
+
+[lib]
+name = "open_diff_app"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "open-diff-app"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build.workspace = true
+
+[dependencies]
+serde.workspace = true
+tauri.workspace = true
+tokio.workspace = true
+diff-core = { path = "crates/diff-core" }
+shared-types = { path = "crates/shared-types" }

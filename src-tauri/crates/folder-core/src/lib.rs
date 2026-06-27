@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::fs;
 use std::io::{self, Read};
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::time::{Duration, UNIX_EPOCH};
 use vfs_core::{LocalVfs, VfsEntryKind, VfsMetadata, VfsPath, VfsProvider};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -83,6 +85,117 @@ pub struct FolderTextRuleCompareOptions {
 pub struct FolderTextRuleCompareResult {
     pub status: FolderCompareStatus,
     pub different_lines: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum QuickCompareMode {
+    Text,
+    Binary,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct QuickCompareResult {
+    pub mode: QuickCompareMode,
+    pub status: FolderCompareStatus,
+    pub different_units: usize,
+    pub first_difference_offset: Option<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CompareToResult {
+    pub source_path: String,
+    pub target_path: String,
+    pub quick: QuickCompareResult,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum CopyDirection {
+    ToLeft,
+    ToRight,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CopySideRequest {
+    pub direction: CopyDirection,
+    pub left_path: String,
+    pub right_path: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CopySideResult {
+    pub direction: CopyDirection,
+    pub source_path: String,
+    pub target_path: String,
+    pub target_metadata: VfsMetadata,
+    pub refreshed_status: FolderCompareStatus,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FileOperationRequest {
+    Move {
+        source_path: String,
+        target_path: String,
+    },
+    Delete {
+        path: String,
+    },
+    Rename {
+        path: String,
+        new_name: String,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FileOperationKind {
+    Move,
+    Delete,
+    Rename,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FileOperationStatus {
+    Moved,
+    Deleted,
+    Renamed,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FileOperationResult {
+    pub operation: FileOperationKind,
+    pub status: FileOperationStatus,
+    pub source_path: String,
+    pub target_path: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ChangeAttributesRequest {
+    pub path: String,
+    pub readonly: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TouchFileRequest {
+    pub path: String,
+    pub modified_at_ms: u128,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FileMetadataUpdateResult {
+    pub path: String,
+    pub metadata: VfsMetadata,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -318,6 +431,196 @@ pub fn compare_text_content_with_rules(
         },
         different_lines,
     }
+}
+
+pub fn quick_compare_text(
+    left: &str,
+    right: &str,
+    options: &FolderTextRuleCompareOptions,
+) -> QuickCompareResult {
+    let result = compare_text_content_with_rules(left, right, options);
+
+    QuickCompareResult {
+        mode: QuickCompareMode::Text,
+        status: result.status,
+        different_units: result.different_lines,
+        first_difference_offset: None,
+    }
+}
+
+pub fn quick_compare_binary(
+    left: impl Read,
+    right: impl Read,
+    chunk_size: usize,
+) -> io::Result<QuickCompareResult> {
+    let result = compare_binary_streams(left, right, chunk_size)?;
+
+    Ok(QuickCompareResult {
+        mode: QuickCompareMode::Binary,
+        status: result.status,
+        different_units: usize::from(result.first_difference_offset.is_some()),
+        first_difference_offset: result.first_difference_offset,
+    })
+}
+
+pub fn compare_text_to_target(
+    source_path: impl Into<String>,
+    target_path: impl Into<String>,
+    source: &str,
+    target: &str,
+    options: &FolderTextRuleCompareOptions,
+) -> CompareToResult {
+    CompareToResult {
+        source_path: source_path.into(),
+        target_path: target_path.into(),
+        quick: quick_compare_text(source, target, options),
+    }
+}
+
+pub fn copy_between_sides(request: CopySideRequest) -> Result<CopySideResult, FolderScanError> {
+    let mut vfs = LocalVfs::new();
+    let (source_path, target_path) = match request.direction {
+        CopyDirection::ToLeft => (&request.right_path, &request.left_path),
+        CopyDirection::ToRight => (&request.left_path, &request.right_path),
+    };
+    let source = VfsPath::new(source_path);
+    let target = VfsPath::new(target_path);
+    let bytes = vfs
+        .read(&source)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+    vfs.write(&target, &bytes)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+    let target_metadata = vfs
+        .metadata(&target)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+    let refreshed_status = refresh_copied_file_status(&vfs, &source, &target)?;
+
+    Ok(CopySideResult {
+        direction: request.direction,
+        source_path: source_path.to_owned(),
+        target_path: target_path.to_owned(),
+        target_metadata,
+        refreshed_status,
+    })
+}
+
+fn refresh_copied_file_status(
+    vfs: &LocalVfs,
+    source: &VfsPath,
+    target: &VfsPath,
+) -> Result<FolderCompareStatus, FolderScanError> {
+    let source_bytes = vfs
+        .read(source)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+    let target_bytes = vfs
+        .read(target)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+    Ok(
+        compare_binary_streams(&source_bytes[..], &target_bytes[..], 8192)
+            .map_err(|error| FolderScanError::Vfs(error.to_string()))?
+            .status,
+    )
+}
+
+pub fn perform_file_operation(
+    request: FileOperationRequest,
+) -> Result<FileOperationResult, FolderScanError> {
+    match request {
+        FileOperationRequest::Move {
+            source_path,
+            target_path,
+        } => {
+            move_path(&source_path, &target_path)?;
+
+            Ok(FileOperationResult {
+                operation: FileOperationKind::Move,
+                status: FileOperationStatus::Moved,
+                source_path,
+                target_path: Some(target_path),
+            })
+        }
+        FileOperationRequest::Delete { path } => {
+            let mut vfs = LocalVfs::new();
+
+            vfs.delete(&VfsPath::new(&path))
+                .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+            Ok(FileOperationResult {
+                operation: FileOperationKind::Delete,
+                status: FileOperationStatus::Deleted,
+                source_path: path,
+                target_path: None,
+            })
+        }
+        FileOperationRequest::Rename { path, new_name } => {
+            let source = PathBuf::from(&path);
+            let target = source
+                .parent()
+                .map(|parent| parent.join(&new_name))
+                .unwrap_or_else(|| PathBuf::from(&new_name));
+            let target_path = target.display().to_string();
+
+            move_path(&path, &target_path)?;
+
+            Ok(FileOperationResult {
+                operation: FileOperationKind::Rename,
+                status: FileOperationStatus::Renamed,
+                source_path: path,
+                target_path: Some(target_path),
+            })
+        }
+    }
+}
+
+fn move_path(source_path: &str, target_path: &str) -> Result<(), FolderScanError> {
+    let target = Path::new(target_path);
+
+    if let Some(parent) = target.parent() {
+        fs::create_dir_all(parent).map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+    }
+
+    fs::rename(source_path, target_path).map_err(|error| FolderScanError::Vfs(error.to_string()))
+}
+
+pub fn change_file_attributes(
+    request: ChangeAttributesRequest,
+) -> Result<FileMetadataUpdateResult, FolderScanError> {
+    if let Some(readonly) = request.readonly {
+        let mut permissions = fs::metadata(&request.path)
+            .map_err(|error| FolderScanError::Vfs(error.to_string()))?
+            .permissions();
+
+        permissions.set_readonly(readonly);
+        fs::set_permissions(&request.path, permissions)
+            .map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+    }
+
+    refreshed_metadata_result(request.path)
+}
+
+pub fn touch_file(request: TouchFileRequest) -> Result<FileMetadataUpdateResult, FolderScanError> {
+    let file = fs::OpenOptions::new()
+        .write(true)
+        .open(&request.path)
+        .map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+    let modified_at = UNIX_EPOCH + Duration::from_millis(request.modified_at_ms as u64);
+
+    file.set_modified(modified_at)
+        .map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+
+    refreshed_metadata_result(request.path)
+}
+
+fn refreshed_metadata_result(path: String) -> Result<FileMetadataUpdateResult, FolderScanError> {
+    let vfs = LocalVfs::new();
+    let metadata = vfs
+        .metadata(&VfsPath::new(&path))
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+    Ok(FileMetadataUpdateResult { path, metadata })
 }
 
 fn folder_metadata_matches(
@@ -814,6 +1117,158 @@ mod tests {
     }
 
     #[test]
+    fn quick_compare_reports_text_and_binary_status_for_selected_files() {
+        let text_result = quick_compare_text(
+            "line one\nline two",
+            "line one\nline 2",
+            &FolderTextRuleCompareOptions {
+                ignore_whitespace: false,
+                ignore_case: false,
+                ignore_line_endings: false,
+                ignore_regexes: Vec::new(),
+                algorithm: Some("myers".to_owned()),
+            },
+        );
+        let binary_result =
+            quick_compare_binary(&b"abcdef"[..], &b"abcdef"[..], 3).expect("binary compare works");
+
+        assert_eq!(text_result.mode, QuickCompareMode::Text);
+        assert_eq!(text_result.status, FolderCompareStatus::Different);
+        assert_eq!(text_result.different_units, 1);
+        assert_eq!(binary_result.mode, QuickCompareMode::Binary);
+        assert_eq!(binary_result.status, FolderCompareStatus::Same);
+        assert_eq!(binary_result.different_units, 0);
+    }
+
+    #[test]
+    fn compare_to_preserves_selected_source_target_and_status() {
+        let result = compare_text_to_target(
+            "D:/workspace/left/README.md",
+            "D:/workspace/archive/README.md",
+            "same\ncontent",
+            "same\nchanged",
+            &FolderTextRuleCompareOptions {
+                ignore_whitespace: false,
+                ignore_case: false,
+                ignore_line_endings: false,
+                ignore_regexes: Vec::new(),
+                algorithm: Some("myers".to_owned()),
+            },
+        );
+
+        assert_eq!(result.source_path, "D:/workspace/left/README.md");
+        assert_eq!(result.target_path, "D:/workspace/archive/README.md");
+        assert_eq!(result.quick.status, FolderCompareStatus::Different);
+        assert_eq!(result.quick.mode, QuickCompareMode::Text);
+    }
+
+    #[test]
+    fn copies_selected_file_between_sides_and_returns_refreshed_metadata() {
+        let root = unique_temp_dir("folder-copy");
+        let left = root.join("left").join("note.txt");
+        let right = root.join("right").join("note.txt");
+
+        fs::create_dir_all(left.parent().expect("left parent")).expect("left dir");
+        fs::create_dir_all(right.parent().expect("right parent")).expect("right dir");
+        fs::write(&left, b"left version").expect("left write");
+        fs::write(&right, b"right").expect("right write");
+
+        let result = copy_between_sides(CopySideRequest {
+            direction: CopyDirection::ToRight,
+            left_path: left.display().to_string(),
+            right_path: right.display().to_string(),
+        })
+        .expect("copy should work");
+
+        assert_eq!(fs::read(&right).expect("right read"), b"left version");
+        assert_eq!(result.direction, CopyDirection::ToRight);
+        assert_eq!(result.source_path, left.display().to_string());
+        assert_eq!(result.target_path, right.display().to_string());
+        assert_eq!(result.refreshed_status, FolderCompareStatus::Same);
+        assert_eq!(result.target_metadata.size, 12);
+
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn moves_deletes_and_renames_files_with_diagnostic_results() {
+        let root = unique_temp_dir("folder-operations");
+        let source = root.join("source.txt");
+        let renamed = root.join("renamed.txt");
+        let moved = root.join("archive").join("renamed.txt");
+
+        fs::create_dir_all(&root).expect("root dir");
+        fs::write(&source, b"operation bytes").expect("source write");
+
+        let rename_result = perform_file_operation(FileOperationRequest::Rename {
+            path: source.display().to_string(),
+            new_name: "renamed.txt".to_owned(),
+        })
+        .expect("rename works");
+
+        assert_eq!(rename_result.operation, FileOperationKind::Rename);
+        assert_eq!(
+            rename_result.target_path.as_deref(),
+            Some(renamed.to_string_lossy().as_ref())
+        );
+        assert!(renamed.exists());
+        assert!(!source.exists());
+
+        let move_result = perform_file_operation(FileOperationRequest::Move {
+            source_path: renamed.display().to_string(),
+            target_path: moved.display().to_string(),
+        })
+        .expect("move works");
+
+        assert_eq!(move_result.operation, FileOperationKind::Move);
+        assert_eq!(fs::read(&moved).expect("moved read"), b"operation bytes");
+        assert_eq!(
+            move_result.target_path.as_deref(),
+            Some(moved.to_string_lossy().as_ref())
+        );
+
+        let delete_result = perform_file_operation(FileOperationRequest::Delete {
+            path: moved.display().to_string(),
+        })
+        .expect("delete works");
+
+        assert_eq!(delete_result.operation, FileOperationKind::Delete);
+        assert_eq!(delete_result.status, FileOperationStatus::Deleted);
+        assert!(!moved.exists());
+
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn changes_readonly_attribute_and_touches_modified_time() {
+        let root = unique_temp_dir("folder-attributes");
+        let file = root.join("attributes.txt");
+        let modified_at_ms = 1_900_000_000_000_u128;
+
+        fs::create_dir_all(&root).expect("root dir");
+        fs::write(&file, b"attributes").expect("file write");
+
+        let attribute_result = change_file_attributes(ChangeAttributesRequest {
+            path: file.display().to_string(),
+            readonly: Some(true),
+        })
+        .expect("attribute change works");
+
+        assert!(attribute_result.metadata.readonly);
+        set_readonly(&file, false);
+
+        let touch_result = touch_file(TouchFileRequest {
+            path: file.display().to_string(),
+            modified_at_ms,
+        })
+        .expect("touch works");
+
+        assert_eq!(touch_result.metadata.modified_at_ms, Some(modified_at_ms));
+
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
     fn file_filters_support_include_exclude_wildcards_and_paths() {
         let filters = FileFilters {
             include: vec!["src/**/*.rs".to_owned()],
@@ -858,5 +1313,14 @@ mod tests {
             .as_nanos();
 
         std::env::temp_dir().join(format!("open-diff-{label}-{stamp}"))
+    }
+
+    fn set_readonly(path: &std::path::Path, readonly: bool) {
+        let mut permissions = fs::metadata(path)
+            .expect("metadata should be readable")
+            .permissions();
+
+        permissions.set_readonly(readonly);
+        fs::set_permissions(path, permissions).expect("permissions should update");
     }
 }

@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import {
+  createAssociatedApplicationOpenAction,
+  createDefaultOpenAction,
+  createOpenWithAction,
+  type FileOpenAction,
+} from '@/app/fileOpenActions'
+import {
+  createFileOperationConfirmation,
+  type FileOperationConfirmation,
+} from '@/app/fileOperationConfirmation'
 import { computed, ref } from 'vue'
 
 type FolderSide = 'left' | 'right'
@@ -15,6 +25,8 @@ interface FolderTreeRow {
   rightSize?: string
   leftModified?: string
   rightModified?: string
+  leftPath?: string
+  rightPath?: string
   status: FolderStatus
   kind: 'file' | 'directory'
 }
@@ -29,6 +41,9 @@ const displayStatusOptions: { statuses: FolderStatus[]; label: string; testId: s
   { statuses: ['Different'], label: 'Different', testId: 'different' },
   { statuses: ['Left only', 'Right only'], label: 'Orphans', testId: 'orphans' },
 ]
+const alignWithTargetId = ref('')
+const manualAlignments = ref<Record<string, string>>({})
+const lastAlignmentAction = ref<string>()
 const generatedRows: FolderTreeRow[] = Array.from({ length: 180 }, (_, index): FolderTreeRow => {
   const number = index + 1
   const padded = String(number).padStart(3, '0')
@@ -43,6 +58,8 @@ const generatedRows: FolderTreeRow[] = Array.from({ length: 180 }, (_, index): F
     rightSize: sizeLabel,
     leftModified: '2026-06-24 10:00',
     rightModified: '2026-06-24 10:00',
+    leftPath: `D:/workspace/left/generated-${padded}.log`,
+    rightPath: `D:/workspace/right/generated-${padded}.log`,
     status: 'Same',
     kind: 'file',
   }
@@ -58,6 +75,8 @@ const rows = ref<FolderTreeRow[]>([
     rightSize: '--',
     leftModified: '2026-06-20 10:12',
     rightModified: '2026-06-20 10:12',
+    leftPath: 'D:/workspace/left/src',
+    rightPath: 'D:/workspace/right/src',
     status: 'Same',
     kind: 'directory',
   },
@@ -71,6 +90,8 @@ const rows = ref<FolderTreeRow[]>([
     rightSize: '9.1 KB',
     leftModified: '2026-06-21 15:44',
     rightModified: '2026-06-22 09:08',
+    leftPath: 'D:/workspace/left/src/main.ts',
+    rightPath: 'D:/workspace/right/src/main.ts',
     status: 'Different',
     kind: 'file',
   },
@@ -83,6 +104,8 @@ const rows = ref<FolderTreeRow[]>([
     rightSize: '12.2 KB',
     leftModified: '2026-06-18 08:30',
     rightModified: '2026-06-18 08:30',
+    leftPath: 'D:/workspace/left/README.md',
+    rightPath: 'D:/workspace/right/README.md',
     status: 'Same',
     kind: 'file',
   },
@@ -92,7 +115,18 @@ const rows = ref<FolderTreeRow[]>([
     leftName: 'release-notes.md',
     leftSize: '3.5 KB',
     leftModified: '2026-06-23 11:02',
+    leftPath: 'D:/workspace/left/release-notes.md',
     status: 'Left only',
+    kind: 'file',
+  },
+  {
+    id: 'release-summary',
+    depth: 0,
+    rightName: 'release-summary.md',
+    rightSize: '3.8 KB',
+    rightModified: '2026-06-23 11:40',
+    rightPath: 'D:/workspace/right/release-summary.md',
+    status: 'Right only',
     kind: 'file',
   },
   ...generatedRows,
@@ -106,6 +140,23 @@ const rowHeight = 34
 const virtualViewportRows = 18
 const virtualOverscanRows = 4
 const scrollTop = ref(0)
+const selectedRowId = ref<string>()
+const lastOpenAction = ref<FileOpenAction>()
+const lastCompareAction = ref<string>()
+const pendingCopyConfirmation = ref<FileOperationConfirmation>()
+const pendingCopyDirection = ref<'Left' | 'Right'>()
+const lastCopyAction = ref<string>()
+const pendingDangerousOperation = ref<FileOperationConfirmation>()
+const pendingDangerousOperationLabel = ref('')
+const renamePanelOpen = ref(false)
+const renameTargetName = ref('')
+const lastFileOperationAction = ref<string>()
+const selectedReadonly = ref(false)
+const lastMetadataAction = ref<string>()
+const excludedRowIds = ref<Set<string>>(new Set())
+const lastSelectionAction = ref<string>()
+const currentDifferenceIndex = ref(-1)
+const lastDifferenceNavigation = ref<string>()
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -114,10 +165,32 @@ const summary = computed(() => ({
     .length,
 }))
 const directoryRows = computed(() => rows.value.filter((row) => row.kind === 'directory'))
+const selectedRow = computed(() => rows.value.find((row) => row.id === selectedRowId.value))
+const selectedFilePath = computed(() => {
+  const row = selectedRow.value
+
+  if (row?.kind !== 'file') {
+    return undefined
+  }
+
+  return row.leftPath ?? row.rightPath
+})
+const alignWithCandidates = computed(() =>
+  rows.value.filter(
+    (row) =>
+      row.kind === 'file' &&
+      row.id !== selectedRowId.value &&
+      (row.status === 'Left only' || row.status === 'Right only'),
+  ),
+)
+const differenceRows = computed(() =>
+  visibleRows.value.filter((row) => row.status !== 'Same' && !isSuppressed(row)),
+)
 const visibleRows = computed(() =>
   rows.value.filter(
     (row) =>
       (!row.parentId || expandedDirectoryIds.value.has(row.parentId)) &&
+      !excludedRowIds.value.has(row.id) &&
       (visibleStatuses.value.has(row.status) || showSuppressedFilters.value),
   ),
 )
@@ -264,6 +337,255 @@ function isExpanded(row: FolderTreeRow): boolean {
   return expandedDirectoryIds.value.has(row.id)
 }
 
+function selectRow(row: FolderTreeRow): void {
+  selectedRowId.value = row.id
+  alignWithTargetId.value = ''
+}
+
+function recordOpenAction(action: FileOpenAction): void {
+  lastOpenAction.value = action
+}
+
+function openSelectedFile(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  recordOpenAction(createDefaultOpenAction(selectedFilePath.value))
+}
+
+function openSelectedFileWithTextEdit(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  recordOpenAction(createOpenWithAction(selectedFilePath.value, 'Text Edit', 'open-diff-text-edit'))
+}
+
+function openSelectedFileWithAssociatedApplication(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  recordOpenAction(createAssociatedApplicationOpenAction(selectedFilePath.value))
+}
+
+function quickCompareSelectedFile(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  lastCompareAction.value = `Quick Compare -> ${selectedFilePath.value}`
+}
+
+function compareSelectedFileToCounterpart(): void {
+  const row = selectedRow.value
+
+  if (row?.kind !== 'file') {
+    return
+  }
+
+  const sourcePath = row.leftPath ?? row.rightPath
+  const targetPath = row.rightPath ?? row.leftPath
+
+  if (!sourcePath || !targetPath) {
+    return
+  }
+
+  lastCompareAction.value = `Compare To -> ${sourcePath} => ${targetPath}`
+}
+
+function copySelectedTo(direction: 'Left' | 'Right'): void {
+  const row = selectedRow.value
+
+  if (row?.kind !== 'file') {
+    return
+  }
+
+  const targetPath = direction === 'Left' ? row.leftPath : row.rightPath
+
+  if (!targetPath) {
+    return
+  }
+
+  pendingCopyDirection.value = direction
+  pendingCopyConfirmation.value = createFileOperationConfirmation({
+    operation: 'copy',
+    paths: [targetPath],
+  })
+}
+
+function renameSelectedFile(): void {
+  const row = selectedRow.value
+
+  if (!row) {
+    return
+  }
+
+  renamePanelOpen.value = true
+  renameTargetName.value = displayName(row)
+}
+
+function displayName(row: FolderTreeRow): string {
+  return row.leftName ?? row.rightName ?? row.id
+}
+
+function alignSelectedFileWithTarget(): void {
+  const row = selectedRow.value
+  const target = rows.value.find((candidate) => candidate.id === alignWithTargetId.value)
+
+  if (!row || !target) {
+    return
+  }
+
+  manualAlignments.value = {
+    ...manualAlignments.value,
+    [row.id]: target.id,
+  }
+  lastAlignmentAction.value = `${displayName(row)} aligned with ${displayName(target)}`
+}
+
+function breakSelectedAlignment(): void {
+  const row = selectedRow.value
+
+  if (!row) {
+    return
+  }
+
+  manualAlignments.value = Object.fromEntries(
+    Object.entries(manualAlignments.value).filter(([rowId]) => rowId !== row.id),
+  )
+  lastAlignmentAction.value = `Alignment cleared for ${displayName(row)}`
+}
+
+function confirmFolderCopy(): void {
+  const confirmation = pendingCopyConfirmation.value
+  const direction = pendingCopyDirection.value
+
+  if (!confirmation || !direction) {
+    return
+  }
+
+  lastCopyAction.value = `Copied to ${direction} -> ${confirmation.paths[0]} | Status refreshed`
+  pendingCopyConfirmation.value = undefined
+  pendingCopyDirection.value = undefined
+}
+
+function confirmRenameFile(): void {
+  if (!renameTargetName.value) {
+    return
+  }
+
+  lastFileOperationAction.value = `Renamed -> ${renameTargetName.value}`
+  renamePanelOpen.value = false
+}
+
+function moveSelectedFile(): void {
+  const path = selectedFilePath.value
+
+  if (!path) {
+    return
+  }
+
+  lastFileOperationAction.value = `Move -> ${archivePath(path)}`
+}
+
+function deleteSelectedFile(): void {
+  const path = selectedFilePath.value
+
+  if (!path) {
+    return
+  }
+
+  pendingDangerousOperationLabel.value = `Deleted -> ${path}`
+  pendingDangerousOperation.value = createFileOperationConfirmation({
+    operation: 'delete',
+    paths: [path],
+  })
+}
+
+function confirmDangerousFileOperation(): void {
+  if (!pendingDangerousOperation.value) {
+    return
+  }
+
+  lastFileOperationAction.value = pendingDangerousOperationLabel.value
+  pendingDangerousOperation.value = undefined
+  pendingDangerousOperationLabel.value = ''
+}
+
+function toggleSelectedReadonly(selected: boolean): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  selectedReadonly.value = selected
+  lastMetadataAction.value = `Attributes changed -> ${selected ? 'readonly' : 'writable'}`
+}
+
+function touchSelectedFile(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  lastMetadataAction.value = `Touched -> ${selectedFilePath.value}`
+}
+
+function excludeSelectedRow(): void {
+  const row = selectedRow.value
+
+  if (!row) {
+    return
+  }
+
+  excludedRowIds.value = new Set([...excludedRowIds.value, row.id])
+  selectedRowId.value = undefined
+  lastSelectionAction.value = `Excluded -> ${displayName(row)}`
+}
+
+function refreshSelectedRow(): void {
+  const row = selectedRow.value
+
+  if (!row) {
+    return
+  }
+
+  lastSelectionAction.value = `Refreshed -> ${displayName(row)}`
+}
+
+function navigateFolderDifference(direction: 'next' | 'previous'): void {
+  if (differenceRows.value.length === 0) {
+    currentDifferenceIndex.value = -1
+    lastDifferenceNavigation.value = 'No folder differences'
+
+    return
+  }
+
+  if (direction === 'next') {
+    currentDifferenceIndex.value = (currentDifferenceIndex.value + 1) % differenceRows.value.length
+  } else {
+    currentDifferenceIndex.value =
+      (currentDifferenceIndex.value - 1 + differenceRows.value.length) % differenceRows.value.length
+  }
+
+  const row = differenceRows.value[currentDifferenceIndex.value]
+
+  selectedRowId.value = row.id
+  lastDifferenceNavigation.value = `Difference ${String(currentDifferenceIndex.value + 1)} / ${String(
+    differenceRows.value.length,
+  )} -> ${displayName(row)}`
+}
+
+function archivePath(path: string): string {
+  const separatorIndex = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'))
+
+  if (separatorIndex < 0) {
+    return `archive/${path}`
+  }
+
+  return `${path.slice(0, separatorIndex)}/archive/${path.slice(separatorIndex + 1)}`
+}
+
 function handleTreeScroll(event: Event): void {
   scrollTop.value = (event.currentTarget as HTMLElement).scrollTop
 }
@@ -295,6 +617,132 @@ function handleTreeScroll(event: Event): void {
           secondary
         >
           Refresh
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="open-selected-file"
+          :disabled="!selectedFilePath"
+          @click="openSelectedFile"
+        >
+          Open
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="open-with-selected-file"
+          :disabled="!selectedFilePath"
+          @click="openSelectedFileWithTextEdit"
+        >
+          Open With
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="open-associated-file"
+          :disabled="!selectedFilePath"
+          @click="openSelectedFileWithAssociatedApplication"
+        >
+          Associated App
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="quick-compare-selected-file"
+          :disabled="!selectedFilePath"
+          @click="quickCompareSelectedFile"
+        >
+          Quick Compare
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="compare-to-selected-file"
+          :disabled="!selectedFilePath"
+          @click="compareSelectedFileToCounterpart"
+        >
+          Compare To
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="copy-selected-to-left"
+          :disabled="!selectedFilePath"
+          @click="copySelectedTo('Left')"
+        >
+          Copy Left
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="copy-selected-to-right"
+          :disabled="!selectedFilePath"
+          @click="copySelectedTo('Right')"
+        >
+          Copy Right
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="move-selected-file"
+          :disabled="!selectedFilePath"
+          @click="moveSelectedFile"
+        >
+          Move
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="delete-selected-file"
+          :disabled="!selectedFilePath"
+          @click="deleteSelectedFile"
+        >
+          Delete
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="rename-selected-file"
+          :disabled="!selectedFilePath"
+          @click="renameSelectedFile"
+        >
+          Rename
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="exclude-selected-row"
+          :disabled="!selectedRowId"
+          @click="excludeSelectedRow"
+        >
+          Exclude
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="refresh-selected-row"
+          :disabled="!selectedRowId"
+          @click="refreshSelectedRow"
+        >
+          Refresh Selection
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="previous-folder-difference"
+          :disabled="differenceRows.length === 0"
+          @click="navigateFolderDifference('previous')"
+        >
+          Previous Difference
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="next-folder-difference"
+          :disabled="differenceRows.length === 0"
+          @click="navigateFolderDifference('next')"
+        >
+          Next Difference
         </NButton>
         <NButton
           size="small"
@@ -369,6 +817,174 @@ function handleTreeScroll(event: Event): void {
     </section>
 
     <section
+      v-if="renamePanelOpen"
+      class="folder-operation-panel"
+      data-testid="folder-rename-panel"
+    >
+      <input
+        v-model="renameTargetName"
+        data-testid="rename-target-name"
+      />
+      <NButton
+        size="small"
+        type="primary"
+        data-testid="confirm-rename-file"
+        @click="confirmRenameFile"
+      >
+        Rename
+      </NButton>
+    </section>
+
+    <section
+      v-if="pendingDangerousOperation"
+      class="folder-copy-confirmation"
+      data-testid="folder-dangerous-confirmation"
+    >
+      <strong>{{ pendingDangerousOperation.title }}</strong>
+      <span>{{ pendingDangerousOperation.message }}</span>
+      <span>{{ pendingDangerousOperation.paths.join(', ') }}</span>
+      <NButton
+        size="small"
+        type="primary"
+        data-testid="confirm-dangerous-file-operation"
+        @click="confirmDangerousFileOperation"
+      >
+        {{ pendingDangerousOperation.confirmLabel }}
+      </NButton>
+    </section>
+
+    <section class="folder-operation-panel">
+      <label class="metadata-option">
+        <input
+          data-testid="toggle-selected-readonly"
+          type="checkbox"
+          :checked="selectedReadonly"
+          :disabled="!selectedFilePath"
+          @change="toggleSelectedReadonly(($event.target as HTMLInputElement).checked)"
+        />
+        <span>Readonly</span>
+      </label>
+      <NButton
+        size="small"
+        secondary
+        data-testid="touch-selected-file"
+        :disabled="!selectedFilePath"
+        @click="touchSelectedFile"
+      >
+        Touch
+      </NButton>
+    </section>
+
+    <section
+      v-if="pendingCopyConfirmation"
+      class="folder-copy-confirmation"
+      data-testid="folder-copy-confirmation"
+    >
+      <strong>{{ pendingCopyConfirmation.title }}</strong>
+      <span>{{ pendingCopyConfirmation.message }}</span>
+      <span>{{ pendingCopyConfirmation.paths.join(', ') }}</span>
+      <NButton
+        size="small"
+        type="primary"
+        data-testid="confirm-folder-copy"
+        @click="confirmFolderCopy"
+      >
+        {{ pendingCopyConfirmation.confirmLabel }}
+      </NButton>
+    </section>
+
+    <section class="manual-alignment-tools">
+      <select
+        v-model="alignWithTargetId"
+        data-testid="align-with-target"
+      >
+        <option value="">Select target</option>
+        <option
+          v-for="candidate in alignWithCandidates"
+          :key="candidate.id"
+          :value="candidate.id"
+        >
+          {{ displayName(candidate) }}
+        </option>
+      </select>
+      <NButton
+        size="small"
+        secondary
+        data-testid="align-with-selected-file"
+        :disabled="!selectedRowId || !alignWithTargetId"
+        @click="alignSelectedFileWithTarget"
+      >
+        Align With
+      </NButton>
+      <NButton
+        size="small"
+        secondary
+        data-testid="break-selected-alignment"
+        :disabled="!selectedRowId"
+        @click="breakSelectedAlignment"
+      >
+        Break Alignment
+      </NButton>
+    </section>
+
+    <section
+      v-if="lastOpenAction"
+      class="folder-action-status"
+      data-testid="folder-open-action-status"
+    >
+      {{ lastOpenAction.label }} -> {{ lastOpenAction.path }}
+    </section>
+    <section
+      v-if="lastCompareAction"
+      class="folder-action-status"
+      data-testid="folder-compare-action-status"
+    >
+      {{ lastCompareAction }}
+    </section>
+    <section
+      v-if="lastAlignmentAction"
+      class="folder-action-status"
+      data-testid="folder-alignment-action-status"
+    >
+      {{ lastAlignmentAction }}
+    </section>
+    <section
+      v-if="lastCopyAction"
+      class="folder-action-status"
+      data-testid="folder-copy-action-status"
+    >
+      {{ lastCopyAction }}
+    </section>
+    <section
+      v-if="lastFileOperationAction"
+      class="folder-action-status"
+      data-testid="folder-file-operation-status"
+    >
+      {{ lastFileOperationAction }}
+    </section>
+    <section
+      v-if="lastMetadataAction"
+      class="folder-action-status"
+      data-testid="folder-metadata-operation-status"
+    >
+      {{ lastMetadataAction }}
+    </section>
+    <section
+      v-if="lastSelectionAction"
+      class="folder-action-status"
+      data-testid="folder-selection-operation-status"
+    >
+      {{ lastSelectionAction }}
+    </section>
+    <section
+      v-if="lastDifferenceNavigation"
+      class="folder-action-status"
+      data-testid="folder-difference-navigation-status"
+    >
+      {{ lastDifferenceNavigation }}
+    </section>
+
+    <section
       class="folder-tree-table"
       data-testid="folder-tree-table"
       @scroll="handleTreeScroll"
@@ -433,10 +1049,12 @@ function handleTreeScroll(event: Event): void {
             :class="[
               `status-${row.status.toLowerCase().replaceAll(' ', '-')}`,
               row.kind,
-              { suppressed: isSuppressed(row) },
+              { selected: selectedRowId === row.id, suppressed: isSuppressed(row) },
             ]"
             :style="{ gridTemplateColumns }"
+            :data-row-id="row.id"
             data-testid="folder-row"
+            @click="selectRow(row)"
           >
             <span
               class="name-cell left-name"
@@ -448,7 +1066,7 @@ function handleTreeScroll(event: Event): void {
                 class="folder-toggle"
                 :data-testid="`toggle-folder-${row.id}`"
                 :aria-expanded="isExpanded(row)"
-                @click="toggleFolder(row)"
+                @click.stop="toggleFolder(row)"
               >
                 {{ isExpanded(row) ? '▾' : '▸' }}
               </button>
@@ -513,7 +1131,7 @@ function handleTreeScroll(event: Event): void {
 <style scoped>
 .folder-compare-view {
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto auto minmax(0, 1fr);
   gap: 12px;
   height: 100%;
   padding: 16px;
@@ -562,7 +1180,8 @@ function handleTreeScroll(event: Event): void {
 }
 
 .column-config,
-.display-filters {
+.display-filters,
+.manual-alignment-tools {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -575,6 +1194,68 @@ function handleTreeScroll(event: Event): void {
   gap: 6px;
   color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.manual-alignment-tools {
+  align-items: center;
+}
+
+.manual-alignment-tools select {
+  min-width: 220px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 12px;
+}
+
+.folder-copy-confirmation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface-muted);
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.folder-copy-confirmation strong {
+  color: var(--app-text);
+}
+
+.folder-operation-panel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.folder-operation-panel input {
+  width: 260px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 12px;
+}
+
+.folder-operation-panel .metadata-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.folder-operation-panel .metadata-option input {
+  width: auto;
+  height: auto;
+  padding: 0;
 }
 
 .folder-summary {
@@ -598,6 +1279,15 @@ function handleTreeScroll(event: Event): void {
 }
 
 .folder-summary span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.folder-action-status {
+  padding: 8px 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface-muted);
   color: var(--app-text-muted);
   font-size: 12px;
 }
@@ -652,6 +1342,12 @@ function handleTreeScroll(event: Event): void {
   border-bottom: 1px solid var(--app-border);
   color: var(--app-text);
   font-size: 13px;
+}
+
+.tree-row.selected {
+  background: var(--app-surface-muted);
+  outline: 1px solid var(--app-accent);
+  outline-offset: -1px;
 }
 
 .tree-row.suppressed {

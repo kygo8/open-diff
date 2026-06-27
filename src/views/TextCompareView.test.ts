@@ -3,6 +3,7 @@ import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextCompareView from './TextCompareView.vue'
 import { diffText } from '@/api/diff'
+import type { TextDiffRequest } from '@/types/diff'
 
 vi.mock('@/api/diff', () => ({
   diffText: vi.fn().mockResolvedValue({
@@ -107,5 +108,40 @@ describe('TextCompareView', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.findAll('textarea')[0]?.element.value).toBe('second edit')
+  })
+
+  it('copies the current diff from left to right and marks the view dirty', async () => {
+    vi.mocked(diffText).mockResolvedValueOnce({
+      lines: [
+        {
+          leftNumber: 1,
+          rightNumber: 1,
+          leftText: 'left changed',
+          rightText: 'right changed',
+          kind: 'modified',
+          inlineSegments: { left: [], right: [] },
+        },
+      ],
+      stats: { added: 0, deleted: 0, modified: 1, equal: 0 },
+    })
+
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+    await wrapper.vm.$nextTick()
+    await wrapper.find('[data-testid="copy-left-to-right"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="dirty-status"]').text()).toContain('Unsaved edits')
+
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+
+    const lastCall = vi.mocked(diffText).mock.lastCall
+
+    expect(lastCall).toBeDefined()
+
+    const [lastRequest] = lastCall as [TextDiffRequest]
+
+    expect(lastRequest.right).toContain('left changed')
   })
 })

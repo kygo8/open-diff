@@ -99,6 +99,35 @@ function redoLeft(): void {
   left.value = next
   dirty.value = true
 }
+
+function copyCurrentDiff(direction: 'leftToRight' | 'rightToLeft'): void {
+  const currentDiff = result.value?.lines.find((line) => line.kind !== 'equal')
+
+  if (!currentDiff) {
+    return
+  }
+
+  if (direction === 'leftToRight') {
+    copyLineToSide(currentDiff.rightNumber, currentDiff.leftText, 'right')
+
+    return
+  }
+
+  copyLineToSide(currentDiff.leftNumber, currentDiff.rightText, 'left')
+}
+
+function copyLineToSide(lineNumber: number | null, text: string, side: 'left' | 'right'): void {
+  if (lineNumber === null) {
+    return
+  }
+
+  const target = side === 'left' ? left : right
+  const lines = target.value.split('\n')
+
+  lines[lineNumber - 1] = text
+  target.value = lines.join('\n')
+  dirty.value = true
+}
 </script>
 
 <template>
@@ -134,6 +163,24 @@ function redoLeft(): void {
         @click="redoLeft"
       >
         Redo
+      </button>
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="copy-left-to-right"
+        :disabled="!result"
+        @click="copyCurrentDiff('leftToRight')"
+      >
+        Left to Right
+      </button>
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="copy-right-to-left"
+        :disabled="!result"
+        @click="copyCurrentDiff('rightToLeft')"
+      >
+        Right to Left
       </button>
       <select
         v-model="algorithm"

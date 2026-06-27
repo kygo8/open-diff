@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+use shared_types::TextDiffRequest;
+use std::path::Path;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -31,6 +33,22 @@ pub struct CliParseError {
     pub exit_code: CliExitCode,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CliFileCompareResult {
+    pub exit_code: CliExitCode,
+    pub added: usize,
+    pub deleted: usize,
+    pub modified: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CliRuntimeError {
+    pub message: String,
+    pub exit_code: CliExitCode,
+}
+
 pub fn parse_cli_args<I, S>(args: I) -> Result<CliInvocation, CliParseError>
 where
     I: IntoIterator<Item = S>,
@@ -51,6 +69,35 @@ where
 
 pub fn cli_exit_code_value(exit_code: CliExitCode) -> i32 {
     exit_code as i32
+}
+
+pub fn compare_text_files(
+    left: impl AsRef<Path>,
+    right: impl AsRef<Path>,
+) -> Result<CliFileCompareResult, CliRuntimeError> {
+    let left = file_core::read_text_file(left).map_err(runtime_error)?;
+    let right = file_core::read_text_file(right).map_err(runtime_error)?;
+    let diff = diff_core::diff_text(&TextDiffRequest {
+        left: left.text,
+        right: right.text,
+        algorithm: None,
+        ignore_whitespace: false,
+        ignore_case: false,
+        ignore_line_endings: false,
+        ignore_regexes: Vec::new(),
+    });
+    let has_difference = diff.stats.added > 0 || diff.stats.deleted > 0 || diff.stats.modified > 0;
+
+    Ok(CliFileCompareResult {
+        exit_code: if has_difference {
+            CliExitCode::Different
+        } else {
+            CliExitCode::Success
+        },
+        added: diff.stats.added,
+        deleted: diff.stats.deleted,
+        modified: diff.stats.modified,
+    })
 }
 
 fn help_invocation() -> CliInvocation {
@@ -81,9 +128,18 @@ fn usage_error(message: impl Into<String>) -> CliParseError {
     }
 }
 
+fn runtime_error(error: impl std::fmt::Debug) -> CliRuntimeError {
+    CliRuntimeError {
+        message: format!("{error:?}"),
+        exit_code: CliExitCode::RuntimeError,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
 
     #[test]
     fn parses_help_and_command_arguments() {
@@ -109,5 +165,37 @@ mod tests {
 
         assert_eq!(error.exit_code, CliExitCode::UsageError);
         assert!(error.message.contains("compare requires"));
+    }
+
+    #[test]
+    fn compares_text_files_and_returns_stable_difference_codes() {
+        let left = temp_file_path("left");
+        let same = temp_file_path("same");
+        let different = temp_file_path("different");
+
+        fs::write(&left, "one\ntwo\n").expect("fixture should be writable");
+        fs::write(&same, "one\ntwo\n").expect("fixture should be writable");
+        fs::write(&different, "one\nchanged\n").expect("fixture should be writable");
+
+        let equal = compare_text_files(&left, &same).expect("comparison should run");
+        assert_eq!(equal.exit_code, CliExitCode::Success);
+        assert_eq!(equal.modified, 0);
+
+        let changed = compare_text_files(&left, &different).expect("comparison should run");
+        assert_eq!(changed.exit_code, CliExitCode::Different);
+        assert_eq!(changed.modified, 1);
+
+        fs::remove_file(left).expect("fixture should be removable");
+        fs::remove_file(same).expect("fixture should be removable");
+        fs::remove_file(different).expect("fixture should be removable");
+    }
+
+    fn temp_file_path(name: &str) -> std::path::PathBuf {
+        let stamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("system time should be after epoch")
+            .as_nanos();
+
+        std::env::temp_dir().join(format!("open-diff-cli-{name}-{stamp}.txt"))
     }
 }

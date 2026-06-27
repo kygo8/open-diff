@@ -1,4 +1,4 @@
-use cli_core::{cli_exit_code_value, parse_cli_args, CliCommand};
+use cli_core::{cli_exit_code_value, compare_text_files, parse_cli_args, CliCommand};
 
 fn main() {
     let invocation = match parse_cli_args(std::env::args()) {
@@ -16,7 +16,19 @@ fn main() {
             println!("  compare <left> <right>");
         }
         CliCommand::CompareFiles { left, right } => {
-            println!("compare {left} {right}");
+            let result = match compare_text_files(&left, &right) {
+                Ok(result) => result,
+                Err(error) => {
+                    eprintln!("{}", error.message);
+                    std::process::exit(cli_exit_code_value(error.exit_code));
+                }
+            };
+
+            println!(
+                "added: {}, deleted: {}, modified: {}",
+                result.added, result.deleted, result.modified
+            );
+            std::process::exit(cli_exit_code_value(result.exit_code));
         }
     }
 

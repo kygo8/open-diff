@@ -357,7 +357,10 @@ dependencies = [
 name = "cli-core"
 version = "1.0.0"
 dependencies = [
+ "diff-core",
+ "file-core",
  "serde",
+ "shared-types",
 ]
 
 [[package]]

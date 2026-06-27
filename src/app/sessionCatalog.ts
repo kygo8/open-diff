@@ -33,7 +33,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Folder Sync',
     summary: 'Two-way folder operations',
     priority: 'P1',
-    implemented: false,
+    implemented: true,
+    route: '/sync/folder',
   },
   {
     type: 'text-merge',

@@ -66,7 +66,7 @@ describe('HomeView', () => {
 
     expect(textCompare.attributes('disabled')).toBeUndefined()
     expect(folderCompare.attributes('disabled')).toBeUndefined()
-    expect(folderSync.attributes('disabled')).toBeDefined()
+    expect(folderSync.attributes('disabled')).toBeUndefined()
 
     await textCompare.trigger('click')
 
@@ -75,6 +75,10 @@ describe('HomeView', () => {
     await folderCompare.trigger('click')
 
     expect(push).toHaveBeenCalledWith('/compare/folder')
+
+    await folderSync.trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/sync/folder')
   })
 
   it('shows saved sessions grouped by folder', () => {

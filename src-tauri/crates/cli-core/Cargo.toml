@@ -11,4 +11,5 @@ file-core = { path = "../file-core" }
 folder-core = { path = "../folder-core" }
 job-core = { path = "../job-core" }
 serde.workspace = true
+session-core = { path = "../session-core" }
 shared-types = { path = "../shared-types" }

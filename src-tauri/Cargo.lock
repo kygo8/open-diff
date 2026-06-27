@@ -362,6 +362,7 @@ dependencies = [
  "folder-core",
  "job-core",
  "serde",
+ "session-core",
  "shared-types",
 ]
 

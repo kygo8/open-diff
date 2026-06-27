@@ -1,5 +1,6 @@
 use cli_core::{
-    cli_exit_code_value, compare_folders, compare_text_files, parse_cli_args, CliCommand,
+    cli_exit_code_value, compare_folders, compare_text_files, open_named_session, parse_cli_args,
+    CliCommand,
 };
 
 fn main() {
@@ -17,6 +18,7 @@ fn main() {
             println!("Commands:");
             println!("  compare <left> <right>");
             println!("  compare-folders <left> <right>");
+            println!("  open-session <store-root> <name>");
         }
         CliCommand::CompareFiles { left, right } => {
             let result = match compare_text_files(&left, &right) {
@@ -50,6 +52,21 @@ fn main() {
                 result.left_only,
                 result.right_only,
                 result.error
+            );
+            std::process::exit(cli_exit_code_value(result.exit_code));
+        }
+        CliCommand::OpenSession { store_root, name } => {
+            let result = match open_named_session(&store_root, &name) {
+                Ok(result) => result,
+                Err(error) => {
+                    eprintln!("{}", error.message);
+                    std::process::exit(cli_exit_code_value(error.exit_code));
+                }
+            };
+
+            println!(
+                "session: {} | name: {} | type: {}",
+                result.id, result.name, result.session_type
             );
             std::process::exit(cli_exit_code_value(result.exit_code));
         }

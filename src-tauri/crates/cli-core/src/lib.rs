@@ -15,6 +15,7 @@ pub enum CliCommand {
     Help,
     CompareFiles { left: String, right: String },
     CompareFolders { left: String, right: String },
+    OpenSession { store_root: String, name: String },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -57,6 +58,15 @@ pub struct CliFolderCompareResult {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct CliOpenSessionResult {
+    pub exit_code: CliExitCode,
+    pub id: String,
+    pub name: String,
+    pub session_type: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CliRuntimeError {
     pub message: String,
     pub exit_code: CliExitCode,
@@ -77,6 +87,7 @@ where
         "--help" | "-h" | "help" => Ok(help_invocation()),
         "compare" => parse_compare_files(args.collect()),
         "compare-folders" => parse_compare_folders(args.collect()),
+        "open-session" => parse_open_session(args.collect()),
         unknown => Err(usage_error(format!("unknown command: {unknown}"))),
     }
 }
@@ -147,6 +158,22 @@ pub fn compare_folders(
     })
 }
 
+pub fn open_named_session(
+    store_root: impl AsRef<Path>,
+    name: impl AsRef<str>,
+) -> Result<CliOpenSessionResult, CliRuntimeError> {
+    let session = session_core::SessionStore::new(store_root)
+        .load_named(name)
+        .map_err(runtime_error)?;
+
+    Ok(CliOpenSessionResult {
+        exit_code: CliExitCode::Success,
+        id: session.id,
+        name: session.name,
+        session_type: session_type_label(&session.session_type).to_owned(),
+    })
+}
+
 fn help_invocation() -> CliInvocation {
     CliInvocation {
         command: CliCommand::Help,
@@ -182,10 +209,42 @@ fn parse_compare_folders(args: Vec<String>) -> Result<CliInvocation, CliParseErr
     })
 }
 
+fn parse_open_session(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    if args.len() != 2 {
+        return Err(usage_error("open-session requires STORE_ROOT and NAME"));
+    }
+
+    Ok(CliInvocation {
+        command: CliCommand::OpenSession {
+            store_root: args[0].clone(),
+            name: args[1].clone(),
+        },
+        exit_code: CliExitCode::Success,
+    })
+}
+
 fn usage_error(message: impl Into<String>) -> CliParseError {
     CliParseError {
         message: message.into(),
         exit_code: CliExitCode::UsageError,
+    }
+}
+
+fn session_type_label(session_type: &session_core::SessionType) -> &'static str {
+    match session_type {
+        session_core::SessionType::FolderCompare => "folder-compare",
+        session_core::SessionType::FolderMerge => "folder-merge",
+        session_core::SessionType::FolderSync => "folder-sync",
+        session_core::SessionType::TextCompare => "text-compare",
+        session_core::SessionType::TextMerge => "text-merge",
+        session_core::SessionType::TableCompare => "table-compare",
+        session_core::SessionType::HexCompare => "hex-compare",
+        session_core::SessionType::PictureCompare => "picture-compare",
+        session_core::SessionType::RegistryCompare => "registry-compare",
+        session_core::SessionType::TextEdit => "text-edit",
+        session_core::SessionType::TextPatch => "text-patch",
+        session_core::SessionType::MediaCompare => "media-compare",
+        session_core::SessionType::VersionCompare => "version-compare",
     }
 }
 
@@ -225,6 +284,16 @@ mod tests {
             CliCommand::CompareFolders {
                 left: "left".to_owned(),
                 right: "right".to_owned(),
+            }
+        );
+
+        let session = parse_cli_args(["open-diff-cli", "open-session", ".open-diff", "team/demo"])
+            .expect("session open should parse");
+        assert_eq!(
+            session.command,
+            CliCommand::OpenSession {
+                store_root: ".open-diff".to_owned(),
+                name: "team/demo".to_owned(),
             }
         );
     }
@@ -285,6 +354,34 @@ mod tests {
 
         fs::remove_dir_all(left).expect("fixture should be removable");
         fs::remove_dir_all(right).expect("fixture should be removable");
+    }
+
+    #[test]
+    fn opens_named_session_from_store_root() {
+        let root = temp_dir_path("session-store");
+        let store = session_core::SessionStore::new(&root);
+        let session = session_core::SessionDocument::new(
+            "session-1",
+            "Daily compare",
+            session_core::SessionType::TextCompare,
+            session_core::SessionLocations::two_way(
+                session_core::SessionLocation::local_path("left.txt"),
+                session_core::SessionLocation::local_path("right.txt"),
+            ),
+        );
+
+        store
+            .save_named("team/daily", &session)
+            .expect("session should save");
+
+        let opened = open_named_session(&root, "team/daily").expect("session should open");
+
+        assert_eq!(opened.exit_code, CliExitCode::Success);
+        assert_eq!(opened.id, "session-1");
+        assert_eq!(opened.name, "Daily compare");
+        assert_eq!(opened.session_type, "text-compare");
+
+        fs::remove_dir_all(root).expect("fixture should be removable");
     }
 
     fn temp_file_path(name: &str) -> std::path::PathBuf {

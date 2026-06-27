@@ -80,8 +80,36 @@ pub fn build_update_right_plan(
     plan
 }
 
+pub fn build_update_left_plan(
+    left_root: impl AsRef<str>,
+    right_root: impl AsRef<str>,
+    rows: &[FolderAlignmentRow],
+) -> SyncPlan {
+    let mut plan = SyncPlan::new("Update Left");
+
+    for row in rows {
+        let action = if should_copy_right_to_left(row) {
+            copy_right_to_left_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
+        } else {
+            SyncAction::Leave
+        };
+
+        plan.add_item(SyncPlanItem {
+            relative_path: row.relative_path.clone(),
+            reason: update_left_reason(row, &action),
+            action,
+        });
+    }
+
+    plan
+}
+
 fn should_copy_left_to_right(row: &FolderAlignmentRow) -> bool {
     row.left.is_some() && row.right.is_none() || left_is_newer(row)
+}
+
+fn should_copy_right_to_left(row: &FolderAlignmentRow) -> bool {
+    row.left.is_none() && row.right.is_some() || right_is_newer(row)
 }
 
 fn copy_left_to_right_action(left_root: &str, right_root: &str, relative_path: &str) -> SyncAction {
@@ -89,6 +117,14 @@ fn copy_left_to_right_action(left_root: &str, right_root: &str, relative_path: &
         direction: SyncDirection::LeftToRight,
         source_path: joined_path(left_root, relative_path),
         target_path: joined_path(right_root, relative_path),
+    }
+}
+
+fn copy_right_to_left_action(left_root: &str, right_root: &str, relative_path: &str) -> SyncAction {
+    SyncAction::Copy {
+        direction: SyncDirection::RightToLeft,
+        source_path: joined_path(right_root, relative_path),
+        target_path: joined_path(left_root, relative_path),
     }
 }
 
@@ -103,6 +139,17 @@ fn left_is_newer(row: &FolderAlignmentRow) -> bool {
     left.metadata.modified_at_ms > right.metadata.modified_at_ms
 }
 
+fn right_is_newer(row: &FolderAlignmentRow) -> bool {
+    let Some(left) = row.left.as_ref() else {
+        return false;
+    };
+    let Some(right) = row.right.as_ref() else {
+        return false;
+    };
+
+    right.metadata.modified_at_ms > left.metadata.modified_at_ms
+}
+
 fn update_right_reason(row: &FolderAlignmentRow, action: &SyncAction) -> String {
     match action {
         SyncAction::Copy { .. } if row.right.is_none() => "Left item only exists".to_owned(),
@@ -110,6 +157,17 @@ fn update_right_reason(row: &FolderAlignmentRow, action: &SyncAction) -> String 
         SyncAction::Leave => "No update needed".to_owned(),
         SyncAction::Delete { .. } | SyncAction::Conflict { .. } => {
             "Not used by Update Right".to_owned()
+        }
+    }
+}
+
+fn update_left_reason(row: &FolderAlignmentRow, action: &SyncAction) -> String {
+    match action {
+        SyncAction::Copy { .. } if row.left.is_none() => "Right item only exists".to_owned(),
+        SyncAction::Copy { .. } => "Right item is newer".to_owned(),
+        SyncAction::Leave => "No update needed".to_owned(),
+        SyncAction::Delete { .. } | SyncAction::Conflict { .. } => {
+            "Not used by Update Left".to_owned()
         }
     }
 }
@@ -207,6 +265,41 @@ mod tests {
         assert_eq!(plan.items[3].action, SyncAction::Leave);
     }
 
+    #[test]
+    fn update_left_copies_right_newer_and_right_orphans_to_left() {
+        let rows = vec![
+            file_row("right-newer.txt", Some(1_000), Some(2_000)),
+            right_only_file_row("right-only.txt", 1_500),
+            file_row("left-newer.txt", Some(2_000), Some(1_000)),
+            file_row("same.txt", Some(1_000), Some(1_000)),
+        ];
+
+        let plan = build_update_left_plan("D:/left", "D:/right", &rows);
+
+        assert_eq!(plan.name, "Update Left");
+        assert_eq!(plan.items.len(), 4);
+        assert_eq!(plan.items[0].relative_path, "right-newer.txt");
+        assert_eq!(
+            plan.items[0].action,
+            SyncAction::Copy {
+                direction: SyncDirection::RightToLeft,
+                source_path: "D:/right/right-newer.txt".to_owned(),
+                target_path: "D:/left/right-newer.txt".to_owned(),
+            }
+        );
+        assert_eq!(plan.items[1].relative_path, "right-only.txt");
+        assert_eq!(
+            plan.items[1].action,
+            SyncAction::Copy {
+                direction: SyncDirection::RightToLeft,
+                source_path: "D:/right/right-only.txt".to_owned(),
+                target_path: "D:/left/right-only.txt".to_owned(),
+            }
+        );
+        assert_eq!(plan.items[2].action, SyncAction::Leave);
+        assert_eq!(plan.items[3].action, SyncAction::Leave);
+    }
+
     fn file_row(
         relative_path: &str,
         left_modified_at_ms: Option<u128>,
@@ -238,6 +331,19 @@ mod tests {
                 FolderCompareStatus::LeftOnly,
             )),
             right: None,
+        }
+    }
+
+    fn right_only_file_row(relative_path: &str, modified_at_ms: u128) -> FolderAlignmentRow {
+        FolderAlignmentRow {
+            relative_path: relative_path.to_owned(),
+            depth: 0,
+            left: None,
+            right: Some(file_node(
+                relative_path,
+                Some(modified_at_ms),
+                FolderCompareStatus::RightOnly,
+            )),
         }
     }
 

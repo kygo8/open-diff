@@ -201,6 +201,59 @@ pub fn render_text_report(report: &UnifiedReport) -> String {
     output
 }
 
+pub fn render_json_report(report: &UnifiedReport) -> Result<String, serde_json::Error> {
+    serde_json::to_string_pretty(report)
+}
+
+pub fn render_xml_report(report: &UnifiedReport) -> String {
+    let mut xml = String::new();
+
+    xml.push_str("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    xml.push_str("<report kind=\"");
+    xml.push_str(report_kind_label(&report.kind));
+    xml.push_str("\" title=\"");
+    xml.push_str(&escape_xml(&report.title));
+    xml.push_str("\">");
+    xml.push_str("<metadata><generatedAt>");
+    xml.push_str(&escape_xml(&report.metadata.generated_at));
+    xml.push_str("</generatedAt>");
+    push_optional_xml_value(
+        &mut xml,
+        "leftSource",
+        report.metadata.left_source.as_deref(),
+    );
+    push_optional_xml_value(
+        &mut xml,
+        "rightSource",
+        report.metadata.right_source.as_deref(),
+    );
+    xml.push_str("</metadata><sections>");
+
+    for section in &report.sections {
+        xml.push_str("<section kind=\"");
+        xml.push_str(report_section_kind_label(&section.kind));
+        xml.push_str("\" title=\"");
+        xml.push_str(&escape_xml(&section.title));
+        xml.push_str("\">");
+
+        for row in &section.rows {
+            xml.push_str("<row status=\"");
+            xml.push_str(row_status_label(&row.status));
+            xml.push_str("\"><label>");
+            xml.push_str(&escape_xml(&row.label));
+            xml.push_str("</label>");
+            push_optional_xml_value(&mut xml, "left", row.left.as_deref());
+            push_optional_xml_value(&mut xml, "right", row.right.as_deref());
+            xml.push_str("</row>");
+        }
+
+        xml.push_str("</section>");
+    }
+
+    xml.push_str("</sections></report>");
+    xml
+}
+
 fn push_optional_metadata(html: &mut String, label: &str, value: Option<&str>) {
     if let Some(value) = value {
         html.push_str("<dt>");
@@ -226,6 +279,36 @@ fn push_optional_text_value(output: &mut String, label: &str, value: Option<&str
         output.push_str(label);
         output.push_str(": ");
         output.push_str(value);
+    }
+}
+
+fn push_optional_xml_value(xml: &mut String, element: &str, value: Option<&str>) {
+    if let Some(value) = value {
+        xml.push('<');
+        xml.push_str(element);
+        xml.push('>');
+        xml.push_str(&escape_xml(value));
+        xml.push_str("</");
+        xml.push_str(element);
+        xml.push('>');
+    }
+}
+
+fn report_kind_label(kind: &ReportKind) -> &'static str {
+    match kind {
+        ReportKind::Text => "text",
+        ReportKind::Folder => "folder",
+        ReportKind::Table => "table",
+        ReportKind::Image => "image",
+    }
+}
+
+fn report_section_kind_label(kind: &ReportSectionKind) -> &'static str {
+    match kind {
+        ReportSectionKind::Summary => "summary",
+        ReportSectionKind::Differences => "differences",
+        ReportSectionKind::Metadata => "metadata",
+        ReportSectionKind::Context => "context",
     }
 }
 
@@ -256,6 +339,15 @@ fn escape_html(value: &str) -> String {
         .replace('>', "&gt;")
         .replace('"', "&quot;")
         .replace('\'', "&#39;")
+}
+
+fn escape_xml(value: &str) -> String {
+    value
+        .replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&apos;")
 }
 
 #[cfg(test)]
@@ -369,5 +461,41 @@ mod tests {
         assert!(text.contains("== Summary =="));
         assert!(text.contains("[different] Changed files | left: 2 | right: 3"));
         assert!(!text.contains("<table"));
+    }
+
+    #[test]
+    fn renders_json_and_xml_structured_reports() {
+        let report = UnifiedReport::new(
+            ReportKind::Table,
+            "Table & Data",
+            ReportMetadata {
+                generated_at: "2026-06-27T03:20:00Z".to_owned(),
+                left_source: Some("left.csv".to_owned()),
+                right_source: Some("right.csv".to_owned()),
+            },
+        )
+        .with_section(ReportSection {
+            kind: ReportSectionKind::Differences,
+            title: "Rows".to_owned(),
+            rows: vec![ReportRow {
+                label: "id=1".to_owned(),
+                left: Some("A&B".to_owned()),
+                right: Some("A<C".to_owned()),
+                status: ReportRowStatus::Different,
+            }],
+        });
+
+        let json = render_json_report(&report).expect("json should render");
+        let parsed: serde_json::Value = serde_json::from_str(&json).expect("json should parse");
+        assert_eq!(parsed["kind"], "table");
+        assert_eq!(parsed["metadata"]["leftSource"], "left.csv");
+        assert_eq!(parsed["sections"][0]["rows"][0]["status"], "different");
+
+        let xml = render_xml_report(&report);
+        assert!(xml.starts_with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
+        assert!(xml.contains("<report kind=\"table\" title=\"Table &amp; Data\">"));
+        assert!(xml.contains("<section kind=\"differences\" title=\"Rows\">"));
+        assert!(xml.contains("<left>A&amp;B</left>"));
+        assert!(xml.contains("<right>A&lt;C</right>"));
     }
 }

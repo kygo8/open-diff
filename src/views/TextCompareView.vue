@@ -22,6 +22,7 @@ const findRegex = ref(false)
 const findCaseSensitive = ref(false)
 const findWholeWord = ref(false)
 const currentFindIndex = ref(0)
+const ignoredDiffKeys = ref<Set<string>>(new Set())
 
 const statsLabel = computed(() => {
   if (!result.value) return 'No comparison yet'
@@ -36,6 +37,10 @@ const lineEndingStatus = computed(
 )
 const dirtyStatus = computed(() => (dirty.value ? 'Unsaved edits' : 'No edits'))
 const diffRows = computed(() => result.value?.lines.filter((line) => line.kind !== 'equal') ?? [])
+const activeDiffRows = computed(() =>
+  diffRows.value.filter((line) => !ignoredDiffKeys.value.has(diffKey(line))),
+)
+const activeDiffStatus = computed(() => `${String(activeDiffRows.value.length)} active diff`)
 const findMatches = computed(() => {
   const matcher = createFindMatcher()
 
@@ -88,6 +93,7 @@ async function runDiff(): Promise<void> {
       right: right.value,
       algorithm: algorithm.value,
     })
+    ignoredDiffKeys.value = new Set()
     currentDiffIndex.value = 0
     dirty.value = false
   } catch (event) {
@@ -191,11 +197,11 @@ function redoLeft(): void {
 }
 
 function copyCurrentDiff(direction: 'leftToRight' | 'rightToLeft'): void {
-  if (diffRows.value.length === 0) {
+  if (activeDiffRows.value.length === 0) {
     return
   }
 
-  const currentDiff = diffRows.value[currentDiffIndex.value]
+  const currentDiff = activeDiffRows.value[currentDiffIndex.value]
 
   if (direction === 'leftToRight') {
     copyLineToSide(currentDiff.rightNumber, currentDiff.leftText, 'right')
@@ -221,13 +227,34 @@ function copyLineToSide(lineNumber: number | null, text: string, side: 'left' | 
 }
 
 function goToNextDiff(): void {
-  if (diffRows.value.length === 0) {
+  if (activeDiffRows.value.length === 0) {
     currentDiffIndex.value = 0
 
     return
   }
 
-  currentDiffIndex.value = Math.min(currentDiffIndex.value + 1, diffRows.value.length - 1)
+  currentDiffIndex.value = Math.min(currentDiffIndex.value + 1, activeDiffRows.value.length - 1)
+}
+
+function ignoreCurrentDiff(): void {
+  if (activeDiffRows.value.length === 0) {
+    return
+  }
+
+  const currentDiff = activeDiffRows.value[currentDiffIndex.value]
+
+  ignoredDiffKeys.value = new Set([...ignoredDiffKeys.value, diffKey(currentDiff)])
+  currentDiffIndex.value = Math.min(currentDiffIndex.value, activeDiffRows.value.length - 1)
+}
+
+function diffKey(line: TextDiffResponse['lines'][number]): string {
+  return [
+    line.kind,
+    line.leftNumber ?? '',
+    line.rightNumber ?? '',
+    line.leftText,
+    line.rightText,
+  ].join('|')
 }
 
 interface FindMatcher {
@@ -293,6 +320,11 @@ function escapeRegExp(value: string): string {
         data-testid="dirty-status"
         >{{ dirtyStatus }}</span
       >
+      <span
+        class="status-chip"
+        data-testid="active-diff-status"
+        >{{ activeDiffStatus }}</span
+      >
       <div class="spacer" />
       <button
         type="button"
@@ -329,6 +361,15 @@ function escapeRegExp(value: string): string {
         @click="copyCurrentDiff('rightToLeft')"
       >
         Right to Left
+      </button>
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="ignore-current-diff"
+        :disabled="activeDiffRows.length === 0"
+        @click="ignoreCurrentDiff"
+      >
+        Ignore
       </button>
       <select
         v-model="algorithm"

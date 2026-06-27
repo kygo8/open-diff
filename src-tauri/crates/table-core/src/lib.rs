@@ -170,6 +170,12 @@ pub struct SortedRowAlignmentOptions {
     pub case_sensitive: bool,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct TableComparisonOptions {
+    pub numeric_tolerance: Option<f64>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RowAlignment {
@@ -545,6 +551,15 @@ pub fn compare_aligned_rows(
     right: &TableSheet,
     alignments: &[RowAlignment],
 ) -> Vec<TableRowDiff> {
+    compare_aligned_rows_with_options(left, right, alignments, &TableComparisonOptions::default())
+}
+
+pub fn compare_aligned_rows_with_options(
+    left: &TableSheet,
+    right: &TableSheet,
+    alignments: &[RowAlignment],
+    options: &TableComparisonOptions,
+) -> Vec<TableRowDiff> {
     alignments
         .iter()
         .enumerate()
@@ -555,7 +570,7 @@ pub fn compare_aligned_rows(
             let right_row = alignment
                 .right_row_index
                 .and_then(|index| right.rows.iter().find(|row| row.index == index));
-            let cells = compare_row_cells(row_index, left_row, right_row);
+            let cells = compare_row_cells(row_index, left_row, right_row, options);
             let status = row_diff_status(alignment, &cells);
 
             TableRowDiff {
@@ -571,6 +586,7 @@ fn compare_row_cells(
     row_index: usize,
     left_row: Option<&TableRow>,
     right_row: Option<&TableRow>,
+    options: &TableComparisonOptions,
 ) -> Vec<TableCellDiff> {
     let max_columns = left_row
         .into_iter()
@@ -599,13 +615,47 @@ fn compare_row_cells(
             TableCellDiff {
                 row_index,
                 column_index,
-                important: status != TableDiffStatus::Same,
+                important: cell_diff_is_important(&status, &left, &right, options),
                 status,
                 left,
                 right,
             }
         })
         .collect()
+}
+
+fn cell_diff_is_important(
+    status: &TableDiffStatus,
+    left: &Option<TableCellValue>,
+    right: &Option<TableCellValue>,
+    options: &TableComparisonOptions,
+) -> bool {
+    if *status == TableDiffStatus::Same {
+        return false;
+    }
+
+    if numeric_difference_is_within_tolerance(left, right, options) {
+        return false;
+    }
+
+    true
+}
+
+fn numeric_difference_is_within_tolerance(
+    left: &Option<TableCellValue>,
+    right: &Option<TableCellValue>,
+    options: &TableComparisonOptions,
+) -> bool {
+    let Some(tolerance) = options.numeric_tolerance else {
+        return false;
+    };
+
+    let (Some(TableCellValue::Number(left)), Some(TableCellValue::Number(right))) = (left, right)
+    else {
+        return false;
+    };
+
+    (left - right).abs() <= tolerance
 }
 
 fn row_diff_status(alignment: &RowAlignment, cells: &[TableCellDiff]) -> TableDiffStatus {
@@ -1372,6 +1422,31 @@ mod tests {
             .all(|cell| cell.status == TableDiffStatus::Added));
     }
 
+    #[test]
+    fn marks_numeric_differences_within_tolerance_as_unimportant() {
+        let left = numeric_sheet(vec![("A-001", 12.00)]);
+        let right = numeric_sheet(vec![("A-001", 12.04)]);
+        let alignments = vec![RowAlignment {
+            key: vec!["a-001".to_owned()],
+            left_row_index: Some(0),
+            right_row_index: Some(0),
+            status: RowAlignmentStatus::Matched,
+        }];
+
+        let diff = compare_aligned_rows_with_options(
+            &left,
+            &right,
+            &alignments,
+            &TableComparisonOptions {
+                numeric_tolerance: Some(0.05),
+            },
+        );
+
+        assert_eq!(diff[0].status, TableDiffStatus::Modified);
+        assert_eq!(diff[0].cells[1].status, TableDiffStatus::Modified);
+        assert!(!diff[0].cells[1].important);
+    }
+
     fn keyed_sheet(rows: Vec<(&str, &str, &str)>) -> TableSheet {
         TableSheet {
             name: "Inventory".to_owned(),
@@ -1410,6 +1485,42 @@ mod tests {
                             row_index: index,
                             column_index: 2,
                             value: TableCellValue::Text(quantity.to_owned()),
+                        },
+                    ],
+                })
+                .collect(),
+        }
+    }
+
+    fn numeric_sheet(rows: Vec<(&str, f64)>) -> TableSheet {
+        TableSheet {
+            name: "Inventory".to_owned(),
+            index: 0,
+            columns: vec![
+                TableColumn {
+                    index: 0,
+                    name: "SKU".to_owned(),
+                },
+                TableColumn {
+                    index: 1,
+                    name: "Price".to_owned(),
+                },
+            ],
+            rows: rows
+                .into_iter()
+                .enumerate()
+                .map(|(index, (sku, price))| TableRow {
+                    index,
+                    cells: vec![
+                        TableCell {
+                            row_index: index,
+                            column_index: 0,
+                            value: TableCellValue::Text(sku.to_owned()),
+                        },
+                        TableCell {
+                            row_index: index,
+                            column_index: 1,
+                            value: TableCellValue::Number(price),
                         },
                     ],
                 })

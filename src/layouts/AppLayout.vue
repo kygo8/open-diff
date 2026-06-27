@@ -72,7 +72,8 @@ function executeCommand(commandId: CommandId): void {
         <NButton
           quaternary
           size="small"
-          disabled
+          data-testid="open-folder-compare"
+          @click="navigate('/compare/folder', 'Folder Compare')"
         >
           <template #icon><FolderTree :size="16" /></template>
           Folder

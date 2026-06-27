@@ -29,8 +29,8 @@ describe('selectSessionForDrop', () => {
   it('selects folder compare for two directories', () => {
     expect(selectSessionForDrop(pair('left', 'right', 'directory'))).toMatchObject({
       sessionType: 'folder-compare',
-      route: undefined,
-      enabled: false,
+      route: '/compare/folder',
+      enabled: true,
     })
   })
 

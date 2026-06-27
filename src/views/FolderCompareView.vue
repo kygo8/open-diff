@@ -1,0 +1,334 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+
+type FolderSide = 'left' | 'right'
+type FolderStatus = 'Same' | 'Different' | 'Left only' | 'Right only'
+
+interface FolderTreeRow {
+  id: string
+  depth: number
+  leftName?: string
+  rightName?: string
+  leftSize?: string
+  rightSize?: string
+  leftModified?: string
+  rightModified?: string
+  status: FolderStatus
+  kind: 'file' | 'directory'
+}
+
+const rows = ref<FolderTreeRow[]>([
+  {
+    id: 'src',
+    depth: 0,
+    leftName: 'src',
+    rightName: 'src',
+    leftSize: '--',
+    rightSize: '--',
+    leftModified: '2026-06-20 10:12',
+    rightModified: '2026-06-20 10:12',
+    status: 'Same',
+    kind: 'directory',
+  },
+  {
+    id: 'src-main',
+    depth: 1,
+    leftName: 'main.ts',
+    rightName: 'main.ts',
+    leftSize: '8.4 KB',
+    rightSize: '9.1 KB',
+    leftModified: '2026-06-21 15:44',
+    rightModified: '2026-06-22 09:08',
+    status: 'Different',
+    kind: 'file',
+  },
+  {
+    id: 'readme',
+    depth: 0,
+    leftName: 'README.md',
+    rightName: 'README.md',
+    leftSize: '12.2 KB',
+    rightSize: '12.2 KB',
+    leftModified: '2026-06-18 08:30',
+    rightModified: '2026-06-18 08:30',
+    status: 'Same',
+    kind: 'file',
+  },
+  {
+    id: 'notes',
+    depth: 0,
+    leftName: 'release-notes.md',
+    leftSize: '3.5 KB',
+    leftModified: '2026-06-23 11:02',
+    status: 'Left only',
+    kind: 'file',
+  },
+])
+
+const summary = computed(() => ({
+  total: rows.value.length,
+  different: rows.value.filter((row) => row.status === 'Different').length,
+  orphans: rows.value.filter((row) => row.status === 'Left only' || row.status === 'Right only')
+    .length,
+}))
+
+function rowIndent(row: FolderTreeRow): string {
+  const indent = String(row.depth * 18)
+
+  return `${indent}px`
+}
+
+function sideValue(
+  row: FolderTreeRow,
+  side: FolderSide,
+  field: 'name' | 'size' | 'modified',
+): string {
+  const key = `${side}${field[0].toUpperCase()}${field.slice(1)}` as keyof FolderTreeRow
+  const value = row[key]
+
+  return typeof value === 'string' ? value : '--'
+}
+</script>
+
+<template>
+  <section class="folder-compare-view">
+    <header class="folder-toolbar">
+      <div class="path-pair">
+        <label>
+          <span>Left folder</span>
+          <input
+            value="D:/workspace/left"
+            readonly
+          />
+        </label>
+        <label>
+          <span>Right folder</span>
+          <input
+            value="D:/workspace/right"
+            readonly
+          />
+        </label>
+      </div>
+      <div class="folder-actions">
+        <NButton size="small">Compare</NButton>
+        <NButton
+          size="small"
+          secondary
+        >
+          Refresh
+        </NButton>
+      </div>
+    </header>
+
+    <section class="folder-summary">
+      <div>
+        <strong>{{ summary.total }}</strong>
+        <span>Items</span>
+      </div>
+      <div>
+        <strong>{{ summary.different }}</strong>
+        <span>Different</span>
+      </div>
+      <div>
+        <strong>{{ summary.orphans }}</strong>
+        <span>Orphans</span>
+      </div>
+    </section>
+
+    <section
+      class="folder-tree-table"
+      data-testid="folder-tree-table"
+    >
+      <div class="tree-head">
+        <span>Name</span>
+        <span>Size</span>
+        <span>Modified</span>
+        <span>Status</span>
+        <span>Name</span>
+        <span>Size</span>
+        <span>Modified</span>
+      </div>
+      <div class="tree-body">
+        <div
+          v-for="row in rows"
+          :key="row.id"
+          class="tree-row"
+          :class="[`status-${row.status.toLowerCase().replaceAll(' ', '-')}`, row.kind]"
+          data-testid="folder-row"
+        >
+          <span
+            class="name-cell left-name"
+            :style="{ paddingLeft: rowIndent(row) }"
+          >
+            {{ sideValue(row, 'left', 'name') }}
+          </span>
+          <span>{{ sideValue(row, 'left', 'size') }}</span>
+          <span>{{ sideValue(row, 'left', 'modified') }}</span>
+          <strong>{{ row.status }}</strong>
+          <span
+            class="name-cell"
+            :style="{ paddingLeft: rowIndent(row) }"
+          >
+            {{ sideValue(row, 'right', 'name') }}
+          </span>
+          <span>{{ sideValue(row, 'right', 'size') }}</span>
+          <span>{{ sideValue(row, 'right', 'modified') }}</span>
+        </div>
+      </div>
+    </section>
+  </section>
+</template>
+
+<style scoped>
+.folder-compare-view {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 12px;
+  height: 100%;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.folder-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.path-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.path-pair label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.path-pair span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.path-pair input {
+  width: 100%;
+  height: 32px;
+  padding: 0 9px;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  text-overflow: ellipsis;
+}
+
+.folder-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.folder-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 110px);
+  gap: 8px;
+}
+
+.folder-summary div {
+  display: grid;
+  gap: 2px;
+  padding: 9px 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.folder-summary strong {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.folder-summary span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.folder-tree-table {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.tree-head,
+.tree-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) 90px 150px 104px minmax(180px, 1.2fr) 90px 150px;
+  min-width: 1040px;
+}
+
+.tree-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface-muted);
+  color: var(--app-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tree-head span,
+.tree-row span,
+.tree-row strong {
+  min-width: 0;
+  padding: 8px 10px;
+  overflow: hidden;
+  border-right: 1px solid var(--app-border);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-row {
+  border-bottom: 1px solid var(--app-border);
+  color: var(--app-text);
+  font-size: 13px;
+}
+
+.tree-row.directory .name-cell {
+  font-weight: 700;
+}
+
+.tree-row strong {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-same strong {
+  color: var(--diff-added-fg);
+}
+
+.status-different strong {
+  color: var(--diff-modified-fg);
+}
+
+.status-left-only strong,
+.status-right-only strong {
+  color: var(--diff-deleted-fg);
+}
+
+@media (width <= 760px) {
+  .folder-toolbar,
+  .path-pair,
+  .folder-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .folder-actions {
+    justify-content: start;
+  }
+}
+</style>

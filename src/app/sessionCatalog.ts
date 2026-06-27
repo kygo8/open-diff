@@ -25,7 +25,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Folder Compare',
     summary: 'Directory tree diff',
     priority: 'P0',
-    implemented: false,
+    implemented: true,
+    route: '/compare/folder',
   },
   {
     type: 'folder-sync',

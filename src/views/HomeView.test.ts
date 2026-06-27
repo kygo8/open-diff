@@ -47,7 +47,7 @@ describe('HomeView', () => {
     }
   })
 
-  it('opens the implemented text compare entry and disables planned entries', async () => {
+  it('opens implemented compare entries and disables planned entries', async () => {
     const wrapper = mount(HomeView, {
       global: {
         stubs: {
@@ -62,13 +62,19 @@ describe('HomeView', () => {
 
     const textCompare = wrapper.find('[data-session-type="text-compare"] button')
     const folderCompare = wrapper.find('[data-session-type="folder-compare"] button')
+    const folderSync = wrapper.find('[data-session-type="folder-sync"] button')
 
     expect(textCompare.attributes('disabled')).toBeUndefined()
-    expect(folderCompare.attributes('disabled')).toBeDefined()
+    expect(folderCompare.attributes('disabled')).toBeUndefined()
+    expect(folderSync.attributes('disabled')).toBeDefined()
 
     await textCompare.trigger('click')
 
     expect(push).toHaveBeenCalledWith('/compare/text')
+
+    await folderCompare.trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/compare/folder')
   })
 
   it('shows saved sessions grouped by folder', () => {

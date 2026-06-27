@@ -105,6 +105,31 @@ pub enum HexReplaceError {
     LengthMismatch { find_len: u64, replace_len: u64 },
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HexReport {
+    pub summary: HexReportSummary,
+    pub rows: Vec<HexReportRow>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HexReportSummary {
+    pub original_len: u64,
+    pub modified_len: u64,
+    pub changed_rows: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HexReportRow {
+    pub offset: u64,
+    pub original_byte: Option<u8>,
+    pub modified_byte: Option<u8>,
+    pub original_hex: Option<String>,
+    pub modified_hex: Option<String>,
+}
+
 pub fn read_hex_block(source: &[u8], offset: u64, length: usize) -> HexBlock {
     let total_len = source.len() as u64;
     let start = usize::try_from(offset)
@@ -282,6 +307,33 @@ pub fn replace_hex_matches(
     Ok(HexReplaceResult { bytes, matches })
 }
 
+pub fn build_hex_report(original: &[u8], modified: &[u8]) -> HexReport {
+    let max_len = original.len().max(modified.len());
+    let rows = (0..max_len)
+        .filter_map(|index| {
+            let original_byte = original.get(index).copied();
+            let modified_byte = modified.get(index).copied();
+
+            (original_byte != modified_byte).then_some(HexReportRow {
+                offset: index as u64,
+                original_byte,
+                modified_byte,
+                original_hex: original_byte.map(format_hex_byte),
+                modified_hex: modified_byte.map(format_hex_byte),
+            })
+        })
+        .collect::<Vec<_>>();
+
+    HexReport {
+        summary: HexReportSummary {
+            original_len: original.len() as u64,
+            modified_len: modified.len() as u64,
+            changed_rows: rows.len() as u64,
+        },
+        rows,
+    }
+}
+
 fn find_query_bytes(query: HexFindQuery) -> Result<Vec<u8>, HexFindError> {
     match query {
         HexFindQuery::Text(value) => non_empty_bytes(value),
@@ -319,6 +371,10 @@ fn find_byte_pattern(source: &[u8], pattern: &[u8]) -> Vec<HexFindMatch> {
             })
         })
         .collect()
+}
+
+fn format_hex_byte(byte: u8) -> String {
+    format!("{byte:02X}")
 }
 
 fn parse_hex_query(value: &str) -> Result<Vec<u8>, HexFindError> {
@@ -673,6 +729,50 @@ mod tests {
                 find_len: 2,
                 replace_len: 3,
             }
+        );
+    }
+
+    #[test]
+    fn builds_hex_report_rows_with_offsets_original_and_modified_bytes() {
+        let report = build_hex_report(b"ABC", b"AxCD");
+
+        assert_eq!(report.summary.original_len, 3);
+        assert_eq!(report.summary.modified_len, 4);
+        assert_eq!(report.summary.changed_rows, 2);
+        assert_eq!(
+            report.rows,
+            vec![
+                HexReportRow {
+                    offset: 1,
+                    original_byte: Some(0x42),
+                    modified_byte: Some(0x78),
+                    original_hex: Some("42".to_owned()),
+                    modified_hex: Some("78".to_owned()),
+                },
+                HexReportRow {
+                    offset: 3,
+                    original_byte: None,
+                    modified_byte: Some(0x44),
+                    original_hex: None,
+                    modified_hex: Some("44".to_owned()),
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn builds_hex_report_rows_for_removed_bytes() {
+        let report = build_hex_report(b"ABCD", b"ABC");
+
+        assert_eq!(
+            report.rows,
+            vec![HexReportRow {
+                offset: 3,
+                original_byte: Some(0x44),
+                modified_byte: None,
+                original_hex: Some("44".to_owned()),
+                modified_hex: None,
+            }]
         );
     }
 

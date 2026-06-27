@@ -147,6 +147,45 @@ pub fn classify_folder_alignment_with_options(
     }
 }
 
+pub fn classify_folder_alignment_with_crc32(
+    left: Option<&FolderScanNode>,
+    right: Option<&FolderScanNode>,
+    options: &FolderCompareOptions,
+    left_crc32: Option<u32>,
+    right_crc32: Option<u32>,
+) -> FolderCompareStatus {
+    let metadata_status = classify_folder_alignment_with_options(left, right, options);
+
+    if metadata_status != FolderCompareStatus::Same {
+        return metadata_status;
+    }
+
+    if !matches!((left, right), (Some(left), Some(right)) if left.kind == FolderNodeKind::File && right.kind == FolderNodeKind::File)
+    {
+        return metadata_status;
+    }
+
+    match (left_crc32, right_crc32) {
+        (Some(left), Some(right)) if left == right => FolderCompareStatus::Same,
+        (Some(_), Some(_)) => FolderCompareStatus::Different,
+        _ => metadata_status,
+    }
+}
+
+pub fn calculate_crc32(bytes: &[u8]) -> u32 {
+    let mut crc = 0xffff_ffffu32;
+
+    for byte in bytes {
+        crc ^= u32::from(*byte);
+        for _ in 0..8 {
+            let mask = (crc & 1).wrapping_neg();
+            crc = (crc >> 1) ^ (0xedb8_8320 & mask);
+        }
+    }
+
+    !crc
+}
+
 fn folder_metadata_matches(
     left: &FolderScanNode,
     right: &FolderScanNode,
@@ -502,6 +541,36 @@ mod tests {
         assert!(sensitive
             .iter()
             .any(|row| row.left.is_none() && row.right.is_some()));
+    }
+
+    #[test]
+    fn calculates_crc32_with_standard_vector() {
+        assert_eq!(calculate_crc32(b"123456789"), 0xcbf4_3926);
+    }
+
+    #[test]
+    fn updates_file_status_from_crc32_content_comparison() {
+        let left = FolderScanNode::new_file(
+            "same-size.bin",
+            "same-size.bin",
+            metadata(VfsEntryKind::File, "same-size.bin", Some("bin"), 3),
+        );
+        let right = FolderScanNode::new_file(
+            "same-size.bin",
+            "same-size.bin",
+            metadata(VfsEntryKind::File, "same-size.bin", Some("bin"), 3),
+        );
+
+        assert_eq!(
+            classify_folder_alignment_with_crc32(
+                Some(&left),
+                Some(&right),
+                &FolderCompareOptions::default(),
+                Some(calculate_crc32(b"abc")),
+                Some(calculate_crc32(b"abd")),
+            ),
+            FolderCompareStatus::Different
+        );
     }
 
     fn metadata(kind: VfsEntryKind, name: &str, extension: Option<&str>, size: u64) -> VfsMetadata {

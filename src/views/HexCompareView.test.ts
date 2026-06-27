@@ -42,4 +42,16 @@ describe('HexCompareView', () => {
     expect(changedByte.classes()).toContain('hex-byte-different')
     expect(changedByte.text()).toBe('42')
   })
+
+  it('adjusts bytes per row from the available viewport width', async () => {
+    const wrapper = mount(HexCompareView)
+
+    expect(wrapper.find('[data-testid="hex-bytes-per-row"]').text()).toContain('16')
+    expect(wrapper.findAll('[data-testid="hex-row"]')).toHaveLength(4)
+
+    await wrapper.find('[data-testid="hex-width-control"]').setValue(360)
+
+    expect(wrapper.find('[data-testid="hex-bytes-per-row"]').text()).toContain('8')
+    expect(wrapper.findAll('[data-testid="hex-row"]')).toHaveLength(8)
+  })
 })

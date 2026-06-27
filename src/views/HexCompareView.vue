@@ -17,13 +17,14 @@ interface HexCell {
 const leftViewport = ref<HTMLElement | null>(null)
 const rightViewport = ref<HTMLElement | null>(null)
 const bytes = Array.from({ length: 64 }, (_, index) => 0x41 + (index % 26))
-const bytesPerRow = 16
 const differentOffsets = new Set([1])
+const viewportWidth = ref(640)
+const bytesPerRow = computed(() => (viewportWidth.value < 480 ? 8 : 16))
 
 const hexRows = computed<HexRow[]>(() =>
-  Array.from({ length: Math.ceil(bytes.length / bytesPerRow) }, (_, rowIndex) => {
-    const rowOffset = rowIndex * bytesPerRow
-    const rowBytes = bytes.slice(rowOffset, rowOffset + bytesPerRow)
+  Array.from({ length: Math.ceil(bytes.length / bytesPerRow.value) }, (_, rowIndex) => {
+    const rowOffset = rowIndex * bytesPerRow.value
+    const rowBytes = bytes.slice(rowOffset, rowOffset + bytesPerRow.value)
 
     return {
       offset: rowOffset.toString(16).toUpperCase().padStart(8, '0'),
@@ -66,6 +67,21 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
         <span>bytes loaded</span>
       </div>
     </header>
+
+    <section class="hex-wrap-controls">
+      <label>
+        <span>Viewport width</span>
+        <input
+          v-model.number="viewportWidth"
+          type="range"
+          min="320"
+          max="760"
+          step="40"
+          data-testid="hex-width-control"
+        />
+      </label>
+      <strong data-testid="hex-bytes-per-row">{{ bytesPerRow }} bytes / row</strong>
+    </section>
 
     <section class="hex-pane-grid">
       <section class="hex-side">
@@ -194,6 +210,41 @@ h2 {
   font-size: 12px;
 }
 
+.hex-wrap-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.hex-wrap-controls label {
+  display: grid;
+  gap: 5px;
+}
+
+.hex-wrap-controls span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.hex-wrap-controls input {
+  width: 100%;
+}
+
+.hex-wrap-controls strong {
+  min-width: 102px;
+  padding: 7px 9px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  font-size: 12px;
+  text-align: center;
+}
+
 .hex-pane-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -267,6 +318,7 @@ h2 {
 
 @media (width <= 760px) {
   .hex-header,
+  .hex-wrap-controls,
   .hex-pane-grid {
     grid-template-columns: 1fr;
   }

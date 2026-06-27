@@ -16,6 +16,8 @@ const leftRedoStack = ref<string[]>([])
 const rightUndoStack = ref<string[]>([])
 const rightRedoStack = ref<string[]>([])
 const currentDiffIndex = ref(0)
+const findQuery = ref('')
+const currentFindIndex = ref(0)
 
 const statsLabel = computed(() => {
   if (!result.value) return 'No comparison yet'
@@ -30,6 +32,33 @@ const lineEndingStatus = computed(
 )
 const dirtyStatus = computed(() => (dirty.value ? 'Unsaved edits' : 'No edits'))
 const diffRows = computed(() => result.value?.lines.filter((line) => line.kind !== 'equal') ?? [])
+const findMatches = computed(() => {
+  const query = findQuery.value.toLocaleLowerCase()
+
+  if (!query) {
+    return []
+  }
+
+  return [left.value, right.value].flatMap((content, sideIndex) =>
+    content
+      .toLocaleLowerCase()
+      .split('\n')
+      .flatMap((line, lineIndex) =>
+        line.includes(query) ? [{ sideIndex, lineIndex, columnIndex: line.indexOf(query) }] : [],
+      ),
+  )
+})
+const findStatus = computed(() => {
+  if (!findQuery.value) {
+    return 'No search'
+  }
+
+  if (findMatches.value.length === 0) {
+    return '0 / 0'
+  }
+
+  return `${String(currentFindIndex.value + 1)} / ${String(findMatches.value.length)}`
+})
 
 function detectLineEnding(value: string): string {
   if (value.includes('\r\n')) {
@@ -77,6 +106,38 @@ function updateRight(value: string): void {
   rightRedoStack.value = []
   right.value = value
   dirty.value = true
+}
+
+function updateFindQuery(event: Event): void {
+  const target = event.currentTarget
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  findQuery.value = target.value
+  currentFindIndex.value = 0
+}
+
+function findNext(): void {
+  if (findMatches.value.length === 0) {
+    currentFindIndex.value = 0
+
+    return
+  }
+
+  currentFindIndex.value = (currentFindIndex.value + 1) % findMatches.value.length
+}
+
+function findPrevious(): void {
+  if (findMatches.value.length === 0) {
+    currentFindIndex.value = 0
+
+    return
+  }
+
+  currentFindIndex.value =
+    (currentFindIndex.value - 1 + findMatches.value.length) % findMatches.value.length
 }
 
 function undoLeft(): void {
@@ -230,6 +291,40 @@ function goToNextDiff(): void {
       />
     </div>
 
+    <div class="find-toolbar">
+      <input
+        class="find-input"
+        data-testid="find-query"
+        type="search"
+        placeholder="Find"
+        :value="findQuery"
+        @input="updateFindQuery"
+      />
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="find-previous"
+        :disabled="findMatches.length === 0"
+        @click="findPrevious"
+      >
+        Previous
+      </button>
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="find-next"
+        :disabled="findMatches.length === 0"
+        @click="findNext"
+      >
+        Next
+      </button>
+      <span
+        class="status-chip"
+        data-testid="find-status"
+        >{{ findStatus }}</span
+      >
+    </div>
+
     <NAlert
       v-if="error"
       type="error"
@@ -304,6 +399,23 @@ function goToNextDiff(): void {
 .toolbar-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.find-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.find-input {
+  width: 220px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 12px;
 }
 
 .input-row {

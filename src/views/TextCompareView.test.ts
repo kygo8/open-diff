@@ -185,4 +185,20 @@ describe('TextCompareView', () => {
     expect(lastRequest.right).toContain('left first')
     expect(lastRequest.right).toContain('left second')
   })
+
+  it('finds text matches and navigates between them', async () => {
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="find-query"]').setValue('line')
+
+    expect(wrapper.find('[data-testid="find-status"]').text()).toContain('1 / 7')
+
+    await wrapper.find('[data-testid="find-next"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="find-status"]').text()).toContain('2 / 7')
+
+    await wrapper.find('[data-testid="find-previous"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="find-status"]').text()).toContain('1 / 7')
+  })
 })

@@ -16,6 +16,36 @@ const pixelPreview = ref<{
   y: number
   color: string
 } | null>(null)
+const metadataRows = [
+  {
+    key: 'dimensions',
+    label: 'Dimensions',
+    left: '1024 x 768',
+    right: '1024 x 760',
+    status: 'different',
+  },
+  {
+    key: 'format',
+    label: 'Format',
+    left: 'PNG',
+    right: 'PNG',
+    status: 'equal',
+  },
+  {
+    key: 'color-depth',
+    label: 'Color Depth',
+    left: '24-bit',
+    right: '32-bit',
+    status: 'different',
+  },
+  {
+    key: 'exif',
+    label: 'EXIF',
+    left: 'Camera Model: Studio A',
+    right: 'Camera Model: Studio B',
+    status: 'different',
+  },
+] as const
 
 const sharedTransformParts = computed(() => [
   `translate(${String(panX.value)}px, ${String(panY.value)}px)`,
@@ -259,6 +289,39 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
         </div>
       </section>
     </section>
+
+    <section
+      class="picture-metadata-panel"
+      data-testid="picture-metadata-panel"
+    >
+      <header class="metadata-header">
+        <h2>Metadata</h2>
+        <span>Left vs Right</span>
+      </header>
+      <div class="metadata-grid">
+        <div class="metadata-grid-heading">Field</div>
+        <div class="metadata-grid-heading">Left</div>
+        <div class="metadata-grid-heading">Right</div>
+        <div class="metadata-grid-heading">State</div>
+        <template
+          v-for="row in metadataRows"
+          :key="row.key"
+        >
+          <div
+            class="metadata-row"
+            :data-testid="`picture-metadata-${row.key}`"
+            :data-metadata-status="row.status"
+          >
+            <div class="metadata-cell metadata-label">{{ row.label }}</div>
+            <div class="metadata-cell">{{ row.left }}</div>
+            <div class="metadata-cell">{{ row.right }}</div>
+            <div class="metadata-cell metadata-status">
+              {{ row.status }}
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
   </section>
 </template>
 
@@ -426,6 +489,66 @@ h2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.picture-metadata-panel {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.metadata-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.metadata-header span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.8fr) repeat(2, minmax(160px, 1fr)) minmax(90px, auto);
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+}
+
+.metadata-row {
+  display: contents;
+}
+
+.metadata-grid-heading,
+.metadata-cell {
+  min-width: 0;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--app-border);
+  font-size: 12px;
+}
+
+.metadata-grid-heading {
+  background: var(--app-bg);
+  color: var(--app-text-muted);
+  font-weight: 700;
+}
+
+.metadata-label,
+.metadata-status {
+  font-weight: 700;
+}
+
+.metadata-row[data-metadata-status='different'] .metadata-status {
+  color: var(--app-danger);
+}
+
+.metadata-row[data-metadata-status='equal'] .metadata-status {
+  color: var(--app-success);
 }
 
 .picture-side {

@@ -91,4 +91,16 @@ describe('PictureCompareView', () => {
       /^rgb\(\d+, \d+, \d+\)$/,
     )
   })
+
+  it('renders image metadata comparison rows with difference states', () => {
+    const wrapper = mount(PictureCompareView)
+
+    expect(wrapper.find('[data-testid="picture-metadata-panel"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="picture-metadata-dimensions"]').text()).toContain(
+      '1024 x 768',
+    )
+    expect(wrapper.find('[data-testid="picture-metadata-color-depth"]').text()).toContain('24-bit')
+    expect(wrapper.find('[data-testid="picture-metadata-exif"]').text()).toContain('Camera Model')
+    expect(wrapper.findAll('[data-metadata-status="different"]')).toHaveLength(3)
+  })
 })

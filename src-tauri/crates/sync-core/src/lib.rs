@@ -156,6 +156,32 @@ pub fn build_mirror_to_right_plan(
     plan
 }
 
+pub fn build_mirror_to_left_plan(
+    left_root: impl AsRef<str>,
+    right_root: impl AsRef<str>,
+    rows: &[FolderAlignmentRow],
+) -> SyncPlan {
+    let mut plan = SyncPlan::new("Mirror to Left");
+
+    for row in rows {
+        let action = if should_mirror_right_to_left(row) {
+            copy_right_to_left_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
+        } else if row.left.is_some() && row.right.is_none() {
+            delete_left_action(left_root.as_ref(), &row.relative_path)
+        } else {
+            SyncAction::Leave
+        };
+
+        plan.add_item(SyncPlanItem {
+            relative_path: row.relative_path.clone(),
+            reason: mirror_to_left_reason(row, &action),
+            action,
+        });
+    }
+
+    plan
+}
+
 fn should_copy_left_to_right(row: &FolderAlignmentRow) -> bool {
     row.left.is_some() && row.right.is_none() || left_is_newer(row)
 }
@@ -166,6 +192,10 @@ fn should_copy_right_to_left(row: &FolderAlignmentRow) -> bool {
 
 fn should_mirror_left_to_right(row: &FolderAlignmentRow) -> bool {
     row.left.is_some() && !row_is_same(row)
+}
+
+fn should_mirror_right_to_left(row: &FolderAlignmentRow) -> bool {
+    row.right.is_some() && !row_is_same(row)
 }
 
 fn copy_left_to_right_action(left_root: &str, right_root: &str, relative_path: &str) -> SyncAction {
@@ -180,6 +210,12 @@ fn copy_right_to_left_action(left_root: &str, right_root: &str, relative_path: &
     SyncAction::Copy {
         direction: SyncDirection::RightToLeft,
         source_path: joined_path(right_root, relative_path),
+        target_path: joined_path(left_root, relative_path),
+    }
+}
+
+fn delete_left_action(left_root: &str, relative_path: &str) -> SyncAction {
+    SyncAction::Delete {
         target_path: joined_path(left_root, relative_path),
     }
 }
@@ -277,6 +313,16 @@ fn mirror_to_right_reason(row: &FolderAlignmentRow, action: &SyncAction) -> Stri
         SyncAction::Delete { .. } => "Right item does not exist on left".to_owned(),
         SyncAction::Leave => "Already mirrored".to_owned(),
         SyncAction::Conflict { .. } => "Not used by Mirror to Right".to_owned(),
+    }
+}
+
+fn mirror_to_left_reason(row: &FolderAlignmentRow, action: &SyncAction) -> String {
+    match action {
+        SyncAction::Copy { .. } if row.left.is_none() => "Right item only exists".to_owned(),
+        SyncAction::Copy { .. } => "Right item replaces left item".to_owned(),
+        SyncAction::Delete { .. } => "Left item does not exist on right".to_owned(),
+        SyncAction::Leave => "Already mirrored".to_owned(),
+        SyncAction::Conflict { .. } => "Not used by Mirror to Left".to_owned(),
     }
 }
 
@@ -499,6 +545,53 @@ mod tests {
             plan.items[3].action,
             SyncAction::Delete {
                 target_path: "D:/right/right-only.txt".to_owned(),
+            }
+        );
+        assert_eq!(plan.items[4].action, SyncAction::Leave);
+    }
+
+    #[test]
+    fn mirror_to_left_copies_right_items_and_deletes_left_orphans() {
+        let rows = vec![
+            file_row("left-newer.txt", Some(2_000), Some(1_000)),
+            file_row("right-newer.txt", Some(1_000), Some(2_000)),
+            left_only_file_row("left-only.txt", 1_500),
+            right_only_file_row("right-only.txt", 1_500),
+            file_row("same.txt", Some(1_000), Some(1_000)),
+        ];
+
+        let plan = build_mirror_to_left_plan("D:/left", "D:/right", &rows);
+
+        assert_eq!(plan.name, "Mirror to Left");
+        assert_eq!(plan.items.len(), 5);
+        assert_eq!(
+            plan.items[0].action,
+            SyncAction::Copy {
+                direction: SyncDirection::RightToLeft,
+                source_path: "D:/right/left-newer.txt".to_owned(),
+                target_path: "D:/left/left-newer.txt".to_owned(),
+            }
+        );
+        assert_eq!(
+            plan.items[1].action,
+            SyncAction::Copy {
+                direction: SyncDirection::RightToLeft,
+                source_path: "D:/right/right-newer.txt".to_owned(),
+                target_path: "D:/left/right-newer.txt".to_owned(),
+            }
+        );
+        assert_eq!(
+            plan.items[2].action,
+            SyncAction::Delete {
+                target_path: "D:/left/left-only.txt".to_owned(),
+            }
+        );
+        assert_eq!(
+            plan.items[3].action,
+            SyncAction::Copy {
+                direction: SyncDirection::RightToLeft,
+                source_path: "D:/right/right-only.txt".to_owned(),
+                target_path: "D:/left/right-only.txt".to_owned(),
             }
         );
         assert_eq!(plan.items[4].action, SyncAction::Leave);

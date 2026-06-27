@@ -4,7 +4,8 @@ members = [
   "crates/diff-core",
   "crates/file-core",
   "crates/session-core",
-  "crates/shared-types"
+  "crates/shared-types",
+  "crates/vfs-core"
 ]
 resolver = "2"
 

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -39,6 +40,34 @@ pub struct ScriptVariables {
     pub left_path: Option<String>,
     pub right_path: Option<String>,
     pub selection: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptExecutionContext {
+    pub variables: ScriptVariables,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ScriptCommandContext<'a> {
+    pub line: usize,
+    pub command_name: &'static str,
+    pub command: &'a ScriptCommandKind,
+    pub execution: &'a ScriptExecutionContext,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptExecutionResult {
+    pub executed: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptExecutionError {
+    pub line: usize,
+    pub command: String,
+    pub reason: String,
 }
 
 pub fn parse_script(source: &str) -> Result<ScriptDocument, ScriptParseError> {
@@ -83,6 +112,36 @@ pub fn expand_script_variables(
     Ok(output)
 }
 
+pub fn execute_script_with_handler<F>(
+    script: &ScriptDocument,
+    execution: ScriptExecutionContext,
+    mut handler: F,
+) -> Result<ScriptExecutionResult, ScriptExecutionError>
+where
+    F: FnMut(ScriptCommandContext<'_>) -> Result<(), String>,
+{
+    let mut executed = 0;
+
+    for command in &script.commands {
+        let command_name = command.kind.command_name();
+        let context = ScriptCommandContext {
+            line: command.line,
+            command_name,
+            command: &command.kind,
+            execution: &execution,
+        };
+
+        handler(context).map_err(|reason| ScriptExecutionError {
+            line: command.line,
+            command: command_name.to_owned(),
+            reason,
+        })?;
+        executed += 1;
+    }
+
+    Ok(ScriptExecutionResult { executed })
+}
+
 fn resolve_script_variable<'a>(
     name: &str,
     variables: &'a ScriptVariables,
@@ -97,6 +156,30 @@ fn resolve_script_variable<'a>(
         unknown => Err(parse_error(0, format!("unknown variable: {unknown}"))),
     }
 }
+
+impl ScriptCommandKind {
+    pub fn command_name(&self) -> &'static str {
+        match self {
+            ScriptCommandKind::Load { .. } => "LOAD",
+            ScriptCommandKind::Filter { .. } => "FILTER",
+            ScriptCommandKind::Compare => "COMPARE",
+            ScriptCommandKind::TextReport { .. } => "TEXT-REPORT",
+            ScriptCommandKind::FolderReport { .. } => "FOLDER-REPORT",
+        }
+    }
+}
+
+impl fmt::Display for ScriptExecutionError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            formatter,
+            "script error at line {} in {}: {}",
+            self.line, self.command, self.reason
+        )
+    }
+}
+
+impl std::error::Error for ScriptExecutionError {}
 
 fn parse_command(
     command: &str,
@@ -287,5 +370,47 @@ mod tests {
 
         assert_eq!(error.line, 0);
         assert!(error.message.contains("unknown variable"));
+    }
+
+    #[test]
+    fn executes_script_with_context_and_records_each_command() {
+        let script = parse_script("LOAD left right\nFILTER *.rs\nCOMPARE").expect("script parses");
+        let mut executed = Vec::new();
+        let result =
+            execute_script_with_handler(&script, ScriptExecutionContext::default(), |ctx| {
+                executed.push((ctx.line, ctx.command_name.to_owned()));
+                Ok(())
+            })
+            .expect("script should execute");
+
+        assert_eq!(result.executed, 3);
+        assert_eq!(
+            executed,
+            vec![
+                (1, "LOAD".to_owned()),
+                (2, "FILTER".to_owned()),
+                (3, "COMPARE".to_owned()),
+            ]
+        );
+    }
+
+    #[test]
+    fn execution_errors_include_command_line_and_reason() {
+        let script = parse_script("LOAD left right\nCOMPARE").expect("script parses");
+        let error =
+            execute_script_with_handler(&script, ScriptExecutionContext::default(), |ctx| {
+                if ctx.command_name == "COMPARE" {
+                    return Err("comparison source is not loaded".to_owned());
+                }
+
+                Ok(())
+            })
+            .expect_err("handler error should fail execution");
+
+        assert_eq!(error.line, 2);
+        assert_eq!(error.command, "COMPARE");
+        assert_eq!(error.reason, "comparison source is not loaded");
+        assert!(error.to_string().contains("line 2"));
+        assert!(error.to_string().contains("COMPARE"));
     }
 }

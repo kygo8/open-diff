@@ -62,4 +62,18 @@ describe('PictureCompareView', () => {
       'rotate(90deg) scaleX(-1)',
     )
   })
+
+  it('applies manual alignment offset only to the right pane', async () => {
+    const wrapper = mount(PictureCompareView)
+
+    await wrapper.find<HTMLInputElement>('[data-testid="picture-align-x"]').setValue('12')
+    await wrapper.find<HTMLInputElement>('[data-testid="picture-align-y"]').setValue('-8')
+
+    expect(wrapper.find('[data-testid="left-picture-image"]').attributes('style')).toContain(
+      'translate(0px, 0px)',
+    )
+    expect(wrapper.find('[data-testid="right-picture-image"]').attributes('style')).toContain(
+      'translate(12px, -8px)',
+    )
+  })
 })

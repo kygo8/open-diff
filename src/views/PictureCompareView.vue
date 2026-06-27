@@ -8,19 +8,32 @@ const showOverlay = ref(true)
 const rotationDeg = ref(0)
 const flipHorizontal = ref(false)
 const flipVertical = ref(false)
+const alignmentOffsetX = ref(0)
+const alignmentOffsetY = ref(0)
 
-const imageTransform = computed(() =>
+const sharedTransformParts = computed(() => [
+  `translate(${String(panX.value)}px, ${String(panY.value)}px)`,
+  `rotate(${String(rotationDeg.value)}deg)`,
+  `scaleX(${flipHorizontal.value ? '-1' : '1'})`,
+  `scaleY(${flipVertical.value ? '-1' : '1'})`,
+  `scale(${String(zoom.value / 100)})`,
+])
+
+const imageTransform = computed(() => sharedTransformParts.value.join(' '))
+
+const rightImageTransform = computed(() =>
   [
-    `translate(${String(panX.value)}px, ${String(panY.value)}px)`,
-    `rotate(${String(rotationDeg.value)}deg)`,
-    `scaleX(${flipHorizontal.value ? '-1' : '1'})`,
-    `scaleY(${flipVertical.value ? '-1' : '1'})`,
-    `scale(${String(zoom.value / 100)})`,
+    ...sharedTransformParts.value,
+    `translate(${String(alignmentOffsetX.value)}px, ${String(alignmentOffsetY.value)}px)`,
   ].join(' '),
 )
 
 const imageStyle = computed<Record<string, string>>(() => ({
   transform: imageTransform.value,
+}))
+
+const rightImageStyle = computed<Record<string, string>>(() => ({
+  transform: rightImageTransform.value,
 }))
 
 function rotatePicture(delta: number): void {
@@ -113,6 +126,30 @@ function rotatePicture(delta: number): void {
           Flip V
         </button>
       </div>
+      <div class="picture-alignment-controls">
+        <label>
+          <span>Offset X</span>
+          <input
+            v-model.number="alignmentOffsetX"
+            type="number"
+            min="-200"
+            max="200"
+            step="1"
+            data-testid="picture-align-x"
+          />
+        </label>
+        <label>
+          <span>Offset Y</span>
+          <input
+            v-model.number="alignmentOffsetY"
+            type="number"
+            min="-200"
+            max="200"
+            step="1"
+            data-testid="picture-align-y"
+          />
+        </label>
+      </div>
     </section>
 
     <section class="picture-pane-grid">
@@ -157,7 +194,7 @@ function rotatePicture(delta: number): void {
         >
           <div
             class="picture-image right-image"
-            :style="imageStyle"
+            :style="rightImageStyle"
             data-testid="right-picture-image"
           >
             <span class="picture-marker marker-a"></span>
@@ -240,7 +277,7 @@ h2 {
 
 .picture-controls {
   display: grid;
-  grid-template-columns: repeat(3, minmax(140px, 1fr)) auto minmax(260px, auto);
+  grid-template-columns: repeat(3, minmax(140px, 1fr)) auto minmax(260px, auto) minmax(180px, auto);
   gap: 10px;
   padding: 10px;
   border: 1px solid var(--app-border);
@@ -292,6 +329,23 @@ h2 {
 
 .picture-transform-tools button:hover {
   border-color: var(--app-accent);
+}
+
+.picture-alignment-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.picture-alignment-controls input {
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 12px;
 }
 
 .picture-pane-grid {

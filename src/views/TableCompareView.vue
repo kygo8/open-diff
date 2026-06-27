@@ -12,6 +12,16 @@ interface ColumnMappingModel {
   source: 'Automatic' | 'Manual' | 'Left Only' | 'Right Only'
 }
 
+interface VirtualGridCell {
+  key: string
+  text: string
+}
+
+interface VirtualGridRow {
+  key: string
+  cells: VirtualGridCell[]
+}
+
 const leftColumns: TableColumnModel[] = [
   { side: 'left', name: 'SKU' },
   { side: 'left', name: 'Unit Price' },
@@ -22,9 +32,35 @@ const rightColumns: TableColumnModel[] = [
   { side: 'right', name: 'unitprice' },
   { side: 'right', name: 'Right Only' },
 ]
+const visibleRows = 8
+const visibleColumns = 5
 const manualLeftColumn = ref('SKU')
 const manualRightColumn = ref('sku')
 const manualMappings = ref<ColumnMappingModel[]>([])
+
+const virtualGridStyle = computed<Record<string, string>>(() => ({
+  '--visible-columns': String(visibleColumns),
+  '--visible-rows': String(visibleRows),
+}))
+
+const virtualGridRows = computed<VirtualGridRow[]>(() =>
+  Array.from({ length: visibleRows }, (_, rowIndex) => {
+    const rowNumber = rowIndex + 1
+    const rowLabel = String(rowNumber)
+
+    return {
+      key: `row-${rowLabel}`,
+      cells: Array.from({ length: visibleColumns }, (_, columnIndex) => {
+        const columnLabel = String(columnIndex + 1)
+
+        return {
+          key: `cell-${rowLabel}-${columnLabel}`,
+          text: `R${rowLabel}C${columnLabel}`,
+        }
+      }),
+    }
+  }),
+)
 
 const columnMappings = computed<ColumnMappingModel[]>(() => {
   const usedLeft = new Set<string>()
@@ -178,6 +214,36 @@ function addManualMapping(): void {
       </section>
     </section>
 
+    <section class="table-grid-panel">
+      <header>
+        <strong>Data Grid</strong>
+        <span>{{ visibleRows }} rows x {{ visibleColumns }} columns</span>
+      </header>
+      <div class="table-grid-viewport">
+        <div
+          class="table-virtual-grid"
+          data-testid="table-virtual-grid"
+          :style="virtualGridStyle"
+        >
+          <div
+            v-for="row in virtualGridRows"
+            :key="row.key"
+            class="table-grid-row"
+            data-testid="table-grid-row"
+          >
+            <span
+              v-for="cell in row.cells"
+              :key="cell.key"
+              class="table-grid-cell"
+              data-testid="table-grid-cell"
+            >
+              {{ cell.text }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section
       class="column-mapping-list"
       data-testid="column-mapping-list"
@@ -306,7 +372,8 @@ h2 {
 }
 
 .column-source-grid section,
-.column-mapping-list {
+.column-mapping-list,
+.table-grid-panel {
   display: grid;
   gap: 8px;
   padding: 10px;
@@ -334,6 +401,58 @@ h2 {
 .column-mapping-list header {
   display: grid;
   gap: 2px;
+}
+
+.table-grid-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.table-grid-panel header span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.table-grid-viewport {
+  max-width: 100%;
+  overflow: auto;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+}
+
+.table-virtual-grid {
+  display: grid;
+  grid-template-rows: repeat(var(--visible-rows), 34px);
+  min-width: calc(var(--visible-columns) * 132px);
+}
+
+.table-grid-row {
+  display: grid;
+  grid-template-columns: repeat(var(--visible-columns), minmax(132px, 1fr));
+  min-height: 34px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.table-grid-row:last-child {
+  border-bottom: 0;
+}
+
+.table-grid-cell {
+  min-width: 0;
+  padding: 8px 10px;
+  overflow: hidden;
+  border-right: 1px solid var(--app-border);
+  font-size: 12px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-grid-cell:last-child {
+  border-right: 0;
 }
 
 .column-map-table {

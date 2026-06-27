@@ -55,6 +55,44 @@ pub struct PixelDiff {
     pub bounding_rect: Option<ImageRect>,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImageReport {
+    pub statistics: ImageReportStatistics,
+    pub preview: Option<ImageReportPreview>,
+    pub metadata_differences: Vec<ImageMetadataDifference>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImageReportStatistics {
+    pub total_pixels: u64,
+    pub different_pixels: u64,
+    pub difference_ratio: f64,
+    pub bounding_rect: Option<ImageRect>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImageReportPreview {
+    pub kind: ImageReportPreviewKind,
+    pub path: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ImageReportPreviewKind {
+    DifferenceOverlay,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImageMetadataDifference {
+    pub field: String,
+    pub left: String,
+    pub right: String,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageRect {
@@ -143,6 +181,34 @@ pub fn scan_pixel_differences(
     scan_pixel_differences_with_options(left, right, width, height, PixelDiffOptions::default())
 }
 
+pub fn build_image_report(
+    left_metadata: ImageMetadata,
+    right_metadata: ImageMetadata,
+    diff: PixelDiff,
+    preview_path: Option<String>,
+) -> ImageReport {
+    let total_pixels = u64::from(left_metadata.width) * u64::from(left_metadata.height);
+    let metadata_differences = compare_image_metadata(&left_metadata, &right_metadata);
+
+    ImageReport {
+        statistics: ImageReportStatistics {
+            total_pixels,
+            different_pixels: diff.different_pixels,
+            difference_ratio: if total_pixels == 0 {
+                0.0
+            } else {
+                diff.different_pixels as f64 / total_pixels as f64
+            },
+            bounding_rect: diff.bounding_rect,
+        },
+        preview: preview_path.map(|path| ImageReportPreview {
+            kind: ImageReportPreviewKind::DifferenceOverlay,
+            path,
+        }),
+        metadata_differences,
+    }
+}
+
 pub fn scan_pixel_differences_with_options(
     left: &[u8],
     right: &[u8],
@@ -192,6 +258,57 @@ pub fn scan_pixel_differences_with_options(
         different_pixels,
         bounding_rect,
     })
+}
+
+fn compare_image_metadata(
+    left: &ImageMetadata,
+    right: &ImageMetadata,
+) -> Vec<ImageMetadataDifference> {
+    let mut differences = Vec::new();
+
+    push_metadata_difference(
+        &mut differences,
+        "Dimensions",
+        format!("{} x {}", left.width, left.height),
+        format!("{} x {}", right.width, right.height),
+    );
+    push_metadata_difference(
+        &mut differences,
+        "Format",
+        format!("{:?}", left.format),
+        format!("{:?}", right.format),
+    );
+    push_metadata_difference(
+        &mut differences,
+        "Color Depth",
+        format!("{}-bit", left.color_depth_bits),
+        format!("{}-bit", right.color_depth_bits),
+    );
+    push_metadata_difference(
+        &mut differences,
+        "Alpha",
+        left.color.has_alpha.to_string(),
+        right.color.has_alpha.to_string(),
+    );
+
+    differences
+}
+
+fn push_metadata_difference(
+    differences: &mut Vec<ImageMetadataDifference>,
+    field: &str,
+    left: String,
+    right: String,
+) {
+    if left == right {
+        return;
+    }
+
+    differences.push(ImageMetadataDifference {
+        field: field.to_owned(),
+        left,
+        right,
+    });
 }
 
 fn pixels_equal_with_options(left: &[u8], right: &[u8], options: &PixelDiffOptions) -> bool {
@@ -524,6 +641,68 @@ mod tests {
         .expect("scan should work");
 
         assert_eq!(diff.different_pixels, 1);
+    }
+
+    #[test]
+    fn builds_image_report_with_diff_statistics_and_preview() {
+        let left_metadata = ImageMetadata::new(
+            ImageFormat::Png,
+            4,
+            3,
+            ImageColorInfo {
+                bits_per_channel: 8,
+                channel_count: 4,
+                has_alpha: true,
+            },
+        );
+        let right_metadata = ImageMetadata::new(
+            ImageFormat::Png,
+            4,
+            3,
+            ImageColorInfo {
+                bits_per_channel: 8,
+                channel_count: 3,
+                has_alpha: false,
+            },
+        );
+        let diff = PixelDiff {
+            different_pixels: 2,
+            bounding_rect: Some(ImageRect {
+                x: 1,
+                y: 1,
+                width: 2,
+                height: 1,
+            }),
+        };
+
+        let report = build_image_report(
+            left_metadata,
+            right_metadata,
+            diff,
+            Some("previews/image-diff.png".to_owned()),
+        );
+
+        assert_eq!(report.statistics.total_pixels, 12);
+        assert_eq!(report.statistics.different_pixels, 2);
+        assert_eq!(report.statistics.difference_ratio, 2.0 / 12.0);
+        assert_eq!(
+            report
+                .statistics
+                .bounding_rect
+                .expect("rect expected")
+                .width,
+            2
+        );
+        assert_eq!(
+            report.preview,
+            Some(ImageReportPreview {
+                kind: ImageReportPreviewKind::DifferenceOverlay,
+                path: "previews/image-diff.png".to_owned(),
+            })
+        );
+        assert_eq!(report.metadata_differences.len(), 2);
+        assert_eq!(report.metadata_differences[0].field, "Color Depth");
+        assert_eq!(report.metadata_differences[1].field, "Alpha");
     }
 
     fn encode_fixture_image(format: image::ImageFormat) -> Vec<u8> {

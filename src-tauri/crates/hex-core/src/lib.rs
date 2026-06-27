@@ -85,6 +85,26 @@ pub enum HexFindError {
     InvalidHexQuery(String),
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum HexReplaceValue {
+    Text(String),
+    Hex(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HexReplaceResult {
+    pub bytes: Vec<u8>,
+    pub matches: Vec<HexFindMatch>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum HexReplaceError {
+    Find(HexFindError),
+    LengthMismatch { find_len: u64, replace_len: u64 },
+}
+
 pub fn read_hex_block(source: &[u8], offset: u64, length: usize) -> HexBlock {
     let total_len = source.len() as u64;
     let start = usize::try_from(offset)
@@ -229,18 +249,59 @@ pub fn find_hex_matches(
     source: &[u8],
     query: HexFindQuery,
 ) -> Result<Vec<HexFindMatch>, HexFindError> {
-    let pattern = match query {
-        HexFindQuery::Text(value) => {
-            if value.is_empty() {
-                return Err(HexFindError::EmptyQuery);
-            }
-
-            value.into_bytes()
-        }
-        HexFindQuery::Hex(value) => parse_hex_query(&value)?,
-    };
+    let pattern = find_query_bytes(query)?;
 
     Ok(find_byte_pattern(source, &pattern))
+}
+
+pub fn replace_hex_matches(
+    source: &[u8],
+    find: HexFindQuery,
+    replace: HexReplaceValue,
+) -> Result<HexReplaceResult, HexReplaceError> {
+    let find_pattern = find_query_bytes(find).map_err(HexReplaceError::Find)?;
+    let replace_pattern = replace_value_bytes(replace).map_err(HexReplaceError::Find)?;
+
+    if find_pattern.len() != replace_pattern.len() {
+        return Err(HexReplaceError::LengthMismatch {
+            find_len: find_pattern.len() as u64,
+            replace_len: replace_pattern.len() as u64,
+        });
+    }
+
+    let matches = find_byte_pattern(source, &find_pattern);
+    let mut bytes = source.to_vec();
+
+    for matched in &matches {
+        let start = matched.offset as usize;
+        let end = start + replace_pattern.len();
+
+        bytes[start..end].copy_from_slice(&replace_pattern);
+    }
+
+    Ok(HexReplaceResult { bytes, matches })
+}
+
+fn find_query_bytes(query: HexFindQuery) -> Result<Vec<u8>, HexFindError> {
+    match query {
+        HexFindQuery::Text(value) => non_empty_bytes(value),
+        HexFindQuery::Hex(value) => parse_hex_query(&value),
+    }
+}
+
+fn replace_value_bytes(value: HexReplaceValue) -> Result<Vec<u8>, HexFindError> {
+    match value {
+        HexReplaceValue::Text(value) => non_empty_bytes(value),
+        HexReplaceValue::Hex(value) => parse_hex_query(&value),
+    }
+}
+
+fn non_empty_bytes(value: String) -> Result<Vec<u8>, HexFindError> {
+    if value.is_empty() {
+        return Err(HexFindError::EmptyQuery);
+    }
+
+    Ok(value.into_bytes())
 }
 
 fn find_byte_pattern(source: &[u8], pattern: &[u8]) -> Vec<HexFindMatch> {
@@ -317,6 +378,23 @@ impl fmt::Display for HexFindError {
 }
 
 impl std::error::Error for HexFindError {}
+
+impl fmt::Display for HexReplaceError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Find(error) => write!(formatter, "{error}"),
+            Self::LengthMismatch {
+                find_len,
+                replace_len,
+            } => write!(
+                formatter,
+                "hex replacement length {replace_len} does not match find length {find_len}"
+            ),
+        }
+    }
+}
+
+impl std::error::Error for HexReplaceError {}
 
 #[cfg(test)]
 mod tests {
@@ -527,6 +605,75 @@ mod tests {
 
         assert_eq!(text_error, HexFindError::EmptyQuery);
         assert_eq!(hex_error, HexFindError::EmptyQuery);
+    }
+
+    #[test]
+    fn replaces_all_equal_length_hex_matches() {
+        let source = [0x10, 0xAB, 0xCD, 0x20, 0xAB, 0xCD, 0x30];
+        let result = replace_hex_matches(
+            &source,
+            HexFindQuery::Hex("AB CD".to_owned()),
+            HexReplaceValue::Hex("FE DC".to_owned()),
+        )
+        .expect("equal length replacement should work");
+
+        assert_eq!(result.bytes, vec![0x10, 0xFE, 0xDC, 0x20, 0xFE, 0xDC, 0x30]);
+        assert_eq!(
+            result.matches,
+            vec![
+                HexFindMatch {
+                    offset: 1,
+                    length: 2,
+                },
+                HexFindMatch {
+                    offset: 4,
+                    length: 2,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn replaces_equal_length_text_matches() {
+        let result = replace_hex_matches(
+            b"cat dog cat",
+            HexFindQuery::Text("cat".to_owned()),
+            HexReplaceValue::Text("hen".to_owned()),
+        )
+        .expect("equal length text replacement should work");
+
+        assert_eq!(result.bytes, b"hen dog hen");
+        assert_eq!(
+            result.matches,
+            vec![
+                HexFindMatch {
+                    offset: 0,
+                    length: 3,
+                },
+                HexFindMatch {
+                    offset: 8,
+                    length: 3,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn rejects_replacements_that_change_byte_length() {
+        let error = replace_hex_matches(
+            b"ABAB",
+            HexFindQuery::Text("AB".to_owned()),
+            HexReplaceValue::Text("XYZ".to_owned()),
+        )
+        .expect_err("length changing replacement should be rejected");
+
+        assert_eq!(
+            error,
+            HexReplaceError::LengthMismatch {
+                find_len: 2,
+                replace_len: 3,
+            }
+        );
     }
 
     fn unique_temp_dir(prefix: &str) -> std::path::PathBuf {

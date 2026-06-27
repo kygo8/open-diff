@@ -68,6 +68,23 @@ pub struct BinaryCompareResult {
     pub first_difference_offset: Option<u64>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderTextRuleCompareOptions {
+    pub ignore_whitespace: bool,
+    pub ignore_case: bool,
+    pub ignore_line_endings: bool,
+    pub ignore_regexes: Vec<String>,
+    pub algorithm: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderTextRuleCompareResult {
+    pub status: FolderCompareStatus,
+    pub different_lines: usize,
+}
+
 impl FolderScanNode {
     pub fn new_directory(
         relative_path: impl Into<String>,
@@ -239,6 +256,32 @@ pub fn compare_binary_streams(
                 first_difference_offset: None,
             });
         }
+    }
+}
+
+pub fn compare_text_content_with_rules(
+    left: &str,
+    right: &str,
+    options: &FolderTextRuleCompareOptions,
+) -> FolderTextRuleCompareResult {
+    let response = diff_core::diff_text(&shared_types::TextDiffRequest {
+        left: left.to_owned(),
+        right: right.to_owned(),
+        ignore_whitespace: options.ignore_whitespace,
+        ignore_case: options.ignore_case,
+        ignore_line_endings: options.ignore_line_endings,
+        ignore_regexes: options.ignore_regexes.clone(),
+        algorithm: options.algorithm.clone(),
+    });
+    let different_lines = response.stats.added + response.stats.deleted + response.stats.modified;
+
+    FolderTextRuleCompareResult {
+        status: if different_lines == 0 {
+            FolderCompareStatus::Same
+        } else {
+            FolderCompareStatus::Different
+        },
+        different_lines,
     }
 }
 
@@ -644,6 +687,24 @@ mod tests {
         assert_eq!(different.first_difference_offset, Some(3));
         assert_eq!(length_mismatch.status, FolderCompareStatus::Different);
         assert_eq!(length_mismatch.first_difference_offset, Some(3));
+    }
+
+    #[test]
+    fn compares_text_content_with_file_format_rules() {
+        let result = compare_text_content_with_rules(
+            "timestamp=100\nstatus=ok",
+            "timestamp=200\nstatus=ok",
+            &FolderTextRuleCompareOptions {
+                ignore_whitespace: false,
+                ignore_case: false,
+                ignore_line_endings: false,
+                ignore_regexes: vec!["timestamp=\\d+".to_owned()],
+                algorithm: Some("myers".to_owned()),
+            },
+        );
+
+        assert_eq!(result.status, FolderCompareStatus::Same);
+        assert_eq!(result.different_lines, 0);
     }
 
     fn metadata(kind: VfsEntryKind, name: &str, extension: Option<&str>, size: u64) -> VfsMetadata {

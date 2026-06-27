@@ -5,6 +5,7 @@ members = [
   "crates/file-core",
   "crates/folder-core",
   "crates/hex-core",
+  "crates/image-core",
   "crates/job-core",
   "crates/session-core",
   "crates/sync-core",

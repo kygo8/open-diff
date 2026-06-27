@@ -1527,6 +1527,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "image-core"
+version = "1.0.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"

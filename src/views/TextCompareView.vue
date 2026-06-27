@@ -17,6 +17,10 @@ const rightUndoStack = ref<string[]>([])
 const rightRedoStack = ref<string[]>([])
 const currentDiffIndex = ref(0)
 const findQuery = ref('')
+const replaceQuery = ref('')
+const findRegex = ref(false)
+const findCaseSensitive = ref(false)
+const findWholeWord = ref(false)
 const currentFindIndex = ref(0)
 
 const statsLabel = computed(() => {
@@ -33,19 +37,18 @@ const lineEndingStatus = computed(
 const dirtyStatus = computed(() => (dirty.value ? 'Unsaved edits' : 'No edits'))
 const diffRows = computed(() => result.value?.lines.filter((line) => line.kind !== 'equal') ?? [])
 const findMatches = computed(() => {
-  const query = findQuery.value.toLocaleLowerCase()
+  const matcher = createFindMatcher()
 
-  if (!query) {
+  if (!matcher) {
     return []
   }
 
   return [left.value, right.value].flatMap((content, sideIndex) =>
-    content
-      .toLocaleLowerCase()
-      .split('\n')
-      .flatMap((line, lineIndex) =>
-        line.includes(query) ? [{ sideIndex, lineIndex, columnIndex: line.indexOf(query) }] : [],
-      ),
+    content.split('\n').flatMap((line, lineIndex) => {
+      const columnIndex = matcher.findIndex(line)
+
+      return columnIndex >= 0 ? [{ sideIndex, lineIndex, columnIndex }] : []
+    }),
   )
 })
 const findStatus = computed(() => {
@@ -119,6 +122,16 @@ function updateFindQuery(event: Event): void {
   currentFindIndex.value = 0
 }
 
+function updateReplaceQuery(event: Event): void {
+  const target = event.currentTarget
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  replaceQuery.value = target.value
+}
+
 function findNext(): void {
   if (findMatches.value.length === 0) {
     currentFindIndex.value = 0
@@ -138,6 +151,19 @@ function findPrevious(): void {
 
   currentFindIndex.value =
     (currentFindIndex.value - 1 + findMatches.value.length) % findMatches.value.length
+}
+
+function replaceAll(): void {
+  const matcher = createFindMatcher()
+
+  if (!matcher) {
+    return
+  }
+
+  left.value = matcher.replace(left.value, replaceQuery.value)
+  right.value = matcher.replace(right.value, replaceQuery.value)
+  dirty.value = true
+  currentFindIndex.value = 0
 }
 
 function undoLeft(): void {
@@ -202,6 +228,53 @@ function goToNextDiff(): void {
   }
 
   currentDiffIndex.value = Math.min(currentDiffIndex.value + 1, diffRows.value.length - 1)
+}
+
+interface FindMatcher {
+  findIndex: (value: string) => number
+  replace: (value: string, replacement: string) => string
+}
+
+function createFindMatcher(): FindMatcher | null {
+  if (!findQuery.value) {
+    return null
+  }
+
+  if (findRegex.value) {
+    return createRegexMatcher()
+  }
+
+  return createPlainTextMatcher()
+}
+
+function createRegexMatcher(): FindMatcher | null {
+  try {
+    const expression = new RegExp(findQuery.value, findCaseSensitive.value ? 'g' : 'gi')
+
+    return {
+      findIndex: (value: string): number => value.search(expression),
+      replace: (value: string, replacement: string): string =>
+        value.replace(expression, replacement),
+    }
+  } catch {
+    return null
+  }
+}
+
+function createPlainTextMatcher(): FindMatcher {
+  const flags = findCaseSensitive.value ? 'g' : 'gi'
+  const escaped = escapeRegExp(findQuery.value)
+  const source = findWholeWord.value ? `\\b${escaped}\\b` : escaped
+  const expression = new RegExp(source, flags)
+
+  return {
+    findIndex: (value: string): number => value.search(expression),
+    replace: (value: string, replacement: string): string => value.replace(expression, replacement),
+  }
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 </script>
 
@@ -300,6 +373,38 @@ function goToNextDiff(): void {
         :value="findQuery"
         @input="updateFindQuery"
       />
+      <input
+        class="find-input"
+        data-testid="replace-query"
+        type="text"
+        placeholder="Replace"
+        :value="replaceQuery"
+        @input="updateReplaceQuery"
+      />
+      <label class="find-option">
+        <input
+          v-model="findRegex"
+          data-testid="find-regex"
+          type="checkbox"
+        />
+        Regex
+      </label>
+      <label class="find-option">
+        <input
+          v-model="findCaseSensitive"
+          data-testid="find-case-sensitive"
+          type="checkbox"
+        />
+        Case
+      </label>
+      <label class="find-option">
+        <input
+          v-model="findWholeWord"
+          data-testid="find-whole-word"
+          type="checkbox"
+        />
+        Word
+      </label>
       <button
         type="button"
         class="toolbar-button"
@@ -323,6 +428,15 @@ function goToNextDiff(): void {
         data-testid="find-status"
         >{{ findStatus }}</span
       >
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="replace-all"
+        :disabled="findMatches.length === 0"
+        @click="replaceAll"
+      >
+        Replace All
+      </button>
     </div>
 
     <NAlert
@@ -415,6 +529,14 @@ function goToNextDiff(): void {
   border-radius: 6px;
   background: var(--app-surface);
   color: var(--app-text);
+  font-size: 12px;
+}
+
+.find-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--app-text-muted);
   font-size: 12px;
 }
 

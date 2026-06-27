@@ -201,4 +201,25 @@ describe('TextCompareView', () => {
 
     expect(wrapper.find('[data-testid="find-status"]').text()).toContain('1 / 7')
   })
+
+  it('replaces matches with regex search enabled', async () => {
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="find-query"]').setValue('line\\s+(one|two)')
+    await wrapper.find('[data-testid="replace-query"]').setValue('row')
+    await wrapper.find('[data-testid="find-regex"]').setValue(true)
+    await wrapper.find('[data-testid="replace-all"]').trigger('click')
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+
+    const lastCall = vi.mocked(diffText).mock.lastCall
+
+    expect(lastCall).toBeDefined()
+
+    const [lastRequest] = lastCall as [TextDiffRequest]
+
+    expect(lastRequest.left).toContain('row')
+    expect(lastRequest.left).not.toContain('line one')
+    expect(lastRequest.left).not.toContain('line two')
+    expect(wrapper.find('[data-testid="dirty-status"]').text()).toContain('No edits')
+  })
 })

@@ -125,6 +125,7 @@ const virtualOverscanRows = 4
 const scrollTop = ref(0)
 const selectedRowId = ref<string>()
 const lastOpenAction = ref<FileOpenAction>()
+const lastCompareAction = ref<string>()
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -325,6 +326,31 @@ function openSelectedFileWithAssociatedApplication(): void {
   recordOpenAction(createAssociatedApplicationOpenAction(selectedFilePath.value))
 }
 
+function quickCompareSelectedFile(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  lastCompareAction.value = `Quick Compare -> ${selectedFilePath.value}`
+}
+
+function compareSelectedFileToCounterpart(): void {
+  const row = selectedRow.value
+
+  if (row?.kind !== 'file') {
+    return
+  }
+
+  const sourcePath = row.leftPath ?? row.rightPath
+  const targetPath = row.rightPath ?? row.leftPath
+
+  if (!sourcePath || !targetPath) {
+    return
+  }
+
+  lastCompareAction.value = `Compare To -> ${sourcePath} => ${targetPath}`
+}
+
 function handleTreeScroll(event: Event): void {
   scrollTop.value = (event.currentTarget as HTMLElement).scrollTop
 }
@@ -383,6 +409,24 @@ function handleTreeScroll(event: Event): void {
           @click="openSelectedFileWithAssociatedApplication"
         >
           Associated App
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="quick-compare-selected-file"
+          :disabled="!selectedFilePath"
+          @click="quickCompareSelectedFile"
+        >
+          Quick Compare
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="compare-to-selected-file"
+          :disabled="!selectedFilePath"
+          @click="compareSelectedFileToCounterpart"
+        >
+          Compare To
         </NButton>
         <NButton
           size="small"
@@ -462,6 +506,13 @@ function handleTreeScroll(event: Event): void {
       data-testid="folder-open-action-status"
     >
       {{ lastOpenAction.label }} -> {{ lastOpenAction.path }}
+    </section>
+    <section
+      v-if="lastCompareAction"
+      class="folder-action-status"
+      data-testid="folder-compare-action-status"
+    >
+      {{ lastCompareAction }}
     </section>
 
     <section

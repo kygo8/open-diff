@@ -87,6 +87,30 @@ pub struct FolderTextRuleCompareResult {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub enum QuickCompareMode {
+    Text,
+    Binary,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct QuickCompareResult {
+    pub mode: QuickCompareMode,
+    pub status: FolderCompareStatus,
+    pub different_units: usize,
+    pub first_difference_offset: Option<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CompareToResult {
+    pub source_path: String,
+    pub target_path: String,
+    pub quick: QuickCompareResult,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct FileFilters {
     pub include: Vec<String>,
     pub exclude: Vec<String>,
@@ -317,6 +341,50 @@ pub fn compare_text_content_with_rules(
             FolderCompareStatus::Different
         },
         different_lines,
+    }
+}
+
+pub fn quick_compare_text(
+    left: &str,
+    right: &str,
+    options: &FolderTextRuleCompareOptions,
+) -> QuickCompareResult {
+    let result = compare_text_content_with_rules(left, right, options);
+
+    QuickCompareResult {
+        mode: QuickCompareMode::Text,
+        status: result.status,
+        different_units: result.different_lines,
+        first_difference_offset: None,
+    }
+}
+
+pub fn quick_compare_binary(
+    left: impl Read,
+    right: impl Read,
+    chunk_size: usize,
+) -> io::Result<QuickCompareResult> {
+    let result = compare_binary_streams(left, right, chunk_size)?;
+
+    Ok(QuickCompareResult {
+        mode: QuickCompareMode::Binary,
+        status: result.status,
+        different_units: usize::from(result.first_difference_offset.is_some()),
+        first_difference_offset: result.first_difference_offset,
+    })
+}
+
+pub fn compare_text_to_target(
+    source_path: impl Into<String>,
+    target_path: impl Into<String>,
+    source: &str,
+    target: &str,
+    options: &FolderTextRuleCompareOptions,
+) -> CompareToResult {
+    CompareToResult {
+        source_path: source_path.into(),
+        target_path: target_path.into(),
+        quick: quick_compare_text(source, target, options),
     }
 }
 
@@ -811,6 +879,52 @@ mod tests {
 
         assert_eq!(result.status, FolderCompareStatus::Same);
         assert_eq!(result.different_lines, 0);
+    }
+
+    #[test]
+    fn quick_compare_reports_text_and_binary_status_for_selected_files() {
+        let text_result = quick_compare_text(
+            "line one\nline two",
+            "line one\nline 2",
+            &FolderTextRuleCompareOptions {
+                ignore_whitespace: false,
+                ignore_case: false,
+                ignore_line_endings: false,
+                ignore_regexes: Vec::new(),
+                algorithm: Some("myers".to_owned()),
+            },
+        );
+        let binary_result =
+            quick_compare_binary(&b"abcdef"[..], &b"abcdef"[..], 3).expect("binary compare works");
+
+        assert_eq!(text_result.mode, QuickCompareMode::Text);
+        assert_eq!(text_result.status, FolderCompareStatus::Different);
+        assert_eq!(text_result.different_units, 1);
+        assert_eq!(binary_result.mode, QuickCompareMode::Binary);
+        assert_eq!(binary_result.status, FolderCompareStatus::Same);
+        assert_eq!(binary_result.different_units, 0);
+    }
+
+    #[test]
+    fn compare_to_preserves_selected_source_target_and_status() {
+        let result = compare_text_to_target(
+            "D:/workspace/left/README.md",
+            "D:/workspace/archive/README.md",
+            "same\ncontent",
+            "same\nchanged",
+            &FolderTextRuleCompareOptions {
+                ignore_whitespace: false,
+                ignore_case: false,
+                ignore_line_endings: false,
+                ignore_regexes: Vec::new(),
+                algorithm: Some("myers".to_owned()),
+            },
+        );
+
+        assert_eq!(result.source_path, "D:/workspace/left/README.md");
+        assert_eq!(result.target_path, "D:/workspace/archive/README.md");
+        assert_eq!(result.quick.status, FolderCompareStatus::Different);
+        assert_eq!(result.quick.mode, QuickCompareMode::Text);
     }
 
     #[test]

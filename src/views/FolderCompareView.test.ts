@@ -191,4 +191,29 @@ describe('FolderCompareView', () => {
       'Open With Associated Application -> D:/workspace/left/README.md',
     )
   })
+
+  it('starts quick compare and compare-to actions for the selected folder file', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-row-id="src-main"]').trigger('click')
+    await wrapper.find('[data-testid="quick-compare-selected-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Quick Compare -> D:/workspace/left/src/main.ts')
+
+    await wrapper.find('[data-testid="compare-to-selected-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain(
+      'Compare To -> D:/workspace/left/src/main.ts => D:/workspace/right/src/main.ts',
+    )
+  })
 })

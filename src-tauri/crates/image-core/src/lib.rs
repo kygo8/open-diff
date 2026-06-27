@@ -425,6 +425,29 @@ mod tests {
         assert_eq!(diff.different_pixels, 1);
     }
 
+    #[test]
+    fn can_ignore_alpha_channel_differences() {
+        let left = vec![100, 100, 100, 255];
+        let right = vec![100, 100, 100, 128];
+
+        let strict_diff = scan_pixel_differences(&left, &right, 1, 1).expect("scan should work");
+        let ignored_alpha_diff = scan_pixel_differences_with_options(
+            &left,
+            &right,
+            1,
+            1,
+            PixelDiffOptions {
+                rgb_tolerance: 0,
+                compare_alpha: false,
+            },
+        )
+        .expect("scan should work");
+
+        assert_eq!(strict_diff.different_pixels, 1);
+        assert_eq!(ignored_alpha_diff.different_pixels, 0);
+        assert_eq!(ignored_alpha_diff.bounding_rect, None);
+    }
+
     fn encode_fixture_image(format: image::ImageFormat) -> Vec<u8> {
         let mut bytes = std::io::Cursor::new(Vec::new());
 

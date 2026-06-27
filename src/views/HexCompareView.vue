@@ -19,6 +19,7 @@ const rightViewport = ref<HTMLElement | null>(null)
 const bytes = Array.from({ length: 64 }, (_, index) => 0x41 + (index % 26))
 const differentOffsets = new Set([1])
 const viewportWidth = ref(640)
+const diffOnly = ref(false)
 const bytesPerRow = computed(() => (viewportWidth.value < 480 ? 8 : 16))
 
 const hexRows = computed<HexRow[]>(() =>
@@ -42,6 +43,14 @@ const hexRows = computed<HexRow[]>(() =>
     }
   }),
 )
+
+const visibleHexRows = computed(() => {
+  if (!diffOnly.value) {
+    return hexRows.value
+  }
+
+  return hexRows.value.filter((row) => row.cells.some((cell) => cell.different))
+})
 
 function syncHexScroll(source: 'left' | 'right', event: Event): void {
   const sourceElement = event.currentTarget
@@ -80,6 +89,14 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
           data-testid="hex-width-control"
         />
       </label>
+      <label class="hex-toggle">
+        <input
+          v-model="diffOnly"
+          type="checkbox"
+          data-testid="hex-diff-only-toggle"
+        />
+        <span>Differences only</span>
+      </label>
       <strong data-testid="hex-bytes-per-row">{{ bytesPerRow }} bytes / row</strong>
     </section>
 
@@ -93,7 +110,7 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
           @scroll="syncHexScroll('left', $event)"
         >
           <div
-            v-for="row in hexRows"
+            v-for="row in visibleHexRows"
             :key="`left-${row.offset}`"
             class="hex-row"
             data-testid="hex-row"
@@ -137,7 +154,7 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
           @scroll="syncHexScroll('right', $event)"
         >
           <div
-            v-for="row in hexRows"
+            v-for="row in visibleHexRows"
             :key="`right-${row.offset}`"
             class="hex-row"
           >

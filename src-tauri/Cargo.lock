@@ -1288,6 +1288,7 @@ name = "hex-core"
 version = "1.0.0"
 dependencies = [
  "serde",
+ "vfs-core",
 ]
 
 [[package]]

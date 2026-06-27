@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+use std::fmt;
+use vfs_core::{LocalVfs, VfsPath, VfsProvider};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -41,6 +43,26 @@ pub struct HexViewCell {
     pub hex: String,
     pub ascii: String,
     pub different: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HexByteEdit {
+    pub offset: u64,
+    pub value: u8,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HexSaveResult {
+    pub bytes_written: u64,
+    pub backup_path: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum HexEditError {
+    OffsetOutOfRange { offset: u64, len: u64 },
+    Storage(String),
 }
 
 pub fn read_hex_block(source: &[u8], offset: u64, length: usize) -> HexBlock {
@@ -130,6 +152,43 @@ pub fn scan_binary_differences(left: &[u8], right: &[u8]) -> BinaryDiff {
     }
 }
 
+pub fn apply_hex_byte_edits(source: &[u8], edits: &[HexByteEdit]) -> Result<Vec<u8>, HexEditError> {
+    let mut edited = source.to_vec();
+    let len = edited.len() as u64;
+
+    for edit in edits {
+        let index = usize::try_from(edit.offset)
+            .ok()
+            .filter(|index| *index < edited.len())
+            .ok_or(HexEditError::OffsetOutOfRange {
+                offset: edit.offset,
+                len,
+            })?;
+
+        edited[index] = edit.value;
+    }
+
+    Ok(edited)
+}
+
+pub fn save_hex_byte_edits(
+    path: impl AsRef<str>,
+    edits: &[HexByteEdit],
+) -> Result<HexSaveResult, HexEditError> {
+    let path = VfsPath::new(path.as_ref().to_owned());
+    let mut vfs = LocalVfs::new();
+    let original = vfs.read(&path).map_err(storage_error)?;
+    let edited = apply_hex_byte_edits(&original, edits)?;
+    let backup = vfs
+        .write_with_backup(&path, &edited)
+        .map_err(storage_error)?;
+
+    Ok(HexSaveResult {
+        bytes_written: edited.len() as u64,
+        backup_path: backup.map(|path| path.as_str().to_owned()),
+    })
+}
+
 fn ascii_byte_text(byte: u8) -> String {
     if byte.is_ascii_graphic() || byte == b' ' {
         char::from(byte).to_string()
@@ -145,6 +204,26 @@ fn diff_contains_offset(diff: &BinaryDiff, offset: u64) -> bool {
         offset >= range.offset && offset < range.offset + range_len
     })
 }
+
+fn storage_error(error: impl fmt::Debug) -> HexEditError {
+    HexEditError::Storage(format!("{error:?}"))
+}
+
+impl fmt::Display for HexEditError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::OffsetOutOfRange { offset, len } => {
+                write!(
+                    formatter,
+                    "hex edit offset {offset} is outside file length {len}"
+                )
+            }
+            Self::Storage(error) => write!(formatter, "{error}"),
+        }
+    }
+}
+
+impl std::error::Error for HexEditError {}
 
 #[cfg(test)]
 mod tests {
@@ -220,5 +299,81 @@ mod tests {
         assert_eq!(window.cells[1].hex, "42");
         assert!(window.cells[1].different);
         assert_eq!(window.cells[2].ascii, ".");
+    }
+
+    #[test]
+    fn applies_byte_edits_at_requested_offsets() {
+        let source = b"ABCDEF";
+        let edits = vec![
+            HexByteEdit {
+                offset: 1,
+                value: 0x78,
+            },
+            HexByteEdit {
+                offset: 4,
+                value: 0x79,
+            },
+        ];
+
+        let edited = apply_hex_byte_edits(source, &edits).expect("edits should apply");
+
+        assert_eq!(edited, b"AxCDyF");
+    }
+
+    #[test]
+    fn rejects_byte_edits_outside_source_length() {
+        let error = apply_hex_byte_edits(
+            b"ABC",
+            &[HexByteEdit {
+                offset: 3,
+                value: 0x78,
+            }],
+        )
+        .expect_err("offset at len should be rejected");
+
+        assert_eq!(error, HexEditError::OffsetOutOfRange { offset: 3, len: 3 });
+    }
+
+    #[test]
+    fn saves_byte_edits_with_backup() {
+        let root = unique_temp_dir("hex-save");
+        let path = root.join("sample.bin");
+        std::fs::write(&path, b"ABCDEF").expect("fixture should be writable");
+        let edits = vec![HexByteEdit {
+            offset: 2,
+            value: 0x78,
+        }];
+
+        let result =
+            save_hex_byte_edits(path.to_string_lossy().as_ref(), &edits).expect("save should work");
+
+        assert_eq!(
+            std::fs::read(&path).expect("edited file should be readable"),
+            b"ABxDEF"
+        );
+        assert_eq!(result.bytes_written, 6);
+        let backup_path = result
+            .backup_path
+            .expect("existing file should have backup");
+        assert_eq!(
+            std::fs::read(backup_path).expect("backup should be readable"),
+            b"ABCDEF"
+        );
+
+        std::fs::remove_dir_all(root).expect("temp directory should be removable");
+    }
+
+    fn unique_temp_dir(prefix: &str) -> std::path::PathBuf {
+        let mut dir = std::env::temp_dir();
+        dir.push(format!(
+            "open-diff-{prefix}-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("system time should be after unix epoch")
+                .as_nanos()
+        ));
+        std::fs::create_dir_all(&dir).expect("temp directory should be created");
+        dir
     }
 }

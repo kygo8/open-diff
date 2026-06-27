@@ -216,4 +216,29 @@ describe('FolderCompareView', () => {
       'Compare To -> D:/workspace/left/src/main.ts => D:/workspace/right/src/main.ts',
     )
   })
+
+  it('manually aligns an orphan with a selected counterpart and breaks the alignment', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-row-id="notes"]').trigger('click')
+    await wrapper.find('[data-testid="align-with-target"]').setValue('release-summary')
+    await wrapper.find('[data-testid="align-with-selected-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain('release-notes.md aligned with release-summary.md')
+
+    await wrapper.find('[data-testid="break-selected-alignment"]').trigger('click')
+
+    expect(wrapper.text()).not.toContain('release-notes.md aligned with release-summary.md')
+    expect(wrapper.text()).toContain('Alignment cleared for release-notes.md')
+  })
 })

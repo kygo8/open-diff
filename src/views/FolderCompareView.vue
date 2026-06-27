@@ -37,6 +37,9 @@ const displayStatusOptions: { statuses: FolderStatus[]; label: string; testId: s
   { statuses: ['Different'], label: 'Different', testId: 'different' },
   { statuses: ['Left only', 'Right only'], label: 'Orphans', testId: 'orphans' },
 ]
+const alignWithTargetId = ref('')
+const manualAlignments = ref<Record<string, string>>({})
+const lastAlignmentAction = ref<string>()
 const generatedRows: FolderTreeRow[] = Array.from({ length: 180 }, (_, index): FolderTreeRow => {
   const number = index + 1
   const padded = String(number).padStart(3, '0')
@@ -112,6 +115,16 @@ const rows = ref<FolderTreeRow[]>([
     status: 'Left only',
     kind: 'file',
   },
+  {
+    id: 'release-summary',
+    depth: 0,
+    rightName: 'release-summary.md',
+    rightSize: '3.8 KB',
+    rightModified: '2026-06-23 11:40',
+    rightPath: 'D:/workspace/right/release-summary.md',
+    status: 'Right only',
+    kind: 'file',
+  },
   ...generatedRows,
 ])
 const expandedDirectoryIds = ref<Set<string>>(new Set(['src']))
@@ -144,6 +157,14 @@ const selectedFilePath = computed(() => {
 
   return row.leftPath ?? row.rightPath
 })
+const alignWithCandidates = computed(() =>
+  rows.value.filter(
+    (row) =>
+      row.kind === 'file' &&
+      row.id !== selectedRowId.value &&
+      (row.status === 'Left only' || row.status === 'Right only'),
+  ),
+)
 const visibleRows = computed(() =>
   rows.value.filter(
     (row) =>
@@ -296,6 +317,7 @@ function isExpanded(row: FolderTreeRow): boolean {
 
 function selectRow(row: FolderTreeRow): void {
   selectedRowId.value = row.id
+  alignWithTargetId.value = ''
 }
 
 function recordOpenAction(action: FileOpenAction): void {
@@ -349,6 +371,38 @@ function compareSelectedFileToCounterpart(): void {
   }
 
   lastCompareAction.value = `Compare To -> ${sourcePath} => ${targetPath}`
+}
+
+function displayName(row: FolderTreeRow): string {
+  return row.leftName ?? row.rightName ?? row.id
+}
+
+function alignSelectedFileWithTarget(): void {
+  const row = selectedRow.value
+  const target = rows.value.find((candidate) => candidate.id === alignWithTargetId.value)
+
+  if (!row || !target) {
+    return
+  }
+
+  manualAlignments.value = {
+    ...manualAlignments.value,
+    [row.id]: target.id,
+  }
+  lastAlignmentAction.value = `${displayName(row)} aligned with ${displayName(target)}`
+}
+
+function breakSelectedAlignment(): void {
+  const row = selectedRow.value
+
+  if (!row) {
+    return
+  }
+
+  manualAlignments.value = Object.fromEntries(
+    Object.entries(manualAlignments.value).filter(([rowId]) => rowId !== row.id),
+  )
+  lastAlignmentAction.value = `Alignment cleared for ${displayName(row)}`
 }
 
 function handleTreeScroll(event: Event): void {
@@ -500,6 +554,40 @@ function handleTreeScroll(event: Event): void {
       </div>
     </section>
 
+    <section class="manual-alignment-tools">
+      <select
+        v-model="alignWithTargetId"
+        data-testid="align-with-target"
+      >
+        <option value="">Select target</option>
+        <option
+          v-for="candidate in alignWithCandidates"
+          :key="candidate.id"
+          :value="candidate.id"
+        >
+          {{ displayName(candidate) }}
+        </option>
+      </select>
+      <NButton
+        size="small"
+        secondary
+        data-testid="align-with-selected-file"
+        :disabled="!selectedRowId || !alignWithTargetId"
+        @click="alignSelectedFileWithTarget"
+      >
+        Align With
+      </NButton>
+      <NButton
+        size="small"
+        secondary
+        data-testid="break-selected-alignment"
+        :disabled="!selectedRowId"
+        @click="breakSelectedAlignment"
+      >
+        Break Alignment
+      </NButton>
+    </section>
+
     <section
       v-if="lastOpenAction"
       class="folder-action-status"
@@ -513,6 +601,13 @@ function handleTreeScroll(event: Event): void {
       data-testid="folder-compare-action-status"
     >
       {{ lastCompareAction }}
+    </section>
+    <section
+      v-if="lastAlignmentAction"
+      class="folder-action-status"
+      data-testid="folder-alignment-action-status"
+    >
+      {{ lastAlignmentAction }}
     </section>
 
     <section
@@ -711,7 +806,8 @@ function handleTreeScroll(event: Event): void {
 }
 
 .column-config,
-.display-filters {
+.display-filters,
+.manual-alignment-tools {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -723,6 +819,21 @@ function handleTreeScroll(event: Event): void {
   align-items: center;
   gap: 6px;
   color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.manual-alignment-tools {
+  align-items: center;
+}
+
+.manual-alignment-tools select {
+  min-width: 220px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
   font-size: 12px;
 }
 

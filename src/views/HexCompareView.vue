@@ -5,12 +5,20 @@ interface HexRow {
   offset: string
   hex: string
   ascii: string
+  cells: HexCell[]
+}
+
+interface HexCell {
+  offset: string
+  hex: string
+  different: boolean
 }
 
 const leftViewport = ref<HTMLElement | null>(null)
 const rightViewport = ref<HTMLElement | null>(null)
 const bytes = Array.from({ length: 64 }, (_, index) => 0x41 + (index % 26))
 const bytesPerRow = 16
+const differentOffsets = new Set([1])
 
 const hexRows = computed<HexRow[]>(() =>
   Array.from({ length: Math.ceil(bytes.length / bytesPerRow) }, (_, rowIndex) => {
@@ -21,6 +29,15 @@ const hexRows = computed<HexRow[]>(() =>
       offset: rowOffset.toString(16).toUpperCase().padStart(8, '0'),
       hex: rowBytes.map((byte) => byte.toString(16).toUpperCase().padStart(2, '0')).join(' '),
       ascii: rowBytes.map((byte) => String.fromCharCode(byte)).join(''),
+      cells: rowBytes.map((byte, byteIndex) => {
+        const absoluteOffset = rowOffset + byteIndex
+
+        return {
+          offset: absoluteOffset.toString(16).toUpperCase().padStart(8, '0'),
+          hex: byte.toString(16).toUpperCase().padStart(2, '0'),
+          different: differentOffsets.has(absoluteOffset),
+        }
+      }),
     }
   }),
 )
@@ -75,7 +92,15 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
               class="hex-bytes"
               data-testid="hex-byte-pane"
             >
-              {{ row.hex }}
+              <span
+                v-for="cell in row.cells"
+                :key="cell.offset"
+                class="hex-byte"
+                :class="{ 'hex-byte-different': cell.different }"
+                :data-testid="cell.different ? `hex-byte-diff-${cell.offset}` : undefined"
+              >
+                {{ cell.hex }}
+              </span>
             </span>
             <span
               class="hex-ascii"
@@ -220,6 +245,20 @@ h2 {
 
 .hex-offset {
   color: var(--app-text-muted);
+}
+
+.hex-byte {
+  display: inline-flex;
+  justify-content: center;
+  width: 22px;
+  margin-right: 6px;
+  border-radius: 4px;
+}
+
+.hex-byte-different {
+  background: var(--diff-modified-bg);
+  color: var(--diff-modified-fg);
+  font-weight: 700;
 }
 
 .hex-ascii {

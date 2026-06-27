@@ -33,4 +33,13 @@ describe('HexCompareView', () => {
 
     wrapper.unmount()
   })
+
+  it('marks changed bytes with a dedicated highlight class', () => {
+    const wrapper = mount(HexCompareView)
+    const changedByte = wrapper.find('[data-testid="hex-byte-diff-00000001"]')
+
+    expect(changedByte.exists()).toBe(true)
+    expect(changedByte.classes()).toContain('hex-byte-different')
+    expect(changedByte.text()).toBe('42')
+  })
 })

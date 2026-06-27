@@ -1,7 +1,8 @@
 use encoding_rs::GBK;
-use shared_types::ReadTextFileResponse;
+use shared_types::{FileStamp, ReadTextFileResponse};
 use std::fs;
 use std::path::Path;
+use std::time::UNIX_EPOCH;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FileReadError {
@@ -13,12 +14,38 @@ pub fn read_text_file(path: impl AsRef<Path>) -> Result<ReadTextFileResponse, Fi
     let path_ref = path.as_ref();
     let bytes = fs::read(path_ref).map_err(|error| FileReadError::Io(error.to_string()))?;
     let (text, encoding) = decode_text_bytes(&bytes)?;
+    let file_stamp = file_stamp(path_ref)?;
 
     Ok(ReadTextFileResponse {
         path: path_ref.display().to_string(),
         line_ending: detect_line_ending(&text).to_string(),
+        file_stamp,
         text,
         encoding,
+    })
+}
+
+pub fn check_text_file_changed(
+    path: impl AsRef<Path>,
+    previous_stamp: &FileStamp,
+) -> Result<bool, FileReadError> {
+    let current_stamp = file_stamp(path.as_ref())?;
+
+    Ok(&current_stamp != previous_stamp)
+}
+
+fn file_stamp(path: &Path) -> Result<FileStamp, FileReadError> {
+    let metadata = fs::metadata(path).map_err(|error| FileReadError::Io(error.to_string()))?;
+    let modified_at_ms = metadata
+        .modified()
+        .map_err(|error| FileReadError::Io(error.to_string()))?
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| FileReadError::Io(error.to_string()))?
+        .as_millis();
+
+    Ok(FileStamp {
+        size: metadata.len(),
+        modified_at_ms,
     })
 }
 
@@ -167,5 +194,27 @@ mod tests {
 
             fs::remove_file(path).expect("fixture should be removable");
         }
+    }
+
+    #[test]
+    fn detects_external_file_changes_from_stamp() {
+        let path = temp_file_path("external-change");
+
+        fs::write(&path, "before").expect("fixture should be writable");
+        let initial = read_text_file(&path).expect("text file should be readable");
+
+        fs::write(&path, "after with more bytes").expect("fixture should be writable");
+        let changed =
+            check_text_file_changed(&path, &initial.file_stamp).expect("file should be statable");
+
+        assert!(changed);
+
+        let latest = read_text_file(&path).expect("text file should be readable");
+        let unchanged =
+            check_text_file_changed(&path, &latest.file_stamp).expect("file should be statable");
+
+        assert!(!unchanged);
+
+        fs::remove_file(path).expect("fixture should be removable");
     }
 }

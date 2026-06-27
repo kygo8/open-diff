@@ -22,6 +22,14 @@ pub struct ReadTextFileResponse {
     pub text: String,
     pub encoding: String,
     pub line_ending: String,
+    pub file_stamp: FileStamp,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct FileStamp {
+    pub size: u64,
+    pub modified_at_ms: u128,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]

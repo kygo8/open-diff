@@ -42,4 +42,10 @@ export interface ReadTextFileResponse {
   text: string
   encoding: string
   lineEnding: string
+  fileStamp: FileStamp
+}
+
+export interface FileStamp {
+  size: number
+  modifiedAtMs: number
 }

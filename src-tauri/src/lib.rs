@@ -3,6 +3,7 @@ mod commands;
 pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
+            commands::check_text_file_changed,
             commands::diff_text,
             commands::read_text_file
         ])

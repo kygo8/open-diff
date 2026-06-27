@@ -1,4 +1,10 @@
 <script setup lang="ts">
+import {
+  createAssociatedApplicationOpenAction,
+  createDefaultOpenAction,
+  createOpenWithAction,
+  type FileOpenAction,
+} from '@/app/fileOpenActions'
 import { computed, ref } from 'vue'
 
 type FolderSide = 'left' | 'right'
@@ -15,6 +21,8 @@ interface FolderTreeRow {
   rightSize?: string
   leftModified?: string
   rightModified?: string
+  leftPath?: string
+  rightPath?: string
   status: FolderStatus
   kind: 'file' | 'directory'
 }
@@ -43,6 +51,8 @@ const generatedRows: FolderTreeRow[] = Array.from({ length: 180 }, (_, index): F
     rightSize: sizeLabel,
     leftModified: '2026-06-24 10:00',
     rightModified: '2026-06-24 10:00',
+    leftPath: `D:/workspace/left/generated-${padded}.log`,
+    rightPath: `D:/workspace/right/generated-${padded}.log`,
     status: 'Same',
     kind: 'file',
   }
@@ -58,6 +68,8 @@ const rows = ref<FolderTreeRow[]>([
     rightSize: '--',
     leftModified: '2026-06-20 10:12',
     rightModified: '2026-06-20 10:12',
+    leftPath: 'D:/workspace/left/src',
+    rightPath: 'D:/workspace/right/src',
     status: 'Same',
     kind: 'directory',
   },
@@ -71,6 +83,8 @@ const rows = ref<FolderTreeRow[]>([
     rightSize: '9.1 KB',
     leftModified: '2026-06-21 15:44',
     rightModified: '2026-06-22 09:08',
+    leftPath: 'D:/workspace/left/src/main.ts',
+    rightPath: 'D:/workspace/right/src/main.ts',
     status: 'Different',
     kind: 'file',
   },
@@ -83,6 +97,8 @@ const rows = ref<FolderTreeRow[]>([
     rightSize: '12.2 KB',
     leftModified: '2026-06-18 08:30',
     rightModified: '2026-06-18 08:30',
+    leftPath: 'D:/workspace/left/README.md',
+    rightPath: 'D:/workspace/right/README.md',
     status: 'Same',
     kind: 'file',
   },
@@ -92,6 +108,7 @@ const rows = ref<FolderTreeRow[]>([
     leftName: 'release-notes.md',
     leftSize: '3.5 KB',
     leftModified: '2026-06-23 11:02',
+    leftPath: 'D:/workspace/left/release-notes.md',
     status: 'Left only',
     kind: 'file',
   },
@@ -106,6 +123,8 @@ const rowHeight = 34
 const virtualViewportRows = 18
 const virtualOverscanRows = 4
 const scrollTop = ref(0)
+const selectedRowId = ref<string>()
+const lastOpenAction = ref<FileOpenAction>()
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -114,6 +133,16 @@ const summary = computed(() => ({
     .length,
 }))
 const directoryRows = computed(() => rows.value.filter((row) => row.kind === 'directory'))
+const selectedRow = computed(() => rows.value.find((row) => row.id === selectedRowId.value))
+const selectedFilePath = computed(() => {
+  const row = selectedRow.value
+
+  if (row?.kind !== 'file') {
+    return undefined
+  }
+
+  return row.leftPath ?? row.rightPath
+})
 const visibleRows = computed(() =>
   rows.value.filter(
     (row) =>
@@ -264,6 +293,38 @@ function isExpanded(row: FolderTreeRow): boolean {
   return expandedDirectoryIds.value.has(row.id)
 }
 
+function selectRow(row: FolderTreeRow): void {
+  selectedRowId.value = row.id
+}
+
+function recordOpenAction(action: FileOpenAction): void {
+  lastOpenAction.value = action
+}
+
+function openSelectedFile(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  recordOpenAction(createDefaultOpenAction(selectedFilePath.value))
+}
+
+function openSelectedFileWithTextEdit(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  recordOpenAction(createOpenWithAction(selectedFilePath.value, 'Text Edit', 'open-diff-text-edit'))
+}
+
+function openSelectedFileWithAssociatedApplication(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  recordOpenAction(createAssociatedApplicationOpenAction(selectedFilePath.value))
+}
+
 function handleTreeScroll(event: Event): void {
   scrollTop.value = (event.currentTarget as HTMLElement).scrollTop
 }
@@ -295,6 +356,33 @@ function handleTreeScroll(event: Event): void {
           secondary
         >
           Refresh
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="open-selected-file"
+          :disabled="!selectedFilePath"
+          @click="openSelectedFile"
+        >
+          Open
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="open-with-selected-file"
+          :disabled="!selectedFilePath"
+          @click="openSelectedFileWithTextEdit"
+        >
+          Open With
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="open-associated-file"
+          :disabled="!selectedFilePath"
+          @click="openSelectedFileWithAssociatedApplication"
+        >
+          Associated App
         </NButton>
         <NButton
           size="small"
@@ -369,6 +457,14 @@ function handleTreeScroll(event: Event): void {
     </section>
 
     <section
+      v-if="lastOpenAction"
+      class="folder-action-status"
+      data-testid="folder-open-action-status"
+    >
+      {{ lastOpenAction.label }} -> {{ lastOpenAction.path }}
+    </section>
+
+    <section
       class="folder-tree-table"
       data-testid="folder-tree-table"
       @scroll="handleTreeScroll"
@@ -433,10 +529,12 @@ function handleTreeScroll(event: Event): void {
             :class="[
               `status-${row.status.toLowerCase().replaceAll(' ', '-')}`,
               row.kind,
-              { suppressed: isSuppressed(row) },
+              { selected: selectedRowId === row.id, suppressed: isSuppressed(row) },
             ]"
             :style="{ gridTemplateColumns }"
+            :data-row-id="row.id"
             data-testid="folder-row"
+            @click="selectRow(row)"
           >
             <span
               class="name-cell left-name"
@@ -448,7 +546,7 @@ function handleTreeScroll(event: Event): void {
                 class="folder-toggle"
                 :data-testid="`toggle-folder-${row.id}`"
                 :aria-expanded="isExpanded(row)"
-                @click="toggleFolder(row)"
+                @click.stop="toggleFolder(row)"
               >
                 {{ isExpanded(row) ? '▾' : '▸' }}
               </button>
@@ -513,7 +611,7 @@ function handleTreeScroll(event: Event): void {
 <style scoped>
 .folder-compare-view {
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto auto minmax(0, 1fr);
   gap: 12px;
   height: 100%;
   padding: 16px;
@@ -602,6 +700,15 @@ function handleTreeScroll(event: Event): void {
   font-size: 12px;
 }
 
+.folder-action-status {
+  padding: 8px 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface-muted);
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
 .folder-tree-table {
   position: relative;
   min-height: 0;
@@ -652,6 +759,12 @@ function handleTreeScroll(event: Event): void {
   border-bottom: 1px solid var(--app-border);
   color: var(--app-text);
   font-size: 13px;
+}
+
+.tree-row.selected {
+  background: var(--app-surface-muted);
+  outline: 1px solid var(--app-accent);
+  outline-offset: -1px;
 }
 
 .tree-row.suppressed {

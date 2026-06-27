@@ -157,4 +157,38 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).toContain('README.md')
     expect(wrapper.find('[data-testid="suppressed-marker-readme"]').exists()).toBe(true)
   })
+
+  it('selects a file row and records open actions for default, configured, and associated applications', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-row-id="readme"]').trigger('click')
+
+    expect(
+      wrapper.find('[data-testid="open-selected-file"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    await wrapper.find('[data-testid="open-selected-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Open -> D:/workspace/left/README.md')
+
+    await wrapper.find('[data-testid="open-with-selected-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Open With Text Edit -> D:/workspace/left/README.md')
+
+    await wrapper.find('[data-testid="open-associated-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain(
+      'Open With Associated Application -> D:/workspace/left/README.md',
+    )
+  })
 })

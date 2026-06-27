@@ -133,6 +133,31 @@ pub enum SheetMappingSource {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct ColumnMappingOptions {
+    pub case_sensitive: bool,
+    pub ignore_whitespace: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ColumnMapping {
+    pub left_column_index: Option<usize>,
+    pub right_column_index: Option<usize>,
+    pub left_column: Option<String>,
+    pub right_column: Option<String>,
+    pub source: ColumnMappingSource,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ColumnMappingSource {
+    Automatic,
+    LeftOnly,
+    RightOnly,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum TableParseError {
     UnclosedQuote,
     Excel(String),
@@ -353,6 +378,74 @@ fn sheet_names_match(left: &str, right: &str, case_sensitive: bool) -> bool {
         left == right
     } else {
         left.eq_ignore_ascii_case(right)
+    }
+}
+
+pub fn map_columns(
+    left: &TableSheet,
+    right: &TableSheet,
+    options: &ColumnMappingOptions,
+) -> Vec<ColumnMapping> {
+    let mut mappings = Vec::new();
+    let mut used_right = Vec::<usize>::new();
+
+    for left_column in &left.columns {
+        if let Some(right_column) = right.columns.iter().find(|right_column| {
+            !used_right.contains(&right_column.index)
+                && column_names_match(&left_column.name, &right_column.name, options)
+        }) {
+            used_right.push(right_column.index);
+            mappings.push(ColumnMapping {
+                left_column_index: Some(left_column.index),
+                right_column_index: Some(right_column.index),
+                left_column: Some(left_column.name.clone()),
+                right_column: Some(right_column.name.clone()),
+                source: ColumnMappingSource::Automatic,
+            });
+        } else {
+            mappings.push(ColumnMapping {
+                left_column_index: Some(left_column.index),
+                right_column_index: None,
+                left_column: Some(left_column.name.clone()),
+                right_column: None,
+                source: ColumnMappingSource::LeftOnly,
+            });
+        }
+    }
+
+    for right_column in &right.columns {
+        if !used_right.contains(&right_column.index) {
+            mappings.push(ColumnMapping {
+                left_column_index: None,
+                right_column_index: Some(right_column.index),
+                left_column: None,
+                right_column: Some(right_column.name.clone()),
+                source: ColumnMappingSource::RightOnly,
+            });
+        }
+    }
+
+    mappings
+}
+
+fn column_names_match(left: &str, right: &str, options: &ColumnMappingOptions) -> bool {
+    let left = normalize_column_name(left, options);
+    let right = normalize_column_name(right, options);
+
+    if options.case_sensitive {
+        left == right
+    } else {
+        left.eq_ignore_ascii_case(&right)
+    }
+}
+
+fn normalize_column_name(name: &str, options: &ColumnMappingOptions) -> String {
+    if options.ignore_whitespace {
+        name.chars()
+            .filter(|character| !character.is_whitespace())
+            .collect()
+    } else {
+        name.to_owned()
     }
 }
 
@@ -875,6 +968,68 @@ mod tests {
         assert_eq!(mappings[2].right_sheet, None);
         assert_eq!(mappings[3].left_sheet, None);
         assert_eq!(mappings[3].right_sheet.as_deref(), Some("Right Only"));
+    }
+
+    #[test]
+    fn maps_columns_by_name_with_case_and_whitespace_options() {
+        let left = TableSheet {
+            name: "Inventory".to_owned(),
+            index: 0,
+            columns: vec![
+                TableColumn {
+                    index: 0,
+                    name: "SKU".to_owned(),
+                },
+                TableColumn {
+                    index: 1,
+                    name: "Unit Price".to_owned(),
+                },
+                TableColumn {
+                    index: 2,
+                    name: "Left Only".to_owned(),
+                },
+            ],
+            rows: Vec::new(),
+        };
+        let right = TableSheet {
+            name: "Inventory".to_owned(),
+            index: 0,
+            columns: vec![
+                TableColumn {
+                    index: 0,
+                    name: "sku".to_owned(),
+                },
+                TableColumn {
+                    index: 1,
+                    name: "unitprice".to_owned(),
+                },
+                TableColumn {
+                    index: 2,
+                    name: "Right Only".to_owned(),
+                },
+            ],
+            rows: Vec::new(),
+        };
+
+        let mappings = map_columns(
+            &left,
+            &right,
+            &ColumnMappingOptions {
+                case_sensitive: false,
+                ignore_whitespace: true,
+            },
+        );
+
+        assert_eq!(mappings.len(), 4);
+        assert_eq!(mappings[0].left_column.as_deref(), Some("SKU"));
+        assert_eq!(mappings[0].right_column.as_deref(), Some("sku"));
+        assert_eq!(mappings[0].source, ColumnMappingSource::Automatic);
+        assert_eq!(mappings[1].left_column.as_deref(), Some("Unit Price"));
+        assert_eq!(mappings[1].right_column.as_deref(), Some("unitprice"));
+        assert_eq!(mappings[2].left_column.as_deref(), Some("Left Only"));
+        assert_eq!(mappings[2].right_column, None);
+        assert_eq!(mappings[3].left_column, None);
+        assert_eq!(mappings[3].right_column.as_deref(), Some("Right Only"));
     }
 
     fn empty_sheet(name: &str, index: usize) -> TableSheet {

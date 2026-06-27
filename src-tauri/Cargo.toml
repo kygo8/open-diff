@@ -10,10 +10,10 @@ members = [
 resolver = "2"
 
 [workspace.package]
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 authors = ["Open Diff Contributors"]
-license = "TBD"
+license = "Apache-2.0"
 
 [workspace.dependencies]
 serde = { version = "1.0.228", features = ["derive"] }

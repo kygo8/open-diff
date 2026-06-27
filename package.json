@@ -1,7 +1,16 @@
 {
   "name": "open-diff",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kygo8/open-diff.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kygo8/open-diff/issues"
+  },
+  "homepage": "https://github.com/kygo8/open-diff#readme",
   "type": "module",
   "packageManager": "pnpm@11.9.0",
   "scripts": {

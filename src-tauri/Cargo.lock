@@ -540,7 +540,7 @@ dependencies = [
 
 [[package]]
 name = "diff-core"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "regex",
  "shared-types",
@@ -762,7 +762,7 @@ dependencies = [
 
 [[package]]
 name = "file-core"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "encoding_rs",
  "shared-types",
@@ -2037,7 +2037,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "open-diff-app"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "diff-core",
  "file-core",
@@ -2710,7 +2710,7 @@ dependencies = [
 
 [[package]]
 name = "session-core"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -2729,7 +2729,7 @@ dependencies = [
 
 [[package]]
 name = "shared-types"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "serde",
 ]
@@ -3674,6 +3674,13 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+
+[[package]]
+name = "vfs-core"
+version = "1.0.0"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "vswhom"

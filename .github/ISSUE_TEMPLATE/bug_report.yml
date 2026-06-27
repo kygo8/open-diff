@@ -1,0 +1,102 @@
+name: Bug report
+description: Report a reproducible problem in Open Diff
+title: '[Bug]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Clear reproduction details help us fix it faster.
+  - type: input
+    id: version
+    attributes:
+      label: Open Diff version
+      description: Use the version shown in the app or the release/tag you built from.
+      placeholder: '1.0.0'
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: os-version
+    attributes:
+      label: Operating system version
+      placeholder: 'Windows 11 24H2, macOS 15, Ubuntu 24.04'
+    validations:
+      required: true
+  - type: dropdown
+    id: install-source
+    attributes:
+      label: Installation source
+      options:
+        - GitHub Release
+        - Built from source
+        - Development mode
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: compare-mode
+    attributes:
+      label: Comparison mode
+      options:
+        - Text comparison
+        - Folder comparison
+        - Folder synchronization
+        - Table comparison
+        - Image comparison
+        - Binary or hex comparison
+        - Session management
+        - Settings
+        - Startup or installation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps needed to trigger the problem.
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Click ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: Sample input or screenshots
+      description: Attach screenshots, logs, or minimal sample files when possible. Do not upload sensitive data.
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Add anything else that may help us understand the issue.
+    validations:
+      required: false

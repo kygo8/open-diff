@@ -1,0 +1,57 @@
+name: Feature request
+description: Suggest an improvement or new workflow for Open Diff
+title: '[Feature]: '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an idea. Describe the workflow first, then the proposed solution.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Product area
+      options:
+        - Text comparison
+        - Folder comparison
+        - Folder synchronization
+        - Table comparison
+        - Image comparison
+        - Binary or hex comparison
+        - Three-way merge
+        - Session management
+        - Reports
+        - Automation or CLI
+        - Installation or packaging
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or workflow
+      description: What are you trying to do, and what makes it difficult today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Mention workarounds or other designs you considered.
+    validations:
+      required: false
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or references
+      description: Add screenshots, links, commands, sample files, or prior-art examples if useful.
+    validations:
+      required: false

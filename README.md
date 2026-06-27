@@ -11,6 +11,90 @@ Open Diff is a cross-platform comparison and merge tool for files, folders, tabl
 - [Français](docs/readme/README.fr.md)
 - [Deutsch](docs/readme/README.de.md)
 
+## Installation
+
+Download the latest installer or platform bundle from the
+[GitHub Releases](https://github.com/kygo8/open-diff/releases) page.
+
+Release assets are published for supported desktop platforms through the Tauri
+release workflow.
+
+## Development
+
+Requirements:
+
+- Node.js LTS
+- pnpm through Corepack
+- Rust stable toolchain
+- Platform dependencies required by Tauri
+
+Install dependencies:
+
+```bash
+corepack enable
+corepack pnpm install
+```
+
+Run the web app during development:
+
+```bash
+corepack pnpm dev
+```
+
+Run the desktop app during development:
+
+```bash
+corepack pnpm tauri:dev
+```
+
+Build the frontend:
+
+```bash
+corepack pnpm build
+```
+
+Build desktop bundles:
+
+```bash
+corepack pnpm tauri:build
+```
+
+## Quality Checks
+
+Run the full local quality gate before opening a pull request:
+
+```bash
+corepack pnpm quality
+corepack pnpm test
+```
+
+The quality gate includes formatting checks, ESLint, Stylelint, TypeScript type
+checking, Rust formatting checks, and Clippy.
+
+## Contributing
+
+Issues and pull requests are welcome. Please read
+[CONTRIBUTING.md](CONTRIBUTING.md) before submitting code changes.
+
+- Use the bug report template for reproducible problems.
+- Use the feature request template for workflow and product suggestions.
+- Report security vulnerabilities privately according to
+  [SECURITY.md](SECURITY.md).
+
+## Release Process
+
+Open Diff uses semantic version tags such as `v1.0.0`.
+
+When a `v*` tag is pushed, GitHub Actions builds Tauri bundles for Windows,
+macOS, and Linux, creates a draft GitHub Release, uploads the generated desktop
+assets, and generates release notes.
+
+Before creating a release tag, make sure the version is synchronized across:
+
+- `package.json`
+- `src-tauri/tauri.conf.json`
+- `src-tauri/Cargo.toml`
+
 ## Core Features
 
 ### Text Comparison
@@ -164,8 +248,10 @@ The following areas are part of the product direction:
 
 ## Project Status
 
-Open Diff is at an early repository stage. The current README describes the intended feature set and product direction. Implementation details, installation instructions, build steps, and contribution guidelines will be added as the project evolves.
+Open Diff is at an early repository stage. The README describes the intended
+feature set and product direction while the implementation continues to evolve.
+Some listed capabilities may still be in progress.
 
 ## License
 
-To be decided.
+Open Diff is licensed under the [Apache License 2.0](LICENSE).

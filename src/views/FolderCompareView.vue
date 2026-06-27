@@ -14,6 +14,7 @@ import { computed, ref } from 'vue'
 type FolderSide = 'left' | 'right'
 type FolderStatus = 'Same' | 'Different' | 'Left only' | 'Right only'
 type FolderColumnId = 'size' | 'modified' | 'type'
+type SyncPreviewAction = 'Copy' | 'Overwrite' | 'Delete' | 'Error'
 
 interface FolderTreeRow {
   id: string
@@ -29,6 +30,14 @@ interface FolderTreeRow {
   rightPath?: string
   status: FolderStatus
   kind: 'file' | 'directory'
+}
+
+interface SyncPreviewItem {
+  id: string
+  action: SyncPreviewAction
+  sourcePath?: string
+  targetPath?: string
+  detail: string
 }
 
 const configurableColumns: { id: FolderColumnId; label: string }[] = [
@@ -157,6 +166,7 @@ const excludedRowIds = ref<Set<string>>(new Set())
 const lastSelectionAction = ref<string>()
 const currentDifferenceIndex = ref(-1)
 const lastDifferenceNavigation = ref<string>()
+const syncPreviewItems = ref<SyncPreviewItem[]>([])
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -553,6 +563,41 @@ function refreshSelectedRow(): void {
   lastSelectionAction.value = `Refreshed -> ${displayName(row)}`
 }
 
+function previewSyncPlan(): void {
+  syncPreviewItems.value = [
+    {
+      id: 'copy-release-notes',
+      action: 'Copy',
+      sourcePath: 'D:/workspace/left/release-notes.md',
+      targetPath: 'D:/workspace/right/release-notes.md',
+      detail: 'Left-only item will be copied to the right side.',
+    },
+    {
+      id: 'overwrite-main',
+      action: 'Overwrite',
+      sourcePath: 'D:/workspace/left/src/main.ts',
+      targetPath: 'D:/workspace/right/src/main.ts',
+      detail: 'Different file will overwrite the target side.',
+    },
+    {
+      id: 'delete-legacy',
+      action: 'Delete',
+      targetPath: 'D:/workspace/right/archive/legacy.tmp',
+      detail: 'Right-only item will be removed.',
+    },
+    {
+      id: 'permission-error',
+      action: 'Error',
+      targetPath: 'D:/workspace/right/protected/settings.json',
+      detail: 'Permission denied',
+    },
+  ]
+}
+
+function closeSyncPreview(): void {
+  syncPreviewItems.value = []
+}
+
 function navigateFolderDifference(direction: 'next' | 'previous'): void {
   if (differenceRows.value.length === 0) {
     currentDifferenceIndex.value = -1
@@ -617,6 +662,14 @@ function handleTreeScroll(event: Event): void {
           secondary
         >
           Refresh
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="preview-sync-plan"
+          @click="previewSyncPlan"
+        >
+          Preview Sync
         </NButton>
         <NButton
           size="small"
@@ -813,6 +866,47 @@ function handleTreeScroll(event: Event): void {
       <div>
         <strong>{{ summary.orphans }}</strong>
         <span>Orphans</span>
+      </div>
+    </section>
+
+    <section
+      v-if="syncPreviewItems.length > 0"
+      class="sync-preview-panel"
+      data-testid="sync-preview-panel"
+    >
+      <header class="sync-preview-header">
+        <div>
+          <strong>Sync preview</strong>
+          <span>{{ syncPreviewItems.length }} operations</span>
+        </div>
+        <NButton
+          size="small"
+          secondary
+          data-testid="close-sync-preview"
+          @click="closeSyncPreview"
+        >
+          Close
+        </NButton>
+      </header>
+      <div class="sync-preview-table">
+        <div class="sync-preview-row sync-preview-row-head">
+          <span>Action</span>
+          <span>Source</span>
+          <span>Target</span>
+          <span>Detail</span>
+        </div>
+        <div
+          v-for="item in syncPreviewItems"
+          :key="item.id"
+          class="sync-preview-row"
+          :class="`sync-preview-${item.action.toLowerCase()}`"
+          data-testid="sync-preview-row"
+        >
+          <strong>{{ item.action }}</strong>
+          <span>{{ item.sourcePath ?? '--' }}</span>
+          <span>{{ item.targetPath ?? '--' }}</span>
+          <span>{{ item.detail }}</span>
+        </div>
       </div>
     </section>
 
@@ -1290,6 +1384,90 @@ function handleTreeScroll(event: Event): void {
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.sync-preview-panel {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.sync-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sync-preview-header div {
+  display: grid;
+  gap: 2px;
+}
+
+.sync-preview-header strong {
+  font-size: 13px;
+}
+
+.sync-preview-header span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.sync-preview-table {
+  display: grid;
+  overflow: auto;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+}
+
+.sync-preview-row {
+  display: grid;
+  grid-template-columns: 104px minmax(180px, 1fr) minmax(180px, 1fr) minmax(160px, 0.8fr);
+  min-width: 860px;
+  border-bottom: 1px solid var(--app-border);
+  color: var(--app-text);
+  font-size: 12px;
+}
+
+.sync-preview-row:last-child {
+  border-bottom: 0;
+}
+
+.sync-preview-row span,
+.sync-preview-row strong {
+  min-width: 0;
+  padding: 8px 10px;
+  overflow: hidden;
+  border-right: 1px solid var(--app-border);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sync-preview-row span:last-child {
+  border-right: 0;
+}
+
+.sync-preview-row-head {
+  background: var(--app-surface-muted);
+  color: var(--app-text-muted);
+  font-weight: 700;
+}
+
+.sync-preview-copy strong {
+  color: var(--diff-added-fg);
+}
+
+.sync-preview-overwrite strong {
+  color: var(--diff-modified-fg);
+}
+
+.sync-preview-delete strong,
+.sync-preview-error strong {
+  color: var(--diff-deleted-fg);
 }
 
 .folder-tree-table {

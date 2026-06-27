@@ -373,4 +373,34 @@ describe('FolderCompareView', () => {
 
     expect(wrapper.text()).toContain('Difference 1 / 3 -> main.ts')
   })
+
+  it('opens a sync preview with copy, overwrite, delete, and error operations', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.find('[data-testid="sync-preview-panel"]').exists()).toBe(false)
+
+    await wrapper.find('[data-testid="preview-sync-plan"]').trigger('click')
+
+    const preview = wrapper.find('[data-testid="sync-preview-panel"]')
+
+    expect(preview.exists()).toBe(true)
+    expect(preview.text()).toContain('Sync preview')
+    expect(preview.text()).toContain('Copy')
+    expect(preview.text()).toContain('Overwrite')
+    expect(preview.text()).toContain('Delete')
+    expect(preview.text()).toContain('Error')
+    expect(preview.text()).toContain('D:/workspace/left/release-notes.md')
+    expect(preview.text()).toContain('D:/workspace/right/archive/legacy.tmp')
+    expect(preview.text()).toContain('Permission denied')
+  })
 })

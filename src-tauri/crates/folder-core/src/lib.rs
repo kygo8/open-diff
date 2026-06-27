@@ -200,6 +200,38 @@ pub struct FileMetadataUpdateResult {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct FolderReportModel {
+    pub summary: FolderReportSummary,
+    pub rows: Vec<FolderReportRow>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderReportSummary {
+    pub total: usize,
+    pub same: usize,
+    pub different: usize,
+    pub left_only: usize,
+    pub right_only: usize,
+    pub error: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderReportRow {
+    pub relative_path: String,
+    pub depth: usize,
+    pub status: FolderCompareStatus,
+    pub left_path: Option<String>,
+    pub right_path: Option<String>,
+    pub left_size: Option<u64>,
+    pub right_size: Option<u64>,
+    pub left_kind: Option<FolderNodeKind>,
+    pub right_kind: Option<FolderNodeKind>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct FileFilters {
     pub include: Vec<String>,
     pub exclude: Vec<String>,
@@ -621,6 +653,54 @@ fn refreshed_metadata_result(path: String) -> Result<FileMetadataUpdateResult, F
         .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
 
     Ok(FileMetadataUpdateResult { path, metadata })
+}
+
+pub fn build_folder_report_model(
+    rows: &[FolderAlignmentRow],
+    options: &FolderCompareOptions,
+    include_same: bool,
+) -> FolderReportModel {
+    let mut summary = FolderReportSummary {
+        total: rows.len(),
+        ..FolderReportSummary::default()
+    };
+    let rows = rows
+        .iter()
+        .filter_map(|row| {
+            let status = classify_folder_alignment_with_options(
+                row.left.as_ref(),
+                row.right.as_ref(),
+                options,
+            );
+
+            increment_report_summary(&mut summary, &status);
+
+            (include_same || status != FolderCompareStatus::Same).then(|| FolderReportRow {
+                relative_path: row.relative_path.clone(),
+                depth: row.depth,
+                status,
+                left_path: row.left.as_ref().map(|node| node.relative_path.clone()),
+                right_path: row.right.as_ref().map(|node| node.relative_path.clone()),
+                left_size: row.left.as_ref().map(|node| node.metadata.size),
+                right_size: row.right.as_ref().map(|node| node.metadata.size),
+                left_kind: row.left.as_ref().map(|node| node.kind.clone()),
+                right_kind: row.right.as_ref().map(|node| node.kind.clone()),
+            })
+        })
+        .collect();
+
+    FolderReportModel { summary, rows }
+}
+
+fn increment_report_summary(summary: &mut FolderReportSummary, status: &FolderCompareStatus) {
+    match status {
+        FolderCompareStatus::Unknown => {}
+        FolderCompareStatus::Same => summary.same += 1,
+        FolderCompareStatus::Different => summary.different += 1,
+        FolderCompareStatus::LeftOnly => summary.left_only += 1,
+        FolderCompareStatus::RightOnly => summary.right_only += 1,
+        FolderCompareStatus::Error => summary.error += 1,
+    }
 }
 
 fn folder_metadata_matches(
@@ -1266,6 +1346,64 @@ mod tests {
         assert_eq!(touch_result.metadata.modified_at_ms, Some(modified_at_ms));
 
         let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn builds_folder_report_summary_and_side_by_side_rows() {
+        let rows = vec![
+            FolderAlignmentRow {
+                relative_path: "same.txt".to_owned(),
+                depth: 0,
+                left: Some(FolderScanNode::new_file(
+                    "same.txt",
+                    "same.txt",
+                    metadata(VfsEntryKind::File, "same.txt", Some("txt"), 10),
+                )),
+                right: Some(FolderScanNode::new_file(
+                    "same.txt",
+                    "same.txt",
+                    metadata(VfsEntryKind::File, "same.txt", Some("txt"), 10),
+                )),
+            },
+            FolderAlignmentRow {
+                relative_path: "changed.txt".to_owned(),
+                depth: 0,
+                left: Some(FolderScanNode::new_file(
+                    "changed.txt",
+                    "changed.txt",
+                    metadata(VfsEntryKind::File, "changed.txt", Some("txt"), 10),
+                )),
+                right: Some(FolderScanNode::new_file(
+                    "changed.txt",
+                    "changed.txt",
+                    metadata(VfsEntryKind::File, "changed.txt", Some("txt"), 12),
+                )),
+            },
+            FolderAlignmentRow {
+                relative_path: "left-only.txt".to_owned(),
+                depth: 0,
+                left: Some(FolderScanNode::new_file(
+                    "left-only.txt",
+                    "left-only.txt",
+                    metadata(VfsEntryKind::File, "left-only.txt", Some("txt"), 8),
+                )),
+                right: None,
+            },
+        ];
+
+        let report = build_folder_report_model(&rows, &FolderCompareOptions::default(), false);
+
+        assert_eq!(report.summary.total, 3);
+        assert_eq!(report.summary.same, 1);
+        assert_eq!(report.summary.different, 1);
+        assert_eq!(report.summary.left_only, 1);
+        assert_eq!(report.summary.right_only, 0);
+        assert_eq!(report.rows.len(), 2);
+        assert_eq!(report.rows[0].relative_path, "changed.txt");
+        assert_eq!(report.rows[0].status, FolderCompareStatus::Different);
+        assert_eq!(report.rows[0].left_size, Some(10));
+        assert_eq!(report.rows[0].right_size, Some(12));
+        assert_eq!(report.rows[1].status, FolderCompareStatus::LeftOnly);
     }
 
     #[test]

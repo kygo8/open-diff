@@ -703,6 +703,119 @@ fn increment_report_summary(summary: &mut FolderReportSummary, status: &FolderCo
     }
 }
 
+pub fn render_folder_report_html(report: &FolderReportModel, title: &str) -> String {
+    let title = escape_html(title);
+    let mut html = String::from("<!doctype html><html><head><meta charset=\"utf-8\">");
+
+    html.push_str("<title>");
+    html.push_str(&title);
+    html.push_str("</title>");
+    html.push_str("<style>body{font-family:system-ui,sans-serif;margin:24px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #d0d7de;padding:6px 8px;text-align:left}.different{background:#fff8c5}.left-only,.right-only{background:#ffebe9}.same{background:#dafbe1}</style>");
+    html.push_str("</head><body><h1>");
+    html.push_str(&title);
+    html.push_str("</h1><section>");
+    html.push_str(&format!(
+        "Total: {} | Same: {} | Different: {} | Left only: {} | Right only: {} | Error: {}",
+        report.summary.total,
+        report.summary.same,
+        report.summary.different,
+        report.summary.left_only,
+        report.summary.right_only,
+        report.summary.error
+    ));
+    html.push_str("</section><table><thead><tr><th>Path</th><th>Status</th><th>Left</th><th>Right</th><th>Left Size</th><th>Right Size</th></tr></thead><tbody>");
+
+    for row in &report.rows {
+        let status_class = status_css_class(&row.status);
+
+        html.push_str("<tr class=\"");
+        html.push_str(status_class);
+        html.push_str("\"><td>");
+        html.push_str(&escape_html(&row.relative_path));
+        html.push_str("</td><td>");
+        html.push_str(&escape_html(&status_label(&row.status)));
+        html.push_str("</td><td>");
+        html.push_str(&linked_path(row.left_path.as_deref()));
+        html.push_str("</td><td>");
+        html.push_str(&linked_path(row.right_path.as_deref()));
+        html.push_str("</td><td>");
+        html.push_str(
+            &row.left_size
+                .map_or_else(|| "-".to_owned(), |size| size.to_string()),
+        );
+        html.push_str("</td><td>");
+        html.push_str(
+            &row.right_size
+                .map_or_else(|| "-".to_owned(), |size| size.to_string()),
+        );
+        html.push_str("</td></tr>");
+    }
+
+    html.push_str("</tbody></table></body></html>");
+    html
+}
+
+fn status_css_class(status: &FolderCompareStatus) -> &'static str {
+    match status {
+        FolderCompareStatus::Unknown => "unknown",
+        FolderCompareStatus::Same => "same",
+        FolderCompareStatus::Different => "different",
+        FolderCompareStatus::LeftOnly => "left-only",
+        FolderCompareStatus::RightOnly => "right-only",
+        FolderCompareStatus::Error => "error",
+    }
+}
+
+fn status_label(status: &FolderCompareStatus) -> String {
+    match status {
+        FolderCompareStatus::Unknown => "unknown",
+        FolderCompareStatus::Same => "same",
+        FolderCompareStatus::Different => "different",
+        FolderCompareStatus::LeftOnly => "left only",
+        FolderCompareStatus::RightOnly => "right only",
+        FolderCompareStatus::Error => "error",
+    }
+    .to_owned()
+}
+
+fn linked_path(path: Option<&str>) -> String {
+    path.map_or_else(
+        || "-".to_owned(),
+        |path| {
+            format!(
+                "<a href=\"file://{}\">{}</a>",
+                encode_file_link(path),
+                escape_html(path)
+            )
+        },
+    )
+}
+
+fn escape_html(value: &str) -> String {
+    value
+        .replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&#39;")
+}
+
+fn encode_file_link(value: &str) -> String {
+    value
+        .chars()
+        .flat_map(|character| match character {
+            ' ' => "%20".chars().collect::<Vec<_>>(),
+            '<' => "%3C".chars().collect(),
+            '>' => "%3E".chars().collect(),
+            '"' => "%22".chars().collect(),
+            '\'' => "%27".chars().collect(),
+            '#' => "%23".chars().collect(),
+            '?' => "%3F".chars().collect(),
+            _ => vec![character],
+        })
+        .collect()
+}
+
 fn folder_metadata_matches(
     left: &FolderScanNode,
     right: &FolderScanNode,
@@ -1404,6 +1517,53 @@ mod tests {
         assert_eq!(report.rows[0].left_size, Some(10));
         assert_eq!(report.rows[0].right_size, Some(12));
         assert_eq!(report.rows[1].status, FolderCompareStatus::LeftOnly);
+    }
+
+    #[test]
+    fn renders_folder_report_as_escaped_html_with_file_links() {
+        let report = FolderReportModel {
+            summary: FolderReportSummary {
+                total: 2,
+                same: 0,
+                different: 1,
+                left_only: 1,
+                right_only: 0,
+                error: 0,
+            },
+            rows: vec![
+                FolderReportRow {
+                    relative_path: "src/<main>.rs".to_owned(),
+                    depth: 1,
+                    status: FolderCompareStatus::Different,
+                    left_path: Some("left/src/<main>.rs".to_owned()),
+                    right_path: Some("right/src/<main>.rs".to_owned()),
+                    left_size: Some(10),
+                    right_size: Some(12),
+                    left_kind: Some(FolderNodeKind::File),
+                    right_kind: Some(FolderNodeKind::File),
+                },
+                FolderReportRow {
+                    relative_path: "notes.md".to_owned(),
+                    depth: 0,
+                    status: FolderCompareStatus::LeftOnly,
+                    left_path: Some("left/notes.md".to_owned()),
+                    right_path: None,
+                    left_size: Some(8),
+                    right_size: None,
+                    left_kind: Some(FolderNodeKind::File),
+                    right_kind: None,
+                },
+            ],
+        };
+
+        let html = render_folder_report_html(&report, "Release <Report>");
+
+        assert!(html.contains("<title>Release &lt;Report&gt;</title>"));
+        assert!(html.contains("Total: 2"));
+        assert!(html.contains("Different: 1"));
+        assert!(html.contains("src/&lt;main&gt;.rs"));
+        assert!(html.contains("href=\"file://left/src/%3Cmain%3E.rs\""));
+        assert!(html.contains("left only"));
     }
 
     #[test]

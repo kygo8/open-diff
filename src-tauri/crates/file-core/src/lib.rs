@@ -16,9 +16,26 @@ pub fn read_text_file(path: impl AsRef<Path>) -> Result<ReadTextFileResponse, Fi
 
     Ok(ReadTextFileResponse {
         path: path_ref.display().to_string(),
+        line_ending: detect_line_ending(&text).to_string(),
         text,
         encoding,
     })
+}
+
+fn detect_line_ending(text: &str) -> &'static str {
+    if text.contains("\r\n") {
+        return "CRLF";
+    }
+
+    if text.contains('\n') {
+        return "LF";
+    }
+
+    if text.contains('\r') {
+        return "CR";
+    }
+
+    "None"
 }
 
 fn decode_text_bytes(bytes: &[u8]) -> Result<(String, String), FileReadError> {
@@ -129,5 +146,26 @@ mod tests {
         assert_eq!(result.encoding, "gbk");
 
         fs::remove_file(path).expect("fixture should be removable");
+    }
+
+    #[test]
+    fn detects_line_endings() {
+        let cases = [
+            ("lf", "one\ntwo", "LF"),
+            ("crlf", "one\r\ntwo", "CRLF"),
+            ("cr", "one\rtwo", "CR"),
+        ];
+
+        for (name, content, expected) in cases {
+            let path = temp_file_path(name);
+
+            fs::write(&path, content).expect("fixture should be writable");
+
+            let result = read_text_file(&path).expect("text file should be readable");
+
+            assert_eq!(result.line_ending, expected);
+
+            fs::remove_file(path).expect("fixture should be removable");
+        }
     }
 }

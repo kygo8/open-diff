@@ -41,4 +41,5 @@ export interface ReadTextFileResponse {
   path: string
   text: string
   encoding: string
+  lineEnding: string
 }

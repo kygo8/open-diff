@@ -21,6 +21,7 @@ pub struct ReadTextFileResponse {
     pub path: String,
     pub text: String,
     pub encoding: String,
+    pub line_ending: String,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]

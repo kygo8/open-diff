@@ -19,6 +19,25 @@ const statsLabel = computed(() => {
     deleted,
   )} deleted`
 })
+const lineEndingStatus = computed(
+  () => `Left: ${detectLineEnding(left.value)} | Right: ${detectLineEnding(right.value)}`,
+)
+
+function detectLineEnding(value: string): string {
+  if (value.includes('\r\n')) {
+    return 'CRLF'
+  }
+
+  if (value.includes('\n')) {
+    return 'LF'
+  }
+
+  if (value.includes('\r')) {
+    return 'CR'
+  }
+
+  return 'None'
+}
 
 async function runDiff(): Promise<void> {
   loading.value = true
@@ -42,6 +61,11 @@ async function runDiff(): Promise<void> {
     <div class="compare-toolbar">
       <strong>Text Compare</strong>
       <span class="stats">{{ statsLabel }}</span>
+      <span
+        class="status-chip"
+        data-testid="line-ending-status"
+        >{{ lineEndingStatus }}</span
+      >
       <div class="spacer" />
       <select
         v-model="algorithm"
@@ -112,6 +136,11 @@ async function runDiff(): Promise<void> {
 }
 
 .stats {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.status-chip {
   color: var(--app-text-muted);
   font-size: 12px;
 }

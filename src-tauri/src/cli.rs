@@ -1,6 +1,6 @@
 use cli_core::{
-    cli_exit_code_value, compare_folders, compare_text_files, open_named_session, parse_cli_args,
-    CliCommand,
+    cli_exit_code_contract, cli_exit_code_value, compare_folders, compare_text_files,
+    open_named_session, parse_cli_args, CliCommand,
 };
 
 fn main() {
@@ -20,6 +20,10 @@ fn main() {
             println!("  compare-folders <left> <right>");
             println!("  open-session <store-root> <name>");
             println!("  merge-text <base> <left> <right> [output]");
+            println!("Exit codes:");
+            for spec in cli_exit_code_contract() {
+                println!("  {} {}", spec.value, spec.meaning);
+            }
         }
         CliCommand::CompareFiles { left, right } => {
             let result = match compare_text_files(&left, &right) {

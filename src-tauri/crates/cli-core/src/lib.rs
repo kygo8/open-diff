@@ -38,6 +38,14 @@ pub enum CliExitCode {
     Cancelled = 4,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CliExitCodeSpec {
+    pub code: CliExitCode,
+    pub value: i32,
+    pub meaning: &'static str,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CliParseError {
@@ -105,6 +113,36 @@ where
 
 pub fn cli_exit_code_value(exit_code: CliExitCode) -> i32 {
     exit_code as i32
+}
+
+pub fn cli_exit_code_contract() -> [CliExitCodeSpec; 5] {
+    [
+        CliExitCodeSpec {
+            code: CliExitCode::Success,
+            value: 0,
+            meaning: "success",
+        },
+        CliExitCodeSpec {
+            code: CliExitCode::Different,
+            value: 1,
+            meaning: "differences detected",
+        },
+        CliExitCodeSpec {
+            code: CliExitCode::UsageError,
+            value: 2,
+            meaning: "usage error",
+        },
+        CliExitCodeSpec {
+            code: CliExitCode::RuntimeError,
+            value: 3,
+            meaning: "runtime error",
+        },
+        CliExitCodeSpec {
+            code: CliExitCode::Cancelled,
+            value: 4,
+            meaning: "cancelled",
+        },
+    ]
 }
 
 pub fn compare_text_files(
@@ -365,6 +403,46 @@ mod tests {
 
         assert_eq!(error.exit_code, CliExitCode::UsageError);
         assert!(error.message.contains("compare requires"));
+    }
+
+    #[test]
+    fn exposes_stable_exit_code_contract() {
+        assert_eq!(cli_exit_code_value(CliExitCode::Success), 0);
+        assert_eq!(cli_exit_code_value(CliExitCode::Different), 1);
+        assert_eq!(cli_exit_code_value(CliExitCode::UsageError), 2);
+        assert_eq!(cli_exit_code_value(CliExitCode::RuntimeError), 3);
+        assert_eq!(cli_exit_code_value(CliExitCode::Cancelled), 4);
+
+        assert_eq!(
+            cli_exit_code_contract(),
+            [
+                CliExitCodeSpec {
+                    code: CliExitCode::Success,
+                    value: 0,
+                    meaning: "success",
+                },
+                CliExitCodeSpec {
+                    code: CliExitCode::Different,
+                    value: 1,
+                    meaning: "differences detected",
+                },
+                CliExitCodeSpec {
+                    code: CliExitCode::UsageError,
+                    value: 2,
+                    meaning: "usage error",
+                },
+                CliExitCodeSpec {
+                    code: CliExitCode::RuntimeError,
+                    value: 3,
+                    meaning: "runtime error",
+                },
+                CliExitCodeSpec {
+                    code: CliExitCode::Cancelled,
+                    value: 4,
+                    meaning: "cancelled",
+                },
+            ]
+        );
     }
 
     #[test]

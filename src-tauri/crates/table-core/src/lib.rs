@@ -103,6 +103,35 @@ pub struct TableCellDiff {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct TableReport {
+    pub summary: TableReportSummary,
+    pub rows: Vec<TableReportRow>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TableReportSummary {
+    pub sheet_count: usize,
+    pub changed_row_count: usize,
+    pub changed_cell_count: usize,
+    pub important_cell_count: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TableReportRow {
+    pub sheet_name: String,
+    pub row_index: usize,
+    pub column_index: Option<usize>,
+    pub column_name: Option<String>,
+    pub status: TableDiffStatus,
+    pub left_value: Option<String>,
+    pub right_value: Option<String>,
+    pub important: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SheetMappingOptions {
     pub case_sensitive: bool,
     pub manual_mappings: Vec<ManualSheetMapping>,
@@ -583,6 +612,50 @@ pub fn compare_aligned_rows_with_options(
         .collect()
 }
 
+pub fn build_table_report(diff: &TableDiff) -> TableReport {
+    let rows = diff
+        .sheets
+        .iter()
+        .flat_map(|sheet| {
+            sheet.rows.iter().flat_map(move |row| {
+                row.cells
+                    .iter()
+                    .filter(|cell| cell.status != TableDiffStatus::Same)
+                    .map(move |cell| {
+                        let column = sheet
+                            .columns
+                            .iter()
+                            .find(|column| column.column_index == cell.column_index);
+
+                        TableReportRow {
+                            sheet_name: sheet.sheet_name.clone(),
+                            row_index: row.row_index,
+                            column_index: Some(cell.column_index),
+                            column_name: column.map(|column| column.name.clone()),
+                            status: cell.status.clone(),
+                            left_value: cell.left.as_ref().map(table_cell_value_to_report_text),
+                            right_value: cell.right.as_ref().map(table_cell_value_to_report_text),
+                            important: cell.important,
+                        }
+                    })
+            })
+        })
+        .collect::<Vec<_>>();
+    let summary = TableReportSummary {
+        sheet_count: diff.sheets.len(),
+        changed_row_count: diff
+            .sheets
+            .iter()
+            .flat_map(|sheet| &sheet.rows)
+            .filter(|row| row.status != TableDiffStatus::Same)
+            .count(),
+        changed_cell_count: rows.len(),
+        important_cell_count: rows.iter().filter(|row| row.important).count(),
+    };
+
+    TableReport { summary, rows }
+}
+
 fn compare_row_cells(
     row_index: usize,
     left_row: Option<&TableRow>,
@@ -661,6 +734,15 @@ fn numeric_difference_is_within_tolerance(
     };
 
     (left - right).abs() <= tolerance
+}
+
+fn table_cell_value_to_report_text(value: &TableCellValue) -> String {
+    match value {
+        TableCellValue::Empty => String::new(),
+        TableCellValue::Text(value) | TableCellValue::DateTime(value) => value.clone(),
+        TableCellValue::Number(value) => value.to_string(),
+        TableCellValue::Boolean(value) => value.to_string(),
+    }
 }
 
 fn date_time_difference_is_within_tolerance(
@@ -1590,6 +1672,46 @@ mod tests {
         assert_eq!(diff[0].status, TableDiffStatus::Modified);
         assert_eq!(diff[0].cells[1].status, TableDiffStatus::Modified);
         assert!(!diff[0].cells[1].important);
+    }
+
+    #[test]
+    fn builds_table_report_rows_with_cell_context() {
+        let diff = TableDiff {
+            sheets: vec![TableSheetDiff {
+                sheet_name: "Inventory".to_owned(),
+                status: TableDiffStatus::Modified,
+                columns: vec![TableColumnDiff {
+                    column_index: 1,
+                    name: "Quantity".to_owned(),
+                    status: TableDiffStatus::Modified,
+                }],
+                rows: vec![TableRowDiff {
+                    row_index: 2,
+                    status: TableDiffStatus::Modified,
+                    cells: vec![TableCellDiff {
+                        row_index: 2,
+                        column_index: 1,
+                        status: TableDiffStatus::Modified,
+                        left: Some(TableCellValue::Number(12.0)),
+                        right: Some(TableCellValue::Number(14.0)),
+                        important: true,
+                    }],
+                }],
+            }],
+        };
+
+        let report = build_table_report(&diff);
+
+        assert_eq!(report.summary.sheet_count, 1);
+        assert_eq!(report.summary.changed_row_count, 1);
+        assert_eq!(report.summary.changed_cell_count, 1);
+        assert_eq!(report.rows[0].sheet_name, "Inventory");
+        assert_eq!(report.rows[0].row_index, 2);
+        assert_eq!(report.rows[0].column_index, Some(1));
+        assert_eq!(report.rows[0].column_name.as_deref(), Some("Quantity"));
+        assert_eq!(report.rows[0].left_value.as_deref(), Some("12"));
+        assert_eq!(report.rows[0].right_value.as_deref(), Some("14"));
+        assert!(report.rows[0].important);
     }
 
     fn keyed_sheet(rows: Vec<(&str, &str, &str)>) -> TableSheet {

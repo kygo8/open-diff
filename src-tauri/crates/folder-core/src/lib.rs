@@ -85,6 +85,41 @@ pub struct FolderTextRuleCompareResult {
     pub different_lines: usize,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FileFilters {
+    pub include: Vec<String>,
+    pub exclude: Vec<String>,
+    pub case_sensitive: bool,
+}
+
+impl Default for FileFilters {
+    fn default() -> Self {
+        Self {
+            include: Vec::new(),
+            exclude: Vec::new(),
+            case_sensitive: true,
+        }
+    }
+}
+
+impl FileFilters {
+    pub fn allows(&self, relative_path: &str) -> bool {
+        let path = filter_path(relative_path, self.case_sensitive);
+        let included = self.include.is_empty()
+            || self
+                .include
+                .iter()
+                .any(|pattern| wildcard_matches(&filter_path(pattern, self.case_sensitive), &path));
+        let excluded = self
+            .exclude
+            .iter()
+            .any(|pattern| wildcard_matches(&filter_path(pattern, self.case_sensitive), &path));
+
+        included && !excluded
+    }
+}
+
 impl FolderScanNode {
     pub fn new_directory(
         relative_path: impl Into<String>,
@@ -401,6 +436,77 @@ fn relative_path(root: &Path, path: &Path) -> String {
         .replace('\\', "/")
 }
 
+fn filter_path(value: &str, case_sensitive: bool) -> String {
+    let normalized = value.replace('\\', "/");
+
+    if case_sensitive {
+        normalized
+    } else {
+        normalized.to_lowercase()
+    }
+}
+
+fn wildcard_matches(pattern: &str, value: &str) -> bool {
+    if let Some(inner) = pattern.strip_prefix("**/") {
+        return wildcard_matches(inner, value)
+            || value
+                .split_once('/')
+                .is_some_and(|(_, rest)| wildcard_matches(pattern, rest));
+    }
+
+    wildcard_match_segments(
+        &pattern.split('/').collect::<Vec<_>>(),
+        &value.split('/').collect::<Vec<_>>(),
+    )
+}
+
+fn wildcard_match_segments(pattern: &[&str], value: &[&str]) -> bool {
+    match pattern {
+        [] => value.is_empty(),
+        ["**", rest @ ..] => {
+            wildcard_match_segments(rest, value)
+                || (!value.is_empty() && wildcard_match_segments(pattern, &value[1..]))
+        }
+        [head, rest @ ..] => {
+            !value.is_empty()
+                && wildcard_match_component(head, value[0])
+                && wildcard_match_segments(rest, &value[1..])
+        }
+    }
+}
+
+fn wildcard_match_component(pattern: &str, value: &str) -> bool {
+    let pattern_chars = pattern.chars().collect::<Vec<_>>();
+    let value_chars = value.chars().collect::<Vec<_>>();
+    let mut matches = vec![vec![false; value_chars.len() + 1]; pattern_chars.len() + 1];
+
+    matches[0][0] = true;
+
+    for pattern_index in 1..=pattern_chars.len() {
+        if pattern_chars[pattern_index - 1] == '*' {
+            matches[pattern_index][0] = matches[pattern_index - 1][0];
+        }
+    }
+
+    for pattern_index in 1..=pattern_chars.len() {
+        for value_index in 1..=value_chars.len() {
+            matches[pattern_index][value_index] = match pattern_chars[pattern_index - 1] {
+                '*' => {
+                    matches[pattern_index - 1][value_index]
+                        || matches[pattern_index][value_index - 1]
+                }
+                '?' => matches[pattern_index - 1][value_index - 1],
+                expected => {
+                    expected == value_chars[value_index - 1]
+                        && matches[pattern_index - 1][value_index - 1]
+                }
+            };
+        }
+    }
+
+    matches[pattern_chars.len()][value_chars.len()]
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -705,6 +811,21 @@ mod tests {
 
         assert_eq!(result.status, FolderCompareStatus::Same);
         assert_eq!(result.different_lines, 0);
+    }
+
+    #[test]
+    fn file_filters_support_include_exclude_wildcards_and_paths() {
+        let filters = FileFilters {
+            include: vec!["src/**/*.rs".to_owned()],
+            exclude: vec!["target/**".to_owned(), "*.tmp".to_owned()],
+            case_sensitive: true,
+        };
+
+        assert!(filters.allows("src/main.rs"));
+        assert!(filters.allows("src/bin/tool.rs"));
+        assert!(!filters.allows("src/main.ts"));
+        assert!(!filters.allows("target/debug/app.rs"));
+        assert!(!filters.allows("notes.tmp"));
     }
 
     fn metadata(kind: VfsEntryKind, name: &str, extension: Option<&str>, size: u64) -> VfsMetadata {

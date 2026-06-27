@@ -322,4 +322,29 @@ describe('FolderCompareView', () => {
 
     expect(wrapper.text()).toContain('Touched -> D:/workspace/left/README.md')
   })
+
+  it('excludes the selected row and refreshes the current selection', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-row-id="readme"]').trigger('click')
+    await wrapper.find('[data-testid="exclude-selected-row"]').trigger('click')
+
+    expect(wrapper.find('[data-row-id="readme"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Excluded -> README.md')
+
+    await wrapper.find('[data-row-id="src-main"]').trigger('click')
+    await wrapper.find('[data-testid="refresh-selected-row"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Refreshed -> main.ts')
+  })
 })

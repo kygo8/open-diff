@@ -153,6 +153,8 @@ const renameTargetName = ref('')
 const lastFileOperationAction = ref<string>()
 const selectedReadonly = ref(false)
 const lastMetadataAction = ref<string>()
+const excludedRowIds = ref<Set<string>>(new Set())
+const lastSelectionAction = ref<string>()
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -183,6 +185,7 @@ const visibleRows = computed(() =>
   rows.value.filter(
     (row) =>
       (!row.parentId || expandedDirectoryIds.value.has(row.parentId)) &&
+      !excludedRowIds.value.has(row.id) &&
       (visibleStatuses.value.has(row.status) || showSuppressedFilters.value),
   ),
 )
@@ -523,6 +526,28 @@ function touchSelectedFile(): void {
   lastMetadataAction.value = `Touched -> ${selectedFilePath.value}`
 }
 
+function excludeSelectedRow(): void {
+  const row = selectedRow.value
+
+  if (!row) {
+    return
+  }
+
+  excludedRowIds.value = new Set([...excludedRowIds.value, row.id])
+  selectedRowId.value = undefined
+  lastSelectionAction.value = `Excluded -> ${displayName(row)}`
+}
+
+function refreshSelectedRow(): void {
+  const row = selectedRow.value
+
+  if (!row) {
+    return
+  }
+
+  lastSelectionAction.value = `Refreshed -> ${displayName(row)}`
+}
+
 function archivePath(path: string): string {
   const separatorIndex = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'))
 
@@ -654,6 +679,24 @@ function handleTreeScroll(event: Event): void {
           @click="renameSelectedFile"
         >
           Rename
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="exclude-selected-row"
+          :disabled="!selectedRowId"
+          @click="excludeSelectedRow"
+        >
+          Exclude
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="refresh-selected-row"
+          :disabled="!selectedRowId"
+          @click="refreshSelectedRow"
+        >
+          Refresh Selection
         </NButton>
         <NButton
           size="small"
@@ -879,6 +922,13 @@ function handleTreeScroll(event: Event): void {
       data-testid="folder-metadata-operation-status"
     >
       {{ lastMetadataAction }}
+    </section>
+    <section
+      v-if="lastSelectionAction"
+      class="folder-action-status"
+      data-testid="folder-selection-operation-status"
+    >
+      {{ lastSelectionAction }}
     </section>
 
     <section

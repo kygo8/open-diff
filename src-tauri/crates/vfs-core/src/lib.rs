@@ -15,6 +15,24 @@ impl VfsPath {
     pub fn as_str(&self) -> &str {
         &self.0
     }
+
+    pub fn normalized(&self) -> Self {
+        normalize_vfs_path(&self.0)
+    }
+
+    pub fn join(&self, child: impl AsRef<str>) -> Self {
+        let mut base = self.normalized().0;
+        let child = normalize_vfs_path(child.as_ref()).0;
+
+        if base.ends_with('/') {
+            base.push_str(child.trim_start_matches('/'));
+        } else {
+            base.push('/');
+            base.push_str(child.trim_start_matches('/'));
+        }
+
+        normalize_vfs_path(&base)
+    }
 }
 
 impl From<&str> for VfsPath {
@@ -27,6 +45,61 @@ impl From<String> for VfsPath {
     fn from(value: String) -> Self {
         Self::new(value)
     }
+}
+
+fn normalize_vfs_path(value: &str) -> VfsPath {
+    let unified = value.replace('\\', "/");
+    let (prefix, rest) = split_path_prefix(&unified);
+    let mut segments = Vec::<&str>::new();
+
+    for segment in rest.split('/') {
+        match segment {
+            "" | "." => {}
+            ".." => {
+                let can_pop = segments.last().is_some_and(|previous| *previous != "..");
+
+                if can_pop {
+                    segments.pop();
+                } else if prefix.is_empty() {
+                    segments.push("..");
+                }
+            }
+            _ => segments.push(segment),
+        }
+    }
+
+    let joined = segments.join("/");
+
+    if prefix.is_empty() {
+        if joined.is_empty() {
+            return VfsPath::new(".");
+        }
+
+        return VfsPath::new(joined);
+    }
+
+    if joined.is_empty() {
+        return VfsPath::new(prefix);
+    }
+
+    VfsPath::new(format!("{prefix}{joined}"))
+}
+
+fn split_path_prefix(value: &str) -> (String, &str) {
+    if let Some(rest) = value.strip_prefix('/') {
+        return ("/".to_owned(), rest);
+    }
+
+    let bytes = value.as_bytes();
+
+    if bytes.len() >= 2 && bytes[1] == b':' {
+        let drive = &value[..2];
+        let rest = value[2..].trim_start_matches('/');
+
+        return (format!("{drive}/"), rest);
+    }
+
+    (String::new(), value)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -300,6 +373,26 @@ mod tests {
 
         assert!(matches!(vfs.read(&file), Err(VfsError::NotFound(_))));
         let _ = std::fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn normalizes_platform_paths_predictably() {
+        assert_eq!(
+            VfsPath::new(r"C:\work\.\left\..\right//file.txt")
+                .normalized()
+                .as_str(),
+            "C:/work/right/file.txt"
+        );
+        assert_eq!(
+            VfsPath::new("/work//left/../right/./file.txt")
+                .normalized()
+                .as_str(),
+            "/work/right/file.txt"
+        );
+        assert_eq!(
+            VfsPath::new("/work").join("child/file.txt").as_str(),
+            "/work/child/file.txt"
+        );
     }
 
     fn unique_temp_dir(label: &str) -> std::path::PathBuf {

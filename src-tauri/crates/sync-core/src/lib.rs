@@ -49,6 +49,7 @@ pub struct SyncExecutionResult {
     pub total: usize,
     pub succeeded: usize,
     pub failed: usize,
+    pub cancelled: usize,
     pub items: Vec<SyncExecutionItemResult>,
 }
 
@@ -66,6 +67,7 @@ pub struct SyncExecutionItemResult {
 pub enum SyncExecutionStatus {
     Succeeded,
     Failed,
+    Cancelled,
 }
 
 impl SyncPlan {
@@ -82,21 +84,50 @@ impl SyncPlan {
 }
 
 pub fn execute_sync_plan(vfs: &mut impl VfsProvider, plan: &SyncPlan) -> SyncExecutionResult {
-    let items = plan
-        .items
-        .iter()
-        .map(|item| execute_sync_plan_item(vfs, item))
-        .collect::<Vec<_>>();
+    execute_sync_plan_with_control(vfs, plan, |_, _| {}, || false)
+}
+
+pub fn execute_sync_plan_with_control(
+    vfs: &mut impl VfsProvider,
+    plan: &SyncPlan,
+    mut on_progress: impl FnMut(usize, usize),
+    mut is_cancelled: impl FnMut() -> bool,
+) -> SyncExecutionResult {
+    let mut items = Vec::with_capacity(plan.items.len());
+    let total = plan.items.len();
+
+    for (index, item) in plan.items.iter().enumerate() {
+        if is_cancelled() {
+            items.extend(plan.items[index..].iter().map(cancelled_sync_plan_item));
+            break;
+        }
+
+        items.push(execute_sync_plan_item(vfs, item));
+        on_progress(items.len(), total);
+    }
+
+    summarize_sync_execution(items)
+}
+
+fn summarize_sync_execution(items: Vec<SyncExecutionItemResult>) -> SyncExecutionResult {
     let succeeded = items
         .iter()
         .filter(|item| item.status == SyncExecutionStatus::Succeeded)
         .count();
-    let failed = items.len() - succeeded;
+    let failed = items
+        .iter()
+        .filter(|item| item.status == SyncExecutionStatus::Failed)
+        .count();
+    let cancelled = items
+        .iter()
+        .filter(|item| item.status == SyncExecutionStatus::Cancelled)
+        .count();
 
     SyncExecutionResult {
         total: items.len(),
         succeeded,
         failed,
+        cancelled,
         items,
     }
 }
@@ -131,6 +162,15 @@ fn execute_sync_plan_item(
             status: SyncExecutionStatus::Failed,
             error: Some(format!("{error:?}")),
         },
+    }
+}
+
+fn cancelled_sync_plan_item(item: &SyncPlanItem) -> SyncExecutionItemResult {
+    SyncExecutionItemResult {
+        relative_path: item.relative_path.clone(),
+        action: item.action.clone(),
+        status: SyncExecutionStatus::Cancelled,
+        error: None,
     }
 }
 
@@ -412,6 +452,7 @@ fn joined_path(root: &str, relative_path: &str) -> String {
 mod tests {
     use super::*;
     use folder_core::{FolderAlignmentRow, FolderCompareStatus, FolderScanNode};
+    use std::cell::Cell;
     use std::collections::BTreeMap;
     use vfs_core::{VfsEntry, VfsEntryKind, VfsError, VfsMetadata, VfsProvider};
 
@@ -730,6 +771,49 @@ mod tests {
         assert_eq!(vfs.read_bytes("/right/delete.txt"), None);
         assert_eq!(vfs.read_bytes("/right/keep.txt"), Some(b"keep me".to_vec()));
         assert!(result.items.iter().all(|item| item.error.is_none()));
+    }
+
+    #[test]
+    fn sync_execution_reports_progress_and_stops_when_cancelled() {
+        let mut vfs = MemoryVfs::default()
+            .with_file("/left/one.txt", b"one")
+            .with_file("/left/two.txt", b"two")
+            .with_file("/left/three.txt", b"three");
+        let mut plan = SyncPlan::new("Cancellable plan");
+
+        for name in ["one.txt", "two.txt", "three.txt"] {
+            plan.add_item(SyncPlanItem {
+                relative_path: name.to_owned(),
+                action: SyncAction::Copy {
+                    direction: SyncDirection::LeftToRight,
+                    source_path: format!("/left/{name}"),
+                    target_path: format!("/right/{name}"),
+                },
+                reason: "copy".to_owned(),
+            });
+        }
+
+        let mut progress = Vec::new();
+        let should_cancel = Cell::new(false);
+        let result = execute_sync_plan_with_control(
+            &mut vfs,
+            &plan,
+            |completed, total| {
+                progress.push((completed, total));
+                should_cancel.set(true);
+            },
+            || should_cancel.get(),
+        );
+
+        assert_eq!(result.total, 3);
+        assert_eq!(result.succeeded, 1);
+        assert_eq!(result.cancelled, 2);
+        assert_eq!(result.failed, 0);
+        assert_eq!(progress, vec![(1, 3)]);
+        assert_eq!(vfs.read_bytes("/right/one.txt"), Some(b"one".to_vec()));
+        assert_eq!(vfs.read_bytes("/right/two.txt"), None);
+        assert_eq!(vfs.read_bytes("/right/three.txt"), None);
+        assert_eq!(result.items[1].status, SyncExecutionStatus::Cancelled);
     }
 
     fn file_row(

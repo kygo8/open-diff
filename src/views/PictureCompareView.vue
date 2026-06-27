@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 const zoom = ref(100)
 const panX = ref(0)
 const panY = ref(0)
+const showOverlay = ref(true)
 
 const imageTransform = computed(
   () =>
@@ -64,6 +65,14 @@ const imageStyle = computed<Record<string, string>>(() => ({
           data-testid="picture-pan-y"
         />
       </label>
+      <label class="picture-toggle">
+        <input
+          v-model="showOverlay"
+          type="checkbox"
+          data-testid="picture-overlay-toggle"
+        />
+        <span>Overlay</span>
+      </label>
     </section>
 
     <section class="picture-pane-grid">
@@ -83,6 +92,16 @@ const imageStyle = computed<Record<string, string>>(() => ({
           >
             <span class="picture-marker marker-a"></span>
             <span class="picture-marker marker-b"></span>
+            <span
+              v-if="showOverlay"
+              class="picture-diff-overlay"
+              data-testid="picture-diff-overlay"
+            >
+              <span
+                class="picture-diff-region"
+                data-testid="picture-diff-region"
+              ></span>
+            </span>
           </div>
         </div>
       </section>
@@ -103,6 +122,16 @@ const imageStyle = computed<Record<string, string>>(() => ({
           >
             <span class="picture-marker marker-a"></span>
             <span class="picture-marker marker-b marker-shifted"></span>
+            <span
+              v-if="showOverlay"
+              class="picture-diff-overlay"
+              data-testid="picture-diff-overlay"
+            >
+              <span
+                class="picture-diff-region shifted-region"
+                data-testid="picture-diff-region"
+              ></span>
+            </span>
           </div>
         </div>
       </section>
@@ -171,7 +200,7 @@ h2 {
 
 .picture-controls {
   display: grid;
-  grid-template-columns: repeat(3, minmax(140px, 1fr));
+  grid-template-columns: repeat(3, minmax(140px, 1fr)) auto;
   gap: 10px;
   padding: 10px;
   border: 1px solid var(--app-border);
@@ -191,6 +220,16 @@ h2 {
 
 .picture-controls input {
   width: 100%;
+}
+
+.picture-toggle {
+  grid-template-columns: auto auto;
+  place-content: end;
+}
+
+.picture-toggle input {
+  width: 16px;
+  height: 16px;
 }
 
 .picture-pane-grid {
@@ -277,6 +316,31 @@ h2 {
 .marker-shifted {
   right: 12%;
   bottom: 24%;
+}
+
+.picture-diff-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.picture-diff-region {
+  position: absolute;
+  right: 15%;
+  bottom: 18%;
+  width: 24%;
+  height: 24%;
+  border: 2px solid rgb(255 255 255 / 0.9);
+  border-radius: 6px;
+  background: rgb(217 70 70 / 0.34);
+  box-shadow:
+    0 0 0 1px rgb(127 29 29 / 0.5),
+    0 0 22px rgb(217 70 70 / 0.42);
+}
+
+.shifted-region {
+  right: 9%;
+  bottom: 22%;
 }
 
 @media (width <= 860px) {

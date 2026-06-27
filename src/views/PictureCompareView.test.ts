@@ -37,4 +37,15 @@ describe('PictureCompareView', () => {
       'scale(1.5)',
     )
   })
+
+  it('toggles the picture difference overlay layer', async () => {
+    const wrapper = mount(PictureCompareView)
+
+    expect(wrapper.findAll('[data-testid="picture-diff-overlay"]')).toHaveLength(2)
+    expect(wrapper.find('[data-testid="picture-diff-region"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="picture-overlay-toggle"]').setValue(false)
+
+    expect(wrapper.findAll('[data-testid="picture-diff-overlay"]')).toHaveLength(0)
+  })
 })

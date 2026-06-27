@@ -171,6 +171,8 @@ impl LocalVfs {
             fs::create_dir_all(parent).map_err(|error| VfsError::Io(error.to_string()))?;
         }
 
+        ensure_writable(path, &target)?;
+
         let backup = if target.exists() {
             let backup_path = backup_path_for(&target);
             fs::copy(&target, &backup_path).map_err(|error| fs_error(path, error))?;
@@ -243,6 +245,7 @@ impl VfsProvider for LocalVfs {
             fs::create_dir_all(parent).map_err(|error| VfsError::Io(error.to_string()))?;
         }
 
+        ensure_writable(path, &path_buf)?;
         fs::write(path_buf, bytes).map_err(|error| fs_error(path, error))
     }
 
@@ -274,6 +277,18 @@ fn backup_path_for(path: &Path) -> PathBuf {
         .unwrap_or_else(|| "bak".to_owned());
 
     path.with_extension(backup_extension)
+}
+
+fn ensure_writable(path: &VfsPath, path_buf: &Path) -> VfsResult<()> {
+    let Ok(metadata) = fs::metadata(path_buf) else {
+        return Ok(());
+    };
+
+    if metadata.permissions().readonly() {
+        return Err(VfsError::Readonly(path.clone()));
+    }
+
+    Ok(())
 }
 
 fn metadata_from_fs(path: &Path, metadata: &fs::Metadata) -> VfsResult<VfsMetadata> {
@@ -551,6 +566,40 @@ mod tests {
         assert!(directory_path.is_dir());
 
         let _ = std::fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn local_vfs_returns_readonly_error_for_readonly_file_writes() {
+        let root = unique_temp_dir("readonly");
+        let mut vfs = LocalVfs::new();
+        let file_path = root.join("locked.txt");
+        let file = VfsPath::new(file_path.display().to_string());
+
+        vfs.write(&file, b"locked").expect("write should work");
+        set_readonly(&file_path, true);
+
+        assert!(matches!(
+            vfs.write(&file, b"changed"),
+            Err(VfsError::Readonly(path)) if path == file
+        ));
+        assert!(matches!(
+            vfs.write_with_backup(&file, b"changed"),
+            Err(VfsError::Readonly(path)) if path == file
+        ));
+        assert_eq!(vfs.read(&file).expect("read should work"), b"locked");
+        assert!(!file_path.with_extension("txt.bak").exists());
+
+        set_readonly(&file_path, false);
+        let _ = std::fs::remove_dir_all(root);
+    }
+
+    fn set_readonly(path: &std::path::Path, readonly: bool) {
+        let mut permissions = std::fs::metadata(path)
+            .expect("metadata should be readable")
+            .permissions();
+
+        permissions.set_readonly(readonly);
+        std::fs::set_permissions(path, permissions).expect("permissions should update");
     }
 
     fn unique_temp_dir(label: &str) -> std::path::PathBuf {

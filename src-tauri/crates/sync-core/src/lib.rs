@@ -1,6 +1,6 @@
 use folder_core::FolderAlignmentRow;
 use serde::{Deserialize, Serialize};
-use vfs_core::VfsPath;
+use vfs_core::{VfsPath, VfsProvider};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -43,6 +43,31 @@ pub enum SyncDirection {
     RightToLeft,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SyncExecutionResult {
+    pub total: usize,
+    pub succeeded: usize,
+    pub failed: usize,
+    pub items: Vec<SyncExecutionItemResult>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SyncExecutionItemResult {
+    pub relative_path: String,
+    pub action: SyncAction,
+    pub status: SyncExecutionStatus,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum SyncExecutionStatus {
+    Succeeded,
+    Failed,
+}
+
 impl SyncPlan {
     pub fn new(name: impl Into<String>) -> Self {
         Self {
@@ -53,6 +78,59 @@ impl SyncPlan {
 
     pub fn add_item(&mut self, item: SyncPlanItem) {
         self.items.push(item);
+    }
+}
+
+pub fn execute_sync_plan(vfs: &mut impl VfsProvider, plan: &SyncPlan) -> SyncExecutionResult {
+    let items = plan
+        .items
+        .iter()
+        .map(|item| execute_sync_plan_item(vfs, item))
+        .collect::<Vec<_>>();
+    let succeeded = items
+        .iter()
+        .filter(|item| item.status == SyncExecutionStatus::Succeeded)
+        .count();
+    let failed = items.len() - succeeded;
+
+    SyncExecutionResult {
+        total: items.len(),
+        succeeded,
+        failed,
+        items,
+    }
+}
+
+fn execute_sync_plan_item(
+    vfs: &mut impl VfsProvider,
+    item: &SyncPlanItem,
+) -> SyncExecutionItemResult {
+    let execution = match &item.action {
+        SyncAction::Copy {
+            source_path,
+            target_path,
+            ..
+        } => vfs
+            .read(&VfsPath::new(source_path.clone()))
+            .and_then(|bytes| vfs.write(&VfsPath::new(target_path.clone()), &bytes)),
+        SyncAction::Delete { target_path } => vfs.delete(&VfsPath::new(target_path.clone())),
+        SyncAction::Leave => Ok(()),
+        SyncAction::Conflict { message, .. } => Err(vfs_core::VfsError::Io(message.clone())),
+    };
+
+    match execution {
+        Ok(()) => SyncExecutionItemResult {
+            relative_path: item.relative_path.clone(),
+            action: item.action.clone(),
+            status: SyncExecutionStatus::Succeeded,
+            error: None,
+        },
+        Err(error) => SyncExecutionItemResult {
+            relative_path: item.relative_path.clone(),
+            action: item.action.clone(),
+            status: SyncExecutionStatus::Failed,
+            error: Some(format!("{error:?}")),
+        },
     }
 }
 
@@ -334,7 +412,8 @@ fn joined_path(root: &str, relative_path: &str) -> String {
 mod tests {
     use super::*;
     use folder_core::{FolderAlignmentRow, FolderCompareStatus, FolderScanNode};
-    use vfs_core::{VfsEntryKind, VfsMetadata};
+    use std::collections::BTreeMap;
+    use vfs_core::{VfsEntry, VfsEntryKind, VfsError, VfsMetadata, VfsProvider};
 
     #[test]
     fn sync_plan_supports_copy_delete_leave_and_conflict_actions() {
@@ -597,6 +676,62 @@ mod tests {
         assert_eq!(plan.items[4].action, SyncAction::Leave);
     }
 
+    #[test]
+    fn executes_sync_plan_copy_overwrite_delete_and_leave_actions() {
+        let mut vfs = MemoryVfs::default()
+            .with_file("/left/new.txt", b"new")
+            .with_file("/left/overwrite.txt", b"left version")
+            .with_file("/right/overwrite.txt", b"right version")
+            .with_file("/right/delete.txt", b"delete me")
+            .with_file("/right/keep.txt", b"keep me");
+        let mut plan = SyncPlan::new("Execute plan");
+
+        plan.add_item(SyncPlanItem {
+            relative_path: "new.txt".to_owned(),
+            action: SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "/left/new.txt".to_owned(),
+                target_path: "/right/new.txt".to_owned(),
+            },
+            reason: "copy".to_owned(),
+        });
+        plan.add_item(SyncPlanItem {
+            relative_path: "overwrite.txt".to_owned(),
+            action: SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "/left/overwrite.txt".to_owned(),
+                target_path: "/right/overwrite.txt".to_owned(),
+            },
+            reason: "overwrite".to_owned(),
+        });
+        plan.add_item(SyncPlanItem {
+            relative_path: "delete.txt".to_owned(),
+            action: SyncAction::Delete {
+                target_path: "/right/delete.txt".to_owned(),
+            },
+            reason: "delete".to_owned(),
+        });
+        plan.add_item(SyncPlanItem {
+            relative_path: "keep.txt".to_owned(),
+            action: SyncAction::Leave,
+            reason: "leave".to_owned(),
+        });
+
+        let result = execute_sync_plan(&mut vfs, &plan);
+
+        assert_eq!(result.total, 4);
+        assert_eq!(result.succeeded, 4);
+        assert_eq!(result.failed, 0);
+        assert_eq!(vfs.read_bytes("/right/new.txt"), Some(b"new".to_vec()));
+        assert_eq!(
+            vfs.read_bytes("/right/overwrite.txt"),
+            Some(b"left version".to_vec())
+        );
+        assert_eq!(vfs.read_bytes("/right/delete.txt"), None);
+        assert_eq!(vfs.read_bytes("/right/keep.txt"), Some(b"keep me".to_vec()));
+        assert!(result.items.iter().all(|item| item.error.is_none()));
+    }
+
     fn file_row(
         relative_path: &str,
         left_modified_at_ms: Option<u128>,
@@ -667,5 +802,70 @@ mod tests {
         );
         node.status = status;
         node
+    }
+
+    #[derive(Default)]
+    struct MemoryVfs {
+        files: BTreeMap<String, Vec<u8>>,
+    }
+
+    impl MemoryVfs {
+        fn with_file(mut self, path: &str, bytes: &[u8]) -> Self {
+            self.files.insert(path.to_owned(), bytes.to_vec());
+            self
+        }
+
+        fn read_bytes(&self, path: &str) -> Option<Vec<u8>> {
+            self.files.get(path).cloned()
+        }
+    }
+
+    impl VfsProvider for MemoryVfs {
+        fn list(&self, _path: &vfs_core::VfsPath) -> vfs_core::VfsResult<Vec<VfsEntry>> {
+            Ok(Vec::new())
+        }
+
+        fn read(&self, path: &vfs_core::VfsPath) -> vfs_core::VfsResult<Vec<u8>> {
+            self.files
+                .get(path.as_str())
+                .cloned()
+                .ok_or_else(|| VfsError::NotFound(path.clone()))
+        }
+
+        fn write(&mut self, path: &vfs_core::VfsPath, bytes: &[u8]) -> vfs_core::VfsResult<()> {
+            self.files.insert(path.as_str().to_owned(), bytes.to_vec());
+
+            Ok(())
+        }
+
+        fn metadata(&self, path: &vfs_core::VfsPath) -> vfs_core::VfsResult<VfsMetadata> {
+            let bytes = self
+                .files
+                .get(path.as_str())
+                .ok_or_else(|| VfsError::NotFound(path.clone()))?;
+
+            Ok(VfsMetadata {
+                kind: VfsEntryKind::File,
+                name: path
+                    .as_str()
+                    .rsplit('/')
+                    .next()
+                    .unwrap_or(path.as_str())
+                    .to_owned(),
+                extension: None,
+                size: bytes.len() as u64,
+                readonly: false,
+                created_at_ms: None,
+                modified_at_ms: None,
+                accessed_at_ms: None,
+            })
+        }
+
+        fn delete(&mut self, path: &vfs_core::VfsPath) -> vfs_core::VfsResult<()> {
+            self.files
+                .remove(path.as_str())
+                .map(|_| ())
+                .ok_or_else(|| VfsError::NotFound(path.clone()))
+        }
     }
 }

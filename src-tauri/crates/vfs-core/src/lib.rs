@@ -113,9 +113,13 @@ pub struct VfsEntry {
 #[serde(rename_all = "camelCase")]
 pub struct VfsMetadata {
     pub kind: VfsEntryKind,
+    pub name: String,
+    pub extension: Option<String>,
     pub size: u64,
     pub readonly: bool,
+    pub created_at_ms: Option<u128>,
     pub modified_at_ms: Option<u128>,
+    pub accessed_at_ms: Option<u128>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -177,7 +181,7 @@ impl VfsProvider for LocalVfs {
 
                 Ok(VfsEntry {
                     path: VfsPath::new(entry_path.display().to_string()),
-                    metadata: metadata_from_fs(&metadata)?,
+                    metadata: metadata_from_fs(&entry_path, &metadata)?,
                 })
             })
             .collect::<VfsResult<Vec<_>>>()?;
@@ -204,7 +208,7 @@ impl VfsProvider for LocalVfs {
     fn metadata(&self, path: &VfsPath) -> VfsResult<VfsMetadata> {
         let metadata = fs::metadata(path_buf(path)).map_err(|error| fs_error(path, error))?;
 
-        metadata_from_fs(&metadata)
+        metadata_from_fs(&path_buf(path), &metadata)
     }
 
     fn delete(&mut self, path: &VfsPath) -> VfsResult<()> {
@@ -222,19 +226,36 @@ fn path_buf(path: &VfsPath) -> PathBuf {
     Path::new(path.as_str()).to_path_buf()
 }
 
-fn metadata_from_fs(metadata: &fs::Metadata) -> VfsResult<VfsMetadata> {
+fn metadata_from_fs(path: &Path, metadata: &fs::Metadata) -> VfsResult<VfsMetadata> {
     Ok(VfsMetadata {
         kind: if metadata.is_dir() {
             VfsEntryKind::Directory
         } else {
             VfsEntryKind::File
         },
+        name: path
+            .file_name()
+            .map(|name| name.to_string_lossy().into_owned())
+            .unwrap_or_else(|| path.display().to_string()),
+        extension: path
+            .extension()
+            .map(|extension| extension.to_string_lossy().into_owned()),
         size: metadata.len(),
         readonly: metadata.permissions().readonly(),
+        created_at_ms: metadata
+            .created()
+            .ok()
+            .and_then(|created| created.duration_since(UNIX_EPOCH).ok())
+            .map(|duration| duration.as_millis()),
         modified_at_ms: metadata
             .modified()
             .ok()
             .and_then(|modified| modified.duration_since(UNIX_EPOCH).ok())
+            .map(|duration| duration.as_millis()),
+        accessed_at_ms: metadata
+            .accessed()
+            .ok()
+            .and_then(|accessed| accessed.duration_since(UNIX_EPOCH).ok())
             .map(|duration| duration.as_millis()),
     })
 }
@@ -277,9 +298,23 @@ mod tests {
                                 path: file_path.clone(),
                                 metadata: VfsMetadata {
                                     kind: VfsEntryKind::File,
+                                    name: file_path
+                                        .as_str()
+                                        .rsplit('/')
+                                        .next()
+                                        .unwrap_or(file_path.as_str())
+                                        .to_owned(),
+                                    extension: file_path.as_str().rsplit('/').next().and_then(
+                                        |name| {
+                                            name.rsplit_once('.')
+                                                .map(|(_, extension)| extension.to_owned())
+                                        },
+                                    ),
                                     size: bytes.len() as u64,
                                     readonly: false,
+                                    created_at_ms: None,
                                     modified_at_ms: None,
+                                    accessed_at_ms: None,
                                 },
                             })
                         })
@@ -308,9 +343,21 @@ mod tests {
 
             Ok(VfsMetadata {
                 kind: VfsEntryKind::File,
+                name: path
+                    .as_str()
+                    .rsplit('/')
+                    .next()
+                    .unwrap_or(path.as_str())
+                    .to_owned(),
+                extension: path.as_str().rsplit('/').next().and_then(|name| {
+                    name.rsplit_once('.')
+                        .map(|(_, extension)| extension.to_owned())
+                }),
                 size: bytes.len() as u64,
                 readonly: false,
+                created_at_ms: None,
                 modified_at_ms: None,
+                accessed_at_ms: None,
             })
         }
 
@@ -393,6 +440,26 @@ mod tests {
             VfsPath::new("/work").join("child/file.txt").as_str(),
             "/work/child/file.txt"
         );
+    }
+
+    #[test]
+    fn local_vfs_metadata_includes_file_identity_time_and_attributes() {
+        let root = unique_temp_dir("metadata");
+        let mut vfs = LocalVfs::new();
+        let file = VfsPath::new(root.join("report.txt").display().to_string());
+
+        vfs.write(&file, b"metadata").expect("write should work");
+
+        let metadata = vfs.metadata(&file).expect("metadata should work");
+
+        assert_eq!(metadata.name, "report.txt");
+        assert_eq!(metadata.extension.as_deref(), Some("txt"));
+        assert_eq!(metadata.kind, VfsEntryKind::File);
+        assert_eq!(metadata.size, 8);
+        assert!(!metadata.readonly);
+        assert!(metadata.modified_at_ms.is_some());
+
+        let _ = std::fs::remove_dir_all(root);
     }
 
     fn unique_temp_dir(label: &str) -> std::path::PathBuf {

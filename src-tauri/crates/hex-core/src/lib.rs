@@ -65,6 +65,26 @@ pub enum HexEditError {
     Storage(String),
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum HexFindQuery {
+    Text(String),
+    Hex(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HexFindMatch {
+    pub offset: u64,
+    pub length: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum HexFindError {
+    EmptyQuery,
+    InvalidHexQuery(String),
+}
+
 pub fn read_hex_block(source: &[u8], offset: u64, length: usize) -> HexBlock {
     let total_len = source.len() as u64;
     let start = usize::try_from(offset)
@@ -205,6 +225,68 @@ fn diff_contains_offset(diff: &BinaryDiff, offset: u64) -> bool {
     })
 }
 
+pub fn find_hex_matches(
+    source: &[u8],
+    query: HexFindQuery,
+) -> Result<Vec<HexFindMatch>, HexFindError> {
+    let pattern = match query {
+        HexFindQuery::Text(value) => {
+            if value.is_empty() {
+                return Err(HexFindError::EmptyQuery);
+            }
+
+            value.into_bytes()
+        }
+        HexFindQuery::Hex(value) => parse_hex_query(&value)?,
+    };
+
+    Ok(find_byte_pattern(source, &pattern))
+}
+
+fn find_byte_pattern(source: &[u8], pattern: &[u8]) -> Vec<HexFindMatch> {
+    if pattern.is_empty() || pattern.len() > source.len() {
+        return Vec::new();
+    }
+
+    source
+        .windows(pattern.len())
+        .enumerate()
+        .filter_map(|(offset, window)| {
+            (window == pattern).then_some(HexFindMatch {
+                offset: offset as u64,
+                length: pattern.len() as u64,
+            })
+        })
+        .collect()
+}
+
+fn parse_hex_query(value: &str) -> Result<Vec<u8>, HexFindError> {
+    let compact = value
+        .chars()
+        .filter(|character| !character.is_whitespace())
+        .collect::<String>();
+
+    if compact.is_empty() {
+        return Err(HexFindError::EmptyQuery);
+    }
+
+    if compact.len() % 2 != 0
+        || !compact
+            .chars()
+            .all(|character| character.is_ascii_hexdigit())
+    {
+        return Err(HexFindError::InvalidHexQuery(value.to_owned()));
+    }
+
+    (0..compact.len())
+        .step_by(2)
+        .map(|index| {
+            u8::from_str_radix(&compact[index..index + 2], 16)
+                .map_err(|_| HexFindError::InvalidHexQuery(value.to_owned()))
+        })
+        .collect()
+}
+
 fn storage_error(error: impl fmt::Debug) -> HexEditError {
     HexEditError::Storage(format!("{error:?}"))
 }
@@ -224,6 +306,17 @@ impl fmt::Display for HexEditError {
 }
 
 impl std::error::Error for HexEditError {}
+
+impl fmt::Display for HexFindError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::EmptyQuery => write!(formatter, "hex find query cannot be empty"),
+            Self::InvalidHexQuery(query) => write!(formatter, "invalid hex query: {query}"),
+        }
+    }
+}
+
+impl std::error::Error for HexFindError {}
 
 #[cfg(test)]
 mod tests {
@@ -361,6 +454,79 @@ mod tests {
         );
 
         std::fs::remove_dir_all(root).expect("temp directory should be removable");
+    }
+
+    #[test]
+    fn finds_text_queries_as_utf8_bytes() {
+        let result = find_hex_matches(b"alpha beta alpha", HexFindQuery::Text("alpha".to_owned()))
+            .expect("text query should be valid");
+
+        assert_eq!(
+            result,
+            vec![
+                HexFindMatch {
+                    offset: 0,
+                    length: 5,
+                },
+                HexFindMatch {
+                    offset: 11,
+                    length: 5,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn finds_hex_sequence_queries_with_spacing() {
+        let source = [0x10, 0xAB, 0xCD, 0x20, 0xAB, 0xCD, 0x30];
+        let result = find_hex_matches(&source, HexFindQuery::Hex("AB CD".to_owned()))
+            .expect("hex query should be valid");
+
+        assert_eq!(
+            result,
+            vec![
+                HexFindMatch {
+                    offset: 1,
+                    length: 2,
+                },
+                HexFindMatch {
+                    offset: 4,
+                    length: 2,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn finds_compact_case_insensitive_hex_queries() {
+        let source = [0xAA, 0xBB, 0xCC, 0xAA, 0xBB];
+        let result = find_hex_matches(&source, HexFindQuery::Hex("aAbb".to_owned()))
+            .expect("compact hex query should be valid");
+
+        assert_eq!(
+            result,
+            vec![
+                HexFindMatch {
+                    offset: 0,
+                    length: 2,
+                },
+                HexFindMatch {
+                    offset: 3,
+                    length: 2,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn rejects_empty_find_queries() {
+        let text_error = find_hex_matches(b"ABC", HexFindQuery::Text(String::new()))
+            .expect_err("empty text query should be rejected");
+        let hex_error = find_hex_matches(b"ABC", HexFindQuery::Hex("   ".to_owned()))
+            .expect_err("empty hex query should be rejected");
+
+        assert_eq!(text_error, HexFindError::EmptyQuery);
+        assert_eq!(hex_error, HexFindError::EmptyQuery);
     }
 
     fn unique_temp_dir(prefix: &str) -> std::path::PathBuf {

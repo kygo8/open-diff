@@ -56,7 +56,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Hex Compare',
     summary: 'Binary byte comparison',
     priority: 'P1',
-    implemented: false,
+    implemented: true,
+    route: '/compare/hex',
   },
   {
     type: 'picture-compare',

@@ -52,14 +52,16 @@ describe('selectSessionForDrop', () => {
   it('selects hex compare for binary or unknown file extensions', () => {
     expect(selectSessionForDrop(pair('left.exe', 'right.dll'))).toMatchObject({
       sessionType: 'hex-compare',
-      enabled: false,
+      route: '/compare/hex',
+      enabled: true,
     })
   })
 
   it('falls back to hex compare for mixed inputs', () => {
     expect(selectSessionForDrop(pair('left.txt', 'right', 'file', 'directory'))).toMatchObject({
       sessionType: 'hex-compare',
-      enabled: false,
+      route: '/compare/hex',
+      enabled: true,
     })
   })
 })

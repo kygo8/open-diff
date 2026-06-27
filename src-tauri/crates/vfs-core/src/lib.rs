@@ -159,6 +159,47 @@ impl LocalVfs {
     pub fn new() -> Self {
         Self
     }
+
+    pub fn write_with_backup(
+        &mut self,
+        path: &VfsPath,
+        bytes: &[u8],
+    ) -> VfsResult<Option<VfsPath>> {
+        let target = path_buf(path);
+
+        if let Some(parent) = target.parent() {
+            fs::create_dir_all(parent).map_err(|error| VfsError::Io(error.to_string()))?;
+        }
+
+        let backup = if target.exists() {
+            let backup_path = backup_path_for(&target);
+            fs::copy(&target, &backup_path).map_err(|error| fs_error(path, error))?;
+            Some(VfsPath::new(backup_path.display().to_string()))
+        } else {
+            None
+        };
+        let temp_path = target.with_extension(format!(
+            "{}tmp",
+            target
+                .extension()
+                .map(|extension| format!("{}.", extension.to_string_lossy()))
+                .unwrap_or_default()
+        ));
+
+        if let Err(error) = fs::write(&temp_path, bytes) {
+            let _ = fs::remove_file(&temp_path);
+
+            return Err(fs_error(path, error));
+        }
+
+        if let Err(error) = fs::rename(&temp_path, &target) {
+            let _ = fs::remove_file(&temp_path);
+
+            return Err(fs_error(path, error));
+        }
+
+        Ok(backup)
+    }
 }
 
 impl VfsProvider for LocalVfs {
@@ -224,6 +265,15 @@ impl VfsProvider for LocalVfs {
 
 fn path_buf(path: &VfsPath) -> PathBuf {
     Path::new(path.as_str()).to_path_buf()
+}
+
+fn backup_path_for(path: &Path) -> PathBuf {
+    let backup_extension = path
+        .extension()
+        .map(|extension| format!("{}.bak", extension.to_string_lossy()))
+        .unwrap_or_else(|| "bak".to_owned());
+
+    path.with_extension(backup_extension)
 }
 
 fn metadata_from_fs(path: &Path, metadata: &fs::Metadata) -> VfsResult<VfsMetadata> {
@@ -458,6 +508,47 @@ mod tests {
         assert_eq!(metadata.size, 8);
         assert!(!metadata.readonly);
         assert!(metadata.modified_at_ms.is_some());
+
+        let _ = std::fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn local_vfs_safe_write_creates_backup_before_replace() {
+        let root = unique_temp_dir("safe-write");
+        let mut vfs = LocalVfs::new();
+        let file = VfsPath::new(root.join("document.txt").display().to_string());
+
+        vfs.write(&file, b"old content")
+            .expect("initial write should work");
+
+        let backup = vfs
+            .write_with_backup(&file, b"new content")
+            .expect("safe write should work")
+            .expect("existing file should produce a backup");
+
+        assert_eq!(
+            vfs.read(&file).expect("target should be readable"),
+            b"new content"
+        );
+        assert_eq!(
+            vfs.read(&backup).expect("backup should be readable"),
+            b"old content"
+        );
+
+        let _ = std::fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn local_vfs_safe_write_failure_preserves_existing_directory() {
+        let root = unique_temp_dir("safe-write-failure");
+        let mut vfs = LocalVfs::new();
+        let directory_path = root.join("target");
+        let directory = VfsPath::new(directory_path.display().to_string());
+
+        std::fs::create_dir_all(&directory_path).expect("directory should be created");
+
+        assert!(vfs.write_with_backup(&directory, b"bytes").is_err());
+        assert!(directory_path.is_dir());
 
         let _ = std::fs::remove_dir_all(root);
     }

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 
 type FolderSide = 'left' | 'right'
 type FolderStatus = 'Same' | 'Different' | 'Left only' | 'Right only'
+type FolderColumnId = 'size' | 'modified' | 'type'
 
 interface FolderTreeRow {
   id: string
@@ -18,6 +19,11 @@ interface FolderTreeRow {
   kind: 'file' | 'directory'
 }
 
+const configurableColumns: { id: FolderColumnId; label: string }[] = [
+  { id: 'size', label: 'Size' },
+  { id: 'modified', label: 'Modified' },
+  { id: 'type', label: 'Type' },
+]
 const generatedRows: FolderTreeRow[] = Array.from({ length: 180 }, (_, index): FolderTreeRow => {
   const number = index + 1
   const padded = String(number).padStart(3, '0')
@@ -124,6 +130,38 @@ const virtualOffset = computed(() => {
 
   return `translateY(${offset}px)`
 })
+const visibleColumnIds = ref<Set<FolderColumnId>>(new Set(['size', 'modified']))
+const gridTemplateColumns = computed(() => {
+  const columns = ['minmax(180px, 1.2fr)']
+
+  if (isColumnVisible('size')) {
+    columns.push('90px')
+  }
+
+  if (isColumnVisible('modified')) {
+    columns.push('150px')
+  }
+
+  if (isColumnVisible('type')) {
+    columns.push('96px')
+  }
+
+  columns.push('104px', 'minmax(180px, 1.2fr)')
+
+  if (isColumnVisible('size')) {
+    columns.push('90px')
+  }
+
+  if (isColumnVisible('modified')) {
+    columns.push('150px')
+  }
+
+  if (isColumnVisible('type')) {
+    columns.push('96px')
+  }
+
+  return columns.join(' ')
+})
 
 function rowIndent(row: FolderTreeRow): string {
   const indent = String(row.depth * 18)
@@ -140,6 +178,26 @@ function sideValue(
   const value = row[key]
 
   return typeof value === 'string' ? value : '--'
+}
+
+function typeLabel(row: FolderTreeRow): string {
+  return row.kind === 'directory' ? 'Directory' : 'File'
+}
+
+function isColumnVisible(columnId: FolderColumnId): boolean {
+  return visibleColumnIds.value.has(columnId)
+}
+
+function toggleColumn(columnId: FolderColumnId, selected: boolean): void {
+  const next = new Set(visibleColumnIds.value)
+
+  if (selected) {
+    next.add(columnId)
+  } else {
+    next.delete(columnId)
+  }
+
+  visibleColumnIds.value = next
 }
 
 function toggleFolder(row: FolderTreeRow): void {
@@ -221,6 +279,21 @@ function handleTreeScroll(event: Event): void {
       </div>
     </header>
 
+    <section class="column-config">
+      <label
+        v-for="column in configurableColumns"
+        :key="column.id"
+      >
+        <input
+          :data-testid="`toggle-column-${column.id}`"
+          type="checkbox"
+          :checked="isColumnVisible(column.id)"
+          @change="toggleColumn(column.id, ($event.target as HTMLInputElement).checked)"
+        />
+        <span>{{ column.label }}</span>
+      </label>
+    </section>
+
     <section class="folder-summary">
       <div>
         <strong>{{ summary.total }}</strong>
@@ -241,14 +314,49 @@ function handleTreeScroll(event: Event): void {
       data-testid="folder-tree-table"
       @scroll="handleTreeScroll"
     >
-      <div class="tree-head">
+      <div
+        class="tree-head"
+        :style="{ gridTemplateColumns }"
+      >
         <span>Name</span>
-        <span>Size</span>
-        <span>Modified</span>
+        <span
+          v-if="isColumnVisible('size')"
+          data-column="left-size"
+        >
+          Size
+        </span>
+        <span
+          v-if="isColumnVisible('modified')"
+          data-column="left-modified"
+        >
+          Modified
+        </span>
+        <span
+          v-if="isColumnVisible('type')"
+          data-column="left-type"
+        >
+          Type
+        </span>
         <span>Status</span>
         <span>Name</span>
-        <span>Size</span>
-        <span>Modified</span>
+        <span
+          v-if="isColumnVisible('size')"
+          data-column="right-size"
+        >
+          Size
+        </span>
+        <span
+          v-if="isColumnVisible('modified')"
+          data-column="right-modified"
+        >
+          Modified
+        </span>
+        <span
+          v-if="isColumnVisible('type')"
+          data-column="right-type"
+        >
+          Type
+        </span>
       </div>
       <div
         class="tree-body"
@@ -264,6 +372,7 @@ function handleTreeScroll(event: Event): void {
             :key="row.id"
             class="tree-row"
             :class="[`status-${row.status.toLowerCase().replaceAll(' ', '-')}`, row.kind]"
+            :style="{ gridTemplateColumns }"
             data-testid="folder-row"
           >
             <span
@@ -282,8 +391,24 @@ function handleTreeScroll(event: Event): void {
               </button>
               {{ sideValue(row, 'left', 'name') }}
             </span>
-            <span>{{ sideValue(row, 'left', 'size') }}</span>
-            <span>{{ sideValue(row, 'left', 'modified') }}</span>
+            <span
+              v-if="isColumnVisible('size')"
+              data-column="left-size"
+            >
+              {{ sideValue(row, 'left', 'size') }}
+            </span>
+            <span
+              v-if="isColumnVisible('modified')"
+              data-column="left-modified"
+            >
+              {{ sideValue(row, 'left', 'modified') }}
+            </span>
+            <span
+              v-if="isColumnVisible('type')"
+              data-column="left-type"
+            >
+              {{ typeLabel(row) }}
+            </span>
             <strong>{{ row.status }}</strong>
             <span
               class="name-cell"
@@ -291,8 +416,24 @@ function handleTreeScroll(event: Event): void {
             >
               {{ sideValue(row, 'right', 'name') }}
             </span>
-            <span>{{ sideValue(row, 'right', 'size') }}</span>
-            <span>{{ sideValue(row, 'right', 'modified') }}</span>
+            <span
+              v-if="isColumnVisible('size')"
+              data-column="right-size"
+            >
+              {{ sideValue(row, 'right', 'size') }}
+            </span>
+            <span
+              v-if="isColumnVisible('modified')"
+              data-column="right-modified"
+            >
+              {{ sideValue(row, 'right', 'modified') }}
+            </span>
+            <span
+              v-if="isColumnVisible('type')"
+              data-column="right-type"
+            >
+              {{ typeLabel(row) }}
+            </span>
           </div>
         </div>
       </div>
@@ -303,7 +444,7 @@ function handleTreeScroll(event: Event): void {
 <style scoped>
 .folder-compare-view {
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto minmax(0, 1fr);
   gap: 12px;
   height: 100%;
   padding: 16px;
@@ -349,6 +490,20 @@ function handleTreeScroll(event: Event): void {
 .folder-actions {
   display: flex;
   gap: 8px;
+}
+
+.column-config {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.column-config label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--app-text-muted);
+  font-size: 12px;
 }
 
 .folder-summary {
@@ -397,7 +552,6 @@ function handleTreeScroll(event: Event): void {
 .tree-head,
 .tree-row {
   display: grid;
-  grid-template-columns: minmax(180px, 1.2fr) 90px 150px 104px minmax(180px, 1.2fr) 90px 150px;
   min-width: 1040px;
 }
 

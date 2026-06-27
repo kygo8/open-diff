@@ -79,4 +79,30 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).toContain('generated-120.log')
     expect(wrapper.findAll('[data-testid="folder-row"]').length).toBeLessThan(40)
   })
+
+  it('configures visible folder table columns', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.findAll('[data-column="left-size"]').length).toBeGreaterThan(0)
+    expect(wrapper.find('[data-column="left-type"]').exists()).toBe(false)
+
+    await wrapper.find('[data-testid="toggle-column-size"]').setValue(false)
+    await wrapper.find('[data-testid="toggle-column-modified"]').setValue(false)
+    await wrapper.find('[data-testid="toggle-column-type"]').setValue(true)
+
+    expect(wrapper.find('[data-column="left-size"]').exists()).toBe(false)
+    expect(wrapper.find('[data-column="left-modified"]').exists()).toBe(false)
+    expect(wrapper.find('[data-column="left-type"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Directory')
+  })
 })

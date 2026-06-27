@@ -9,6 +9,7 @@ members = [
   "crates/image-core",
   "crates/job-core",
   "crates/report-core",
+  "crates/script-core",
   "crates/session-core",
   "crates/sync-core",
   "crates/table-core",

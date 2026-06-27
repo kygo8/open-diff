@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { readClipboardTextSource } from '@/app/clipboardSource'
 import { classifyDropInputs } from '@/app/dropInput'
 import { buildSavedSessionTree, filterSavedSessions } from '@/app/savedSessions'
 import { selectSessionForDrop } from '@/app/sessionAutoSelect'
@@ -24,6 +25,7 @@ const selectedDropSession = ref<SessionSelection>()
 const isDragging = ref(false)
 const sessionSearch = ref('')
 const selectedSessionTypes = ref<Set<SessionType>>(new Set())
+const clipboardStatus = ref('Clipboard text source not loaded')
 const savedSessionTypes = computed(() =>
   Array.from(new Set(savedSessions.sessions.map((session) => session.sessionType))),
 )
@@ -109,6 +111,21 @@ function openSelectedDropSession(): void {
     dirty: false,
   })
   void router.push(selectedDropSession.value.route)
+}
+
+async function openClipboardText(): Promise<void> {
+  try {
+    const source = await readClipboardTextSource()
+
+    clipboardStatus.value = `${source.title} ready`
+    tabs.openTab({ title: source.title, route: '/compare/text', dirty: false })
+    void router.push('/compare/text')
+  } catch (error) {
+    clipboardStatus.value =
+      typeof error === 'object' && error !== null && 'message' in error
+        ? String(error.message)
+        : String(error)
+  }
 }
 
 function toggleSessionType(type: SessionType, selected: boolean): void {
@@ -218,6 +235,20 @@ function restoreWorkspaceFromRecovery(): void {
         @click="openSelectedDropSession"
       >
         Open Suggested View
+      </NButton>
+    </section>
+
+    <section class="clipboard-source">
+      <div>
+        <strong>Clipboard text</strong>
+        <span>{{ clipboardStatus }}</span>
+      </div>
+      <NButton
+        size="small"
+        data-testid="open-clipboard-text"
+        @click="openClipboardText"
+      >
+        Open Clipboard
       </NButton>
     </section>
 
@@ -420,6 +451,33 @@ h1 {
   gap: 6px;
 }
 
+.clipboard-source {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+  place-items: center;
+}
+
+.clipboard-source div {
+  display: grid;
+  gap: 4px;
+  justify-self: start;
+}
+
+.clipboard-source strong {
+  font-size: 14px;
+}
+
+.clipboard-source span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
 .drop-zone strong {
   font-size: 15px;
 }
@@ -616,7 +674,8 @@ h1 {
   }
 
   .home-content,
-  .drop-zone {
+  .drop-zone,
+  .clipboard-source {
     grid-template-columns: 1fr;
   }
 }

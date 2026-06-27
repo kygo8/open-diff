@@ -2,10 +2,19 @@ import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import HomeView from './HomeView.vue'
+import { readClipboardTextSource } from '@/app/clipboardSource'
 import { sessionCatalog } from '@/app/sessionCatalog'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
 
 const push = vi.fn()
+
+vi.mock('@/app/clipboardSource', () => ({
+  readClipboardTextSource: vi.fn().mockResolvedValue({
+    kind: 'clipboard-text',
+    title: 'Clipboard Text',
+    text: 'clipboard text',
+  }),
+}))
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
@@ -15,6 +24,7 @@ describe('HomeView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     push.mockClear()
+    vi.mocked(readClipboardTextSource).mockClear()
   })
 
   it('renders every session type entry grouped by priority', () => {
@@ -211,5 +221,25 @@ describe('HomeView', () => {
     expect(wrapper.find('[data-testid="recovery-entry"]').exists()).toBe(false)
     expect(wrapper.text()).toContain('Recovered text')
     expect(push).toHaveBeenCalledWith('/compare/text')
+  })
+
+  it('opens text compare from clipboard text', async () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="open-clipboard-text"]').trigger('click')
+
+    expect(readClipboardTextSource).toHaveBeenCalled()
+    expect(push).toHaveBeenCalledWith('/compare/text')
+    expect(wrapper.text()).toContain('Clipboard Text ready')
   })
 })

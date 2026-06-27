@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use std::path::Path;
 use vfs_core::{LocalVfs, VfsEntryKind, VfsMetadata, VfsPath, VfsProvider};
 
@@ -29,6 +30,15 @@ pub enum FolderCompareStatus {
     LeftOnly,
     RightOnly,
     Error,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderAlignmentRow {
+    pub relative_path: String,
+    pub depth: usize,
+    pub left: Option<FolderScanNode>,
+    pub right: Option<FolderScanNode>,
 }
 
 impl FolderScanNode {
@@ -62,6 +72,25 @@ impl FolderScanNode {
             children: Vec::new(),
         }
     }
+}
+
+pub fn align_folder_trees(
+    left: &FolderScanNode,
+    right: &FolderScanNode,
+) -> Vec<FolderAlignmentRow> {
+    let mut rows = BTreeMap::<String, (Option<FolderScanNode>, Option<FolderScanNode>)>::new();
+
+    collect_alignment_side(left, true, &mut rows);
+    collect_alignment_side(right, false, &mut rows);
+
+    rows.into_iter()
+        .map(|(relative_path, (left, right))| FolderAlignmentRow {
+            depth: path_depth(&relative_path),
+            relative_path,
+            left,
+            right,
+        })
+        .collect()
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -119,6 +148,31 @@ fn scan_path(
         metadata,
         children,
     ))
+}
+
+fn collect_alignment_side(
+    node: &FolderScanNode,
+    is_left: bool,
+    rows: &mut BTreeMap<String, (Option<FolderScanNode>, Option<FolderScanNode>)>,
+) {
+    for child in &node.children {
+        let entry = rows.entry(child.relative_path.clone()).or_default();
+        if is_left {
+            entry.0 = Some(child.clone());
+        } else {
+            entry.1 = Some(child.clone());
+        }
+
+        collect_alignment_side(child, is_left, rows);
+    }
+}
+
+fn path_depth(relative_path: &str) -> usize {
+    if relative_path.is_empty() {
+        0
+    } else {
+        relative_path.matches('/').count()
+    }
 }
 
 fn relative_path(root: &Path, path: &Path) -> String {
@@ -187,6 +241,57 @@ mod tests {
         );
 
         let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn aligns_matching_paths_and_preserves_orphans() {
+        let left = FolderScanNode::new_directory(
+            "",
+            "left",
+            metadata(VfsEntryKind::Directory, "left", None, 0),
+            vec![
+                FolderScanNode::new_file(
+                    "left-only.txt",
+                    "left-only.txt",
+                    metadata(VfsEntryKind::File, "left-only.txt", Some("txt"), 10),
+                ),
+                FolderScanNode::new_file(
+                    "shared.txt",
+                    "shared.txt",
+                    metadata(VfsEntryKind::File, "shared.txt", Some("txt"), 20),
+                ),
+            ],
+        );
+        let right = FolderScanNode::new_directory(
+            "",
+            "right",
+            metadata(VfsEntryKind::Directory, "right", None, 0),
+            vec![
+                FolderScanNode::new_file(
+                    "right-only.txt",
+                    "right-only.txt",
+                    metadata(VfsEntryKind::File, "right-only.txt", Some("txt"), 30),
+                ),
+                FolderScanNode::new_file(
+                    "shared.txt",
+                    "shared.txt",
+                    metadata(VfsEntryKind::File, "shared.txt", Some("txt"), 20),
+                ),
+            ],
+        );
+
+        let aligned = align_folder_trees(&left, &right);
+
+        assert_eq!(aligned.len(), 3);
+        assert_eq!(aligned[0].relative_path, "left-only.txt");
+        assert!(aligned[0].left.is_some());
+        assert!(aligned[0].right.is_none());
+        assert_eq!(aligned[1].relative_path, "right-only.txt");
+        assert!(aligned[1].left.is_none());
+        assert!(aligned[1].right.is_some());
+        assert_eq!(aligned[2].relative_path, "shared.txt");
+        assert!(aligned[2].left.is_some());
+        assert!(aligned[2].right.is_some());
     }
 
     fn metadata(kind: VfsEntryKind, name: &str, extension: Option<&str>, size: u64) -> VfsMetadata {

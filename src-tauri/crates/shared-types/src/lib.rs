@@ -17,6 +17,14 @@ pub struct TextDiffResponse {
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
+pub struct ReadTextFileResponse {
+    pub path: String,
+    pub text: String,
+    pub encoding: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct DiffLine {
     pub left_number: Option<usize>,
     pub right_number: Option<usize>,

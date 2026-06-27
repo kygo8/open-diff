@@ -1,0 +1,10 @@
+[package]
+name = "file-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+encoding_rs.workspace = true
+shared-types = { path = "../shared-types" }

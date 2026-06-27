@@ -36,3 +36,9 @@ export interface TextDiffResponse {
     equal: number
   }
 }
+
+export interface ReadTextFileResponse {
+  path: string
+  text: string
+  encoding: string
+}

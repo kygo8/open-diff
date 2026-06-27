@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core'
-import type { TextDiffRequest, TextDiffResponse } from '@/types/diff'
+import type { ReadTextFileResponse, TextDiffRequest, TextDiffResponse } from '@/types/diff'
 
 export function diffText(request: TextDiffRequest): Promise<TextDiffResponse> {
   return invoke<TextDiffResponse>('diff_text', {
@@ -7,4 +7,8 @@ export function diffText(request: TextDiffRequest): Promise<TextDiffResponse> {
     right: request.right,
     algorithm: request.algorithm ?? 'myers',
   })
+}
+
+export function readTextFile(path: string): Promise<ReadTextFileResponse> {
+  return invoke<ReadTextFileResponse>('read_text_file', { path })
 }

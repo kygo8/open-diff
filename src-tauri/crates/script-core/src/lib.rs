@@ -62,6 +62,39 @@ pub struct ScriptExecutionResult {
     pub executed: usize,
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptRuntimeState {
+    pub load_paths: Vec<String>,
+    pub filters: Vec<String>,
+    pub last_compare: Option<ScriptCompareSummary>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptCompareExecutionResult {
+    pub executed: usize,
+    pub state: ScriptRuntimeState,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptCompareSummary {
+    pub compared: usize,
+    pub different: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptCompareRequest {
+    pub load_paths: Vec<String>,
+    pub filters: Vec<String>,
+}
+
+pub trait ScriptCompareEngine {
+    fn compare(&mut self, request: ScriptCompareRequest) -> Result<ScriptCompareSummary, String>;
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScriptExecutionError {
@@ -142,6 +175,69 @@ where
     Ok(ScriptExecutionResult { executed })
 }
 
+pub fn execute_compare_script<E>(
+    script: &ScriptDocument,
+    execution: ScriptExecutionContext,
+    engine: &mut E,
+) -> Result<ScriptCompareExecutionResult, ScriptExecutionError>
+where
+    E: ScriptCompareEngine,
+{
+    let mut state = ScriptRuntimeState::default();
+    let mut executed = 0;
+
+    for command in &script.commands {
+        match &command.kind {
+            ScriptCommandKind::Load { paths } => {
+                let expanded_paths =
+                    expand_values(paths, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?;
+                state.load_paths = expanded_paths;
+            }
+            ScriptCommandKind::Filter { patterns } => {
+                let expanded_patterns =
+                    expand_values(patterns, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?;
+                state.filters = expanded_patterns;
+            }
+            ScriptCommandKind::Compare => {
+                if state.load_paths.is_empty() {
+                    return Err(execution_error(command, "COMPARE requires LOAD first"));
+                }
+
+                let summary = engine
+                    .compare(ScriptCompareRequest {
+                        load_paths: state.load_paths.clone(),
+                        filters: state.filters.clone(),
+                    })
+                    .map_err(|reason| execution_error(command, reason))?;
+                state.last_compare = Some(summary);
+            }
+            other => {
+                return Err(execution_error(
+                    command,
+                    format!(
+                        "{} is not supported by compare execution",
+                        other.command_name()
+                    ),
+                ));
+            }
+        }
+
+        executed += 1;
+    }
+
+    Ok(ScriptCompareExecutionResult { executed, state })
+}
+
 fn resolve_script_variable<'a>(
     name: &str,
     variables: &'a ScriptVariables,
@@ -154,6 +250,24 @@ fn resolve_script_variable<'a>(
         "right_path" => Ok(variables.right_path.as_deref().unwrap_or("")),
         "selection" => Ok(variables.selection.as_deref().unwrap_or("")),
         unknown => Err(parse_error(0, format!("unknown variable: {unknown}"))),
+    }
+}
+
+fn expand_values(
+    values: &[String],
+    variables: &ScriptVariables,
+) -> Result<Vec<String>, ScriptParseError> {
+    values
+        .iter()
+        .map(|value| expand_script_variables(value, variables))
+        .collect()
+}
+
+fn execution_error(command: &ScriptCommand, reason: impl Into<String>) -> ScriptExecutionError {
+    ScriptExecutionError {
+        line: command.line,
+        command: command.kind.command_name().to_owned(),
+        reason: reason.into(),
     }
 }
 
@@ -412,5 +526,85 @@ mod tests {
         assert_eq!(error.reason, "comparison source is not loaded");
         assert!(error.to_string().contains("line 2"));
         assert!(error.to_string().contains("COMPARE"));
+    }
+
+    #[test]
+    fn runs_load_filter_and_compare_with_compare_engine() {
+        #[derive(Default)]
+        struct RecordingCompareEngine {
+            requests: Vec<ScriptCompareRequest>,
+        }
+
+        impl ScriptCompareEngine for RecordingCompareEngine {
+            fn compare(
+                &mut self,
+                request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                self.requests.push(request);
+                Ok(ScriptCompareSummary {
+                    compared: 2,
+                    different: 1,
+                })
+            }
+        }
+
+        let script = parse_script(
+            r#"
+            LOAD "left/root" "right/root"
+            FILTER "*.rs" "-target"
+            COMPARE
+            "#,
+        )
+        .expect("script parses");
+        let mut engine = RecordingCompareEngine::default();
+        let result =
+            execute_compare_script(&script, ScriptExecutionContext::default(), &mut engine)
+                .expect("script should execute");
+
+        assert_eq!(result.executed, 3);
+        assert_eq!(
+            result.state,
+            ScriptRuntimeState {
+                load_paths: vec!["left/root".to_owned(), "right/root".to_owned()],
+                filters: vec!["*.rs".to_owned(), "-target".to_owned()],
+                last_compare: Some(ScriptCompareSummary {
+                    compared: 2,
+                    different: 1,
+                }),
+            }
+        );
+        assert_eq!(
+            engine.requests,
+            vec![ScriptCompareRequest {
+                load_paths: vec!["left/root".to_owned(), "right/root".to_owned()],
+                filters: vec!["*.rs".to_owned(), "-target".to_owned()],
+            }]
+        );
+    }
+
+    #[test]
+    fn compare_requires_loaded_paths() {
+        struct NoopCompareEngine;
+
+        impl ScriptCompareEngine for NoopCompareEngine {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+
+        let script = parse_script("COMPARE").expect("script parses");
+        let error = execute_compare_script(
+            &script,
+            ScriptExecutionContext::default(),
+            &mut NoopCompareEngine,
+        )
+        .expect_err("compare without LOAD should fail");
+
+        assert_eq!(error.line, 1);
+        assert_eq!(error.command, "COMPARE");
+        assert!(error.reason.contains("LOAD"));
     }
 }

@@ -64,6 +64,13 @@ pub struct ImageRect {
     pub height: u32,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PixelDiffOptions {
+    pub rgb_tolerance: u8,
+    pub compare_alpha: bool,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PixelDiffError {
     InvalidBufferLength {
@@ -125,6 +132,16 @@ pub fn scan_pixel_differences(
     width: u32,
     height: u32,
 ) -> Result<PixelDiff, PixelDiffError> {
+    scan_pixel_differences_with_options(left, right, width, height, PixelDiffOptions::default())
+}
+
+pub fn scan_pixel_differences_with_options(
+    left: &[u8],
+    right: &[u8],
+    width: u32,
+    height: u32,
+    options: PixelDiffOptions,
+) -> Result<PixelDiff, PixelDiffError> {
     let expected = expected_rgba_len(width, height);
     ensure_rgba_len(ImageSide::Left, left.len(), expected)?;
     ensure_rgba_len(ImageSide::Right, right.len(), expected)?;
@@ -138,7 +155,7 @@ pub fn scan_pixel_differences(
     for pixel_index in 0..(width * height) {
         let start = (pixel_index * 4) as usize;
 
-        if left[start..start + 4] == right[start..start + 4] {
+        if pixels_equal_with_options(&left[start..start + 4], &right[start..start + 4], options) {
             continue;
         }
 
@@ -167,6 +184,16 @@ pub fn scan_pixel_differences(
         different_pixels,
         bounding_rect,
     })
+}
+
+fn pixels_equal_with_options(left: &[u8], right: &[u8], options: PixelDiffOptions) -> bool {
+    let rgb_equal = left[..3]
+        .iter()
+        .zip(&right[..3])
+        .all(|(left, right)| left.abs_diff(*right) <= options.rgb_tolerance);
+    let alpha_equal = !options.compare_alpha || left[3] == right[3];
+
+    rgb_equal && alpha_equal
 }
 
 fn expected_rgba_len(width: u32, height: u32) -> usize {
@@ -222,6 +249,15 @@ impl fmt::Display for PixelDiffError {
 }
 
 impl std::error::Error for PixelDiffError {}
+
+impl Default for PixelDiffOptions {
+    fn default() -> Self {
+        Self {
+            rgb_tolerance: 0,
+            compare_alpha: true,
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -348,6 +384,45 @@ mod tests {
                 actual: 3,
             }
         );
+    }
+
+    #[test]
+    fn ignores_rgb_differences_within_tolerance() {
+        let left = vec![100, 100, 100, 255, 10, 10, 10, 255];
+        let right = vec![103, 98, 101, 255, 18, 10, 10, 255];
+
+        let diff = scan_pixel_differences_with_options(
+            &left,
+            &right,
+            2,
+            1,
+            PixelDiffOptions {
+                rgb_tolerance: 3,
+                compare_alpha: true,
+            },
+        )
+        .expect("scan should work");
+
+        assert_eq!(diff.different_pixels, 1);
+        assert_eq!(
+            diff.bounding_rect,
+            Some(ImageRect {
+                x: 1,
+                y: 0,
+                width: 1,
+                height: 1,
+            })
+        );
+    }
+
+    #[test]
+    fn default_pixel_diff_options_compare_rgb_strictly() {
+        let left = vec![100, 100, 100, 255];
+        let right = vec![101, 100, 100, 255];
+
+        let diff = scan_pixel_differences(&left, &right, 1, 1).expect("scan should work");
+
+        assert_eq!(diff.different_pixels, 1);
     }
 
     fn encode_fixture_image(format: image::ImageFormat) -> Vec<u8> {

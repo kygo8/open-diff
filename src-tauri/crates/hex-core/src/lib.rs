@@ -25,6 +25,24 @@ pub struct BinaryDiffRange {
     pub right_bytes: Vec<u8>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HexViewWindow {
+    pub offset: u64,
+    pub total_len: u64,
+    pub cells: Vec<HexViewCell>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HexViewCell {
+    pub offset: u64,
+    pub byte: u8,
+    pub hex: String,
+    pub ascii: String,
+    pub different: bool,
+}
+
 pub fn read_hex_block(source: &[u8], offset: u64, length: usize) -> HexBlock {
     let total_len = source.len() as u64;
     let start = usize::try_from(offset)
@@ -37,6 +55,37 @@ pub fn read_hex_block(source: &[u8], offset: u64, length: usize) -> HexBlock {
         bytes: source[start..end].to_vec(),
         total_len,
         end_of_file: end >= source.len(),
+    }
+}
+
+pub fn build_hex_view_window(
+    source: &[u8],
+    offset: u64,
+    length: usize,
+    diff: Option<&BinaryDiff>,
+) -> HexViewWindow {
+    let block = read_hex_block(source, offset, length);
+    let cells = block
+        .bytes
+        .iter()
+        .enumerate()
+        .map(|(index, byte)| {
+            let cell_offset = block.offset + index as u64;
+
+            HexViewCell {
+                offset: cell_offset,
+                byte: *byte,
+                hex: format!("{byte:02X}"),
+                ascii: ascii_byte_text(*byte),
+                different: diff.is_some_and(|diff| diff_contains_offset(diff, cell_offset)),
+            }
+        })
+        .collect();
+
+    HexViewWindow {
+        offset: block.offset,
+        total_len: block.total_len,
+        cells,
     }
 }
 
@@ -79,6 +128,22 @@ pub fn scan_binary_differences(left: &[u8], right: &[u8]) -> BinaryDiff {
         right_len: right.len() as u64,
         ranges,
     }
+}
+
+fn ascii_byte_text(byte: u8) -> String {
+    if byte.is_ascii_graphic() || byte == b' ' {
+        char::from(byte).to_string()
+    } else {
+        ".".to_owned()
+    }
+}
+
+fn diff_contains_offset(diff: &BinaryDiff, offset: u64) -> bool {
+    diff.ranges.iter().any(|range| {
+        let range_len = range.left_bytes.len().max(range.right_bytes.len()) as u64;
+
+        offset >= range.offset && offset < range.offset + range_len
+    })
 }
 
 #[cfg(test)]
@@ -128,5 +193,32 @@ mod tests {
         assert_eq!(diff.ranges[2].right_bytes, vec![0x07]);
         assert_eq!(diff.left_len, 7);
         assert_eq!(diff.right_len, 8);
+    }
+
+    #[test]
+    fn builds_hex_view_window_with_ascii_and_diff_markers() {
+        let source = b"AB\x00Z";
+        let diff = BinaryDiff {
+            left_len: 4,
+            right_len: 4,
+            ranges: vec![BinaryDiffRange {
+                offset: 1,
+                left_bytes: vec![b'B'],
+                right_bytes: vec![b'C'],
+            }],
+        };
+
+        let window = build_hex_view_window(source, 0, 4, Some(&diff));
+
+        assert_eq!(window.offset, 0);
+        assert_eq!(window.total_len, 4);
+        assert_eq!(window.cells.len(), 4);
+        assert_eq!(window.cells[0].hex, "41");
+        assert_eq!(window.cells[0].ascii, "A");
+        assert!(!window.cells[0].different);
+        assert_eq!(window.cells[1].offset, 1);
+        assert_eq!(window.cells[1].hex, "42");
+        assert!(window.cells[1].different);
+        assert_eq!(window.cells[2].ascii, ".");
     }
 }

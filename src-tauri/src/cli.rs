@@ -19,6 +19,7 @@ fn main() {
             println!("  compare <left> <right>");
             println!("  compare-folders <left> <right>");
             println!("  open-session <store-root> <name>");
+            println!("  merge-text <base> <left> <right> [output]");
         }
         CliCommand::CompareFiles { left, right } => {
             let result = match compare_text_files(&left, &right) {
@@ -69,6 +70,15 @@ fn main() {
                 result.id, result.name, result.session_type
             );
             std::process::exit(cli_exit_code_value(result.exit_code));
+        }
+        CliCommand::MergeText(args) => {
+            println!(
+                "merge base: {}, left: {}, right: {}, output: {}",
+                args.base,
+                args.left,
+                args.right,
+                args.output.as_deref().unwrap_or("<none>")
+            );
         }
     }
 

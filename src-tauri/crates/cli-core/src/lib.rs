@@ -16,6 +16,16 @@ pub enum CliCommand {
     CompareFiles { left: String, right: String },
     CompareFolders { left: String, right: String },
     OpenSession { store_root: String, name: String },
+    MergeText(CliTextMergeArgs),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CliTextMergeArgs {
+    pub base: String,
+    pub left: String,
+    pub right: String,
+    pub output: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -88,6 +98,7 @@ where
         "compare" => parse_compare_files(args.collect()),
         "compare-folders" => parse_compare_folders(args.collect()),
         "open-session" => parse_open_session(args.collect()),
+        "merge-text" => parse_merge_text(args.collect()),
         unknown => Err(usage_error(format!("unknown command: {unknown}"))),
     }
 }
@@ -223,6 +234,24 @@ fn parse_open_session(args: Vec<String>) -> Result<CliInvocation, CliParseError>
     })
 }
 
+fn parse_merge_text(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    if !(args.len() == 3 || args.len() == 4) {
+        return Err(usage_error(
+            "merge-text requires BASE LEFT RIGHT [OUTPUT] paths",
+        ));
+    }
+
+    Ok(CliInvocation {
+        command: CliCommand::MergeText(CliTextMergeArgs {
+            base: args[0].clone(),
+            left: args[1].clone(),
+            right: args[2].clone(),
+            output: args.get(3).cloned(),
+        }),
+        exit_code: CliExitCode::Success,
+    })
+}
+
 fn usage_error(message: impl Into<String>) -> CliParseError {
     CliParseError {
         message: message.into(),
@@ -295,6 +324,37 @@ mod tests {
                 store_root: ".open-diff".to_owned(),
                 name: "team/demo".to_owned(),
             }
+        );
+
+        let merge_three = parse_cli_args(["open-diff-cli", "merge-text", "base", "left", "right"])
+            .expect("3 file merge should parse");
+        assert_eq!(
+            merge_three.command,
+            CliCommand::MergeText(CliTextMergeArgs {
+                base: "base".to_owned(),
+                left: "left".to_owned(),
+                right: "right".to_owned(),
+                output: None,
+            })
+        );
+
+        let merge_four = parse_cli_args([
+            "open-diff-cli",
+            "merge-text",
+            "base",
+            "left",
+            "right",
+            "output",
+        ])
+        .expect("4 file merge should parse");
+        assert_eq!(
+            merge_four.command,
+            CliCommand::MergeText(CliTextMergeArgs {
+                base: "base".to_owned(),
+                left: "left".to_owned(),
+                right: "right".to_owned(),
+                output: Some("output".to_owned()),
+            })
         );
     }
 

@@ -151,6 +151,8 @@ const pendingDangerousOperationLabel = ref('')
 const renamePanelOpen = ref(false)
 const renameTargetName = ref('')
 const lastFileOperationAction = ref<string>()
+const selectedReadonly = ref(false)
+const lastMetadataAction = ref<string>()
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -504,6 +506,23 @@ function confirmDangerousFileOperation(): void {
   pendingDangerousOperationLabel.value = ''
 }
 
+function toggleSelectedReadonly(selected: boolean): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  selectedReadonly.value = selected
+  lastMetadataAction.value = `Attributes changed -> ${selected ? 'readonly' : 'writable'}`
+}
+
+function touchSelectedFile(): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  lastMetadataAction.value = `Touched -> ${selectedFilePath.value}`
+}
+
 function archivePath(path: string): string {
   const separatorIndex = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'))
 
@@ -745,6 +764,28 @@ function handleTreeScroll(event: Event): void {
       </NButton>
     </section>
 
+    <section class="folder-operation-panel">
+      <label class="metadata-option">
+        <input
+          data-testid="toggle-selected-readonly"
+          type="checkbox"
+          :checked="selectedReadonly"
+          :disabled="!selectedFilePath"
+          @change="toggleSelectedReadonly(($event.target as HTMLInputElement).checked)"
+        />
+        <span>Readonly</span>
+      </label>
+      <NButton
+        size="small"
+        secondary
+        data-testid="touch-selected-file"
+        :disabled="!selectedFilePath"
+        @click="touchSelectedFile"
+      >
+        Touch
+      </NButton>
+    </section>
+
     <section
       v-if="pendingCopyConfirmation"
       class="folder-copy-confirmation"
@@ -831,6 +872,13 @@ function handleTreeScroll(event: Event): void {
       data-testid="folder-file-operation-status"
     >
       {{ lastFileOperationAction }}
+    </section>
+    <section
+      v-if="lastMetadataAction"
+      class="folder-action-status"
+      data-testid="folder-metadata-operation-status"
+    >
+      {{ lastMetadataAction }}
     </section>
 
     <section
@@ -1091,6 +1139,20 @@ function handleTreeScroll(event: Event): void {
   background: var(--app-surface);
   color: var(--app-text);
   font-size: 12px;
+}
+
+.folder-operation-panel .metadata-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.folder-operation-panel .metadata-option input {
+  width: auto;
+  height: auto;
+  padding: 0;
 }
 
 .folder-summary {

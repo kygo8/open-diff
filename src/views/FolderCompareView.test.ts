@@ -299,4 +299,27 @@ describe('FolderCompareView', () => {
 
     expect(wrapper.text()).toContain('Deleted -> D:/workspace/left/release-notes.md')
   })
+
+  it('changes selected file attributes and touch timestamp from the folder toolbar', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-row-id="readme"]').trigger('click')
+    await wrapper.find('[data-testid="toggle-selected-readonly"]').setValue(true)
+
+    expect(wrapper.text()).toContain('Attributes changed -> readonly')
+
+    await wrapper.find('[data-testid="touch-selected-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Touched -> D:/workspace/left/README.md')
+  })
 })

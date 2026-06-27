@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
+use std::time::{Duration, UNIX_EPOCH};
 use vfs_core::{LocalVfs, VfsEntryKind, VfsMetadata, VfsPath, VfsProvider};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -174,6 +175,27 @@ pub struct FileOperationResult {
     pub status: FileOperationStatus,
     pub source_path: String,
     pub target_path: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ChangeAttributesRequest {
+    pub path: String,
+    pub readonly: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TouchFileRequest {
+    pub path: String,
+    pub modified_at_ms: u128,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FileMetadataUpdateResult {
+    pub path: String,
+    pub metadata: VfsMetadata,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -561,6 +583,44 @@ fn move_path(source_path: &str, target_path: &str) -> Result<(), FolderScanError
     }
 
     fs::rename(source_path, target_path).map_err(|error| FolderScanError::Vfs(error.to_string()))
+}
+
+pub fn change_file_attributes(
+    request: ChangeAttributesRequest,
+) -> Result<FileMetadataUpdateResult, FolderScanError> {
+    if let Some(readonly) = request.readonly {
+        let mut permissions = fs::metadata(&request.path)
+            .map_err(|error| FolderScanError::Vfs(error.to_string()))?
+            .permissions();
+
+        permissions.set_readonly(readonly);
+        fs::set_permissions(&request.path, permissions)
+            .map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+    }
+
+    refreshed_metadata_result(request.path)
+}
+
+pub fn touch_file(request: TouchFileRequest) -> Result<FileMetadataUpdateResult, FolderScanError> {
+    let file = fs::OpenOptions::new()
+        .write(true)
+        .open(&request.path)
+        .map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+    let modified_at = UNIX_EPOCH + Duration::from_millis(request.modified_at_ms as u64);
+
+    file.set_modified(modified_at)
+        .map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+
+    refreshed_metadata_result(request.path)
+}
+
+fn refreshed_metadata_result(path: String) -> Result<FileMetadataUpdateResult, FolderScanError> {
+    let vfs = LocalVfs::new();
+    let metadata = vfs
+        .metadata(&VfsPath::new(&path))
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+    Ok(FileMetadataUpdateResult { path, metadata })
 }
 
 fn folder_metadata_matches(
@@ -1180,6 +1240,35 @@ mod tests {
     }
 
     #[test]
+    fn changes_readonly_attribute_and_touches_modified_time() {
+        let root = unique_temp_dir("folder-attributes");
+        let file = root.join("attributes.txt");
+        let modified_at_ms = 1_900_000_000_000_u128;
+
+        fs::create_dir_all(&root).expect("root dir");
+        fs::write(&file, b"attributes").expect("file write");
+
+        let attribute_result = change_file_attributes(ChangeAttributesRequest {
+            path: file.display().to_string(),
+            readonly: Some(true),
+        })
+        .expect("attribute change works");
+
+        assert!(attribute_result.metadata.readonly);
+        set_readonly(&file, false);
+
+        let touch_result = touch_file(TouchFileRequest {
+            path: file.display().to_string(),
+            modified_at_ms,
+        })
+        .expect("touch works");
+
+        assert_eq!(touch_result.metadata.modified_at_ms, Some(modified_at_ms));
+
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
     fn file_filters_support_include_exclude_wildcards_and_paths() {
         let filters = FileFilters {
             include: vec!["src/**/*.rs".to_owned()],
@@ -1224,5 +1313,14 @@ mod tests {
             .as_nanos();
 
         std::env::temp_dir().join(format!("open-diff-{label}-{stamp}"))
+    }
+
+    fn set_readonly(path: &std::path::Path, readonly: bool) {
+        let mut permissions = fs::metadata(path)
+            .expect("metadata should be readable")
+            .permissions();
+
+        permissions.set_readonly(readonly);
+        fs::set_permissions(path, permissions).expect("permissions should update");
     }
 }

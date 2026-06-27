@@ -3,6 +3,7 @@ members = [
   ".",
   "crates/diff-core",
   "crates/file-core",
+  "crates/job-core",
   "crates/session-core",
   "crates/shared-types",
   "crates/vfs-core"

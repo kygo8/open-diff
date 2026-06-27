@@ -144,4 +144,45 @@ describe('TextCompareView', () => {
 
     expect(lastRequest.right).toContain('left changed')
   })
+
+  it('advances to the next diff after copying', async () => {
+    vi.mocked(diffText).mockResolvedValueOnce({
+      lines: [
+        {
+          leftNumber: 1,
+          rightNumber: 1,
+          leftText: 'left first',
+          rightText: 'right first',
+          kind: 'modified',
+          inlineSegments: { left: [], right: [] },
+        },
+        {
+          leftNumber: 2,
+          rightNumber: 2,
+          leftText: 'left second',
+          rightText: 'right second',
+          kind: 'modified',
+          inlineSegments: { left: [], right: [] },
+        },
+      ],
+      stats: { added: 0, deleted: 0, modified: 2, equal: 0 },
+    })
+
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+    await wrapper.vm.$nextTick()
+    await wrapper.find('[data-testid="copy-left-to-right"]').trigger('click')
+    await wrapper.find('[data-testid="copy-left-to-right"]').trigger('click')
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+
+    const lastCall = vi.mocked(diffText).mock.lastCall
+
+    expect(lastCall).toBeDefined()
+
+    const [lastRequest] = lastCall as [TextDiffRequest]
+
+    expect(lastRequest.right).toContain('left first')
+    expect(lastRequest.right).toContain('left second')
+  })
 })

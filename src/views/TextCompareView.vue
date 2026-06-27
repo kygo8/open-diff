@@ -15,6 +15,7 @@ const leftUndoStack = ref<string[]>([])
 const leftRedoStack = ref<string[]>([])
 const rightUndoStack = ref<string[]>([])
 const rightRedoStack = ref<string[]>([])
+const currentDiffIndex = ref(0)
 
 const statsLabel = computed(() => {
   if (!result.value) return 'No comparison yet'
@@ -28,6 +29,7 @@ const lineEndingStatus = computed(
   () => `Left: ${detectLineEnding(left.value)} | Right: ${detectLineEnding(right.value)}`,
 )
 const dirtyStatus = computed(() => (dirty.value ? 'Unsaved edits' : 'No edits'))
+const diffRows = computed(() => result.value?.lines.filter((line) => line.kind !== 'equal') ?? [])
 
 function detectLineEnding(value: string): string {
   if (value.includes('\r\n')) {
@@ -54,6 +56,7 @@ async function runDiff(): Promise<void> {
       right: right.value,
       algorithm: algorithm.value,
     })
+    currentDiffIndex.value = 0
     dirty.value = false
   } catch (event) {
     error.value = String(event)
@@ -101,11 +104,11 @@ function redoLeft(): void {
 }
 
 function copyCurrentDiff(direction: 'leftToRight' | 'rightToLeft'): void {
-  const currentDiff = result.value?.lines.find((line) => line.kind !== 'equal')
-
-  if (!currentDiff) {
+  if (diffRows.value.length === 0) {
     return
   }
+
+  const currentDiff = diffRows.value[currentDiffIndex.value]
 
   if (direction === 'leftToRight') {
     copyLineToSide(currentDiff.rightNumber, currentDiff.leftText, 'right')
@@ -127,6 +130,17 @@ function copyLineToSide(lineNumber: number | null, text: string, side: 'left' | 
   lines[lineNumber - 1] = text
   target.value = lines.join('\n')
   dirty.value = true
+  goToNextDiff()
+}
+
+function goToNextDiff(): void {
+  if (diffRows.value.length === 0) {
+    currentDiffIndex.value = 0
+
+    return
+  }
+
+  currentDiffIndex.value = Math.min(currentDiffIndex.value + 1, diffRows.value.length - 1)
 }
 </script>
 

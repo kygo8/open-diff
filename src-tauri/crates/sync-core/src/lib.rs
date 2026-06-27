@@ -104,6 +104,32 @@ pub fn build_update_left_plan(
     plan
 }
 
+pub fn build_update_both_plan(
+    left_root: impl AsRef<str>,
+    right_root: impl AsRef<str>,
+    rows: &[FolderAlignmentRow],
+) -> SyncPlan {
+    let mut plan = SyncPlan::new("Update Both");
+
+    for row in rows {
+        let action = if should_copy_left_to_right(row) {
+            copy_left_to_right_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
+        } else if should_copy_right_to_left(row) {
+            copy_right_to_left_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
+        } else {
+            SyncAction::Leave
+        };
+
+        plan.add_item(SyncPlanItem {
+            relative_path: row.relative_path.clone(),
+            reason: update_both_reason(row, &action),
+            action,
+        });
+    }
+
+    plan
+}
+
 fn should_copy_left_to_right(row: &FolderAlignmentRow) -> bool {
     row.left.is_some() && row.right.is_none() || left_is_newer(row)
 }
@@ -168,6 +194,31 @@ fn update_left_reason(row: &FolderAlignmentRow, action: &SyncAction) -> String {
         SyncAction::Leave => "No update needed".to_owned(),
         SyncAction::Delete { .. } | SyncAction::Conflict { .. } => {
             "Not used by Update Left".to_owned()
+        }
+    }
+}
+
+fn update_both_reason(row: &FolderAlignmentRow, action: &SyncAction) -> String {
+    match action {
+        SyncAction::Copy {
+            direction: SyncDirection::LeftToRight,
+            ..
+        } if row.right.is_none() => "Left item only exists".to_owned(),
+        SyncAction::Copy {
+            direction: SyncDirection::RightToLeft,
+            ..
+        } if row.left.is_none() => "Right item only exists".to_owned(),
+        SyncAction::Copy {
+            direction: SyncDirection::LeftToRight,
+            ..
+        } => "Left item is newer".to_owned(),
+        SyncAction::Copy {
+            direction: SyncDirection::RightToLeft,
+            ..
+        } => "Right item is newer".to_owned(),
+        SyncAction::Leave => "No update needed".to_owned(),
+        SyncAction::Delete { .. } | SyncAction::Conflict { .. } => {
+            "Not used by Update Both".to_owned()
         }
     }
 }
@@ -298,6 +349,55 @@ mod tests {
         );
         assert_eq!(plan.items[2].action, SyncAction::Leave);
         assert_eq!(plan.items[3].action, SyncAction::Leave);
+    }
+
+    #[test]
+    fn update_both_copies_newer_items_and_orphans_in_both_directions() {
+        let rows = vec![
+            file_row("left-newer.txt", Some(2_000), Some(1_000)),
+            file_row("right-newer.txt", Some(1_000), Some(2_000)),
+            left_only_file_row("left-only.txt", 1_500),
+            right_only_file_row("right-only.txt", 1_500),
+            file_row("same.txt", Some(1_000), Some(1_000)),
+        ];
+
+        let plan = build_update_both_plan("D:/left", "D:/right", &rows);
+
+        assert_eq!(plan.name, "Update Both");
+        assert_eq!(plan.items.len(), 5);
+        assert_eq!(
+            plan.items[0].action,
+            SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "D:/left/left-newer.txt".to_owned(),
+                target_path: "D:/right/left-newer.txt".to_owned(),
+            }
+        );
+        assert_eq!(
+            plan.items[1].action,
+            SyncAction::Copy {
+                direction: SyncDirection::RightToLeft,
+                source_path: "D:/right/right-newer.txt".to_owned(),
+                target_path: "D:/left/right-newer.txt".to_owned(),
+            }
+        );
+        assert_eq!(
+            plan.items[2].action,
+            SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "D:/left/left-only.txt".to_owned(),
+                target_path: "D:/right/left-only.txt".to_owned(),
+            }
+        );
+        assert_eq!(
+            plan.items[3].action,
+            SyncAction::Copy {
+                direction: SyncDirection::RightToLeft,
+                source_path: "D:/right/right-only.txt".to_owned(),
+                target_path: "D:/left/right-only.txt".to_owned(),
+            }
+        );
+        assert_eq!(plan.items[4].action, SyncAction::Leave);
     }
 
     fn file_row(

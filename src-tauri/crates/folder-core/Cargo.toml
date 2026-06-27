@@ -6,5 +6,6 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+job-core = { path = "../job-core" }
 serde.workspace = true
 vfs-core = { path = "../vfs-core" }

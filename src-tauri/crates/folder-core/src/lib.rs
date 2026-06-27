@@ -755,6 +755,90 @@ pub fn render_folder_report_html(report: &FolderReportModel, title: &str) -> Str
     html
 }
 
+pub fn render_folder_report_xml(report: &FolderReportModel) -> String {
+    let mut xml = String::from("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+
+    xml.push_str(&format!(
+        "<folderReport total=\"{}\" same=\"{}\" different=\"{}\" leftOnly=\"{}\" rightOnly=\"{}\" error=\"{}\">",
+        report.summary.total,
+        report.summary.same,
+        report.summary.different,
+        report.summary.left_only,
+        report.summary.right_only,
+        report.summary.error
+    ));
+    xml.push_str("<rows>");
+
+    for row in &report.rows {
+        xml.push_str("<row");
+        push_xml_attribute(&mut xml, "relativePath", &row.relative_path);
+        push_xml_attribute(&mut xml, "status", &status_label(&row.status));
+        push_xml_attribute(&mut xml, "depth", &row.depth.to_string());
+
+        if let Some(path) = &row.left_path {
+            push_xml_attribute(&mut xml, "leftPath", path);
+        }
+
+        if let Some(path) = &row.right_path {
+            push_xml_attribute(&mut xml, "rightPath", path);
+        }
+
+        if let Some(size) = row.left_size {
+            push_xml_attribute(&mut xml, "leftSize", &size.to_string());
+        }
+
+        if let Some(size) = row.right_size {
+            push_xml_attribute(&mut xml, "rightSize", &size.to_string());
+        }
+
+        xml.push_str("/>");
+    }
+
+    xml.push_str("</rows></folderReport>");
+    xml
+}
+
+pub fn render_folder_report_text(report: &FolderReportModel, title: &str) -> String {
+    let mut text = String::new();
+
+    text.push_str(title);
+    text.push('\n');
+    text.push_str(&format!(
+        "Total: {} | Same: {} | Different: {} | Left only: {} | Right only: {} | Error: {}\n",
+        report.summary.total,
+        report.summary.same,
+        report.summary.different,
+        report.summary.left_only,
+        report.summary.right_only,
+        report.summary.error
+    ));
+    text.push_str("Status | Path | Left | Right | Left Size | Right Size\n");
+
+    for row in &report.rows {
+        text.push_str(&format!(
+            "{} | {} | {} | {} | {} | {}\n",
+            status_label(&row.status),
+            row.relative_path,
+            row.left_path.as_deref().unwrap_or("-"),
+            row.right_path.as_deref().unwrap_or("-"),
+            row.left_size
+                .map_or_else(|| "-".to_owned(), |size| size.to_string()),
+            row.right_size
+                .map_or_else(|| "-".to_owned(), |size| size.to_string())
+        ));
+    }
+
+    text
+}
+
+fn push_xml_attribute(xml: &mut String, key: &str, value: &str) {
+    xml.push(' ');
+    xml.push_str(key);
+    xml.push_str("=\"");
+    xml.push_str(&escape_html(value));
+    xml.push('"');
+}
+
 fn status_css_class(status: &FolderCompareStatus) -> &'static str {
     match status {
         FolderCompareStatus::Unknown => "unknown",
@@ -1564,6 +1648,41 @@ mod tests {
         assert!(html.contains("src/&lt;main&gt;.rs"));
         assert!(html.contains("href=\"file://left/src/%3Cmain%3E.rs\""));
         assert!(html.contains("left only"));
+    }
+
+    #[test]
+    fn renders_folder_report_as_xml_and_plain_text() {
+        let report = FolderReportModel {
+            summary: FolderReportSummary {
+                total: 1,
+                same: 0,
+                different: 1,
+                left_only: 0,
+                right_only: 0,
+                error: 0,
+            },
+            rows: vec![FolderReportRow {
+                relative_path: "src/&main.rs".to_owned(),
+                depth: 1,
+                status: FolderCompareStatus::Different,
+                left_path: Some("left/src/&main.rs".to_owned()),
+                right_path: Some("right/src/&main.rs".to_owned()),
+                left_size: Some(10),
+                right_size: Some(12),
+                left_kind: Some(FolderNodeKind::File),
+                right_kind: Some(FolderNodeKind::File),
+            }],
+        };
+
+        let xml = render_folder_report_xml(&report);
+        let text = render_folder_report_text(&report, "Release Report");
+
+        assert!(xml.contains("<folderReport"));
+        assert!(xml.contains("relativePath=\"src/&amp;main.rs\""));
+        assert!(xml.contains("status=\"different\""));
+        assert!(text.contains("Release Report"));
+        assert!(text.contains("Total: 1"));
+        assert!(text.contains("different | src/&main.rs | left/src/&main.rs | right/src/&main.rs"));
     }
 
     #[test]

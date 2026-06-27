@@ -134,4 +134,27 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).not.toContain('main.ts')
     expect(wrapper.text()).toContain('release-notes.md')
   })
+
+  it('temporarily shows suppressed rows with a marker', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="toggle-status-same"]').setValue(false)
+
+    expect(wrapper.text()).not.toContain('README.md')
+
+    await wrapper.find('[data-testid="toggle-suppressed-filters"]').setValue(true)
+
+    expect(wrapper.text()).toContain('README.md')
+    expect(wrapper.find('[data-testid="suppressed-marker-readme"]').exists()).toBe(true)
+  })
 })

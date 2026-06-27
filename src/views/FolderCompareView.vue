@@ -101,6 +101,7 @@ const expandedDirectoryIds = ref<Set<string>>(new Set(['src']))
 const visibleStatuses = ref<Set<FolderStatus>>(
   new Set(['Same', 'Different', 'Left only', 'Right only']),
 )
+const showSuppressedFilters = ref(false)
 const rowHeight = 34
 const virtualViewportRows = 18
 const virtualOverscanRows = 4
@@ -117,7 +118,7 @@ const visibleRows = computed(() =>
   rows.value.filter(
     (row) =>
       (!row.parentId || expandedDirectoryIds.value.has(row.parentId)) &&
-      visibleStatuses.value.has(row.status),
+      (visibleStatuses.value.has(row.status) || showSuppressedFilters.value),
   ),
 )
 const virtualStartIndex = computed(() =>
@@ -214,6 +215,10 @@ function toggleColumn(columnId: FolderColumnId, selected: boolean): void {
 
 function areStatusesVisible(statuses: FolderStatus[]): boolean {
   return statuses.every((status) => visibleStatuses.value.has(status))
+}
+
+function isSuppressed(row: FolderTreeRow): boolean {
+  return !visibleStatuses.value.has(row.status)
 }
 
 function toggleStatuses(statuses: FolderStatus[], selected: boolean): void {
@@ -338,6 +343,14 @@ function handleTreeScroll(event: Event): void {
         />
         <span>{{ option.label }}</span>
       </label>
+      <label>
+        <input
+          v-model="showSuppressedFilters"
+          data-testid="toggle-suppressed-filters"
+          type="checkbox"
+        />
+        <span>Suppressed</span>
+      </label>
     </section>
 
     <section class="folder-summary">
@@ -417,7 +430,11 @@ function handleTreeScroll(event: Event): void {
             v-for="row in virtualRows"
             :key="row.id"
             class="tree-row"
-            :class="[`status-${row.status.toLowerCase().replaceAll(' ', '-')}`, row.kind]"
+            :class="[
+              `status-${row.status.toLowerCase().replaceAll(' ', '-')}`,
+              row.kind,
+              { suppressed: isSuppressed(row) },
+            ]"
             :style="{ gridTemplateColumns }"
             data-testid="folder-row"
           >
@@ -436,6 +453,12 @@ function handleTreeScroll(event: Event): void {
                 {{ isExpanded(row) ? '▾' : '▸' }}
               </button>
               {{ sideValue(row, 'left', 'name') }}
+              <small
+                v-if="isSuppressed(row)"
+                :data-testid="`suppressed-marker-${row.id}`"
+              >
+                Suppressed
+              </small>
             </span>
             <span
               v-if="isColumnVisible('size')"
@@ -629,6 +652,17 @@ function handleTreeScroll(event: Event): void {
   border-bottom: 1px solid var(--app-border);
   color: var(--app-text);
   font-size: 13px;
+}
+
+.tree-row.suppressed {
+  opacity: 0.56;
+}
+
+.tree-row small {
+  margin-left: 8px;
+  color: var(--app-text-muted);
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .tree-row.directory .name-cell {

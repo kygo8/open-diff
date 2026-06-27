@@ -5,17 +5,27 @@ const zoom = ref(100)
 const panX = ref(0)
 const panY = ref(0)
 const showOverlay = ref(true)
+const rotationDeg = ref(0)
+const flipHorizontal = ref(false)
+const flipVertical = ref(false)
 
-const imageTransform = computed(
-  () =>
-    `translate(${String(panX.value)}px, ${String(panY.value)}px) scale(${String(
-      zoom.value / 100,
-    )})`,
+const imageTransform = computed(() =>
+  [
+    `translate(${String(panX.value)}px, ${String(panY.value)}px)`,
+    `rotate(${String(rotationDeg.value)}deg)`,
+    `scaleX(${flipHorizontal.value ? '-1' : '1'})`,
+    `scaleY(${flipVertical.value ? '-1' : '1'})`,
+    `scale(${String(zoom.value / 100)})`,
+  ].join(' '),
 )
 
 const imageStyle = computed<Record<string, string>>(() => ({
   transform: imageTransform.value,
 }))
+
+function rotatePicture(delta: number): void {
+  rotationDeg.value = (rotationDeg.value + delta + 360) % 360
+}
 </script>
 
 <template>
@@ -73,6 +83,36 @@ const imageStyle = computed<Record<string, string>>(() => ({
         />
         <span>Overlay</span>
       </label>
+      <div class="picture-transform-tools">
+        <button
+          type="button"
+          data-testid="picture-rotate-counterclockwise"
+          @click="rotatePicture(-90)"
+        >
+          Rotate Left
+        </button>
+        <button
+          type="button"
+          data-testid="picture-rotate-clockwise"
+          @click="rotatePicture(90)"
+        >
+          Rotate Right
+        </button>
+        <button
+          type="button"
+          data-testid="picture-flip-horizontal"
+          @click="flipHorizontal = !flipHorizontal"
+        >
+          Flip H
+        </button>
+        <button
+          type="button"
+          data-testid="picture-flip-vertical"
+          @click="flipVertical = !flipVertical"
+        >
+          Flip V
+        </button>
+      </div>
     </section>
 
     <section class="picture-pane-grid">
@@ -200,7 +240,7 @@ h2 {
 
 .picture-controls {
   display: grid;
-  grid-template-columns: repeat(3, minmax(140px, 1fr)) auto;
+  grid-template-columns: repeat(3, minmax(140px, 1fr)) auto minmax(260px, auto);
   gap: 10px;
   padding: 10px;
   border: 1px solid var(--app-border);
@@ -230,6 +270,28 @@ h2 {
 .picture-toggle input {
   width: 16px;
   height: 16px;
+}
+
+.picture-transform-tools {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  align-content: end;
+}
+
+.picture-transform-tools button {
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.picture-transform-tools button:hover {
+  border-color: var(--app-accent);
 }
 
 .picture-pane-grid {

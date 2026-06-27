@@ -48,4 +48,18 @@ describe('PictureCompareView', () => {
 
     expect(wrapper.findAll('[data-testid="picture-diff-overlay"]')).toHaveLength(0)
   })
+
+  it('applies rotation and flip transforms to both panes', async () => {
+    const wrapper = mount(PictureCompareView)
+
+    await wrapper.find('[data-testid="picture-rotate-clockwise"]').trigger('click')
+    await wrapper.find('[data-testid="picture-flip-horizontal"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="left-picture-image"]').attributes('style')).toContain(
+      'rotate(90deg) scaleX(-1)',
+    )
+    expect(wrapper.find('[data-testid="right-picture-image"]').attributes('style')).toContain(
+      'rotate(90deg) scaleX(-1)',
+    )
+  })
 })

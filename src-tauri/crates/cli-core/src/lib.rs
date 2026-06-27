@@ -14,6 +14,7 @@ pub struct CliInvocation {
 pub enum CliCommand {
     Help,
     CompareFiles { left: String, right: String },
+    CompareFolders { left: String, right: String },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -44,6 +45,18 @@ pub struct CliFileCompareResult {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct CliFolderCompareResult {
+    pub exit_code: CliExitCode,
+    pub total: usize,
+    pub same: usize,
+    pub different: usize,
+    pub left_only: usize,
+    pub right_only: usize,
+    pub error: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CliRuntimeError {
     pub message: String,
     pub exit_code: CliExitCode,
@@ -63,6 +76,7 @@ where
     match command.as_str() {
         "--help" | "-h" | "help" => Ok(help_invocation()),
         "compare" => parse_compare_files(args.collect()),
+        "compare-folders" => parse_compare_folders(args.collect()),
         unknown => Err(usage_error(format!("unknown command: {unknown}"))),
     }
 }
@@ -100,6 +114,39 @@ pub fn compare_text_files(
     })
 }
 
+pub fn compare_folders(
+    left: impl AsRef<Path>,
+    right: impl AsRef<Path>,
+) -> Result<CliFolderCompareResult, CliRuntimeError> {
+    let cancel_token = job_core::CancellationToken::default();
+    let left = folder_core::scan_local_folder(left, &cancel_token).map_err(runtime_error)?;
+    let right = folder_core::scan_local_folder(right, &cancel_token).map_err(runtime_error)?;
+    let rows = folder_core::align_folder_trees(&left, &right);
+    let report = folder_core::build_folder_report_model(
+        &rows,
+        &folder_core::FolderCompareOptions::default(),
+        true,
+    );
+    let has_difference = report.summary.different > 0
+        || report.summary.left_only > 0
+        || report.summary.right_only > 0
+        || report.summary.error > 0;
+
+    Ok(CliFolderCompareResult {
+        exit_code: if has_difference {
+            CliExitCode::Different
+        } else {
+            CliExitCode::Success
+        },
+        total: report.summary.total,
+        same: report.summary.same,
+        different: report.summary.different,
+        left_only: report.summary.left_only,
+        right_only: report.summary.right_only,
+        error: report.summary.error,
+    })
+}
+
 fn help_invocation() -> CliInvocation {
     CliInvocation {
         command: CliCommand::Help,
@@ -114,6 +161,20 @@ fn parse_compare_files(args: Vec<String>) -> Result<CliInvocation, CliParseError
 
     Ok(CliInvocation {
         command: CliCommand::CompareFiles {
+            left: args[0].clone(),
+            right: args[1].clone(),
+        },
+        exit_code: CliExitCode::Success,
+    })
+}
+
+fn parse_compare_folders(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    if args.len() != 2 {
+        return Err(usage_error("compare-folders requires LEFT and RIGHT paths"));
+    }
+
+    Ok(CliInvocation {
+        command: CliCommand::CompareFolders {
             left: args[0].clone(),
             right: args[1].clone(),
         },
@@ -156,6 +217,16 @@ mod tests {
                 right: "right.txt".to_owned(),
             }
         );
+
+        let folders = parse_cli_args(["open-diff-cli", "compare-folders", "left", "right"])
+            .expect("folder compare should parse");
+        assert_eq!(
+            folders.command,
+            CliCommand::CompareFolders {
+                left: "left".to_owned(),
+                right: "right".to_owned(),
+            }
+        );
     }
 
     #[test]
@@ -190,6 +261,32 @@ mod tests {
         fs::remove_file(different).expect("fixture should be removable");
     }
 
+    #[test]
+    fn compares_folders_and_returns_summary() {
+        let left = temp_dir_path("left-folder");
+        let right = temp_dir_path("right-folder");
+
+        fs::create_dir_all(&left).expect("fixture directory should be writable");
+        fs::create_dir_all(&right).expect("fixture directory should be writable");
+        fs::write(left.join("same.txt"), "same").expect("fixture should be writable");
+        fs::write(right.join("same.txt"), "same").expect("fixture should be writable");
+        fs::write(left.join("changed.txt"), "left").expect("fixture should be writable");
+        fs::write(right.join("changed.txt"), "right").expect("fixture should be writable");
+        fs::write(left.join("left-only.txt"), "left").expect("fixture should be writable");
+
+        let result = compare_folders(&left, &right).expect("folder comparison should run");
+
+        assert_eq!(result.exit_code, CliExitCode::Different);
+        assert_eq!(result.total, 3);
+        assert_eq!(result.same, 1);
+        assert_eq!(result.different, 1);
+        assert_eq!(result.left_only, 1);
+        assert_eq!(result.right_only, 0);
+
+        fs::remove_dir_all(left).expect("fixture should be removable");
+        fs::remove_dir_all(right).expect("fixture should be removable");
+    }
+
     fn temp_file_path(name: &str) -> std::path::PathBuf {
         let stamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -197,5 +294,14 @@ mod tests {
             .as_nanos();
 
         std::env::temp_dir().join(format!("open-diff-cli-{name}-{stamp}.txt"))
+    }
+
+    fn temp_dir_path(name: &str) -> std::path::PathBuf {
+        let stamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("system time should be after epoch")
+            .as_nanos();
+
+        std::env::temp_dir().join(format!("open-diff-cli-{name}-{stamp}"))
     }
 }

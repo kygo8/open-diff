@@ -8,5 +8,7 @@ license.workspace = true
 [dependencies]
 diff-core = { path = "../diff-core" }
 file-core = { path = "../file-core" }
+folder-core = { path = "../folder-core" }
+job-core = { path = "../job-core" }
 serde.workspace = true
 shared-types = { path = "../shared-types" }

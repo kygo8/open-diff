@@ -359,6 +359,8 @@ version = "1.0.0"
 dependencies = [
  "diff-core",
  "file-core",
+ "folder-core",
+ "job-core",
  "serde",
  "shared-types",
 ]

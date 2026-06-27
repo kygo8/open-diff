@@ -1,6 +1,7 @@
 [workspace]
 members = [
   ".",
+  "crates/cli-core",
   "crates/diff-core",
   "crates/file-core",
   "crates/folder-core",
@@ -48,10 +49,15 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 name = "open-diff-app"
 path = "src/main.rs"
 
+[[bin]]
+name = "open-diff-cli"
+path = "src/cli.rs"
+
 [build-dependencies]
 tauri-build.workspace = true
 
 [dependencies]
+cli-core = { path = "crates/cli-core" }
 serde.workspace = true
 tauri.workspace = true
 tokio.workspace = true

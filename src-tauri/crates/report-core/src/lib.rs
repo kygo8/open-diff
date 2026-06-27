@@ -160,6 +160,47 @@ pub fn render_html_report(report: &UnifiedReport) -> String {
     html
 }
 
+pub fn render_text_report(report: &UnifiedReport) -> String {
+    let mut output = String::new();
+
+    output.push_str(&report.title);
+    output.push('\n');
+    output.push_str(&"=".repeat(report.title.chars().count()));
+    output.push('\n');
+    output.push_str("Generated At: ");
+    output.push_str(&report.metadata.generated_at);
+    output.push('\n');
+    push_optional_text_metadata(
+        &mut output,
+        "Left Source",
+        report.metadata.left_source.as_deref(),
+    );
+    push_optional_text_metadata(
+        &mut output,
+        "Right Source",
+        report.metadata.right_source.as_deref(),
+    );
+
+    for section in &report.sections {
+        output.push('\n');
+        output.push_str("== ");
+        output.push_str(&section.title);
+        output.push_str(" ==\n");
+
+        for row in &section.rows {
+            output.push('[');
+            output.push_str(row_status_label(&row.status));
+            output.push_str("] ");
+            output.push_str(&row.label);
+            push_optional_text_value(&mut output, "left", row.left.as_deref());
+            push_optional_text_value(&mut output, "right", row.right.as_deref());
+            output.push('\n');
+        }
+    }
+
+    output
+}
+
 fn push_optional_metadata(html: &mut String, label: &str, value: Option<&str>) {
     if let Some(value) = value {
         html.push_str("<dt>");
@@ -167,6 +208,24 @@ fn push_optional_metadata(html: &mut String, label: &str, value: Option<&str>) {
         html.push_str("</dt><dd>");
         html.push_str(&escape_html(value));
         html.push_str("</dd>");
+    }
+}
+
+fn push_optional_text_metadata(output: &mut String, label: &str, value: Option<&str>) {
+    if let Some(value) = value {
+        output.push_str(label);
+        output.push_str(": ");
+        output.push_str(value);
+        output.push('\n');
+    }
+}
+
+fn push_optional_text_value(output: &mut String, label: &str, value: Option<&str>) {
+    if let Some(value) = value {
+        output.push_str(" | ");
+        output.push_str(label);
+        output.push_str(": ");
+        output.push_str(value);
     }
 }
 
@@ -278,5 +337,37 @@ mod tests {
         assert!(html.contains("Context"));
         assert!(html.contains("&lt;old&gt;"));
         assert!(!html.contains("<old>"));
+    }
+
+    #[test]
+    fn renders_plain_text_report_for_terminal_and_logs() {
+        let report = UnifiedReport::new(
+            ReportKind::Folder,
+            "Folder Report",
+            ReportMetadata {
+                generated_at: "2026-06-27T03:10:00Z".to_owned(),
+                left_source: Some("left/".to_owned()),
+                right_source: Some("right/".to_owned()),
+            },
+        )
+        .with_section(ReportSection {
+            kind: ReportSectionKind::Summary,
+            title: "Summary".to_owned(),
+            rows: vec![ReportRow {
+                label: "Changed files".to_owned(),
+                left: Some("2".to_owned()),
+                right: Some("3".to_owned()),
+                status: ReportRowStatus::Different,
+            }],
+        });
+
+        let text = render_text_report(&report);
+
+        assert!(text.contains("Folder Report"));
+        assert!(text.contains("Generated At: 2026-06-27T03:10:00Z"));
+        assert!(text.contains("Left Source: left/"));
+        assert!(text.contains("== Summary =="));
+        assert!(text.contains("[different] Changed files | left: 2 | right: 3"));
+        assert!(!text.contains("<table"));
     }
 }

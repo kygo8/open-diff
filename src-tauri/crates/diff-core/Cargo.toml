@@ -6,4 +6,5 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+regex.workspace = true
 shared-types = { path = "../shared-types" }

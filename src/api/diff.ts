@@ -14,6 +14,7 @@ export function diffText(request: TextDiffRequest): Promise<TextDiffResponse> {
     ignoreWhitespace: request.ignoreWhitespace ?? false,
     ignoreCase: request.ignoreCase ?? false,
     ignoreLineEndings: request.ignoreLineEndings ?? false,
+    ignoreRegexes: request.ignoreRegexes ?? [],
   })
 }
 

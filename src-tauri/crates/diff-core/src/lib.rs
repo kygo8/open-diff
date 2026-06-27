@@ -1,3 +1,4 @@
+use regex::Regex;
 use shared_types::{
     DiffLine, DiffLineKind, DiffStats, InlineDiffSegment, InlineDiffSegments, TextDiffRequest,
     TextDiffResponse,
@@ -32,8 +33,9 @@ pub fn diff_text_with_algorithm(
 ) -> TextDiffResponse {
     let left_lines = split_lines(&request.left);
     let right_lines = split_lines(&request.right);
-    let comparable_left_lines = comparable_lines(&left_lines, request);
-    let comparable_right_lines = comparable_lines(&right_lines, request);
+    let ignore_regexes = compiled_ignore_regexes(&request.ignore_regexes);
+    let comparable_left_lines = comparable_lines(&left_lines, request, &ignore_regexes);
+    let comparable_right_lines = comparable_lines(&right_lines, request, &ignore_regexes);
     let edits = match algorithm {
         TextDiffAlgorithm::Myers => diff_lines(&comparable_left_lines, &comparable_right_lines),
         TextDiffAlgorithm::Patience => {
@@ -49,19 +51,34 @@ pub fn diff_text_with_algorithm(
     TextDiffResponse { lines: rows, stats }
 }
 
-fn comparable_lines(lines: &[String], request: &TextDiffRequest) -> Vec<String> {
-    lines
+fn compiled_ignore_regexes(patterns: &[String]) -> Vec<Regex> {
+    patterns
         .iter()
-        .map(|line| comparable_line(line, request))
+        .filter_map(|pattern| Regex::new(pattern).ok())
         .collect()
 }
 
-fn comparable_line(line: &str, request: &TextDiffRequest) -> String {
+fn comparable_lines(
+    lines: &[String],
+    request: &TextDiffRequest,
+    ignore_regexes: &[Regex],
+) -> Vec<String> {
+    lines
+        .iter()
+        .map(|line| comparable_line(line, request, ignore_regexes))
+        .collect()
+}
+
+fn comparable_line(line: &str, request: &TextDiffRequest, ignore_regexes: &[Regex]) -> String {
     let mut value = if request.ignore_whitespace {
         line.split_whitespace().collect::<String>()
     } else {
         line.to_owned()
     };
+
+    for expression in ignore_regexes {
+        value = expression.replace_all(&value, "").into_owned();
+    }
 
     if request.ignore_case {
         value = value.to_lowercase();
@@ -609,6 +626,7 @@ mod tests {
             ignore_whitespace: false,
             ignore_case: false,
             ignore_line_endings: false,
+            ignore_regexes: Vec::new(),
         }
     }
 
@@ -714,6 +732,7 @@ mod tests {
             ignore_whitespace: true,
             ignore_case: true,
             ignore_line_endings: false,
+            ignore_regexes: Vec::new(),
         };
 
         let result = diff_text(&request);
@@ -722,5 +741,16 @@ mod tests {
         assert_eq!(result.stats.modified, 0);
         assert_eq!(result.lines[0].left_text, "Line   One");
         assert_eq!(result.lines[0].right_text, "line one");
+    }
+
+    #[test]
+    fn ignores_regex_fragments_when_requested() {
+        let mut request = request("status=ok timestamp=123", "status=ok timestamp=456");
+        request.ignore_regexes = vec!["timestamp=\\d+".to_owned()];
+
+        let result = diff_text(&request);
+
+        assert_eq!(result.stats.equal, 1);
+        assert_eq!(result.stats.modified, 0);
     }
 }

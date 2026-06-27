@@ -12,6 +12,8 @@ pub struct TextDiffRequest {
     pub ignore_case: bool,
     #[serde(default)]
     pub ignore_line_endings: bool,
+    #[serde(default)]
+    pub ignore_regexes: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]

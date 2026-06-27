@@ -26,6 +26,7 @@ export interface TextDiffRequest {
   ignoreWhitespace?: boolean
   ignoreCase?: boolean
   ignoreLineEndings?: boolean
+  ignoreRegexes?: string[]
 }
 
 export type TextDiffAlgorithm = 'myers' | 'patience' | 'histogram'

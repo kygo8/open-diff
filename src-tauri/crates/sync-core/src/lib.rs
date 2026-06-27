@@ -17,6 +17,14 @@ pub struct SyncPlanItem {
     pub reason: String,
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SyncTimeRuleOptions {
+    pub timestamp_tolerance_ms: u128,
+    pub ignore_daylight_saving_hour_offset: bool,
+    pub ignored_timezone_hour_offsets: Vec<i32>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum SyncAction {
@@ -239,10 +247,24 @@ pub fn build_update_right_plan(
     right_root: impl AsRef<str>,
     rows: &[FolderAlignmentRow],
 ) -> SyncPlan {
+    build_update_right_plan_with_options(
+        left_root,
+        right_root,
+        rows,
+        &SyncTimeRuleOptions::default(),
+    )
+}
+
+pub fn build_update_right_plan_with_options(
+    left_root: impl AsRef<str>,
+    right_root: impl AsRef<str>,
+    rows: &[FolderAlignmentRow],
+    time_rules: &SyncTimeRuleOptions,
+) -> SyncPlan {
     let mut plan = SyncPlan::new("Update Right");
 
     for row in rows {
-        let action = if should_copy_left_to_right(row) {
+        let action = if should_copy_left_to_right(row, time_rules) {
             copy_left_to_right_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
         } else {
             SyncAction::Leave
@@ -263,10 +285,24 @@ pub fn build_update_left_plan(
     right_root: impl AsRef<str>,
     rows: &[FolderAlignmentRow],
 ) -> SyncPlan {
+    build_update_left_plan_with_options(
+        left_root,
+        right_root,
+        rows,
+        &SyncTimeRuleOptions::default(),
+    )
+}
+
+pub fn build_update_left_plan_with_options(
+    left_root: impl AsRef<str>,
+    right_root: impl AsRef<str>,
+    rows: &[FolderAlignmentRow],
+    time_rules: &SyncTimeRuleOptions,
+) -> SyncPlan {
     let mut plan = SyncPlan::new("Update Left");
 
     for row in rows {
-        let action = if should_copy_right_to_left(row) {
+        let action = if should_copy_right_to_left(row, time_rules) {
             copy_right_to_left_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
         } else {
             SyncAction::Leave
@@ -287,12 +323,26 @@ pub fn build_update_both_plan(
     right_root: impl AsRef<str>,
     rows: &[FolderAlignmentRow],
 ) -> SyncPlan {
+    build_update_both_plan_with_options(
+        left_root,
+        right_root,
+        rows,
+        &SyncTimeRuleOptions::default(),
+    )
+}
+
+pub fn build_update_both_plan_with_options(
+    left_root: impl AsRef<str>,
+    right_root: impl AsRef<str>,
+    rows: &[FolderAlignmentRow],
+    time_rules: &SyncTimeRuleOptions,
+) -> SyncPlan {
     let mut plan = SyncPlan::new("Update Both");
 
     for row in rows {
-        let action = if should_copy_left_to_right(row) {
+        let action = if should_copy_left_to_right(row, time_rules) {
             copy_left_to_right_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
-        } else if should_copy_right_to_left(row) {
+        } else if should_copy_right_to_left(row, time_rules) {
             copy_right_to_left_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
         } else {
             SyncAction::Leave
@@ -313,10 +363,24 @@ pub fn build_mirror_to_right_plan(
     right_root: impl AsRef<str>,
     rows: &[FolderAlignmentRow],
 ) -> SyncPlan {
+    build_mirror_to_right_plan_with_options(
+        left_root,
+        right_root,
+        rows,
+        &SyncTimeRuleOptions::default(),
+    )
+}
+
+pub fn build_mirror_to_right_plan_with_options(
+    left_root: impl AsRef<str>,
+    right_root: impl AsRef<str>,
+    rows: &[FolderAlignmentRow],
+    time_rules: &SyncTimeRuleOptions,
+) -> SyncPlan {
     let mut plan = SyncPlan::new("Mirror to Right");
 
     for row in rows {
-        let action = if should_mirror_left_to_right(row) {
+        let action = if should_mirror_left_to_right(row, time_rules) {
             copy_left_to_right_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
         } else if row.left.is_none() && row.right.is_some() {
             delete_right_action(right_root.as_ref(), &row.relative_path)
@@ -339,10 +403,24 @@ pub fn build_mirror_to_left_plan(
     right_root: impl AsRef<str>,
     rows: &[FolderAlignmentRow],
 ) -> SyncPlan {
+    build_mirror_to_left_plan_with_options(
+        left_root,
+        right_root,
+        rows,
+        &SyncTimeRuleOptions::default(),
+    )
+}
+
+pub fn build_mirror_to_left_plan_with_options(
+    left_root: impl AsRef<str>,
+    right_root: impl AsRef<str>,
+    rows: &[FolderAlignmentRow],
+    time_rules: &SyncTimeRuleOptions,
+) -> SyncPlan {
     let mut plan = SyncPlan::new("Mirror to Left");
 
     for row in rows {
-        let action = if should_mirror_right_to_left(row) {
+        let action = if should_mirror_right_to_left(row, time_rules) {
             copy_right_to_left_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
         } else if row.left.is_some() && row.right.is_none() {
             delete_left_action(left_root.as_ref(), &row.relative_path)
@@ -360,20 +438,20 @@ pub fn build_mirror_to_left_plan(
     plan
 }
 
-fn should_copy_left_to_right(row: &FolderAlignmentRow) -> bool {
-    row.left.is_some() && row.right.is_none() || left_is_newer(row)
+fn should_copy_left_to_right(row: &FolderAlignmentRow, time_rules: &SyncTimeRuleOptions) -> bool {
+    row.left.is_some() && row.right.is_none() || left_is_newer(row, time_rules)
 }
 
-fn should_copy_right_to_left(row: &FolderAlignmentRow) -> bool {
-    row.left.is_none() && row.right.is_some() || right_is_newer(row)
+fn should_copy_right_to_left(row: &FolderAlignmentRow, time_rules: &SyncTimeRuleOptions) -> bool {
+    row.left.is_none() && row.right.is_some() || right_is_newer(row, time_rules)
 }
 
-fn should_mirror_left_to_right(row: &FolderAlignmentRow) -> bool {
-    row.left.is_some() && !row_is_same(row)
+fn should_mirror_left_to_right(row: &FolderAlignmentRow, time_rules: &SyncTimeRuleOptions) -> bool {
+    row.left.is_some() && !row_is_same(row, time_rules)
 }
 
-fn should_mirror_right_to_left(row: &FolderAlignmentRow) -> bool {
-    row.right.is_some() && !row_is_same(row)
+fn should_mirror_right_to_left(row: &FolderAlignmentRow, time_rules: &SyncTimeRuleOptions) -> bool {
+    row.right.is_some() && !row_is_same(row, time_rules)
 }
 
 fn copy_left_to_right_action(left_root: &str, right_root: &str, relative_path: &str) -> SyncAction {
@@ -404,7 +482,7 @@ fn delete_right_action(right_root: &str, relative_path: &str) -> SyncAction {
     }
 }
 
-fn left_is_newer(row: &FolderAlignmentRow) -> bool {
+fn left_is_newer(row: &FolderAlignmentRow, time_rules: &SyncTimeRuleOptions) -> bool {
     let Some(left) = row.left.as_ref() else {
         return false;
     };
@@ -412,10 +490,14 @@ fn left_is_newer(row: &FolderAlignmentRow) -> bool {
         return false;
     };
 
-    left.metadata.modified_at_ms > right.metadata.modified_at_ms
+    !timestamps_match(
+        left.metadata.modified_at_ms,
+        right.metadata.modified_at_ms,
+        time_rules,
+    ) && left.metadata.modified_at_ms > right.metadata.modified_at_ms
 }
 
-fn right_is_newer(row: &FolderAlignmentRow) -> bool {
+fn right_is_newer(row: &FolderAlignmentRow, time_rules: &SyncTimeRuleOptions) -> bool {
     let Some(left) = row.left.as_ref() else {
         return false;
     };
@@ -423,10 +505,14 @@ fn right_is_newer(row: &FolderAlignmentRow) -> bool {
         return false;
     };
 
-    right.metadata.modified_at_ms > left.metadata.modified_at_ms
+    !timestamps_match(
+        left.metadata.modified_at_ms,
+        right.metadata.modified_at_ms,
+        time_rules,
+    ) && right.metadata.modified_at_ms > left.metadata.modified_at_ms
 }
 
-fn row_is_same(row: &FolderAlignmentRow) -> bool {
+fn row_is_same(row: &FolderAlignmentRow, time_rules: &SyncTimeRuleOptions) -> bool {
     let Some(left) = row.left.as_ref() else {
         return false;
     };
@@ -434,7 +520,53 @@ fn row_is_same(row: &FolderAlignmentRow) -> bool {
         return false;
     };
 
-    left.metadata.modified_at_ms == right.metadata.modified_at_ms
+    timestamps_match(
+        left.metadata.modified_at_ms,
+        right.metadata.modified_at_ms,
+        time_rules,
+    )
+}
+
+fn timestamps_match(
+    left: Option<u128>,
+    right: Option<u128>,
+    time_rules: &SyncTimeRuleOptions,
+) -> bool {
+    let (Some(left), Some(right)) = (left, right) else {
+        return left == right;
+    };
+    let difference = left.abs_diff(right);
+
+    difference <= time_rules.timestamp_tolerance_ms
+        || ignored_hour_offsets(time_rules)
+            .into_iter()
+            .any(|offset_ms| offset_matches_difference(difference, offset_ms, time_rules))
+}
+
+fn ignored_hour_offsets(time_rules: &SyncTimeRuleOptions) -> Vec<u128> {
+    let mut offsets = time_rules
+        .ignored_timezone_hour_offsets
+        .iter()
+        .map(|hours| u128::from(hours.unsigned_abs()) * 3_600_000)
+        .collect::<Vec<_>>();
+
+    if time_rules.ignore_daylight_saving_hour_offset {
+        offsets.push(3_600_000);
+    }
+
+    offsets
+}
+
+fn offset_matches_difference(
+    difference: u128,
+    offset_ms: u128,
+    time_rules: &SyncTimeRuleOptions,
+) -> bool {
+    if offset_ms == 0 {
+        return false;
+    }
+
+    difference.abs_diff(offset_ms) <= time_rules.timestamp_tolerance_ms
 }
 
 fn update_right_reason(row: &FolderAlignmentRow, action: &SyncAction) -> String {
@@ -681,6 +813,68 @@ mod tests {
             }
         );
         assert_eq!(plan.items[4].action, SyncAction::Leave);
+    }
+
+    #[test]
+    fn update_both_honors_timestamp_tolerance_and_timezone_rules() {
+        let rows = vec![
+            file_row("within-tolerance.txt", Some(10_000), Some(10_800)),
+            file_row("dst-offset.txt", Some(3_600_000), Some(0)),
+            file_row("timezone-offset.txt", Some(7_200_000), Some(0)),
+            file_row("real-change.txt", Some(12_000), Some(10_000)),
+        ];
+
+        let plan = build_update_both_plan_with_options(
+            "D:/left",
+            "D:/right",
+            &rows,
+            &SyncTimeRuleOptions {
+                timestamp_tolerance_ms: 1_000,
+                ignore_daylight_saving_hour_offset: true,
+                ignored_timezone_hour_offsets: vec![2],
+            },
+        );
+
+        assert_eq!(plan.items[0].action, SyncAction::Leave);
+        assert_eq!(plan.items[1].action, SyncAction::Leave);
+        assert_eq!(plan.items[2].action, SyncAction::Leave);
+        assert_eq!(
+            plan.items[3].action,
+            SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "D:/left/real-change.txt".to_owned(),
+                target_path: "D:/right/real-change.txt".to_owned(),
+            }
+        );
+    }
+
+    #[test]
+    fn mirror_plan_leaves_files_matching_configured_time_rules() {
+        let rows = vec![
+            file_row("dst-offset.txt", Some(3_600_000), Some(0)),
+            file_row("different.txt", Some(5_000), Some(0)),
+        ];
+
+        let plan = build_mirror_to_right_plan_with_options(
+            "D:/left",
+            "D:/right",
+            &rows,
+            &SyncTimeRuleOptions {
+                timestamp_tolerance_ms: 500,
+                ignore_daylight_saving_hour_offset: true,
+                ignored_timezone_hour_offsets: Vec::new(),
+            },
+        );
+
+        assert_eq!(plan.items[0].action, SyncAction::Leave);
+        assert_eq!(
+            plan.items[1].action,
+            SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "D:/left/different.txt".to_owned(),
+                target_path: "D:/right/different.txt".to_owned(),
+            }
+        );
     }
 
     #[test]

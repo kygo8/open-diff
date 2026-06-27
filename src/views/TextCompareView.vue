@@ -23,6 +23,9 @@ const findCaseSensitive = ref(false)
 const findWholeWord = ref(false)
 const currentFindIndex = ref(0)
 const ignoredDiffKeys = ref<Set<string>>(new Set())
+const bookmarkSlots = Array.from({ length: 10 }, (_, index) => index)
+const selectedBookmark = ref(0)
+const bookmarks = ref<Record<number, string>>({})
 
 const statsLabel = computed(() => {
   if (!result.value) return 'No comparison yet'
@@ -41,6 +44,11 @@ const activeDiffRows = computed(() =>
   diffRows.value.filter((line) => !ignoredDiffKeys.value.has(diffKey(line))),
 )
 const activeDiffStatus = computed(() => `${String(activeDiffRows.value.length)} active diff`)
+const bookmarkStatus = computed(() =>
+  bookmarks.value[selectedBookmark.value]
+    ? `Bookmark ${String(selectedBookmark.value)} set`
+    : `No bookmark ${String(selectedBookmark.value)}`,
+)
 const findMatches = computed(() => {
   const matcher = createFindMatcher()
 
@@ -94,6 +102,7 @@ async function runDiff(): Promise<void> {
       algorithm: algorithm.value,
     })
     ignoredDiffKeys.value = new Set()
+    bookmarks.value = {}
     currentDiffIndex.value = 0
     dirty.value = false
   } catch (event) {
@@ -247,6 +256,44 @@ function ignoreCurrentDiff(): void {
   currentDiffIndex.value = Math.min(currentDiffIndex.value, activeDiffRows.value.length - 1)
 }
 
+function setBookmark(): void {
+  if (activeDiffRows.value.length === 0) {
+    return
+  }
+
+  bookmarks.value = {
+    ...bookmarks.value,
+    [selectedBookmark.value]: diffKey(activeDiffRows.value[currentDiffIndex.value]),
+  }
+}
+
+function jumpToBookmark(): void {
+  const key = bookmarks.value[selectedBookmark.value]
+
+  if (!key) {
+    return
+  }
+
+  const index = activeDiffRows.value.findIndex((line) => diffKey(line) === key)
+
+  if (index >= 0) {
+    currentDiffIndex.value = index
+  }
+}
+
+function clearBookmark(): void {
+  bookmarks.value = Object.entries(bookmarks.value).reduce<Record<number, string>>(
+    (nextBookmarks, [slot, key]) => {
+      if (Number(slot) !== selectedBookmark.value) {
+        nextBookmarks[Number(slot)] = key
+      }
+
+      return nextBookmarks
+    },
+    {},
+  )
+}
+
 function diffKey(line: TextDiffResponse['lines'][number]): string {
   return [
     line.kind,
@@ -371,6 +418,51 @@ function escapeRegExp(value: string): string {
       >
         Ignore
       </button>
+      <select
+        v-model.number="selectedBookmark"
+        class="algorithm-select"
+        data-testid="bookmark-slot"
+      >
+        <option
+          v-for="slot in bookmarkSlots"
+          :key="slot"
+          :value="slot"
+        >
+          {{ slot }}
+        </option>
+      </select>
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="set-bookmark"
+        :disabled="activeDiffRows.length === 0"
+        @click="setBookmark"
+      >
+        Set
+      </button>
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="jump-bookmark"
+        :disabled="!bookmarks[selectedBookmark]"
+        @click="jumpToBookmark"
+      >
+        Jump
+      </button>
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="clear-bookmark"
+        :disabled="!bookmarks[selectedBookmark]"
+        @click="clearBookmark"
+      >
+        Clear
+      </button>
+      <span
+        class="status-chip"
+        data-testid="bookmark-status"
+        >{{ bookmarkStatus }}</span
+      >
       <select
         v-model="algorithm"
         class="algorithm-select"

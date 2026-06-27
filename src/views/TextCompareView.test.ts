@@ -266,4 +266,55 @@ describe('TextCompareView', () => {
     expect(lastRequest.right).toContain('copy this')
     expect(lastRequest.right).not.toContain('ignore this')
   })
+
+  it('sets, jumps to, and clears numbered bookmarks for active differences', async () => {
+    vi.mocked(diffText).mockResolvedValueOnce({
+      lines: [
+        {
+          leftNumber: 1,
+          rightNumber: 1,
+          leftText: 'bookmarked left',
+          rightText: 'first right',
+          kind: 'modified',
+          inlineSegments: { left: [], right: [] },
+        },
+        {
+          leftNumber: 2,
+          rightNumber: 2,
+          leftText: 'second left',
+          rightText: 'second right',
+          kind: 'modified',
+          inlineSegments: { left: [], right: [] },
+        },
+      ],
+      stats: { added: 0, deleted: 0, modified: 2, equal: 0 },
+    })
+
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+    await wrapper.vm.$nextTick()
+    await wrapper.find('[data-testid="bookmark-slot"]').setValue('0')
+    await wrapper.find('[data-testid="set-bookmark"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="bookmark-status"]').text()).toContain('Bookmark 0 set')
+
+    await wrapper.find('[data-testid="copy-left-to-right"]').trigger('click')
+    await wrapper.find('[data-testid="jump-bookmark"]').trigger('click')
+    await wrapper.find('[data-testid="copy-left-to-right"]').trigger('click')
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+
+    const lastCall = vi.mocked(diffText).mock.lastCall
+
+    expect(lastCall).toBeDefined()
+
+    const [lastRequest] = lastCall as [TextDiffRequest]
+
+    expect(lastRequest.right).toContain('bookmarked left')
+    expect(lastRequest.right).not.toContain('second left')
+
+    await wrapper.find('[data-testid="clear-bookmark"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="bookmark-status"]').text()).toContain('No bookmark 0')
+  })
 })

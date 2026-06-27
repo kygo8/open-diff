@@ -99,6 +99,135 @@ pub struct TableCellDiff {
     pub important: bool,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum TableParseError {
+    UnclosedQuote,
+}
+
+pub fn parse_csv(input: &str) -> Result<TableWorkbook, TableParseError> {
+    parse_delimited_table(input, ',')
+}
+
+pub fn parse_delimited_table(
+    input: &str,
+    delimiter: char,
+) -> Result<TableWorkbook, TableParseError> {
+    let raw_rows = parse_delimited_rows(input, delimiter)?;
+    let columns = raw_rows
+        .first()
+        .map(|headers| {
+            headers
+                .iter()
+                .enumerate()
+                .map(|(index, name)| TableColumn {
+                    index,
+                    name: name.clone(),
+                })
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    let rows = raw_rows
+        .into_iter()
+        .skip(1)
+        .enumerate()
+        .map(|(row_index, values)| TableRow {
+            index: row_index,
+            cells: values
+                .into_iter()
+                .enumerate()
+                .map(|(column_index, value)| TableCell {
+                    row_index,
+                    column_index,
+                    value: parse_cell_value(value),
+                })
+                .collect(),
+        })
+        .collect::<Vec<_>>();
+
+    Ok(TableWorkbook {
+        sheets: vec![TableSheet {
+            name: "Sheet1".to_owned(),
+            index: 0,
+            columns,
+            rows,
+        }],
+    })
+}
+
+fn parse_delimited_rows(input: &str, delimiter: char) -> Result<Vec<Vec<String>>, TableParseError> {
+    let mut rows = Vec::new();
+    let mut row = Vec::new();
+    let mut cell = String::new();
+    let mut chars = input.chars().peekable();
+    let mut in_quotes = false;
+
+    while let Some(character) = chars.next() {
+        if in_quotes {
+            match character {
+                '"' if chars.peek() == Some(&'"') => {
+                    cell.push('"');
+                    chars.next();
+                }
+                '"' => in_quotes = false,
+                _ => cell.push(character),
+            }
+            continue;
+        }
+
+        match character {
+            '"' if cell.is_empty() => in_quotes = true,
+            character if character == delimiter => finish_cell(&mut row, &mut cell),
+            '\n' => finish_row(&mut rows, &mut row, &mut cell),
+            '\r' => {
+                if chars.peek() == Some(&'\n') {
+                    chars.next();
+                }
+                finish_row(&mut rows, &mut row, &mut cell);
+            }
+            _ => cell.push(character),
+        }
+    }
+
+    if in_quotes {
+        return Err(TableParseError::UnclosedQuote);
+    }
+
+    finish_row(&mut rows, &mut row, &mut cell);
+
+    Ok(rows)
+}
+
+fn finish_cell(row: &mut Vec<String>, cell: &mut String) {
+    row.push(std::mem::take(cell));
+}
+
+fn finish_row(rows: &mut Vec<Vec<String>>, row: &mut Vec<String>, cell: &mut String) {
+    finish_cell(row, cell);
+
+    if row.len() > 1 || row.first().is_some_and(|value| !value.is_empty()) {
+        rows.push(std::mem::take(row));
+    } else {
+        row.clear();
+    }
+}
+
+fn parse_cell_value(value: String) -> TableCellValue {
+    let trimmed = value.trim();
+
+    if trimmed.is_empty() {
+        TableCellValue::Empty
+    } else if let Ok(number) = trimmed.parse::<f64>() {
+        TableCellValue::Number(number)
+    } else if trimmed.eq_ignore_ascii_case("true") {
+        TableCellValue::Boolean(true)
+    } else if trimmed.eq_ignore_ascii_case("false") {
+        TableCellValue::Boolean(false)
+    } else {
+        TableCellValue::Text(value)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -175,5 +304,42 @@ mod tests {
         assert_eq!(diff.sheets[0].rows[0].status, TableDiffStatus::Added);
         assert_eq!(diff.sheets[0].columns[0].status, TableDiffStatus::Removed);
         assert!(diff.sheets[0].rows[0].cells[0].important);
+    }
+
+    #[test]
+    fn parses_csv_with_delimiters_quotes_and_multiline_cells() {
+        let workbook = parse_csv(
+            "Name,Note,Quantity\n\
+             \"Widget, Large\",\"Line one\nLine two\",12\n\
+             \"Quoted \"\"value\"\"\",Plain,3",
+        )
+        .expect("csv should parse");
+
+        let sheet = &workbook.sheets[0];
+
+        assert_eq!(sheet.name, "Sheet1");
+        assert_eq!(sheet.columns.len(), 3);
+        assert_eq!(sheet.columns[0].name, "Name");
+        assert_eq!(sheet.rows.len(), 2);
+        assert_eq!(
+            sheet.rows[0].cells[0].value,
+            TableCellValue::Text("Widget, Large".to_owned())
+        );
+        assert_eq!(
+            sheet.rows[0].cells[1].value,
+            TableCellValue::Text("Line one\nLine two".to_owned())
+        );
+        assert_eq!(sheet.rows[0].cells[2].value, TableCellValue::Number(12.0));
+        assert_eq!(
+            sheet.rows[1].cells[0].value,
+            TableCellValue::Text("Quoted \"value\"".to_owned())
+        );
+    }
+
+    #[test]
+    fn rejects_unclosed_csv_quotes() {
+        let error = parse_csv("Name,Note\nWidget,\"Unclosed").expect_err("csv should fail");
+
+        assert_eq!(error, TableParseError::UnclosedQuote);
     }
 }

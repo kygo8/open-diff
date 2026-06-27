@@ -14,7 +14,7 @@ import { computed, ref } from 'vue'
 type FolderSide = 'left' | 'right'
 type FolderStatus = 'Same' | 'Different' | 'Left only' | 'Right only'
 type FolderColumnId = 'size' | 'modified' | 'type'
-type SyncPreviewAction = 'Copy' | 'Overwrite' | 'Delete' | 'Error'
+type SyncPreviewAction = 'Copy' | 'Overwrite' | 'Delete' | 'Error' | 'Leave'
 
 interface FolderTreeRow {
   id: string
@@ -37,6 +37,8 @@ interface SyncPreviewItem {
   action: SyncPreviewAction
   sourcePath?: string
   targetPath?: string
+  originalSourcePath?: string
+  originalTargetPath?: string
   detail: string
 }
 
@@ -570,6 +572,8 @@ function previewSyncPlan(): void {
       action: 'Copy',
       sourcePath: 'D:/workspace/left/release-notes.md',
       targetPath: 'D:/workspace/right/release-notes.md',
+      originalSourcePath: 'D:/workspace/left/release-notes.md',
+      originalTargetPath: 'D:/workspace/right/release-notes.md',
       detail: 'Left-only item will be copied to the right side.',
     },
     {
@@ -577,6 +581,8 @@ function previewSyncPlan(): void {
       action: 'Overwrite',
       sourcePath: 'D:/workspace/left/src/main.ts',
       targetPath: 'D:/workspace/right/src/main.ts',
+      originalSourcePath: 'D:/workspace/left/src/main.ts',
+      originalTargetPath: 'D:/workspace/right/src/main.ts',
       detail: 'Different file will overwrite the target side.',
     },
     {
@@ -592,6 +598,39 @@ function previewSyncPlan(): void {
       detail: 'Permission denied',
     },
   ]
+}
+
+function markSyncPreviewItemAsLeave(itemId: string): void {
+  syncPreviewItems.value = syncPreviewItems.value.map((item) =>
+    item.id === itemId
+      ? {
+          ...item,
+          action: 'Leave',
+          sourcePath: undefined,
+          targetPath: item.targetPath ?? item.originalTargetPath,
+          detail: 'No operation will be performed.',
+        }
+      : item,
+  )
+}
+
+function reverseSyncPreviewItem(itemId: string): void {
+  syncPreviewItems.value = syncPreviewItems.value.map((item) => {
+    if (item.id !== itemId) {
+      return item
+    }
+
+    const sourcePath = item.originalTargetPath ?? item.targetPath
+    const targetPath = item.originalSourcePath ?? item.sourcePath
+
+    return {
+      ...item,
+      action: 'Copy',
+      sourcePath,
+      targetPath,
+      detail: 'Direction reversed by user.',
+    }
+  })
 }
 
 function closeSyncPreview(): void {
@@ -894,18 +933,39 @@ function handleTreeScroll(event: Event): void {
           <span>Source</span>
           <span>Target</span>
           <span>Detail</span>
+          <span>Change</span>
         </div>
         <div
           v-for="item in syncPreviewItems"
           :key="item.id"
           class="sync-preview-row"
           :class="`sync-preview-${item.action.toLowerCase()}`"
+          :data-preview-id="item.id"
           data-testid="sync-preview-row"
         >
           <strong>{{ item.action }}</strong>
           <span>{{ item.sourcePath ?? '--' }}</span>
           <span>{{ item.targetPath ?? '--' }}</span>
           <span>{{ item.detail }}</span>
+          <span class="sync-preview-change-actions">
+            <NButton
+              size="tiny"
+              secondary
+              :data-testid="`sync-preview-leave-${item.id}`"
+              @click="markSyncPreviewItemAsLeave(item.id)"
+            >
+              Leave
+            </NButton>
+            <NButton
+              size="tiny"
+              secondary
+              :disabled="!item.originalSourcePath || !item.originalTargetPath"
+              :data-testid="`sync-preview-reverse-${item.id}`"
+              @click="reverseSyncPreviewItem(item.id)"
+            >
+              Reverse
+            </NButton>
+          </span>
         </div>
       </div>
     </section>
@@ -1426,8 +1486,10 @@ function handleTreeScroll(event: Event): void {
 
 .sync-preview-row {
   display: grid;
-  grid-template-columns: 104px minmax(180px, 1fr) minmax(180px, 1fr) minmax(160px, 0.8fr);
-  min-width: 860px;
+  grid-template-columns:
+    104px minmax(180px, 1fr) minmax(180px, 1fr) minmax(160px, 0.8fr)
+    150px;
+  min-width: 1010px;
   border-bottom: 1px solid var(--app-border);
   color: var(--app-text);
   font-size: 12px;
@@ -1468,6 +1530,16 @@ function handleTreeScroll(event: Event): void {
 .sync-preview-delete strong,
 .sync-preview-error strong {
   color: var(--diff-deleted-fg);
+}
+
+.sync-preview-leave strong {
+  color: var(--app-text-muted);
+}
+
+.sync-preview-change-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .folder-tree-table {

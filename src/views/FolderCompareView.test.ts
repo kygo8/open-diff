@@ -403,4 +403,35 @@ describe('FolderCompareView', () => {
     expect(preview.text()).toContain('D:/workspace/right/archive/legacy.tmp')
     expect(preview.text()).toContain('Permission denied')
   })
+
+  it('changes a single sync preview item to leave or reverse copy', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="preview-sync-plan"]').trigger('click')
+    await wrapper.find('[data-testid="sync-preview-leave-copy-release-notes"]').trigger('click')
+
+    const copyRow = wrapper.find('[data-preview-id="copy-release-notes"]')
+
+    expect(copyRow.text()).toContain('Leave')
+    expect(copyRow.text()).toContain('No operation will be performed.')
+
+    await wrapper.find('[data-testid="sync-preview-reverse-overwrite-main"]').trigger('click')
+
+    const overwriteRow = wrapper.find('[data-preview-id="overwrite-main"]')
+
+    expect(overwriteRow.text()).toContain('Copy')
+    expect(overwriteRow.text()).toContain('D:/workspace/right/src/main.ts')
+    expect(overwriteRow.text()).toContain('D:/workspace/left/src/main.ts')
+    expect(overwriteRow.text()).toContain('Direction reversed by user.')
+  })
 })

@@ -48,7 +48,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Table Compare',
     summary: 'Delimited and spreadsheet data',
     priority: 'P1',
-    implemented: false,
+    implemented: true,
+    route: '/compare/table',
   },
   {
     type: 'hex-compare',

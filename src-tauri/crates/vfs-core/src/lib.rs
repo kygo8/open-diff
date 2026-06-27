@@ -1,4 +1,7 @@
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::time::UNIX_EPOCH;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -70,6 +73,109 @@ pub trait VfsProvider {
     fn metadata(&self, path: &VfsPath) -> VfsResult<VfsMetadata>;
 
     fn delete(&mut self, path: &VfsPath) -> VfsResult<()>;
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct LocalVfs;
+
+impl LocalVfs {
+    pub fn new() -> Self {
+        Self
+    }
+}
+
+impl VfsProvider for LocalVfs {
+    fn list(&self, path: &VfsPath) -> VfsResult<Vec<VfsEntry>> {
+        let path_buf = path_buf(path);
+        let metadata = fs::metadata(&path_buf).map_err(|error| fs_error(path, error))?;
+
+        if !metadata.is_dir() {
+            return Err(VfsError::NotDirectory(path.clone()));
+        }
+
+        let mut entries = fs::read_dir(&path_buf)
+            .map_err(|error| fs_error(path, error))?
+            .map(|entry| {
+                let entry = entry.map_err(|error| VfsError::Io(error.to_string()))?;
+                let entry_path = entry.path();
+                let metadata = entry
+                    .metadata()
+                    .map_err(|error| VfsError::Io(error.to_string()))?;
+
+                Ok(VfsEntry {
+                    path: VfsPath::new(entry_path.display().to_string()),
+                    metadata: metadata_from_fs(&metadata)?,
+                })
+            })
+            .collect::<VfsResult<Vec<_>>>()?;
+
+        entries.sort_by(|left, right| left.path.cmp(&right.path));
+
+        Ok(entries)
+    }
+
+    fn read(&self, path: &VfsPath) -> VfsResult<Vec<u8>> {
+        fs::read(path_buf(path)).map_err(|error| fs_error(path, error))
+    }
+
+    fn write(&mut self, path: &VfsPath, bytes: &[u8]) -> VfsResult<()> {
+        let path_buf = path_buf(path);
+
+        if let Some(parent) = path_buf.parent() {
+            fs::create_dir_all(parent).map_err(|error| VfsError::Io(error.to_string()))?;
+        }
+
+        fs::write(path_buf, bytes).map_err(|error| fs_error(path, error))
+    }
+
+    fn metadata(&self, path: &VfsPath) -> VfsResult<VfsMetadata> {
+        let metadata = fs::metadata(path_buf(path)).map_err(|error| fs_error(path, error))?;
+
+        metadata_from_fs(&metadata)
+    }
+
+    fn delete(&mut self, path: &VfsPath) -> VfsResult<()> {
+        let metadata = fs::metadata(path_buf(path)).map_err(|error| fs_error(path, error))?;
+
+        if metadata.is_dir() {
+            fs::remove_dir_all(path_buf(path)).map_err(|error| fs_error(path, error))
+        } else {
+            fs::remove_file(path_buf(path)).map_err(|error| fs_error(path, error))
+        }
+    }
+}
+
+fn path_buf(path: &VfsPath) -> PathBuf {
+    Path::new(path.as_str()).to_path_buf()
+}
+
+fn metadata_from_fs(metadata: &fs::Metadata) -> VfsResult<VfsMetadata> {
+    Ok(VfsMetadata {
+        kind: if metadata.is_dir() {
+            VfsEntryKind::Directory
+        } else {
+            VfsEntryKind::File
+        },
+        size: metadata.len(),
+        readonly: metadata.permissions().readonly(),
+        modified_at_ms: metadata
+            .modified()
+            .ok()
+            .and_then(|modified| modified.duration_since(UNIX_EPOCH).ok())
+            .map(|duration| duration.as_millis()),
+    })
+}
+
+fn fs_error(path: &VfsPath, error: std::io::Error) -> VfsError {
+    if error.kind() == std::io::ErrorKind::NotFound {
+        return VfsError::NotFound(path.clone());
+    }
+
+    if error.kind() == std::io::ErrorKind::PermissionDenied {
+        return VfsError::Readonly(path.clone());
+    }
+
+    VfsError::Io(error.to_string())
 }
 
 #[cfg(test)]
@@ -158,5 +264,50 @@ mod tests {
         vfs.delete(&file).expect("delete should work");
 
         assert!(matches!(vfs.read(&file), Err(VfsError::NotFound(_))));
+    }
+
+    #[test]
+    fn local_vfs_reads_writes_lists_metadata_and_deletes_files() {
+        let root = unique_temp_dir("local-vfs");
+        let mut vfs = LocalVfs::new();
+        let file = VfsPath::new(
+            root.join("nested")
+                .join("example.txt")
+                .display()
+                .to_string(),
+        );
+        let directory = VfsPath::new(root.join("nested").display().to_string());
+
+        vfs.write(&file, b"local bytes")
+            .expect("local write should work");
+
+        assert_eq!(
+            vfs.read(&file).expect("local read should work"),
+            b"local bytes"
+        );
+        assert_eq!(
+            vfs.metadata(&file)
+                .expect("local metadata should work")
+                .kind,
+            VfsEntryKind::File
+        );
+        assert_eq!(
+            vfs.list(&directory).expect("local list should work")[0].path,
+            file
+        );
+
+        vfs.delete(&file).expect("local delete should work");
+
+        assert!(matches!(vfs.read(&file), Err(VfsError::NotFound(_))));
+        let _ = std::fs::remove_dir_all(root);
+    }
+
+    fn unique_temp_dir(label: &str) -> std::path::PathBuf {
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("system clock should be after epoch")
+            .as_nanos();
+
+        std::env::temp_dir().join(format!("open-diff-{label}-{stamp}"))
     }
 }

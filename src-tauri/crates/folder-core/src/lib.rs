@@ -41,6 +41,22 @@ pub struct FolderAlignmentRow {
     pub right: Option<FolderScanNode>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderCompareOptions {
+    pub compare_size: bool,
+    pub compare_modified_time: bool,
+}
+
+impl Default for FolderCompareOptions {
+    fn default() -> Self {
+        Self {
+            compare_size: true,
+            compare_modified_time: false,
+        }
+    }
+}
+
 impl FolderScanNode {
     pub fn new_directory(
         relative_path: impl Into<String>,
@@ -78,6 +94,14 @@ pub fn align_folder_trees(
     left: &FolderScanNode,
     right: &FolderScanNode,
 ) -> Vec<FolderAlignmentRow> {
+    align_folder_trees_with_options(left, right, &FolderCompareOptions::default())
+}
+
+pub fn align_folder_trees_with_options(
+    left: &FolderScanNode,
+    right: &FolderScanNode,
+    options: &FolderCompareOptions,
+) -> Vec<FolderAlignmentRow> {
     let mut rows = BTreeMap::<String, (Option<FolderScanNode>, Option<FolderScanNode>)>::new();
 
     collect_alignment_side(left, true, &mut rows);
@@ -85,7 +109,8 @@ pub fn align_folder_trees(
 
     rows.into_iter()
         .map(|(relative_path, (left, right))| {
-            let status = classify_folder_alignment(left.as_ref(), right.as_ref());
+            let status =
+                classify_folder_alignment_with_options(left.as_ref(), right.as_ref(), options);
 
             FolderAlignmentRow {
                 depth: path_depth(&relative_path),
@@ -101,17 +126,34 @@ pub fn classify_folder_alignment(
     left: Option<&FolderScanNode>,
     right: Option<&FolderScanNode>,
 ) -> FolderCompareStatus {
+    classify_folder_alignment_with_options(left, right, &FolderCompareOptions::default())
+}
+
+pub fn classify_folder_alignment_with_options(
+    left: Option<&FolderScanNode>,
+    right: Option<&FolderScanNode>,
+    options: &FolderCompareOptions,
+) -> FolderCompareStatus {
     match (left, right) {
         (Some(_), None) => FolderCompareStatus::LeftOnly,
         (None, Some(_)) => FolderCompareStatus::RightOnly,
-        (Some(left), Some(right))
-            if left.kind == right.kind && left.metadata.size == right.metadata.size =>
-        {
+        (Some(left), Some(right)) if folder_metadata_matches(left, right, options) => {
             FolderCompareStatus::Same
         }
-        (Some(_), Some(_)) => FolderCompareStatus::Different,
+        (Some(_left), Some(_right)) => FolderCompareStatus::Different,
         (None, None) => FolderCompareStatus::Unknown,
     }
+}
+
+fn folder_metadata_matches(
+    left: &FolderScanNode,
+    right: &FolderScanNode,
+    options: &FolderCompareOptions,
+) -> bool {
+    left.kind == right.kind
+        && (!options.compare_size || left.metadata.size == right.metadata.size)
+        && (!options.compare_modified_time
+            || left.metadata.modified_at_ms == right.metadata.modified_at_ms)
 }
 
 fn with_status(mut node: FolderScanNode, status: FolderCompareStatus) -> FolderScanNode {
@@ -356,7 +398,54 @@ mod tests {
         );
     }
 
+    #[test]
+    fn supports_size_and_modified_time_comparison_options() {
+        let left = FolderScanNode::new_file(
+            "same.txt",
+            "same.txt",
+            metadata_with_modified_at(VfsEntryKind::File, "same.txt", Some("txt"), 20, Some(1_000)),
+        );
+        let right = FolderScanNode::new_file(
+            "same.txt",
+            "same.txt",
+            metadata_with_modified_at(VfsEntryKind::File, "same.txt", Some("txt"), 20, Some(2_000)),
+        );
+
+        assert_eq!(
+            classify_folder_alignment_with_options(
+                Some(&left),
+                Some(&right),
+                &FolderCompareOptions {
+                    compare_size: true,
+                    compare_modified_time: true,
+                },
+            ),
+            FolderCompareStatus::Different
+        );
+        assert_eq!(
+            classify_folder_alignment_with_options(
+                Some(&left),
+                Some(&right),
+                &FolderCompareOptions {
+                    compare_size: true,
+                    compare_modified_time: false,
+                },
+            ),
+            FolderCompareStatus::Same
+        );
+    }
+
     fn metadata(kind: VfsEntryKind, name: &str, extension: Option<&str>, size: u64) -> VfsMetadata {
+        metadata_with_modified_at(kind, name, extension, size, None)
+    }
+
+    fn metadata_with_modified_at(
+        kind: VfsEntryKind,
+        name: &str,
+        extension: Option<&str>,
+        size: u64,
+        modified_at_ms: Option<u128>,
+    ) -> VfsMetadata {
         VfsMetadata {
             kind,
             name: name.to_owned(),
@@ -364,7 +453,7 @@ mod tests {
             size,
             readonly: false,
             created_at_ms: None,
-            modified_at_ms: None,
+            modified_at_ms,
             accessed_at_ms: None,
         }
     }

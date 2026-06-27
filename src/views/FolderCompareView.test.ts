@@ -16,7 +16,7 @@ describe('FolderCompareView', () => {
     })
 
     expect(wrapper.find('[data-testid="folder-tree-table"]').exists()).toBe(true)
-    expect(wrapper.findAll('[data-testid="folder-row"]')).toHaveLength(4)
+    expect(wrapper.findAll('[data-testid="folder-row"]').length).toBeLessThan(40)
     expect(wrapper.text()).toContain('Name')
     expect(wrapper.text()).toContain('Size')
     expect(wrapper.text()).toContain('Modified')
@@ -52,5 +52,31 @@ describe('FolderCompareView', () => {
     await wrapper.find('[data-testid="collapse-all-folders"]').trigger('click')
 
     expect(wrapper.text()).not.toContain('main.ts')
+  })
+
+  it('virtualizes large folder lists and updates the rendered window on scroll', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.find('[data-testid="folder-virtual-spacer"]').exists()).toBe(true)
+    expect(wrapper.findAll('[data-testid="folder-row"]').length).toBeLessThan(40)
+    expect(wrapper.text()).not.toContain('generated-120.log')
+
+    const table = wrapper.find('[data-testid="folder-tree-table"]')
+
+    Object.defineProperty(table.element, 'scrollTop', { value: 3600, configurable: true })
+    await table.trigger('scroll')
+
+    expect(wrapper.text()).toContain('generated-120.log')
+    expect(wrapper.findAll('[data-testid="folder-row"]').length).toBeLessThan(40)
   })
 })

@@ -18,6 +18,25 @@ interface FolderTreeRow {
   kind: 'file' | 'directory'
 }
 
+const generatedRows: FolderTreeRow[] = Array.from({ length: 180 }, (_, index): FolderTreeRow => {
+  const number = index + 1
+  const padded = String(number).padStart(3, '0')
+  const sizeLabel = `${String(number + 1)}.0 KB`
+
+  return {
+    id: `generated-${padded}`,
+    depth: 0,
+    leftName: `generated-${padded}.log`,
+    rightName: `generated-${padded}.log`,
+    leftSize: sizeLabel,
+    rightSize: sizeLabel,
+    leftModified: '2026-06-24 10:00',
+    rightModified: '2026-06-24 10:00',
+    status: 'Same',
+    kind: 'file',
+  }
+})
+
 const rows = ref<FolderTreeRow[]>([
   {
     id: 'src',
@@ -65,8 +84,13 @@ const rows = ref<FolderTreeRow[]>([
     status: 'Left only',
     kind: 'file',
   },
+  ...generatedRows,
 ])
 const expandedDirectoryIds = ref<Set<string>>(new Set(['src']))
+const rowHeight = 34
+const virtualViewportRows = 18
+const virtualOverscanRows = 4
+const scrollTop = ref(0)
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -78,6 +102,28 @@ const directoryRows = computed(() => rows.value.filter((row) => row.kind === 'di
 const visibleRows = computed(() =>
   rows.value.filter((row) => !row.parentId || expandedDirectoryIds.value.has(row.parentId)),
 )
+const virtualStartIndex = computed(() =>
+  Math.max(0, Math.floor(scrollTop.value / rowHeight) - virtualOverscanRows),
+)
+const virtualEndIndex = computed(() =>
+  Math.min(
+    visibleRows.value.length,
+    virtualStartIndex.value + virtualViewportRows + virtualOverscanRows * 2,
+  ),
+)
+const virtualRows = computed(() =>
+  visibleRows.value.slice(virtualStartIndex.value, virtualEndIndex.value),
+)
+const virtualSpacerHeight = computed(() => {
+  const height = String(visibleRows.value.length * rowHeight)
+
+  return `${height}px`
+})
+const virtualOffset = computed(() => {
+  const offset = String(virtualStartIndex.value * rowHeight)
+
+  return `translateY(${offset}px)`
+})
 
 function rowIndent(row: FolderTreeRow): string {
   const indent = String(row.depth * 18)
@@ -122,6 +168,10 @@ function collapseAllFolders(): void {
 
 function isExpanded(row: FolderTreeRow): boolean {
   return expandedDirectoryIds.value.has(row.id)
+}
+
+function handleTreeScroll(event: Event): void {
+  scrollTop.value = (event.currentTarget as HTMLElement).scrollTop
 }
 </script>
 
@@ -189,6 +239,7 @@ function isExpanded(row: FolderTreeRow): boolean {
     <section
       class="folder-tree-table"
       data-testid="folder-tree-table"
+      @scroll="handleTreeScroll"
     >
       <div class="tree-head">
         <span>Name</span>
@@ -199,41 +250,50 @@ function isExpanded(row: FolderTreeRow): boolean {
         <span>Size</span>
         <span>Modified</span>
       </div>
-      <div class="tree-body">
+      <div
+        class="tree-body"
+        data-testid="folder-virtual-spacer"
+        :style="{ height: virtualSpacerHeight }"
+      >
         <div
-          v-for="row in visibleRows"
-          :key="row.id"
-          class="tree-row"
-          :class="[`status-${row.status.toLowerCase().replaceAll(' ', '-')}`, row.kind]"
-          data-testid="folder-row"
+          class="tree-window"
+          :style="{ transform: virtualOffset }"
         >
-          <span
-            class="name-cell left-name"
-            :style="{ paddingLeft: rowIndent(row) }"
+          <div
+            v-for="row in virtualRows"
+            :key="row.id"
+            class="tree-row"
+            :class="[`status-${row.status.toLowerCase().replaceAll(' ', '-')}`, row.kind]"
+            data-testid="folder-row"
           >
-            <button
-              v-if="row.kind === 'directory'"
-              type="button"
-              class="folder-toggle"
-              :data-testid="`toggle-folder-${row.id}`"
-              :aria-expanded="isExpanded(row)"
-              @click="toggleFolder(row)"
+            <span
+              class="name-cell left-name"
+              :style="{ paddingLeft: rowIndent(row) }"
             >
-              {{ isExpanded(row) ? '▾' : '▸' }}
-            </button>
-            {{ sideValue(row, 'left', 'name') }}
-          </span>
-          <span>{{ sideValue(row, 'left', 'size') }}</span>
-          <span>{{ sideValue(row, 'left', 'modified') }}</span>
-          <strong>{{ row.status }}</strong>
-          <span
-            class="name-cell"
-            :style="{ paddingLeft: rowIndent(row) }"
-          >
-            {{ sideValue(row, 'right', 'name') }}
-          </span>
-          <span>{{ sideValue(row, 'right', 'size') }}</span>
-          <span>{{ sideValue(row, 'right', 'modified') }}</span>
+              <button
+                v-if="row.kind === 'directory'"
+                type="button"
+                class="folder-toggle"
+                :data-testid="`toggle-folder-${row.id}`"
+                :aria-expanded="isExpanded(row)"
+                @click="toggleFolder(row)"
+              >
+                {{ isExpanded(row) ? '▾' : '▸' }}
+              </button>
+              {{ sideValue(row, 'left', 'name') }}
+            </span>
+            <span>{{ sideValue(row, 'left', 'size') }}</span>
+            <span>{{ sideValue(row, 'left', 'modified') }}</span>
+            <strong>{{ row.status }}</strong>
+            <span
+              class="name-cell"
+              :style="{ paddingLeft: rowIndent(row) }"
+            >
+              {{ sideValue(row, 'right', 'name') }}
+            </span>
+            <span>{{ sideValue(row, 'right', 'size') }}</span>
+            <span>{{ sideValue(row, 'right', 'modified') }}</span>
+          </div>
         </div>
       </div>
     </section>
@@ -317,11 +377,21 @@ function isExpanded(row: FolderTreeRow): boolean {
 }
 
 .folder-tree-table {
+  position: relative;
   min-height: 0;
   overflow: auto;
   border: 1px solid var(--app-border);
   border-radius: 8px;
   background: var(--app-surface);
+}
+
+.tree-body {
+  position: relative;
+}
+
+.tree-window {
+  position: absolute;
+  inset: 0 0 auto;
 }
 
 .tree-head,

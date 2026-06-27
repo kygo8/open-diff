@@ -25,6 +25,7 @@ const findCaseSensitive = ref(false)
 const findWholeWord = ref(false)
 const currentFindIndex = ref(0)
 const ignoredDiffKeys = ref<Set<string>>(new Set())
+const showHtmlPreview = ref(false)
 const bookmarkSlots = Array.from({ length: 10 }, (_, index) => index)
 const selectedBookmark = ref(0)
 const bookmarks = ref<Record<number, string>>({})
@@ -79,6 +80,7 @@ const hexDetails = computed(() => {
     currentActiveDiff.value.rightText,
   )}`
 })
+const canPreviewHtml = computed(() => looksLikeHtml(left.value) || looksLikeHtml(right.value))
 const findMatches = computed(() => {
   const matcher = createFindMatcher()
 
@@ -146,6 +148,7 @@ function updateLeft(value: string): void {
   leftUndoStack.value.push(left.value)
   leftRedoStack.value = []
   left.value = value
+  closeHtmlPreviewWhenUnavailable()
   dirty.value = true
 }
 
@@ -153,6 +156,7 @@ function updateRight(value: string): void {
   rightUndoStack.value.push(right.value)
   rightRedoStack.value = []
   right.value = value
+  closeHtmlPreviewWhenUnavailable()
   dirty.value = true
 }
 
@@ -390,6 +394,26 @@ function toHexBytes(value: string): string {
     .map((byte) => byte.toString(16).toUpperCase().padStart(2, '0'))
     .join(' ')
 }
+
+function looksLikeHtml(value: string): boolean {
+  return /<!doctype html|<html[\s>]|<\/?[a-z][\s\S]*>/iu.test(value)
+}
+
+function toggleHtmlPreview(): void {
+  if (!canPreviewHtml.value) {
+    showHtmlPreview.value = false
+
+    return
+  }
+
+  showHtmlPreview.value = !showHtmlPreview.value
+}
+
+function closeHtmlPreviewWhenUnavailable(): void {
+  if (!canPreviewHtml.value) {
+    showHtmlPreview.value = false
+  }
+}
 </script>
 
 <template>
@@ -457,6 +481,15 @@ function toHexBytes(value: string): string {
         @click="ignoreCurrentDiff"
       >
         Ignore
+      </button>
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="toggle-html-preview"
+        :disabled="!canPreviewHtml"
+        @click="toggleHtmlPreview"
+      >
+        Preview
       </button>
       <select
         v-model.number="selectedBookmark"
@@ -650,6 +683,26 @@ function toHexBytes(value: string): string {
         <span>{{ hexDetails }}</span>
       </div>
     </section>
+
+    <section
+      v-if="showHtmlPreview"
+      class="html-preview-panel"
+      aria-label="HTML preview"
+    >
+      <iframe
+        class="html-preview-frame"
+        data-testid="html-preview"
+        title="Left HTML preview"
+        sandbox=""
+        :srcdoc="left"
+      />
+      <iframe
+        class="html-preview-frame"
+        title="Right HTML preview"
+        sandbox=""
+        :srcdoc="right"
+      />
+    </section>
   </section>
 </template>
 
@@ -771,5 +824,20 @@ function toHexBytes(value: string): string {
   overflow-wrap: anywhere;
   color: var(--app-text-muted);
   font-family: var(--app-font-mono);
+}
+
+.html-preview-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  min-height: 180px;
+}
+
+.html-preview-frame {
+  width: 100%;
+  height: 220px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: #ffffff;
 }
 </style>

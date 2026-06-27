@@ -343,4 +343,21 @@ describe('TextCompareView', () => {
     expect(wrapper.find('[data-testid="hex-details"]').text()).toContain('41 5A')
     expect(wrapper.find('[data-testid="hex-details"]').text()).toContain('41 21')
   })
+
+  it('toggles an HTML preview panel for HTML text input', async () => {
+    const wrapper = mountTextCompareView()
+    const leftInput = wrapper.findAllComponents(NInputStub)[0]
+
+    leftInput.vm.$emit('update:value', '<h1>Hello preview</h1>')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="html-preview"]').exists()).toBe(false)
+
+    await wrapper.find('[data-testid="toggle-html-preview"]').trigger('click')
+
+    const preview = wrapper.find('[data-testid="html-preview"]')
+
+    expect(preview.exists()).toBe(true)
+    expect(preview.attributes('srcdoc')).toContain('<h1>Hello preview</h1>')
+  })
 })

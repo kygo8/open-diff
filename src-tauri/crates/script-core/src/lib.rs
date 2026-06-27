@@ -68,6 +68,7 @@ pub struct ScriptRuntimeState {
     pub load_paths: Vec<String>,
     pub filters: Vec<String>,
     pub last_compare: Option<ScriptCompareSummary>,
+    pub reports_written: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -93,6 +94,25 @@ pub struct ScriptCompareRequest {
 
 pub trait ScriptCompareEngine {
     fn compare(&mut self, request: ScriptCompareRequest) -> Result<ScriptCompareSummary, String>;
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ScriptReportType {
+    Text,
+    Folder,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptReportRequest {
+    pub report_type: ScriptReportType,
+    pub output: String,
+    pub compare_summary: ScriptCompareSummary,
+}
+
+pub trait ScriptReportEngine {
+    fn write_report(&mut self, request: ScriptReportRequest) -> Result<(), String>;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -238,6 +258,58 @@ where
     Ok(ScriptCompareExecutionResult { executed, state })
 }
 
+pub fn execute_automation_script<C, R>(
+    script: &ScriptDocument,
+    execution: ScriptExecutionContext,
+    compare_engine: &mut C,
+    report_engine: &mut R,
+) -> Result<ScriptCompareExecutionResult, ScriptExecutionError>
+where
+    C: ScriptCompareEngine,
+    R: ScriptReportEngine,
+{
+    let mut state = ScriptRuntimeState::default();
+    let mut executed = 0;
+
+    for command in &script.commands {
+        match &command.kind {
+            ScriptCommandKind::Load { paths } => {
+                state.load_paths = expand_command_values(command, paths, &execution.variables)?;
+            }
+            ScriptCommandKind::Filter { patterns } => {
+                state.filters = expand_command_values(command, patterns, &execution.variables)?;
+            }
+            ScriptCommandKind::Compare => {
+                run_compare_command(command, &mut state, compare_engine)?;
+            }
+            ScriptCommandKind::TextReport { output } => {
+                run_report_command(
+                    command,
+                    &mut state,
+                    report_engine,
+                    ScriptReportType::Text,
+                    output,
+                    &execution.variables,
+                )?;
+            }
+            ScriptCommandKind::FolderReport { output } => {
+                run_report_command(
+                    command,
+                    &mut state,
+                    report_engine,
+                    ScriptReportType::Folder,
+                    output,
+                    &execution.variables,
+                )?;
+            }
+        }
+
+        executed += 1;
+    }
+
+    Ok(ScriptCompareExecutionResult { executed, state })
+}
+
 fn resolve_script_variable<'a>(
     name: &str,
     variables: &'a ScriptVariables,
@@ -261,6 +333,72 @@ fn expand_values(
         .iter()
         .map(|value| expand_script_variables(value, variables))
         .collect()
+}
+
+fn expand_command_values(
+    command: &ScriptCommand,
+    values: &[String],
+    variables: &ScriptVariables,
+) -> Result<Vec<String>, ScriptExecutionError> {
+    expand_values(values, variables).map_err(|error| {
+        execution_error(command, format!("{} at line {}", error.message, error.line))
+    })
+}
+
+fn run_compare_command<E>(
+    command: &ScriptCommand,
+    state: &mut ScriptRuntimeState,
+    engine: &mut E,
+) -> Result<(), ScriptExecutionError>
+where
+    E: ScriptCompareEngine,
+{
+    if state.load_paths.is_empty() {
+        return Err(execution_error(command, "COMPARE requires LOAD first"));
+    }
+
+    let summary = engine
+        .compare(ScriptCompareRequest {
+            load_paths: state.load_paths.clone(),
+            filters: state.filters.clone(),
+        })
+        .map_err(|reason| execution_error(command, reason))?;
+    state.last_compare = Some(summary);
+
+    Ok(())
+}
+
+fn run_report_command<R>(
+    command: &ScriptCommand,
+    state: &mut ScriptRuntimeState,
+    engine: &mut R,
+    report_type: ScriptReportType,
+    output: &str,
+    variables: &ScriptVariables,
+) -> Result<(), ScriptExecutionError>
+where
+    R: ScriptReportEngine,
+{
+    let Some(compare_summary) = state.last_compare.clone() else {
+        return Err(execution_error(
+            command,
+            "report command requires COMPARE first",
+        ));
+    };
+    let output = expand_script_variables(output, variables).map_err(|error| {
+        execution_error(command, format!("{} at line {}", error.message, error.line))
+    })?;
+
+    engine
+        .write_report(ScriptReportRequest {
+            report_type,
+            output,
+            compare_summary,
+        })
+        .map_err(|reason| execution_error(command, reason))?;
+    state.reports_written += 1;
+
+    Ok(())
 }
 
 fn execution_error(command: &ScriptCommand, reason: impl Into<String>) -> ScriptExecutionError {
@@ -571,6 +709,7 @@ mod tests {
                     compared: 2,
                     different: 1,
                 }),
+                reports_written: 0,
             }
         );
         assert_eq!(
@@ -606,5 +745,111 @@ mod tests {
         assert_eq!(error.line, 1);
         assert_eq!(error.command, "COMPARE");
         assert!(error.reason.contains("LOAD"));
+    }
+
+    #[test]
+    fn runs_text_and_folder_report_commands_after_compare() {
+        struct StaticCompareEngine;
+
+        impl ScriptCompareEngine for StaticCompareEngine {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary {
+                    compared: 4,
+                    different: 2,
+                })
+            }
+        }
+
+        #[derive(Default)]
+        struct RecordingReportEngine {
+            requests: Vec<ScriptReportRequest>,
+        }
+
+        impl ScriptReportEngine for RecordingReportEngine {
+            fn write_report(&mut self, request: ScriptReportRequest) -> Result<(), String> {
+                self.requests.push(request);
+                Ok(())
+            }
+        }
+
+        let script = parse_script(
+            r#"
+            LOAD left right
+            COMPARE
+            TEXT-REPORT "reports/text.txt"
+            FOLDER-REPORT "reports/folder.html"
+            "#,
+        )
+        .expect("script parses");
+        let mut compare_engine = StaticCompareEngine;
+        let mut report_engine = RecordingReportEngine::default();
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext::default(),
+            &mut compare_engine,
+            &mut report_engine,
+        )
+        .expect("script should execute");
+
+        assert_eq!(result.executed, 4);
+        assert_eq!(result.state.reports_written, 2);
+        assert_eq!(
+            report_engine.requests,
+            vec![
+                ScriptReportRequest {
+                    report_type: ScriptReportType::Text,
+                    output: "reports/text.txt".to_owned(),
+                    compare_summary: ScriptCompareSummary {
+                        compared: 4,
+                        different: 2,
+                    },
+                },
+                ScriptReportRequest {
+                    report_type: ScriptReportType::Folder,
+                    output: "reports/folder.html".to_owned(),
+                    compare_summary: ScriptCompareSummary {
+                        compared: 4,
+                        different: 2,
+                    },
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn report_requires_previous_compare() {
+        struct NoopCompareEngine;
+        struct NoopReportEngine;
+
+        impl ScriptCompareEngine for NoopCompareEngine {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+
+        impl ScriptReportEngine for NoopReportEngine {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script("TEXT-REPORT out.txt").expect("script parses");
+        let error = execute_automation_script(
+            &script,
+            ScriptExecutionContext::default(),
+            &mut NoopCompareEngine,
+            &mut NoopReportEngine,
+        )
+        .expect_err("report before compare should fail");
+
+        assert_eq!(error.line, 1);
+        assert_eq!(error.command, "TEXT-REPORT");
+        assert!(error.reason.contains("COMPARE"));
     }
 }

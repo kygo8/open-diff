@@ -45,7 +45,8 @@ describe('selectSessionForDrop', () => {
   it('selects picture compare for image extensions', () => {
     expect(selectSessionForDrop(pair('before.png', 'after.jpeg'))).toMatchObject({
       sessionType: 'picture-compare',
-      enabled: false,
+      route: '/compare/picture',
+      enabled: true,
     })
   })
 

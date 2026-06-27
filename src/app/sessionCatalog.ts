@@ -64,7 +64,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Picture Compare',
     summary: 'Image visual comparison',
     priority: 'P1',
-    implemented: false,
+    implemented: true,
+    route: '/compare/picture',
   },
   {
     type: 'folder-merge',

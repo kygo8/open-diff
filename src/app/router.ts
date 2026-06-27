@@ -5,6 +5,7 @@ import FolderCompareView from '@/views/FolderCompareView.vue'
 import FolderSyncView from '@/views/FolderSyncView.vue'
 import TableCompareView from '@/views/TableCompareView.vue'
 import HexCompareView from '@/views/HexCompareView.vue'
+import PictureCompareView from '@/views/PictureCompareView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 
 export const router = createRouter({
@@ -16,6 +17,7 @@ export const router = createRouter({
     { path: '/sync/folder', name: 'folder-sync', component: FolderSyncView },
     { path: '/compare/table', name: 'table-compare', component: TableCompareView },
     { path: '/compare/hex', name: 'hex-compare', component: HexCompareView },
+    { path: '/compare/picture', name: 'picture-compare', component: PictureCompareView },
     { path: '/settings', name: 'settings', component: SettingsView },
   ],
 })

@@ -1,4 +1,6 @@
+use folder_core::FolderAlignmentRow;
 use serde::{Deserialize, Serialize};
+use vfs_core::VfsPath;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -54,9 +56,73 @@ impl SyncPlan {
     }
 }
 
+pub fn build_update_right_plan(
+    left_root: impl AsRef<str>,
+    right_root: impl AsRef<str>,
+    rows: &[FolderAlignmentRow],
+) -> SyncPlan {
+    let mut plan = SyncPlan::new("Update Right");
+
+    for row in rows {
+        let action = if should_copy_left_to_right(row) {
+            copy_left_to_right_action(left_root.as_ref(), right_root.as_ref(), &row.relative_path)
+        } else {
+            SyncAction::Leave
+        };
+
+        plan.add_item(SyncPlanItem {
+            relative_path: row.relative_path.clone(),
+            reason: update_right_reason(row, &action),
+            action,
+        });
+    }
+
+    plan
+}
+
+fn should_copy_left_to_right(row: &FolderAlignmentRow) -> bool {
+    row.left.is_some() && row.right.is_none() || left_is_newer(row)
+}
+
+fn copy_left_to_right_action(left_root: &str, right_root: &str, relative_path: &str) -> SyncAction {
+    SyncAction::Copy {
+        direction: SyncDirection::LeftToRight,
+        source_path: joined_path(left_root, relative_path),
+        target_path: joined_path(right_root, relative_path),
+    }
+}
+
+fn left_is_newer(row: &FolderAlignmentRow) -> bool {
+    let Some(left) = row.left.as_ref() else {
+        return false;
+    };
+    let Some(right) = row.right.as_ref() else {
+        return false;
+    };
+
+    left.metadata.modified_at_ms > right.metadata.modified_at_ms
+}
+
+fn update_right_reason(row: &FolderAlignmentRow, action: &SyncAction) -> String {
+    match action {
+        SyncAction::Copy { .. } if row.right.is_none() => "Left item only exists".to_owned(),
+        SyncAction::Copy { .. } => "Left item is newer".to_owned(),
+        SyncAction::Leave => "No update needed".to_owned(),
+        SyncAction::Delete { .. } | SyncAction::Conflict { .. } => {
+            "Not used by Update Right".to_owned()
+        }
+    }
+}
+
+fn joined_path(root: &str, relative_path: &str) -> String {
+    VfsPath::new(root).join(relative_path).as_str().to_owned()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use folder_core::{FolderAlignmentRow, FolderCompareStatus, FolderScanNode};
+    use vfs_core::{VfsEntryKind, VfsMetadata};
 
     #[test]
     fn sync_plan_supports_copy_delete_leave_and_conflict_actions() {
@@ -104,5 +170,99 @@ mod tests {
         assert!(matches!(plan.items[1].action, SyncAction::Delete { .. }));
         assert_eq!(plan.items[2].action, SyncAction::Leave);
         assert!(matches!(plan.items[3].action, SyncAction::Conflict { .. }));
+    }
+
+    #[test]
+    fn update_right_copies_left_newer_and_left_orphans_to_right() {
+        let rows = vec![
+            file_row("left-newer.txt", Some(2_000), Some(1_000)),
+            left_only_file_row("left-only.txt", 1_500),
+            file_row("right-newer.txt", Some(1_000), Some(2_000)),
+            file_row("same.txt", Some(1_000), Some(1_000)),
+        ];
+
+        let plan = build_update_right_plan("D:/left", "D:/right", &rows);
+
+        assert_eq!(plan.name, "Update Right");
+        assert_eq!(plan.items.len(), 4);
+        assert_eq!(plan.items[0].relative_path, "left-newer.txt");
+        assert_eq!(
+            plan.items[0].action,
+            SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "D:/left/left-newer.txt".to_owned(),
+                target_path: "D:/right/left-newer.txt".to_owned(),
+            }
+        );
+        assert_eq!(plan.items[1].relative_path, "left-only.txt");
+        assert_eq!(
+            plan.items[1].action,
+            SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "D:/left/left-only.txt".to_owned(),
+                target_path: "D:/right/left-only.txt".to_owned(),
+            }
+        );
+        assert_eq!(plan.items[2].action, SyncAction::Leave);
+        assert_eq!(plan.items[3].action, SyncAction::Leave);
+    }
+
+    fn file_row(
+        relative_path: &str,
+        left_modified_at_ms: Option<u128>,
+        right_modified_at_ms: Option<u128>,
+    ) -> FolderAlignmentRow {
+        FolderAlignmentRow {
+            relative_path: relative_path.to_owned(),
+            depth: 0,
+            left: Some(file_node(
+                relative_path,
+                left_modified_at_ms,
+                FolderCompareStatus::Different,
+            )),
+            right: Some(file_node(
+                relative_path,
+                right_modified_at_ms,
+                FolderCompareStatus::Different,
+            )),
+        }
+    }
+
+    fn left_only_file_row(relative_path: &str, modified_at_ms: u128) -> FolderAlignmentRow {
+        FolderAlignmentRow {
+            relative_path: relative_path.to_owned(),
+            depth: 0,
+            left: Some(file_node(
+                relative_path,
+                Some(modified_at_ms),
+                FolderCompareStatus::LeftOnly,
+            )),
+            right: None,
+        }
+    }
+
+    fn file_node(
+        relative_path: &str,
+        modified_at_ms: Option<u128>,
+        status: FolderCompareStatus,
+    ) -> FolderScanNode {
+        let mut node = FolderScanNode::new_file(
+            relative_path,
+            relative_path,
+            VfsMetadata {
+                kind: VfsEntryKind::File,
+                name: relative_path.to_owned(),
+                extension: relative_path
+                    .rsplit_once('.')
+                    .map(|(_, extension)| extension.to_owned()),
+                size: 1,
+                readonly: false,
+                created_at_ms: None,
+                modified_at_ms,
+                accessed_at_ms: None,
+            },
+        );
+        node.status = status;
+        node
     }
 }

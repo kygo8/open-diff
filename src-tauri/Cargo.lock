@@ -2912,7 +2912,9 @@ dependencies = [
 name = "sync-core"
 version = "1.0.0"
 dependencies = [
+ "folder-core",
  "serde",
+ "vfs-core",
 ]
 
 [[package]]

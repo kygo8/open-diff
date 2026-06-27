@@ -24,6 +24,11 @@ const configurableColumns: { id: FolderColumnId; label: string }[] = [
   { id: 'modified', label: 'Modified' },
   { id: 'type', label: 'Type' },
 ]
+const displayStatusOptions: { statuses: FolderStatus[]; label: string; testId: string }[] = [
+  { statuses: ['Same'], label: 'Same', testId: 'same' },
+  { statuses: ['Different'], label: 'Different', testId: 'different' },
+  { statuses: ['Left only', 'Right only'], label: 'Orphans', testId: 'orphans' },
+]
 const generatedRows: FolderTreeRow[] = Array.from({ length: 180 }, (_, index): FolderTreeRow => {
   const number = index + 1
   const padded = String(number).padStart(3, '0')
@@ -93,6 +98,9 @@ const rows = ref<FolderTreeRow[]>([
   ...generatedRows,
 ])
 const expandedDirectoryIds = ref<Set<string>>(new Set(['src']))
+const visibleStatuses = ref<Set<FolderStatus>>(
+  new Set(['Same', 'Different', 'Left only', 'Right only']),
+)
 const rowHeight = 34
 const virtualViewportRows = 18
 const virtualOverscanRows = 4
@@ -106,7 +114,11 @@ const summary = computed(() => ({
 }))
 const directoryRows = computed(() => rows.value.filter((row) => row.kind === 'directory'))
 const visibleRows = computed(() =>
-  rows.value.filter((row) => !row.parentId || expandedDirectoryIds.value.has(row.parentId)),
+  rows.value.filter(
+    (row) =>
+      (!row.parentId || expandedDirectoryIds.value.has(row.parentId)) &&
+      visibleStatuses.value.has(row.status),
+  ),
 )
 const virtualStartIndex = computed(() =>
   Math.max(0, Math.floor(scrollTop.value / rowHeight) - virtualOverscanRows),
@@ -200,6 +212,25 @@ function toggleColumn(columnId: FolderColumnId, selected: boolean): void {
   visibleColumnIds.value = next
 }
 
+function areStatusesVisible(statuses: FolderStatus[]): boolean {
+  return statuses.every((status) => visibleStatuses.value.has(status))
+}
+
+function toggleStatuses(statuses: FolderStatus[], selected: boolean): void {
+  const next = new Set(visibleStatuses.value)
+
+  for (const status of statuses) {
+    if (selected) {
+      next.add(status)
+    } else {
+      next.delete(status)
+    }
+  }
+
+  visibleStatuses.value = next
+  scrollTop.value = 0
+}
+
 function toggleFolder(row: FolderTreeRow): void {
   if (row.kind !== 'directory') {
     return
@@ -291,6 +322,21 @@ function handleTreeScroll(event: Event): void {
           @change="toggleColumn(column.id, ($event.target as HTMLInputElement).checked)"
         />
         <span>{{ column.label }}</span>
+      </label>
+    </section>
+
+    <section class="display-filters">
+      <label
+        v-for="option in displayStatusOptions"
+        :key="option.testId"
+      >
+        <input
+          :data-testid="`toggle-status-${option.testId}`"
+          type="checkbox"
+          :checked="areStatusesVisible(option.statuses)"
+          @change="toggleStatuses(option.statuses, ($event.target as HTMLInputElement).checked)"
+        />
+        <span>{{ option.label }}</span>
       </label>
     </section>
 
@@ -444,7 +490,7 @@ function handleTreeScroll(event: Event): void {
 <style scoped>
 .folder-compare-view {
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
   gap: 12px;
   height: 100%;
   padding: 16px;
@@ -492,13 +538,15 @@ function handleTreeScroll(event: Event): void {
   gap: 8px;
 }
 
-.column-config {
+.column-config,
+.display-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.column-config label {
+.column-config label,
+.display-filters label {
   display: inline-flex;
   align-items: center;
   gap: 6px;

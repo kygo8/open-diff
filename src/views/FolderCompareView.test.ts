@@ -105,4 +105,33 @@ describe('FolderCompareView', () => {
     expect(wrapper.find('[data-column="left-type"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('Directory')
   })
+
+  it('filters rows by comparison status', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.text()).toContain('README.md')
+    expect(wrapper.text()).toContain('main.ts')
+    expect(wrapper.text()).toContain('release-notes.md')
+
+    await wrapper.find('[data-testid="toggle-status-same"]').setValue(false)
+
+    expect(wrapper.text()).not.toContain('README.md')
+    expect(wrapper.text()).toContain('main.ts')
+    expect(wrapper.text()).toContain('release-notes.md')
+
+    await wrapper.find('[data-testid="toggle-status-different"]').setValue(false)
+
+    expect(wrapper.text()).not.toContain('main.ts')
+    expect(wrapper.text()).toContain('release-notes.md')
+  })
 })

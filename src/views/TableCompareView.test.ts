@@ -84,4 +84,26 @@ describe('TableCompareView', () => {
 
     wrapper.unmount()
   })
+
+  it('hides ignored columns and marks them as unimportant', async () => {
+    const wrapper = mount(TableCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.find('[data-testid="table-grid-cell-quantity"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="ignore-column-quantity"]').setValue(true)
+
+    expect(wrapper.find('[data-testid="table-grid-cell-quantity"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="column-rule-quantity"]').text()).toContain('Ignored')
+    expect(wrapper.find('[data-testid="column-rule-quantity"]').text()).toContain('Unimportant')
+  })
 })

@@ -14,12 +14,19 @@ interface ColumnMappingModel {
 
 interface VirtualGridCell {
   key: string
+  columnKey: string
+  testId: string
   text: string
 }
 
 interface VirtualGridRow {
   key: string
   cells: VirtualGridCell[]
+}
+
+interface VirtualGridColumn {
+  key: string
+  label: string
 }
 
 const leftColumns: TableColumnModel[] = [
@@ -33,15 +40,28 @@ const rightColumns: TableColumnModel[] = [
   { side: 'right', name: 'Right Only' },
 ]
 const visibleRows = 8
-const visibleColumns = 5
+const virtualGridColumns: VirtualGridColumn[] = [
+  { key: 'sku', label: 'SKU' },
+  { key: 'region', label: 'Region' },
+  { key: 'quantity', label: 'Quantity' },
+  { key: 'price', label: 'Price' },
+  { key: 'updated', label: 'Updated' },
+]
 const manualLeftColumn = ref('SKU')
 const manualRightColumn = ref('sku')
 const manualMappings = ref<ColumnMappingModel[]>([])
 const leftGridViewport = ref<HTMLElement | null>(null)
 const rightGridViewport = ref<HTMLElement | null>(null)
+const ignoredColumnKeys = ref<string[]>([])
+
+const visibleGridColumns = computed<VirtualGridColumn[]>(() =>
+  virtualGridColumns.filter((column) => !ignoredColumnKeys.value.includes(column.key)),
+)
+
+const visibleColumns = computed(() => visibleGridColumns.value.length)
 
 const virtualGridStyle = computed<Record<string, string>>(() => ({
-  '--visible-columns': String(visibleColumns),
+  '--visible-columns': String(visibleColumns.value),
   '--visible-rows': String(visibleRows),
 }))
 
@@ -52,14 +72,29 @@ const virtualGridRows = computed<VirtualGridRow[]>(() =>
 
     return {
       key: `row-${rowLabel}`,
-      cells: Array.from({ length: visibleColumns }, (_, columnIndex) => {
+      cells: visibleGridColumns.value.map((column, columnIndex) => {
         const columnLabel = String(columnIndex + 1)
 
         return {
-          key: `cell-${rowLabel}-${columnLabel}`,
+          key: `cell-${rowLabel}-${column.key}`,
+          columnKey: column.key,
+          testId: `table-grid-cell-${column.key}`,
           text: `R${rowLabel}C${columnLabel}`,
         }
       }),
+    }
+  }),
+)
+
+const columnRules = computed(() =>
+  virtualGridColumns.map((column) => {
+    const ignored = ignoredColumnKeys.value.includes(column.key)
+
+    return {
+      ...column,
+      ignored,
+      importance: ignored ? 'Unimportant' : 'Important',
+      status: ignored ? 'Ignored' : 'Compared',
     }
   }),
 )
@@ -233,6 +268,24 @@ function syncGridScroll(source: 'left' | 'right', event: Event): void {
         <strong>Data Grid</strong>
         <span>{{ visibleRows }} rows x {{ visibleColumns }} columns</span>
       </header>
+      <div class="table-column-rules">
+        <label
+          v-for="rule in columnRules"
+          :key="rule.key"
+          class="table-column-rule"
+          :data-testid="`column-rule-${rule.key}`"
+        >
+          <input
+            v-model="ignoredColumnKeys"
+            type="checkbox"
+            :value="rule.key"
+            :data-testid="`ignore-column-${rule.key}`"
+          />
+          <span>{{ rule.label }}</span>
+          <strong>{{ rule.status }}</strong>
+          <small>{{ rule.importance }}</small>
+        </label>
+      </div>
       <div class="table-grid-panes">
         <section class="table-grid-pane">
           <strong>Left</strong>
@@ -257,9 +310,10 @@ function syncGridScroll(source: 'left' | 'right', event: Event): void {
                   v-for="cell in row.cells"
                   :key="cell.key"
                   class="table-grid-cell"
+                  :data-column-key="cell.columnKey"
                   data-testid="table-grid-cell"
                 >
-                  {{ cell.text }}
+                  <span :data-testid="cell.testId">{{ cell.text }}</span>
                 </span>
               </div>
             </div>
@@ -286,6 +340,7 @@ function syncGridScroll(source: 'left' | 'right', event: Event): void {
                   v-for="cell in row.cells"
                   :key="cell.key"
                   class="table-grid-cell"
+                  :data-column-key="cell.columnKey"
                 >
                   {{ cell.text }}
                 </span>
@@ -467,6 +522,43 @@ h2 {
   font-size: 12px;
 }
 
+.table-column-rules {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(128px, 1fr));
+  gap: 8px;
+  overflow: auto;
+}
+
+.table-column-rule {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px 8px;
+  min-width: 128px;
+  padding: 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  font-size: 12px;
+}
+
+.table-column-rule input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+
+.table-column-rule strong,
+.table-column-rule small {
+  grid-column: 2;
+  color: var(--app-text-muted);
+  line-height: 1.2;
+}
+
+.table-column-rule small {
+  font-size: 11px;
+}
+
 .table-grid-panes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -576,6 +668,7 @@ h2 {
   .table-compare-header,
   .column-map-controls,
   .column-source-grid,
+  .table-column-rules,
   .table-grid-panes {
     grid-template-columns: 1fr;
   }

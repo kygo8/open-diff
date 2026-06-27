@@ -37,6 +37,8 @@ const visibleColumns = 5
 const manualLeftColumn = ref('SKU')
 const manualRightColumn = ref('sku')
 const manualMappings = ref<ColumnMappingModel[]>([])
+const leftGridViewport = ref<HTMLElement | null>(null)
+const rightGridViewport = ref<HTMLElement | null>(null)
 
 const virtualGridStyle = computed<Record<string, string>>(() => ({
   '--visible-columns': String(visibleColumns),
@@ -133,6 +135,18 @@ function addManualMapping(): void {
     },
   ]
 }
+
+function syncGridScroll(source: 'left' | 'right', event: Event): void {
+  const sourceElement = event.currentTarget
+  const targetElement = source === 'left' ? rightGridViewport.value : leftGridViewport.value
+
+  if (!(sourceElement instanceof HTMLElement) || !targetElement) {
+    return
+  }
+
+  targetElement.scrollTop = sourceElement.scrollTop
+  targetElement.scrollLeft = sourceElement.scrollLeft
+}
 </script>
 
 <template>
@@ -219,28 +233,66 @@ function addManualMapping(): void {
         <strong>Data Grid</strong>
         <span>{{ visibleRows }} rows x {{ visibleColumns }} columns</span>
       </header>
-      <div class="table-grid-viewport">
-        <div
-          class="table-virtual-grid"
-          data-testid="table-virtual-grid"
-          :style="virtualGridStyle"
-        >
+      <div class="table-grid-panes">
+        <section class="table-grid-pane">
+          <strong>Left</strong>
           <div
-            v-for="row in virtualGridRows"
-            :key="row.key"
-            class="table-grid-row"
-            data-testid="table-grid-row"
+            ref="leftGridViewport"
+            class="table-grid-viewport"
+            data-testid="left-table-grid-viewport"
+            @scroll="syncGridScroll('left', $event)"
           >
-            <span
-              v-for="cell in row.cells"
-              :key="cell.key"
-              class="table-grid-cell"
-              data-testid="table-grid-cell"
+            <div
+              class="table-virtual-grid"
+              data-testid="table-virtual-grid"
+              :style="virtualGridStyle"
             >
-              {{ cell.text }}
-            </span>
+              <div
+                v-for="row in virtualGridRows"
+                :key="row.key"
+                class="table-grid-row"
+                data-testid="table-grid-row"
+              >
+                <span
+                  v-for="cell in row.cells"
+                  :key="cell.key"
+                  class="table-grid-cell"
+                  data-testid="table-grid-cell"
+                >
+                  {{ cell.text }}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
+        <section class="table-grid-pane">
+          <strong>Right</strong>
+          <div
+            ref="rightGridViewport"
+            class="table-grid-viewport"
+            data-testid="right-table-grid-viewport"
+            @scroll="syncGridScroll('right', $event)"
+          >
+            <div
+              class="table-virtual-grid"
+              :style="virtualGridStyle"
+            >
+              <div
+                v-for="row in virtualGridRows"
+                :key="row.key"
+                class="table-grid-row"
+              >
+                <span
+                  v-for="cell in row.cells"
+                  :key="cell.key"
+                  class="table-grid-cell"
+                >
+                  {{ cell.text }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
 
@@ -415,8 +467,26 @@ h2 {
   font-size: 12px;
 }
 
+.table-grid-panes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.table-grid-pane {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.table-grid-pane > strong {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
 .table-grid-viewport {
   max-width: 100%;
+  max-height: 178px;
   overflow: auto;
   border: 1px solid var(--app-border);
   border-radius: 6px;
@@ -505,7 +575,8 @@ h2 {
 @media (width <= 760px) {
   .table-compare-header,
   .column-map-controls,
-  .column-source-grid {
+  .column-source-grid,
+  .table-grid-panes {
     grid-template-columns: 1fr;
   }
 

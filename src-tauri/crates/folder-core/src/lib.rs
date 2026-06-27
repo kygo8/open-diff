@@ -84,13 +84,39 @@ pub fn align_folder_trees(
     collect_alignment_side(right, false, &mut rows);
 
     rows.into_iter()
-        .map(|(relative_path, (left, right))| FolderAlignmentRow {
-            depth: path_depth(&relative_path),
-            relative_path,
-            left,
-            right,
+        .map(|(relative_path, (left, right))| {
+            let status = classify_folder_alignment(left.as_ref(), right.as_ref());
+
+            FolderAlignmentRow {
+                depth: path_depth(&relative_path),
+                relative_path,
+                left: left.map(|node| with_status(node, status.clone())),
+                right: right.map(|node| with_status(node, status)),
+            }
         })
         .collect()
+}
+
+pub fn classify_folder_alignment(
+    left: Option<&FolderScanNode>,
+    right: Option<&FolderScanNode>,
+) -> FolderCompareStatus {
+    match (left, right) {
+        (Some(_), None) => FolderCompareStatus::LeftOnly,
+        (None, Some(_)) => FolderCompareStatus::RightOnly,
+        (Some(left), Some(right))
+            if left.kind == right.kind && left.metadata.size == right.metadata.size =>
+        {
+            FolderCompareStatus::Same
+        }
+        (Some(_), Some(_)) => FolderCompareStatus::Different,
+        (None, None) => FolderCompareStatus::Unknown,
+    }
+}
+
+fn with_status(mut node: FolderScanNode, status: FolderCompareStatus) -> FolderScanNode {
+    node.status = status;
+    node
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -292,6 +318,42 @@ mod tests {
         assert_eq!(aligned[2].relative_path, "shared.txt");
         assert!(aligned[2].left.is_some());
         assert!(aligned[2].right.is_some());
+    }
+
+    #[test]
+    fn classifies_aligned_folder_rows_by_presence_kind_and_size() {
+        let same_left = FolderScanNode::new_file(
+            "same.txt",
+            "same.txt",
+            metadata(VfsEntryKind::File, "same.txt", Some("txt"), 20),
+        );
+        let same_right = FolderScanNode::new_file(
+            "same.txt",
+            "same.txt",
+            metadata(VfsEntryKind::File, "same.txt", Some("txt"), 20),
+        );
+        let different_right = FolderScanNode::new_file(
+            "same.txt",
+            "same.txt",
+            metadata(VfsEntryKind::File, "same.txt", Some("txt"), 21),
+        );
+
+        assert_eq!(
+            classify_folder_alignment(Some(&same_left), Some(&same_right)),
+            FolderCompareStatus::Same
+        );
+        assert_eq!(
+            classify_folder_alignment(Some(&same_left), Some(&different_right)),
+            FolderCompareStatus::Different
+        );
+        assert_eq!(
+            classify_folder_alignment(Some(&same_left), None),
+            FolderCompareStatus::LeftOnly
+        );
+        assert_eq!(
+            classify_folder_alignment(None, Some(&same_right)),
+            FolderCompareStatus::RightOnly
+        );
     }
 
     fn metadata(kind: VfsEntryKind, name: &str, extension: Option<&str>, size: u64) -> VfsMetadata {

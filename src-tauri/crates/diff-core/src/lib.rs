@@ -1,7 +1,7 @@
 use regex::Regex;
 use shared_types::{
     DiffLine, DiffLineKind, DiffStats, InlineDiffSegment, InlineDiffSegments, TextDiffRequest,
-    TextDiffResponse,
+    TextDiffResponse, TextPatchResponse,
 };
 use std::collections::BTreeMap;
 
@@ -19,12 +19,162 @@ pub fn diff_text(request: &TextDiffRequest) -> TextDiffResponse {
     )
 }
 
+pub fn parse_text_patch(input: &str) -> TextPatchResponse {
+    let mut files = Vec::new();
+    let mut current_file: Option<shared_types::PatchFile> = None;
+    let mut current_hunk: Option<shared_types::PatchHunk> = None;
+    let mut old_line_number = 0;
+    let mut new_line_number = 0;
+
+    for line in input.lines() {
+        if let Some(old_path) = line.strip_prefix("--- ") {
+            flush_hunk(&mut current_file, &mut current_hunk);
+            flush_file(&mut files, &mut current_file);
+            current_file = Some(shared_types::PatchFile {
+                old_path: old_path.to_owned(),
+                new_path: String::new(),
+                hunks: Vec::new(),
+            });
+            continue;
+        }
+
+        if let Some(new_path) = line.strip_prefix("+++ ") {
+            if let Some(file) = &mut current_file {
+                file.new_path = new_path.to_owned();
+            }
+            continue;
+        }
+
+        if let Some(header) = line.strip_prefix("@@ ") {
+            flush_hunk(&mut current_file, &mut current_hunk);
+            if let Some(hunk) = parse_hunk_header(header) {
+                old_line_number = hunk.old_start;
+                new_line_number = hunk.new_start;
+                current_hunk = Some(hunk);
+            }
+            continue;
+        }
+
+        if let Some(hunk) = &mut current_hunk {
+            if let Some(patch_line) =
+                parse_patch_line(line, &mut old_line_number, &mut new_line_number)
+            {
+                hunk.lines.push(patch_line);
+            }
+        }
+    }
+
+    flush_hunk(&mut current_file, &mut current_hunk);
+    flush_file(&mut files, &mut current_file);
+
+    TextPatchResponse { files }
+}
+
 fn algorithm_from_request(value: Option<&str>) -> TextDiffAlgorithm {
     match value {
         Some("patience") => TextDiffAlgorithm::Patience,
         Some("histogram") => TextDiffAlgorithm::Histogram,
         _ => TextDiffAlgorithm::Myers,
     }
+}
+
+fn flush_file(
+    files: &mut Vec<shared_types::PatchFile>,
+    current_file: &mut Option<shared_types::PatchFile>,
+) {
+    if let Some(file) = current_file.take() {
+        files.push(file);
+    }
+}
+
+fn flush_hunk(
+    current_file: &mut Option<shared_types::PatchFile>,
+    current_hunk: &mut Option<shared_types::PatchHunk>,
+) {
+    let Some(hunk) = current_hunk.take() else {
+        return;
+    };
+
+    if let Some(file) = current_file {
+        file.hunks.push(hunk);
+    }
+}
+
+fn parse_hunk_header(header: &str) -> Option<shared_types::PatchHunk> {
+    let (ranges, heading) = header.split_once("@@").unwrap_or((header, ""));
+    let mut parts = ranges.split_whitespace();
+    let old_range = parts.next()?.strip_prefix('-')?;
+    let new_range = parts.next()?.strip_prefix('+')?;
+    let (old_start, old_count) = parse_patch_range(old_range)?;
+    let (new_start, new_count) = parse_patch_range(new_range)?;
+
+    Some(shared_types::PatchHunk {
+        old_start,
+        old_count,
+        new_start,
+        new_count,
+        heading: heading.trim().to_owned(),
+        lines: Vec::new(),
+    })
+}
+
+fn parse_patch_range(value: &str) -> Option<(usize, usize)> {
+    let (start, count) = value.split_once(',').unwrap_or((value, "1"));
+
+    Some((start.parse().ok()?, count.parse().ok()?))
+}
+
+fn parse_patch_line(
+    line: &str,
+    old_line_number: &mut usize,
+    new_line_number: &mut usize,
+) -> Option<shared_types::PatchLine> {
+    if line.starts_with('\\') {
+        return None;
+    }
+
+    let (kind, text, old_number, new_number) = match line.as_bytes().first().copied()? {
+        b' ' => {
+            let old_number = *old_line_number;
+            let new_number = *new_line_number;
+            *old_line_number += 1;
+            *new_line_number += 1;
+            (
+                shared_types::PatchLineKind::Context,
+                &line[1..],
+                Some(old_number),
+                Some(new_number),
+            )
+        }
+        b'-' => {
+            let old_number = *old_line_number;
+            *old_line_number += 1;
+            (
+                shared_types::PatchLineKind::Removed,
+                &line[1..],
+                Some(old_number),
+                None,
+            )
+        }
+        b'+' => {
+            let new_number = *new_line_number;
+            *new_line_number += 1;
+            (
+                shared_types::PatchLineKind::Added,
+                &line[1..],
+                None,
+                Some(new_number),
+            )
+        }
+        _ => return None,
+    };
+
+    Some(shared_types::PatchLine {
+        kind,
+        old_number,
+        new_number,
+        text: text.to_owned(),
+    })
 }
 
 pub fn diff_text_with_algorithm(
@@ -752,5 +902,37 @@ mod tests {
 
         assert_eq!(result.stats.equal, 1);
         assert_eq!(result.stats.modified, 0);
+    }
+
+    #[test]
+    fn parses_unified_text_patch_files_and_hunks() {
+        let patch = "\
+diff --git a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -1,3 +1,3 @@
+ fn main() {
+-    println!(\"old\");
++    println!(\"new\");
+ }
+";
+
+        let result = parse_text_patch(patch);
+
+        assert_eq!(result.files.len(), 1);
+        assert_eq!(result.files[0].old_path, "a/src/main.rs");
+        assert_eq!(result.files[0].new_path, "b/src/main.rs");
+        assert_eq!(result.files[0].hunks.len(), 1);
+        assert_eq!(result.files[0].hunks[0].old_start, 1);
+        assert_eq!(result.files[0].hunks[0].new_start, 1);
+        assert_eq!(result.files[0].hunks[0].lines.len(), 4);
+        assert_eq!(
+            result.files[0].hunks[0].lines[1].kind,
+            shared_types::PatchLineKind::Removed
+        );
+        assert_eq!(
+            result.files[0].hunks[0].lines[2].kind,
+            shared_types::PatchLineKind::Added
+        );
     }
 }

@@ -82,3 +82,45 @@ pub enum DiffLineKind {
     Deleted,
     Modified,
 }
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct TextPatchResponse {
+    pub files: Vec<PatchFile>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct PatchFile {
+    pub old_path: String,
+    pub new_path: String,
+    pub hunks: Vec<PatchHunk>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct PatchHunk {
+    pub old_start: usize,
+    pub old_count: usize,
+    pub new_start: usize,
+    pub new_count: usize,
+    pub heading: String,
+    pub lines: Vec<PatchLine>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct PatchLine {
+    pub kind: PatchLineKind,
+    pub old_number: Option<usize>,
+    pub new_number: Option<usize>,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum PatchLineKind {
+    Context,
+    Added,
+    Removed,
+}

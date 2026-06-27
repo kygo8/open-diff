@@ -1,4 +1,6 @@
-use shared_types::{FileStamp, ReadTextFileResponse, TextDiffRequest, TextDiffResponse};
+use shared_types::{
+    FileStamp, ReadTextFileResponse, TextDiffRequest, TextDiffResponse, TextPatchResponse,
+};
 
 #[tauri::command]
 pub fn diff_text(
@@ -20,6 +22,11 @@ pub fn diff_text(
         ignore_regexes: ignore_regexes.unwrap_or_default(),
     };
     diff_core::diff_text(&request)
+}
+
+#[tauri::command]
+pub fn parse_text_patch(input: String) -> TextPatchResponse {
+    diff_core::parse_text_patch(&input)
 }
 
 #[tauri::command]

@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core'
 import type {
   FileStamp,
+  TextPatchResponse,
   ReadTextFileResponse,
   TextDiffRequest,
   TextDiffResponse,
@@ -16,6 +17,10 @@ export function diffText(request: TextDiffRequest): Promise<TextDiffResponse> {
     ignoreLineEndings: request.ignoreLineEndings ?? false,
     ignoreRegexes: request.ignoreRegexes ?? [],
   })
+}
+
+export function parseTextPatch(input: string): Promise<TextPatchResponse> {
+  return invoke<TextPatchResponse>('parse_text_patch', { input })
 }
 
 export function readTextFile(path: string): Promise<ReadTextFileResponse> {

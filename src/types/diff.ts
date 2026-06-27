@@ -53,3 +53,31 @@ export interface FileStamp {
   size: number
   modifiedAtMs: number
 }
+
+export interface TextPatchResponse {
+  files: PatchFile[]
+}
+
+export interface PatchFile {
+  oldPath: string
+  newPath: string
+  hunks: PatchHunk[]
+}
+
+export interface PatchHunk {
+  oldStart: number
+  oldCount: number
+  newStart: number
+  newCount: number
+  heading: string
+  lines: PatchLine[]
+}
+
+export interface PatchLine {
+  kind: PatchLineKind
+  oldNumber: number | null
+  newNumber: number | null
+  text: string
+}
+
+export type PatchLineKind = 'context' | 'added' | 'removed'

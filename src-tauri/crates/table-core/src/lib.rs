@@ -105,15 +105,55 @@ pub enum TableParseError {
     UnclosedQuote,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DelimitedTableOptions {
+    pub delimiter: char,
+    pub sheet_name: String,
+}
+
+impl DelimitedTableOptions {
+    pub fn csv() -> Self {
+        Self {
+            delimiter: ',',
+            sheet_name: "Sheet1".to_owned(),
+        }
+    }
+
+    pub fn tsv() -> Self {
+        Self {
+            delimiter: '\t',
+            sheet_name: "Sheet1".to_owned(),
+        }
+    }
+}
+
 pub fn parse_csv(input: &str) -> Result<TableWorkbook, TableParseError> {
-    parse_delimited_table(input, ',')
+    parse_delimited_table_with_options(input, &DelimitedTableOptions::csv())
+}
+
+pub fn parse_tsv(input: &str) -> Result<TableWorkbook, TableParseError> {
+    parse_delimited_table_with_options(input, &DelimitedTableOptions::tsv())
 }
 
 pub fn parse_delimited_table(
     input: &str,
     delimiter: char,
 ) -> Result<TableWorkbook, TableParseError> {
-    let raw_rows = parse_delimited_rows(input, delimiter)?;
+    parse_delimited_table_with_options(
+        input,
+        &DelimitedTableOptions {
+            delimiter,
+            sheet_name: "Sheet1".to_owned(),
+        },
+    )
+}
+
+pub fn parse_delimited_table_with_options(
+    input: &str,
+    options: &DelimitedTableOptions,
+) -> Result<TableWorkbook, TableParseError> {
+    let raw_rows = parse_delimited_rows(input, options.delimiter)?;
     let columns = raw_rows
         .first()
         .map(|headers| {
@@ -147,7 +187,7 @@ pub fn parse_delimited_table(
 
     Ok(TableWorkbook {
         sheets: vec![TableSheet {
-            name: "Sheet1".to_owned(),
+            name: options.sheet_name.clone(),
             index: 0,
             columns,
             rows,
@@ -341,5 +381,33 @@ mod tests {
         let error = parse_csv("Name,Note\nWidget,\"Unclosed").expect_err("csv should fail");
 
         assert_eq!(error, TableParseError::UnclosedQuote);
+    }
+
+    #[test]
+    fn parses_tsv_and_custom_delimiters() {
+        let tsv = parse_tsv("Name\tQuantity\nWidget\t12").expect("tsv should parse");
+        let custom = parse_delimited_table_with_options(
+            "Name|Note|Quantity\nWidget|Pipe separated|7",
+            &DelimitedTableOptions {
+                delimiter: '|',
+                sheet_name: "Pipes".to_owned(),
+            },
+        )
+        .expect("custom delimiter should parse");
+
+        assert_eq!(tsv.sheets[0].columns[1].name, "Quantity");
+        assert_eq!(
+            tsv.sheets[0].rows[0].cells[0].value,
+            TableCellValue::Text("Widget".to_owned())
+        );
+        assert_eq!(
+            tsv.sheets[0].rows[0].cells[1].value,
+            TableCellValue::Number(12.0)
+        );
+        assert_eq!(custom.sheets[0].name, "Pipes");
+        assert_eq!(
+            custom.sheets[0].rows[0].cells[1].value,
+            TableCellValue::Text("Pipe separated".to_owned())
+        );
     }
 }

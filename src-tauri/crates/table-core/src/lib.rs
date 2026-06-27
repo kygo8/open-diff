@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -103,6 +104,7 @@ pub struct TableCellDiff {
 #[serde(rename_all = "camelCase")]
 pub enum TableParseError {
     UnclosedQuote,
+    Excel(String),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -203,6 +205,93 @@ pub fn parse_html_tables(input: &str) -> Result<TableWorkbook, TableParseError> 
         .collect::<Vec<_>>();
 
     Ok(TableWorkbook { sheets })
+}
+
+pub fn read_excel_workbook(path: impl AsRef<Path>) -> Result<TableWorkbook, TableParseError> {
+    let mut workbook = calamine::open_workbook_auto(path.as_ref())
+        .map_err(|error| TableParseError::Excel(format!("{error:?}")))?;
+    let sheet_names = calamine::Reader::sheet_names(&workbook);
+    let sheets = sheet_names
+        .iter()
+        .enumerate()
+        .map(|(index, sheet_name)| {
+            let range = calamine::Reader::worksheet_range(&mut workbook, sheet_name)
+                .map_err(|error| TableParseError::Excel(format!("{error:?}")))?;
+
+            Ok(excel_range_to_sheet(sheet_name, index, &range))
+        })
+        .collect::<Result<Vec<_>, TableParseError>>()?;
+
+    Ok(TableWorkbook { sheets })
+}
+
+fn excel_range_to_sheet(
+    sheet_name: &str,
+    sheet_index: usize,
+    range: &calamine::Range<calamine::Data>,
+) -> TableSheet {
+    let rows = range.rows().collect::<Vec<_>>();
+    let columns = rows
+        .first()
+        .map(|headers| {
+            headers
+                .iter()
+                .enumerate()
+                .map(|(index, value)| TableColumn {
+                    index,
+                    name: excel_cell_to_string(value),
+                })
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    let rows = rows
+        .into_iter()
+        .skip(1)
+        .enumerate()
+        .map(|(row_index, values)| TableRow {
+            index: row_index,
+            cells: values
+                .iter()
+                .enumerate()
+                .map(|(column_index, value)| TableCell {
+                    row_index,
+                    column_index,
+                    value: excel_cell_to_value(value),
+                })
+                .collect(),
+        })
+        .collect();
+
+    TableSheet {
+        name: sheet_name.to_owned(),
+        index: sheet_index,
+        columns,
+        rows,
+    }
+}
+
+fn excel_cell_to_value(value: &calamine::Data) -> TableCellValue {
+    match value {
+        calamine::Data::Empty => TableCellValue::Empty,
+        calamine::Data::String(value) => parse_cell_value(value.clone()),
+        calamine::Data::Float(value) => TableCellValue::Number(*value),
+        calamine::Data::Int(value) => TableCellValue::Number(*value as f64),
+        calamine::Data::Bool(value) => TableCellValue::Boolean(*value),
+        calamine::Data::DateTime(value) => TableCellValue::DateTime(value.to_string()),
+        calamine::Data::DateTimeIso(value) | calamine::Data::DurationIso(value) => {
+            TableCellValue::DateTime(value.clone())
+        }
+        calamine::Data::Error(value) => TableCellValue::Text(format!("{value:?}")),
+    }
+}
+
+fn excel_cell_to_string(value: &calamine::Data) -> String {
+    match excel_cell_to_value(value) {
+        TableCellValue::Empty => String::new(),
+        TableCellValue::Text(value) | TableCellValue::DateTime(value) => value,
+        TableCellValue::Number(value) => value.to_string(),
+        TableCellValue::Boolean(value) => value.to_string(),
+    }
 }
 
 fn html_table_to_sheet(table_html: &str, table_index: usize) -> TableSheet {
@@ -575,5 +664,52 @@ mod tests {
             workbook.sheets[1].rows[0].cells[1].value,
             TableCellValue::Text("Ready".to_owned())
         );
+    }
+
+    #[test]
+    fn reads_excel_workbook_sheets_and_cells() {
+        let path = unique_temp_file("excel-read", "xlsx");
+        let mut workbook = rust_xlsxwriter::Workbook::new();
+        let first = workbook.add_worksheet();
+        first.set_name("Inventory").expect("sheet name");
+        first.write_string(0, 0, "SKU").expect("header");
+        first.write_string(0, 1, "Quantity").expect("header");
+        first.write_string(1, 0, "A-001").expect("sku");
+        first.write_number(1, 1, 12.0).expect("quantity");
+        let second = workbook.add_worksheet();
+        second.set_name("Flags").expect("sheet name");
+        second.write_string(0, 0, "Enabled").expect("header");
+        second.write_boolean(1, 0, true).expect("flag");
+        workbook.save(&path).expect("xlsx should write");
+
+        let parsed = read_excel_workbook(&path).expect("xlsx should read");
+
+        assert_eq!(parsed.sheets.len(), 2);
+        assert_eq!(parsed.sheets[0].name, "Inventory");
+        assert_eq!(parsed.sheets[0].columns[0].name, "SKU");
+        assert_eq!(
+            parsed.sheets[0].rows[0].cells[0].value,
+            TableCellValue::Text("A-001".to_owned())
+        );
+        assert_eq!(
+            parsed.sheets[0].rows[0].cells[1].value,
+            TableCellValue::Number(12.0)
+        );
+        assert_eq!(parsed.sheets[1].name, "Flags");
+        assert_eq!(
+            parsed.sheets[1].rows[0].cells[0].value,
+            TableCellValue::Boolean(true)
+        );
+
+        let _ = std::fs::remove_file(path);
+    }
+
+    fn unique_temp_file(label: &str, extension: &str) -> std::path::PathBuf {
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("system clock should be after epoch")
+            .as_nanos();
+
+        std::env::temp_dir().join(format!("open-diff-{label}-{stamp}.{extension}"))
     }
 }

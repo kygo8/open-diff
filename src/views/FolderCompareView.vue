@@ -146,6 +146,11 @@ const lastCompareAction = ref<string>()
 const pendingCopyConfirmation = ref<FileOperationConfirmation>()
 const pendingCopyDirection = ref<'Left' | 'Right'>()
 const lastCopyAction = ref<string>()
+const pendingDangerousOperation = ref<FileOperationConfirmation>()
+const pendingDangerousOperationLabel = ref('')
+const renamePanelOpen = ref(false)
+const renameTargetName = ref('')
+const lastFileOperationAction = ref<string>()
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -400,6 +405,17 @@ function copySelectedTo(direction: 'Left' | 'Right'): void {
   })
 }
 
+function renameSelectedFile(): void {
+  const row = selectedRow.value
+
+  if (!row) {
+    return
+  }
+
+  renamePanelOpen.value = true
+  renameTargetName.value = displayName(row)
+}
+
 function displayName(row: FolderTreeRow): string {
   return row.leftName ?? row.rightName ?? row.id
 }
@@ -443,6 +459,59 @@ function confirmFolderCopy(): void {
   lastCopyAction.value = `Copied to ${direction} -> ${confirmation.paths[0]} | Status refreshed`
   pendingCopyConfirmation.value = undefined
   pendingCopyDirection.value = undefined
+}
+
+function confirmRenameFile(): void {
+  if (!renameTargetName.value) {
+    return
+  }
+
+  lastFileOperationAction.value = `Renamed -> ${renameTargetName.value}`
+  renamePanelOpen.value = false
+}
+
+function moveSelectedFile(): void {
+  const path = selectedFilePath.value
+
+  if (!path) {
+    return
+  }
+
+  lastFileOperationAction.value = `Move -> ${archivePath(path)}`
+}
+
+function deleteSelectedFile(): void {
+  const path = selectedFilePath.value
+
+  if (!path) {
+    return
+  }
+
+  pendingDangerousOperationLabel.value = `Deleted -> ${path}`
+  pendingDangerousOperation.value = createFileOperationConfirmation({
+    operation: 'delete',
+    paths: [path],
+  })
+}
+
+function confirmDangerousFileOperation(): void {
+  if (!pendingDangerousOperation.value) {
+    return
+  }
+
+  lastFileOperationAction.value = pendingDangerousOperationLabel.value
+  pendingDangerousOperation.value = undefined
+  pendingDangerousOperationLabel.value = ''
+}
+
+function archivePath(path: string): string {
+  const separatorIndex = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'))
+
+  if (separatorIndex < 0) {
+    return `archive/${path}`
+  }
+
+  return `${path.slice(0, separatorIndex)}/archive/${path.slice(separatorIndex + 1)}`
 }
 
 function handleTreeScroll(event: Event): void {
@@ -543,6 +612,33 @@ function handleTreeScroll(event: Event): void {
         <NButton
           size="small"
           secondary
+          data-testid="move-selected-file"
+          :disabled="!selectedFilePath"
+          @click="moveSelectedFile"
+        >
+          Move
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="delete-selected-file"
+          :disabled="!selectedFilePath"
+          @click="deleteSelectedFile"
+        >
+          Delete
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="rename-selected-file"
+          :disabled="!selectedFilePath"
+          @click="renameSelectedFile"
+        >
+          Rename
+        </NButton>
+        <NButton
+          size="small"
+          secondary
           data-testid="expand-all-folders"
           @click="expandAllFolders"
         >
@@ -610,6 +706,43 @@ function handleTreeScroll(event: Event): void {
         <strong>{{ summary.orphans }}</strong>
         <span>Orphans</span>
       </div>
+    </section>
+
+    <section
+      v-if="renamePanelOpen"
+      class="folder-operation-panel"
+      data-testid="folder-rename-panel"
+    >
+      <input
+        v-model="renameTargetName"
+        data-testid="rename-target-name"
+      />
+      <NButton
+        size="small"
+        type="primary"
+        data-testid="confirm-rename-file"
+        @click="confirmRenameFile"
+      >
+        Rename
+      </NButton>
+    </section>
+
+    <section
+      v-if="pendingDangerousOperation"
+      class="folder-copy-confirmation"
+      data-testid="folder-dangerous-confirmation"
+    >
+      <strong>{{ pendingDangerousOperation.title }}</strong>
+      <span>{{ pendingDangerousOperation.message }}</span>
+      <span>{{ pendingDangerousOperation.paths.join(', ') }}</span>
+      <NButton
+        size="small"
+        type="primary"
+        data-testid="confirm-dangerous-file-operation"
+        @click="confirmDangerousFileOperation"
+      >
+        {{ pendingDangerousOperation.confirmLabel }}
+      </NButton>
     </section>
 
     <section
@@ -691,6 +824,13 @@ function handleTreeScroll(event: Event): void {
       data-testid="folder-copy-action-status"
     >
       {{ lastCopyAction }}
+    </section>
+    <section
+      v-if="lastFileOperationAction"
+      class="folder-action-status"
+      data-testid="folder-file-operation-status"
+    >
+      {{ lastFileOperationAction }}
     </section>
 
     <section
@@ -934,6 +1074,23 @@ function handleTreeScroll(event: Event): void {
 
 .folder-copy-confirmation strong {
   color: var(--app-text);
+}
+
+.folder-operation-panel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.folder-operation-panel input {
+  width: 260px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 12px;
 }
 
 .folder-summary {

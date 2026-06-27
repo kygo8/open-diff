@@ -266,4 +266,37 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).toContain('Copied to Right -> D:/workspace/right/src/main.ts')
     expect(wrapper.text()).toContain('Status refreshed')
   })
+
+  it('confirms delete, move, and rename operations for the selected file', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-row-id="notes"]').trigger('click')
+    await wrapper.find('[data-testid="rename-selected-file"]').trigger('click')
+    await wrapper.find('[data-testid="rename-target-name"]').setValue('release-notes-final.md')
+    await wrapper.find('[data-testid="confirm-rename-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Renamed -> release-notes-final.md')
+
+    await wrapper.find('[data-testid="move-selected-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Move -> D:/workspace/left/archive/release-notes.md')
+
+    await wrapper.find('[data-testid="delete-selected-file"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Delete 1 item?')
+
+    await wrapper.find('[data-testid="confirm-dangerous-file-operation"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Deleted -> D:/workspace/left/release-notes.md')
+  })
 })

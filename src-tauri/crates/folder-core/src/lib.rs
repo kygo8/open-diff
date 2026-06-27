@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::fs;
 use std::io::{self, Read};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use vfs_core::{LocalVfs, VfsEntryKind, VfsMetadata, VfsPath, VfsProvider};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -132,6 +133,47 @@ pub struct CopySideResult {
     pub target_path: String,
     pub target_metadata: VfsMetadata,
     pub refreshed_status: FolderCompareStatus,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FileOperationRequest {
+    Move {
+        source_path: String,
+        target_path: String,
+    },
+    Delete {
+        path: String,
+    },
+    Rename {
+        path: String,
+        new_name: String,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FileOperationKind {
+    Move,
+    Delete,
+    Rename,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FileOperationStatus {
+    Moved,
+    Deleted,
+    Renamed,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FileOperationResult {
+    pub operation: FileOperationKind,
+    pub status: FileOperationStatus,
+    pub source_path: String,
+    pub target_path: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -459,6 +501,66 @@ fn refresh_copied_file_status(
             .map_err(|error| FolderScanError::Vfs(error.to_string()))?
             .status,
     )
+}
+
+pub fn perform_file_operation(
+    request: FileOperationRequest,
+) -> Result<FileOperationResult, FolderScanError> {
+    match request {
+        FileOperationRequest::Move {
+            source_path,
+            target_path,
+        } => {
+            move_path(&source_path, &target_path)?;
+
+            Ok(FileOperationResult {
+                operation: FileOperationKind::Move,
+                status: FileOperationStatus::Moved,
+                source_path,
+                target_path: Some(target_path),
+            })
+        }
+        FileOperationRequest::Delete { path } => {
+            let mut vfs = LocalVfs::new();
+
+            vfs.delete(&VfsPath::new(&path))
+                .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+            Ok(FileOperationResult {
+                operation: FileOperationKind::Delete,
+                status: FileOperationStatus::Deleted,
+                source_path: path,
+                target_path: None,
+            })
+        }
+        FileOperationRequest::Rename { path, new_name } => {
+            let source = PathBuf::from(&path);
+            let target = source
+                .parent()
+                .map(|parent| parent.join(&new_name))
+                .unwrap_or_else(|| PathBuf::from(&new_name));
+            let target_path = target.display().to_string();
+
+            move_path(&path, &target_path)?;
+
+            Ok(FileOperationResult {
+                operation: FileOperationKind::Rename,
+                status: FileOperationStatus::Renamed,
+                source_path: path,
+                target_path: Some(target_path),
+            })
+        }
+    }
+}
+
+fn move_path(source_path: &str, target_path: &str) -> Result<(), FolderScanError> {
+    let target = Path::new(target_path);
+
+    if let Some(parent) = target.parent() {
+        fs::create_dir_all(parent).map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+    }
+
+    fs::rename(source_path, target_path).map_err(|error| FolderScanError::Vfs(error.to_string()))
 }
 
 fn folder_metadata_matches(
@@ -1024,6 +1126,55 @@ mod tests {
         assert_eq!(result.target_path, right.display().to_string());
         assert_eq!(result.refreshed_status, FolderCompareStatus::Same);
         assert_eq!(result.target_metadata.size, 12);
+
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn moves_deletes_and_renames_files_with_diagnostic_results() {
+        let root = unique_temp_dir("folder-operations");
+        let source = root.join("source.txt");
+        let renamed = root.join("renamed.txt");
+        let moved = root.join("archive").join("renamed.txt");
+
+        fs::create_dir_all(&root).expect("root dir");
+        fs::write(&source, b"operation bytes").expect("source write");
+
+        let rename_result = perform_file_operation(FileOperationRequest::Rename {
+            path: source.display().to_string(),
+            new_name: "renamed.txt".to_owned(),
+        })
+        .expect("rename works");
+
+        assert_eq!(rename_result.operation, FileOperationKind::Rename);
+        assert_eq!(
+            rename_result.target_path.as_deref(),
+            Some(renamed.to_string_lossy().as_ref())
+        );
+        assert!(renamed.exists());
+        assert!(!source.exists());
+
+        let move_result = perform_file_operation(FileOperationRequest::Move {
+            source_path: renamed.display().to_string(),
+            target_path: moved.display().to_string(),
+        })
+        .expect("move works");
+
+        assert_eq!(move_result.operation, FileOperationKind::Move);
+        assert_eq!(fs::read(&moved).expect("moved read"), b"operation bytes");
+        assert_eq!(
+            move_result.target_path.as_deref(),
+            Some(moved.to_string_lossy().as_ref())
+        );
+
+        let delete_result = perform_file_operation(FileOperationRequest::Delete {
+            path: moved.display().to_string(),
+        })
+        .expect("delete works");
+
+        assert_eq!(delete_result.operation, FileOperationKind::Delete);
+        assert_eq!(delete_result.status, FileOperationStatus::Deleted);
+        assert!(!moved.exists());
 
         let _ = fs::remove_dir_all(root);
     }

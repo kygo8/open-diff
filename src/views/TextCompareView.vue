@@ -11,6 +11,10 @@ const result = ref<TextDiffResponse | null>(null)
 const loading = ref(false)
 const error = ref('')
 const dirty = ref(false)
+const leftUndoStack = ref<string[]>([])
+const leftRedoStack = ref<string[]>([])
+const rightUndoStack = ref<string[]>([])
+const rightRedoStack = ref<string[]>([])
 
 const statsLabel = computed(() => {
   if (!result.value) return 'No comparison yet'
@@ -59,12 +63,40 @@ async function runDiff(): Promise<void> {
 }
 
 function updateLeft(value: string): void {
+  leftUndoStack.value.push(left.value)
+  leftRedoStack.value = []
   left.value = value
   dirty.value = true
 }
 
 function updateRight(value: string): void {
+  rightUndoStack.value.push(right.value)
+  rightRedoStack.value = []
   right.value = value
+  dirty.value = true
+}
+
+function undoLeft(): void {
+  const previous = leftUndoStack.value.pop()
+
+  if (previous === undefined) {
+    return
+  }
+
+  leftRedoStack.value.push(left.value)
+  left.value = previous
+  dirty.value = true
+}
+
+function redoLeft(): void {
+  const next = leftRedoStack.value.pop()
+
+  if (next === undefined) {
+    return
+  }
+
+  leftUndoStack.value.push(left.value)
+  left.value = next
   dirty.value = true
 }
 </script>
@@ -85,6 +117,24 @@ function updateRight(value: string): void {
         >{{ dirtyStatus }}</span
       >
       <div class="spacer" />
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="undo-left"
+        :disabled="leftUndoStack.length === 0"
+        @click="undoLeft"
+      >
+        Undo
+      </button>
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="redo-left"
+        :disabled="leftRedoStack.length === 0"
+        @click="redoLeft"
+      >
+        Redo
+      </button>
       <select
         v-model="algorithm"
         class="algorithm-select"
@@ -177,6 +227,22 @@ function updateRight(value: string): void {
   background: var(--app-surface);
   color: var(--app-text);
   font-size: 12px;
+}
+
+.toolbar-button {
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.toolbar-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .input-row {

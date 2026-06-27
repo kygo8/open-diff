@@ -88,4 +88,24 @@ describe('TextCompareView', () => {
     )
     expect(wrapper.find('[data-testid="dirty-status"]').text()).toContain('No edits')
   })
+
+  it('undoes and redoes left-side edits', async () => {
+    const wrapper = mountTextCompareView()
+    const leftInput = wrapper.findAllComponents(NInputStub)[0]
+
+    leftInput.vm.$emit('update:value', 'first edit')
+    await wrapper.vm.$nextTick()
+    leftInput.vm.$emit('update:value', 'second edit')
+    await wrapper.vm.$nextTick()
+
+    await wrapper.find('[data-testid="undo-left"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.findAll('textarea')[0]?.element.value).toBe('first edit')
+
+    await wrapper.find('[data-testid="redo-left"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.findAll('textarea')[0]?.element.value).toBe('second edit')
+  })
 })

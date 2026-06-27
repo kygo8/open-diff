@@ -1,11 +1,21 @@
 use shared_types::{FileStamp, ReadTextFileResponse, TextDiffRequest, TextDiffResponse};
 
 #[tauri::command]
-pub fn diff_text(left: String, right: String, algorithm: Option<String>) -> TextDiffResponse {
+pub fn diff_text(
+    left: String,
+    right: String,
+    algorithm: Option<String>,
+    ignore_whitespace: Option<bool>,
+    ignore_case: Option<bool>,
+    ignore_line_endings: Option<bool>,
+) -> TextDiffResponse {
     let request = TextDiffRequest {
         left,
         right,
         algorithm,
+        ignore_whitespace: ignore_whitespace.unwrap_or(false),
+        ignore_case: ignore_case.unwrap_or(false),
+        ignore_line_endings: ignore_line_endings.unwrap_or(false),
     };
     diff_core::diff_text(&request)
 }

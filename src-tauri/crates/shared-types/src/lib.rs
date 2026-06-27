@@ -6,6 +6,12 @@ pub struct TextDiffRequest {
     pub left: String,
     pub right: String,
     pub algorithm: Option<String>,
+    #[serde(default)]
+    pub ignore_whitespace: bool,
+    #[serde(default)]
+    pub ignore_case: bool,
+    #[serde(default)]
+    pub ignore_line_endings: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]

@@ -32,15 +32,46 @@ pub fn diff_text_with_algorithm(
 ) -> TextDiffResponse {
     let left_lines = split_lines(&request.left);
     let right_lines = split_lines(&request.right);
+    let comparable_left_lines = comparable_lines(&left_lines, request);
+    let comparable_right_lines = comparable_lines(&right_lines, request);
     let edits = match algorithm {
-        TextDiffAlgorithm::Myers => diff_lines(&left_lines, &right_lines),
-        TextDiffAlgorithm::Patience => patience_diff_lines(&left_lines, &right_lines),
-        TextDiffAlgorithm::Histogram => histogram_diff_lines(&left_lines, &right_lines),
+        TextDiffAlgorithm::Myers => diff_lines(&comparable_left_lines, &comparable_right_lines),
+        TextDiffAlgorithm::Patience => {
+            patience_diff_lines(&comparable_left_lines, &comparable_right_lines)
+        }
+        TextDiffAlgorithm::Histogram => {
+            histogram_diff_lines(&comparable_left_lines, &comparable_right_lines)
+        }
     };
     let rows = rows_from_edits(&edits, &left_lines, &right_lines);
     let stats = stats_for(&rows);
 
     TextDiffResponse { lines: rows, stats }
+}
+
+fn comparable_lines(lines: &[String], request: &TextDiffRequest) -> Vec<String> {
+    lines
+        .iter()
+        .map(|line| comparable_line(line, request))
+        .collect()
+}
+
+fn comparable_line(line: &str, request: &TextDiffRequest) -> String {
+    let mut value = if request.ignore_whitespace {
+        line.split_whitespace().collect::<String>()
+    } else {
+        line.to_owned()
+    };
+
+    if request.ignore_case {
+        value = value.to_lowercase();
+    }
+
+    if request.ignore_line_endings {
+        value = value.trim_end_matches(['\r', '\n']).to_owned();
+    }
+
+    value
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -570,13 +601,20 @@ fn build_inline_segments(
 mod tests {
     use super::*;
 
+    fn request(left: &str, right: &str) -> TextDiffRequest {
+        TextDiffRequest {
+            left: left.to_owned(),
+            right: right.to_owned(),
+            algorithm: None,
+            ignore_whitespace: false,
+            ignore_case: false,
+            ignore_line_endings: false,
+        }
+    }
+
     #[test]
     fn reports_equal_and_modified_lines() {
-        let request = TextDiffRequest {
-            left: "one\ntwo".to_owned(),
-            right: "one\n2".to_owned(),
-            algorithm: None,
-        };
+        let request = request("one\ntwo", "one\n2");
 
         let result = diff_text(&request);
 
@@ -587,11 +625,7 @@ mod tests {
 
     #[test]
     fn reports_added_lines() {
-        let request = TextDiffRequest {
-            left: "one".to_owned(),
-            right: "one\ntwo".to_owned(),
-            algorithm: None,
-        };
+        let request = request("one", "one\ntwo");
 
         let result = diff_text(&request);
 
@@ -601,11 +635,7 @@ mod tests {
 
     #[test]
     fn realigns_after_inserted_line() {
-        let request = TextDiffRequest {
-            left: "a\nb\nc".to_owned(),
-            right: "a\nx\nb\nc".to_owned(),
-            algorithm: None,
-        };
+        let request = request("a\nb\nc", "a\nx\nb\nc");
 
         let result = diff_text(&request);
         let kinds: Vec<DiffLineKind> = result.lines.iter().map(|line| line.kind.clone()).collect();
@@ -625,11 +655,10 @@ mod tests {
 
     #[test]
     fn patience_uses_unique_lines_as_readable_anchors() {
-        let request = TextDiffRequest {
-            left: "repeat\nalpha\nalpha\nshared-anchor\nbeta\nbeta\nrepeat".to_owned(),
-            right: "repeat\nbeta\nbeta\nshared-anchor\nalpha\nalpha\nrepeat".to_owned(),
-            algorithm: None,
-        };
+        let request = request(
+            "repeat\nalpha\nalpha\nshared-anchor\nbeta\nbeta\nrepeat",
+            "repeat\nbeta\nbeta\nshared-anchor\nalpha\nalpha\nrepeat",
+        );
 
         let result = diff_text_with_algorithm(&request, TextDiffAlgorithm::Patience);
         let anchor = result
@@ -642,11 +671,10 @@ mod tests {
 
     #[test]
     fn histogram_uses_low_frequency_lines_as_anchors() {
-        let request = TextDiffRequest {
-            left: "noise\nnoise\nleft-only\nrare-anchor\nnoise\ncommon\nnoise".to_owned(),
-            right: "noise\nnoise\nright-only\nrare-anchor\nnoise\ncommon\nnoise".to_owned(),
-            algorithm: None,
-        };
+        let request = request(
+            "noise\nnoise\nleft-only\nrare-anchor\nnoise\ncommon\nnoise",
+            "noise\nnoise\nright-only\nrare-anchor\nnoise\ncommon\nnoise",
+        );
 
         let result = diff_text_with_algorithm(&request, TextDiffAlgorithm::Histogram);
         let anchor = result
@@ -659,11 +687,7 @@ mod tests {
 
     #[test]
     fn modified_lines_include_inline_character_segments() {
-        let request = TextDiffRequest {
-            left: "line two".to_owned(),
-            right: "line too".to_owned(),
-            algorithm: None,
-        };
+        let request = request("line two", "line too");
 
         let result = diff_text(&request);
         let modified = &result.lines[0];
@@ -679,5 +703,24 @@ mod tests {
             .right
             .iter()
             .any(|segment| segment.changed));
+    }
+
+    #[test]
+    fn ignores_whitespace_and_case_when_requested() {
+        let request = TextDiffRequest {
+            left: "Line   One".to_owned(),
+            right: "line one".to_owned(),
+            algorithm: None,
+            ignore_whitespace: true,
+            ignore_case: true,
+            ignore_line_endings: false,
+        };
+
+        let result = diff_text(&request);
+
+        assert_eq!(result.stats.equal, 1);
+        assert_eq!(result.stats.modified, 0);
+        assert_eq!(result.lines[0].left_text, "Line   One");
+        assert_eq!(result.lines[0].right_text, "line one");
     }
 }

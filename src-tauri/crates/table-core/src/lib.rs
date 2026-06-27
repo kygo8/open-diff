@@ -166,6 +166,12 @@ pub struct RowAlignmentOptions {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SortedRowAlignmentOptions {
+    pub case_sensitive: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RowAlignment {
     pub key: Vec<String>,
     pub left_row_index: Option<usize>,
@@ -504,6 +510,36 @@ pub fn align_rows_by_key_columns(
         .collect()
 }
 
+pub fn align_rows_by_sorted_content(
+    left: &TableSheet,
+    right: &TableSheet,
+    options: &SortedRowAlignmentOptions,
+) -> Vec<RowAlignment> {
+    let mut rows = BTreeMap::<Vec<String>, (Option<usize>, Option<usize>)>::new();
+
+    for row in &left.rows {
+        rows.entry(sorted_row_key(row, options)).or_default().0 = Some(row.index);
+    }
+
+    for row in &right.rows {
+        rows.entry(sorted_row_key(row, options)).or_default().1 = Some(row.index);
+    }
+
+    rows.into_iter()
+        .map(|(key, (left_row_index, right_row_index))| RowAlignment {
+            key,
+            left_row_index,
+            right_row_index,
+            status: match (left_row_index, right_row_index) {
+                (Some(_), Some(_)) => RowAlignmentStatus::Matched,
+                (Some(_), None) => RowAlignmentStatus::LeftOnly,
+                (None, Some(_)) => RowAlignmentStatus::RightOnly,
+                (None, None) => RowAlignmentStatus::LeftOnly,
+            },
+        })
+        .collect()
+}
+
 fn row_key(row: &TableRow, options: &RowAlignmentOptions) -> Vec<String> {
     options
         .key_column_indices
@@ -515,6 +551,21 @@ fn row_key(row: &TableRow, options: &RowAlignmentOptions) -> Vec<String> {
                 .find(|cell| cell.column_index == *column_index)
                 .map(|cell| table_cell_value_to_key(&cell.value))
                 .unwrap_or_default();
+
+            if options.case_sensitive {
+                key
+            } else {
+                key.to_lowercase()
+            }
+        })
+        .collect()
+}
+
+fn sorted_row_key(row: &TableRow, options: &SortedRowAlignmentOptions) -> Vec<String> {
+    row.cells
+        .iter()
+        .map(|cell| {
+            let key = table_cell_value_to_key(&cell.value);
 
             if options.case_sensitive {
                 key
@@ -1146,6 +1197,37 @@ mod tests {
         assert_eq!(rows[0].status, RowAlignmentStatus::Matched);
         assert_eq!(rows[1].left_row_index, Some(1));
         assert_eq!(rows[1].right_row_index, Some(0));
+        assert_eq!(rows[2].status, RowAlignmentStatus::LeftOnly);
+        assert_eq!(rows[3].status, RowAlignmentStatus::RightOnly);
+    }
+
+    #[test]
+    fn aligns_rows_by_sorted_content_without_key_columns() {
+        let left = keyed_sheet(vec![
+            ("B-002", "EU", "20"),
+            ("A-001", "US", "12"),
+            ("C-003", "US", "30"),
+        ]);
+        let right = keyed_sheet(vec![
+            ("A-001", "US", "12"),
+            ("D-004", "APAC", "8"),
+            ("B-002", "EU", "20"),
+        ]);
+
+        let rows = align_rows_by_sorted_content(
+            &left,
+            &right,
+            &SortedRowAlignmentOptions {
+                case_sensitive: false,
+            },
+        );
+
+        assert_eq!(rows.len(), 4);
+        assert_eq!(rows[0].left_row_index, Some(1));
+        assert_eq!(rows[0].right_row_index, Some(0));
+        assert_eq!(rows[0].status, RowAlignmentStatus::Matched);
+        assert_eq!(rows[1].left_row_index, Some(0));
+        assert_eq!(rows[1].right_row_index, Some(2));
         assert_eq!(rows[2].status, RowAlignmentStatus::LeftOnly);
         assert_eq!(rows[3].status, RowAlignmentStatus::RightOnly);
     }

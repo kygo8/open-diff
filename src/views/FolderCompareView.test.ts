@@ -434,4 +434,35 @@ describe('FolderCompareView', () => {
     expect(overwriteRow.text()).toContain('D:/workspace/left/src/main.ts')
     expect(overwriteRow.text()).toContain('Direction reversed by user.')
   })
+
+  it('requires safety confirmation before running sync with delete or overwrite actions', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="preview-sync-plan"]').trigger('click')
+    await wrapper.find('[data-testid="run-sync-preview"]').trigger('click')
+
+    const confirmation = wrapper.find('[data-testid="sync-safety-confirmation"]')
+
+    expect(confirmation.exists()).toBe(true)
+    expect(confirmation.text()).toContain('Confirm risky sync actions')
+    expect(confirmation.text()).toContain('Overwrite')
+    expect(confirmation.text()).toContain('Delete')
+    expect(confirmation.text()).toContain('D:/workspace/right/src/main.ts')
+    expect(confirmation.text()).toContain('D:/workspace/right/archive/legacy.tmp')
+
+    await wrapper.find('[data-testid="confirm-sync-safety"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Sync confirmed -> 4 operations ready')
+    expect(wrapper.find('[data-testid="sync-safety-confirmation"]').exists()).toBe(false)
+  })
 })

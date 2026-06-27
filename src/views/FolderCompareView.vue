@@ -169,6 +169,8 @@ const lastSelectionAction = ref<string>()
 const currentDifferenceIndex = ref(-1)
 const lastDifferenceNavigation = ref<string>()
 const syncPreviewItems = ref<SyncPreviewItem[]>([])
+const pendingSyncSafetyItems = ref<SyncPreviewItem[]>([])
+const lastSyncAction = ref<string>()
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -633,8 +635,28 @@ function reverseSyncPreviewItem(itemId: string): void {
   })
 }
 
+function runSyncPreview(): void {
+  const riskyItems = syncPreviewItems.value.filter((item) =>
+    ['Delete', 'Overwrite'].includes(item.action),
+  )
+
+  if (riskyItems.length > 0) {
+    pendingSyncSafetyItems.value = riskyItems
+
+    return
+  }
+
+  lastSyncAction.value = `Sync ready -> ${String(syncPreviewItems.value.length)} operations ready`
+}
+
+function confirmSyncSafety(): void {
+  lastSyncAction.value = `Sync confirmed -> ${String(syncPreviewItems.value.length)} operations ready`
+  pendingSyncSafetyItems.value = []
+}
+
 function closeSyncPreview(): void {
   syncPreviewItems.value = []
+  pendingSyncSafetyItems.value = []
 }
 
 function navigateFolderDifference(direction: 'next' | 'previous'): void {
@@ -926,7 +948,42 @@ function handleTreeScroll(event: Event): void {
         >
           Close
         </NButton>
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="run-sync-preview"
+          @click="runSyncPreview"
+        >
+          Run Sync
+        </NButton>
       </header>
+      <section
+        v-if="pendingSyncSafetyItems.length > 0"
+        class="sync-safety-confirmation"
+        data-testid="sync-safety-confirmation"
+      >
+        <div>
+          <strong>Confirm risky sync actions</strong>
+          <span>{{ pendingSyncSafetyItems.length }} overwrite/delete operations need review.</span>
+        </div>
+        <ul>
+          <li
+            v-for="item in pendingSyncSafetyItems"
+            :key="item.id"
+          >
+            <strong>{{ item.action }}</strong>
+            <span>{{ item.targetPath ?? item.detail }}</span>
+          </li>
+        </ul>
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="confirm-sync-safety"
+          @click="confirmSyncSafety"
+        >
+          Confirm Sync
+        </NButton>
+      </section>
       <div class="sync-preview-table">
         <div class="sync-preview-row sync-preview-row-head">
           <span>Action</span>
@@ -1136,6 +1193,13 @@ function handleTreeScroll(event: Event): void {
       data-testid="folder-difference-navigation-status"
     >
       {{ lastDifferenceNavigation }}
+    </section>
+    <section
+      v-if="lastSyncAction"
+      class="folder-action-status"
+      data-testid="folder-sync-action-status"
+    >
+      {{ lastSyncAction }}
     </section>
 
     <section
@@ -1459,13 +1523,14 @@ function handleTreeScroll(event: Event): void {
 .sync-preview-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: end;
   gap: 12px;
 }
 
 .sync-preview-header div {
   display: grid;
   gap: 2px;
+  margin-right: auto;
 }
 
 .sync-preview-header strong {
@@ -1482,6 +1547,53 @@ function handleTreeScroll(event: Event): void {
   overflow: auto;
   border: 1px solid var(--app-border);
   border-radius: 6px;
+}
+
+.sync-safety-confirmation {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 1px solid var(--diff-deleted-fg);
+  border-radius: 6px;
+  background: var(--app-surface-muted);
+}
+
+.sync-safety-confirmation div {
+  display: grid;
+  gap: 2px;
+}
+
+.sync-safety-confirmation strong {
+  font-size: 12px;
+}
+
+.sync-safety-confirmation span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.sync-safety-confirmation ul {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sync-safety-confirmation li {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+}
+
+.sync-safety-confirmation li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sync-preview-row {

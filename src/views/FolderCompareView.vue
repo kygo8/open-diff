@@ -155,6 +155,8 @@ const selectedReadonly = ref(false)
 const lastMetadataAction = ref<string>()
 const excludedRowIds = ref<Set<string>>(new Set())
 const lastSelectionAction = ref<string>()
+const currentDifferenceIndex = ref(-1)
+const lastDifferenceNavigation = ref<string>()
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -180,6 +182,9 @@ const alignWithCandidates = computed(() =>
       row.id !== selectedRowId.value &&
       (row.status === 'Left only' || row.status === 'Right only'),
   ),
+)
+const differenceRows = computed(() =>
+  visibleRows.value.filter((row) => row.status !== 'Same' && !isSuppressed(row)),
 )
 const visibleRows = computed(() =>
   rows.value.filter(
@@ -548,6 +553,29 @@ function refreshSelectedRow(): void {
   lastSelectionAction.value = `Refreshed -> ${displayName(row)}`
 }
 
+function navigateFolderDifference(direction: 'next' | 'previous'): void {
+  if (differenceRows.value.length === 0) {
+    currentDifferenceIndex.value = -1
+    lastDifferenceNavigation.value = 'No folder differences'
+
+    return
+  }
+
+  if (direction === 'next') {
+    currentDifferenceIndex.value = (currentDifferenceIndex.value + 1) % differenceRows.value.length
+  } else {
+    currentDifferenceIndex.value =
+      (currentDifferenceIndex.value - 1 + differenceRows.value.length) % differenceRows.value.length
+  }
+
+  const row = differenceRows.value[currentDifferenceIndex.value]
+
+  selectedRowId.value = row.id
+  lastDifferenceNavigation.value = `Difference ${String(currentDifferenceIndex.value + 1)} / ${String(
+    differenceRows.value.length,
+  )} -> ${displayName(row)}`
+}
+
 function archivePath(path: string): string {
   const separatorIndex = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'))
 
@@ -697,6 +725,24 @@ function handleTreeScroll(event: Event): void {
           @click="refreshSelectedRow"
         >
           Refresh Selection
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="previous-folder-difference"
+          :disabled="differenceRows.length === 0"
+          @click="navigateFolderDifference('previous')"
+        >
+          Previous Difference
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="next-folder-difference"
+          :disabled="differenceRows.length === 0"
+          @click="navigateFolderDifference('next')"
+        >
+          Next Difference
         </NButton>
         <NButton
           size="small"
@@ -929,6 +975,13 @@ function handleTreeScroll(event: Event): void {
       data-testid="folder-selection-operation-status"
     >
       {{ lastSelectionAction }}
+    </section>
+    <section
+      v-if="lastDifferenceNavigation"
+      class="folder-action-status"
+      data-testid="folder-difference-navigation-status"
+    >
+      {{ lastDifferenceNavigation }}
     </section>
 
     <section

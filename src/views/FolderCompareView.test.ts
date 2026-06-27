@@ -347,4 +347,30 @@ describe('FolderCompareView', () => {
 
     expect(wrapper.text()).toContain('Refreshed -> main.ts')
   })
+
+  it('navigates to next and previous folder differences', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="next-folder-difference"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Difference 1 / 3 -> main.ts')
+
+    await wrapper.find('[data-testid="next-folder-difference"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Difference 2 / 3 -> release-notes.md')
+
+    await wrapper.find('[data-testid="previous-folder-difference"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Difference 1 / 3 -> main.ts')
+  })
 })

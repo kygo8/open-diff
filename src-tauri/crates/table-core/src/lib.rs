@@ -102,6 +102,37 @@ pub struct TableCellDiff {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SheetMappingOptions {
+    pub case_sensitive: bool,
+    pub manual_mappings: Vec<ManualSheetMapping>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ManualSheetMapping {
+    pub left_sheet: String,
+    pub right_sheet: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SheetMapping {
+    pub left_sheet: Option<String>,
+    pub right_sheet: Option<String>,
+    pub source: SheetMappingSource,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum SheetMappingSource {
+    Automatic,
+    Manual,
+    LeftOnly,
+    RightOnly,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum TableParseError {
     UnclosedQuote,
     Excel(String),
@@ -223,6 +254,106 @@ pub fn read_excel_workbook(path: impl AsRef<Path>) -> Result<TableWorkbook, Tabl
         .collect::<Result<Vec<_>, TableParseError>>()?;
 
     Ok(TableWorkbook { sheets })
+}
+
+pub fn map_sheets(
+    left: &TableWorkbook,
+    right: &TableWorkbook,
+    options: &SheetMappingOptions,
+) -> Vec<SheetMapping> {
+    let mut mappings = Vec::new();
+    let mut used_left = Vec::<usize>::new();
+    let mut used_right = Vec::<usize>::new();
+    let manual_pairs = options
+        .manual_mappings
+        .iter()
+        .filter_map(|manual| {
+            let left_index = find_sheet_index(&left.sheets, &manual.left_sheet, true)?;
+            let right_index = find_sheet_index(&right.sheets, &manual.right_sheet, true)?;
+
+            Some((left_index, right_index))
+        })
+        .collect::<Vec<_>>();
+
+    for (left_index, left_sheet) in left.sheets.iter().enumerate() {
+        if used_left.contains(&left_index) {
+            continue;
+        }
+
+        if let Some((_, right_index)) = manual_pairs
+            .iter()
+            .find(|(manual_left_index, _)| *manual_left_index == left_index)
+        {
+            if used_right.contains(right_index) {
+                continue;
+            }
+
+            used_left.push(left_index);
+            used_right.push(*right_index);
+            mappings.push(SheetMapping {
+                left_sheet: Some(left_sheet.name.clone()),
+                right_sheet: Some(right.sheets[*right_index].name.clone()),
+                source: SheetMappingSource::Manual,
+            });
+        } else if let Some((right_index, right_sheet)) =
+            right
+                .sheets
+                .iter()
+                .enumerate()
+                .find(|(right_index, right_sheet)| {
+                    !used_right.contains(right_index)
+                        && sheet_names_match(
+                            &left_sheet.name,
+                            &right_sheet.name,
+                            options.case_sensitive,
+                        )
+                })
+        {
+            used_left.push(left_index);
+            used_right.push(right_index);
+            mappings.push(SheetMapping {
+                left_sheet: Some(left_sheet.name.clone()),
+                right_sheet: Some(right_sheet.name.clone()),
+                source: SheetMappingSource::Automatic,
+            });
+        }
+    }
+
+    for (left_index, left_sheet) in left.sheets.iter().enumerate() {
+        if !used_left.contains(&left_index) {
+            mappings.push(SheetMapping {
+                left_sheet: Some(left_sheet.name.clone()),
+                right_sheet: None,
+                source: SheetMappingSource::LeftOnly,
+            });
+        }
+    }
+
+    for (right_index, right_sheet) in right.sheets.iter().enumerate() {
+        if !used_right.contains(&right_index) {
+            mappings.push(SheetMapping {
+                left_sheet: None,
+                right_sheet: Some(right_sheet.name.clone()),
+                source: SheetMappingSource::RightOnly,
+            });
+        }
+    }
+
+    mappings
+}
+
+fn find_sheet_index(sheets: &[TableSheet], name: &str, case_sensitive: bool) -> Option<usize> {
+    sheets
+        .iter()
+        .position(|sheet| sheet_names_match(&sheet.name, name, case_sensitive))
+}
+
+fn sheet_names_match(left: &str, right: &str, case_sensitive: bool) -> bool {
+    if case_sensitive {
+        left == right
+    } else {
+        left.eq_ignore_ascii_case(right)
+    }
 }
 
 fn excel_range_to_sheet(
@@ -702,6 +833,57 @@ mod tests {
         );
 
         let _ = std::fs::remove_file(path);
+    }
+
+    #[test]
+    fn maps_sheets_automatically_and_with_manual_overrides() {
+        let left = TableWorkbook {
+            sheets: vec![
+                empty_sheet("Inventory", 0),
+                empty_sheet("Archive 2026", 1),
+                empty_sheet("Left Only", 2),
+            ],
+        };
+        let right = TableWorkbook {
+            sheets: vec![
+                empty_sheet("inventory", 0),
+                empty_sheet("Archive", 1),
+                empty_sheet("Right Only", 2),
+            ],
+        };
+
+        let mappings = map_sheets(
+            &left,
+            &right,
+            &SheetMappingOptions {
+                case_sensitive: false,
+                manual_mappings: vec![ManualSheetMapping {
+                    left_sheet: "Archive 2026".to_owned(),
+                    right_sheet: "Archive".to_owned(),
+                }],
+            },
+        );
+
+        assert_eq!(mappings.len(), 4);
+        assert_eq!(mappings[0].left_sheet.as_deref(), Some("Inventory"));
+        assert_eq!(mappings[0].right_sheet.as_deref(), Some("inventory"));
+        assert_eq!(mappings[0].source, SheetMappingSource::Automatic);
+        assert_eq!(mappings[1].left_sheet.as_deref(), Some("Archive 2026"));
+        assert_eq!(mappings[1].right_sheet.as_deref(), Some("Archive"));
+        assert_eq!(mappings[1].source, SheetMappingSource::Manual);
+        assert_eq!(mappings[2].left_sheet.as_deref(), Some("Left Only"));
+        assert_eq!(mappings[2].right_sheet, None);
+        assert_eq!(mappings[3].left_sheet, None);
+        assert_eq!(mappings[3].right_sheet.as_deref(), Some("Right Only"));
+    }
+
+    fn empty_sheet(name: &str, index: usize) -> TableSheet {
+        TableSheet {
+            name: name.to_owned(),
+            index,
+            columns: Vec::new(),
+            rows: Vec::new(),
+        }
     }
 
     fn unique_temp_file(label: &str, extension: &str) -> std::path::PathBuf {

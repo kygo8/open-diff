@@ -51,6 +51,7 @@ pub struct SyncExecutionResult {
     pub failed: usize,
     pub cancelled: usize,
     pub items: Vec<SyncExecutionItemResult>,
+    pub logs: Vec<SyncExecutionLogEntry>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -68,6 +69,17 @@ pub enum SyncExecutionStatus {
     Succeeded,
     Failed,
     Cancelled,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SyncExecutionLogEntry {
+    pub relative_path: String,
+    pub action: String,
+    pub source_path: Option<String>,
+    pub target_path: Option<String>,
+    pub status: SyncExecutionStatus,
+    pub error: Option<String>,
 }
 
 impl SyncPlan {
@@ -110,6 +122,10 @@ pub fn execute_sync_plan_with_control(
 }
 
 fn summarize_sync_execution(items: Vec<SyncExecutionItemResult>) -> SyncExecutionResult {
+    let logs = items
+        .iter()
+        .map(sync_execution_log_entry)
+        .collect::<Vec<_>>();
     let succeeded = items
         .iter()
         .filter(|item| item.status == SyncExecutionStatus::Succeeded)
@@ -129,6 +145,7 @@ fn summarize_sync_execution(items: Vec<SyncExecutionItemResult>) -> SyncExecutio
         failed,
         cancelled,
         items,
+        logs,
     }
 }
 
@@ -171,6 +188,49 @@ fn cancelled_sync_plan_item(item: &SyncPlanItem) -> SyncExecutionItemResult {
         action: item.action.clone(),
         status: SyncExecutionStatus::Cancelled,
         error: None,
+    }
+}
+
+fn sync_execution_log_entry(item: &SyncExecutionItemResult) -> SyncExecutionLogEntry {
+    let (action, source_path, target_path) = match &item.action {
+        SyncAction::Copy {
+            direction,
+            source_path,
+            target_path,
+        } => (
+            sync_copy_action_label(direction).to_owned(),
+            Some(source_path.clone()),
+            Some(target_path.clone()),
+        ),
+        SyncAction::Delete { target_path } => {
+            ("delete".to_owned(), None, Some(target_path.clone()))
+        }
+        SyncAction::Leave => ("leave".to_owned(), None, None),
+        SyncAction::Conflict {
+            left_path,
+            right_path,
+            ..
+        } => (
+            "conflict".to_owned(),
+            Some(left_path.clone()),
+            Some(right_path.clone()),
+        ),
+    };
+
+    SyncExecutionLogEntry {
+        relative_path: item.relative_path.clone(),
+        action,
+        source_path,
+        target_path,
+        status: item.status.clone(),
+        error: item.error.clone(),
+    }
+}
+
+fn sync_copy_action_label(direction: &SyncDirection) -> &'static str {
+    match direction {
+        SyncDirection::LeftToRight => "copyLeftToRight",
+        SyncDirection::RightToLeft => "copyRightToLeft",
     }
 }
 
@@ -814,6 +874,53 @@ mod tests {
         assert_eq!(vfs.read_bytes("/right/two.txt"), None);
         assert_eq!(vfs.read_bytes("/right/three.txt"), None);
         assert_eq!(result.items[1].status, SyncExecutionStatus::Cancelled);
+    }
+
+    #[test]
+    fn sync_execution_logs_every_action_path_result_and_error() {
+        let mut vfs = MemoryVfs::default().with_file("/left/good.txt", b"good");
+        let mut plan = SyncPlan::new("Logged plan");
+
+        plan.add_item(SyncPlanItem {
+            relative_path: "good.txt".to_owned(),
+            action: SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "/left/good.txt".to_owned(),
+                target_path: "/right/good.txt".to_owned(),
+            },
+            reason: "copy".to_owned(),
+        });
+        plan.add_item(SyncPlanItem {
+            relative_path: "missing.txt".to_owned(),
+            action: SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "/left/missing.txt".to_owned(),
+                target_path: "/right/missing.txt".to_owned(),
+            },
+            reason: "copy missing".to_owned(),
+        });
+
+        let result = execute_sync_plan(&mut vfs, &plan);
+
+        assert_eq!(result.logs.len(), 2);
+        assert_eq!(result.logs[0].relative_path, "good.txt");
+        assert_eq!(result.logs[0].action, "copyLeftToRight");
+        assert_eq!(
+            result.logs[0].source_path.as_deref(),
+            Some("/left/good.txt")
+        );
+        assert_eq!(
+            result.logs[0].target_path.as_deref(),
+            Some("/right/good.txt")
+        );
+        assert_eq!(result.logs[0].status, SyncExecutionStatus::Succeeded);
+        assert_eq!(result.logs[0].error, None);
+        assert_eq!(result.logs[1].relative_path, "missing.txt");
+        assert_eq!(result.logs[1].status, SyncExecutionStatus::Failed);
+        assert!(result.logs[1]
+            .error
+            .as_deref()
+            .is_some_and(|error| error.contains("NotFound")));
     }
 
     fn file_row(

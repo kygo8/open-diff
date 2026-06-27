@@ -4,6 +4,8 @@ import { diffText } from '@/api/diff'
 import type { TextDiffAlgorithm, TextDiffResponse } from '@/types/diff'
 import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
 
+type DiffLine = TextDiffResponse['lines'][number]
+
 const left = ref('line one\nline two\nline four')
 const right = ref('line one\nline 2\nline three\nline four')
 const algorithm = ref<TextDiffAlgorithm>('myers')
@@ -43,12 +45,40 @@ const diffRows = computed(() => result.value?.lines.filter((line) => line.kind !
 const activeDiffRows = computed(() =>
   diffRows.value.filter((line) => !ignoredDiffKeys.value.has(diffKey(line))),
 )
+const currentActiveDiff = computed<DiffLine | null>(() => {
+  if (currentDiffIndex.value < 0 || currentDiffIndex.value >= activeDiffRows.value.length) {
+    return null
+  }
+
+  return activeDiffRows.value[currentDiffIndex.value]
+})
 const activeDiffStatus = computed(() => `${String(activeDiffRows.value.length)} active diff`)
 const bookmarkStatus = computed(() =>
   bookmarks.value[selectedBookmark.value]
     ? `Bookmark ${String(selectedBookmark.value)} set`
     : `No bookmark ${String(selectedBookmark.value)}`,
 )
+const textDetails = computed(() => {
+  if (!currentActiveDiff.value) {
+    return 'No active difference'
+  }
+
+  const leftNumber = currentActiveDiff.value.leftNumber ?? '-'
+  const rightNumber = currentActiveDiff.value.rightNumber ?? '-'
+
+  return `Left ${String(leftNumber)}: ${currentActiveDiff.value.leftText} | Right ${String(rightNumber)}: ${
+    currentActiveDiff.value.rightText
+  }`
+})
+const hexDetails = computed(() => {
+  if (!currentActiveDiff.value) {
+    return 'No bytes'
+  }
+
+  return `Left: ${toHexBytes(currentActiveDiff.value.leftText)} | Right: ${toHexBytes(
+    currentActiveDiff.value.rightText,
+  )}`
+})
 const findMatches = computed(() => {
   const matcher = createFindMatcher()
 
@@ -350,6 +380,16 @@ function createPlainTextMatcher(): FindMatcher {
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
+
+function toHexBytes(value: string): string {
+  if (!value) {
+    return '(empty)'
+  }
+
+  return Array.from(new TextEncoder().encode(value))
+    .map((byte) => byte.toString(16).toUpperCase().padStart(2, '0'))
+    .join(' ')
+}
 </script>
 
 <template>
@@ -589,6 +629,27 @@ function escapeRegExp(value: string): string {
     >
       Run the sample comparison to render the custom diff view.
     </div>
+
+    <section
+      v-if="result"
+      class="details-panel"
+      aria-label="Text and hex details"
+    >
+      <div
+        class="details-cell"
+        data-testid="text-details"
+      >
+        <strong>Text Details</strong>
+        <span>{{ textDetails }}</span>
+      </div>
+      <div
+        class="details-cell"
+        data-testid="hex-details"
+      >
+        <strong>Hex Details</strong>
+        <span>{{ hexDetails }}</span>
+      </div>
+    </section>
   </section>
 </template>
 
@@ -687,5 +748,28 @@ function escapeRegExp(value: string): string {
   border-radius: 8px;
   color: var(--app-text-muted);
   place-items: center;
+}
+
+.details-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.details-cell {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  font-size: 12px;
+}
+
+.details-cell span {
+  overflow-wrap: anywhere;
+  color: var(--app-text-muted);
+  font-family: var(--app-font-mono);
 }
 </style>

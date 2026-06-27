@@ -317,4 +317,30 @@ describe('TextCompareView', () => {
 
     expect(wrapper.find('[data-testid="bookmark-status"]').text()).toContain('No bookmark 0')
   })
+
+  it('shows text and hex details for the current active difference', async () => {
+    vi.mocked(diffText).mockResolvedValueOnce({
+      lines: [
+        {
+          leftNumber: 1,
+          rightNumber: 1,
+          leftText: 'AZ',
+          rightText: 'A!',
+          kind: 'modified',
+          inlineSegments: { left: [], right: [] },
+        },
+      ],
+      stats: { added: 0, deleted: 0, modified: 1, equal: 0 },
+    })
+
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="text-details"]').text()).toContain('Left 1: AZ')
+    expect(wrapper.find('[data-testid="text-details"]').text()).toContain('Right 1: A!')
+    expect(wrapper.find('[data-testid="hex-details"]').text()).toContain('41 5A')
+    expect(wrapper.find('[data-testid="hex-details"]').text()).toContain('41 21')
+  })
 })

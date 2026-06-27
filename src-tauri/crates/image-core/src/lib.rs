@@ -64,11 +64,19 @@ pub struct ImageRect {
     pub height: u32,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PixelDiffOptions {
     pub rgb_tolerance: u8,
     pub compare_alpha: bool,
+    pub ignored_replacements: Vec<ColorReplacementRule>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ColorReplacementRule {
+    pub from: [u8; 4],
+    pub to: [u8; 4],
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -155,7 +163,7 @@ pub fn scan_pixel_differences_with_options(
     for pixel_index in 0..(width * height) {
         let start = (pixel_index * 4) as usize;
 
-        if pixels_equal_with_options(&left[start..start + 4], &right[start..start + 4], options) {
+        if pixels_equal_with_options(&left[start..start + 4], &right[start..start + 4], &options) {
             continue;
         }
 
@@ -186,7 +194,11 @@ pub fn scan_pixel_differences_with_options(
     })
 }
 
-fn pixels_equal_with_options(left: &[u8], right: &[u8], options: PixelDiffOptions) -> bool {
+fn pixels_equal_with_options(left: &[u8], right: &[u8], options: &PixelDiffOptions) -> bool {
+    if replacement_is_ignored(left, right, &options.ignored_replacements) {
+        return true;
+    }
+
     let rgb_equal = left[..3]
         .iter()
         .zip(&right[..3])
@@ -194,6 +206,12 @@ fn pixels_equal_with_options(left: &[u8], right: &[u8], options: PixelDiffOption
     let alpha_equal = !options.compare_alpha || left[3] == right[3];
 
     rgb_equal && alpha_equal
+}
+
+fn replacement_is_ignored(left: &[u8], right: &[u8], rules: &[ColorReplacementRule]) -> bool {
+    rules
+        .iter()
+        .any(|rule| left == rule.from && right == rule.to)
 }
 
 fn expected_rgba_len(width: u32, height: u32) -> usize {
@@ -255,6 +273,7 @@ impl Default for PixelDiffOptions {
         Self {
             rgb_tolerance: 0,
             compare_alpha: true,
+            ignored_replacements: Vec::new(),
         }
     }
 }
@@ -399,6 +418,7 @@ mod tests {
             PixelDiffOptions {
                 rgb_tolerance: 3,
                 compare_alpha: true,
+                ignored_replacements: Vec::new(),
             },
         )
         .expect("scan should work");
@@ -439,6 +459,7 @@ mod tests {
             PixelDiffOptions {
                 rgb_tolerance: 0,
                 compare_alpha: false,
+                ignored_replacements: Vec::new(),
             },
         )
         .expect("scan should work");
@@ -446,6 +467,63 @@ mod tests {
         assert_eq!(strict_diff.different_pixels, 1);
         assert_eq!(ignored_alpha_diff.different_pixels, 0);
         assert_eq!(ignored_alpha_diff.bounding_rect, None);
+    }
+
+    #[test]
+    fn ignores_configured_replacement_colors() {
+        let left = vec![255, 0, 0, 255, 10, 10, 10, 255];
+        let right = vec![0, 255, 0, 255, 20, 10, 10, 255];
+
+        let diff = scan_pixel_differences_with_options(
+            &left,
+            &right,
+            2,
+            1,
+            PixelDiffOptions {
+                rgb_tolerance: 0,
+                compare_alpha: true,
+                ignored_replacements: vec![ColorReplacementRule {
+                    from: [255, 0, 0, 255],
+                    to: [0, 255, 0, 255],
+                }],
+            },
+        )
+        .expect("scan should work");
+
+        assert_eq!(diff.different_pixels, 1);
+        assert_eq!(
+            diff.bounding_rect,
+            Some(ImageRect {
+                x: 1,
+                y: 0,
+                width: 1,
+                height: 1,
+            })
+        );
+    }
+
+    #[test]
+    fn replacement_color_rules_are_directional() {
+        let left = vec![0, 255, 0, 255];
+        let right = vec![255, 0, 0, 255];
+
+        let diff = scan_pixel_differences_with_options(
+            &left,
+            &right,
+            1,
+            1,
+            PixelDiffOptions {
+                rgb_tolerance: 0,
+                compare_alpha: true,
+                ignored_replacements: vec![ColorReplacementRule {
+                    from: [255, 0, 0, 255],
+                    to: [0, 255, 0, 255],
+                }],
+            },
+        )
+        .expect("scan should work");
+
+        assert_eq!(diff.different_pixels, 1);
     }
 
     fn encode_fixture_image(format: image::ImageFormat) -> Vec<u8> {

@@ -10,6 +10,12 @@ const flipHorizontal = ref(false)
 const flipVertical = ref(false)
 const alignmentOffsetX = ref(0)
 const alignmentOffsetY = ref(0)
+const pixelPreview = ref<{
+  side: 'Left' | 'Right'
+  x: number
+  y: number
+  color: string
+} | null>(null)
 
 const sharedTransformParts = computed(() => [
   `translate(${String(panX.value)}px, ${String(panY.value)}px)`,
@@ -38,6 +44,26 @@ const rightImageStyle = computed<Record<string, string>>(() => ({
 
 function rotatePicture(delta: number): void {
   rotationDeg.value = (rotationDeg.value + delta + 360) % 360
+}
+
+function buildPreviewColor(side: 'Left' | 'Right', x: number, y: number): string {
+  const red = side === 'Left' ? 28 : 225
+  const green = Math.min(255, Math.max(0, 128 + Math.round(x / 4)))
+  const blue = Math.min(255, Math.max(0, 90 + Math.round(y / 4)))
+
+  return `rgb(${String(red)}, ${String(green)}, ${String(blue)})`
+}
+
+function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
+  const x = Math.max(0, Math.round(event.offsetX || event.clientX))
+  const y = Math.max(0, Math.round(event.offsetY || event.clientY))
+
+  pixelPreview.value = {
+    side,
+    x,
+    y,
+    color: buildPreviewColor(side, x, y),
+  }
 }
 </script>
 
@@ -150,6 +176,22 @@ function rotatePicture(delta: number): void {
           />
         </label>
       </div>
+      <div
+        class="picture-pixel-preview"
+        data-testid="picture-pixel-preview"
+      >
+        <span>{{ pixelPreview?.side ?? 'No pixel' }}</span>
+        <strong data-testid="picture-pixel-coordinates">
+          {{ pixelPreview ? `${pixelPreview.x}, ${pixelPreview.y}` : '--, --' }}
+        </strong>
+        <span
+          class="picture-pixel-swatch"
+          :style="{ backgroundColor: pixelPreview?.color ?? 'transparent' }"
+        ></span>
+        <strong data-testid="picture-pixel-color">{{
+          pixelPreview?.color ?? 'rgb(--, --, --)'
+        }}</strong>
+      </div>
     </section>
 
     <section class="picture-pane-grid">
@@ -166,6 +208,8 @@ function rotatePicture(delta: number): void {
             class="picture-image left-image"
             :style="imageStyle"
             data-testid="left-picture-image"
+            @mousemove="updatePixelPreview('Left', $event)"
+            @mouseleave="pixelPreview = null"
           >
             <span class="picture-marker marker-a"></span>
             <span class="picture-marker marker-b"></span>
@@ -196,6 +240,8 @@ function rotatePicture(delta: number): void {
             class="picture-image right-image"
             :style="rightImageStyle"
             data-testid="right-picture-image"
+            @mousemove="updatePixelPreview('Right', $event)"
+            @mouseleave="pixelPreview = null"
           >
             <span class="picture-marker marker-a"></span>
             <span class="picture-marker marker-b marker-shifted"></span>
@@ -277,7 +323,9 @@ h2 {
 
 .picture-controls {
   display: grid;
-  grid-template-columns: repeat(3, minmax(140px, 1fr)) auto minmax(260px, auto) minmax(180px, auto);
+  grid-template-columns:
+    repeat(3, minmax(140px, 1fr)) auto minmax(260px, auto) minmax(180px, auto)
+    minmax(180px, auto);
   gap: 10px;
   padding: 10px;
   border: 1px solid var(--app-border);
@@ -346,6 +394,32 @@ h2 {
   color: var(--app-text);
   font: inherit;
   font-size: 12px;
+}
+
+.picture-pixel-preview {
+  display: grid;
+  grid-template-columns: auto auto 18px auto;
+  align-items: center;
+  align-content: end;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+}
+
+.picture-pixel-preview strong {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.picture-pixel-swatch {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
 }
 
 .picture-pane-grid {

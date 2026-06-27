@@ -76,4 +76,19 @@ describe('PictureCompareView', () => {
       'translate(12px, -8px)',
     )
   })
+
+  it('shows pointer pixel preview with coordinates and color', async () => {
+    const wrapper = mount(PictureCompareView)
+
+    await wrapper.find('[data-testid="right-picture-image"]').trigger('mousemove', {
+      clientX: 42,
+      clientY: 24,
+    })
+
+    expect(wrapper.find('[data-testid="picture-pixel-preview"]').text()).toContain('Right')
+    expect(wrapper.find('[data-testid="picture-pixel-coordinates"]').text()).toBe('42, 24')
+    expect(wrapper.find('[data-testid="picture-pixel-color"]').text()).toMatch(
+      /^rgb\(\d+, \d+, \d+\)$/,
+    )
+  })
 })

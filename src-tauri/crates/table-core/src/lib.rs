@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use std::path::Path;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -152,6 +153,30 @@ pub struct ColumnMapping {
 #[serde(rename_all = "camelCase")]
 pub enum ColumnMappingSource {
     Automatic,
+    LeftOnly,
+    RightOnly,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RowAlignmentOptions {
+    pub key_column_indices: Vec<usize>,
+    pub case_sensitive: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RowAlignment {
+    pub key: Vec<String>,
+    pub left_row_index: Option<usize>,
+    pub right_row_index: Option<usize>,
+    pub status: RowAlignmentStatus,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum RowAlignmentStatus {
+    Matched,
     LeftOnly,
     RightOnly,
 }
@@ -446,6 +471,66 @@ fn normalize_column_name(name: &str, options: &ColumnMappingOptions) -> String {
             .collect()
     } else {
         name.to_owned()
+    }
+}
+
+pub fn align_rows_by_key_columns(
+    left: &TableSheet,
+    right: &TableSheet,
+    options: &RowAlignmentOptions,
+) -> Vec<RowAlignment> {
+    let mut rows = BTreeMap::<Vec<String>, (Option<usize>, Option<usize>)>::new();
+
+    for row in &left.rows {
+        rows.entry(row_key(row, options)).or_default().0 = Some(row.index);
+    }
+
+    for row in &right.rows {
+        rows.entry(row_key(row, options)).or_default().1 = Some(row.index);
+    }
+
+    rows.into_iter()
+        .map(|(key, (left_row_index, right_row_index))| RowAlignment {
+            key,
+            left_row_index,
+            right_row_index,
+            status: match (left_row_index, right_row_index) {
+                (Some(_), Some(_)) => RowAlignmentStatus::Matched,
+                (Some(_), None) => RowAlignmentStatus::LeftOnly,
+                (None, Some(_)) => RowAlignmentStatus::RightOnly,
+                (None, None) => RowAlignmentStatus::LeftOnly,
+            },
+        })
+        .collect()
+}
+
+fn row_key(row: &TableRow, options: &RowAlignmentOptions) -> Vec<String> {
+    options
+        .key_column_indices
+        .iter()
+        .map(|column_index| {
+            let key = row
+                .cells
+                .iter()
+                .find(|cell| cell.column_index == *column_index)
+                .map(|cell| table_cell_value_to_key(&cell.value))
+                .unwrap_or_default();
+
+            if options.case_sensitive {
+                key
+            } else {
+                key.to_lowercase()
+            }
+        })
+        .collect()
+}
+
+fn table_cell_value_to_key(value: &TableCellValue) -> String {
+    match value {
+        TableCellValue::Empty => String::new(),
+        TableCellValue::Text(value) | TableCellValue::DateTime(value) => value.clone(),
+        TableCellValue::Number(value) => value.to_string(),
+        TableCellValue::Boolean(value) => value.to_string(),
     }
 }
 
@@ -1030,6 +1115,84 @@ mod tests {
         assert_eq!(mappings[2].right_column, None);
         assert_eq!(mappings[3].left_column, None);
         assert_eq!(mappings[3].right_column.as_deref(), Some("Right Only"));
+    }
+
+    #[test]
+    fn aligns_rows_by_multiple_key_columns() {
+        let left = keyed_sheet(vec![
+            ("A-001", "US", "12"),
+            ("A-002", "EU", "20"),
+            ("A-003", "US", "30"),
+        ]);
+        let right = keyed_sheet(vec![
+            ("A-002", "EU", "21"),
+            ("A-004", "US", "7"),
+            ("A-001", "US", "12"),
+        ]);
+
+        let rows = align_rows_by_key_columns(
+            &left,
+            &right,
+            &RowAlignmentOptions {
+                key_column_indices: vec![0, 1],
+                case_sensitive: false,
+            },
+        );
+
+        assert_eq!(rows.len(), 4);
+        assert_eq!(rows[0].key, vec!["a-001".to_owned(), "us".to_owned()]);
+        assert_eq!(rows[0].left_row_index, Some(0));
+        assert_eq!(rows[0].right_row_index, Some(2));
+        assert_eq!(rows[0].status, RowAlignmentStatus::Matched);
+        assert_eq!(rows[1].left_row_index, Some(1));
+        assert_eq!(rows[1].right_row_index, Some(0));
+        assert_eq!(rows[2].status, RowAlignmentStatus::LeftOnly);
+        assert_eq!(rows[3].status, RowAlignmentStatus::RightOnly);
+    }
+
+    fn keyed_sheet(rows: Vec<(&str, &str, &str)>) -> TableSheet {
+        TableSheet {
+            name: "Inventory".to_owned(),
+            index: 0,
+            columns: vec![
+                TableColumn {
+                    index: 0,
+                    name: "SKU".to_owned(),
+                },
+                TableColumn {
+                    index: 1,
+                    name: "Region".to_owned(),
+                },
+                TableColumn {
+                    index: 2,
+                    name: "Quantity".to_owned(),
+                },
+            ],
+            rows: rows
+                .into_iter()
+                .enumerate()
+                .map(|(index, (sku, region, quantity))| TableRow {
+                    index,
+                    cells: vec![
+                        TableCell {
+                            row_index: index,
+                            column_index: 0,
+                            value: TableCellValue::Text(sku.to_owned()),
+                        },
+                        TableCell {
+                            row_index: index,
+                            column_index: 1,
+                            value: TableCellValue::Text(region.to_owned()),
+                        },
+                        TableCell {
+                            row_index: index,
+                            column_index: 2,
+                            value: TableCellValue::Text(quantity.to_owned()),
+                        },
+                    ],
+                })
+                .collect(),
+        }
     }
 
     fn empty_sheet(name: &str, index: usize) -> TableSheet {

@@ -38,6 +38,7 @@ const viewportHeight = ref(defaultViewportHeight)
 const displayMode = ref<DiffDisplayMode>('all')
 const differenceContextRows = ref(defaultDifferenceContextRows)
 const showWhitespace = ref(false)
+const wordWrap = ref(false)
 
 const displayRows = computed((): VisibleDiffRow[] => {
   if (displayMode.value === 'all') {
@@ -137,6 +138,10 @@ const toggleWhitespace = (): void => {
   showWhitespace.value = !showWhitespace.value
 }
 
+const toggleWordWrap = (): void => {
+  wordWrap.value = !wordWrap.value
+}
+
 const getCurrentLineIndex = (): number => Math.floor(scrollTop.value / textDiffRowHeightPx)
 
 const jumpToNextDiff = (): void => {
@@ -226,7 +231,10 @@ const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[
 </script>
 
 <template>
-  <div class="diff-panel">
+  <div
+    class="diff-panel"
+    :class="{ 'diff-panel-word-wrap': wordWrap }"
+  >
     <div class="diff-header">
       <span>Left</span>
       <span>Right</span>
@@ -275,6 +283,15 @@ const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[
           @click="toggleWhitespace"
         >
           Whitespace
+        </button>
+        <button
+          type="button"
+          class="diff-option-button"
+          :class="{ 'diff-option-button-active': wordWrap }"
+          data-testid="text-diff-toggle-word-wrap"
+          @click="toggleWordWrap"
+        >
+          Wrap
         </button>
         <div
           class="diff-navigation"
@@ -326,7 +343,10 @@ const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[
             :style="{ '--text-diff-row-height': textDiffRowHeight }"
           >
             <div class="gutter">{{ line.leftNumber ?? '' }}</div>
-            <pre class="cell"><span
+            <pre
+              class="cell"
+              :class="{ 'cell-word-wrap': wordWrap }"
+            ><span
               v-for="(segment, segmentIndex) in getInlineSegments(line, 'left')"
                 :key="`left-${segmentIndex}`"
                 class="inline-segment"
@@ -337,7 +357,10 @@ const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[
               :class="{ 'visible-whitespace': part.whitespace }"
             >{{ part.text }}</span></span></pre>
             <div class="gutter">{{ line.rightNumber ?? '' }}</div>
-            <pre class="cell"><span
+            <pre
+              class="cell"
+              :class="{ 'cell-word-wrap': wordWrap }"
+            ><span
               v-for="(segment, segmentIndex) in getInlineSegments(line, 'right')"
                 :key="`right-${segmentIndex}`"
                 class="inline-segment"
@@ -539,6 +562,11 @@ const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[
   overflow: hidden;
   line-height: 18px;
   white-space: pre;
+}
+
+.cell-word-wrap {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .inline-segment-changed {

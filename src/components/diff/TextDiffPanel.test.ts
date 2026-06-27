@@ -323,4 +323,28 @@ describe('TextDiffPanel', () => {
     expect(markers.map((marker) => marker.text())).toContain('·')
     expect(markers.map((marker) => marker.text())).toContain('→')
   })
+
+  it('toggles word wrap for long text rows', async () => {
+    const lines: DiffLine[] = [
+      {
+        leftNumber: 1,
+        rightNumber: 1,
+        leftText: 'left-'.repeat(80),
+        rightText: 'right-'.repeat(80),
+        kind: 'equal',
+        inlineSegments: { left: [], right: [] },
+      },
+    ]
+
+    const wrapper = mount(TextDiffPanel, { props: { lines } })
+    const panel = wrapper.find('.diff-panel')
+
+    expect(panel.classes()).not.toContain('diff-panel-word-wrap')
+
+    await wrapper.find('[data-testid="text-diff-toggle-word-wrap"]').trigger('click')
+    await nextTick()
+
+    expect(panel.classes()).toContain('diff-panel-word-wrap')
+    expect(wrapper.find('.cell').classes()).toContain('cell-word-wrap')
+  })
 })

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::io::{self, Read};
 use std::path::Path;
 use vfs_core::{LocalVfs, VfsEntryKind, VfsMetadata, VfsPath, VfsProvider};
 
@@ -57,6 +58,14 @@ impl Default for FolderCompareOptions {
             case_sensitive_names: true,
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BinaryCompareResult {
+    pub status: FolderCompareStatus,
+    pub compared_bytes: u64,
+    pub first_difference_offset: Option<u64>,
 }
 
 impl FolderScanNode {
@@ -184,6 +193,53 @@ pub fn calculate_crc32(bytes: &[u8]) -> u32 {
     }
 
     !crc
+}
+
+pub fn compare_binary_streams(
+    mut left: impl Read,
+    mut right: impl Read,
+    chunk_size: usize,
+) -> io::Result<BinaryCompareResult> {
+    let chunk_size = chunk_size.max(1);
+    let mut left_buffer = vec![0; chunk_size];
+    let mut right_buffer = vec![0; chunk_size];
+    let mut compared_bytes = 0u64;
+
+    loop {
+        let left_read = left.read(&mut left_buffer)?;
+        let right_read = right.read(&mut right_buffer)?;
+        let compared_in_chunk = left_read.min(right_read);
+
+        if let Some(index) = left_buffer[..compared_in_chunk]
+            .iter()
+            .zip(&right_buffer[..compared_in_chunk])
+            .position(|(left, right)| left != right)
+        {
+            return Ok(BinaryCompareResult {
+                status: FolderCompareStatus::Different,
+                compared_bytes: compared_bytes + index as u64,
+                first_difference_offset: Some(compared_bytes + index as u64),
+            });
+        }
+
+        compared_bytes += compared_in_chunk as u64;
+
+        if left_read != right_read {
+            return Ok(BinaryCompareResult {
+                status: FolderCompareStatus::Different,
+                compared_bytes,
+                first_difference_offset: Some(compared_bytes),
+            });
+        }
+
+        if left_read == 0 {
+            return Ok(BinaryCompareResult {
+                status: FolderCompareStatus::Same,
+                compared_bytes,
+                first_difference_offset: None,
+            });
+        }
+    }
 }
 
 fn folder_metadata_matches(
@@ -571,6 +627,23 @@ mod tests {
             ),
             FolderCompareStatus::Different
         );
+    }
+
+    #[test]
+    fn compares_binary_streams_by_chunks() {
+        let same =
+            compare_binary_streams(&b"abcdef"[..], &b"abcdef"[..], 2).expect("compare should work");
+        let different =
+            compare_binary_streams(&b"abcdef"[..], &b"abcxef"[..], 2).expect("compare should work");
+        let length_mismatch =
+            compare_binary_streams(&b"abc"[..], &b"abcd"[..], 2).expect("compare should work");
+
+        assert_eq!(same.status, FolderCompareStatus::Same);
+        assert_eq!(same.first_difference_offset, None);
+        assert_eq!(different.status, FolderCompareStatus::Different);
+        assert_eq!(different.first_difference_offset, Some(3));
+        assert_eq!(length_mismatch.status, FolderCompareStatus::Different);
+        assert_eq!(length_mismatch.first_difference_offset, Some(3));
     }
 
     fn metadata(kind: VfsEntryKind, name: &str, extension: Option<&str>, size: u64) -> VfsMetadata {

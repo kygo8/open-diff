@@ -29,6 +29,11 @@ interface VirtualGridColumn {
   label: string
 }
 
+interface TableCellLocation {
+  key: string
+  text: string
+}
+
 const leftColumns: TableColumnModel[] = [
   { side: 'left', name: 'SKU' },
   { side: 'left', name: 'Unit Price' },
@@ -53,6 +58,13 @@ const manualMappings = ref<ColumnMappingModel[]>([])
 const leftGridViewport = ref<HTMLElement | null>(null)
 const rightGridViewport = ref<HTMLElement | null>(null)
 const ignoredColumnKeys = ref<string[]>([])
+const tableSearchQuery = ref('')
+const activeDifferenceIndex = ref(0)
+
+const tableDifferenceCells: TableCellLocation[] = [
+  { key: 'row-2-quantity', text: 'R2C3' },
+  { key: 'row-5-price', text: 'R5C4' },
+]
 
 const visibleGridColumns = computed<VirtualGridColumn[]>(() =>
   virtualGridColumns.filter((column) => !ignoredColumnKeys.value.includes(column.key)),
@@ -97,6 +109,39 @@ const columnRules = computed(() =>
       status: ignored ? 'Ignored' : 'Compared',
     }
   }),
+)
+
+const searchableCells = computed<TableCellLocation[]>(() =>
+  virtualGridRows.value.flatMap((row) =>
+    row.cells.map((cell) => ({
+      key: `${row.key}-${cell.columnKey}`,
+      text: cell.text,
+    })),
+  ),
+)
+
+const tableSearchMatches = computed<TableCellLocation[]>(() => {
+  const query = tableSearchQuery.value.trim().toLowerCase()
+
+  if (!query) {
+    return []
+  }
+
+  return searchableCells.value.filter((cell) => cell.text.toLowerCase().includes(query))
+})
+
+const activeTableCell = computed<TableCellLocation | undefined>(
+  () => tableSearchMatches.value[0] ?? tableDifferenceCells[activeDifferenceIndex.value],
+)
+
+const tableSearchSummary = computed(() => {
+  const count = tableSearchMatches.value.length
+
+  return `${String(count)} ${count === 1 ? 'match' : 'matches'}`
+})
+
+const tableDifferenceSummary = computed(
+  () => `${String(activeDifferenceIndex.value + 1)} / ${String(tableDifferenceCells.length)}`,
 )
 
 const columnMappings = computed<ColumnMappingModel[]>(() => {
@@ -181,6 +226,17 @@ function syncGridScroll(source: 'left' | 'right', event: Event): void {
 
   targetElement.scrollTop = sourceElement.scrollTop
   targetElement.scrollLeft = sourceElement.scrollLeft
+}
+
+function goToNextTableDifference(): void {
+  if (tableSearchQuery.value.trim()) {
+    tableSearchQuery.value = ''
+    activeDifferenceIndex.value = 0
+
+    return
+  }
+
+  activeDifferenceIndex.value = (activeDifferenceIndex.value + 1) % tableDifferenceCells.length
 }
 </script>
 
@@ -268,6 +324,26 @@ function syncGridScroll(source: 'left' | 'right', event: Event): void {
         <strong>Data Grid</strong>
         <span>{{ visibleRows }} rows x {{ visibleColumns }} columns</span>
       </header>
+      <div class="table-navigation-bar">
+        <label>
+          <span>Find</span>
+          <input
+            v-model="tableSearchQuery"
+            type="search"
+            data-testid="table-search-input"
+          />
+        </label>
+        <span data-testid="table-search-summary">{{ tableSearchSummary }}</span>
+        <button
+          type="button"
+          data-testid="next-table-difference"
+          @click="goToNextTableDifference"
+        >
+          Next Difference
+        </button>
+        <span data-testid="table-difference-summary">{{ tableDifferenceSummary }}</span>
+        <strong data-testid="active-table-cell">{{ activeTableCell?.text ?? '--' }}</strong>
+      </div>
       <div class="table-column-rules">
         <label
           v-for="rule in columnRules"
@@ -522,6 +598,55 @@ h2 {
   font-size: 12px;
 }
 
+.table-navigation-bar {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto auto auto auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.table-navigation-bar label {
+  display: grid;
+  gap: 4px;
+}
+
+.table-navigation-bar label span,
+.table-navigation-bar > span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.table-navigation-bar input {
+  width: 100%;
+  height: 32px;
+  padding: 0 9px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-size: 13px;
+}
+
+.table-navigation-bar button {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface-muted);
+  color: var(--app-text);
+  font-size: 12px;
+}
+
+.table-navigation-bar > strong {
+  min-width: 72px;
+  padding: 7px 9px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  font-size: 12px;
+  text-align: center;
+}
+
 .table-column-rules {
   display: grid;
   grid-template-columns: repeat(5, minmax(128px, 1fr));
@@ -668,6 +793,7 @@ h2 {
   .table-compare-header,
   .column-map-controls,
   .column-source-grid,
+  .table-navigation-bar,
   .table-column-rules,
   .table-grid-panes {
     grid-template-columns: 1fr;

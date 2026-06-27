@@ -106,4 +106,28 @@ describe('TableCompareView', () => {
     expect(wrapper.find('[data-testid="column-rule-quantity"]').text()).toContain('Ignored')
     expect(wrapper.find('[data-testid="column-rule-quantity"]').text()).toContain('Unimportant')
   })
+
+  it('searches table cells and navigates to the next difference', async () => {
+    const wrapper = mount(TableCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="table-search-input"]').setValue('R8C5')
+
+    expect(wrapper.find('[data-testid="table-search-summary"]').text()).toContain('1 match')
+    expect(wrapper.find('[data-testid="active-table-cell"]').text()).toContain('R8C5')
+
+    await wrapper.find('[data-testid="next-table-difference"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="active-table-cell"]').text()).toContain('R2C3')
+    expect(wrapper.find('[data-testid="table-difference-summary"]').text()).toContain('1 / 2')
+  })
 })

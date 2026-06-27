@@ -30,6 +30,17 @@ pub struct ScriptParseError {
     pub message: String,
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptVariables {
+    pub date: String,
+    pub time: String,
+    pub fn_time: String,
+    pub left_path: Option<String>,
+    pub right_path: Option<String>,
+    pub selection: Option<String>,
+}
+
 pub fn parse_script(source: &str) -> Result<ScriptDocument, ScriptParseError> {
     let mut commands = Vec::new();
 
@@ -47,6 +58,44 @@ pub fn parse_script(source: &str) -> Result<ScriptDocument, ScriptParseError> {
     }
 
     Ok(ScriptDocument { commands })
+}
+
+pub fn expand_script_variables(
+    input: &str,
+    variables: &ScriptVariables,
+) -> Result<String, ScriptParseError> {
+    let mut output = String::new();
+    let mut rest = input;
+
+    while let Some(start) = rest.find('%') {
+        output.push_str(&rest[..start]);
+        let after_start = &rest[start + 1..];
+        let Some(end) = after_start.find('%') else {
+            return Err(parse_error(0, "unterminated variable"));
+        };
+
+        let name = &after_start[..end];
+        output.push_str(resolve_script_variable(name, variables)?);
+        rest = &after_start[end + 1..];
+    }
+
+    output.push_str(rest);
+    Ok(output)
+}
+
+fn resolve_script_variable<'a>(
+    name: &str,
+    variables: &'a ScriptVariables,
+) -> Result<&'a str, ScriptParseError> {
+    match name.to_ascii_lowercase().as_str() {
+        "date" => Ok(&variables.date),
+        "time" => Ok(&variables.time),
+        "fn_time" => Ok(&variables.fn_time),
+        "left_path" => Ok(variables.left_path.as_deref().unwrap_or("")),
+        "right_path" => Ok(variables.right_path.as_deref().unwrap_or("")),
+        "selection" => Ok(variables.selection.as_deref().unwrap_or("")),
+        unknown => Err(parse_error(0, format!("unknown variable: {unknown}"))),
+    }
 }
 
 fn parse_command(
@@ -206,5 +255,37 @@ mod tests {
 
         assert_eq!(error.line, 2);
         assert!(error.message.contains("unknown command"));
+    }
+
+    #[test]
+    fn expands_dynamic_script_variables_from_clock_and_context() {
+        let variables = ScriptVariables {
+            date: "2026-06-27".to_owned(),
+            time: "03:59:42".to_owned(),
+            fn_time: "20260627-035942".to_owned(),
+            left_path: Some("left/root".to_owned()),
+            right_path: Some("right/root".to_owned()),
+            selection: Some("src/main.rs".to_owned()),
+        };
+
+        let expanded = expand_script_variables(
+            "report-%date%-%time%-%fn_time%-%left_path%-%right_path%-%selection%",
+            &variables,
+        )
+        .expect("variables should expand");
+
+        assert_eq!(
+            expanded,
+            "report-2026-06-27-03:59:42-20260627-035942-left/root-right/root-src/main.rs"
+        );
+    }
+
+    #[test]
+    fn rejects_unknown_dynamic_variables() {
+        let error = expand_script_variables("%missing%", &ScriptVariables::default())
+            .expect_err("unknown variable should fail");
+
+        assert_eq!(error.line, 0);
+        assert!(error.message.contains("unknown variable"));
     }
 }

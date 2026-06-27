@@ -195,6 +195,135 @@ pub fn parse_delimited_table_with_options(
     })
 }
 
+pub fn parse_html_tables(input: &str) -> Result<TableWorkbook, TableParseError> {
+    let sheets = extract_tag_blocks(input, "table")
+        .into_iter()
+        .enumerate()
+        .map(|(index, table_html)| html_table_to_sheet(&table_html, index))
+        .collect::<Vec<_>>();
+
+    Ok(TableWorkbook { sheets })
+}
+
+fn html_table_to_sheet(table_html: &str, table_index: usize) -> TableSheet {
+    let caption = extract_tag_blocks(table_html, "caption")
+        .first()
+        .map(|caption| normalize_html_text(caption))
+        .filter(|caption| !caption.is_empty())
+        .unwrap_or_else(|| format!("Table {}", table_index + 1));
+    let raw_rows = extract_tag_blocks(table_html, "tr")
+        .into_iter()
+        .map(|row_html| html_row_cells(&row_html))
+        .filter(|cells| !cells.is_empty())
+        .collect::<Vec<_>>();
+    let columns = raw_rows
+        .first()
+        .map(|headers| {
+            headers
+                .iter()
+                .enumerate()
+                .map(|(index, name)| TableColumn {
+                    index,
+                    name: name.clone(),
+                })
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    let rows = raw_rows
+        .into_iter()
+        .skip(1)
+        .enumerate()
+        .map(|(row_index, values)| TableRow {
+            index: row_index,
+            cells: values
+                .into_iter()
+                .enumerate()
+                .map(|(column_index, value)| TableCell {
+                    row_index,
+                    column_index,
+                    value: parse_cell_value(value),
+                })
+                .collect(),
+        })
+        .collect();
+
+    TableSheet {
+        name: caption,
+        index: table_index,
+        columns,
+        rows,
+    }
+}
+
+fn html_row_cells(row_html: &str) -> Vec<String> {
+    let headers = extract_tag_blocks(row_html, "th");
+
+    if !headers.is_empty() {
+        return headers
+            .into_iter()
+            .map(|cell| normalize_html_text(&cell))
+            .collect();
+    }
+
+    extract_tag_blocks(row_html, "td")
+        .into_iter()
+        .map(|cell| normalize_html_text(&cell))
+        .collect()
+}
+
+fn extract_tag_blocks(input: &str, tag: &str) -> Vec<String> {
+    let mut blocks = Vec::new();
+    let mut cursor = 0;
+    let lower = input.to_ascii_lowercase();
+    let open_pattern = format!("<{tag}");
+    let close_pattern = format!("</{tag}>");
+
+    while let Some(open_offset) = lower[cursor..].find(&open_pattern) {
+        let open_start = cursor + open_offset;
+        let Some(open_end_offset) = lower[open_start..].find('>') else {
+            break;
+        };
+        let content_start = open_start + open_end_offset + 1;
+        let Some(close_offset) = lower[content_start..].find(&close_pattern) else {
+            break;
+        };
+        let close_start = content_start + close_offset;
+
+        blocks.push(input[content_start..close_start].to_owned());
+        cursor = close_start + close_pattern.len();
+    }
+
+    blocks
+}
+
+fn normalize_html_text(input: &str) -> String {
+    let mut text = String::new();
+    let mut in_tag = false;
+
+    for character in input.chars() {
+        match character {
+            '<' => in_tag = true,
+            '>' => in_tag = false,
+            _ if !in_tag => text.push(character),
+            _ => {}
+        }
+    }
+
+    decode_html_entities(&text)
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn decode_html_entities(input: &str) -> String {
+    input
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+}
+
 fn parse_delimited_rows(input: &str, delimiter: char) -> Result<Vec<Vec<String>>, TableParseError> {
     let mut rows = Vec::new();
     let mut row = Vec::new();
@@ -408,6 +537,43 @@ mod tests {
         assert_eq!(
             custom.sheets[0].rows[0].cells[1].value,
             TableCellValue::Text("Pipe separated".to_owned())
+        );
+    }
+
+    #[test]
+    fn parses_multiple_html_tables() {
+        let workbook = parse_html_tables(
+            r#"
+            <section>
+              <table>
+                <caption>Inventory</caption>
+                <tr><th>SKU</th><th>Quantity</th></tr>
+                <tr><td>A-001</td><td>12</td></tr>
+              </table>
+              <table>
+                <tr><th>Name</th><th>Note</th></tr>
+                <tr><td>Widget &amp; Gear</td><td><strong>Ready</strong></td></tr>
+              </table>
+            </section>
+            "#,
+        )
+        .expect("html tables should parse");
+
+        assert_eq!(workbook.sheets.len(), 2);
+        assert_eq!(workbook.sheets[0].name, "Inventory");
+        assert_eq!(workbook.sheets[0].columns[0].name, "SKU");
+        assert_eq!(
+            workbook.sheets[0].rows[0].cells[1].value,
+            TableCellValue::Number(12.0)
+        );
+        assert_eq!(workbook.sheets[1].name, "Table 2");
+        assert_eq!(
+            workbook.sheets[1].rows[0].cells[0].value,
+            TableCellValue::Text("Widget & Gear".to_owned())
+        );
+        assert_eq!(
+            workbook.sheets[1].rows[0].cells[1].value,
+            TableCellValue::Text("Ready".to_owned())
         );
     }
 }

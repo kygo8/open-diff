@@ -46,6 +46,7 @@ pub struct FolderAlignmentRow {
 pub struct FolderCompareOptions {
     pub compare_size: bool,
     pub compare_modified_time: bool,
+    pub case_sensitive_names: bool,
 }
 
 impl Default for FolderCompareOptions {
@@ -53,6 +54,7 @@ impl Default for FolderCompareOptions {
         Self {
             compare_size: true,
             compare_modified_time: false,
+            case_sensitive_names: true,
         }
     }
 }
@@ -104,8 +106,8 @@ pub fn align_folder_trees_with_options(
 ) -> Vec<FolderAlignmentRow> {
     let mut rows = BTreeMap::<String, (Option<FolderScanNode>, Option<FolderScanNode>)>::new();
 
-    collect_alignment_side(left, true, &mut rows);
-    collect_alignment_side(right, false, &mut rows);
+    collect_alignment_side(left, true, options, &mut rows);
+    collect_alignment_side(right, false, options, &mut rows);
 
     rows.into_iter()
         .map(|(relative_path, (left, right))| {
@@ -221,17 +223,28 @@ fn scan_path(
 fn collect_alignment_side(
     node: &FolderScanNode,
     is_left: bool,
+    options: &FolderCompareOptions,
     rows: &mut BTreeMap<String, (Option<FolderScanNode>, Option<FolderScanNode>)>,
 ) {
     for child in &node.children {
-        let entry = rows.entry(child.relative_path.clone()).or_default();
+        let entry = rows
+            .entry(alignment_key(&child.relative_path, options))
+            .or_default();
         if is_left {
             entry.0 = Some(child.clone());
         } else {
             entry.1 = Some(child.clone());
         }
 
-        collect_alignment_side(child, is_left, rows);
+        collect_alignment_side(child, is_left, options, rows);
+    }
+}
+
+fn alignment_key(relative_path: &str, options: &FolderCompareOptions) -> String {
+    if options.case_sensitive_names {
+        relative_path.to_owned()
+    } else {
+        relative_path.to_lowercase()
     }
 }
 
@@ -418,6 +431,7 @@ mod tests {
                 &FolderCompareOptions {
                     compare_size: true,
                     compare_modified_time: true,
+                    case_sensitive_names: true,
                 },
             ),
             FolderCompareStatus::Different
@@ -429,10 +443,65 @@ mod tests {
                 &FolderCompareOptions {
                     compare_size: true,
                     compare_modified_time: false,
+                    case_sensitive_names: true,
                 },
             ),
             FolderCompareStatus::Same
         );
+    }
+
+    #[test]
+    fn aligns_names_with_configurable_case_sensitivity() {
+        let left = FolderScanNode::new_directory(
+            "",
+            "left",
+            metadata(VfsEntryKind::Directory, "left", None, 0),
+            vec![FolderScanNode::new_file(
+                "Readme.md",
+                "Readme.md",
+                metadata(VfsEntryKind::File, "Readme.md", Some("md"), 20),
+            )],
+        );
+        let right = FolderScanNode::new_directory(
+            "",
+            "right",
+            metadata(VfsEntryKind::Directory, "right", None, 0),
+            vec![FolderScanNode::new_file(
+                "README.md",
+                "README.md",
+                metadata(VfsEntryKind::File, "README.md", Some("md"), 20),
+            )],
+        );
+
+        let insensitive = align_folder_trees_with_options(
+            &left,
+            &right,
+            &FolderCompareOptions {
+                compare_size: true,
+                compare_modified_time: false,
+                case_sensitive_names: false,
+            },
+        );
+        let sensitive = align_folder_trees_with_options(
+            &left,
+            &right,
+            &FolderCompareOptions {
+                compare_size: true,
+                compare_modified_time: false,
+                case_sensitive_names: true,
+            },
+        );
+
+        assert_eq!(insensitive.len(), 1);
+        assert!(insensitive[0].left.is_some());
+        assert!(insensitive[0].right.is_some());
+        assert_eq!(sensitive.len(), 2);
+        assert!(sensitive
+            .iter()
+            .any(|row| row.left.is_some() && row.right.is_none()));
+        assert!(sensitive
+            .iter()
+            .any(|row| row.left.is_none() && row.right.is_some()));
     }
 
     fn metadata(kind: VfsEntryKind, name: &str, extension: Option<&str>, size: u64) -> VfsMetadata {

@@ -241,4 +241,29 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).not.toContain('release-notes.md aligned with release-summary.md')
     expect(wrapper.text()).toContain('Alignment cleared for release-notes.md')
   })
+
+  it('requires confirmation before copying selected files between left and right sides', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-row-id="src-main"]').trigger('click')
+    await wrapper.find('[data-testid="copy-selected-to-right"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Copy 1 item?')
+    expect(wrapper.text()).toContain('D:/workspace/right/src/main.ts')
+
+    await wrapper.find('[data-testid="confirm-folder-copy"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Copied to Right -> D:/workspace/right/src/main.ts')
+    expect(wrapper.text()).toContain('Status refreshed')
+  })
 })

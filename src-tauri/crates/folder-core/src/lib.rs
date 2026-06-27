@@ -111,6 +111,31 @@ pub struct CompareToResult {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub enum CopyDirection {
+    ToLeft,
+    ToRight,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CopySideRequest {
+    pub direction: CopyDirection,
+    pub left_path: String,
+    pub right_path: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CopySideResult {
+    pub direction: CopyDirection,
+    pub source_path: String,
+    pub target_path: String,
+    pub target_metadata: VfsMetadata,
+    pub refreshed_status: FolderCompareStatus,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct FileFilters {
     pub include: Vec<String>,
     pub exclude: Vec<String>,
@@ -386,6 +411,54 @@ pub fn compare_text_to_target(
         target_path: target_path.into(),
         quick: quick_compare_text(source, target, options),
     }
+}
+
+pub fn copy_between_sides(request: CopySideRequest) -> Result<CopySideResult, FolderScanError> {
+    let mut vfs = LocalVfs::new();
+    let (source_path, target_path) = match request.direction {
+        CopyDirection::ToLeft => (&request.right_path, &request.left_path),
+        CopyDirection::ToRight => (&request.left_path, &request.right_path),
+    };
+    let source = VfsPath::new(source_path);
+    let target = VfsPath::new(target_path);
+    let bytes = vfs
+        .read(&source)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+    vfs.write(&target, &bytes)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+    let target_metadata = vfs
+        .metadata(&target)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+    let refreshed_status = refresh_copied_file_status(&vfs, &source, &target)?;
+
+    Ok(CopySideResult {
+        direction: request.direction,
+        source_path: source_path.to_owned(),
+        target_path: target_path.to_owned(),
+        target_metadata,
+        refreshed_status,
+    })
+}
+
+fn refresh_copied_file_status(
+    vfs: &LocalVfs,
+    source: &VfsPath,
+    target: &VfsPath,
+) -> Result<FolderCompareStatus, FolderScanError> {
+    let source_bytes = vfs
+        .read(source)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+    let target_bytes = vfs
+        .read(target)
+        .map_err(|error| FolderScanError::Vfs(format!("{error:?}")))?;
+
+    Ok(
+        compare_binary_streams(&source_bytes[..], &target_bytes[..], 8192)
+            .map_err(|error| FolderScanError::Vfs(error.to_string()))?
+            .status,
+    )
 }
 
 fn folder_metadata_matches(
@@ -925,6 +998,34 @@ mod tests {
         assert_eq!(result.target_path, "D:/workspace/archive/README.md");
         assert_eq!(result.quick.status, FolderCompareStatus::Different);
         assert_eq!(result.quick.mode, QuickCompareMode::Text);
+    }
+
+    #[test]
+    fn copies_selected_file_between_sides_and_returns_refreshed_metadata() {
+        let root = unique_temp_dir("folder-copy");
+        let left = root.join("left").join("note.txt");
+        let right = root.join("right").join("note.txt");
+
+        fs::create_dir_all(left.parent().expect("left parent")).expect("left dir");
+        fs::create_dir_all(right.parent().expect("right parent")).expect("right dir");
+        fs::write(&left, b"left version").expect("left write");
+        fs::write(&right, b"right").expect("right write");
+
+        let result = copy_between_sides(CopySideRequest {
+            direction: CopyDirection::ToRight,
+            left_path: left.display().to_string(),
+            right_path: right.display().to_string(),
+        })
+        .expect("copy should work");
+
+        assert_eq!(fs::read(&right).expect("right read"), b"left version");
+        assert_eq!(result.direction, CopyDirection::ToRight);
+        assert_eq!(result.source_path, left.display().to_string());
+        assert_eq!(result.target_path, right.display().to_string());
+        assert_eq!(result.refreshed_status, FolderCompareStatus::Same);
+        assert_eq!(result.target_metadata.size, 12);
+
+        let _ = fs::remove_dir_all(root);
     }
 
     #[test]

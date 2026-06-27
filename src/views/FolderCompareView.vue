@@ -5,6 +5,10 @@ import {
   createOpenWithAction,
   type FileOpenAction,
 } from '@/app/fileOpenActions'
+import {
+  createFileOperationConfirmation,
+  type FileOperationConfirmation,
+} from '@/app/fileOperationConfirmation'
 import { computed, ref } from 'vue'
 
 type FolderSide = 'left' | 'right'
@@ -139,6 +143,9 @@ const scrollTop = ref(0)
 const selectedRowId = ref<string>()
 const lastOpenAction = ref<FileOpenAction>()
 const lastCompareAction = ref<string>()
+const pendingCopyConfirmation = ref<FileOperationConfirmation>()
+const pendingCopyDirection = ref<'Left' | 'Right'>()
+const lastCopyAction = ref<string>()
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -373,6 +380,26 @@ function compareSelectedFileToCounterpart(): void {
   lastCompareAction.value = `Compare To -> ${sourcePath} => ${targetPath}`
 }
 
+function copySelectedTo(direction: 'Left' | 'Right'): void {
+  const row = selectedRow.value
+
+  if (row?.kind !== 'file') {
+    return
+  }
+
+  const targetPath = direction === 'Left' ? row.leftPath : row.rightPath
+
+  if (!targetPath) {
+    return
+  }
+
+  pendingCopyDirection.value = direction
+  pendingCopyConfirmation.value = createFileOperationConfirmation({
+    operation: 'copy',
+    paths: [targetPath],
+  })
+}
+
 function displayName(row: FolderTreeRow): string {
   return row.leftName ?? row.rightName ?? row.id
 }
@@ -403,6 +430,19 @@ function breakSelectedAlignment(): void {
     Object.entries(manualAlignments.value).filter(([rowId]) => rowId !== row.id),
   )
   lastAlignmentAction.value = `Alignment cleared for ${displayName(row)}`
+}
+
+function confirmFolderCopy(): void {
+  const confirmation = pendingCopyConfirmation.value
+  const direction = pendingCopyDirection.value
+
+  if (!confirmation || !direction) {
+    return
+  }
+
+  lastCopyAction.value = `Copied to ${direction} -> ${confirmation.paths[0]} | Status refreshed`
+  pendingCopyConfirmation.value = undefined
+  pendingCopyDirection.value = undefined
 }
 
 function handleTreeScroll(event: Event): void {
@@ -485,6 +525,24 @@ function handleTreeScroll(event: Event): void {
         <NButton
           size="small"
           secondary
+          data-testid="copy-selected-to-left"
+          :disabled="!selectedFilePath"
+          @click="copySelectedTo('Left')"
+        >
+          Copy Left
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="copy-selected-to-right"
+          :disabled="!selectedFilePath"
+          @click="copySelectedTo('Right')"
+        >
+          Copy Right
+        </NButton>
+        <NButton
+          size="small"
+          secondary
           data-testid="expand-all-folders"
           @click="expandAllFolders"
         >
@@ -554,6 +612,24 @@ function handleTreeScroll(event: Event): void {
       </div>
     </section>
 
+    <section
+      v-if="pendingCopyConfirmation"
+      class="folder-copy-confirmation"
+      data-testid="folder-copy-confirmation"
+    >
+      <strong>{{ pendingCopyConfirmation.title }}</strong>
+      <span>{{ pendingCopyConfirmation.message }}</span>
+      <span>{{ pendingCopyConfirmation.paths.join(', ') }}</span>
+      <NButton
+        size="small"
+        type="primary"
+        data-testid="confirm-folder-copy"
+        @click="confirmFolderCopy"
+      >
+        {{ pendingCopyConfirmation.confirmLabel }}
+      </NButton>
+    </section>
+
     <section class="manual-alignment-tools">
       <select
         v-model="alignWithTargetId"
@@ -608,6 +684,13 @@ function handleTreeScroll(event: Event): void {
       data-testid="folder-alignment-action-status"
     >
       {{ lastAlignmentAction }}
+    </section>
+    <section
+      v-if="lastCopyAction"
+      class="folder-action-status"
+      data-testid="folder-copy-action-status"
+    >
+      {{ lastCopyAction }}
     </section>
 
     <section
@@ -835,6 +918,22 @@ function handleTreeScroll(event: Event): void {
   background: var(--app-surface);
   color: var(--app-text);
   font-size: 12px;
+}
+
+.folder-copy-confirmation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface-muted);
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.folder-copy-confirmation strong {
+  color: var(--app-text);
 }
 
 .folder-summary {

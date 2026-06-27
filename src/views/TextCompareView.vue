@@ -10,6 +10,7 @@ const algorithm = ref<TextDiffAlgorithm>('myers')
 const result = ref<TextDiffResponse | null>(null)
 const loading = ref(false)
 const error = ref('')
+const dirty = ref(false)
 
 const statsLabel = computed(() => {
   if (!result.value) return 'No comparison yet'
@@ -22,6 +23,7 @@ const statsLabel = computed(() => {
 const lineEndingStatus = computed(
   () => `Left: ${detectLineEnding(left.value)} | Right: ${detectLineEnding(right.value)}`,
 )
+const dirtyStatus = computed(() => (dirty.value ? 'Unsaved edits' : 'No edits'))
 
 function detectLineEnding(value: string): string {
   if (value.includes('\r\n')) {
@@ -48,11 +50,22 @@ async function runDiff(): Promise<void> {
       right: right.value,
       algorithm: algorithm.value,
     })
+    dirty.value = false
   } catch (event) {
     error.value = String(event)
   } finally {
     loading.value = false
   }
+}
+
+function updateLeft(value: string): void {
+  left.value = value
+  dirty.value = true
+}
+
+function updateRight(value: string): void {
+  right.value = value
+  dirty.value = true
 }
 </script>
 
@@ -65,6 +78,11 @@ async function runDiff(): Promise<void> {
         class="status-chip"
         data-testid="line-ending-status"
         >{{ lineEndingStatus }}</span
+      >
+      <span
+        class="status-chip"
+        data-testid="dirty-status"
+        >{{ dirtyStatus }}</span
       >
       <div class="spacer" />
       <select
@@ -88,14 +106,16 @@ async function runDiff(): Promise<void> {
 
     <div class="input-row">
       <NInput
-        v-model:value="left"
+        :value="left"
         type="textarea"
         placeholder="Left content"
+        @update:value="updateLeft"
       />
       <NInput
-        v-model:value="right"
+        :value="right"
         type="textarea"
         placeholder="Right content"
+        @update:value="updateRight"
       />
     </div>
 

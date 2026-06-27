@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextCompareView from './TextCompareView.vue'
@@ -23,27 +23,31 @@ const NInputStub = defineComponent({
   template: '<textarea :value="value" @input="$emit(\'update:value\', $event.target.value)" />',
 })
 
+function mountTextCompareView(): VueWrapper {
+  return mount(TextCompareView, {
+    global: {
+      stubs: {
+        NButton: {
+          props: ['loading'],
+          emits: ['click'],
+          template: '<button @click="$emit(\'click\')"><slot /></button>',
+        },
+        NInput: {
+          ...NInputStub,
+        },
+        NAlert: { template: '<div><slot /></div>' },
+      },
+    },
+  })
+}
+
 describe('TextCompareView', () => {
   beforeEach(() => {
     vi.mocked(diffText).mockClear()
   })
 
   it('passes the selected algorithm when running a diff', async () => {
-    const wrapper = mount(TextCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['loading'],
-            emits: ['click'],
-            template: '<button @click="$emit(\'click\')"><slot /></button>',
-          },
-          NInput: {
-            ...NInputStub,
-          },
-          NAlert: { template: '<div><slot /></div>' },
-        },
-      },
-    })
+    const wrapper = mountTextCompareView()
 
     await wrapper.find('[data-testid="algorithm-select"]').setValue('histogram')
     await wrapper.find('[data-testid="run-diff"]').trigger('click')
@@ -56,21 +60,7 @@ describe('TextCompareView', () => {
   })
 
   it('shows detected line endings for the current text inputs', async () => {
-    const wrapper = mount(TextCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['loading'],
-            emits: ['click'],
-            template: '<button @click="$emit(\'click\')"><slot /></button>',
-          },
-          NInput: {
-            ...NInputStub,
-          },
-          NAlert: { template: '<div><slot /></div>' },
-        },
-      },
-    })
+    const wrapper = mountTextCompareView()
 
     expect(wrapper.find('[data-testid="line-ending-status"]').text()).toContain('Left: LF')
     expect(wrapper.find('[data-testid="line-ending-status"]').text()).toContain('Right: LF')
@@ -79,5 +69,23 @@ describe('TextCompareView', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-testid="line-ending-status"]').text()).toContain('Left: CRLF')
+  })
+
+  it('marks edits as dirty and recomputes diff from edited text', async () => {
+    const wrapper = mountTextCompareView()
+
+    wrapper.findAllComponents(NInputStub)[0]?.vm.$emit('update:value', 'edited left')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="dirty-status"]').text()).toContain('Unsaved edits')
+
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+
+    expect(diffText).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        left: 'edited left',
+      }),
+    )
+    expect(wrapper.find('[data-testid="dirty-status"]').text()).toContain('No edits')
   })
 })

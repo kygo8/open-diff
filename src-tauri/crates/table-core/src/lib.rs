@@ -174,6 +174,7 @@ pub struct SortedRowAlignmentOptions {
 #[serde(rename_all = "camelCase")]
 pub struct TableComparisonOptions {
     pub numeric_tolerance: Option<f64>,
+    pub date_time_tolerance_seconds: Option<i64>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -638,6 +639,10 @@ fn cell_diff_is_important(
         return false;
     }
 
+    if date_time_difference_is_within_tolerance(left, right, options) {
+        return false;
+    }
+
     true
 }
 
@@ -656,6 +661,119 @@ fn numeric_difference_is_within_tolerance(
     };
 
     (left - right).abs() <= tolerance
+}
+
+fn date_time_difference_is_within_tolerance(
+    left: &Option<TableCellValue>,
+    right: &Option<TableCellValue>,
+    options: &TableComparisonOptions,
+) -> bool {
+    let Some(tolerance_seconds) = options.date_time_tolerance_seconds else {
+        return false;
+    };
+
+    let (Some(TableCellValue::DateTime(left)), Some(TableCellValue::DateTime(right))) =
+        (left, right)
+    else {
+        return false;
+    };
+
+    let Some(left_seconds) = parse_table_date_time_seconds(left) else {
+        return false;
+    };
+    let Some(right_seconds) = parse_table_date_time_seconds(right) else {
+        return false;
+    };
+
+    (left_seconds - right_seconds).abs() <= tolerance_seconds
+}
+
+fn parse_table_date_time_seconds(value: &str) -> Option<i64> {
+    let value = value.trim();
+    let (date_part, time_part) = if value.len() == 10 {
+        (value, "00:00:00")
+    } else {
+        let separator_index = value.find(['T', ' '])?;
+        (&value[..separator_index], &value[separator_index + 1..])
+    };
+    let (year, month, day) = parse_table_date(date_part)?;
+    let (hour, minute, second) = parse_table_time(time_part)?;
+
+    Some(
+        days_from_civil(year, month, day) * 86_400
+            + i64::from(hour) * 3_600
+            + i64::from(minute) * 60
+            + i64::from(second),
+    )
+}
+
+fn parse_table_date(value: &str) -> Option<(i32, u32, u32)> {
+    let mut parts = value.split('-');
+    let year = parts.next()?.parse::<i32>().ok()?;
+    let month = parts.next()?.parse::<u32>().ok()?;
+    let day = parts.next()?.parse::<u32>().ok()?;
+
+    if parts.next().is_some() || !date_parts_are_valid(year, month, day) {
+        return None;
+    }
+
+    Some((year, month, day))
+}
+
+fn parse_table_time(value: &str) -> Option<(u32, u32, u32)> {
+    let value = value
+        .trim_end_matches('Z')
+        .split_once('.')
+        .map_or(value.trim_end_matches('Z'), |(time, _)| time);
+    let mut parts = value.split(':');
+    let hour = parts.next()?.parse::<u32>().ok()?;
+    let minute = parts.next()?.parse::<u32>().ok()?;
+    let second = parts
+        .next()
+        .map_or(Some(0), |value| value.parse::<u32>().ok())?;
+
+    if parts.next().is_some() || hour > 23 || minute > 59 || second > 59 {
+        return None;
+    }
+
+    Some((hour, minute, second))
+}
+
+fn date_parts_are_valid(year: i32, month: u32, day: u32) -> bool {
+    let Some(max_day) = days_in_month(year, month) else {
+        return false;
+    };
+
+    (1..=max_day).contains(&day)
+}
+
+fn days_in_month(year: i32, month: u32) -> Option<u32> {
+    match month {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => Some(31),
+        4 | 6 | 9 | 11 => Some(30),
+        2 if year_is_leap(year) => Some(29),
+        2 => Some(28),
+        _ => None,
+    }
+}
+
+fn year_is_leap(year: i32) -> bool {
+    (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+}
+
+fn days_from_civil(year: i32, month: u32, day: u32) -> i64 {
+    let adjusted_year = year - i32::from(month <= 2);
+    let era = if adjusted_year >= 0 {
+        adjusted_year
+    } else {
+        adjusted_year - 399
+    } / 400;
+    let year_of_era = adjusted_year - era * 400;
+    let shifted_month = month as i32 + if month > 2 { -3 } else { 9 };
+    let day_of_year = (153 * shifted_month + 2) / 5 + day as i32 - 1;
+    let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
+
+    i64::from(era) * 146_097 + i64::from(day_of_era) - 719_468
 }
 
 fn row_diff_status(alignment: &RowAlignment, cells: &[TableCellDiff]) -> TableDiffStatus {
@@ -1439,6 +1557,33 @@ mod tests {
             &alignments,
             &TableComparisonOptions {
                 numeric_tolerance: Some(0.05),
+                date_time_tolerance_seconds: None,
+            },
+        );
+
+        assert_eq!(diff[0].status, TableDiffStatus::Modified);
+        assert_eq!(diff[0].cells[1].status, TableDiffStatus::Modified);
+        assert!(!diff[0].cells[1].important);
+    }
+
+    #[test]
+    fn marks_date_time_differences_within_tolerance_as_unimportant() {
+        let left = date_time_sheet(vec![("A-001", "2026-06-27T12:00:00Z")]);
+        let right = date_time_sheet(vec![("A-001", "2026-06-27T12:00:30Z")]);
+        let alignments = vec![RowAlignment {
+            key: vec!["a-001".to_owned()],
+            left_row_index: Some(0),
+            right_row_index: Some(0),
+            status: RowAlignmentStatus::Matched,
+        }];
+
+        let diff = compare_aligned_rows_with_options(
+            &left,
+            &right,
+            &alignments,
+            &TableComparisonOptions {
+                numeric_tolerance: None,
+                date_time_tolerance_seconds: Some(60),
             },
         );
 
@@ -1485,6 +1630,42 @@ mod tests {
                             row_index: index,
                             column_index: 2,
                             value: TableCellValue::Text(quantity.to_owned()),
+                        },
+                    ],
+                })
+                .collect(),
+        }
+    }
+
+    fn date_time_sheet(rows: Vec<(&str, &str)>) -> TableSheet {
+        TableSheet {
+            name: "Inventory".to_owned(),
+            index: 0,
+            columns: vec![
+                TableColumn {
+                    index: 0,
+                    name: "SKU".to_owned(),
+                },
+                TableColumn {
+                    index: 1,
+                    name: "Updated At".to_owned(),
+                },
+            ],
+            rows: rows
+                .into_iter()
+                .enumerate()
+                .map(|(index, (sku, updated_at))| TableRow {
+                    index,
+                    cells: vec![
+                        TableCell {
+                            row_index: index,
+                            column_index: 0,
+                            value: TableCellValue::Text(sku.to_owned()),
+                        },
+                        TableCell {
+                            row_index: index,
+                            column_index: 1,
+                            value: TableCellValue::DateTime(updated_at.to_owned()),
                         },
                     ],
                 })

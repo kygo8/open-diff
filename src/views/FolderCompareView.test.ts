@@ -25,4 +25,32 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).toContain('README.md')
     expect(wrapper.text()).toContain('Different')
   })
+
+  it('expands and collapses directory rows', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.text()).toContain('main.ts')
+
+    await wrapper.find('[data-testid="toggle-folder-src"]').trigger('click')
+
+    expect(wrapper.text()).not.toContain('main.ts')
+
+    await wrapper.find('[data-testid="expand-all-folders"]').trigger('click')
+
+    expect(wrapper.text()).toContain('main.ts')
+
+    await wrapper.find('[data-testid="collapse-all-folders"]').trigger('click')
+
+    expect(wrapper.text()).not.toContain('main.ts')
+  })
 })

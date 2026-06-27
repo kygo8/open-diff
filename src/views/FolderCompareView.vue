@@ -6,6 +6,7 @@ type FolderStatus = 'Same' | 'Different' | 'Left only' | 'Right only'
 
 interface FolderTreeRow {
   id: string
+  parentId?: string
   depth: number
   leftName?: string
   rightName?: string
@@ -32,6 +33,7 @@ const rows = ref<FolderTreeRow[]>([
   },
   {
     id: 'src-main',
+    parentId: 'src',
     depth: 1,
     leftName: 'main.ts',
     rightName: 'main.ts',
@@ -64,6 +66,7 @@ const rows = ref<FolderTreeRow[]>([
     kind: 'file',
   },
 ])
+const expandedDirectoryIds = ref<Set<string>>(new Set(['src']))
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -71,6 +74,10 @@ const summary = computed(() => ({
   orphans: rows.value.filter((row) => row.status === 'Left only' || row.status === 'Right only')
     .length,
 }))
+const directoryRows = computed(() => rows.value.filter((row) => row.kind === 'directory'))
+const visibleRows = computed(() =>
+  rows.value.filter((row) => !row.parentId || expandedDirectoryIds.value.has(row.parentId)),
+)
 
 function rowIndent(row: FolderTreeRow): string {
   const indent = String(row.depth * 18)
@@ -87,6 +94,34 @@ function sideValue(
   const value = row[key]
 
   return typeof value === 'string' ? value : '--'
+}
+
+function toggleFolder(row: FolderTreeRow): void {
+  if (row.kind !== 'directory') {
+    return
+  }
+
+  const next = new Set(expandedDirectoryIds.value)
+
+  if (next.has(row.id)) {
+    next.delete(row.id)
+  } else {
+    next.add(row.id)
+  }
+
+  expandedDirectoryIds.value = next
+}
+
+function expandAllFolders(): void {
+  expandedDirectoryIds.value = new Set(directoryRows.value.map((row) => row.id))
+}
+
+function collapseAllFolders(): void {
+  expandedDirectoryIds.value = new Set()
+}
+
+function isExpanded(row: FolderTreeRow): boolean {
+  return expandedDirectoryIds.value.has(row.id)
 }
 </script>
 
@@ -116,6 +151,22 @@ function sideValue(
           secondary
         >
           Refresh
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="expand-all-folders"
+          @click="expandAllFolders"
+        >
+          Open All
+        </NButton>
+        <NButton
+          size="small"
+          secondary
+          data-testid="collapse-all-folders"
+          @click="collapseAllFolders"
+        >
+          Close All
         </NButton>
       </div>
     </header>
@@ -150,7 +201,7 @@ function sideValue(
       </div>
       <div class="tree-body">
         <div
-          v-for="row in rows"
+          v-for="row in visibleRows"
           :key="row.id"
           class="tree-row"
           :class="[`status-${row.status.toLowerCase().replaceAll(' ', '-')}`, row.kind]"
@@ -160,6 +211,16 @@ function sideValue(
             class="name-cell left-name"
             :style="{ paddingLeft: rowIndent(row) }"
           >
+            <button
+              v-if="row.kind === 'directory'"
+              type="button"
+              class="folder-toggle"
+              :data-testid="`toggle-folder-${row.id}`"
+              :aria-expanded="isExpanded(row)"
+              @click="toggleFolder(row)"
+            >
+              {{ isExpanded(row) ? '▾' : '▸' }}
+            </button>
             {{ sideValue(row, 'left', 'name') }}
           </span>
           <span>{{ sideValue(row, 'left', 'size') }}</span>

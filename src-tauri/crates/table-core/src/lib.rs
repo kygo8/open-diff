@@ -540,6 +540,96 @@ pub fn align_rows_by_sorted_content(
         .collect()
 }
 
+pub fn compare_aligned_rows(
+    left: &TableSheet,
+    right: &TableSheet,
+    alignments: &[RowAlignment],
+) -> Vec<TableRowDiff> {
+    alignments
+        .iter()
+        .enumerate()
+        .map(|(row_index, alignment)| {
+            let left_row = alignment
+                .left_row_index
+                .and_then(|index| left.rows.iter().find(|row| row.index == index));
+            let right_row = alignment
+                .right_row_index
+                .and_then(|index| right.rows.iter().find(|row| row.index == index));
+            let cells = compare_row_cells(row_index, left_row, right_row);
+            let status = row_diff_status(alignment, &cells);
+
+            TableRowDiff {
+                row_index,
+                status,
+                cells,
+            }
+        })
+        .collect()
+}
+
+fn compare_row_cells(
+    row_index: usize,
+    left_row: Option<&TableRow>,
+    right_row: Option<&TableRow>,
+) -> Vec<TableCellDiff> {
+    let max_columns = left_row
+        .into_iter()
+        .flat_map(|row| row.cells.iter().map(|cell| cell.column_index))
+        .chain(
+            right_row
+                .into_iter()
+                .flat_map(|row| row.cells.iter().map(|cell| cell.column_index)),
+        )
+        .max()
+        .map(|index| index + 1)
+        .unwrap_or_default();
+
+    (0..max_columns)
+        .map(|column_index| {
+            let left = left_row.and_then(|row| cell_value(row, column_index));
+            let right = right_row.and_then(|row| cell_value(row, column_index));
+            let status = match (&left, &right) {
+                (Some(left), Some(right)) if left == right => TableDiffStatus::Same,
+                (Some(_), Some(_)) => TableDiffStatus::Modified,
+                (Some(_), None) => TableDiffStatus::Removed,
+                (None, Some(_)) => TableDiffStatus::Added,
+                (None, None) => TableDiffStatus::Same,
+            };
+
+            TableCellDiff {
+                row_index,
+                column_index,
+                important: status != TableDiffStatus::Same,
+                status,
+                left,
+                right,
+            }
+        })
+        .collect()
+}
+
+fn row_diff_status(alignment: &RowAlignment, cells: &[TableCellDiff]) -> TableDiffStatus {
+    match alignment.status {
+        RowAlignmentStatus::LeftOnly => TableDiffStatus::Removed,
+        RowAlignmentStatus::RightOnly => TableDiffStatus::Added,
+        RowAlignmentStatus::Matched
+            if cells
+                .iter()
+                .any(|cell| cell.status == TableDiffStatus::Modified) =>
+        {
+            TableDiffStatus::Modified
+        }
+        RowAlignmentStatus::Matched => TableDiffStatus::Same,
+    }
+}
+
+fn cell_value(row: &TableRow, column_index: usize) -> Option<TableCellValue> {
+    row.cells
+        .iter()
+        .find(|cell| cell.column_index == column_index)
+        .map(|cell| cell.value.clone())
+}
+
 fn row_key(row: &TableRow, options: &RowAlignmentOptions) -> Vec<String> {
     options
         .key_column_indices
@@ -1230,6 +1320,56 @@ mod tests {
         assert_eq!(rows[1].right_row_index, Some(2));
         assert_eq!(rows[2].status, RowAlignmentStatus::LeftOnly);
         assert_eq!(rows[3].status, RowAlignmentStatus::RightOnly);
+    }
+
+    #[test]
+    fn compares_aligned_rows_at_cell_level() {
+        let left = keyed_sheet(vec![("A-001", "US", "12"), ("A-002", "EU", "20")]);
+        let right = keyed_sheet(vec![("A-001", "US", "14"), ("A-003", "APAC", "8")]);
+        let alignments = vec![
+            RowAlignment {
+                key: vec!["a-001".to_owned(), "us".to_owned()],
+                left_row_index: Some(0),
+                right_row_index: Some(0),
+                status: RowAlignmentStatus::Matched,
+            },
+            RowAlignment {
+                key: vec!["a-002".to_owned(), "eu".to_owned()],
+                left_row_index: Some(1),
+                right_row_index: None,
+                status: RowAlignmentStatus::LeftOnly,
+            },
+            RowAlignment {
+                key: vec!["a-003".to_owned(), "apac".to_owned()],
+                left_row_index: None,
+                right_row_index: Some(1),
+                status: RowAlignmentStatus::RightOnly,
+            },
+        ];
+
+        let diff = compare_aligned_rows(&left, &right, &alignments);
+
+        assert_eq!(diff.len(), 3);
+        assert_eq!(diff[0].status, TableDiffStatus::Modified);
+        assert_eq!(diff[0].cells[2].status, TableDiffStatus::Modified);
+        assert_eq!(
+            diff[0].cells[2].left,
+            Some(TableCellValue::Text("12".to_owned()))
+        );
+        assert_eq!(
+            diff[0].cells[2].right,
+            Some(TableCellValue::Text("14".to_owned()))
+        );
+        assert_eq!(diff[1].status, TableDiffStatus::Removed);
+        assert!(diff[1]
+            .cells
+            .iter()
+            .all(|cell| cell.status == TableDiffStatus::Removed));
+        assert_eq!(diff[2].status, TableDiffStatus::Added);
+        assert!(diff[2]
+            .cells
+            .iter()
+            .all(|cell| cell.status == TableDiffStatus::Added));
     }
 
     fn keyed_sheet(rows: Vec<(&str, &str, &str)>) -> TableSheet {

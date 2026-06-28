@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::fmt::{Debug, Formatter};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "kebab-case")]
@@ -44,7 +45,7 @@ impl RemoteEndpoint {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
 pub struct CredentialReference {
     pub kind: CredentialReferenceKind,
@@ -74,7 +75,7 @@ impl CredentialReference {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "kebab-case")]
 pub enum CredentialReferenceKind {
     SystemKeychain,
@@ -115,6 +116,104 @@ impl RemoteProfile {
         self.options.insert(key.into(), value.into());
 
         self
+    }
+}
+
+#[derive(Clone, PartialEq, Eq)]
+pub struct SecretString(String);
+
+impl SecretString {
+    pub fn new(value: impl Into<String>) -> Self {
+        Self(value.into())
+    }
+
+    pub fn expose_secret(&self) -> &str {
+        &self.0
+    }
+}
+
+impl Debug for SecretString {
+    fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str("SecretString(**redacted**)")
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoteCredential {
+    pub username: Option<String>,
+    pub secret: SecretString,
+}
+
+impl RemoteCredential {
+    pub fn username_password(username: impl Into<String>, password: impl Into<String>) -> Self {
+        Self {
+            username: Some(username.into()),
+            secret: SecretString::new(password),
+        }
+    }
+
+    pub fn bearer_token(token: impl Into<String>) -> Self {
+        Self {
+            username: None,
+            secret: SecretString::new(token),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CredentialStoreError {
+    NotFound(CredentialReference),
+    Backend(String),
+}
+
+pub type CredentialStoreResult<T> = Result<T, CredentialStoreError>;
+
+pub trait CredentialStore {
+    fn put(
+        &mut self,
+        credential_ref: CredentialReference,
+        credential: RemoteCredential,
+    ) -> CredentialStoreResult<()>;
+
+    fn resolve(
+        &self,
+        credential_ref: &CredentialReference,
+    ) -> CredentialStoreResult<RemoteCredential>;
+
+    fn delete(&mut self, credential_ref: &CredentialReference) -> CredentialStoreResult<()>;
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct MemoryCredentialStore {
+    credentials: BTreeMap<CredentialReference, RemoteCredential>,
+}
+
+impl CredentialStore for MemoryCredentialStore {
+    fn put(
+        &mut self,
+        credential_ref: CredentialReference,
+        credential: RemoteCredential,
+    ) -> CredentialStoreResult<()> {
+        self.credentials.insert(credential_ref, credential);
+
+        Ok(())
+    }
+
+    fn resolve(
+        &self,
+        credential_ref: &CredentialReference,
+    ) -> CredentialStoreResult<RemoteCredential> {
+        self.credentials
+            .get(credential_ref)
+            .cloned()
+            .ok_or_else(|| CredentialStoreError::NotFound(credential_ref.clone()))
+    }
+
+    fn delete(&mut self, credential_ref: &CredentialReference) -> CredentialStoreResult<()> {
+        self.credentials
+            .remove(credential_ref)
+            .map(|_| ())
+            .ok_or_else(|| CredentialStoreError::NotFound(credential_ref.clone()))
     }
 }
 
@@ -171,5 +270,36 @@ mod tests {
             profile.credential_ref.kind,
             CredentialReferenceKind::Environment
         );
+    }
+
+    #[test]
+    fn credential_store_resolves_secret_material_by_reference() {
+        let mut store = MemoryCredentialStore::default();
+        let credential_ref = CredentialReference::profile_store("release-ftp");
+
+        store
+            .put(
+                credential_ref.clone(),
+                RemoteCredential::username_password("deploy", "correct-horse"),
+            )
+            .unwrap();
+
+        let resolved = store.resolve(&credential_ref).unwrap();
+
+        assert_eq!(resolved.username.as_deref(), Some("deploy"));
+        assert_eq!(resolved.secret.expose_secret(), "correct-horse");
+    }
+
+    #[test]
+    fn missing_credentials_return_structured_errors() {
+        let store = MemoryCredentialStore::default();
+        let missing_ref = CredentialReference::system_keychain("missing-sftp");
+
+        let error = store.resolve(&missing_ref).unwrap_err();
+
+        assert!(matches!(
+            error,
+            CredentialStoreError::NotFound(CredentialReference { key, .. }) if key == "missing-sftp"
+        ));
     }
 }

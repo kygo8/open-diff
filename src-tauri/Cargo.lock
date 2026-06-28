@@ -2243,6 +2243,7 @@ dependencies = [
  "file-core",
  "serde",
  "shared-types",
+ "table-core",
  "tauri",
  "tauri-build",
  "tokio",

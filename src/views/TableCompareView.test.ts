@@ -1,20 +1,90 @@
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { mount, type VueWrapper } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TableCompareView from './TableCompareView.vue'
+import { compareTableCsv } from '@/api/diff'
+import type { TableCompareRequest } from '@/types/diff'
 
-describe('TableCompareView', () => {
-  it('allows manual column mapping and renders the applied mapping list', async () => {
-    const wrapper = mount(TableCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
+vi.mock('@/api/diff', () => ({
+  compareTableCsv: vi.fn().mockResolvedValue({
+    leftColumns: [
+      { side: 'left', name: 'SKU' },
+      { side: 'left', name: 'Quantity' },
+    ],
+    rightColumns: [
+      { side: 'right', name: 'sku' },
+      { side: 'right', name: 'Quantity' },
+    ],
+    columnMappings: [
+      { leftColumn: 'SKU', rightColumn: 'sku', source: 'Automatic' },
+      { leftColumn: 'Quantity', rightColumn: 'Quantity', source: 'Automatic' },
+    ],
+    rows: [
+      {
+        index: 0,
+        leftCells: ['A-1', '12'],
+        rightCells: ['A-1', '14'],
+        status: 'Modified',
+      },
+    ],
+    changedCells: [
+      {
+        rowIndex: 0,
+        columnIndex: 1,
+        leftValue: '12',
+        rightValue: '14',
+        status: 'Modified',
+      },
+    ],
+    summary: {
+      rowCount: 1,
+      changedRowCount: 1,
+      changedCellCount: 1,
+    },
+  }),
+}))
+
+function mountTableCompareView(): VueWrapper {
+  return mount(TableCompareView, {
+    global: {
+      stubs: {
+        NButton: {
+          props: ['disabled', 'loading'],
+          emits: ['click'],
+          template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
         },
       },
-    })
+    },
+  })
+}
+
+describe('TableCompareView', () => {
+  beforeEach(() => {
+    vi.mocked(compareTableCsv).mockClear()
+  })
+
+  it('runs a CSV comparison and renders returned table cells', async () => {
+    const wrapper = mountTableCompareView()
+
+    await wrapper.find('[data-testid="run-table-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    const lastCall = vi.mocked(compareTableCsv).mock.lastCall
+
+    expect(lastCall).toBeDefined()
+
+    const [request] = lastCall as [TableCompareRequest]
+
+    expect(request.left).toContain('SKU')
+    expect(request.right).toContain('sku')
+    expect(wrapper.find('[data-testid="column-mapping-list"]').text()).toContain(
+      'Quantity -> Quantity',
+    )
+    expect(wrapper.find('[data-testid="table-grid-cell-quantity"]').text()).toContain('12')
+    expect(wrapper.find('[data-testid="active-table-cell"]').text()).toContain('12 -> 14')
+  })
+
+  it('allows manual column mapping and renders the applied mapping list', async () => {
+    const wrapper = mountTableCompareView()
 
     expect(wrapper.text()).toContain('Table Compare')
     expect(wrapper.text()).toContain('Left Columns')
@@ -32,17 +102,7 @@ describe('TableCompareView', () => {
   })
 
   it('renders a fixed virtual grid window for large table data', () => {
-    const wrapper = mount(TableCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountTableCompareView()
 
     const grid = wrapper.find('[data-testid="table-virtual-grid"]')
 
@@ -60,7 +120,7 @@ describe('TableCompareView', () => {
       global: {
         stubs: {
           NButton: {
-            props: ['disabled'],
+            props: ['disabled', 'loading'],
             emits: ['click'],
             template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
           },
@@ -86,17 +146,7 @@ describe('TableCompareView', () => {
   })
 
   it('hides ignored columns and marks them as unimportant', async () => {
-    const wrapper = mount(TableCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountTableCompareView()
 
     expect(wrapper.find('[data-testid="table-grid-cell-quantity"]').exists()).toBe(true)
 
@@ -108,17 +158,7 @@ describe('TableCompareView', () => {
   })
 
   it('searches table cells and navigates to the next difference', async () => {
-    const wrapper = mount(TableCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountTableCompareView()
 
     await wrapper.find('[data-testid="table-search-input"]').setValue('R8C5')
 

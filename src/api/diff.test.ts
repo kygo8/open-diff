@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { saveTextFile } from './diff'
+import { compareTableCsv, saveTextFile } from './diff'
 import { invoke } from '@tauri-apps/api/core'
 
 vi.mock('@tauri-apps/api/core', () => ({
@@ -27,5 +27,44 @@ describe('diff api', () => {
       text: 'merged text',
     })
     expect(result.bytesWritten).toBe(12)
+  })
+
+  it('compares CSV table content through the Tauri command contract', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      leftColumns: [{ name: 'SKU', side: 'left' }],
+      rightColumns: [{ name: 'sku', side: 'right' }],
+      columnMappings: [
+        {
+          leftColumn: 'SKU',
+          rightColumn: 'sku',
+          source: 'Automatic',
+        },
+      ],
+      rows: [
+        {
+          index: 0,
+          leftCells: ['A-1'],
+          rightCells: ['A-1'],
+          status: 'Same',
+        },
+      ],
+      changedCells: [],
+      summary: {
+        rowCount: 1,
+        changedRowCount: 0,
+        changedCellCount: 0,
+      },
+    })
+
+    const result = await compareTableCsv({
+      left: 'SKU\nA-1',
+      right: 'sku\nA-1',
+    })
+
+    expect(invoke).toHaveBeenCalledWith('compare_table_csv', {
+      left: 'SKU\nA-1',
+      right: 'sku\nA-1',
+    })
+    expect(result.columnMappings[0]?.leftColumn).toBe('SKU')
   })
 })

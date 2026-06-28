@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { compareTableCsv } from '@/api/diff'
+import type {
+  TableCompareChangedCell,
+  TableCompareColumnMapping,
+  TableCompareResponse,
+} from '@/types/diff'
 
 interface TableColumnModel {
   name: string
@@ -17,6 +23,7 @@ interface VirtualGridCell {
   columnKey: string
   testId: string
   text: string
+  rightText?: string
 }
 
 interface VirtualGridRow {
@@ -34,24 +41,32 @@ interface TableCellLocation {
   text: string
 }
 
-const leftColumns: TableColumnModel[] = [
+const defaultLeftCsv = 'SKU,Region,Quantity,Price,Updated\nA-1,North,12,19.99,2026-06-01'
+const defaultRightCsv = 'sku,Region,Quantity,Price,Updated\nA-1,North,14,19.99,2026-06-01'
+const defaultLeftColumns: TableColumnModel[] = [
   { side: 'left', name: 'SKU' },
   { side: 'left', name: 'Unit Price' },
   { side: 'left', name: 'Left Only' },
 ]
-const rightColumns: TableColumnModel[] = [
+const defaultRightColumns: TableColumnModel[] = [
   { side: 'right', name: 'sku' },
   { side: 'right', name: 'unitprice' },
   { side: 'right', name: 'Right Only' },
 ]
-const visibleRows = 8
-const virtualGridColumns: VirtualGridColumn[] = [
+const defaultVirtualGridColumns: VirtualGridColumn[] = [
   { key: 'sku', label: 'SKU' },
   { key: 'region', label: 'Region' },
   { key: 'quantity', label: 'Quantity' },
   { key: 'price', label: 'Price' },
   { key: 'updated', label: 'Updated' },
 ]
+const visibleRows = 8
+const leftCsv = ref(defaultLeftCsv)
+const rightCsv = ref(defaultRightCsv)
+const leftColumns = ref<TableColumnModel[]>(defaultLeftColumns)
+const rightColumns = ref<TableColumnModel[]>(defaultRightColumns)
+const virtualGridColumns = ref<VirtualGridColumn[]>(defaultVirtualGridColumns)
+const comparedRows = ref<VirtualGridRow[] | null>(null)
 const manualLeftColumn = ref('SKU')
 const manualRightColumn = ref('sku')
 const manualMappings = ref<ColumnMappingModel[]>([])
@@ -60,46 +75,34 @@ const rightGridViewport = ref<HTMLElement | null>(null)
 const ignoredColumnKeys = ref<string[]>([])
 const tableSearchQuery = ref('')
 const activeDifferenceIndex = ref(0)
-
-const tableDifferenceCells: TableCellLocation[] = [
+const loading = ref(false)
+const error = ref('')
+const tableDifferenceCells = ref<TableCellLocation[]>([
   { key: 'row-2-quantity', text: 'R2C3' },
   { key: 'row-5-price', text: 'R5C4' },
-]
+])
 
 const visibleGridColumns = computed<VirtualGridColumn[]>(() =>
-  virtualGridColumns.filter((column) => !ignoredColumnKeys.value.includes(column.key)),
+  virtualGridColumns.value.filter((column) => !ignoredColumnKeys.value.includes(column.key)),
 )
-
 const visibleColumns = computed(() => visibleGridColumns.value.length)
-
+const visibleRowCount = computed(() => virtualGridRows.value.length)
 const virtualGridStyle = computed<Record<string, string>>(() => ({
   '--visible-columns': String(visibleColumns.value),
-  '--visible-rows': String(visibleRows),
+  '--visible-rows': String(visibleRowCount.value),
 }))
+const virtualGridRows = computed<VirtualGridRow[]>(() => {
+  if (comparedRows.value) {
+    return comparedRows.value.map((row) => ({
+      ...row,
+      cells: row.cells.filter((cell) => !ignoredColumnKeys.value.includes(cell.columnKey)),
+    }))
+  }
 
-const virtualGridRows = computed<VirtualGridRow[]>(() =>
-  Array.from({ length: visibleRows }, (_, rowIndex) => {
-    const rowNumber = rowIndex + 1
-    const rowLabel = String(rowNumber)
-
-    return {
-      key: `row-${rowLabel}`,
-      cells: visibleGridColumns.value.map((column, columnIndex) => {
-        const columnLabel = String(columnIndex + 1)
-
-        return {
-          key: `cell-${rowLabel}-${column.key}`,
-          columnKey: column.key,
-          testId: `table-grid-cell-${column.key}`,
-          text: `R${rowLabel}C${columnLabel}`,
-        }
-      }),
-    }
-  }),
-)
-
+  return buildDefaultVirtualRows()
+})
 const columnRules = computed(() =>
-  virtualGridColumns.map((column) => {
+  virtualGridColumns.value.map((column) => {
     const ignored = ignoredColumnKeys.value.includes(column.key)
 
     return {
@@ -110,7 +113,6 @@ const columnRules = computed(() =>
     }
   }),
 )
-
 const searchableCells = computed<TableCellLocation[]>(() =>
   virtualGridRows.value.flatMap((row) =>
     row.cells.map((cell) => ({
@@ -119,7 +121,6 @@ const searchableCells = computed<TableCellLocation[]>(() =>
     })),
   ),
 )
-
 const tableSearchMatches = computed<TableCellLocation[]>(() => {
   const query = tableSearchQuery.value.trim().toLowerCase()
 
@@ -129,21 +130,21 @@ const tableSearchMatches = computed<TableCellLocation[]>(() => {
 
   return searchableCells.value.filter((cell) => cell.text.toLowerCase().includes(query))
 })
-
 const activeTableCell = computed<TableCellLocation | undefined>(
-  () => tableSearchMatches.value[0] ?? tableDifferenceCells[activeDifferenceIndex.value],
+  () => tableSearchMatches.value[0] ?? tableDifferenceCells.value[activeDifferenceIndex.value],
 )
-
 const tableSearchSummary = computed(() => {
   const count = tableSearchMatches.value.length
 
   return `${String(count)} ${count === 1 ? 'match' : 'matches'}`
 })
+const tableDifferenceSummary = computed(() => {
+  if (tableDifferenceCells.value.length === 0) {
+    return '0 / 0'
+  }
 
-const tableDifferenceSummary = computed(
-  () => `${String(activeDifferenceIndex.value + 1)} / ${String(tableDifferenceCells.length)}`,
-)
-
+  return `${String(activeDifferenceIndex.value + 1)} / ${String(tableDifferenceCells.value.length)}`
+})
 const columnMappings = computed<ColumnMappingModel[]>(() => {
   const usedLeft = new Set<string>()
   const usedRight = new Set<string>()
@@ -159,12 +160,12 @@ const columnMappings = computed<ColumnMappingModel[]>(() => {
     mappings.push(mapping)
   }
 
-  for (const leftColumn of leftColumns) {
+  for (const leftColumn of leftColumns.value) {
     if (usedLeft.has(leftColumn.name)) {
       continue
     }
 
-    const rightColumn = rightColumns.find(
+    const rightColumn = rightColumns.value.find(
       (candidate) =>
         !usedRight.has(candidate.name) &&
         normalizeColumnName(candidate.name) === normalizeColumnName(leftColumn.name),
@@ -186,7 +187,7 @@ const columnMappings = computed<ColumnMappingModel[]>(() => {
     }
   }
 
-  for (const rightColumn of rightColumns) {
+  for (const rightColumn of rightColumns.value) {
     if (!usedRight.has(rightColumn.name)) {
       mappings.push({
         rightColumn: rightColumn.name,
@@ -198,8 +199,87 @@ const columnMappings = computed<ColumnMappingModel[]>(() => {
   return mappings
 })
 
+function buildDefaultVirtualRows(): VirtualGridRow[] {
+  return Array.from({ length: visibleRows }, (_, rowIndex) => {
+    const rowNumber = rowIndex + 1
+    const rowLabel = String(rowNumber)
+
+    return {
+      key: `row-${rowLabel}`,
+      cells: visibleGridColumns.value.map((column, columnIndex) => {
+        const columnLabel = String(columnIndex + 1)
+
+        return {
+          key: `cell-${rowLabel}-${column.key}`,
+          columnKey: column.key,
+          testId: `table-grid-cell-${column.key}`,
+          text: `R${rowLabel}C${columnLabel}`,
+        }
+      }),
+    }
+  })
+}
+
 function normalizeColumnName(name: string): string {
   return name.replace(/\s+/g, '').toLowerCase()
+}
+
+function columnsFromResult(result: TableCompareResponse): VirtualGridColumn[] {
+  const mappedColumns = result.columnMappings.map((mapping, index) => {
+    const label = mapping.leftColumn ?? mapping.rightColumn ?? `Column ${String(index + 1)}`
+
+    return {
+      key: normalizeColumnName(label) || `column-${String(index)}`,
+      label,
+    }
+  })
+
+  return mappedColumns.length > 0
+    ? mappedColumns
+    : result.leftColumns.map((column, index) => ({
+        key: normalizeColumnName(column.name) || `column-${String(index)}`,
+        label: column.name,
+      }))
+}
+
+function rowsFromResult(
+  result: TableCompareResponse,
+  columns: VirtualGridColumn[],
+): VirtualGridRow[] {
+  return result.rows.map((row) => ({
+    key: `row-${String(row.index + 1)}`,
+    cells: columns.map((column, columnIndex) => ({
+      key: `cell-${String(row.index + 1)}-${column.key}`,
+      columnKey: column.key,
+      testId: `table-grid-cell-${column.key}`,
+      text: row.leftCells[columnIndex] ?? '',
+      rightText: row.rightCells[columnIndex] ?? '',
+    })),
+  }))
+}
+
+function changedCellsFromResult(
+  cells: TableCompareChangedCell[],
+  columns: VirtualGridColumn[],
+): TableCellLocation[] {
+  return cells.map((cell) => {
+    const columnKey = columns[cell.columnIndex].key
+    const leftValue = cell.leftValue ?? ''
+    const rightValue = cell.rightValue ?? ''
+
+    return {
+      key: `row-${String(cell.rowIndex + 1)}-${columnKey}`,
+      text: `${leftValue} -> ${rightValue}`,
+    }
+  })
+}
+
+function normalizeMapping(mapping: TableCompareColumnMapping): ColumnMappingModel {
+  return {
+    leftColumn: mapping.leftColumn,
+    rightColumn: mapping.rightColumn,
+    source: mapping.source,
+  }
 }
 
 function addManualMapping(): void {
@@ -214,6 +294,31 @@ function addManualMapping(): void {
       source: 'Manual',
     },
   ]
+}
+
+async function runTableCompare(): Promise<void> {
+  loading.value = true
+  error.value = ''
+  try {
+    const result = await compareTableCsv({
+      left: leftCsv.value,
+      right: rightCsv.value,
+    })
+    const columns = columnsFromResult(result)
+
+    leftColumns.value = result.leftColumns
+    rightColumns.value = result.rightColumns
+    manualMappings.value = result.columnMappings.map(normalizeMapping)
+    virtualGridColumns.value = columns
+    comparedRows.value = rowsFromResult(result, columns)
+    tableDifferenceCells.value = changedCellsFromResult(result.changedCells, columns)
+    activeDifferenceIndex.value = 0
+    ignoredColumnKeys.value = []
+  } catch (event) {
+    error.value = String(event)
+  } finally {
+    loading.value = false
+  }
 }
 
 function syncGridScroll(source: 'left' | 'right', event: Event): void {
@@ -236,7 +341,14 @@ function goToNextTableDifference(): void {
     return
   }
 
-  activeDifferenceIndex.value = (activeDifferenceIndex.value + 1) % tableDifferenceCells.length
+  if (tableDifferenceCells.value.length === 0) {
+    activeDifferenceIndex.value = 0
+
+    return
+  }
+
+  activeDifferenceIndex.value =
+    (activeDifferenceIndex.value + 1) % tableDifferenceCells.value.length
 }
 </script>
 
@@ -321,7 +433,7 @@ function goToNextTableDifference(): void {
     <section class="table-grid-panel">
       <header>
         <strong>{{ $t('ui.dataGrid') }}</strong>
-        <span>{{ visibleRows }} rows x {{ visibleColumns }} columns</span>
+        <span>{{ visibleRowCount }} rows x {{ visibleColumns }} columns</span>
       </header>
       <div class="table-navigation-bar">
         <label>
@@ -335,6 +447,14 @@ function goToNextTableDifference(): void {
         <span data-testid="table-search-summary">{{ tableSearchSummary }}</span>
         <button
           type="button"
+          data-testid="run-table-compare"
+          :disabled="loading"
+          @click="runTableCompare"
+        >
+          {{ $t('ui.runDiff') }}
+        </button>
+        <button
+          type="button"
           data-testid="next-table-difference"
           @click="goToNextTableDifference"
         >
@@ -343,6 +463,13 @@ function goToNextTableDifference(): void {
         <span data-testid="table-difference-summary">{{ tableDifferenceSummary }}</span>
         <strong data-testid="active-table-cell">{{ activeTableCell?.text ?? '--' }}</strong>
       </div>
+      <p
+        v-if="error"
+        class="table-error"
+        data-testid="table-compare-error"
+      >
+        {{ error }}
+      </p>
       <div class="table-column-rules">
         <label
           v-for="rule in columnRules"
@@ -417,7 +544,7 @@ function goToNextTableDifference(): void {
                   class="table-grid-cell"
                   :data-column-key="cell.columnKey"
                 >
-                  {{ cell.text }}
+                  {{ cell.rightText ?? cell.text }}
                 </span>
               </div>
             </div>

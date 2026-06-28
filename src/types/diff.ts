@@ -94,3 +94,47 @@ export interface PatchLine {
 }
 
 export type PatchLineKind = 'context' | 'added' | 'removed'
+
+export interface TableCompareRequest {
+  left: string
+  right: string
+}
+
+export interface TableCompareColumn {
+  name: string
+  side: 'left' | 'right'
+}
+
+export interface TableCompareColumnMapping {
+  leftColumn?: string
+  rightColumn?: string
+  source: 'Automatic' | 'Manual' | 'Left Only' | 'Right Only'
+}
+
+export interface TableCompareRow {
+  index: number
+  leftCells: string[]
+  rightCells: string[]
+  status: string
+}
+
+export interface TableCompareChangedCell {
+  rowIndex: number
+  columnIndex: number
+  leftValue?: string
+  rightValue?: string
+  status: string
+}
+
+export interface TableCompareResponse {
+  leftColumns: TableCompareColumn[]
+  rightColumns: TableCompareColumn[]
+  columnMappings: TableCompareColumnMapping[]
+  rows: TableCompareRow[]
+  changedCells: TableCompareChangedCell[]
+  summary: {
+    rowCount: number
+    changedRowCount: number
+    changedCellCount: number
+  }
+}

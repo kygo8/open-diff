@@ -5,6 +5,8 @@ import type {
   ReadTextFileResponse,
   SaveTextFileRequest,
   SaveTextFileResponse,
+  TableCompareRequest,
+  TableCompareResponse,
   TextDiffRequest,
   TextDiffResponse,
 } from '@/types/diff'
@@ -40,5 +42,12 @@ export function checkTextFileChanged(path: string, previousStamp: FileStamp): Pr
   return invoke<boolean>('check_text_file_changed', {
     path,
     previousStamp,
+  })
+}
+
+export function compareTableCsv(request: TableCompareRequest): Promise<TableCompareResponse> {
+  return invoke<TableCompareResponse>('compare_table_csv', {
+    left: request.left,
+    right: request.right,
   })
 }

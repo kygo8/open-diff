@@ -82,3 +82,4 @@ tokio.workspace = true
 diff-core = { path = "crates/diff-core" }
 file-core = { path = "crates/file-core" }
 shared-types = { path = "crates/shared-types" }
+table-core = { path = "crates/table-core" }

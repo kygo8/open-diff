@@ -26,7 +26,21 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
-    "icon": ["icons/icon.ico"]
+    "targets": ["msi"],
+    "publisher": "Open Diff Contributors",
+    "homepage": "https://github.com/kygo8/open-diff",
+    "icon": ["icons/icon.ico"],
+    "license": "Apache-2.0",
+    "copyright": "Copyright (c) 2026 Open Diff Contributors",
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      },
+      "wix": {
+        "upgradeCode": "90ffd755-2be3-5b35-8809-0f6022d8f999",
+        "language": "en-US"
+      }
+    }
   }
 }

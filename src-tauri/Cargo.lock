@@ -1863,6 +1863,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "media-core"
+version = "1.0.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "memchr"
 version = "2.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

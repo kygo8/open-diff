@@ -50,6 +50,15 @@ pub struct ScriptVariables {
 #[serde(rename_all = "camelCase")]
 pub struct ScriptExecutionContext {
     pub variables: ScriptVariables,
+    pub mode: ScriptExecutionMode,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ScriptExecutionMode {
+    #[default]
+    Visible,
+    Silent,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -91,6 +100,17 @@ pub struct ScriptOption {
 pub struct ScriptCompareExecutionResult {
     pub executed: usize,
     pub state: ScriptRuntimeState,
+    pub mode: ScriptExecutionMode,
+    pub progress: Vec<ScriptProgressEvent>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptProgressEvent {
+    pub line: usize,
+    pub command: String,
+    pub completed: usize,
+    pub total: usize,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -270,7 +290,12 @@ where
         executed += 1;
     }
 
-    Ok(ScriptCompareExecutionResult { executed, state })
+    Ok(ScriptCompareExecutionResult {
+        executed,
+        state,
+        mode: execution.mode,
+        progress: Vec::new(),
+    })
 }
 
 pub fn execute_automation_script<C, R>(
@@ -285,6 +310,8 @@ where
 {
     let mut state = ScriptRuntimeState::default();
     let mut executed = 0;
+    let mut progress = Vec::new();
+    let total = script.commands.len();
 
     for command in &script.commands {
         match &command.kind {
@@ -361,9 +388,22 @@ where
         }
 
         executed += 1;
+        if execution.mode == ScriptExecutionMode::Visible {
+            progress.push(ScriptProgressEvent {
+                line: command.line,
+                command: command.kind.command_name().to_owned(),
+                completed: executed,
+                total,
+            });
+        }
     }
 
-    Ok(ScriptCompareExecutionResult { executed, state })
+    Ok(ScriptCompareExecutionResult {
+        executed,
+        state,
+        mode: execution.mode,
+        progress,
+    })
 }
 
 fn resolve_script_variable<'a>(
@@ -1018,6 +1058,7 @@ mod tests {
                     date: "2026-06-27".to_owned(),
                     ..ScriptVariables::default()
                 },
+                ..ScriptExecutionContext::default()
             },
             &mut NoopCompareEngine,
             &mut NoopReportEngine,
@@ -1035,5 +1076,94 @@ mod tests {
             }]
         );
         assert_eq!(result.state.selection, Some("*.rs".to_owned()));
+    }
+
+    #[test]
+    fn visible_mode_records_progress_for_each_command() {
+        struct NoopCompareEngine;
+        struct NoopReportEngine;
+
+        impl ScriptCompareEngine for NoopCompareEngine {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+
+        impl ScriptReportEngine for NoopReportEngine {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script("LOG start\nBEEP").expect("script parses");
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext {
+                mode: ScriptExecutionMode::Visible,
+                ..ScriptExecutionContext::default()
+            },
+            &mut NoopCompareEngine,
+            &mut NoopReportEngine,
+        )
+        .expect("script should execute");
+
+        assert_eq!(result.mode, ScriptExecutionMode::Visible);
+        assert_eq!(
+            result.progress,
+            vec![
+                ScriptProgressEvent {
+                    line: 1,
+                    command: "LOG".to_owned(),
+                    completed: 1,
+                    total: 2,
+                },
+                ScriptProgressEvent {
+                    line: 2,
+                    command: "BEEP".to_owned(),
+                    completed: 2,
+                    total: 2,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn silent_mode_executes_without_progress_events() {
+        struct NoopCompareEngine;
+        struct NoopReportEngine;
+
+        impl ScriptCompareEngine for NoopCompareEngine {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+
+        impl ScriptReportEngine for NoopReportEngine {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script("LOG start\nBEEP").expect("script parses");
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext {
+                mode: ScriptExecutionMode::Silent,
+                ..ScriptExecutionContext::default()
+            },
+            &mut NoopCompareEngine,
+            &mut NoopReportEngine,
+        )
+        .expect("script should execute");
+
+        assert_eq!(result.mode, ScriptExecutionMode::Silent);
+        assert!(result.progress.is_empty());
+        assert_eq!(result.executed, 2);
     }
 }

@@ -13,6 +13,7 @@ pub fn run() {
             commands::compare_version_files,
             commands::diff_text,
             commands::parse_text_patch,
+            commands::preview_folder_sync,
             commands::read_text_file,
             commands::save_text_file
         ])

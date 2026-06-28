@@ -32,6 +32,8 @@ export const zhCN: LanguagePack = {
     'error.folder.scanCancelled.suggestion': '准备好后重新开始比较。',
     'error.folder.scanFailed.message': '无法扫描文件夹 {path}。',
     'error.folder.scanFailed.suggestion': '检查文件夹权限，并确认文件夹仍然可用。',
+    'error.folderSync.invalidStrategy.message': '未知的文件夹同步策略 {strategy}。',
+    'error.folderSync.invalidStrategy.suggestion': '请选择可用的文件夹同步策略。',
     'error.media.readFailed.message': '无法从 {path} 读取媒体元数据。',
     'error.media.readFailed.suggestion': '请使用包含可读元数据的 MP3、FLAC、OGG 或 MP4 文件。',
     'error.media.readFailed.title': '媒体读取失败',

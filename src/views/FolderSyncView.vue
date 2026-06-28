@@ -1,16 +1,21 @@
 <script setup lang="ts">
+import { previewFolderSync } from '@/api/sync'
+import type {
+  FolderSyncPreviewAction,
+  FolderSyncPreviewRow,
+  FolderSyncStrategy,
+} from '@/types/sync'
 import { computed, ref } from 'vue'
 
-type SyncStrategy = 'updateRight' | 'updateLeft' | 'updateBoth' | 'mirrorRight' | 'mirrorLeft'
-
 interface SyncStrategyOption {
-  value: SyncStrategy
+  value: FolderSyncStrategy
   label: string
 }
 
 interface SyncPreviewRow {
   id: string
-  action: 'Copy' | 'Delete' | 'Leave'
+  relativePath: string
+  action: FolderSyncPreviewAction
   sourcePath?: string
   targetPath?: string
   detail: string
@@ -25,7 +30,10 @@ const strategyOptions: SyncStrategyOption[] = [
 ]
 const leftPath = ref('D:/workspace/left')
 const rightPath = ref('D:/workspace/right')
-const selectedStrategy = ref<SyncStrategy>('updateBoth')
+const selectedStrategy = ref<FolderSyncStrategy>('updateBoth')
+const previewName = ref('Update Both')
+const previewLoading = ref(false)
+const previewError = ref<string>()
 const previewRows = ref<SyncPreviewRow[]>([])
 const completedOperations = ref(0)
 const syncLogs = ref<string[]>([])
@@ -37,42 +45,28 @@ const selectedStrategyLabel = computed(
 )
 const canRunSync = computed(() => previewRows.value.length > 0)
 
-function buildPreviewRows(): SyncPreviewRow[] {
-  const mirrorMode =
-    selectedStrategy.value === 'mirrorRight' || selectedStrategy.value === 'mirrorLeft'
-  const sourceRoot = selectedStrategy.value === 'mirrorLeft' ? rightPath.value : leftPath.value
-  const targetRoot = selectedStrategy.value === 'mirrorLeft' ? leftPath.value : rightPath.value
+async function previewSync(): Promise<void> {
+  previewLoading.value = true
+  previewError.value = undefined
 
-  return [
-    {
-      id: 'copy-app',
-      action: 'Copy',
-      sourcePath: `${sourceRoot}/package/app.exe`,
-      targetPath: `${targetRoot}/package/app.exe`,
-      detail: `${selectedStrategyLabel.value} copies the newer application file.`,
-    },
-    {
-      id: 'copy-config',
-      action: 'Copy',
-      sourcePath: `${sourceRoot}/package/app.config`,
-      targetPath: `${targetRoot}/package/app.config`,
-      detail: `${selectedStrategyLabel.value} updates configuration.`,
-    },
-    {
-      id: 'delete-old',
-      action: mirrorMode ? 'Delete' : 'Leave',
-      targetPath: `${targetRoot}/prod/old.dll`,
-      detail: mirrorMode
-        ? `${selectedStrategyLabel.value} removes target-only files.`
-        : 'No deletion is planned for update mode.',
-    },
-  ]
-}
+  try {
+    const response = await previewFolderSync({
+      leftRoot: leftPath.value,
+      rightRoot: rightPath.value,
+      strategy: selectedStrategy.value,
+    })
 
-function previewSync(): void {
-  previewRows.value = buildPreviewRows()
-  completedOperations.value = 0
-  syncLogs.value = []
+    previewName.value = response.name
+    previewRows.value = response.rows.map(syncPreviewResponseRowToViewRow)
+    leftPath.value = response.leftRoot
+    rightPath.value = response.rightRoot
+    completedOperations.value = 0
+    syncLogs.value = []
+  } catch (error) {
+    previewError.value = error instanceof Error ? error.message : String(error)
+  } finally {
+    previewLoading.value = false
+  }
 }
 
 function runSync(): void {
@@ -83,15 +77,30 @@ function runSync(): void {
   completedOperations.value = previewRows.value.length
   syncLogs.value = previewRows.value.map((row) => {
     if (row.action === 'Delete') {
-      return 'Deleted prod/old.dll'
+      return `Deleted ${row.relativePath}`
     }
 
     if (row.action === 'Leave') {
-      return 'Left prod/old.dll unchanged'
+      return `Left ${row.relativePath} unchanged`
     }
 
-    return row.id === 'copy-app' ? 'Copied package/app.exe' : 'Copied package/app.config'
+    if (row.action === 'Conflict') {
+      return `Conflict ${row.relativePath}`
+    }
+
+    return `Copied ${row.relativePath}`
   })
+}
+
+function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreviewRow {
+  return {
+    id: row.id,
+    relativePath: row.relativePath,
+    action: row.action,
+    sourcePath: row.sourcePath,
+    targetPath: row.targetPath,
+    detail: row.detail,
+  }
 }
 </script>
 
@@ -143,6 +152,8 @@ function runSync(): void {
           size="small"
           secondary
           data-testid="folder-sync-preview"
+          :disabled="previewLoading || !leftPath || !rightPath"
+          :loading="previewLoading"
           @click="previewSync"
           >{{ $t('ui.preview') }}</NButton
         >
@@ -158,12 +169,20 @@ function runSync(): void {
     </section>
 
     <section
+      v-if="previewError"
+      class="sync-run-status"
+      data-testid="folder-sync-preview-error"
+    >
+      {{ previewError }}
+    </section>
+
+    <section
       v-if="previewRows.length > 0"
       class="sync-preview"
       data-testid="folder-sync-preview-panel"
     >
       <header>
-        <strong>{{ selectedStrategyLabel }}</strong>
+        <strong>{{ previewName || selectedStrategyLabel }}</strong>
         <span>{{ leftPath }} -> {{ rightPath }}</span>
       </header>
       <div class="sync-preview-table">

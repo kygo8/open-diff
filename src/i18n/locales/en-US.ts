@@ -36,6 +36,9 @@ export const enUS: LanguagePack = {
     'error.folder.scanFailed.message': 'Could not scan folder {path}.',
     'error.folder.scanFailed.suggestion':
       'Check folder permissions and whether the folder is still available.',
+    'error.folderSync.invalidStrategy.message': 'Unknown folder sync strategy {strategy}.',
+    'error.folderSync.invalidStrategy.suggestion':
+      'Choose one of the available folder sync strategies.',
     'error.media.readFailed.message': 'Could not read media metadata from {path}.',
     'error.media.readFailed.suggestion':
       'Use a supported MP3, FLAC, OGG, or MP4 file with readable metadata.',

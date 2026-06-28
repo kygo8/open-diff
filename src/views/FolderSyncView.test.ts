@@ -1,8 +1,46 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderSyncView from './FolderSyncView.vue'
+import { previewFolderSync } from '@/api/sync'
+
+vi.mock('@/api/sync', () => ({
+  previewFolderSync: vi.fn().mockResolvedValue({
+    name: 'Mirror to Right',
+    leftRoot: 'D:/deploy/package',
+    rightRoot: 'D:/deploy/prod',
+    strategy: 'mirrorRight',
+    rows: [
+      {
+        id: 'copy-app',
+        relativePath: 'package/app.exe',
+        action: 'Copy',
+        sourcePath: 'D:/deploy/package/package/app.exe',
+        targetPath: 'D:/deploy/prod/package/app.exe',
+        detail: 'Left item only exists',
+      },
+      {
+        id: 'delete-old',
+        relativePath: 'prod/old.dll',
+        action: 'Delete',
+        targetPath: 'D:/deploy/prod/prod/old.dll',
+        detail: 'Right item does not exist on left',
+      },
+    ],
+    summary: {
+      total: 2,
+      copy: 1,
+      delete: 1,
+      leave: 0,
+      conflict: 0,
+    },
+  }),
+}))
 
 describe('FolderSyncView', () => {
+  beforeEach(() => {
+    vi.mocked(previewFolderSync).mockClear()
+  })
+
   it('configures folder paths, strategy, preview, and run status', async () => {
     const wrapper = mount(FolderSyncView, {
       global: {
@@ -28,7 +66,13 @@ describe('FolderSyncView', () => {
     await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
     await wrapper.find('[data-testid="folder-sync-strategy"]').setValue('mirrorRight')
     await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await wrapper.vm.$nextTick()
 
+    expect(previewFolderSync).toHaveBeenCalledWith({
+      leftRoot: 'D:/deploy/package',
+      rightRoot: 'D:/deploy/prod',
+      strategy: 'mirrorRight',
+    })
     expect(wrapper.find('[data-testid="folder-sync-preview-panel"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('Mirror to Right')
     expect(wrapper.text()).toContain('D:/deploy/package')
@@ -38,7 +82,7 @@ describe('FolderSyncView', () => {
 
     await wrapper.find('[data-testid="folder-sync-run"]').trigger('click')
 
-    expect(wrapper.text()).toContain('Completed 3 / 3')
+    expect(wrapper.text()).toContain('Completed 2 / 2')
     expect(wrapper.text()).toContain('Copied package/app.exe')
     expect(wrapper.text()).toContain('Deleted prod/old.dll')
   })

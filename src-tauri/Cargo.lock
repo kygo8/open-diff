@@ -2250,6 +2250,7 @@ dependencies = [
  "registry-core",
  "serde",
  "shared-types",
+ "sync-core",
  "table-core",
  "tauri",
  "tauri-build",

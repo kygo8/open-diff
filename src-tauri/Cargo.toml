@@ -89,5 +89,6 @@ job-core = { path = "crates/job-core" }
 media-core = { path = "crates/media-core" }
 registry-core = { path = "crates/registry-core" }
 shared-types = { path = "crates/shared-types" }
+sync-core = { path = "crates/sync-core" }
 table-core = { path = "crates/table-core" }
 version-core = { path = "crates/version-core" }

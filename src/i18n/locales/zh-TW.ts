@@ -32,6 +32,8 @@ export const zhTW: LanguagePack = {
     'error.folder.scanCancelled.suggestion': '準備好後重新開始比較。',
     'error.folder.scanFailed.message': '無法掃描資料夾 {path}。',
     'error.folder.scanFailed.suggestion': '檢查資料夾權限，並確認資料夾仍然可用。',
+    'error.folderSync.invalidStrategy.message': '未知的資料夾同步策略 {strategy}。',
+    'error.folderSync.invalidStrategy.suggestion': '請選擇可用的資料夾同步策略。',
     'error.media.readFailed.message': '無法從 {path} 讀取媒體中繼資料。',
     'error.media.readFailed.suggestion': '請使用包含可讀中繼資料的 MP3、FLAC、OGG 或 MP4 檔案。',
     'error.media.readFailed.title': '媒體讀取失敗',

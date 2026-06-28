@@ -307,6 +307,38 @@ pub struct FolderCompareSummary {
     pub right_only: usize,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderSyncPreviewResponse {
+    pub name: String,
+    pub left_root: String,
+    pub right_root: String,
+    pub strategy: String,
+    pub rows: Vec<FolderSyncPreviewRow>,
+    pub summary: FolderSyncPreviewSummary,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderSyncPreviewRow {
+    pub id: String,
+    pub relative_path: String,
+    pub action: String,
+    pub source_path: Option<String>,
+    pub target_path: Option<String>,
+    pub detail: String,
+}
+
+#[derive(Debug, Clone, Default, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderSyncPreviewSummary {
+    pub total: usize,
+    pub copy: usize,
+    pub delete: usize,
+    pub leave: usize,
+    pub conflict: usize,
+}
+
 #[tauri::command]
 pub fn diff_text(
     left: String,
@@ -475,6 +507,43 @@ pub fn compare_folder_paths(
     Ok(FolderCompareResponse {
         left_root,
         right_root,
+        rows,
+        summary,
+    })
+}
+
+#[tauri::command]
+pub fn preview_folder_sync(
+    left_root: String,
+    right_root: String,
+    strategy: String,
+) -> Result<FolderSyncPreviewResponse, AppErrorPayload> {
+    let cancellation_token = job_core::CancellationToken::default();
+    let left_tree = folder_core::scan_local_folder(&left_root, &cancellation_token)
+        .map_err(|error| folder_scan_error(&left_root, error))?;
+    let right_tree = folder_core::scan_local_folder(&right_root, &cancellation_token)
+        .map_err(|error| folder_scan_error(&right_root, error))?;
+    let alignment_rows = folder_core::align_folder_trees(&left_tree, &right_tree);
+    let plan = folder_sync_plan(&left_root, &right_root, &strategy, &alignment_rows)?;
+    let rows = plan
+        .items
+        .iter()
+        .map(folder_sync_preview_row)
+        .collect::<Vec<_>>();
+    let mut summary = FolderSyncPreviewSummary {
+        total: rows.len(),
+        ..FolderSyncPreviewSummary::default()
+    };
+
+    for row in &rows {
+        increment_folder_sync_summary(&mut summary, &row.action);
+    }
+
+    Ok(FolderSyncPreviewResponse {
+        name: plan.name,
+        left_root,
+        right_root,
+        strategy,
         rows,
         summary,
     })
@@ -894,6 +963,104 @@ fn increment_folder_summary(summary: &mut FolderCompareSummary, status: &str) {
         "Different" => summary.different += 1,
         "Left only" => summary.left_only += 1,
         "Right only" => summary.right_only += 1,
+        _ => {}
+    }
+}
+
+fn folder_sync_plan(
+    left_root: &str,
+    right_root: &str,
+    strategy: &str,
+    rows: &[FolderAlignmentRow],
+) -> Result<sync_core::SyncPlan, AppErrorPayload> {
+    match strategy {
+        "updateRight" => Ok(sync_core::build_update_right_plan(
+            left_root, right_root, rows,
+        )),
+        "updateLeft" => Ok(sync_core::build_update_left_plan(
+            left_root, right_root, rows,
+        )),
+        "updateBoth" => Ok(sync_core::build_update_both_plan(
+            left_root, right_root, rows,
+        )),
+        "mirrorRight" => Ok(sync_core::build_mirror_to_right_plan(
+            left_root, right_root, rows,
+        )),
+        "mirrorLeft" => Ok(sync_core::build_mirror_to_left_plan(
+            left_root, right_root, rows,
+        )),
+        unknown => Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.folderSync.invalidStrategy.message",
+            format!("unknown folder sync strategy: {unknown}"),
+        )
+        .with_param("strategy", unknown)
+        .with_suggestion_key("error.folderSync.invalidStrategy.suggestion")),
+    }
+}
+
+fn folder_sync_preview_row(item: &sync_core::SyncPlanItem) -> FolderSyncPreviewRow {
+    let (action, source_path, target_path) = match &item.action {
+        sync_core::SyncAction::Copy {
+            source_path,
+            target_path,
+            ..
+        } => (
+            "Copy".to_owned(),
+            Some(source_path.clone()),
+            Some(target_path.clone()),
+        ),
+        sync_core::SyncAction::Delete { target_path } => {
+            ("Delete".to_owned(), None, Some(target_path.clone()))
+        }
+        sync_core::SyncAction::Leave => ("Leave".to_owned(), None, None),
+        sync_core::SyncAction::Conflict {
+            left_path,
+            right_path,
+            ..
+        } => (
+            "Conflict".to_owned(),
+            Some(left_path.clone()),
+            Some(right_path.clone()),
+        ),
+    };
+
+    FolderSyncPreviewRow {
+        id: row_id_from_relative_path(&item.relative_path),
+        relative_path: item.relative_path.clone(),
+        action,
+        source_path,
+        target_path,
+        detail: item.reason.clone(),
+    }
+}
+
+fn row_id_from_relative_path(relative_path: &str) -> String {
+    let mut id = String::new();
+
+    for character in relative_path.chars() {
+        if character.is_ascii_alphanumeric() {
+            id.push(character.to_ascii_lowercase());
+        } else if !id.ends_with('-') {
+            id.push('-');
+        }
+    }
+
+    let trimmed = id.trim_matches('-');
+
+    if trimmed.is_empty() {
+        "root".to_owned()
+    } else {
+        trimmed.to_owned()
+    }
+}
+
+fn increment_folder_sync_summary(summary: &mut FolderSyncPreviewSummary, action: &str) {
+    match action {
+        "Copy" => summary.copy += 1,
+        "Delete" => summary.delete += 1,
+        "Leave" => summary.leave += 1,
+        "Conflict" => summary.conflict += 1,
         _ => {}
     }
 }
@@ -1566,6 +1733,40 @@ mod tests {
             .rows
             .iter()
             .any(|row| row.relative_path == "src/main.ts" && row.status == "Different"));
+    }
+
+    #[test]
+    fn preview_folder_sync_scans_local_roots_and_returns_sync_actions() {
+        let root = unique_temp_dir("folder-sync-command");
+        let left = root.join("left");
+        let right = root.join("right");
+        fs::create_dir_all(left.join("package")).expect("left fixture directory should be created");
+        fs::create_dir_all(right.join("prod")).expect("right fixture directory should be created");
+        fs::write(left.join("package").join("app.exe"), "left")
+            .expect("left app should be writable");
+        fs::write(right.join("prod").join("old.dll"), "right")
+            .expect("right old file should be writable");
+
+        let response = preview_folder_sync(
+            left.display().to_string(),
+            right.display().to_string(),
+            "mirrorRight".to_owned(),
+        )
+        .expect("valid folders should build a sync preview");
+
+        assert_eq!(response.left_root, left.display().to_string());
+        assert_eq!(response.right_root, right.display().to_string());
+        assert_eq!(response.strategy, "mirrorRight");
+        assert!(response.summary.copy >= 1);
+        assert!(response.summary.delete >= 1);
+        assert!(response
+            .rows
+            .iter()
+            .any(|row| row.relative_path == "package/app.exe" && row.action == "Copy"));
+        assert!(response
+            .rows
+            .iter()
+            .any(|row| row.relative_path == "prod/old.dll" && row.action == "Delete"));
     }
 
     #[test]

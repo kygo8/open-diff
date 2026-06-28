@@ -1,6 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useSettingsStore } from './settings'
+import { commandRegistry } from '@/app/commandRegistry'
 
 describe('useSettingsStore', () => {
   beforeEach(() => {
@@ -45,5 +46,70 @@ describe('useSettingsStore', () => {
 
     expect(store.setLocale('invalid-locale')).toBe(false)
     expect(store.locale).toBe('fr-FR')
+  })
+
+  it('stores shortcut overrides by command id', () => {
+    const store = useSettingsStore()
+
+    expect(
+      store.setShortcutOverride('theme.toggle', {
+        keys: ['Ctrl', 'Shift', 'L'],
+        scope: 'global',
+      }),
+    ).toBe(true)
+
+    expect(store.shortcutOverrides['theme.toggle']).toEqual({
+      keys: ['Ctrl', 'Shift', 'L'],
+      scope: 'global',
+    })
+    expect(JSON.parse(localStorage.getItem('open-diff-shortcut-overrides') ?? '{}')).toEqual({
+      'theme.toggle': {
+        keys: ['Ctrl', 'Shift', 'L'],
+        scope: 'global',
+      },
+    })
+  })
+
+  it('returns custom shortcuts when overrides exist and restores command defaults', () => {
+    const store = useSettingsStore()
+    const themeCommand = commandRegistry.find((command) => command.id === 'theme.toggle')
+
+    if (!themeCommand) {
+      throw new Error('theme.toggle command is missing')
+    }
+
+    expect(store.getEffectiveShortcut(themeCommand)).toEqual(themeCommand.defaultShortcut)
+
+    store.setShortcutOverride('theme.toggle', {
+      keys: ['Ctrl', 'Shift', 'L'],
+      scope: 'global',
+    })
+
+    expect(store.getEffectiveShortcut(themeCommand)).toEqual({
+      keys: ['Ctrl', 'Shift', 'L'],
+      scope: 'global',
+    })
+    expect(store.resetShortcutOverride('theme.toggle')).toBe(true)
+    expect(store.shortcutOverrides['theme.toggle']).toBeUndefined()
+    expect(store.getEffectiveShortcut(themeCommand)).toEqual(themeCommand.defaultShortcut)
+  })
+
+  it('rejects invalid shortcut overrides', () => {
+    const store = useSettingsStore()
+
+    expect(
+      store.setShortcutOverride('theme.toggle', {
+        keys: ['Ctrl', '  '],
+        scope: 'global',
+      }),
+    ).toBe(false)
+    expect(
+      store.setShortcutOverride('theme.toggle', {
+        keys: ['Ctrl', 'K'],
+        scope: 'unknown',
+      }),
+    ).toBe(false)
+    expect(store.shortcutOverrides).toEqual({})
+    expect(localStorage.getItem('open-diff-shortcut-overrides')).toBe('{}')
   })
 })

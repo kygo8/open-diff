@@ -1,12 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { SelectOption } from 'naive-ui'
+import {
+  commandRegistry,
+  filterCommands,
+  type AppCommand,
+  type CommandShortcut,
+} from '@/app/commandRegistry'
 import { useSettingsStore } from '@/stores/settings'
 
 const settings = useSettingsStore()
 const router = useRouter()
 const sharedSessionPathDraft = ref('')
+const shortcutSearch = ref('')
+const shortcutDrafts = ref<Record<string, string>>(
+  Object.fromEntries(
+    commandRegistry.map((command) => [
+      command.id,
+      shortcutToText(settings.getEffectiveShortcut(command)),
+    ]),
+  ),
+)
 const localeOptions: SelectOption[] = [
   { label: 'English', value: 'en-US' },
   { label: '简体中文', value: 'zh-CN' },
@@ -16,6 +31,9 @@ const localeOptions: SelectOption[] = [
   { label: 'Español', value: 'es-ES' },
   { label: '한국어', value: 'ko-KR' },
 ]
+const filteredShortcutCommands = computed(() =>
+  filterCommands(commandRegistry, shortcutSearch.value),
+)
 
 function openFileFormats(): void {
   void router.push('/settings/file-formats')
@@ -33,6 +51,35 @@ function addSharedSessionPath(): void {
 
 function updateLocale(value: string): void {
   settings.setLocale(value)
+}
+
+function saveShortcut(command: AppCommand): void {
+  const keys = parseShortcutText(shortcutDrafts.value[command.id] ?? '')
+
+  if (
+    settings.setShortcutOverride(command.id, {
+      keys,
+      scope: command.defaultShortcut.scope,
+    })
+  ) {
+    shortcutDrafts.value[command.id] = shortcutToText(settings.getEffectiveShortcut(command))
+  }
+}
+
+function resetShortcut(command: AppCommand): void {
+  settings.resetShortcutOverride(command.id)
+  shortcutDrafts.value[command.id] = shortcutToText(command.defaultShortcut)
+}
+
+function shortcutToText(shortcut: CommandShortcut): string {
+  return shortcut.keys.join('+')
+}
+
+function parseShortcutText(value: string): string[] {
+  return value
+    .split('+')
+    .map((key) => key.trim())
+    .filter(Boolean)
 }
 </script>
 
@@ -95,6 +142,60 @@ function updateLocale(value: string): void {
           @click="openRemoteProfiles"
           >{{ $t('ui.manage') }}</NButton
         >
+      </div>
+    </NCard>
+
+    <NCard
+      :title="$t('ui.shortcuts')"
+      size="small"
+    >
+      <div class="shortcut-config">
+        <div class="settings-row">
+          <div>
+            <strong>{{ $t('ui.keyboardShortcuts') }}</strong>
+            <span>{{ $t('ui.searchModifyAndRestoreCommandShortcuts') }}</span>
+          </div>
+        </div>
+        <NInput
+          v-model:value="shortcutSearch"
+          data-testid="shortcut-search"
+          :placeholder="$t('ui.searchCommands')"
+        />
+        <div class="shortcut-list">
+          <div
+            v-for="command in filteredShortcutCommands"
+            :key="command.id"
+            class="shortcut-row"
+          >
+            <div class="shortcut-command">
+              <strong>{{ $t(command.titleKey) }}</strong>
+              <span>{{ command.id }}</span>
+            </div>
+            <span class="shortcut-default">{{ shortcutToText(command.defaultShortcut) }}</span>
+            <span
+              class="shortcut-current"
+              :data-testid="`shortcut-current-${command.id}`"
+              >{{ shortcutToText(settings.getEffectiveShortcut(command)) }}</span
+            >
+            <NInput
+              v-model:value="shortcutDrafts[command.id]"
+              class="shortcut-input"
+              :data-testid="`shortcut-input-${command.id}`"
+            />
+            <NButton
+              size="small"
+              :data-testid="`save-shortcut-${command.id}`"
+              @click="saveShortcut(command)"
+              >{{ $t('ui.save') }}</NButton
+            >
+            <NButton
+              size="small"
+              :data-testid="`reset-shortcut-${command.id}`"
+              @click="resetShortcut(command)"
+              >{{ $t('ui.restoreDefault') }}</NButton
+            >
+          </div>
+        </div>
       </div>
     </NCard>
 
@@ -178,6 +279,51 @@ h1 {
 .shared-session-config {
   display: grid;
   gap: 12px;
+}
+
+.shortcut-config {
+  display: grid;
+  gap: 12px;
+}
+
+.shortcut-list {
+  display: grid;
+  gap: 8px;
+}
+
+.shortcut-row {
+  display: grid;
+  grid-template-columns:
+    minmax(160px, 1.3fr) minmax(90px, 0.7fr) minmax(90px, 0.7fr) minmax(140px, 1fr)
+    auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+}
+
+.shortcut-command {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.shortcut-command span,
+.shortcut-default,
+.shortcut-current {
+  overflow: hidden;
+  color: var(--app-text-muted);
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shortcut-input {
+  min-width: 0;
 }
 
 .shared-session-input {

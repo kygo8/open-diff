@@ -2244,6 +2244,7 @@ dependencies = [
  "image",
  "image-core",
  "media-core",
+ "registry-core",
  "serde",
  "shared-types",
  "table-core",

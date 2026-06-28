@@ -165,6 +165,14 @@ impl RegistryDocument {
             .filter(|value| value.hive == hive && value.key_path == key_path)
             .collect())
     }
+
+    pub fn keys(&self) -> Vec<&RegistryKey> {
+        self.keys.values().collect()
+    }
+
+    pub fn all_values(&self) -> Vec<&RegistryValue> {
+        self.values.values().collect()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

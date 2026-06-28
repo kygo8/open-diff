@@ -11,6 +11,7 @@ use shared_types::{
     AppErrorCode, AppErrorPayload, FileStamp, ReadTextFileResponse, SaveTextFileResponse,
     TextDiffRequest, TextDiffResponse, TextPatchResponse,
 };
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::Path;
 use table_core::{
@@ -154,6 +155,51 @@ pub struct PictureMetadataRow {
     pub left: String,
     pub right: String,
     pub status: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct RegistryCompareResponse {
+    pub left_name: String,
+    pub right_name: String,
+    pub tree: Vec<RegistryKeyNode>,
+    pub summary: RegistryCompareSummary,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct RegistryKeyNode {
+    pub path: String,
+    pub label: String,
+    pub status: String,
+    pub values: Vec<RegistryValueRow>,
+    pub children: Vec<RegistryKeyNode>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct RegistryValueRow {
+    pub key_path: String,
+    pub name: String,
+    pub status: String,
+    pub left: Option<RegistryValueSide>,
+    pub right: Option<RegistryValueSide>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct RegistryValueSide {
+    pub kind: String,
+    pub data: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct RegistryCompareSummary {
+    pub added: u32,
+    pub removed: u32,
+    pub modified: u32,
+    pub unchanged: u32,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
@@ -407,6 +453,28 @@ pub fn compare_picture_files(
         },
         metadata_rows,
     })
+}
+
+#[tauri::command]
+pub fn compare_registry_exports(
+    left: String,
+    right: String,
+    left_name: Option<String>,
+    right_name: Option<String>,
+) -> Result<RegistryCompareResponse, AppErrorPayload> {
+    let left_name = left_name.unwrap_or_else(|| "left.reg".to_owned());
+    let right_name = right_name.unwrap_or_else(|| "right.reg".to_owned());
+    let left_document =
+        registry_core::RegFileParser::parse(left_name.clone(), &left).map_err(registry_error)?;
+    let right_document =
+        registry_core::RegFileParser::parse(right_name.clone(), &right).map_err(registry_error)?;
+
+    Ok(compare_registry_documents(
+        &left_name,
+        &right_name,
+        &left_document,
+        &right_document,
+    ))
 }
 
 #[tauri::command]
@@ -784,6 +852,282 @@ fn image_format_label(format: &ImageFormat) -> String {
     .to_owned()
 }
 
+fn registry_error(error: registry_core::RegistryError) -> AppErrorPayload {
+    AppErrorPayload::new(
+        AppErrorCode::Unknown,
+        "error.registry.parseFailed.message",
+        format!("{error:?}"),
+    )
+    .with_suggestion_key("error.registry.parseFailed.suggestion")
+}
+
+fn compare_registry_documents(
+    left_name: &str,
+    right_name: &str,
+    left: &registry_core::RegistryDocument,
+    right: &registry_core::RegistryDocument,
+) -> RegistryCompareResponse {
+    let values = registry_value_rows(left, right);
+    let mut summary = RegistryCompareSummary {
+        added: 0,
+        removed: 0,
+        modified: 0,
+        unchanged: 0,
+    };
+
+    for value in &values {
+        increment_registry_summary(&mut summary, &value.status);
+    }
+
+    RegistryCompareResponse {
+        left_name: left_name.to_owned(),
+        right_name: right_name.to_owned(),
+        tree: registry_key_tree(left, right, values),
+        summary,
+    }
+}
+
+fn registry_value_rows(
+    left: &registry_core::RegistryDocument,
+    right: &registry_core::RegistryDocument,
+) -> Vec<RegistryValueRow> {
+    let left_values = registry_value_map(left);
+    let right_values = registry_value_map(right);
+    let ids = left_values
+        .keys()
+        .chain(right_values.keys())
+        .cloned()
+        .collect::<BTreeSet<_>>();
+
+    ids.into_iter()
+        .filter_map(|id| {
+            let left_value = left_values.get(&id);
+            let right_value = right_values.get(&id);
+            let value = left_value.or(right_value)?;
+            let left_side = left_value.map(registry_value_side);
+            let right_side = right_value.map(registry_value_side);
+            let status = match (&left_side, &right_side) {
+                (None, Some(_)) => "added",
+                (Some(_), None) => "removed",
+                (Some(left), Some(right)) if left == right => "unchanged",
+                (Some(_), Some(_)) => "modified",
+                (None, None) => "unchanged",
+            };
+
+            Some(RegistryValueRow {
+                key_path: registry_key_display(value.hive, &value.key_path),
+                name: value.name.clone(),
+                status: status.to_owned(),
+                left: left_side,
+                right: right_side,
+            })
+        })
+        .collect()
+}
+
+fn registry_value_map(
+    document: &registry_core::RegistryDocument,
+) -> BTreeMap<String, registry_core::RegistryValue> {
+    document
+        .all_values()
+        .into_iter()
+        .map(|value| {
+            (
+                format!(
+                    "{}/{}",
+                    registry_key_display(value.hive, &value.key_path),
+                    value.name
+                ),
+                value.clone(),
+            )
+        })
+        .collect()
+}
+
+fn registry_key_tree(
+    left: &registry_core::RegistryDocument,
+    right: &registry_core::RegistryDocument,
+    values: Vec<RegistryValueRow>,
+) -> Vec<RegistryKeyNode> {
+    let value_groups = values.into_iter().fold(
+        BTreeMap::<String, Vec<RegistryValueRow>>::new(),
+        |mut groups, value| {
+            groups
+                .entry(value.key_path.clone())
+                .or_default()
+                .push(value);
+            groups
+        },
+    );
+    let key_paths = left
+        .keys()
+        .into_iter()
+        .map(|key| registry_key_display(key.hive, &key.path))
+        .chain(
+            right
+                .keys()
+                .into_iter()
+                .map(|key| registry_key_display(key.hive, &key.path)),
+        )
+        .chain(value_groups.keys().cloned())
+        .collect::<BTreeSet<_>>();
+
+    let child_map = key_paths.iter().fold(
+        BTreeMap::<String, Vec<String>>::new(),
+        |mut children, path| {
+            let parent = registry_parent_key(path)
+                .filter(|parent| key_paths.contains(parent))
+                .unwrap_or_default();
+
+            children.entry(parent).or_default().push(path.clone());
+            children
+        },
+    );
+    let left_key_paths = left
+        .keys()
+        .into_iter()
+        .map(|key| registry_key_display(key.hive, &key.path))
+        .collect::<BTreeSet<_>>();
+    let right_key_paths = right
+        .keys()
+        .into_iter()
+        .map(|key| registry_key_display(key.hive, &key.path))
+        .collect::<BTreeSet<_>>();
+
+    child_map
+        .get("")
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|path| {
+            registry_key_node(
+                path,
+                &child_map,
+                &value_groups,
+                &left_key_paths,
+                &right_key_paths,
+            )
+        })
+        .collect()
+}
+
+fn registry_key_node(
+    path: String,
+    child_map: &BTreeMap<String, Vec<String>>,
+    value_groups: &BTreeMap<String, Vec<RegistryValueRow>>,
+    left_key_paths: &BTreeSet<String>,
+    right_key_paths: &BTreeSet<String>,
+) -> RegistryKeyNode {
+    let children = child_map
+        .get(&path)
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|child| {
+            registry_key_node(
+                child,
+                child_map,
+                value_groups,
+                left_key_paths,
+                right_key_paths,
+            )
+        })
+        .collect::<Vec<_>>();
+    let values = value_groups.get(&path).cloned().unwrap_or_default();
+    let status = registry_key_status(&path, &values, &children, left_key_paths, right_key_paths);
+
+    RegistryKeyNode {
+        label: registry_key_label(&path),
+        path,
+        status,
+        values,
+        children,
+    }
+}
+
+fn registry_key_status(
+    path: &str,
+    values: &[RegistryValueRow],
+    children: &[RegistryKeyNode],
+    left_key_paths: &BTreeSet<String>,
+    right_key_paths: &BTreeSet<String>,
+) -> String {
+    if left_key_paths.contains(path) && !right_key_paths.contains(path) {
+        return "removed".to_owned();
+    }
+
+    if !left_key_paths.contains(path) && right_key_paths.contains(path) {
+        return "added".to_owned();
+    }
+
+    if values.iter().any(|value| value.status != "unchanged")
+        || children.iter().any(|child| child.status != "unchanged")
+    {
+        return "modified".to_owned();
+    }
+
+    "unchanged".to_owned()
+}
+
+fn registry_parent_key(path: &str) -> Option<String> {
+    path.rsplit_once('/').map(|(parent, _)| parent.to_owned())
+}
+
+fn registry_key_label(path: &str) -> String {
+    path.rsplit('/').next().unwrap_or(path).to_owned()
+}
+
+fn registry_key_display(hive: registry_core::RegistryHive, path: &str) -> String {
+    if path.is_empty() {
+        hive.short_name().to_owned()
+    } else {
+        format!("{}/{}", hive.short_name(), path)
+    }
+}
+
+fn registry_value_side(value: &registry_core::RegistryValue) -> RegistryValueSide {
+    let (kind, data) = registry_value_data_text(&value.data);
+
+    RegistryValueSide { kind, data }
+}
+
+fn registry_value_data_text(data: &registry_core::RegistryValueData) -> (String, String) {
+    match data {
+        registry_core::RegistryValueData::String(value) => ("REG_SZ".to_owned(), value.clone()),
+        registry_core::RegistryValueData::ExpandString(value) => {
+            ("REG_EXPAND_SZ".to_owned(), value.clone())
+        }
+        registry_core::RegistryValueData::Dword(value) => {
+            ("REG_DWORD".to_owned(), value.to_string())
+        }
+        registry_core::RegistryValueData::Qword(value) => {
+            ("REG_QWORD".to_owned(), value.to_string())
+        }
+        registry_core::RegistryValueData::Binary(bytes) => (
+            "REG_BINARY".to_owned(),
+            bytes
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<Vec<_>>()
+                .join(" "),
+        ),
+        registry_core::RegistryValueData::MultiString(values) => {
+            ("REG_MULTI_SZ".to_owned(), values.join("; "))
+        }
+        registry_core::RegistryValueData::None => ("REG_NONE".to_owned(), String::new()),
+    }
+}
+
+fn increment_registry_summary(summary: &mut RegistryCompareSummary, status: &str) {
+    match status {
+        "added" => summary.added += 1,
+        "removed" => summary.removed += 1,
+        "modified" => summary.modified += 1,
+        "unchanged" => summary.unchanged += 1,
+        _ => {}
+    }
+}
+
 fn compare_version_files_from_reader(
     reader: &impl NativeVersionInfoReader,
     left_path: &str,
@@ -936,6 +1280,47 @@ mod tests {
         );
         assert_eq!(response.changed_cells[0].left_value.as_deref(), Some("12"));
         assert_eq!(response.changed_cells[0].right_value.as_deref(), Some("14"));
+    }
+
+    #[test]
+    fn compare_registry_exports_returns_key_tree_and_value_diffs() {
+        let left = r#"Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\OpenDiff]
+"Theme"="dark"
+"AutoSave"=dword:00000001
+"#;
+        let right = r#"Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\OpenDiff]
+"Theme"="light"
+"AutoSave"=dword:00000001
+"#;
+
+        let response = compare_registry_exports(
+            left.to_owned(),
+            right.to_owned(),
+            Some("left.reg".to_owned()),
+            Some("right.reg".to_owned()),
+        )
+        .expect("valid registry exports should compare");
+
+        assert_eq!(response.left_name, "left.reg");
+        assert_eq!(response.right_name, "right.reg");
+        assert_eq!(response.summary.modified, 1);
+        assert_eq!(response.summary.unchanged, 1);
+        assert_eq!(response.tree[0].path, "HKCU/Software/OpenDiff");
+        assert_eq!(response.tree[0].status, "modified");
+        assert_eq!(response.tree[0].values[0].name, "AutoSave");
+        assert_eq!(response.tree[0].values[1].name, "Theme");
+        assert_eq!(response.tree[0].values[1].status, "modified");
+        assert_eq!(
+            response.tree[0].values[1]
+                .right
+                .as_ref()
+                .map(|side| side.data.as_str()),
+            Some("light")
+        );
     }
 
     #[test]

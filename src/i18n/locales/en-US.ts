@@ -38,6 +38,10 @@ export const enUS: LanguagePack = {
     'error.picture.readFailed.message': 'Could not read picture metadata from {path}.',
     'error.picture.readFailed.suggestion': 'Use a supported PNG, JPEG, or WebP image file.',
     'error.picture.readFailed.title': 'Picture read failed',
+    'error.registry.parseFailed.message': 'Could not parse registry export.',
+    'error.registry.parseFailed.suggestion':
+      'Use a Windows Registry Editor Version 5.00 or REGEDIT4 export file.',
+    'error.registry.parseFailed.title': 'Registry parse failed',
     'error.version.readFailed.message': 'Could not read version information from {path}.',
     'error.version.readFailed.suggestion':
       'Use a Windows executable or library file that contains readable version resources.',

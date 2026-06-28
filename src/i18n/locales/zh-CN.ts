@@ -34,6 +34,10 @@ export const zhCN: LanguagePack = {
     'error.picture.readFailed.message': '无法从 {path} 读取图片元数据。',
     'error.picture.readFailed.suggestion': '请使用受支持的 PNG、JPEG 或 WebP 图片文件。',
     'error.picture.readFailed.title': '图片读取失败',
+    'error.registry.parseFailed.message': '无法解析注册表导出内容。',
+    'error.registry.parseFailed.suggestion':
+      '请使用 Windows Registry Editor Version 5.00 或 REGEDIT4 导出文件。',
+    'error.registry.parseFailed.title': '注册表解析失败',
     'error.version.readFailed.message': '无法从 {path} 读取版本信息。',
     'error.version.readFailed.suggestion': '请使用包含可读版本资源的 Windows 可执行文件或库文件。',
     'error.version.readFailed.title': '版本读取失败',

@@ -84,6 +84,7 @@ file-core = { path = "crates/file-core" }
 image.workspace = true
 image-core = { path = "crates/image-core" }
 media-core = { path = "crates/media-core" }
+registry-core = { path = "crates/registry-core" }
 shared-types = { path = "crates/shared-types" }
 table-core = { path = "crates/table-core" }
 version-core = { path = "crates/version-core" }

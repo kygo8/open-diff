@@ -34,6 +34,10 @@ export const zhTW: LanguagePack = {
     'error.picture.readFailed.message': '無法從 {path} 讀取圖片中繼資料。',
     'error.picture.readFailed.suggestion': '請使用受支援的 PNG、JPEG 或 WebP 圖片檔案。',
     'error.picture.readFailed.title': '圖片讀取失敗',
+    'error.registry.parseFailed.message': '無法解析登錄檔匯出內容。',
+    'error.registry.parseFailed.suggestion':
+      '請使用 Windows Registry Editor Version 5.00 或 REGEDIT4 匯出檔案。',
+    'error.registry.parseFailed.title': '登錄檔解析失敗',
     'error.version.readFailed.message': '無法從 {path} 讀取版本資訊。',
     'error.version.readFailed.suggestion':
       '請使用包含可讀版本資源的 Windows 可執行檔或程式庫檔案。',

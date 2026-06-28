@@ -211,6 +211,43 @@ export interface PictureCompareResponse {
   metadataRows: PictureMetadataRow[]
 }
 
+export interface RegistryCompareRequest {
+  left: string
+  right: string
+  leftName?: string
+  rightName?: string
+}
+
+export type RegistryDiffStatus = 'added' | 'removed' | 'modified' | 'unchanged'
+
+export interface RegistryValueSide {
+  kind: string
+  data: string
+}
+
+export interface RegistryValueRow {
+  keyPath: string
+  name: string
+  status: RegistryDiffStatus
+  left?: RegistryValueSide
+  right?: RegistryValueSide
+}
+
+export interface RegistryKeyNode {
+  path: string
+  label: string
+  status: RegistryDiffStatus
+  values: RegistryValueRow[]
+  children: RegistryKeyNode[]
+}
+
+export interface RegistryCompareResponse {
+  leftName: string
+  rightName: string
+  tree: RegistryKeyNode[]
+  summary: Record<RegistryDiffStatus, number>
+}
+
 export interface VersionCompareRequest {
   leftPath: string
   rightPath: string

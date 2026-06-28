@@ -5,6 +5,8 @@ import type {
   MediaCompareResponse,
   PictureCompareRequest,
   PictureCompareResponse,
+  RegistryCompareRequest,
+  RegistryCompareResponse,
   TextPatchResponse,
   VersionCompareRequest,
   VersionCompareResponse,
@@ -71,6 +73,17 @@ export function comparePictureFiles(
   return invoke<PictureCompareResponse>('compare_picture_files', {
     leftPath: request.leftPath,
     rightPath: request.rightPath,
+  })
+}
+
+export function compareRegistryExports(
+  request: RegistryCompareRequest,
+): Promise<RegistryCompareResponse> {
+  return invoke<RegistryCompareResponse>('compare_registry_exports', {
+    left: request.left,
+    right: request.right,
+    leftName: request.leftName,
+    rightName: request.rightName,
   })
 }
 

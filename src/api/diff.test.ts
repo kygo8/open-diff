@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   compareMediaFiles,
   comparePictureFiles,
+  compareRegistryExports,
   compareTableCsv,
   compareVersionFiles,
   saveTextFile,
@@ -209,5 +210,50 @@ describe('diff api', () => {
       rightPath: 'C:/apps/right.exe',
     })
     expect(result.fields[0]?.field).toBe('FileVersion')
+  })
+
+  it('compares registry exports through the Tauri command contract', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      leftName: 'left.reg',
+      rightName: 'right.reg',
+      tree: [
+        {
+          path: 'HKCU/Software/OpenDiff',
+          label: 'OpenDiff',
+          status: 'modified',
+          values: [
+            {
+              keyPath: 'HKCU/Software/OpenDiff',
+              name: 'Theme',
+              left: { kind: 'REG_SZ', data: 'dark' },
+              right: { kind: 'REG_SZ', data: 'light' },
+              status: 'modified',
+            },
+          ],
+          children: [],
+        },
+      ],
+      summary: {
+        added: 0,
+        removed: 0,
+        modified: 1,
+        unchanged: 0,
+      },
+    })
+
+    const result = await compareRegistryExports({
+      left: 'Windows Registry Editor Version 5.00',
+      right: 'Windows Registry Editor Version 5.00',
+      leftName: 'left.reg',
+      rightName: 'right.reg',
+    })
+
+    expect(invoke).toHaveBeenCalledWith('compare_registry_exports', {
+      left: 'Windows Registry Editor Version 5.00',
+      right: 'Windows Registry Editor Version 5.00',
+      leftName: 'left.reg',
+      rightName: 'right.reg',
+    })
+    expect(result.tree[0]?.values[0]?.name).toBe('Theme')
   })
 })

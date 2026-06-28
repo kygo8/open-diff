@@ -1,34 +1,19 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
-type RegistryDiffStatus = 'added' | 'removed' | 'modified' | 'unchanged'
-
-interface RegistryValueSide {
-  kind: string
-  data: string
-}
-
-interface RegistryValueRow {
-  keyPath: string
-  name: string
-  status: RegistryDiffStatus
-  left?: RegistryValueSide
-  right?: RegistryValueSide
-}
-
-interface RegistryKeyNode {
-  path: string
-  label: string
-  status: RegistryDiffStatus
-  values: RegistryValueRow[]
-  children: RegistryKeyNode[]
-}
+import { computed, ref } from 'vue'
+import { compareRegistryExports } from '@/api/diff'
+import type {
+  RegistryCompareResponse,
+  RegistryDiffStatus,
+  RegistryKeyNode,
+  RegistryValueRow,
+  RegistryValueSide,
+} from '@/types/diff'
 
 interface FlatRegistryKeyNode extends RegistryKeyNode {
   depth: number
 }
 
-const registryTree: RegistryKeyNode[] = [
+const defaultRegistryTree: RegistryKeyNode[] = [
   {
     path: 'HKCU/Software/OpenDiff',
     label: 'OpenDiff',
@@ -97,11 +82,45 @@ const registryTree: RegistryKeyNode[] = [
 ]
 
 const registryStatuses: RegistryDiffStatus[] = ['added', 'removed', 'modified', 'unchanged']
-const flatRegistryKeys = computed<FlatRegistryKeyNode[]>(() => flattenRegistryKeys(registryTree))
+const defaultRegistrySummary: Record<RegistryDiffStatus, number> = {
+  added: 1,
+  removed: 1,
+  modified: 2,
+  unchanged: 2,
+}
+const defaultLeftExport = `Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\\Software\\OpenDiff]
+"Theme"="dark"
+"AutoSave"=dword:00000001
+`
+const defaultRightExport = `Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\\Software\\OpenDiff]
+"Theme"="light"
+"AutoSave"=dword:00000001
+`
+const leftExport = ref(defaultLeftExport)
+const rightExport = ref(defaultRightExport)
+const leftName = ref('left.reg')
+const rightName = ref('right.reg')
+const registryTree = ref<RegistryKeyNode[]>(defaultRegistryTree)
+const registrySummaryOverride = ref<Record<RegistryDiffStatus, number> | null>(
+  defaultRegistrySummary,
+)
+const loading = ref(false)
+const error = ref('')
+const flatRegistryKeys = computed<FlatRegistryKeyNode[]>(() =>
+  flattenRegistryKeys(registryTree.value),
+)
 const allRegistryValues = computed<RegistryValueRow[]>(() =>
   flatRegistryKeys.value.flatMap((key) => key.values),
 )
 const registrySummary = computed<Record<RegistryDiffStatus, number>>(() => {
+  if (registrySummaryOverride.value) {
+    return registrySummaryOverride.value
+  }
+
   const initial: Record<RegistryDiffStatus, number> = {
     added: 0,
     removed: 0,
@@ -141,6 +160,32 @@ function registryValueText(value?: RegistryValueSide): string {
 
   return `${value.kind} ${value.data}`
 }
+
+function applyRegistryResult(result: RegistryCompareResponse): void {
+  leftName.value = result.leftName
+  rightName.value = result.rightName
+  registryTree.value = result.tree
+  registrySummaryOverride.value = result.summary
+}
+
+async function runRegistryCompare(): Promise<void> {
+  loading.value = true
+  error.value = ''
+  try {
+    const result = await compareRegistryExports({
+      left: leftExport.value,
+      right: rightExport.value,
+      leftName: leftName.value,
+      rightName: rightName.value,
+    })
+
+    applyRegistryResult(result)
+  } catch (event) {
+    error.value = String(event)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -151,10 +196,43 @@ function registryValueText(value?: RegistryValueSide): string {
         <h1>{{ $t('ui.registryCompare') }}</h1>
       </div>
       <div class="registry-source-pair">
-        <span>{{ $t('ui.leftCurrentExport') }}</span>
-        <span>{{ $t('ui.rightUpdatedExport') }}</span>
+        <span>{{ leftName }}</span>
+        <span>{{ rightName }}</span>
       </div>
     </header>
+
+    <section class="registry-input-panel">
+      <label>
+        <span>{{ $t('ui.leftCurrentExport') }}</span>
+        <textarea
+          v-model="leftExport"
+          data-testid="registry-left-export"
+        />
+      </label>
+      <label>
+        <span>{{ $t('ui.rightUpdatedExport') }}</span>
+        <textarea
+          v-model="rightExport"
+          data-testid="registry-right-export"
+        />
+      </label>
+      <button
+        type="button"
+        data-testid="run-registry-compare"
+        :disabled="loading"
+        @click="runRegistryCompare"
+      >
+        {{ $t('ui.runDiff') }}
+      </button>
+    </section>
+
+    <p
+      v-if="error"
+      class="registry-error"
+      data-testid="registry-compare-error"
+    >
+      {{ error }}
+    </p>
 
     <section class="registry-summary-grid">
       <article
@@ -266,6 +344,69 @@ h1 {
   color: var(--app-text-muted);
   font-size: 12px;
   text-align: right;
+}
+
+.registry-input-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.registry-input-panel label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.registry-input-panel span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.registry-input-panel textarea {
+  min-width: 0;
+  min-height: 96px;
+  padding: 8px;
+  font-family: var(--font-mono);
+  resize: vertical;
+}
+
+.registry-input-panel textarea,
+.registry-input-panel button {
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.registry-input-panel button {
+  min-height: 32px;
+  padding: 0 12px;
+}
+
+.registry-input-panel button:hover {
+  border-color: var(--app-accent);
+}
+
+.registry-input-panel button:disabled {
+  opacity: 0.65;
+}
+
+.registry-error {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--app-danger);
+  border-radius: 6px;
+  background: var(--diff-deleted-bg);
+  color: var(--diff-deleted-fg);
+  font-size: 12px;
 }
 
 .registry-summary-grid {
@@ -452,6 +593,7 @@ h1 {
 
 @media (width <= 820px) {
   .registry-header,
+  .registry-input-panel,
   .registry-layout,
   .registry-summary-grid {
     grid-template-columns: 1fr;

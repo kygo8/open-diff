@@ -13,6 +13,7 @@ members = [
   "crates/job-core",
   "crates/merge-core",
   "crates/report-core",
+  "crates/remote-core",
   "crates/script-core",
   "crates/session-core",
   "crates/sync-core",

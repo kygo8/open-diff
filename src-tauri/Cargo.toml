@@ -26,6 +26,7 @@ members = [
   "crates/snapshot-core",
   "crates/sync-core",
   "crates/table-core",
+  "crates/update-core",
   "crates/shared-types",
   "crates/version-core",
   "crates/vfs-core"

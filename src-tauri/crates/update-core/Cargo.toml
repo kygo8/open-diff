@@ -1,0 +1,13 @@
+[package]
+name = "update-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "release_core"
+
+[dependencies]
+policy-core = { path = "../policy-core" }
+serde.workspace = true

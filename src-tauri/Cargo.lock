@@ -1847,6 +1847,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "merge-core"
+version = "1.0.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"

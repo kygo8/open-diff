@@ -8,6 +8,7 @@ members = [
   "crates/hex-core",
   "crates/image-core",
   "crates/job-core",
+  "crates/merge-core",
   "crates/report-core",
   "crates/script-core",
   "crates/session-core",

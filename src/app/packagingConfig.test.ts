@@ -13,6 +13,8 @@ interface TauriConfig {
     icon: string[]
     license?: string
     copyright?: string
+    shortDescription?: string
+    longDescription?: string
     macOS?: {
       bundleName?: string
       bundleVersion?: string
@@ -32,6 +34,16 @@ interface TauriConfig {
           x: number
           y: number
         }
+      }
+    }
+    linux?: {
+      deb?: {
+        depends?: string[]
+        recommends?: string[]
+        provides?: string[]
+        section?: string
+        priority?: string
+        files?: Record<string, string>
       }
     }
     windows?: {
@@ -109,5 +121,49 @@ describe('packagingConfig', () => {
     expect(script).toContain('set -euo pipefail')
     expect(script).toContain('corepack pnpm tauri build --bundles app,dmg')
     expect(script).toContain('TAURI_SIGNING_IDENTITY')
+  })
+
+  it('defines Linux deb metadata for Debian compatible builders', () => {
+    const config = JSON.parse(
+      readFileSync(resolve(process.cwd(), 'src-tauri/tauri.linux.conf.json'), 'utf8'),
+    ) as Pick<TauriConfig, 'bundle'>
+
+    expect(config.bundle.targets).toEqual(['deb'])
+    expect(config.bundle.category).toBe('DeveloperTool')
+    expect(config.bundle.icon).toContain('icons/icon.png')
+    expect(config.bundle.shortDescription).toBe('Professional file and folder comparison tool')
+    expect(config.bundle.longDescription).toContain('text, folder, table, image, binary')
+    expect(config.bundle.linux?.deb?.section).toBe('devel')
+    expect(config.bundle.linux?.deb?.priority).toBe('optional')
+    expect(config.bundle.linux?.deb?.depends).toEqual([
+      'libwebkit2gtk-4.1-0',
+      'libgtk-3-0',
+      'libayatana-appindicator3-1',
+      'librsvg2-2',
+    ])
+    expect(config.bundle.linux?.deb?.recommends).toEqual(['xdg-utils'])
+    expect(config.bundle.linux?.deb?.provides).toEqual(['open-diff'])
+    expect(config.bundle.linux?.deb?.files).toEqual({
+      'README.md': '/usr/share/doc/open-diff/README.md',
+      LICENSE: '/usr/share/doc/open-diff/LICENSE',
+    })
+
+    const iconPath = resolve(process.cwd(), 'src-tauri/icons/icon.png')
+
+    expect(existsSync(iconPath)).toBe(true)
+    expect(readFileSync(iconPath).subarray(0, 8)).toEqual(
+      Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    )
+  })
+
+  it('exposes a Linux deb bundle script for Linux release runners', () => {
+    const manifest = JSON.parse(
+      readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'),
+    ) as PackageManifest
+    const script = readFileSync(resolve(process.cwd(), 'scripts/linux/package-deb.sh'), 'utf8')
+
+    expect(manifest.scripts['tauri:build:linux:deb']).toBe('bash scripts/linux/package-deb.sh')
+    expect(script).toContain('set -euo pipefail')
+    expect(script).toContain('corepack pnpm tauri build --bundles deb')
   })
 })

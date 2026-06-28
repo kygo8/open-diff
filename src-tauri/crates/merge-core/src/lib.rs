@@ -44,6 +44,20 @@ pub struct TextMergeResult {
     pub sections: Vec<TextMergeSection>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextMergeOptions {
+    pub conflict_policy: TextMergeConflictPolicy,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum TextMergeConflictPolicy {
+    MarkConflict,
+    FavorLeft,
+    FavorRight,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TextMergeSection {
@@ -107,7 +121,22 @@ impl TextMergeDocument {
     }
 }
 
+impl Default for TextMergeOptions {
+    fn default() -> Self {
+        Self {
+            conflict_policy: TextMergeConflictPolicy::MarkConflict,
+        }
+    }
+}
+
 pub fn auto_merge_text(document: &TextMergeDocument) -> TextMergeResult {
+    auto_merge_text_with_options(document, TextMergeOptions::default())
+}
+
+pub fn auto_merge_text_with_options(
+    document: &TextMergeDocument,
+    options: TextMergeOptions,
+) -> TextMergeResult {
     let max_len = document
         .base
         .lines
@@ -130,6 +159,12 @@ pub fn auto_merge_text(document: &TextMergeDocument) -> TextMergeResult {
             (true, false) => (TextMergeSectionKind::AcceptedLeft, left),
             (false, true) => (TextMergeSectionKind::AcceptedRight, right),
             (true, true) if left == right => (TextMergeSectionKind::AcceptedLeft, left),
+            (true, true) if options.conflict_policy == TextMergeConflictPolicy::FavorLeft => {
+                (TextMergeSectionKind::AcceptedLeft, left)
+            }
+            (true, true) if options.conflict_policy == TextMergeConflictPolicy::FavorRight => {
+                (TextMergeSectionKind::AcceptedRight, right)
+            }
             (true, true) => {
                 conflicts += 1;
                 conflict = Some(TextMergeConflict {
@@ -287,5 +322,47 @@ mod tests {
                 }),
             }
         );
+    }
+
+    #[test]
+    fn favors_left_when_both_sides_change_the_same_line() {
+        let document = TextMergeDocument::from_inputs(TextMergeInput {
+            base: TextMergeSide::new("base.txt", "one\ntwo\nthree"),
+            left: TextMergeSide::new("left.txt", "one\nleft change\nthree"),
+            right: TextMergeSide::new("right.txt", "one\nright change\nthree"),
+            output_path: None,
+        });
+
+        let result = auto_merge_text_with_options(
+            &document,
+            TextMergeOptions {
+                conflict_policy: TextMergeConflictPolicy::FavorLeft,
+            },
+        );
+
+        assert_eq!(result.conflicts, 0);
+        assert_eq!(result.output_text, "one\nleft change\nthree");
+        assert_eq!(result.sections[1].kind, TextMergeSectionKind::AcceptedLeft);
+    }
+
+    #[test]
+    fn favors_right_when_both_sides_change_the_same_line() {
+        let document = TextMergeDocument::from_inputs(TextMergeInput {
+            base: TextMergeSide::new("base.txt", "one\ntwo\nthree"),
+            left: TextMergeSide::new("left.txt", "one\nleft change\nthree"),
+            right: TextMergeSide::new("right.txt", "one\nright change\nthree"),
+            output_path: None,
+        });
+
+        let result = auto_merge_text_with_options(
+            &document,
+            TextMergeOptions {
+                conflict_policy: TextMergeConflictPolicy::FavorRight,
+            },
+        );
+
+        assert_eq!(result.conflicts, 0);
+        assert_eq!(result.output_text, "one\nright change\nthree");
+        assert_eq!(result.sections[1].kind, TextMergeSectionKind::AcceptedRight);
     }
 }

@@ -2,12 +2,13 @@ import { inject } from 'vue'
 import { createI18n, i18nKey, installI18n, type I18nContext, type LanguagePack } from './core'
 import { enUS } from './locales/en-US'
 import { zhCN } from './locales/zh-CN'
+import { zhTW } from './locales/zh-TW'
 
 export function createAppI18n(defaultLocale: string | null | undefined): I18nContext {
   return createI18n({
     defaultLocale,
     fallbackLocale: 'en-US',
-    languagePacks: [enUS, zhCN],
+    languagePacks: [enUS, zhCN, zhTW],
   })
 }
 

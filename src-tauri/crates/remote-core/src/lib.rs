@@ -971,6 +971,153 @@ impl RemoteFileProvider for MemorySubversionProvider {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RemoteTransferDirection {
+    Upload,
+    Download,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoteTransferConfig {
+    pub max_connections: usize,
+    pub chunk_size: u64,
+}
+
+impl RemoteTransferConfig {
+    pub fn new(max_connections: usize) -> Self {
+        Self {
+            max_connections,
+            chunk_size: 8 * 1024 * 1024,
+        }
+    }
+
+    pub fn with_chunk_size(mut self, chunk_size: u64) -> Self {
+        self.chunk_size = chunk_size;
+
+        self
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoteTransferCheckpoint {
+    pub completed_bytes: u64,
+}
+
+impl RemoteTransferCheckpoint {
+    pub fn new(completed_bytes: u64) -> Self {
+        Self { completed_bytes }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoteTransferChunk {
+    pub id: usize,
+    pub offset: u64,
+    pub size: u64,
+}
+
+impl RemoteTransferChunk {
+    pub fn new(id: usize, offset: u64, size: u64) -> Self {
+        Self { id, offset, size }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoteTransferProgress {
+    pub completed_bytes: u64,
+    pub remaining_bytes: u64,
+    pub total_bytes: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoteTransferPlan {
+    pub direction: RemoteTransferDirection,
+    pub remote_path: String,
+    pub total_bytes: u64,
+    pub resume_offset: u64,
+    pub max_connections: usize,
+    pub chunks: Vec<RemoteTransferChunk>,
+}
+
+impl RemoteTransferPlan {
+    pub fn progress(&self) -> RemoteTransferProgress {
+        RemoteTransferProgress {
+            completed_bytes: self.resume_offset,
+            remaining_bytes: self.total_bytes.saturating_sub(self.resume_offset),
+            total_bytes: self.total_bytes,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct RemoteTransferPlanner {
+    config: RemoteTransferConfig,
+    direction: RemoteTransferDirection,
+    remote_path: String,
+    total_bytes: u64,
+}
+
+impl RemoteTransferPlanner {
+    pub fn new(
+        config: RemoteTransferConfig,
+        direction: RemoteTransferDirection,
+        remote_path: impl Into<String>,
+        total_bytes: u64,
+    ) -> RemoteProviderResult<Self> {
+        if config.max_connections == 0 {
+            return Err(RemoteProviderError::Backend(
+                "transfer requires at least one connection".to_owned(),
+            ));
+        }
+
+        if config.chunk_size == 0 {
+            return Err(RemoteProviderError::Backend(
+                "transfer chunk size must be greater than zero".to_owned(),
+            ));
+        }
+
+        Ok(Self {
+            config,
+            direction,
+            remote_path: normalize_remote_path(&remote_path.into())?,
+            total_bytes,
+        })
+    }
+
+    pub fn plan_from(&self, resume_offset: u64) -> RemoteProviderResult<RemoteTransferPlan> {
+        if resume_offset > self.total_bytes {
+            return Err(RemoteProviderError::InvalidPath(
+                "resume offset exceeds transfer size".to_owned(),
+            ));
+        }
+
+        let mut chunks = Vec::new();
+        let mut offset = resume_offset;
+
+        while offset < self.total_bytes {
+            let size = self.config.chunk_size.min(self.total_bytes - offset);
+            chunks.push(RemoteTransferChunk::new(chunks.len(), offset, size));
+            offset += size;
+        }
+
+        Ok(RemoteTransferPlan {
+            direction: self.direction.clone(),
+            remote_path: self.remote_path.clone(),
+            total_bytes: self.total_bytes,
+            resume_offset,
+            max_connections: self.config.max_connections,
+            chunks,
+        })
+    }
+
+    pub fn plan_from_checkpoint(
+        &self,
+        checkpoint: RemoteTransferCheckpoint,
+    ) -> RemoteProviderResult<RemoteTransferPlan> {
+        self.plan_from(checkpoint.completed_bytes)
+    }
+}
+
 fn normalize_remote_path(path: &str) -> RemoteProviderResult<String> {
     let normalized = path.replace('\\', "/");
     let mut segments = Vec::<&str>::new();
@@ -1603,6 +1750,76 @@ mod tests {
         assert!(matches!(
             error,
             RemoteProviderError::UnsupportedProtocol(RemoteProtocol::S3)
+        ));
+    }
+
+    #[test]
+    fn transfer_planner_splits_large_downloads_by_chunk_and_concurrency() {
+        let planner = RemoteTransferPlanner::new(
+            RemoteTransferConfig::new(3).with_chunk_size(4),
+            RemoteTransferDirection::Download,
+            "/remote/app.bin",
+            10,
+        )
+        .unwrap();
+
+        let plan = planner.plan_from(0).unwrap();
+
+        assert_eq!(plan.direction, RemoteTransferDirection::Download);
+        assert_eq!(plan.max_connections, 3);
+        assert_eq!(plan.total_bytes, 10);
+        assert_eq!(
+            plan.chunks,
+            vec![
+                RemoteTransferChunk::new(0, 0, 4),
+                RemoteTransferChunk::new(1, 4, 4),
+                RemoteTransferChunk::new(2, 8, 2),
+            ]
+        );
+    }
+
+    #[test]
+    fn transfer_planner_resumes_from_completed_offset() {
+        let planner = RemoteTransferPlanner::new(
+            RemoteTransferConfig::new(2).with_chunk_size(5),
+            RemoteTransferDirection::Upload,
+            "/remote/app.bin",
+            16,
+        )
+        .unwrap();
+
+        let plan = planner
+            .plan_from_checkpoint(RemoteTransferCheckpoint::new(10))
+            .unwrap();
+
+        assert_eq!(plan.direction, RemoteTransferDirection::Upload);
+        assert_eq!(plan.resume_offset, 10);
+        assert_eq!(
+            plan.chunks,
+            vec![
+                RemoteTransferChunk::new(0, 10, 5),
+                RemoteTransferChunk::new(1, 15, 1),
+            ]
+        );
+        assert_eq!(plan.progress().completed_bytes, 10);
+        assert_eq!(plan.progress().remaining_bytes, 6);
+    }
+
+    #[test]
+    fn transfer_planner_rejects_invalid_resume_offsets() {
+        let planner = RemoteTransferPlanner::new(
+            RemoteTransferConfig::new(2).with_chunk_size(5),
+            RemoteTransferDirection::Upload,
+            "/remote/app.bin",
+            16,
+        )
+        .unwrap();
+
+        let error = planner.plan_from(17).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::InvalidPath(message) if message == "resume offset exceeds transfer size"
         ));
     }
 }

@@ -45,6 +45,14 @@ interface TauriConfig {
         priority?: string
         files?: Record<string, string>
       }
+      rpm?: {
+        depends?: string[]
+        recommends?: string[]
+        provides?: string[]
+        release?: string
+        epoch?: number
+        files?: Record<string, string>
+      }
     }
     windows?: {
       webviewInstallMode?: {
@@ -128,7 +136,7 @@ describe('packagingConfig', () => {
       readFileSync(resolve(process.cwd(), 'src-tauri/tauri.linux.conf.json'), 'utf8'),
     ) as Pick<TauriConfig, 'bundle'>
 
-    expect(config.bundle.targets).toEqual(['deb'])
+    expect(config.bundle.targets).toContain('deb')
     expect(config.bundle.category).toBe('DeveloperTool')
     expect(config.bundle.icon).toContain('icons/icon.png')
     expect(config.bundle.shortDescription).toBe('Professional file and folder comparison tool')
@@ -165,5 +173,33 @@ describe('packagingConfig', () => {
     expect(manifest.scripts['tauri:build:linux:deb']).toBe('bash scripts/linux/package-deb.sh')
     expect(script).toContain('set -euo pipefail')
     expect(script).toContain('corepack pnpm tauri build --bundles deb')
+  })
+
+  it('defines Linux rpm metadata for RPM compatible builders', () => {
+    const config = JSON.parse(
+      readFileSync(resolve(process.cwd(), 'src-tauri/tauri.linux.conf.json'), 'utf8'),
+    ) as Pick<TauriConfig, 'bundle'>
+
+    expect(config.bundle.targets).toContain('rpm')
+    expect(config.bundle.linux?.rpm?.release).toBe('1')
+    expect(config.bundle.linux?.rpm?.epoch).toBe(0)
+    expect(config.bundle.linux?.rpm?.depends).toEqual(['webkit2gtk4.1', 'gtk3', 'librsvg2'])
+    expect(config.bundle.linux?.rpm?.recommends).toEqual(['xdg-utils'])
+    expect(config.bundle.linux?.rpm?.provides).toEqual(['open-diff'])
+    expect(config.bundle.linux?.rpm?.files).toEqual({
+      'README.md': '/usr/share/doc/open-diff/README.md',
+      LICENSE: '/usr/share/doc/open-diff/LICENSE',
+    })
+  })
+
+  it('exposes a Linux rpm bundle script for Linux release runners', () => {
+    const manifest = JSON.parse(
+      readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'),
+    ) as PackageManifest
+    const script = readFileSync(resolve(process.cwd(), 'scripts/linux/package-rpm.sh'), 'utf8')
+
+    expect(manifest.scripts['tauri:build:linux:rpm']).toBe('bash scripts/linux/package-rpm.sh')
+    expect(script).toContain('set -euo pipefail')
+    expect(script).toContain('corepack pnpm tauri build --bundles rpm')
   })
 })

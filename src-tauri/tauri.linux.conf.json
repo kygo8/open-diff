@@ -1,6 +1,6 @@
 {
   "bundle": {
-    "targets": ["deb"],
+    "targets": ["deb", "rpm"],
     "category": "DeveloperTool",
     "icon": ["icons/icon.png"],
     "shortDescription": "Professional file and folder comparison tool",
@@ -17,6 +17,17 @@
         "provides": ["open-diff"],
         "section": "devel",
         "priority": "optional",
+        "files": {
+          "README.md": "/usr/share/doc/open-diff/README.md",
+          "LICENSE": "/usr/share/doc/open-diff/LICENSE"
+        }
+      },
+      "rpm": {
+        "depends": ["webkit2gtk4.1", "gtk3", "librsvg2"],
+        "recommends": ["xdg-utils"],
+        "provides": ["open-diff"],
+        "release": "1",
+        "epoch": 0,
         "files": {
           "README.md": "/usr/share/doc/open-diff/README.md",
           "LICENSE": "/usr/share/doc/open-diff/LICENSE"

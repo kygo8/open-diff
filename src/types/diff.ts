@@ -139,6 +139,44 @@ export interface TableCompareResponse {
   }
 }
 
+export interface FolderCompareRequest {
+  leftRoot: string
+  rightRoot: string
+}
+
+export type FolderCompareStatus = 'Same' | 'Different' | 'Left only' | 'Right only'
+
+export interface FolderCompareSideEntry {
+  name: string
+  kind: 'file' | 'directory'
+  size: number
+  modifiedAtMs?: number
+  path: string
+}
+
+export interface FolderCompareRow {
+  relativePath: string
+  depth: number
+  status: FolderCompareStatus
+  left?: FolderCompareSideEntry
+  right?: FolderCompareSideEntry
+}
+
+export interface FolderCompareSummary {
+  total: number
+  same: number
+  different: number
+  leftOnly: number
+  rightOnly: number
+}
+
+export interface FolderCompareResponse {
+  leftRoot: string
+  rightRoot: string
+  rows: FolderCompareRow[]
+  summary: FolderCompareSummary
+}
+
 export interface MediaCompareRequest {
   leftPath: string
   rightPath: string

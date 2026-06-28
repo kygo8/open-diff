@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  compareFolderPaths,
   compareHexFiles,
   compareMediaFiles,
   comparePictureFiles,
@@ -74,6 +75,52 @@ describe('diff api', () => {
       right: 'sku\nA-1',
     })
     expect(result.columnMappings[0]?.leftColumn).toBe('SKU')
+  })
+
+  it('compares folder paths through the Tauri command contract', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      rows: [
+        {
+          relativePath: 'src/main.ts',
+          depth: 1,
+          status: 'Different',
+          left: {
+            name: 'main.ts',
+            kind: 'file',
+            size: 12,
+            modifiedAtMs: 1,
+            path: 'D:/left/src/main.ts',
+          },
+          right: {
+            name: 'main.ts',
+            kind: 'file',
+            size: 14,
+            modifiedAtMs: 2,
+            path: 'D:/right/src/main.ts',
+          },
+        },
+      ],
+      summary: {
+        total: 1,
+        same: 0,
+        different: 1,
+        leftOnly: 0,
+        rightOnly: 0,
+      },
+    })
+
+    const result = await compareFolderPaths({
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+    })
+
+    expect(invoke).toHaveBeenCalledWith('compare_folder_paths', {
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+    })
+    expect(result.rows[0]?.relativePath).toBe('src/main.ts')
   })
 
   it('compares media files through the Tauri command contract', async () => {

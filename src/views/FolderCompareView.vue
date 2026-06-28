@@ -11,6 +11,12 @@ import {
   createFileOperationConfirmation,
   type FileOperationConfirmation,
 } from '@/app/fileOperationConfirmation'
+import { compareFolderPaths } from '@/api/diff'
+import type {
+  FolderCompareResponse,
+  FolderCompareRow as FolderCompareResponseRow,
+  FolderCompareSideEntry,
+} from '@/types/diff'
 import { computed, ref } from 'vue'
 
 type FolderSide = 'left' | 'right'
@@ -159,6 +165,10 @@ const rows = ref<FolderTreeRow[]>([
   ...generatedRows,
 ])
 const expandedDirectoryIds = ref<Set<string>>(new Set(['src']))
+const leftRoot = ref('D:/workspace/left')
+const rightRoot = ref('D:/workspace/right')
+const folderCompareLoading = ref(false)
+const folderCompareError = ref<string>()
 const visibleStatuses = ref<Set<FolderStatus>>(
   new Set(['Same', 'Different', 'Left only', 'Right only']),
 )
@@ -368,6 +378,126 @@ function collapseAllFolders(): void {
 
 function isExpanded(row: FolderTreeRow): boolean {
   return expandedDirectoryIds.value.has(row.id)
+}
+
+async function runFolderCompare(): Promise<void> {
+  folderCompareLoading.value = true
+  folderCompareError.value = undefined
+
+  try {
+    const response = await compareFolderPaths({
+      leftRoot: leftRoot.value,
+      rightRoot: rightRoot.value,
+    })
+
+    applyFolderCompareResponse(response)
+  } catch (error) {
+    folderCompareError.value = error instanceof Error ? error.message : String(error)
+  } finally {
+    folderCompareLoading.value = false
+  }
+}
+
+function applyFolderCompareResponse(response: FolderCompareResponse): void {
+  const nextRows = response.rows.map(folderCompareResponseRowToTreeRow)
+  const rowIds = new Set(nextRows.map((row) => row.id))
+
+  rows.value = nextRows.map((row) =>
+    row.parentId && !rowIds.has(row.parentId) ? { ...row, parentId: undefined } : row,
+  )
+  leftRoot.value = response.leftRoot
+  rightRoot.value = response.rightRoot
+  expandedDirectoryIds.value = new Set(
+    rows.value.filter((row) => row.kind === 'directory').map((row) => row.id),
+  )
+  selectedRowId.value = undefined
+  excludedRowIds.value = new Set()
+  alignWithTargetId.value = ''
+  currentDifferenceIndex.value = -1
+  lastDifferenceNavigation.value = undefined
+  scrollTop.value = 0
+}
+
+function folderCompareResponseRowToTreeRow(row: FolderCompareResponseRow): FolderTreeRow {
+  return {
+    id: rowIdFromRelativePath(row.relativePath),
+    parentId: parentIdFromRelativePath(row.relativePath),
+    depth: row.depth,
+    leftName: row.left?.name,
+    rightName: row.right?.name,
+    leftSize: formatFolderSideSize(row.left),
+    rightSize: formatFolderSideSize(row.right),
+    leftModified: formatFolderModified(row.left?.modifiedAtMs),
+    rightModified: formatFolderModified(row.right?.modifiedAtMs),
+    leftPath: row.left?.path,
+    rightPath: row.right?.path,
+    status: row.status,
+    kind: row.left?.kind ?? row.right?.kind ?? 'file',
+  }
+}
+
+function rowIdFromRelativePath(relativePath: string): string {
+  const normalized = relativePath.replaceAll('\\', '/').trim()
+
+  if (!normalized) {
+    return 'root'
+  }
+
+  return normalized
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/gu, '-')
+    .replaceAll(/^-|-$/gu, '')
+}
+
+function parentIdFromRelativePath(relativePath: string): string | undefined {
+  const normalized = relativePath.replaceAll('\\', '/')
+  const separatorIndex = normalized.lastIndexOf('/')
+
+  if (separatorIndex < 0) {
+    return undefined
+  }
+
+  return rowIdFromRelativePath(normalized.slice(0, separatorIndex))
+}
+
+function formatFolderSideSize(side: FolderCompareSideEntry | undefined): string {
+  if (!side || side.kind === 'directory') {
+    return '--'
+  }
+
+  return formatBytes(side.size)
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) {
+    return `${String(bytes)} B`
+  }
+
+  const units = ['KB', 'MB', 'GB', 'TB']
+  let value = bytes / 1024
+  let unitIndex = 0
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024
+    unitIndex += 1
+  }
+
+  return `${value.toFixed(1)} ${units[unitIndex]}`
+}
+
+function formatFolderModified(modifiedAtMs: number | undefined): string {
+  if (!modifiedAtMs) {
+    return '--'
+  }
+
+  const date = new Date(modifiedAtMs)
+  const year = String(date.getFullYear())
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
 function selectRow(row: FolderTreeRow): void {
@@ -733,20 +863,28 @@ function handleTreeScroll(event: Event): void {
         <label>
           <span>{{ $t('ui.leftFolder') }}</span>
           <input
-            value="D:/workspace/left"
-            readonly
+            v-model="leftRoot"
+            data-testid="folder-left-root"
           />
         </label>
         <label>
           <span>{{ $t('ui.rightFolder') }}</span>
           <input
-            value="D:/workspace/right"
-            readonly
+            v-model="rightRoot"
+            data-testid="folder-right-root"
           />
         </label>
       </div>
       <div class="folder-actions">
-        <NButton size="small">{{ $t('ui.compare') }}</NButton>
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="run-folder-compare"
+          :disabled="folderCompareLoading || !leftRoot || !rightRoot"
+          :loading="folderCompareLoading"
+          @click="runFolderCompare"
+          >{{ $t('ui.compare') }}</NButton
+        >
         <NButton
           size="small"
           secondary
@@ -898,6 +1036,22 @@ function handleTreeScroll(event: Event): void {
         >
       </div>
     </header>
+
+    <section
+      class="folder-root-summary"
+      data-testid="folder-root-summary"
+    >
+      <span>{{ leftRoot }}</span>
+      <span>{{ rightRoot }}</span>
+    </section>
+
+    <section
+      v-if="folderCompareError"
+      class="folder-action-status"
+      data-testid="folder-compare-error"
+    >
+      {{ folderCompareError }}
+    </section>
 
     <section class="column-config">
       <label
@@ -1400,6 +1554,21 @@ function handleTreeScroll(event: Event): void {
 .folder-actions {
   display: flex;
   gap: 8px;
+}
+
+.folder-root-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.folder-root-summary span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .column-config,

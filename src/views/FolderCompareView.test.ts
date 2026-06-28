@@ -1,8 +1,76 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderCompareView from './FolderCompareView.vue'
+import { compareFolderPaths } from '@/api/diff'
+
+vi.mock('@/api/diff', () => ({
+  compareFolderPaths: vi.fn().mockResolvedValue({
+    leftRoot: 'D:/fixture-left',
+    rightRoot: 'D:/fixture-right',
+    rows: [
+      {
+        relativePath: 'src/main.ts',
+        depth: 1,
+        status: 'Different',
+        left: {
+          name: 'main.ts',
+          kind: 'file',
+          size: 12,
+          modifiedAtMs: 1,
+          path: 'D:/fixture-left/src/main.ts',
+        },
+        right: {
+          name: 'main.ts',
+          kind: 'file',
+          size: 14,
+          modifiedAtMs: 2,
+          path: 'D:/fixture-right/src/main.ts',
+        },
+      },
+    ],
+    summary: {
+      total: 1,
+      same: 0,
+      different: 1,
+      leftOnly: 0,
+      rightOnly: 0,
+    },
+  }),
+}))
 
 describe('FolderCompareView', () => {
+  beforeEach(() => {
+    vi.mocked(compareFolderPaths).mockClear()
+  })
+
+  it('runs a real folder comparison request and renders returned rows', async () => {
+    const wrapper = mount(FolderCompareView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/fixture-left')
+    await wrapper.find('[data-testid="folder-right-root"]').setValue('D:/fixture-right')
+    await wrapper.find('[data-testid="run-folder-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(compareFolderPaths).toHaveBeenCalledWith({
+      leftRoot: 'D:/fixture-left',
+      rightRoot: 'D:/fixture-right',
+    })
+    expect(wrapper.text()).toContain('D:/fixture-left')
+    expect(wrapper.text()).toContain('D:/fixture-right')
+    expect(wrapper.text()).toContain('main.ts')
+    expect(wrapper.text()).toContain('Different')
+  })
+
   it('renders left and right folder tree tables with core columns', () => {
     const wrapper = mount(FolderCompareView, {
       global: {

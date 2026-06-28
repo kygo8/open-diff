@@ -1,6 +1,8 @@
 import { invoke } from '@tauri-apps/api/core'
 import type {
   FileStamp,
+  FolderCompareRequest,
+  FolderCompareResponse,
   HexCompareRequest,
   HexCompareResponse,
   MediaCompareRequest,
@@ -59,6 +61,13 @@ export function compareTableCsv(request: TableCompareRequest): Promise<TableComp
   return invoke<TableCompareResponse>('compare_table_csv', {
     left: request.left,
     right: request.right,
+  })
+}
+
+export function compareFolderPaths(request: FolderCompareRequest): Promise<FolderCompareResponse> {
+  return invoke<FolderCompareResponse>('compare_folder_paths', {
+    leftRoot: request.leftRoot,
+    rightRoot: request.rightRoot,
   })
 }
 

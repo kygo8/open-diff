@@ -1,4 +1,7 @@
 use file_core::FileReadError;
+use folder_core::{
+    FolderAlignmentRow, FolderCompareStatus, FolderNodeKind, FolderScanError, FolderScanNode,
+};
 use image_core::{
     DecodedImage, ImageDecodeError, ImageFormat, ImageMetadata, ImageRect, PixelDiffError,
 };
@@ -265,6 +268,45 @@ pub struct VersionCompareSummary {
     pub unchanged: u32,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderCompareResponse {
+    pub left_root: String,
+    pub right_root: String,
+    pub rows: Vec<FolderCompareRow>,
+    pub summary: FolderCompareSummary,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderCompareRow {
+    pub relative_path: String,
+    pub depth: usize,
+    pub status: String,
+    pub left: Option<FolderCompareSideEntry>,
+    pub right: Option<FolderCompareSideEntry>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderCompareSideEntry {
+    pub name: String,
+    pub kind: String,
+    pub size: u64,
+    pub modified_at_ms: Option<u128>,
+    pub path: String,
+}
+
+#[derive(Debug, Clone, Default, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderCompareSummary {
+    pub total: usize,
+    pub same: usize,
+    pub different: usize,
+    pub left_only: usize,
+    pub right_only: usize,
+}
+
 #[tauri::command]
 pub fn diff_text(
     left: String,
@@ -403,6 +445,38 @@ pub fn compare_table_csv(
                 .filter(|cell| cell.status != TableDiffStatus::Same)
                 .count(),
         },
+    })
+}
+
+#[tauri::command]
+pub fn compare_folder_paths(
+    left_root: String,
+    right_root: String,
+) -> Result<FolderCompareResponse, AppErrorPayload> {
+    let cancellation_token = job_core::CancellationToken::default();
+    let left_tree = folder_core::scan_local_folder(&left_root, &cancellation_token)
+        .map_err(|error| folder_scan_error(&left_root, error))?;
+    let right_tree = folder_core::scan_local_folder(&right_root, &cancellation_token)
+        .map_err(|error| folder_scan_error(&right_root, error))?;
+    let alignment_rows = folder_core::align_folder_trees(&left_tree, &right_tree);
+    let rows = alignment_rows
+        .iter()
+        .map(|row| folder_compare_row(row, &left_root, &right_root))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut summary = FolderCompareSummary {
+        total: rows.len(),
+        ..FolderCompareSummary::default()
+    };
+
+    for row in &rows {
+        increment_folder_summary(&mut summary, &row.status);
+    }
+
+    Ok(FolderCompareResponse {
+        left_root,
+        right_root,
+        rows,
+        summary,
     })
 }
 
@@ -698,6 +772,130 @@ fn file_io_error(path: &str, error: std::io::Error) -> AppErrorPayload {
     )
     .with_param("path", path)
     .with_suggestion_key("error.file.readFailed.suggestion")
+}
+
+fn folder_scan_error(path: &str, error: FolderScanError) -> AppErrorPayload {
+    match error {
+        FolderScanError::Cancelled => AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.folder.scanCancelled.message",
+            "folder scan was cancelled",
+        )
+        .with_param("path", path)
+        .with_suggestion_key("error.folder.scanCancelled.suggestion"),
+        FolderScanError::Vfs(message) => AppErrorPayload::new(
+            AppErrorCode::FileReadFailed,
+            "error.folder.scanFailed.message",
+            message,
+        )
+        .with_param("path", path)
+        .with_suggestion_key("error.folder.scanFailed.suggestion"),
+    }
+}
+
+fn folder_compare_row(
+    row: &FolderAlignmentRow,
+    left_root: &str,
+    right_root: &str,
+) -> Result<FolderCompareRow, AppErrorPayload> {
+    let status = folder_row_status(row, left_root, right_root)?;
+
+    Ok(FolderCompareRow {
+        relative_path: row.relative_path.clone(),
+        depth: row.depth,
+        status: folder_status_label(&status),
+        left: row
+            .left
+            .as_ref()
+            .map(|node| folder_side_entry(node, left_root)),
+        right: row
+            .right
+            .as_ref()
+            .map(|node| folder_side_entry(node, right_root)),
+    })
+}
+
+fn folder_row_status(
+    row: &FolderAlignmentRow,
+    left_root: &str,
+    right_root: &str,
+) -> Result<FolderCompareStatus, AppErrorPayload> {
+    let metadata_status =
+        folder_core::classify_folder_alignment(row.left.as_ref(), row.right.as_ref());
+
+    if metadata_status != FolderCompareStatus::Same || !row_is_file_pair(row) {
+        return Ok(metadata_status);
+    }
+
+    let left_path = side_path(left_root, &row.relative_path);
+    let right_path = side_path(right_root, &row.relative_path);
+    let left_bytes = fs::read(&left_path).map_err(|error| file_io_error(&left_path, error))?;
+    let right_bytes = fs::read(&right_path).map_err(|error| file_io_error(&right_path, error))?;
+
+    Ok(
+        folder_core::compare_binary_streams(&left_bytes[..], &right_bytes[..], 8192)
+            .map_err(|error| file_io_error(&left_path, error))?
+            .status,
+    )
+}
+
+fn row_is_file_pair(row: &FolderAlignmentRow) -> bool {
+    matches!(
+        (&row.left, &row.right),
+        (Some(left), Some(right))
+            if left.kind == FolderNodeKind::File && right.kind == FolderNodeKind::File
+    )
+}
+
+fn folder_side_entry(node: &FolderScanNode, root: &str) -> FolderCompareSideEntry {
+    FolderCompareSideEntry {
+        name: node.name.clone(),
+        kind: folder_kind_label(&node.kind),
+        size: node.metadata.size,
+        modified_at_ms: node.metadata.modified_at_ms,
+        path: side_path(root, &node.relative_path),
+    }
+}
+
+fn side_path(root: &str, relative_path: &str) -> String {
+    if relative_path.is_empty() {
+        return root.to_owned();
+    }
+
+    Path::new(root)
+        .join(relative_path)
+        .display()
+        .to_string()
+        .replace('\\', "/")
+}
+
+fn folder_kind_label(kind: &FolderNodeKind) -> String {
+    match kind {
+        FolderNodeKind::File => "file",
+        FolderNodeKind::Directory => "directory",
+    }
+    .to_owned()
+}
+
+fn folder_status_label(status: &FolderCompareStatus) -> String {
+    match status {
+        FolderCompareStatus::Same => "Same",
+        FolderCompareStatus::Different => "Different",
+        FolderCompareStatus::LeftOnly => "Left only",
+        FolderCompareStatus::RightOnly => "Right only",
+        FolderCompareStatus::Unknown | FolderCompareStatus::Error => "Different",
+    }
+    .to_owned()
+}
+
+fn increment_folder_summary(summary: &mut FolderCompareSummary, status: &str) {
+    match status {
+        "Same" => summary.same += 1,
+        "Different" => summary.different += 1,
+        "Left only" => summary.left_only += 1,
+        "Right only" => summary.right_only += 1,
+        _ => {}
+    }
 }
 
 fn media_read_error(path: &str, error: MediaReadError) -> AppErrorPayload {
@@ -1341,6 +1539,33 @@ mod tests {
         );
         assert_eq!(response.changed_cells[0].left_value.as_deref(), Some("12"));
         assert_eq!(response.changed_cells[0].right_value.as_deref(), Some("14"));
+    }
+
+    #[test]
+    fn compare_folder_paths_scans_local_roots_and_returns_alignment_rows() {
+        let root = unique_temp_dir("folder-command");
+        let left = root.join("left");
+        let right = root.join("right");
+        fs::create_dir_all(left.join("src")).expect("left fixture directory should be created");
+        fs::create_dir_all(right.join("src")).expect("right fixture directory should be created");
+        fs::write(left.join("src").join("main.ts"), "left").expect("left file should be writable");
+        fs::write(right.join("src").join("main.ts"), "right")
+            .expect("right file should be writable");
+        fs::write(left.join("README.md"), "same").expect("left readme should be writable");
+        fs::write(right.join("README.md"), "same").expect("right readme should be writable");
+
+        let response =
+            compare_folder_paths(left.display().to_string(), right.display().to_string())
+                .expect("valid folders should compare");
+
+        assert_eq!(response.left_root, left.display().to_string());
+        assert_eq!(response.right_root, right.display().to_string());
+        assert!(response.summary.total >= 2);
+        assert!(response.summary.different >= 1);
+        assert!(response
+            .rows
+            .iter()
+            .any(|row| row.relative_path == "src/main.ts" && row.status == "Different"));
     }
 
     #[test]

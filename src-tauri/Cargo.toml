@@ -81,9 +81,11 @@ tauri.workspace = true
 tokio.workspace = true
 diff-core = { path = "crates/diff-core" }
 file-core = { path = "crates/file-core" }
+folder-core = { path = "crates/folder-core" }
 hex-core = { path = "crates/hex-core" }
 image.workspace = true
 image-core = { path = "crates/image-core" }
+job-core = { path = "crates/job-core" }
 media-core = { path = "crates/media-core" }
 registry-core = { path = "crates/registry-core" }
 shared-types = { path = "crates/shared-types" }

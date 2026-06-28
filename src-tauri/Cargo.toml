@@ -17,6 +17,7 @@ members = [
   "crates/remote-core",
   "crates/script-core",
   "crates/session-core",
+  "crates/settings-core",
   "crates/snapshot-core",
   "crates/sync-core",
   "crates/table-core",

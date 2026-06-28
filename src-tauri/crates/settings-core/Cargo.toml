@@ -1,0 +1,13 @@
+[package]
+name = "settings-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+format-core = { path = "../format-core" }
+remote-core = { path = "../remote-core" }
+serde.workspace = true
+serde_json.workspace = true
+session-core = { path = "../session-core" }

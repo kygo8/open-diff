@@ -2938,6 +2938,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "settings-core"
+version = "1.0.0"
+dependencies = [
+ "format-core",
+ "remote-core",
+ "serde",
+ "serde_json",
+ "session-core",
+]
+
+[[package]]
 name = "sha2"
 version = "0.10.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"

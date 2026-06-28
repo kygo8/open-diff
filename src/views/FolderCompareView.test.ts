@@ -185,6 +185,10 @@ describe('FolderCompareView', () => {
 
     expect(wrapper.text()).toContain('Open With Text Edit -> D:/workspace/left/README.md')
 
+    await wrapper.find('[data-testid="open-with-custom-vscode"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Open With Visual Studio Code -> D:/workspace/left/README.md')
+
     await wrapper.find('[data-testid="open-associated-file"]').trigger('click')
 
     expect(wrapper.text()).toContain(

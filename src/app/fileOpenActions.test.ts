@@ -3,6 +3,7 @@ import {
   createAssociatedApplicationOpenAction,
   createDefaultOpenAction,
   createOpenWithAction,
+  listEnabledExternalApplications,
 } from './fileOpenActions'
 
 describe('fileOpenActions', () => {
@@ -24,6 +25,44 @@ describe('fileOpenActions', () => {
       path: 'D:/workspace/left/README.md',
       label: 'Open With Associated Application',
       executable: undefined,
+    })
+  })
+
+  it('builds open-with actions from enabled custom external applications', () => {
+    const applications = listEnabledExternalApplications([
+      {
+        id: 'vscode',
+        name: 'Visual Studio Code',
+        executable: 'code',
+        enabled: true,
+      },
+      {
+        id: 'disabled',
+        name: 'Disabled Tool',
+        executable: 'disabled-tool',
+        enabled: false,
+      },
+    ])
+
+    expect(applications).toEqual([
+      {
+        id: 'vscode',
+        name: 'Visual Studio Code',
+        executable: 'code',
+        enabled: true,
+      },
+    ])
+    expect(
+      createOpenWithAction(
+        'D:/workspace/left/README.md',
+        applications[0].name,
+        applications[0].executable,
+      ),
+    ).toEqual({
+      kind: 'open-with',
+      path: 'D:/workspace/left/README.md',
+      label: 'Open With Visual Studio Code',
+      executable: 'code',
     })
   })
 })

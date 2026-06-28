@@ -3,6 +3,8 @@ import {
   createAssociatedApplicationOpenAction,
   createDefaultOpenAction,
   createOpenWithAction,
+  listEnabledExternalApplications,
+  type ExternalApplicationConfig,
   type FileOpenAction,
 } from '@/app/fileOpenActions'
 import {
@@ -47,6 +49,20 @@ const configurableColumns: { id: FolderColumnId; label: string }[] = [
   { id: 'modified', label: 'Modified' },
   { id: 'type', label: 'Type' },
 ]
+const externalApplicationConfigs = ref<ExternalApplicationConfig[]>([
+  {
+    id: 'vscode',
+    name: 'Visual Studio Code',
+    executable: 'code',
+    enabled: true,
+  },
+  {
+    id: 'text-patch',
+    name: 'Text Patch',
+    executable: 'open-diff-text-patch',
+    enabled: true,
+  },
+])
 const displayStatusOptions: { statuses: FolderStatus[]; label: string; testId: string }[] = [
   { statuses: ['Same'], label: 'Same', testId: 'same' },
   { statuses: ['Different'], label: 'Different', testId: 'different' },
@@ -196,6 +212,9 @@ const alignWithCandidates = computed(() =>
       row.id !== selectedRowId.value &&
       (row.status === 'Left only' || row.status === 'Right only'),
   ),
+)
+const enabledExternalApplications = computed(() =>
+  listEnabledExternalApplications(externalApplicationConfigs.value),
 )
 const differenceRows = computed(() =>
   visibleRows.value.filter((row) => row.status !== 'Same' && !isSuppressed(row)),
@@ -374,6 +393,16 @@ function openSelectedFileWithTextEdit(): void {
   }
 
   recordOpenAction(createOpenWithAction(selectedFilePath.value, 'Text Edit', 'open-diff-text-edit'))
+}
+
+function openSelectedFileWithExternalApplication(application: ExternalApplicationConfig): void {
+  if (!selectedFilePath.value) {
+    return
+  }
+
+  recordOpenAction(
+    createOpenWithAction(selectedFilePath.value, application.name, application.executable),
+  )
 }
 
 function openSelectedFileWithAssociatedApplication(): void {
@@ -749,6 +778,17 @@ function handleTreeScroll(event: Event): void {
           @click="openSelectedFileWithTextEdit"
         >
           Open With
+        </NButton>
+        <NButton
+          v-for="application in enabledExternalApplications"
+          :key="application.id"
+          size="small"
+          secondary
+          :data-testid="`open-with-custom-${application.id}`"
+          :disabled="!selectedFilePath"
+          @click="openSelectedFileWithExternalApplication(application)"
+        >
+          {{ application.name }}
         </NButton>
         <NButton
           size="small"

@@ -7,6 +7,13 @@ export interface FileOpenAction {
   executable?: string
 }
 
+export interface ExternalApplicationConfig {
+  id: string
+  name: string
+  executable: string
+  enabled: boolean
+}
+
 export function createDefaultOpenAction(path: string): FileOpenAction {
   return {
     kind: 'default',
@@ -27,6 +34,12 @@ export function createOpenWithAction(
     label: `Open With ${applicationName}`,
     executable,
   }
+}
+
+export function listEnabledExternalApplications(
+  applications: ExternalApplicationConfig[],
+): ExternalApplicationConfig[] {
+  return applications.filter((application) => application.enabled)
 }
 
 export function createAssociatedApplicationOpenAction(path: string): FileOpenAction {

@@ -13,11 +13,33 @@ pub struct CliInvocation {
 #[serde(rename_all = "camelCase")]
 pub enum CliCommand {
     Help,
-    ShellCompare { path: String },
-    CompareFiles { left: String, right: String },
-    CompareFolders { left: String, right: String },
-    OpenSession { store_root: String, name: String },
+    ShellCompare {
+        path: String,
+    },
+    GitDifftoolConfig {
+        executable_path: String,
+        scope: GitConfigScope,
+    },
+    CompareFiles {
+        left: String,
+        right: String,
+    },
+    CompareFolders {
+        left: String,
+        right: String,
+    },
+    OpenSession {
+        store_root: String,
+        name: String,
+    },
     MergeText(CliTextMergeArgs),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum GitConfigScope {
+    Global,
+    Local,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -104,6 +126,14 @@ pub struct CliTextMergeResult {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct GitToolConfigDocument {
+    pub tool_name: String,
+    pub description: String,
+    pub commands: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CliRuntimeError {
     pub message: String,
     pub exit_code: CliExitCode,
@@ -123,6 +153,7 @@ where
     match command.as_str() {
         "--help" | "-h" | "help" => Ok(help_invocation()),
         "--shell-compare" | "shell-compare" => parse_shell_compare(args.collect()),
+        "git-difftool-config" => parse_git_difftool_config(args.collect()),
         "compare" => parse_compare_files(args.collect()),
         "compare-folders" => parse_compare_folders(args.collect()),
         "open-session" => parse_open_session(args.collect()),
@@ -287,6 +318,40 @@ pub fn automerge_text_files(args: CliTextMergeArgs) -> Result<CliTextMergeResult
     })
 }
 
+pub fn build_git_difftool_config(
+    executable_path: impl AsRef<str>,
+    scope: GitConfigScope,
+) -> Result<GitToolConfigDocument, CliRuntimeError> {
+    let executable_path = executable_path.as_ref().trim();
+
+    if executable_path.is_empty() {
+        return Err(CliRuntimeError {
+            message: "git difftool executable path is required".to_owned(),
+            exit_code: CliExitCode::UsageError,
+        });
+    }
+
+    let scope_flag = git_config_scope_flag(scope);
+    let compare_command = format!(
+        "{} compare \"$LOCAL\" \"$REMOTE\"",
+        quote_executable_for_git_command(executable_path)
+    );
+
+    Ok(GitToolConfigDocument {
+        tool_name: "open-diff".to_owned(),
+        description: "Git difftool configuration for Open Diff text comparisons.".to_owned(),
+        commands: vec![
+            format!("git config {scope_flag} diff.tool open-diff"),
+            format!(
+                "git config {scope_flag} difftool.open-diff.cmd {}",
+                quote_shell_argument(&compare_command)
+            ),
+            format!("git config {scope_flag} difftool.open-diff.prompt false"),
+            format!("git config {scope_flag} difftool.open-diff.trustExitCode true"),
+        ],
+    })
+}
+
 fn help_invocation() -> CliInvocation {
     CliInvocation {
         command: CliCommand::Help,
@@ -302,6 +367,36 @@ fn parse_shell_compare(args: Vec<String>) -> Result<CliInvocation, CliParseError
     Ok(CliInvocation {
         command: CliCommand::ShellCompare {
             path: args[0].clone(),
+        },
+        exit_code: CliExitCode::Success,
+    })
+}
+
+fn parse_git_difftool_config(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    let mut scope = GitConfigScope::Global;
+    let mut paths = Vec::new();
+
+    for arg in args {
+        match normalized_switch(&arg).as_deref() {
+            Some("global") => scope = GitConfigScope::Global,
+            Some("local") => scope = GitConfigScope::Local,
+            Some(unknown) => {
+                return Err(usage_error(format!(
+                    "unknown git-difftool-config switch: {unknown}"
+                )))
+            }
+            None => paths.push(arg),
+        }
+    }
+
+    if paths.len() != 1 {
+        return Err(usage_error("git-difftool-config requires EXECUTABLE_PATH"));
+    }
+
+    Ok(CliInvocation {
+        command: CliCommand::GitDifftoolConfig {
+            executable_path: paths[0].clone(),
+            scope,
         },
         exit_code: CliExitCode::Success,
     })
@@ -389,6 +484,21 @@ fn normalized_switch(arg: &str) -> Option<String> {
     arg.strip_prefix("--")
         .or_else(|| arg.strip_prefix('/'))
         .map(|value| value.to_ascii_lowercase())
+}
+
+fn git_config_scope_flag(scope: GitConfigScope) -> &'static str {
+    match scope {
+        GitConfigScope::Global => "--global",
+        GitConfigScope::Local => "--local",
+    }
+}
+
+fn quote_executable_for_git_command(executable_path: &str) -> String {
+    format!("\"{}\"", executable_path.replace('"', "\\\""))
+}
+
+fn quote_shell_argument(value: &str) -> String {
+    format!("'{}'", value.replace('\'', "''"))
 }
 
 fn usage_error(message: impl Into<String>) -> CliParseError {
@@ -545,6 +655,57 @@ mod tests {
                 automerge: true,
                 favor: Some(CliTextMergeFavor::Left),
             })
+        );
+    }
+
+    #[test]
+    fn builds_git_difftool_configuration_commands() {
+        let invocation = parse_cli_args([
+            "open-diff-cli",
+            "git-difftool-config",
+            "C:/Program Files/Open Diff/open-diff-cli.exe",
+        ])
+        .expect("git difftool config should parse");
+
+        assert_eq!(
+            invocation.command,
+            CliCommand::GitDifftoolConfig {
+                executable_path: "C:/Program Files/Open Diff/open-diff-cli.exe".to_owned(),
+                scope: GitConfigScope::Global,
+            }
+        );
+
+        let config = build_git_difftool_config(
+            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            GitConfigScope::Global,
+        )
+        .expect("config should build");
+
+        assert_eq!(config.tool_name, "open-diff");
+        assert!(config.description.contains("Git difftool"));
+        assert_eq!(
+            config.commands,
+            vec![
+                "git config --global diff.tool open-diff".to_owned(),
+                "git config --global difftool.open-diff.cmd '\"C:/Program Files/Open Diff/open-diff-cli.exe\" compare \"$LOCAL\" \"$REMOTE\"'".to_owned(),
+                "git config --global difftool.open-diff.prompt false".to_owned(),
+                "git config --global difftool.open-diff.trustExitCode true".to_owned(),
+            ]
+        );
+
+        let local = parse_cli_args([
+            "open-diff-cli",
+            "git-difftool-config",
+            "--local",
+            "D:/tools/open-diff-cli.exe",
+        ])
+        .expect("local git difftool config should parse");
+        assert_eq!(
+            local.command,
+            CliCommand::GitDifftoolConfig {
+                executable_path: "D:/tools/open-diff-cli.exe".to_owned(),
+                scope: GitConfigScope::Local,
+            }
         );
     }
 

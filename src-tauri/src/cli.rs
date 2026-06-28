@@ -1,6 +1,6 @@
 use cli_core::{
-    automerge_text_files, cli_exit_code_contract, cli_exit_code_value, compare_folders,
-    compare_text_files, open_named_session, parse_cli_args, CliCommand,
+    automerge_text_files, build_git_difftool_config, cli_exit_code_contract, cli_exit_code_value,
+    compare_folders, compare_text_files, open_named_session, parse_cli_args, CliCommand,
 };
 
 fn main() {
@@ -19,6 +19,7 @@ fn main() {
             println!("  compare <left> <right>");
             println!("  compare-folders <left> <right>");
             println!("  shell-compare <path>");
+            println!("  git-difftool-config [--global|--local] <executable-path>");
             println!("  open-session <store-root> <name>");
             println!("  merge-text <base> <left> <right> [output]");
             println!("Exit codes:");
@@ -43,6 +44,23 @@ fn main() {
         }
         CliCommand::ShellCompare { path } => {
             println!("shell compare path: {path}");
+        }
+        CliCommand::GitDifftoolConfig {
+            executable_path,
+            scope,
+        } => {
+            let config = match build_git_difftool_config(&executable_path, scope) {
+                Ok(config) => config,
+                Err(error) => {
+                    eprintln!("{}", error.message);
+                    std::process::exit(cli_exit_code_value(error.exit_code));
+                }
+            };
+
+            println!("{}", config.description);
+            for command in config.commands {
+                println!("{command}");
+            }
         }
         CliCommand::CompareFolders { left, right } => {
             let result = match compare_folders(&left, &right) {

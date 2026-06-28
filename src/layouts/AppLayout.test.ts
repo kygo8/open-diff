@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import AppLayout from './AppLayout.vue'
 import { createAppI18n, installI18n } from '@/i18n'
 import { useSettingsStore } from '@/stores/settings'
+import { useStatusBarStore } from '@/stores/statusBar'
 
 const push = vi.fn()
 
@@ -56,6 +57,25 @@ describe('AppLayout command palette', () => {
     await wrapper.find('[data-command-id="theme.toggle"]').trigger('click')
 
     expect(settings.theme).toBe('light')
+  })
+
+  it('renders status bar segments from the shared status protocol', async () => {
+    const wrapper = mountAppLayout()
+    const statusBar = useStatusBarStore()
+
+    statusBar.reportStatus({
+      comparisonStatus: 'Compared',
+      differenceCount: 4,
+      encoding: 'UTF-8 / LF',
+      filterStatus: 'All rows',
+      source: 'text-compare',
+    })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Compared')
+    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Differences: 4')
+    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Encoding: UTF-8 / LF')
+    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Filter: All rows')
   })
 })
 

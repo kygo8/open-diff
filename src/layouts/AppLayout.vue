@@ -6,6 +6,7 @@ import { commandRegistry, filterCommands } from '@/app/commandRegistry'
 import { createCommandExecutor, getCommandsForPlacement } from '@/app/commandSystem'
 import { useI18n } from '@/i18n'
 import { useSettingsStore } from '@/stores/settings'
+import { useStatusBarStore } from '@/stores/statusBar'
 import { useTabsStore } from '@/stores/tabs'
 import type { CommandId } from '@/app/commandRegistry'
 import type { AppTab } from '@/stores/tabs'
@@ -13,6 +14,7 @@ import type { AppTab } from '@/stores/tabs'
 const router = useRouter()
 const { t } = useI18n()
 const settings = useSettingsStore()
+const statusBar = useStatusBarStore()
 const tabs = useTabsStore()
 const commandPaletteOpen = ref(false)
 const commandQuery = ref('')
@@ -143,9 +145,15 @@ function commandIcon(commandId: CommandId): typeof FileText {
       <RouterView />
     </main>
 
-    <footer class="status-bar">
-      <span>{{ t('app.ready') }}</span>
-      <span>{{ t('app.workspaceStatus') }}</span>
+    <footer
+      class="status-bar"
+      data-testid="status-bar"
+    >
+      <span
+        v-for="segment in statusBar.segments"
+        :key="segment"
+        >{{ segment }}</span
+      >
     </footer>
 
     <div

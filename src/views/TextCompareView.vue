@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { diffText } from '@/api/diff'
+import { useStatusBarStore } from '@/stores/statusBar'
 import type { TextDiffAlgorithm, TextDiffResponse } from '@/types/diff'
 import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
 
@@ -25,6 +26,7 @@ const builtInSyntaxGrammar = {
 
 const left = ref('line one\nline two\nline four')
 const right = ref('line one\nline 2\nline three\nline four')
+const statusBar = useStatusBarStore()
 const algorithm = ref<TextDiffAlgorithm>('myers')
 const result = ref<TextDiffResponse | null>(null)
 const loading = ref(false)
@@ -58,10 +60,17 @@ const statsLabel = computed(() => {
 const lineEndingStatus = computed(
   () => `Left: ${detectLineEnding(left.value)} | Right: ${detectLineEnding(right.value)}`,
 )
+const statusBarEncoding = computed(() => `UTF-8 | ${lineEndingStatus.value}`)
 const dirtyStatus = computed(() => (dirty.value ? 'Unsaved edits' : 'No edits'))
 const diffRows = computed(() => result.value?.lines.filter((line) => line.kind !== 'equal') ?? [])
 const activeDiffRows = computed(() =>
   diffRows.value.filter((line) => !ignoredDiffKeys.value.has(diffKey(line))),
+)
+const ignoredDiffCount = computed(() =>
+  Math.max(0, diffRows.value.length - activeDiffRows.value.length),
+)
+const filterStatus = computed(() =>
+  ignoredDiffCount.value === 0 ? 'All rows' : `${String(ignoredDiffCount.value)} ignored`,
 )
 const currentActiveDiff = computed<DiffLine | null>(() => {
   if (currentDiffIndex.value < 0 || currentDiffIndex.value >= activeDiffRows.value.length) {
@@ -123,6 +132,27 @@ const findStatus = computed(() => {
   }
 
   return `${String(currentFindIndex.value + 1)} / ${String(findMatches.value.length)}`
+})
+const comparisonStatus = computed(() => {
+  if (loading.value) {
+    return 'Comparing'
+  }
+
+  if (result.value) {
+    return 'Compared'
+  }
+
+  return 'Editing'
+})
+
+watchEffect(() => {
+  statusBar.reportStatus({
+    comparisonStatus: comparisonStatus.value,
+    differenceCount: result.value ? diffRows.value.length : null,
+    encoding: statusBarEncoding.value,
+    filterStatus: filterStatus.value,
+    source: 'text-compare',
+  })
 })
 
 function detectLineEnding(value: string): string {

@@ -1,8 +1,10 @@
 import { mount, type VueWrapper } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextCompareView from './TextCompareView.vue'
 import { diffText } from '@/api/diff'
+import { useStatusBarStore } from '@/stores/statusBar'
 import type { TextDiffRequest } from '@/types/diff'
 
 vi.mock('@/api/diff', () => ({
@@ -61,6 +63,7 @@ function mountTextCompareView(): VueWrapper {
 
 describe('TextCompareView', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.mocked(diffText).mockClear()
   })
 
@@ -87,6 +90,33 @@ describe('TextCompareView', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-testid="line-ending-status"]').text()).toContain('Left: CRLF')
+  })
+
+  it('reports text comparison status to the shared status bar protocol', async () => {
+    const wrapper = mountTextCompareView()
+    const statusBar = useStatusBarStore()
+
+    expect(statusBar.report).toEqual(
+      expect.objectContaining({
+        comparisonStatus: 'Editing',
+        differenceCount: null,
+        encoding: 'UTF-8 | Left: LF | Right: LF',
+        filterStatus: 'All rows',
+        source: 'text-compare',
+      }),
+    )
+
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+
+    expect(statusBar.report).toEqual(
+      expect.objectContaining({
+        comparisonStatus: 'Compared',
+        differenceCount: 0,
+        encoding: 'UTF-8 | Left: LF | Right: LF',
+        filterStatus: 'All rows',
+        source: 'text-compare',
+      }),
+    )
   })
 
   it('marks edits as dirty and recomputes diff from edited text', async () => {
@@ -270,6 +300,7 @@ describe('TextCompareView', () => {
     await wrapper.find('[data-testid="ignore-current-diff"]').trigger('click')
 
     expect(wrapper.find('[data-testid="active-diff-status"]').text()).toContain('1 active diff')
+    expect(useStatusBarStore().report.filterStatus).toBe('1 ignored')
 
     await wrapper.find('[data-testid="copy-left-to-right"]').trigger('click')
     await wrapper.find('[data-testid="run-diff"]').trigger('click')

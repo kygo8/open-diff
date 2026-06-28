@@ -22,6 +22,10 @@ pub enum ScriptCommandKind {
     Compare,
     TextReport { output: String },
     FolderReport { output: String },
+    Log { message: String },
+    Beep,
+    Option { key: String, value: String },
+    Select { query: String },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -69,6 +73,17 @@ pub struct ScriptRuntimeState {
     pub filters: Vec<String>,
     pub last_compare: Option<ScriptCompareSummary>,
     pub reports_written: usize,
+    pub logs: Vec<String>,
+    pub beeps: usize,
+    pub options: Vec<ScriptOption>,
+    pub selection: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptOption {
+    pub key: String,
+    pub value: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -302,6 +317,47 @@ where
                     &execution.variables,
                 )?;
             }
+            ScriptCommandKind::Log { message } => {
+                state.logs.push(
+                    expand_script_variables(message, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?,
+                );
+            }
+            ScriptCommandKind::Beep => {
+                state.beeps += 1;
+            }
+            ScriptCommandKind::Option { key, value } => {
+                state.options.push(ScriptOption {
+                    key: expand_script_variables(key, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?,
+                    value: expand_script_variables(value, &execution.variables).map_err(
+                        |error| {
+                            execution_error(
+                                command,
+                                format!("{} at line {}", error.message, error.line),
+                            )
+                        },
+                    )?,
+                });
+            }
+            ScriptCommandKind::Select { query } => {
+                state.selection = Some(
+                    expand_script_variables(query, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?,
+                );
+            }
         }
 
         executed += 1;
@@ -417,6 +473,10 @@ impl ScriptCommandKind {
             ScriptCommandKind::Compare => "COMPARE",
             ScriptCommandKind::TextReport { .. } => "TEXT-REPORT",
             ScriptCommandKind::FolderReport { .. } => "FOLDER-REPORT",
+            ScriptCommandKind::Log { .. } => "LOG",
+            ScriptCommandKind::Beep => "BEEP",
+            ScriptCommandKind::Option { .. } => "OPTION",
+            ScriptCommandKind::Select { .. } => "SELECT",
         }
     }
 }
@@ -470,6 +530,29 @@ fn parse_command(
         "FOLDER-REPORT" => parse_single_output_command(line, args, |output| {
             ScriptCommandKind::FolderReport { output }
         }),
+        "LOG" => {
+            parse_single_output_command(line, args, |message| ScriptCommandKind::Log { message })
+        }
+        "BEEP" => {
+            if !args.is_empty() {
+                return Err(parse_error(line, "BEEP does not accept arguments"));
+            }
+
+            Ok(ScriptCommandKind::Beep)
+        }
+        "OPTION" => {
+            if args.len() != 2 {
+                return Err(parse_error(line, "OPTION requires KEY and VALUE"));
+            }
+
+            Ok(ScriptCommandKind::Option {
+                key: args[0].clone(),
+                value: args[1].clone(),
+            })
+        }
+        "SELECT" => {
+            parse_single_output_command(line, args, |query| ScriptCommandKind::Select { query })
+        }
         unknown => Err(parse_error(line, format!("unknown command: {unknown}"))),
     }
 }
@@ -710,6 +793,10 @@ mod tests {
                     different: 1,
                 }),
                 reports_written: 0,
+                logs: Vec::new(),
+                beeps: 0,
+                options: Vec::new(),
+                selection: None,
             }
         );
         assert_eq!(
@@ -851,5 +938,102 @@ mod tests {
         assert_eq!(error.line, 1);
         assert_eq!(error.command, "TEXT-REPORT");
         assert!(error.reason.contains("COMPARE"));
+    }
+
+    #[test]
+    fn parses_log_beep_option_and_select_commands() {
+        let script = parse_script(
+            r#"
+            LOG "starting compare"
+            BEEP
+            OPTION "ignore-case" "true"
+            SELECT "diff-only"
+            "#,
+        )
+        .expect("script parses");
+
+        assert_eq!(
+            script.commands,
+            vec![
+                ScriptCommand {
+                    line: 2,
+                    kind: ScriptCommandKind::Log {
+                        message: "starting compare".to_owned(),
+                    },
+                },
+                ScriptCommand {
+                    line: 3,
+                    kind: ScriptCommandKind::Beep,
+                },
+                ScriptCommand {
+                    line: 4,
+                    kind: ScriptCommandKind::Option {
+                        key: "ignore-case".to_owned(),
+                        value: "true".to_owned(),
+                    },
+                },
+                ScriptCommand {
+                    line: 5,
+                    kind: ScriptCommandKind::Select {
+                        query: "diff-only".to_owned(),
+                    },
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn runs_log_beep_option_and_select_commands() {
+        struct NoopCompareEngine;
+        struct NoopReportEngine;
+
+        impl ScriptCompareEngine for NoopCompareEngine {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+
+        impl ScriptReportEngine for NoopReportEngine {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script(
+            r#"
+            LOG "run %date%"
+            BEEP
+            OPTION ignore-case true
+            SELECT "*.rs"
+            "#,
+        )
+        .expect("script parses");
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext {
+                variables: ScriptVariables {
+                    date: "2026-06-27".to_owned(),
+                    ..ScriptVariables::default()
+                },
+            },
+            &mut NoopCompareEngine,
+            &mut NoopReportEngine,
+        )
+        .expect("script should execute");
+
+        assert_eq!(result.executed, 4);
+        assert_eq!(result.state.logs, vec!["run 2026-06-27".to_owned()]);
+        assert_eq!(result.state.beeps, 1);
+        assert_eq!(
+            result.state.options,
+            vec![ScriptOption {
+                key: "ignore-case".to_owned(),
+                value: "true".to_owned(),
+            }]
+        );
+        assert_eq!(result.state.selection, Some("*.rs".to_owned()));
     }
 }

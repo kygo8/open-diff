@@ -73,7 +73,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Folder Merge',
     summary: 'Three-way folder merge',
     priority: 'P2',
-    implemented: false,
+    implemented: true,
+    route: '/merge/folder',
   },
   {
     type: 'text-edit',

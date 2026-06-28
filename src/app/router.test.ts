@@ -7,4 +7,10 @@ describe('router', () => {
 
     expect(route?.name).toBe('file-formats')
   })
+
+  it('registers the folder merge route', () => {
+    const route = router.getRoutes().find((item) => item.path === '/merge/folder')
+
+    expect(route?.name).toBe('folder-merge')
+  })
 })

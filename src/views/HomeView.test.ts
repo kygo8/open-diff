@@ -64,6 +64,7 @@ describe('HomeView', () => {
     const folderCompare = wrapper.find('[data-session-type="folder-compare"] button')
     const folderSync = wrapper.find('[data-session-type="folder-sync"] button')
     const textMerge = wrapper.find('[data-session-type="text-merge"] button')
+    const folderMerge = wrapper.find('[data-session-type="folder-merge"] button')
     const tableCompare = wrapper.find('[data-session-type="table-compare"] button')
     const hexCompare = wrapper.find('[data-session-type="hex-compare"] button')
     const pictureCompare = wrapper.find('[data-session-type="picture-compare"] button')
@@ -72,6 +73,7 @@ describe('HomeView', () => {
     expect(folderCompare.attributes('disabled')).toBeUndefined()
     expect(folderSync.attributes('disabled')).toBeUndefined()
     expect(textMerge.attributes('disabled')).toBeUndefined()
+    expect(folderMerge.attributes('disabled')).toBeUndefined()
     expect(tableCompare.attributes('disabled')).toBeUndefined()
     expect(hexCompare.attributes('disabled')).toBeUndefined()
     expect(pictureCompare.attributes('disabled')).toBeUndefined()
@@ -91,6 +93,10 @@ describe('HomeView', () => {
     await textMerge.trigger('click')
 
     expect(push).toHaveBeenCalledWith('/merge/text')
+
+    await folderMerge.trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/merge/folder')
 
     await tableCompare.trigger('click')
 

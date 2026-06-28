@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
+use std::path::Path;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -131,6 +132,7 @@ impl WindowsRegistryPolicyReader for MemoryWindowsRegistryPolicyReader {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PolicyError {
     Backend(String),
+    InvalidConfig(String),
     InvalidRegistryValue(String),
 }
 
@@ -138,6 +140,7 @@ impl Display for PolicyError {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Backend(message) => write!(formatter, "{message}"),
+            Self::InvalidConfig(message) => write!(formatter, "invalid policy config: {message}"),
             Self::InvalidRegistryValue(value) => {
                 write!(formatter, "invalid registry value: {value}")
             }
@@ -148,6 +151,36 @@ impl Display for PolicyError {
 impl std::error::Error for PolicyError {}
 
 pub type PolicyResult<T> = Result<T, PolicyError>;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct SystemConfigPolicyDocument {
+    capabilities: BTreeMap<PolicyCapability, PolicyDecision>,
+}
+
+pub struct SystemConfigPolicyLoader;
+
+impl SystemConfigPolicyLoader {
+    pub fn load_from_file(path: impl AsRef<Path>) -> PolicyResult<AdminPolicy> {
+        let config = std::fs::read_to_string(path)
+            .map_err(|error| PolicyError::Backend(error.to_string()))?;
+
+        Self::load_from_str(&config)
+    }
+
+    pub fn load_from_str(config: &str) -> PolicyResult<AdminPolicy> {
+        let document: SystemConfigPolicyDocument = serde_json::from_str(config)
+            .map_err(|error| PolicyError::InvalidConfig(error.to_string()))?;
+
+        let mut policy = AdminPolicy::default();
+
+        for (capability, decision) in document.capabilities {
+            policy = policy.with_capability(capability, decision);
+        }
+
+        Ok(policy)
+    }
+}
 
 #[cfg(windows)]
 pub struct HklmWindowsRegistryPolicyReader {
@@ -277,5 +310,30 @@ mod tests {
         assert!(policy.allows(PolicyCapability::SavePasswords));
         assert!(policy.allows(PolicyCapability::RemoteProfiles));
         assert!(policy.allows(PolicyCapability::UpdateChecks));
+    }
+
+    #[test]
+    fn system_config_policy_loader_reads_json_policy_documents() {
+        let policy = SystemConfigPolicyLoader::load_from_str(
+            r#"{
+              "capabilities": {
+                "save-passwords": "deny",
+                "remote-profiles": "allow",
+                "update-checks": "deny"
+              }
+            }"#,
+        )
+        .unwrap();
+
+        assert!(!policy.allows(PolicyCapability::SavePasswords));
+        assert!(policy.allows(PolicyCapability::RemoteProfiles));
+        assert!(!policy.allows(PolicyCapability::UpdateChecks));
+    }
+
+    #[test]
+    fn system_config_policy_loader_rejects_invalid_json() {
+        let error = SystemConfigPolicyLoader::load_from_str("{").unwrap_err();
+
+        assert!(matches!(error, PolicyError::InvalidConfig(_)));
     }
 }

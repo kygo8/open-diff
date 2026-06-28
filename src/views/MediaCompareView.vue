@@ -1,31 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
-type MediaFieldStatus = 'added' | 'removed' | 'modified' | 'unchanged'
-
-interface MediaStreamSummary {
-  codec: string
-  sampleRate: string
-  channels: string
-  bitrate: string
-}
-
-interface MediaSideSummary {
-  name: string
-  container: string
-  duration: string
-  stream: MediaStreamSummary
-}
-
-interface MediaFieldRow {
-  field: string
-  left?: string
-  right?: string
-  status: MediaFieldStatus
-}
+import { computed, ref } from 'vue'
+import { compareMediaFiles } from '@/api/diff'
+import type {
+  MediaCompareResponse,
+  MediaFieldRow,
+  MediaFieldStatus,
+  MediaSideSummary,
+} from '@/types/diff'
 
 const mediaStatuses: MediaFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
-const leftMedia: MediaSideSummary = {
+const defaultLeftMedia: MediaSideSummary = {
   name: 'left-track.flac',
   container: 'FLAC',
   duration: '04:00.000',
@@ -36,7 +20,7 @@ const leftMedia: MediaSideSummary = {
     bitrate: 'Lossless',
   },
 }
-const rightMedia: MediaSideSummary = {
+const defaultRightMedia: MediaSideSummary = {
   name: 'right-track.flac',
   container: 'FLAC',
   duration: '04:00.000',
@@ -47,7 +31,7 @@ const rightMedia: MediaSideSummary = {
     bitrate: 'Lossless',
   },
 }
-const mediaFields: MediaFieldRow[] = [
+const defaultMediaFields: MediaFieldRow[] = [
   {
     field: 'Title',
     left: 'Northern Lights',
@@ -77,8 +61,20 @@ const mediaFields: MediaFieldRow[] = [
     status: 'added',
   },
 ]
+const leftPath = ref('C:/music/left-track.flac')
+const rightPath = ref('C:/music/right-track.flac')
+const leftMedia = ref<MediaSideSummary>(defaultLeftMedia)
+const rightMedia = ref<MediaSideSummary>(defaultRightMedia)
+const mediaFields = ref<MediaFieldRow[]>(defaultMediaFields)
+const mediaSummaryOverride = ref<Record<MediaFieldStatus, number> | null>(null)
+const loading = ref(false)
+const error = ref('')
 
 const mediaSummary = computed<Record<MediaFieldStatus, number>>(() => {
+  if (mediaSummaryOverride.value) {
+    return mediaSummaryOverride.value
+  }
+
   const summary: Record<MediaFieldStatus, number> = {
     added: 0,
     removed: 0,
@@ -86,7 +82,7 @@ const mediaSummary = computed<Record<MediaFieldStatus, number>>(() => {
     unchanged: 0,
   }
 
-  for (const row of mediaFields) {
+  for (const row of mediaFields.value) {
     summary[row.status] += 1
   }
 
@@ -107,6 +103,30 @@ function statusLabel(status: MediaFieldStatus): string {
 function valueText(value?: string): string {
   return value ?? '--'
 }
+
+function applyMediaResult(result: MediaCompareResponse): void {
+  leftMedia.value = result.left
+  rightMedia.value = result.right
+  mediaFields.value = result.fields
+  mediaSummaryOverride.value = result.summary
+}
+
+async function runMediaCompare(): Promise<void> {
+  loading.value = true
+  error.value = ''
+  try {
+    const result = await compareMediaFiles({
+      leftPath: leftPath.value,
+      rightPath: rightPath.value,
+    })
+
+    applyMediaResult(result)
+  } catch (event) {
+    error.value = String(event)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -121,6 +141,40 @@ function valueText(value?: string): string {
         <span>Right: {{ rightMedia.name }}</span>
       </div>
     </header>
+
+    <section class="media-path-panel">
+      <label>
+        <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
+        <input
+          v-model="leftPath"
+          type="text"
+          data-testid="media-left-path"
+        />
+      </label>
+      <label>
+        <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
+        <input
+          v-model="rightPath"
+          type="text"
+          data-testid="media-right-path"
+        />
+      </label>
+      <button
+        type="button"
+        data-testid="run-media-compare"
+        :disabled="loading"
+        @click="runMediaCompare"
+      >
+        {{ $t('ui.runDiff') }}
+      </button>
+    </section>
+    <p
+      v-if="error"
+      class="media-error"
+      data-testid="media-compare-error"
+    >
+      {{ error }}
+    </p>
 
     <section class="media-summary-grid">
       <article

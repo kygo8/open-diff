@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { compareTableCsv, saveTextFile } from './diff'
+import { compareMediaFiles, compareTableCsv, saveTextFile } from './diff'
 import { invoke } from '@tauri-apps/api/core'
 
 vi.mock('@tauri-apps/api/core', () => ({
@@ -66,5 +66,57 @@ describe('diff api', () => {
       right: 'sku\nA-1',
     })
     expect(result.columnMappings[0]?.leftColumn).toBe('SKU')
+  })
+
+  it('compares media files through the Tauri command contract', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      left: {
+        name: 'left.mp3',
+        container: 'MP3',
+        duration: '00:00.000',
+        stream: {
+          codec: 'MP3',
+          sampleRate: 'Unknown',
+          channels: 'Unknown',
+          bitrate: 'Unknown',
+        },
+      },
+      right: {
+        name: 'right.mp3',
+        container: 'MP3',
+        duration: '00:00.000',
+        stream: {
+          codec: 'MP3',
+          sampleRate: 'Unknown',
+          channels: 'Unknown',
+          bitrate: 'Unknown',
+        },
+      },
+      fields: [
+        {
+          field: 'Title',
+          left: 'Left Song',
+          right: 'Right Song',
+          status: 'modified',
+        },
+      ],
+      summary: {
+        added: 0,
+        removed: 0,
+        modified: 1,
+        unchanged: 0,
+      },
+    })
+
+    const result = await compareMediaFiles({
+      leftPath: 'C:/music/left.mp3',
+      rightPath: 'C:/music/right.mp3',
+    })
+
+    expect(invoke).toHaveBeenCalledWith('compare_media_files', {
+      leftPath: 'C:/music/left.mp3',
+      rightPath: 'C:/music/right.mp3',
+    })
+    expect(result.fields[0]?.status).toBe('modified')
   })
 })

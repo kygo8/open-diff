@@ -1,6 +1,8 @@
 import { invoke } from '@tauri-apps/api/core'
 import type {
   FileStamp,
+  MediaCompareRequest,
+  MediaCompareResponse,
   TextPatchResponse,
   ReadTextFileResponse,
   SaveTextFileRequest,
@@ -49,5 +51,12 @@ export function compareTableCsv(request: TableCompareRequest): Promise<TableComp
   return invoke<TableCompareResponse>('compare_table_csv', {
     left: request.left,
     right: request.right,
+  })
+}
+
+export function compareMediaFiles(request: MediaCompareRequest): Promise<MediaCompareResponse> {
+  return invoke<MediaCompareResponse>('compare_media_files', {
+    leftPath: request.leftPath,
+    rightPath: request.rightPath,
   })
 }

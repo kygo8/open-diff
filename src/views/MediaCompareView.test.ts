@@ -1,8 +1,79 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import MediaCompareView from './MediaCompareView.vue'
+import { compareMediaFiles } from '@/api/diff'
+
+vi.mock('@/api/diff', () => ({
+  compareMediaFiles: vi.fn().mockResolvedValue({
+    left: {
+      name: 'fixture-left.mp3',
+      container: 'MP3',
+      duration: '00:00.000',
+      stream: {
+        codec: 'MP3',
+        sampleRate: 'Unknown',
+        channels: 'Unknown',
+        bitrate: 'Unknown',
+      },
+    },
+    right: {
+      name: 'fixture-right.mp3',
+      container: 'MP3',
+      duration: '00:00.000',
+      stream: {
+        codec: 'MP3',
+        sampleRate: 'Unknown',
+        channels: 'Unknown',
+        bitrate: 'Unknown',
+      },
+    },
+    fields: [
+      {
+        field: 'Title',
+        left: 'Left Song',
+        right: 'Right Song',
+        status: 'modified',
+      },
+      {
+        field: 'Artist',
+        left: 'Aster',
+        right: 'Aster',
+        status: 'unchanged',
+      },
+    ],
+    summary: {
+      added: 0,
+      removed: 0,
+      modified: 1,
+      unchanged: 1,
+    },
+  }),
+}))
 
 describe('MediaCompareView', () => {
+  beforeEach(() => {
+    vi.mocked(compareMediaFiles).mockClear()
+  })
+
+  it('runs a real media comparison request and renders returned metadata', async () => {
+    const wrapper = mount(MediaCompareView)
+
+    await wrapper.find('[data-testid="media-left-path"]').setValue('C:/music/fixture-left.mp3')
+    await wrapper.find('[data-testid="media-right-path"]').setValue('C:/music/fixture-right.mp3')
+    await wrapper.find('[data-testid="run-media-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(compareMediaFiles).toHaveBeenCalledWith({
+      leftPath: 'C:/music/fixture-left.mp3',
+      rightPath: 'C:/music/fixture-right.mp3',
+    })
+    expect(wrapper.text()).toContain('fixture-left.mp3')
+    expect(wrapper.text()).toContain('fixture-right.mp3')
+    expect(wrapper.find('[data-testid="media-summary-modified"]').text()).toContain('1')
+    expect(wrapper.find('[data-testid="media-field-Title"]').text()).toContain('Left Song')
+    expect(wrapper.find('[data-testid="media-field-Title"]').text()).toContain('Right Song')
+  })
+
   it('renders media metadata summary and field difference counts', () => {
     const wrapper = mount(MediaCompareView)
 

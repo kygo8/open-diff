@@ -138,3 +138,38 @@ export interface TableCompareResponse {
     changedCellCount: number
   }
 }
+
+export interface MediaCompareRequest {
+  leftPath: string
+  rightPath: string
+}
+
+export interface MediaStreamSummary {
+  codec: string
+  sampleRate: string
+  channels: string
+  bitrate: string
+}
+
+export interface MediaSideSummary {
+  name: string
+  container: string
+  duration: string
+  stream: MediaStreamSummary
+}
+
+export type MediaFieldStatus = 'added' | 'removed' | 'modified' | 'unchanged'
+
+export interface MediaFieldRow {
+  field: string
+  left?: string
+  right?: string
+  status: MediaFieldStatus
+}
+
+export interface MediaCompareResponse {
+  left: MediaSideSummary
+  right: MediaSideSummary
+  fields: MediaFieldRow[]
+  summary: Record<MediaFieldStatus, number>
+}

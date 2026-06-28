@@ -31,6 +31,10 @@ export const enUS: LanguagePack = {
     'error.file.writeFailed.suggestion':
       'Check file permissions, free disk space, and whether the file is locked.',
     'error.file.writeFailed.title': 'Write failed',
+    'error.media.readFailed.message': 'Could not read media metadata from {path}.',
+    'error.media.readFailed.suggestion':
+      'Use a supported MP3, FLAC, OGG, or MP4 file with readable metadata.',
+    'error.media.readFailed.title': 'Media read failed',
     'ui.acceptBase': 'Accept Base',
     'ui.acceptLeft': 'Accept Left',
     'ui.acceptRight': 'Accept Right',

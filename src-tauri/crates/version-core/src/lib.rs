@@ -100,6 +100,13 @@ pub enum VersionFieldStatus {
     Unchanged,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum VersionReadError {
+    Backend(String),
+    InvalidOutput(String),
+    VersionInfoNotFound(String),
+}
+
 impl VersionNumber {
     pub fn new(major: u16, minor: u16, patch: u16, build: u16) -> Self {
         Self {
@@ -198,6 +205,82 @@ pub fn compare_version_documents(left: &VersionDocument, right: &VersionDocument
     VersionDiff { fields, statistics }
 }
 
+pub trait NativeVersionInfoReader {
+    fn read_version_info(&self, path: &str) -> Result<Option<VersionDocument>, VersionReadError>;
+}
+
+pub struct NativeVersionLoader;
+
+impl NativeVersionLoader {
+    pub fn load_file(
+        reader: &impl NativeVersionInfoReader,
+        path: impl AsRef<str>,
+    ) -> Result<VersionDocument, VersionReadError> {
+        let path = normalize_path(path.as_ref());
+
+        reader
+            .read_version_info(&path)?
+            .ok_or(VersionReadError::VersionInfoNotFound(path))
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct MemoryVersionInfoReader {
+    documents: BTreeMap<String, VersionDocument>,
+}
+
+impl MemoryVersionInfoReader {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn with_document(mut self, path: impl AsRef<str>, document: VersionDocument) -> Self {
+        self.documents
+            .insert(normalize_path(path.as_ref()), document);
+        self
+    }
+}
+
+impl NativeVersionInfoReader for MemoryVersionInfoReader {
+    fn read_version_info(&self, path: &str) -> Result<Option<VersionDocument>, VersionReadError> {
+        Ok(self.documents.get(&normalize_path(path)).cloned())
+    }
+}
+
+#[cfg(windows)]
+#[derive(Debug, Clone, Default)]
+pub struct WindowsVersionInfoReader;
+
+#[cfg(windows)]
+impl NativeVersionInfoReader for WindowsVersionInfoReader {
+    fn read_version_info(&self, path: &str) -> Result<Option<VersionDocument>, VersionReadError> {
+        let output = std::process::Command::new("pwsh")
+            .args([
+                "-NoLogo",
+                "-NoProfile",
+                "-Command",
+                &format!(
+                    "$v=(Get-Item -LiteralPath {}).VersionInfo; if ($null -eq $v) {{ exit 2 }}; [Console]::OutputEncoding=[Text.Encoding]::UTF8; @($v.FileVersion,$v.ProductVersion,$v.CompanyName,$v.FileDescription,$v.ProductName) -join \"`n\"",
+                    powershell_quote(path)
+                ),
+            ])
+            .output()
+            .map_err(|error| VersionReadError::Backend(error.to_string()))?;
+
+        if output.status.code() == Some(2) {
+            return Ok(None);
+        }
+
+        if !output.status.success() {
+            return Err(VersionReadError::Backend(
+                String::from_utf8_lossy(&output.stderr).to_string(),
+            ));
+        }
+
+        parse_powershell_version_info(path, &String::from_utf8_lossy(&output.stdout)).map(Some)
+    }
+}
+
 fn version_fields(document: &VersionDocument) -> BTreeMap<String, String> {
     let mut fields = BTreeMap::new();
 
@@ -219,6 +302,80 @@ fn version_fields(document: &VersionDocument) -> BTreeMap<String, String> {
     fields
 }
 
+fn normalize_path(path: &str) -> String {
+    path.replace('\\', "/")
+}
+
+#[cfg(windows)]
+fn powershell_quote(value: &str) -> String {
+    format!("'{}'", value.replace('\'', "''"))
+}
+
+#[cfg(windows)]
+fn parse_powershell_version_info(
+    path: &str,
+    output: &str,
+) -> Result<VersionDocument, VersionReadError> {
+    let lines = output.lines().collect::<Vec<_>>();
+
+    if lines.len() < 5 {
+        return Err(VersionReadError::InvalidOutput(
+            "PowerShell VersionInfo output is incomplete".to_owned(),
+        ));
+    }
+
+    let name = normalize_path(path)
+        .rsplit('/')
+        .next()
+        .filter(|item| !item.is_empty())
+        .unwrap_or(path)
+        .to_owned();
+    let mut document = VersionDocument::new(name);
+    let file_version =
+        parse_version_number(lines[0]).unwrap_or_else(|| VersionNumber::new(0, 0, 0, 0));
+    let product_version =
+        parse_version_number(lines[1]).unwrap_or_else(|| VersionNumber::new(0, 0, 0, 0));
+
+    document = document.with_fixed_info(VersionFixedInfo {
+        file_version,
+        product_version,
+        file_flags: Vec::new(),
+        file_type: if path.to_ascii_lowercase().ends_with(".dll") {
+            VersionFileType::DynamicLibrary
+        } else {
+            VersionFileType::Application
+        },
+        os: VersionTargetOs::Windows32,
+    });
+
+    for (field, value) in [
+        ("CompanyName", lines[2]),
+        ("FileDescription", lines[3]),
+        ("ProductName", lines[4]),
+    ] {
+        if !value.trim().is_empty() {
+            document = document.with_string(field, value.trim());
+        }
+    }
+
+    Ok(document)
+}
+
+#[cfg(windows)]
+fn parse_version_number(value: &str) -> Option<VersionNumber> {
+    let mut parts = value
+        .split(|character: char| !character.is_ascii_digit())
+        .filter(|part| !part.is_empty())
+        .filter_map(|part| part.parse::<u16>().ok());
+
+    Some(VersionNumber::new(
+        parts.next()?,
+        parts.next().unwrap_or(0),
+        parts.next().unwrap_or(0),
+        parts.next().unwrap_or(0),
+    ))
+}
+
 fn increment_statistics(statistics: &mut VersionDiffStatistics, status: VersionFieldStatus) {
     match status {
         VersionFieldStatus::Added => statistics.added += 1,
@@ -227,6 +384,18 @@ fn increment_statistics(statistics: &mut VersionDiffStatistics, status: VersionF
         VersionFieldStatus::Unchanged => statistics.unchanged += 1,
     }
 }
+
+impl fmt::Display for VersionReadError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Backend(message) => write!(formatter, "{message}"),
+            Self::InvalidOutput(message) => write!(formatter, "{message}"),
+            Self::VersionInfoNotFound(path) => write!(formatter, "version info not found: {path}"),
+        }
+    }
+}
+
+impl std::error::Error for VersionReadError {}
 
 #[cfg(test)]
 mod tests {
@@ -309,6 +478,50 @@ mod tests {
                 .expect("product name exists")
                 .status,
             VersionFieldStatus::Added
+        );
+    }
+
+    #[test]
+    fn native_version_loader_builds_document_from_reader() {
+        let reader = MemoryVersionInfoReader::new().with_document(
+            "C:/Apps/OpenDiff/app.exe",
+            VersionDocument::new("app.exe")
+                .with_fixed_info(VersionFixedInfo {
+                    file_version: VersionNumber::new(2, 4, 0, 9),
+                    product_version: VersionNumber::new(2, 4, 0, 0),
+                    file_flags: Vec::new(),
+                    file_type: VersionFileType::Application,
+                    os: VersionTargetOs::Windows32,
+                })
+                .with_string("CompanyName", "Open Diff")
+                .with_string("ProductName", "Open Diff"),
+        );
+
+        let document = NativeVersionLoader::load_file(&reader, "C:/Apps/OpenDiff/app.exe")
+            .expect("version info should load");
+
+        assert_eq!(document.name, "app.exe");
+        assert_eq!(
+            document
+                .fixed_info
+                .as_ref()
+                .expect("fixed info exists")
+                .file_version,
+            VersionNumber::new(2, 4, 0, 9)
+        );
+        assert_eq!(document.string_value("ProductName"), Some("Open Diff"));
+    }
+
+    #[test]
+    fn native_version_loader_reports_missing_version_resources() {
+        let reader = MemoryVersionInfoReader::new();
+
+        let error = NativeVersionLoader::load_file(&reader, "C:/Apps/OpenDiff/plain.bin")
+            .expect_err("missing resource should be reported");
+
+        assert_eq!(
+            error,
+            VersionReadError::VersionInfoNotFound("C:/Apps/OpenDiff/plain.bin".to_owned())
         );
     }
 }

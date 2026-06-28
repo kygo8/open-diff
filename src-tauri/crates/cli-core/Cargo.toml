@@ -10,6 +10,7 @@ diff-core = { path = "../diff-core" }
 file-core = { path = "../file-core" }
 folder-core = { path = "../folder-core" }
 job-core = { path = "../job-core" }
+merge-core = { path = "../merge-core" }
 serde.workspace = true
 session-core = { path = "../session-core" }
 shared-types = { path = "../shared-types" }

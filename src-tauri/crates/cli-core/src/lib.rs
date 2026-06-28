@@ -26,6 +26,15 @@ pub struct CliTextMergeArgs {
     pub left: String,
     pub right: String,
     pub output: Option<String>,
+    pub automerge: bool,
+    pub favor: Option<CliTextMergeFavor>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum CliTextMergeFavor {
+    Left,
+    Right,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -81,6 +90,15 @@ pub struct CliOpenSessionResult {
     pub id: String,
     pub name: String,
     pub session_type: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CliTextMergeResult {
+    pub exit_code: CliExitCode,
+    pub conflicts: usize,
+    pub output_path: Option<String>,
+    pub backup_path: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -223,6 +241,50 @@ pub fn open_named_session(
     })
 }
 
+pub fn automerge_text_files(args: CliTextMergeArgs) -> Result<CliTextMergeResult, CliRuntimeError> {
+    if !args.automerge {
+        return Err(CliRuntimeError {
+            message: "merge-text automerge requires --automerge".to_owned(),
+            exit_code: CliExitCode::UsageError,
+        });
+    }
+
+    let output_path = args.output.clone().ok_or_else(|| CliRuntimeError {
+        message: "merge-text automerge requires an output path".to_owned(),
+        exit_code: CliExitCode::UsageError,
+    })?;
+    let base = file_core::read_text_file(&args.base).map_err(runtime_error)?;
+    let left = file_core::read_text_file(&args.left).map_err(runtime_error)?;
+    let right = file_core::read_text_file(&args.right).map_err(runtime_error)?;
+    let document = merge_core::TextMergeDocument::from_inputs(merge_core::TextMergeInput {
+        base: merge_core::TextMergeSide::new(args.base, base.text),
+        left: merge_core::TextMergeSide::new(args.left, left.text),
+        right: merge_core::TextMergeSide::new(args.right, right.text),
+        output_path: Some(output_path.clone()),
+    });
+    let result =
+        merge_core::auto_merge_text_with_options(&document, merge_options_for_favor(args.favor));
+
+    if result.conflicts > 0 {
+        return Ok(CliTextMergeResult {
+            exit_code: CliExitCode::Different,
+            conflicts: result.conflicts,
+            output_path: Some(output_path),
+            backup_path: None,
+        });
+    }
+
+    let save =
+        file_core::save_text_file(&output_path, result.output_text).map_err(runtime_error)?;
+
+    Ok(CliTextMergeResult {
+        exit_code: CliExitCode::Success,
+        conflicts: 0,
+        output_path: Some(save.path),
+        backup_path: save.backup_path,
+    })
+}
+
 fn help_invocation() -> CliInvocation {
     CliInvocation {
         command: CliCommand::Help,
@@ -273,7 +335,23 @@ fn parse_open_session(args: Vec<String>) -> Result<CliInvocation, CliParseError>
 }
 
 fn parse_merge_text(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
-    if !(args.len() == 3 || args.len() == 4) {
+    let mut automerge = false;
+    let mut favor = None;
+    let mut paths = Vec::new();
+
+    for arg in args {
+        match normalized_switch(&arg).as_deref() {
+            Some("automerge") => automerge = true,
+            Some("favorleft") | Some("favor-left") => favor = Some(CliTextMergeFavor::Left),
+            Some("favorright") | Some("favor-right") => favor = Some(CliTextMergeFavor::Right),
+            Some(unknown) => {
+                return Err(usage_error(format!("unknown merge-text switch: {unknown}")))
+            }
+            None => paths.push(arg),
+        }
+    }
+
+    if !(paths.len() == 3 || paths.len() == 4) {
         return Err(usage_error(
             "merge-text requires BASE LEFT RIGHT [OUTPUT] paths",
         ));
@@ -281,13 +359,21 @@ fn parse_merge_text(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
 
     Ok(CliInvocation {
         command: CliCommand::MergeText(CliTextMergeArgs {
-            base: args[0].clone(),
-            left: args[1].clone(),
-            right: args[2].clone(),
-            output: args.get(3).cloned(),
+            base: paths[0].clone(),
+            left: paths[1].clone(),
+            right: paths[2].clone(),
+            output: paths.get(3).cloned(),
+            automerge,
+            favor,
         }),
         exit_code: CliExitCode::Success,
     })
+}
+
+fn normalized_switch(arg: &str) -> Option<String> {
+    arg.strip_prefix("--")
+        .or_else(|| arg.strip_prefix('/'))
+        .map(|value| value.to_ascii_lowercase())
 }
 
 fn usage_error(message: impl Into<String>) -> CliParseError {
@@ -319,6 +405,16 @@ fn runtime_error(error: impl std::fmt::Debug) -> CliRuntimeError {
     CliRuntimeError {
         message: format!("{error:?}"),
         exit_code: CliExitCode::RuntimeError,
+    }
+}
+
+fn merge_options_for_favor(favor: Option<CliTextMergeFavor>) -> merge_core::TextMergeOptions {
+    merge_core::TextMergeOptions {
+        conflict_policy: match favor {
+            Some(CliTextMergeFavor::Left) => merge_core::TextMergeConflictPolicy::FavorLeft,
+            Some(CliTextMergeFavor::Right) => merge_core::TextMergeConflictPolicy::FavorRight,
+            None => merge_core::TextMergeConflictPolicy::MarkConflict,
+        },
     }
 }
 
@@ -373,6 +469,8 @@ mod tests {
                 left: "left".to_owned(),
                 right: "right".to_owned(),
                 output: None,
+                automerge: false,
+                favor: None,
             })
         );
 
@@ -392,6 +490,35 @@ mod tests {
                 left: "left".to_owned(),
                 right: "right".to_owned(),
                 output: Some("output".to_owned()),
+                automerge: false,
+                favor: None,
+            })
+        );
+    }
+
+    #[test]
+    fn parses_automerge_and_favor_switches_for_text_merge() {
+        let invocation = parse_cli_args([
+            "open-diff-cli",
+            "merge-text",
+            "--automerge",
+            "/favorleft",
+            "base",
+            "left",
+            "right",
+            "output",
+        ])
+        .expect("automerge switches should parse");
+
+        assert_eq!(
+            invocation.command,
+            CliCommand::MergeText(CliTextMergeArgs {
+                base: "base".to_owned(),
+                left: "left".to_owned(),
+                right: "right".to_owned(),
+                output: Some("output".to_owned()),
+                automerge: true,
+                favor: Some(CliTextMergeFavor::Left),
             })
         );
     }
@@ -520,6 +647,109 @@ mod tests {
         assert_eq!(opened.session_type, "text-compare");
 
         fs::remove_dir_all(root).expect("fixture should be removable");
+    }
+
+    #[test]
+    fn automerges_non_conflicting_text_to_output() {
+        let base = temp_file_path("merge-base");
+        let left = temp_file_path("merge-left");
+        let right = temp_file_path("merge-right");
+        let output = temp_file_path("merge-output");
+
+        fs::write(&base, "one\ntwo\nthree").expect("base fixture should be writable");
+        fs::write(&left, "ONE\ntwo\nthree").expect("left fixture should be writable");
+        fs::write(&right, "one\ntwo\nTHREE").expect("right fixture should be writable");
+
+        let result = automerge_text_files(CliTextMergeArgs {
+            base: base.to_string_lossy().into_owned(),
+            left: left.to_string_lossy().into_owned(),
+            right: right.to_string_lossy().into_owned(),
+            output: Some(output.to_string_lossy().into_owned()),
+            automerge: true,
+            favor: None,
+        })
+        .expect("automerge should run");
+
+        assert_eq!(result.exit_code, CliExitCode::Success);
+        assert_eq!(result.conflicts, 0);
+        assert_eq!(
+            fs::read_to_string(&output).expect("output should be saved"),
+            "ONE\ntwo\nTHREE"
+        );
+
+        fs::remove_file(base).expect("base fixture should be removable");
+        fs::remove_file(left).expect("left fixture should be removable");
+        fs::remove_file(right).expect("right fixture should be removable");
+        fs::remove_file(output).expect("output fixture should be removable");
+    }
+
+    #[test]
+    fn automerge_reports_conflicts_without_overwriting_output() {
+        let base = temp_file_path("conflict-base");
+        let left = temp_file_path("conflict-left");
+        let right = temp_file_path("conflict-right");
+        let output = temp_file_path("conflict-output");
+
+        fs::write(&base, "one\ntwo\nthree").expect("base fixture should be writable");
+        fs::write(&left, "one\nleft change\nthree").expect("left fixture should be writable");
+        fs::write(&right, "one\nright change\nthree").expect("right fixture should be writable");
+        fs::write(&output, "existing output").expect("output fixture should be writable");
+
+        let result = automerge_text_files(CliTextMergeArgs {
+            base: base.to_string_lossy().into_owned(),
+            left: left.to_string_lossy().into_owned(),
+            right: right.to_string_lossy().into_owned(),
+            output: Some(output.to_string_lossy().into_owned()),
+            automerge: true,
+            favor: None,
+        })
+        .expect("automerge should report conflicts");
+
+        assert_eq!(result.exit_code, CliExitCode::Different);
+        assert_eq!(result.conflicts, 1);
+        assert_eq!(
+            fs::read_to_string(&output).expect("output should remain unchanged"),
+            "existing output"
+        );
+
+        fs::remove_file(base).expect("base fixture should be removable");
+        fs::remove_file(left).expect("left fixture should be removable");
+        fs::remove_file(right).expect("right fixture should be removable");
+        fs::remove_file(output).expect("output fixture should be removable");
+    }
+
+    #[test]
+    fn automerge_favor_left_writes_conflicting_left_side() {
+        let base = temp_file_path("favor-base");
+        let left = temp_file_path("favor-left");
+        let right = temp_file_path("favor-right");
+        let output = temp_file_path("favor-output");
+
+        fs::write(&base, "one\ntwo\nthree").expect("base fixture should be writable");
+        fs::write(&left, "one\nleft change\nthree").expect("left fixture should be writable");
+        fs::write(&right, "one\nright change\nthree").expect("right fixture should be writable");
+
+        let result = automerge_text_files(CliTextMergeArgs {
+            base: base.to_string_lossy().into_owned(),
+            left: left.to_string_lossy().into_owned(),
+            right: right.to_string_lossy().into_owned(),
+            output: Some(output.to_string_lossy().into_owned()),
+            automerge: true,
+            favor: Some(CliTextMergeFavor::Left),
+        })
+        .expect("favor-left automerge should run");
+
+        assert_eq!(result.exit_code, CliExitCode::Success);
+        assert_eq!(result.conflicts, 0);
+        assert_eq!(
+            fs::read_to_string(&output).expect("output should be saved"),
+            "one\nleft change\nthree"
+        );
+
+        fs::remove_file(base).expect("base fixture should be removable");
+        fs::remove_file(left).expect("left fixture should be removable");
+        fs::remove_file(right).expect("right fixture should be removable");
+        fs::remove_file(output).expect("output fixture should be removable");
     }
 
     fn temp_file_path(name: &str) -> std::path::PathBuf {

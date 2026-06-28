@@ -1,6 +1,6 @@
 use cli_core::{
-    cli_exit_code_contract, cli_exit_code_value, compare_folders, compare_text_files,
-    open_named_session, parse_cli_args, CliCommand,
+    automerge_text_files, cli_exit_code_contract, cli_exit_code_value, compare_folders,
+    compare_text_files, open_named_session, parse_cli_args, CliCommand,
 };
 
 fn main() {
@@ -76,6 +76,24 @@ fn main() {
             std::process::exit(cli_exit_code_value(result.exit_code));
         }
         CliCommand::MergeText(args) => {
+            if args.automerge {
+                let result = match automerge_text_files(args) {
+                    Ok(result) => result,
+                    Err(error) => {
+                        eprintln!("{}", error.message);
+                        std::process::exit(cli_exit_code_value(error.exit_code));
+                    }
+                };
+
+                println!(
+                    "merge conflicts: {}, output: {}, backup: {}",
+                    result.conflicts,
+                    result.output_path.as_deref().unwrap_or("<none>"),
+                    result.backup_path.as_deref().unwrap_or("<none>")
+                );
+                std::process::exit(cli_exit_code_value(result.exit_code));
+            }
+
             println!(
                 "merge base: {}, left: {}, right: {}, output: {}",
                 args.base,

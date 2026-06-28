@@ -164,6 +164,17 @@ pub struct GrammarItemMatch {
     pub line_weight: i32,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextReplacementIgnoreRule {
+    pub id: String,
+    pub name: String,
+    pub left_pattern: String,
+    pub right_replacement: String,
+    pub match_case: bool,
+    pub whole_word: bool,
+}
+
 impl FileFormatDefinition {
     pub fn matches_path(&self, path: impl AsRef<str>) -> bool {
         let path = path.as_ref();
@@ -234,6 +245,37 @@ pub fn find_grammar_item(
     grammar.items.iter().find_map(|item| {
         grammar_item_range(line, &item.matcher).map(|range| match_from_item(item, range))
     })
+}
+
+pub fn text_replacement_is_ignored(
+    left: impl AsRef<str>,
+    right: impl AsRef<str>,
+    rule: &TextReplacementIgnoreRule,
+) -> bool {
+    let left = left.as_ref();
+    let right = right.as_ref();
+    let normalized_left = if rule.match_case {
+        replace_text_pattern(
+            left,
+            &rule.left_pattern,
+            &rule.right_replacement,
+            rule.whole_word,
+        )
+    } else {
+        replace_text_pattern(
+            &left.to_lowercase(),
+            &rule.left_pattern.to_lowercase(),
+            &rule.right_replacement.to_lowercase(),
+            rule.whole_word,
+        )
+    };
+    let normalized_right = if rule.match_case {
+        right.to_owned()
+    } else {
+        right.to_lowercase()
+    };
+
+    normalized_left == normalized_right
 }
 
 fn file_name(path: &str) -> &str {
@@ -353,6 +395,32 @@ fn is_escaped(line: &str, marker_start: usize, escape: Option<&str>) -> bool {
     }
 
     line[..marker_start].ends_with(escape)
+}
+
+fn replace_text_pattern(input: &str, pattern: &str, replacement: &str, whole_word: bool) -> String {
+    if pattern.is_empty() {
+        return input.to_owned();
+    }
+
+    let mut output = String::new();
+    let mut offset = 0;
+
+    while let Some(relative_index) = input[offset..].find(pattern) {
+        let start = offset + relative_index;
+        let end = start + pattern.len();
+
+        if !whole_word || is_keyword_boundary(input, start, end) {
+            output.push_str(&input[offset..start]);
+            output.push_str(replacement);
+        } else {
+            output.push_str(&input[offset..end]);
+        }
+
+        offset = end;
+    }
+
+    output.push_str(&input[offset..]);
+    output
 }
 
 #[cfg(test)]
@@ -548,5 +616,28 @@ mod tests {
         assert_eq!(comment_match.kind, GrammarItemKind::Comment);
         assert_eq!(keyword_match.item_id, "keyword");
         assert_eq!(keyword_match.range, 4..6);
+    }
+
+    #[test]
+    fn text_replacement_ignore_rule_marks_identifier_renames() {
+        let rule = TextReplacementIgnoreRule {
+            id: "rename-config".to_owned(),
+            name: "config rename".to_owned(),
+            left_pattern: "oldConfig".to_owned(),
+            right_replacement: "newConfig".to_owned(),
+            match_case: true,
+            whole_word: true,
+        };
+
+        assert!(text_replacement_is_ignored(
+            "let oldConfig = 1;",
+            "let newConfig = 1;",
+            &rule
+        ));
+        assert!(!text_replacement_is_ignored(
+            "let oldConfiguration = 1;",
+            "let newConfig = 1;",
+            &rule
+        ));
     }
 }

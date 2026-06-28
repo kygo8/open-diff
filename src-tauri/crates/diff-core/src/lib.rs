@@ -214,6 +214,21 @@ pub fn diff_text_with_grammar(
     response
 }
 
+pub fn diff_text_with_replacement_rules(
+    request: &TextDiffRequest,
+    rules: &[format_core::TextReplacementIgnoreRule],
+) -> TextDiffResponse {
+    let mut response = diff_text(request);
+
+    for line in &mut response.lines {
+        if replacement_diff_is_ignored(line, rules) {
+            line.important = false;
+        }
+    }
+
+    response
+}
+
 fn compiled_ignore_regexes(patterns: &[String]) -> Vec<Regex> {
     patterns
         .iter()
@@ -731,6 +746,19 @@ fn grammar_diff_is_important(line: &DiffLine, grammar: &format_core::GrammarDefi
     )
 }
 
+fn replacement_diff_is_ignored(
+    line: &DiffLine,
+    rules: &[format_core::TextReplacementIgnoreRule],
+) -> bool {
+    if line.kind == DiffLineKind::Equal {
+        return false;
+    }
+
+    rules.iter().any(|rule| {
+        format_core::text_replacement_is_ignored(&line.left_text, &line.right_text, rule)
+    })
+}
+
 fn inline_segments_for(
     left_text: &str,
     right_text: &str,
@@ -985,6 +1013,24 @@ mod tests {
 
         assert_eq!(result.stats.modified, 1);
         assert!(result.lines[0].important);
+    }
+
+    #[test]
+    fn marks_identifier_replacements_as_unimportant_with_ignore_rules() {
+        let rules = vec![format_core::TextReplacementIgnoreRule {
+            id: "rename-config".to_owned(),
+            name: "config rename".to_owned(),
+            left_pattern: "oldConfig".to_owned(),
+            right_replacement: "newConfig".to_owned(),
+            match_case: true,
+            whole_word: true,
+        }];
+        let request = request("let oldConfig = load();", "let newConfig = load();");
+
+        let result = diff_text_with_replacement_rules(&request, &rules);
+
+        assert_eq!(result.stats.modified, 1);
+        assert!(!result.lines[0].important);
     }
 
     #[test]

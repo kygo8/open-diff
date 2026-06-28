@@ -146,8 +146,8 @@ function countLines(text: string): number {
   <section class="clipboard-compare-view">
     <header class="clipboard-header">
       <div>
-        <p class="eyebrow">Clipboard Compare</p>
-        <h1>Clipboard Compare</h1>
+        <p class="eyebrow">{{ $t('ui.clipboardCompare') }}</p>
+        <h1>{{ $t('ui.clipboardCompare') }}</h1>
       </div>
       <div class="clipboard-status">
         <strong data-testid="clipboard-history-count">{{ historyCount }}</strong>
@@ -162,7 +162,7 @@ function countLines(text: string): number {
         :loading="loading"
         data-testid="clipboard-capture"
         @click="captureClipboard"
-        >Capture Clipboard</NButton
+        >{{ $t('ui.captureClipboard') }}</NButton
       >
       <NButton
         size="small"
@@ -170,7 +170,7 @@ function countLines(text: string): number {
         :loading="comparing"
         data-testid="clipboard-compare"
         @click="compareClipboardHistory"
-        >Compare Selected</NButton
+        >{{ $t('ui.compareSelected') }}</NButton
       >
       <span
         class="status-chip"
@@ -189,7 +189,7 @@ function countLines(text: string): number {
     <section class="clipboard-layout">
       <aside class="history-pane">
         <header>
-          <strong>History</strong>
+          <strong>{{ $t('ui.history') }}</strong>
           <span>{{ history.length }} entries</span>
         </header>
         <div class="history-list">
@@ -221,13 +221,12 @@ function countLines(text: string): number {
           v-else
           class="empty"
         >
-          Capture two clipboard texts and compare them.
+          {{ $t('ui.captureTwoClipboardTextsAndCompareThem') }}
         </div>
       </section>
     </section>
   </section>
 </template>
-
 <style scoped>
 .clipboard-compare-view {
   display: grid;

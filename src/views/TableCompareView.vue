@@ -244,18 +244,18 @@ function goToNextTableDifference(): void {
   <section class="table-compare-view">
     <header class="table-compare-header">
       <div>
-        <p class="eyebrow">Table Compare</p>
-        <h1>Table Compare</h1>
+        <p class="eyebrow">{{ $t('ui.tableCompare') }}</p>
+        <h1>{{ $t('ui.tableCompare') }}</h1>
       </div>
       <div class="table-summary">
         <strong>{{ columnMappings.length }}</strong>
-        <span>Column mappings</span>
+        <span>{{ $t('ui.columnMappings') }}</span>
       </div>
     </header>
 
     <section class="column-map-controls">
       <label>
-        <span>Left column</span>
+        <span>{{ $t('ui.leftColumn') }}</span>
         <select
           v-model="manualLeftColumn"
           data-testid="manual-left-column"
@@ -270,7 +270,7 @@ function goToNextTableDifference(): void {
         </select>
       </label>
       <label>
-        <span>Right column</span>
+        <span>{{ $t('ui.rightColumn') }}</span>
         <select
           v-model="manualRightColumn"
           data-testid="manual-right-column"
@@ -289,14 +289,13 @@ function goToNextTableDifference(): void {
         type="primary"
         data-testid="add-column-mapping"
         @click="addManualMapping"
+        >{{ $t('ui.addMapping') }}</NButton
       >
-        Add Mapping
-      </NButton>
     </section>
 
     <section class="column-source-grid">
       <section>
-        <h2>Left Columns</h2>
+        <h2>{{ $t('ui.leftColumns') }}</h2>
         <ul>
           <li
             v-for="column in leftColumns"
@@ -307,7 +306,7 @@ function goToNextTableDifference(): void {
         </ul>
       </section>
       <section>
-        <h2>Right Columns</h2>
+        <h2>{{ $t('ui.rightColumns') }}</h2>
         <ul>
           <li
             v-for="column in rightColumns"
@@ -321,12 +320,12 @@ function goToNextTableDifference(): void {
 
     <section class="table-grid-panel">
       <header>
-        <strong>Data Grid</strong>
+        <strong>{{ $t('ui.dataGrid') }}</strong>
         <span>{{ visibleRows }} rows x {{ visibleColumns }} columns</span>
       </header>
       <div class="table-navigation-bar">
         <label>
-          <span>Find</span>
+          <span>{{ $t('ui.find') }}</span>
           <input
             v-model="tableSearchQuery"
             type="search"
@@ -339,7 +338,7 @@ function goToNextTableDifference(): void {
           data-testid="next-table-difference"
           @click="goToNextTableDifference"
         >
-          Next Difference
+          {{ $t('ui.nextDifference') }}
         </button>
         <span data-testid="table-difference-summary">{{ tableDifferenceSummary }}</span>
         <strong data-testid="active-table-cell">{{ activeTableCell?.text ?? '--' }}</strong>
@@ -364,7 +363,7 @@ function goToNextTableDifference(): void {
       </div>
       <div class="table-grid-panes">
         <section class="table-grid-pane">
-          <strong>Left</strong>
+          <strong>{{ $t('ui.left') }}</strong>
           <div
             ref="leftGridViewport"
             class="table-grid-viewport"
@@ -396,7 +395,7 @@ function goToNextTableDifference(): void {
           </div>
         </section>
         <section class="table-grid-pane">
-          <strong>Right</strong>
+          <strong>{{ $t('ui.right') }}</strong>
           <div
             ref="rightGridViewport"
             class="table-grid-viewport"
@@ -432,14 +431,14 @@ function goToNextTableDifference(): void {
       data-testid="column-mapping-list"
     >
       <header>
-        <strong>Column Mapping</strong>
-        <span>Manual mappings override automatic name matches.</span>
+        <strong>{{ $t('ui.columnMapping') }}</strong>
+        <span>{{ $t('ui.manualMappingsOverrideAutomaticNameMatches') }}</span>
       </header>
       <div class="column-map-table">
         <div class="column-map-row column-map-head">
-          <span>Left</span>
-          <span>Right</span>
-          <span>Source</span>
+          <span>{{ $t('ui.left') }}</span>
+          <span>{{ $t('ui.right') }}</span>
+          <span>{{ $t('ui.source') }}</span>
         </div>
         <div
           v-for="mapping in columnMappings"
@@ -455,7 +454,6 @@ function goToNextTableDifference(): void {
     </section>
   </section>
 </template>
-
 <style scoped>
 .table-compare-view {
   display: grid;

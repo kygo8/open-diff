@@ -112,8 +112,8 @@ function valueText(value?: string): string {
   <section class="version-compare-view">
     <header class="version-header">
       <div>
-        <p class="eyebrow">Version Compare</p>
-        <h1>Version Compare</h1>
+        <p class="eyebrow">{{ $t('ui.versionCompare') }}</p>
+        <h1>{{ $t('ui.versionCompare') }}</h1>
       </div>
       <div class="version-source-pair">
         <span>Left: {{ leftVersion.name }}</span>
@@ -141,15 +141,15 @@ function valueText(value?: string): string {
         </header>
         <dl>
           <div>
-            <dt>File Version</dt>
+            <dt>{{ $t('ui.fileVersion') }}</dt>
             <dd>{{ leftVersion.fileVersion }}</dd>
           </div>
           <div>
-            <dt>Product Version</dt>
+            <dt>{{ $t('ui.productVersion') }}</dt>
             <dd>{{ leftVersion.productVersion }}</dd>
           </div>
           <div>
-            <dt>Target OS</dt>
+            <dt>{{ $t('ui.targetOs') }}</dt>
             <dd>{{ leftVersion.targetOs }}</dd>
           </div>
         </dl>
@@ -162,15 +162,15 @@ function valueText(value?: string): string {
         </header>
         <dl>
           <div>
-            <dt>File Version</dt>
+            <dt>{{ $t('ui.fileVersion') }}</dt>
             <dd>{{ rightVersion.fileVersion }}</dd>
           </div>
           <div>
-            <dt>Product Version</dt>
+            <dt>{{ $t('ui.productVersion') }}</dt>
             <dd>{{ rightVersion.productVersion }}</dd>
           </div>
           <div>
-            <dt>Target OS</dt>
+            <dt>{{ $t('ui.targetOs') }}</dt>
             <dd>{{ rightVersion.targetOs }}</dd>
           </div>
         </dl>
@@ -179,7 +179,7 @@ function valueText(value?: string): string {
 
     <section class="version-report-panel">
       <header>
-        <strong>Version Field Report</strong>
+        <strong>{{ $t('ui.versionFieldReport') }}</strong>
         <span>{{ versionFields.length }} fields</span>
       </header>
       <div
@@ -187,11 +187,11 @@ function valueText(value?: string): string {
         data-testid="version-report-table"
       >
         <div class="version-field-row version-field-head">
-          <span>Group</span>
-          <span>Field</span>
-          <span>Left</span>
-          <span>Right</span>
-          <span>Status</span>
+          <span>{{ $t('ui.group') }}</span>
+          <span>{{ $t('ui.field') }}</span>
+          <span>{{ $t('ui.left') }}</span>
+          <span>{{ $t('ui.right') }}</span>
+          <span>{{ $t('ui.status') }}</span>
         </div>
         <div
           v-for="row in versionFields"
@@ -210,7 +210,6 @@ function valueText(value?: string): string {
     </section>
   </section>
 </template>
-
 <style scoped>
 .version-compare-view {
   display: grid;

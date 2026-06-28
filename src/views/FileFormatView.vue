@@ -340,25 +340,25 @@ function viewLabel(value: FileFormatViewMode): string {
   <section class="file-format-view">
     <header class="format-header">
       <div>
-        <p class="eyebrow">Settings</p>
-        <h1>File Formats</h1>
+        <p class="eyebrow">{{ $t('ui.settings') }}</p>
+        <h1>{{ $t('ui.fileFormats') }}</h1>
       </div>
       <div class="format-count">
         <strong>{{ formats.length }}</strong>
-        <span>formats</span>
+        <span>{{ $t('ui.formats') }}</span>
       </div>
     </header>
 
     <section class="format-workspace">
       <aside class="format-list-panel">
         <div class="panel-title">
-          <h2>Definitions</h2>
+          <h2>{{ $t('ui.definitions') }}</h2>
           <button
             type="button"
             data-testid="new-format"
             @click="createNewFormat"
           >
-            New
+            {{ $t('ui.new') }}
           </button>
         </div>
         <div
@@ -388,13 +388,13 @@ function viewLabel(value: FileFormatViewMode): string {
         data-testid="format-detail"
       >
         <div class="panel-title">
-          <h2>Format Details</h2>
+          <h2>{{ $t('ui.formatDetails') }}</h2>
           <button
             type="button"
             data-testid="save-format"
             @click="saveFormat"
           >
-            Save
+            {{ $t('ui.save') }}
           </button>
         </div>
 
@@ -407,7 +407,7 @@ function viewLabel(value: FileFormatViewMode): string {
 
         <div class="format-form">
           <label>
-            <span>Name</span>
+            <span>{{ $t('ui.name') }}</span>
             <input
               v-model="draft.name"
               data-testid="format-name-input"
@@ -415,7 +415,7 @@ function viewLabel(value: FileFormatViewMode): string {
             />
           </label>
           <label>
-            <span>Priority</span>
+            <span>{{ $t('ui.priority') }}</span>
             <input
               v-model.number="draft.priority"
               data-testid="format-priority-input"
@@ -425,19 +425,19 @@ function viewLabel(value: FileFormatViewMode): string {
             />
           </label>
           <label>
-            <span>Default View</span>
+            <span>{{ $t('ui.defaultView') }}</span>
             <select
               v-model="draft.defaultView"
               data-testid="format-view-select"
             >
-              <option value="text">Text</option>
-              <option value="table">Table</option>
-              <option value="hex">Hex</option>
-              <option value="picture">Picture</option>
+              <option value="text">{{ $t('ui.text') }}</option>
+              <option value="table">{{ $t('ui.table') }}</option>
+              <option value="hex">{{ $t('ui.hex') }}</option>
+              <option value="picture">{{ $t('ui.picture') }}</option>
             </select>
           </label>
           <label>
-            <span>Extensions</span>
+            <span>{{ $t('ui.extensions') }}</span>
             <input
               v-model="draft.extensions"
               data-testid="format-extension-input"
@@ -445,7 +445,7 @@ function viewLabel(value: FileFormatViewMode): string {
             />
           </label>
           <label>
-            <span>File Names</span>
+            <span>{{ $t('ui.fileNames') }}</span>
             <input
               v-model="draft.fileNames"
               data-testid="format-file-name-input"
@@ -453,7 +453,7 @@ function viewLabel(value: FileFormatViewMode): string {
             />
           </label>
           <label>
-            <span>Glob Patterns</span>
+            <span>{{ $t('ui.globPatterns') }}</span>
             <input
               v-model="draft.globs"
               data-testid="format-glob-input"
@@ -461,7 +461,7 @@ function viewLabel(value: FileFormatViewMode): string {
             />
           </label>
           <label>
-            <span>Grammar Rule</span>
+            <span>{{ $t('ui.grammarRule') }}</span>
             <input
               v-model="draft.grammar"
               data-testid="format-grammar-input"
@@ -469,7 +469,7 @@ function viewLabel(value: FileFormatViewMode): string {
             />
           </label>
           <label>
-            <span>Ignore Rules</span>
+            <span>{{ $t('ui.ignoreRules') }}</span>
             <input
               v-model="draft.ignore"
               data-testid="format-ignore-input"
@@ -477,7 +477,7 @@ function viewLabel(value: FileFormatViewMode): string {
             />
           </label>
           <label>
-            <span>Conversion Rule</span>
+            <span>{{ $t('ui.conversionRule') }}</span>
             <input
               v-model="draft.conversion"
               data-testid="format-conversion-input"
@@ -505,13 +505,13 @@ function viewLabel(value: FileFormatViewMode): string {
     <section class="format-import-export">
       <section class="format-io-panel">
         <div class="panel-title">
-          <h2>Export</h2>
+          <h2>{{ $t('ui.export') }}</h2>
           <button
             type="button"
             data-testid="export-formats"
             @click="exportFormats"
           >
-            Export JSON
+            {{ $t('ui.exportJson') }}
           </button>
         </div>
         <textarea
@@ -523,13 +523,13 @@ function viewLabel(value: FileFormatViewMode): string {
 
       <section class="format-io-panel">
         <div class="panel-title">
-          <h2>Import</h2>
+          <h2>{{ $t('ui.import') }}</h2>
           <button
             type="button"
             data-testid="import-formats"
             @click="importFormats"
           >
-            Import JSON
+            {{ $t('ui.importJson') }}
           </button>
         </div>
         <textarea
@@ -541,7 +541,6 @@ function viewLabel(value: FileFormatViewMode): string {
     </section>
   </section>
 </template>
-
 <style scoped>
 .file-format-view {
   display: grid;

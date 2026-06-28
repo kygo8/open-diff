@@ -99,32 +99,32 @@ function runSync(): void {
   <section class="folder-sync-view">
     <header class="folder-sync-header">
       <div>
-        <p class="eyebrow">Folder Sync</p>
-        <h1>Folder Sync</h1>
+        <p class="eyebrow">{{ $t('ui.folderSync') }}</p>
+        <h1>{{ $t('ui.folderSync') }}</h1>
       </div>
       <div class="sync-progress">
         <strong>{{ completedOperations }} / {{ previewRows.length }}</strong>
-        <span>Completed</span>
+        <span>{{ $t('ui.completed') }}</span>
       </div>
     </header>
 
     <section class="sync-settings">
       <label>
-        <span>Left folder</span>
+        <span>{{ $t('ui.leftFolder') }}</span>
         <input
           v-model="leftPath"
           data-testid="folder-sync-left-path"
         />
       </label>
       <label>
-        <span>Right folder</span>
+        <span>{{ $t('ui.rightFolder') }}</span>
         <input
           v-model="rightPath"
           data-testid="folder-sync-right-path"
         />
       </label>
       <label>
-        <span>Strategy</span>
+        <span>{{ $t('ui.strategy') }}</span>
         <select
           v-model="selectedStrategy"
           data-testid="folder-sync-strategy"
@@ -144,18 +144,16 @@ function runSync(): void {
           secondary
           data-testid="folder-sync-preview"
           @click="previewSync"
+          >{{ $t('ui.preview') }}</NButton
         >
-          Preview
-        </NButton>
         <NButton
           size="small"
           type="primary"
           data-testid="folder-sync-run"
           :disabled="!canRunSync"
           @click="runSync"
+          >{{ $t('ui.runSync') }}</NButton
         >
-          Run Sync
-        </NButton>
       </div>
     </section>
 
@@ -170,10 +168,10 @@ function runSync(): void {
       </header>
       <div class="sync-preview-table">
         <div class="sync-preview-row sync-preview-head">
-          <span>Action</span>
-          <span>Source</span>
-          <span>Target</span>
-          <span>Detail</span>
+          <span>{{ $t('ui.action') }}</span>
+          <span>{{ $t('ui.source') }}</span>
+          <span>{{ $t('ui.target') }}</span>
+          <span>{{ $t('ui.detail') }}</span>
         </div>
         <div
           v-for="row in previewRows"
@@ -205,7 +203,6 @@ function runSync(): void {
     </section>
   </section>
 </template>
-
 <style scoped>
 .folder-sync-view {
   display: grid;

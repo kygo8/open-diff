@@ -138,8 +138,8 @@ function lineClass(line: string, paneId: MergePaneId): string {
   <section class="text-merge-view">
     <div class="merge-toolbar">
       <div>
-        <strong>Text Merge</strong>
-        <span>Three-way merge workspace</span>
+        <strong>{{ $t('ui.textMerge') }}</strong>
+        <span>{{ $t('ui.threeWayMergeWorkspace') }}</span>
       </div>
       <span
         class="status-chip"
@@ -147,13 +147,13 @@ function lineClass(line: string, paneId: MergePaneId): string {
       >
         {{ conflictStatus }}
       </span>
-      <span class="status-chip">Output has conflict markers</span>
+      <span class="status-chip">{{ $t('ui.outputHasConflictMarkers') }}</span>
       <input
         v-model="outputPath"
         class="output-path-input"
         data-testid="merge-output-path"
         type="text"
-        aria-label="Merge output path"
+        :aria-label="$t('ui.mergeOutputPath')"
       />
       <button
         type="button"
@@ -162,7 +162,7 @@ function lineClass(line: string, paneId: MergePaneId): string {
         :disabled="saving"
         @click="saveOutput"
       >
-        Save Output
+        {{ $t('ui.saveOutput') }}
       </button>
       <span
         class="status-chip"
@@ -211,10 +211,10 @@ function lineClass(line: string, paneId: MergePaneId): string {
 
     <section
       class="conflict-panel"
-      aria-label="Merge conflicts"
+      :aria-label="$t('ui.mergeConflicts')"
     >
       <header>
-        <h2>Conflicts</h2>
+        <h2>{{ $t('ui.conflicts') }}</h2>
         <span>{{ conflictStatus }}</span>
       </header>
       <ul
@@ -233,7 +233,7 @@ function lineClass(line: string, paneId: MergePaneId): string {
               data-testid="accept-left-conflict"
               @click="acceptConflict('left')"
             >
-              Accept Left
+              {{ $t('ui.acceptLeft') }}
             </button>
           </div>
           <div class="conflict-source">
@@ -243,7 +243,7 @@ function lineClass(line: string, paneId: MergePaneId): string {
               data-testid="accept-base-conflict"
               @click="acceptConflict('base')"
             >
-              Accept Base
+              {{ $t('ui.acceptBase') }}
             </button>
           </div>
           <div class="conflict-source">
@@ -253,7 +253,7 @@ function lineClass(line: string, paneId: MergePaneId): string {
               data-testid="accept-right-conflict"
               @click="acceptConflict('right')"
             >
-              Accept Right
+              {{ $t('ui.acceptRight') }}
             </button>
           </div>
         </li>
@@ -261,7 +261,6 @@ function lineClass(line: string, paneId: MergePaneId): string {
     </section>
   </section>
 </template>
-
 <style scoped>
 .text-merge-view {
   display: grid;

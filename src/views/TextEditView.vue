@@ -202,7 +202,7 @@ function escapeRegExp(value: string): string {
   <section class="text-edit-view">
     <header class="text-edit-header">
       <div>
-        <p class="eyebrow">Text Edit</p>
+        <p class="eyebrow">{{ $t('ui.textEdit') }}</p>
         <h1 data-testid="text-edit-title">{{ fileTitle }}</h1>
       </div>
       <div class="document-stats">
@@ -217,14 +217,14 @@ function escapeRegExp(value: string): string {
         class="path-input"
         data-testid="text-edit-path"
         type="text"
-        aria-label="Text file path"
+        :aria-label="$t('ui.textFilePath')"
       />
       <NButton
         size="small"
         :loading="loading"
         data-testid="text-edit-open"
         @click="openDocument"
-        >Open</NButton
+        >{{ $t('ui.open') }}</NButton
       >
       <NButton
         size="small"
@@ -233,7 +233,7 @@ function escapeRegExp(value: string): string {
         :loading="saving"
         data-testid="text-edit-save"
         @click="saveDocument"
-        >Save</NButton
+        >{{ $t('ui.save') }}</NButton
       >
       <span
         class="status-chip"
@@ -252,7 +252,7 @@ function escapeRegExp(value: string): string {
         class="find-input"
         data-testid="text-edit-find"
         type="search"
-        placeholder="Find"
+        :placeholder="$t('ui.find')"
         :value="findQuery"
         @input="updateFindQuery"
       />
@@ -260,7 +260,7 @@ function escapeRegExp(value: string): string {
         class="find-input"
         data-testid="text-edit-replace"
         type="text"
-        placeholder="Replace"
+        :placeholder="$t('ui.replace')"
         :value="replaceQuery"
         @input="updateReplaceQuery"
       />
@@ -271,7 +271,7 @@ function escapeRegExp(value: string): string {
         :disabled="findMatches.length === 0"
         @click="findPrevious"
       >
-        Previous
+        {{ $t('ui.previous') }}
       </button>
       <button
         type="button"
@@ -280,7 +280,7 @@ function escapeRegExp(value: string): string {
         :disabled="findMatches.length === 0"
         @click="findNext"
       >
-        Next
+        {{ $t('ui.next') }}
       </button>
       <span
         class="status-chip"
@@ -294,7 +294,7 @@ function escapeRegExp(value: string): string {
         :disabled="findMatches.length === 0"
         @click="replaceAll"
       >
-        Replace All
+        {{ $t('ui.replaceAll') }}
       </button>
     </section>
 
@@ -309,12 +309,11 @@ function escapeRegExp(value: string): string {
       :value="editorText"
       type="textarea"
       class="editor-input"
-      placeholder="Open a text file to begin editing"
+      :placeholder="$t('ui.openATextFileToBeginEditing')"
       @update:value="updateEditorText"
     />
   </section>
 </template>
-
 <style scoped>
 .text-edit-view {
   display: grid;

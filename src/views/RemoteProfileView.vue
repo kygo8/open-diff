@@ -254,25 +254,25 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
   <section class="remote-profile-view">
     <header class="profile-header">
       <div>
-        <p class="eyebrow">Settings</p>
-        <h1>Remote Profiles</h1>
+        <p class="eyebrow">{{ $t('ui.settings') }}</p>
+        <h1>{{ $t('ui.remoteProfiles') }}</h1>
       </div>
       <div class="profile-count">
         <strong>{{ profiles.length }}</strong>
-        <span>profiles</span>
+        <span>{{ $t('ui.profileCountLabel') }}</span>
       </div>
     </header>
 
     <section class="profile-workspace">
       <aside class="profile-list-panel">
         <div class="panel-title">
-          <h2>Profiles</h2>
+          <h2>{{ $t('ui.profiles') }}</h2>
           <button
             type="button"
             data-testid="new-remote-profile"
             @click="createNewProfile"
           >
-            New
+            {{ $t('ui.new') }}
           </button>
         </div>
         <div
@@ -299,14 +299,14 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
         data-testid="remote-profile-detail"
       >
         <div class="panel-title">
-          <h2>Profile Details</h2>
+          <h2>{{ $t('ui.profileDetails') }}</h2>
           <div class="profile-actions">
             <button
               type="button"
               data-testid="test-remote-profile"
               @click="testProfileConnection"
             >
-              Test
+              {{ $t('ui.test') }}
             </button>
             <button
               type="button"
@@ -314,14 +314,14 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
               :disabled="!selectedProfile"
               @click="deleteProfile"
             >
-              Delete
+              {{ $t('ui.delete') }}
             </button>
             <button
               type="button"
               data-testid="save-remote-profile"
               @click="saveProfile"
             >
-              Save
+              {{ $t('ui.save') }}
             </button>
           </div>
         </div>
@@ -335,7 +335,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
 
         <div class="profile-form">
           <label>
-            <span>Name</span>
+            <span>{{ $t('ui.name') }}</span>
             <input
               v-model="draft.name"
               data-testid="remote-profile-name-input"
@@ -343,23 +343,23 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
             />
           </label>
           <label>
-            <span>Protocol</span>
+            <span>{{ $t('ui.protocol') }}</span>
             <select
               v-model="draft.protocol"
               data-testid="remote-profile-protocol-select"
             >
-              <option value="ftp">FTP</option>
-              <option value="ftps">FTPS</option>
-              <option value="sftp">SFTP</option>
-              <option value="web-dav">WebDAV</option>
-              <option value="s3">S3</option>
-              <option value="dropbox">Dropbox</option>
-              <option value="one-drive">OneDrive</option>
-              <option value="subversion">Subversion</option>
+              <option value="ftp">{{ $t('ui.ftp') }}</option>
+              <option value="ftps">{{ $t('ui.ftps') }}</option>
+              <option value="sftp">{{ $t('ui.sftp') }}</option>
+              <option value="web-dav">{{ $t('ui.webDav') }}</option>
+              <option value="s3">{{ $t('ui.s3') }}</option>
+              <option value="dropbox">{{ $t('ui.dropbox') }}</option>
+              <option value="one-drive">{{ $t('ui.onedrive') }}</option>
+              <option value="subversion">{{ $t('ui.subversion') }}</option>
             </select>
           </label>
           <label>
-            <span>Host</span>
+            <span>{{ $t('ui.host') }}</span>
             <input
               v-model="draft.host"
               data-testid="remote-profile-host-input"
@@ -367,7 +367,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
             />
           </label>
           <label>
-            <span>Port</span>
+            <span>{{ $t('ui.port') }}</span>
             <input
               v-model.number="draft.port"
               data-testid="remote-profile-port-input"
@@ -377,7 +377,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
             />
           </label>
           <label>
-            <span>Root Path</span>
+            <span>{{ $t('ui.rootPath') }}</span>
             <input
               v-model="draft.rootPath"
               data-testid="remote-profile-root-input"
@@ -385,18 +385,18 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
             />
           </label>
           <label>
-            <span>Credential reference</span>
+            <span>{{ $t('ui.credentialReference') }}</span>
             <select
               v-model="draft.credentialKind"
               data-testid="remote-profile-credential-kind-select"
             >
-              <option value="system-keychain">System keychain</option>
-              <option value="environment">Environment variable</option>
-              <option value="profile-store">Profile store</option>
+              <option value="system-keychain">{{ $t('ui.systemKeychain') }}</option>
+              <option value="environment">{{ $t('ui.environmentVariable') }}</option>
+              <option value="profile-store">{{ $t('ui.profileStore') }}</option>
             </select>
           </label>
           <label class="credential-key">
-            <span>Credential key</span>
+            <span>{{ $t('ui.credentialKey') }}</span>
             <input
               v-model="draft.credentialKey"
               data-testid="remote-profile-credential-key-input"
@@ -416,7 +416,6 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
     </section>
   </section>
 </template>
-
 <style scoped>
 .remote-profile-view {
   display: grid;

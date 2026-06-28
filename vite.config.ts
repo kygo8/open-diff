@@ -16,5 +16,6 @@ export default defineConfig({
   clearScreen: false,
   test: {
     environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
   },
 })

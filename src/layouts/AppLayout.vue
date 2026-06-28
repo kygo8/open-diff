@@ -38,11 +38,11 @@ function closeCommandPalette(): void {
 
 function executeCommand(commandId: CommandId): void {
   if (commandId === 'open.textCompare') {
-    navigate('/compare/text', 'Text Compare')
+    navigate('/compare/text', t('ui.textCompare'))
   }
 
   if (commandId === 'open.settings') {
-    navigate('/settings', 'Settings')
+    navigate('/settings', t('ui.settings'))
   }
 
   if (commandId === 'theme.toggle') {
@@ -58,7 +58,7 @@ function executeCommand(commandId: CommandId): void {
     <header class="top-bar">
       <button
         class="brand"
-        @click="navigate('/', 'Home')"
+        @click="navigate('/', t('ui.home'))"
       >
         {{ t('app.brand') }}
       </button>
@@ -66,19 +66,19 @@ function executeCommand(commandId: CommandId): void {
         <NButton
           quaternary
           size="small"
-          @click="navigate('/compare/text', 'Text Compare')"
+          @click="navigate('/compare/text', t('ui.textCompare'))"
         >
           <template #icon><FileText :size="16" /></template>
-          Text
+          {{ t('ui.text') }}
         </NButton>
         <NButton
           quaternary
           size="small"
           data-testid="open-folder-compare"
-          @click="navigate('/compare/folder', 'Folder Compare')"
+          @click="navigate('/compare/folder', t('ui.folderCompare'))"
         >
           <template #icon><FolderTree :size="16" /></template>
-          Folder
+          {{ t('ui.folder') }}
         </NButton>
       </nav>
       <div class="top-spacer" />
@@ -103,7 +103,7 @@ function executeCommand(commandId: CommandId): void {
         quaternary
         circle
         size="small"
-        @click="navigate('/settings', 'Settings')"
+        @click="navigate('/settings', t('ui.settings'))"
       >
         <template #icon><Settings :size="16" /></template>
       </NButton>
@@ -152,15 +152,14 @@ function executeCommand(commandId: CommandId): void {
             :data-command-id="command.id"
             @click="executeCommand(command.id)"
           >
-            <span>{{ command.title }}</span>
-            <small>{{ command.enabled ? 'Ready' : 'Planned' }}</small>
+            <span>{{ t(command.titleKey) }}</span>
+            <small>{{ command.enabled ? t('command.ready') : t('command.planned') }}</small>
           </button>
         </div>
       </section>
     </div>
   </div>
 </template>
-
 <style scoped>
 .app-shell {
   display: flex;

@@ -147,8 +147,8 @@ function openConflictInTextMerge(conflict: MergeConflict): void {
   <section class="folder-merge-view">
     <header class="merge-header">
       <div>
-        <p class="eyebrow">Folder Merge</p>
-        <h1>Folder Merge</h1>
+        <p class="eyebrow">{{ $t('ui.folderMerge') }}</p>
+        <h1>{{ $t('ui.folderMerge') }}</h1>
       </div>
       <section
         class="merge-summary"
@@ -156,43 +156,43 @@ function openConflictInTextMerge(conflict: MergeConflict): void {
       >
         <div>
           <strong>{{ summary.actions }}</strong>
-          <span>Actions</span>
+          <span>{{ $t('ui.actions') }}</span>
         </div>
         <div>
           <strong>{{ summary.automatic }}</strong>
-          <span>Automatic</span>
+          <span>{{ $t('ui.automatic') }}</span>
         </div>
         <div>
           <strong>{{ summary.conflicts }}</strong>
-          <span>Conflicts</span>
+          <span>{{ $t('ui.conflicts') }}</span>
         </div>
       </section>
     </header>
 
     <section class="merge-paths">
       <label>
-        <span>Left folder</span>
+        <span>{{ $t('ui.leftFolder') }}</span>
         <input
           v-model="leftPath"
           data-testid="folder-merge-left-path"
         />
       </label>
       <label>
-        <span>Base folder</span>
+        <span>{{ $t('ui.baseFolder') }}</span>
         <input
           v-model="basePath"
           data-testid="folder-merge-base-path"
         />
       </label>
       <label>
-        <span>Right folder</span>
+        <span>{{ $t('ui.rightFolder') }}</span>
         <input
           v-model="rightPath"
           data-testid="folder-merge-right-path"
         />
       </label>
       <label>
-        <span>Output folder</span>
+        <span>{{ $t('ui.outputFolder') }}</span>
         <input
           v-model="outputPath"
           data-testid="folder-merge-output-path"
@@ -204,9 +204,8 @@ function openConflictInTextMerge(conflict: MergeConflict): void {
           type="primary"
           data-testid="folder-merge-build-plan"
           @click="buildFolderMergePlan"
+          >{{ $t('ui.buildPlan') }}</NButton
         >
-          Build Plan
-        </NButton>
       </div>
     </section>
 
@@ -224,17 +223,17 @@ function openConflictInTextMerge(conflict: MergeConflict): void {
       data-testid="folder-merge-plan"
     >
       <header>
-        <strong>Merge plan</strong>
+        <strong>{{ $t('ui.mergePlan') }}</strong>
         <span>{{ outputPath }}</span>
       </header>
       <div class="merge-plan-table">
         <div class="merge-plan-row merge-plan-head">
-          <span>Path</span>
-          <span>Base</span>
-          <span>Left</span>
-          <span>Right</span>
-          <span>Action</span>
-          <span>Detail</span>
+          <span>{{ $t('ui.path') }}</span>
+          <span>{{ $t('ui.base') }}</span>
+          <span>{{ $t('ui.left') }}</span>
+          <span>{{ $t('ui.right') }}</span>
+          <span>{{ $t('ui.action') }}</span>
+          <span>{{ $t('ui.detail') }}</span>
         </div>
         <div
           v-for="row in planRows"
@@ -259,7 +258,7 @@ function openConflictInTextMerge(conflict: MergeConflict): void {
       data-testid="folder-merge-conflict-list"
     >
       <header>
-        <strong>Conflicts</strong>
+        <strong>{{ $t('ui.conflicts') }}</strong>
         <span>{{ conflicts.length }} item requires review</span>
       </header>
       <ul>
@@ -277,15 +276,13 @@ function openConflictInTextMerge(conflict: MergeConflict): void {
             secondary
             :data-testid="`open-folder-conflict-${conflict.path}`"
             @click="openConflictInTextMerge(conflict)"
+            >{{ $t('ui.openTextMerge') }}</NButton
           >
-            Open Text Merge
-          </NButton>
         </li>
       </ul>
     </section>
   </section>
 </template>
-
 <style scoped>
 .folder-merge-view {
   display: grid;

@@ -101,18 +101,18 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
   <section class="picture-compare-view">
     <header class="picture-header">
       <div>
-        <p class="eyebrow">Picture Compare</p>
-        <h1>Picture Compare</h1>
+        <p class="eyebrow">{{ $t('ui.pictureCompare') }}</p>
+        <h1>{{ $t('ui.pictureCompare') }}</h1>
       </div>
       <div class="picture-summary">
         <strong data-testid="picture-zoom-value">{{ zoom }}%</strong>
-        <span>shared zoom</span>
+        <span>{{ $t('ui.sharedZoom') }}</span>
       </div>
     </header>
 
     <section class="picture-controls">
       <label>
-        <span>Zoom</span>
+        <span>{{ $t('ui.zoom') }}</span>
         <input
           v-model.number="zoom"
           type="range"
@@ -123,7 +123,7 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
         />
       </label>
       <label>
-        <span>Pan X</span>
+        <span>{{ $t('ui.panX') }}</span>
         <input
           v-model.number="panX"
           type="range"
@@ -134,7 +134,7 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
         />
       </label>
       <label>
-        <span>Pan Y</span>
+        <span>{{ $t('ui.panY') }}</span>
         <input
           v-model.number="panY"
           type="range"
@@ -150,7 +150,7 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
           type="checkbox"
           data-testid="picture-overlay-toggle"
         />
-        <span>Overlay</span>
+        <span>{{ $t('ui.overlay') }}</span>
       </label>
       <div class="picture-transform-tools">
         <button
@@ -158,33 +158,33 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
           data-testid="picture-rotate-counterclockwise"
           @click="rotatePicture(-90)"
         >
-          Rotate Left
+          {{ $t('ui.rotateLeft') }}
         </button>
         <button
           type="button"
           data-testid="picture-rotate-clockwise"
           @click="rotatePicture(90)"
         >
-          Rotate Right
+          {{ $t('ui.rotateRight') }}
         </button>
         <button
           type="button"
           data-testid="picture-flip-horizontal"
           @click="flipHorizontal = !flipHorizontal"
         >
-          Flip H
+          {{ $t('ui.flipH') }}
         </button>
         <button
           type="button"
           data-testid="picture-flip-vertical"
           @click="flipVertical = !flipVertical"
         >
-          Flip V
+          {{ $t('ui.flipV') }}
         </button>
       </div>
       <div class="picture-alignment-controls">
         <label>
-          <span>Offset X</span>
+          <span>{{ $t('ui.offsetX') }}</span>
           <input
             v-model.number="alignmentOffsetX"
             type="number"
@@ -195,7 +195,7 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
           />
         </label>
         <label>
-          <span>Offset Y</span>
+          <span>{{ $t('ui.offsetY') }}</span>
           <input
             v-model.number="alignmentOffsetY"
             type="number"
@@ -229,7 +229,7 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
         class="picture-side"
         data-testid="left-picture-pane"
       >
-        <h2>Left</h2>
+        <h2>{{ $t('ui.left') }}</h2>
         <div
           class="picture-canvas-frame"
           data-testid="picture-canvas-frame"
@@ -261,7 +261,7 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
         class="picture-side"
         data-testid="right-picture-pane"
       >
-        <h2>Right</h2>
+        <h2>{{ $t('ui.right') }}</h2>
         <div
           class="picture-canvas-frame"
           data-testid="picture-canvas-frame"
@@ -295,14 +295,14 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
       data-testid="picture-metadata-panel"
     >
       <header class="metadata-header">
-        <h2>Metadata</h2>
-        <span>Left vs Right</span>
+        <h2>{{ $t('ui.metadata') }}</h2>
+        <span>{{ $t('ui.leftVsRight') }}</span>
       </header>
       <div class="metadata-grid">
-        <div class="metadata-grid-heading">Field</div>
-        <div class="metadata-grid-heading">Left</div>
-        <div class="metadata-grid-heading">Right</div>
-        <div class="metadata-grid-heading">State</div>
+        <div class="metadata-grid-heading">{{ $t('ui.field') }}</div>
+        <div class="metadata-grid-heading">{{ $t('ui.left') }}</div>
+        <div class="metadata-grid-heading">{{ $t('ui.right') }}</div>
+        <div class="metadata-grid-heading">{{ $t('ui.state') }}</div>
         <template
           v-for="row in metadataRows"
           :key="row.key"
@@ -324,7 +324,6 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
     </section>
   </section>
 </template>
-
 <style scoped>
 .picture-compare-view {
   display: grid;

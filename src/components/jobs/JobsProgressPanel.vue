@@ -21,10 +21,10 @@ function progressPercent(job: AppJob): string {
 <template>
   <section
     class="jobs-progress-panel"
-    aria-label="Jobs progress"
+    :aria-label="$t('ui.jobsProgress')"
   >
     <header class="jobs-header">
-      <h2>Jobs</h2>
+      <h2>{{ $t('ui.jobs') }}</h2>
       <span>{{ jobs.length }}</span>
     </header>
 
@@ -32,7 +32,7 @@ function progressPercent(job: AppJob): string {
       v-if="jobs.length === 0"
       class="empty-state"
     >
-      No running jobs
+      {{ $t('ui.noRunningJobs') }}
     </p>
 
     <ul
@@ -64,14 +64,13 @@ function progressPercent(job: AppJob): string {
             :data-testid="`cancel-job-${job.id}`"
             @click="$emit('cancel', job.id)"
           >
-            Cancel
+            {{ $t('ui.cancel') }}
           </button>
         </div>
       </li>
     </ul>
   </section>
 </template>
-
 <style scoped>
 .jobs-progress-panel {
   display: grid;

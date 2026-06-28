@@ -18,17 +18,16 @@ defineProps<{
 
     <dl>
       <div>
-        <dt>Path</dt>
+        <dt>{{ $t('ui.path') }}</dt>
         <dd>{{ error.path }}</dd>
       </div>
       <div>
-        <dt>Suggestion</dt>
+        <dt>{{ $t('ui.suggestion') }}</dt>
         <dd>{{ error.suggestion }}</dd>
       </div>
     </dl>
   </section>
 </template>
-
 <style scoped>
 .structured-error-panel {
   display: grid;

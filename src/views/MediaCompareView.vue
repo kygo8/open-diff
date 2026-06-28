@@ -113,8 +113,8 @@ function valueText(value?: string): string {
   <section class="media-compare-view">
     <header class="media-header">
       <div>
-        <p class="eyebrow">Media Compare</p>
-        <h1>Media Compare</h1>
+        <p class="eyebrow">{{ $t('ui.mediaCompare') }}</p>
+        <h1>{{ $t('ui.mediaCompare') }}</h1>
       </div>
       <div class="media-source-pair">
         <span>Left: {{ leftMedia.name }}</span>
@@ -142,23 +142,23 @@ function valueText(value?: string): string {
         </header>
         <dl>
           <div>
-            <dt>Duration</dt>
+            <dt>{{ $t('ui.duration') }}</dt>
             <dd>{{ leftMedia.duration }}</dd>
           </div>
           <div>
-            <dt>Codec</dt>
+            <dt>{{ $t('ui.codec') }}</dt>
             <dd>{{ leftMedia.stream.codec }}</dd>
           </div>
           <div>
-            <dt>Sample Rate</dt>
+            <dt>{{ $t('ui.sampleRate') }}</dt>
             <dd>{{ leftMedia.stream.sampleRate }}</dd>
           </div>
           <div>
-            <dt>Channels</dt>
+            <dt>{{ $t('ui.channels') }}</dt>
             <dd>{{ leftMedia.stream.channels }}</dd>
           </div>
           <div>
-            <dt>Bitrate</dt>
+            <dt>{{ $t('ui.bitrate') }}</dt>
             <dd>{{ leftMedia.stream.bitrate }}</dd>
           </div>
         </dl>
@@ -171,23 +171,23 @@ function valueText(value?: string): string {
         </header>
         <dl>
           <div>
-            <dt>Duration</dt>
+            <dt>{{ $t('ui.duration') }}</dt>
             <dd>{{ rightMedia.duration }}</dd>
           </div>
           <div>
-            <dt>Codec</dt>
+            <dt>{{ $t('ui.codec') }}</dt>
             <dd>{{ rightMedia.stream.codec }}</dd>
           </div>
           <div>
-            <dt>Sample Rate</dt>
+            <dt>{{ $t('ui.sampleRate') }}</dt>
             <dd>{{ rightMedia.stream.sampleRate }}</dd>
           </div>
           <div>
-            <dt>Channels</dt>
+            <dt>{{ $t('ui.channels') }}</dt>
             <dd>{{ rightMedia.stream.channels }}</dd>
           </div>
           <div>
-            <dt>Bitrate</dt>
+            <dt>{{ $t('ui.bitrate') }}</dt>
             <dd>{{ rightMedia.stream.bitrate }}</dd>
           </div>
         </dl>
@@ -196,7 +196,7 @@ function valueText(value?: string): string {
 
     <section class="media-report-panel">
       <header>
-        <strong>Tag Field Report</strong>
+        <strong>{{ $t('ui.tagFieldReport') }}</strong>
         <span>{{ mediaFields.length }} fields</span>
       </header>
       <div
@@ -204,10 +204,10 @@ function valueText(value?: string): string {
         data-testid="media-report-table"
       >
         <div class="media-field-row media-field-head">
-          <span>Field</span>
-          <span>Left</span>
-          <span>Right</span>
-          <span>Status</span>
+          <span>{{ $t('ui.field') }}</span>
+          <span>{{ $t('ui.left') }}</span>
+          <span>{{ $t('ui.right') }}</span>
+          <span>{{ $t('ui.status') }}</span>
         </div>
         <div
           v-for="row in mediaFields"
@@ -225,7 +225,6 @@ function valueText(value?: string): string {
     </section>
   </section>
 </template>
-
 <style scoped>
 .media-compare-view {
   display: grid;

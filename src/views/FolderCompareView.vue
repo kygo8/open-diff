@@ -731,14 +731,14 @@ function handleTreeScroll(event: Event): void {
     <header class="folder-toolbar">
       <div class="path-pair">
         <label>
-          <span>Left folder</span>
+          <span>{{ $t('ui.leftFolder') }}</span>
           <input
             value="D:/workspace/left"
             readonly
           />
         </label>
         <label>
-          <span>Right folder</span>
+          <span>{{ $t('ui.rightFolder') }}</span>
           <input
             value="D:/workspace/right"
             readonly
@@ -746,39 +746,35 @@ function handleTreeScroll(event: Event): void {
         </label>
       </div>
       <div class="folder-actions">
-        <NButton size="small">Compare</NButton>
+        <NButton size="small">{{ $t('ui.compare') }}</NButton>
         <NButton
           size="small"
           secondary
+          >{{ $t('ui.refresh') }}</NButton
         >
-          Refresh
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="preview-sync-plan"
           @click="previewSyncPlan"
+          >{{ $t('ui.previewSync') }}</NButton
         >
-          Preview Sync
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="open-selected-file"
           :disabled="!selectedFilePath"
           @click="openSelectedFile"
+          >{{ $t('ui.open') }}</NButton
         >
-          Open
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="open-with-selected-file"
           :disabled="!selectedFilePath"
           @click="openSelectedFileWithTextEdit"
+          >{{ $t('ui.openWith') }}</NButton
         >
-          Open With
-        </NButton>
         <NButton
           v-for="application in enabledExternalApplications"
           :key="application.id"
@@ -796,124 +792,110 @@ function handleTreeScroll(event: Event): void {
           data-testid="open-associated-file"
           :disabled="!selectedFilePath"
           @click="openSelectedFileWithAssociatedApplication"
+          >{{ $t('ui.associatedApp') }}</NButton
         >
-          Associated App
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="quick-compare-selected-file"
           :disabled="!selectedFilePath"
           @click="quickCompareSelectedFile"
+          >{{ $t('ui.quickCompare') }}</NButton
         >
-          Quick Compare
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="compare-to-selected-file"
           :disabled="!selectedFilePath"
           @click="compareSelectedFileToCounterpart"
+          >{{ $t('ui.compareTo') }}</NButton
         >
-          Compare To
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="copy-selected-to-left"
           :disabled="!selectedFilePath"
           @click="copySelectedTo('Left')"
+          >{{ $t('ui.copyLeft') }}</NButton
         >
-          Copy Left
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="copy-selected-to-right"
           :disabled="!selectedFilePath"
           @click="copySelectedTo('Right')"
+          >{{ $t('ui.copyRight') }}</NButton
         >
-          Copy Right
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="move-selected-file"
           :disabled="!selectedFilePath"
           @click="moveSelectedFile"
+          >{{ $t('ui.move') }}</NButton
         >
-          Move
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="delete-selected-file"
           :disabled="!selectedFilePath"
           @click="deleteSelectedFile"
+          >{{ $t('ui.delete') }}</NButton
         >
-          Delete
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="rename-selected-file"
           :disabled="!selectedFilePath"
           @click="renameSelectedFile"
+          >{{ $t('ui.rename') }}</NButton
         >
-          Rename
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="exclude-selected-row"
           :disabled="!selectedRowId"
           @click="excludeSelectedRow"
+          >{{ $t('ui.exclude') }}</NButton
         >
-          Exclude
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="refresh-selected-row"
           :disabled="!selectedRowId"
           @click="refreshSelectedRow"
+          >{{ $t('ui.refreshSelection') }}</NButton
         >
-          Refresh Selection
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="previous-folder-difference"
           :disabled="differenceRows.length === 0"
           @click="navigateFolderDifference('previous')"
+          >{{ $t('ui.previousDifference') }}</NButton
         >
-          Previous Difference
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="next-folder-difference"
           :disabled="differenceRows.length === 0"
           @click="navigateFolderDifference('next')"
+          >{{ $t('ui.nextDifference') }}</NButton
         >
-          Next Difference
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="expand-all-folders"
           @click="expandAllFolders"
+          >{{ $t('ui.openAll') }}</NButton
         >
-          Open All
-        </NButton>
         <NButton
           size="small"
           secondary
           data-testid="collapse-all-folders"
           @click="collapseAllFolders"
+          >{{ $t('ui.closeAll') }}</NButton
         >
-          Close All
-        </NButton>
       </div>
     </header>
 
@@ -951,22 +933,22 @@ function handleTreeScroll(event: Event): void {
           data-testid="toggle-suppressed-filters"
           type="checkbox"
         />
-        <span>Suppressed</span>
+        <span>{{ $t('ui.suppressed') }}</span>
       </label>
     </section>
 
     <section class="folder-summary">
       <div>
         <strong>{{ summary.total }}</strong>
-        <span>Items</span>
+        <span>{{ $t('ui.items') }}</span>
       </div>
       <div>
         <strong>{{ summary.different }}</strong>
-        <span>Different</span>
+        <span>{{ $t('ui.different') }}</span>
       </div>
       <div>
         <strong>{{ summary.orphans }}</strong>
-        <span>Orphans</span>
+        <span>{{ $t('ui.orphans') }}</span>
       </div>
     </section>
 
@@ -977,7 +959,7 @@ function handleTreeScroll(event: Event): void {
     >
       <header class="sync-preview-header">
         <div>
-          <strong>Sync preview</strong>
+          <strong>{{ $t('ui.syncPreview') }}</strong>
           <span>{{ syncPreviewItems.length }} operations</span>
         </div>
         <NButton
@@ -985,17 +967,15 @@ function handleTreeScroll(event: Event): void {
           secondary
           data-testid="close-sync-preview"
           @click="closeSyncPreview"
+          >{{ $t('ui.close') }}</NButton
         >
-          Close
-        </NButton>
         <NButton
           size="small"
           type="primary"
           data-testid="run-sync-preview"
           @click="runSyncPreview"
+          >{{ $t('ui.runSync') }}</NButton
         >
-          Run Sync
-        </NButton>
       </header>
       <section
         v-if="pendingSyncSafetyItems.length > 0"
@@ -1003,7 +983,7 @@ function handleTreeScroll(event: Event): void {
         data-testid="sync-safety-confirmation"
       >
         <div>
-          <strong>Confirm risky sync actions</strong>
+          <strong>{{ $t('ui.confirmRiskySyncActions') }}</strong>
           <span>{{ pendingSyncSafetyItems.length }} overwrite/delete operations need review.</span>
         </div>
         <ul>
@@ -1020,17 +1000,16 @@ function handleTreeScroll(event: Event): void {
           type="primary"
           data-testid="confirm-sync-safety"
           @click="confirmSyncSafety"
+          >{{ $t('ui.confirmSync') }}</NButton
         >
-          Confirm Sync
-        </NButton>
       </section>
       <div class="sync-preview-table">
         <div class="sync-preview-row sync-preview-row-head">
-          <span>Action</span>
-          <span>Source</span>
-          <span>Target</span>
-          <span>Detail</span>
-          <span>Change</span>
+          <span>{{ $t('ui.action') }}</span>
+          <span>{{ $t('ui.source') }}</span>
+          <span>{{ $t('ui.target') }}</span>
+          <span>{{ $t('ui.detail') }}</span>
+          <span>{{ $t('ui.change') }}</span>
         </div>
         <div
           v-for="item in syncPreviewItems"
@@ -1050,18 +1029,16 @@ function handleTreeScroll(event: Event): void {
               secondary
               :data-testid="`sync-preview-leave-${item.id}`"
               @click="markSyncPreviewItemAsLeave(item.id)"
+              >{{ $t('ui.leave') }}</NButton
             >
-              Leave
-            </NButton>
             <NButton
               size="tiny"
               secondary
               :disabled="!item.originalSourcePath || !item.originalTargetPath"
               :data-testid="`sync-preview-reverse-${item.id}`"
               @click="reverseSyncPreviewItem(item.id)"
+              >{{ $t('ui.reverse') }}</NButton
             >
-              Reverse
-            </NButton>
           </span>
         </div>
       </div>
@@ -1081,9 +1058,8 @@ function handleTreeScroll(event: Event): void {
         type="primary"
         data-testid="confirm-rename-file"
         @click="confirmRenameFile"
+        >{{ $t('ui.rename') }}</NButton
       >
-        Rename
-      </NButton>
     </section>
 
     <section
@@ -1113,7 +1089,7 @@ function handleTreeScroll(event: Event): void {
           :disabled="!selectedFilePath"
           @change="toggleSelectedReadonly(($event.target as HTMLInputElement).checked)"
         />
-        <span>Readonly</span>
+        <span>{{ $t('ui.readonly') }}</span>
       </label>
       <NButton
         size="small"
@@ -1121,9 +1097,8 @@ function handleTreeScroll(event: Event): void {
         data-testid="touch-selected-file"
         :disabled="!selectedFilePath"
         @click="touchSelectedFile"
+        >{{ $t('ui.touch') }}</NButton
       >
-        Touch
-      </NButton>
     </section>
 
     <section
@@ -1149,7 +1124,7 @@ function handleTreeScroll(event: Event): void {
         v-model="alignWithTargetId"
         data-testid="align-with-target"
       >
-        <option value="">Select target</option>
+        <option value="">{{ $t('ui.selectTarget') }}</option>
         <option
           v-for="candidate in alignWithCandidates"
           :key="candidate.id"
@@ -1164,18 +1139,16 @@ function handleTreeScroll(event: Event): void {
         data-testid="align-with-selected-file"
         :disabled="!selectedRowId || !alignWithTargetId"
         @click="alignSelectedFileWithTarget"
+        >{{ $t('ui.alignWith') }}</NButton
       >
-        Align With
-      </NButton>
       <NButton
         size="small"
         secondary
         data-testid="break-selected-alignment"
         :disabled="!selectedRowId"
         @click="breakSelectedAlignment"
+        >{{ $t('ui.breakAlignment') }}</NButton
       >
-        Break Alignment
-      </NButton>
     </section>
 
     <section
@@ -1251,45 +1224,39 @@ function handleTreeScroll(event: Event): void {
         class="tree-head"
         :style="{ gridTemplateColumns }"
       >
-        <span>Name</span>
+        <span>{{ $t('ui.name') }}</span>
         <span
           v-if="isColumnVisible('size')"
           data-column="left-size"
+          >{{ $t('ui.size') }}</span
         >
-          Size
-        </span>
         <span
           v-if="isColumnVisible('modified')"
           data-column="left-modified"
+          >{{ $t('ui.modified') }}</span
         >
-          Modified
-        </span>
         <span
           v-if="isColumnVisible('type')"
           data-column="left-type"
+          >{{ $t('ui.type') }}</span
         >
-          Type
-        </span>
-        <span>Status</span>
-        <span>Name</span>
+        <span>{{ $t('ui.status') }}</span>
+        <span>{{ $t('ui.name') }}</span>
         <span
           v-if="isColumnVisible('size')"
           data-column="right-size"
+          >{{ $t('ui.size') }}</span
         >
-          Size
-        </span>
         <span
           v-if="isColumnVisible('modified')"
           data-column="right-modified"
+          >{{ $t('ui.modified') }}</span
         >
-          Modified
-        </span>
         <span
           v-if="isColumnVisible('type')"
           data-column="right-type"
+          >{{ $t('ui.type') }}</span
         >
-          Type
-        </span>
       </div>
       <div
         class="tree-body"
@@ -1332,9 +1299,8 @@ function handleTreeScroll(event: Event): void {
               <small
                 v-if="isSuppressed(row)"
                 :data-testid="`suppressed-marker-${row.id}`"
+                >{{ $t('ui.suppressed') }}</small
               >
-                Suppressed
-              </small>
             </span>
             <span
               v-if="isColumnVisible('size')"
@@ -1385,7 +1351,6 @@ function handleTreeScroll(event: Event): void {
     </section>
   </section>
 </template>
-
 <style scoped>
 .folder-compare-view {
   display: grid;

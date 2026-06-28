@@ -418,12 +418,12 @@ const splitBySyntaxTokens = (
     :class="{ 'diff-panel-word-wrap': wordWrap }"
   >
     <div class="diff-header">
-      <span>Left</span>
-      <span>Right</span>
+      <span>{{ $t('ui.left') }}</span>
+      <span>{{ $t('ui.right') }}</span>
       <div class="diff-tools">
         <div
           class="diff-filter"
-          aria-label="Diff display mode"
+          :aria-label="$t('ui.diffDisplayMode')"
         >
           <button
             type="button"
@@ -432,7 +432,7 @@ const splitBySyntaxTokens = (
             data-testid="text-diff-show-all"
             @click="setDisplayMode('all')"
           >
-            Show All
+            {{ $t('ui.showAll') }}
           </button>
           <button
             type="button"
@@ -441,12 +441,12 @@ const splitBySyntaxTokens = (
             data-testid="text-diff-show-differences"
             @click="setDisplayMode('differences')"
           >
-            Show Differences
+            {{ $t('ui.showDifferences') }}
           </button>
         </div>
-        <label class="diff-context-control">
-          Context
-          <input
+        <label class="diff-context-control"
+          >{{ $t('ui.context')
+          }}<input
             class="diff-context-input"
             data-testid="text-diff-context-lines"
             type="number"
@@ -464,7 +464,7 @@ const splitBySyntaxTokens = (
           data-testid="text-diff-toggle-whitespace"
           @click="toggleWhitespace"
         >
-          Whitespace
+          {{ $t('ui.whitespace') }}
         </button>
         <button
           type="button"
@@ -473,31 +473,31 @@ const splitBySyntaxTokens = (
           data-testid="text-diff-toggle-word-wrap"
           @click="toggleWordWrap"
         >
-          Wrap
+          {{ $t('ui.wrap') }}
         </button>
         <div
           class="diff-navigation"
-          aria-label="Difference navigation"
+          :aria-label="$t('ui.differenceNavigation')"
         >
           <button
             type="button"
             class="diff-navigation-button"
             data-testid="text-diff-previous-diff"
             :disabled="diffMarkers.length === 0"
-            aria-label="Previous difference"
+            :aria-label="$t('ui.previousDifferenceAria')"
             @click="jumpToPreviousDiff"
           >
-            Previous
+            {{ $t('ui.previous') }}
           </button>
           <button
             type="button"
             class="diff-navigation-button"
             data-testid="text-diff-next-diff"
             :disabled="diffMarkers.length === 0"
-            aria-label="Next difference"
+            :aria-label="$t('ui.nextDifferenceAria')"
             @click="jumpToNextDiff"
           >
-            Next
+            {{ $t('ui.next') }}
           </button>
         </div>
       </div>
@@ -573,7 +573,7 @@ const splitBySyntaxTokens = (
     </div>
     <div
       class="diff-minimap"
-      aria-label="Difference map"
+      :aria-label="$t('ui.differenceMap')"
       data-testid="text-diff-minimap"
     >
       <button
@@ -590,7 +590,6 @@ const splitBySyntaxTokens = (
     </div>
   </div>
 </template>
-
 <style scoped>
 .diff-panel {
   position: relative;

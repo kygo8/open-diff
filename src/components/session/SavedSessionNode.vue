@@ -45,7 +45,7 @@ const emit = defineEmits<{
       <div class="node-actions">
         <button
           type="button"
-          title="Change rules"
+          :title="$t('ui.changeRules')"
           :data-testid="`change-rules-session-${node.id}`"
           :disabled="node.session.metadata.locked"
           @click="emit('change-rules', node.id)"
@@ -54,44 +54,43 @@ const emit = defineEmits<{
         </button>
         <button
           type="button"
-          title="Rename"
+          :title="$t('ui.rename')"
           :data-testid="`rename-session-${node.id}`"
           :disabled="node.session.metadata.locked"
           @click="emit('rename', node.id)"
         >
-          R
+          {{ $t('ui.r') }}
         </button>
         <button
           type="button"
-          title="Copy"
+          :title="$t('ui.copy')"
           :data-testid="`copy-session-${node.id}`"
           @click="emit('copy', node.id)"
         >
-          C
+          {{ $t('ui.c') }}
         </button>
         <button
           type="button"
-          title="Move"
+          :title="$t('ui.move')"
           :data-testid="`move-session-${node.id}`"
           :disabled="node.session.metadata.locked"
           @click="emit('move', node.id)"
         >
-          M
+          {{ $t('ui.m') }}
         </button>
         <button
           type="button"
-          title="Delete"
+          :title="$t('ui.delete')"
           :data-testid="`delete-session-${node.id}`"
           :disabled="node.session.metadata.locked"
           @click="emit('delete', node.id)"
         >
-          D
+          {{ $t('ui.d') }}
         </button>
       </div>
     </div>
   </li>
 </template>
-
 <style scoped>
 .saved-session-node {
   list-style: none;

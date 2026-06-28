@@ -43,7 +43,7 @@ defineEmits<{
         data-testid="cancel-file-operation"
         @click="$emit('cancel')"
       >
-        Cancel
+        {{ $t('ui.cancel') }}
       </button>
       <button
         type="button"
@@ -56,7 +56,6 @@ defineEmits<{
     </footer>
   </section>
 </template>
-
 <style scoped>
 .file-operation-confirm {
   display: grid;

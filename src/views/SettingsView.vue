@@ -38,20 +38,20 @@ function updateLocale(value: string): void {
 
 <template>
   <section class="settings-view">
-    <h1>Settings</h1>
+    <h1>{{ $t('ui.settings') }}</h1>
     <NCard
-      title="Appearance"
+      :title="$t('ui.appearance')"
       size="small"
     >
       <NSpace align="center">
-        <span>Theme</span>
+        <span>{{ $t('ui.theme') }}</span>
         <NRadioGroup v-model:value="settings.theme">
-          <NRadioButton value="dark">Dark</NRadioButton>
-          <NRadioButton value="light">Light</NRadioButton>
+          <NRadioButton value="dark">{{ $t('ui.dark') }}</NRadioButton>
+          <NRadioButton value="light">{{ $t('ui.light') }}</NRadioButton>
         </NRadioGroup>
       </NSpace>
       <NSpace align="center">
-        <span>Language</span>
+        <span>{{ $t('ui.language') }}</span>
         <NSelect
           :value="settings.locale"
           class="locale-select"
@@ -63,67 +63,64 @@ function updateLocale(value: string): void {
     </NCard>
 
     <NCard
-      title="File Formats"
+      :title="$t('ui.fileFormats')"
       size="small"
     >
       <div class="settings-row">
         <div>
-          <strong>Format definitions</strong>
-          <span>Manage matching rules, default views, and rule references.</span>
+          <strong>{{ $t('ui.formatDefinitions') }}</strong>
+          <span>{{ $t('ui.manageMatchingRulesDefaultViewsAndRuleReferences') }}</span>
         </div>
         <NButton
           size="small"
           data-testid="open-file-formats"
           @click="openFileFormats"
+          >{{ $t('ui.manage') }}</NButton
         >
-          Manage
-        </NButton>
       </div>
     </NCard>
 
     <NCard
-      title="Remote Profiles"
+      :title="$t('ui.remoteProfiles')"
       size="small"
     >
       <div class="settings-row">
         <div>
-          <strong>Connection profiles</strong>
-          <span>Manage remote endpoints and credential references.</span>
+          <strong>{{ $t('ui.connectionProfiles') }}</strong>
+          <span>{{ $t('ui.manageRemoteEndpointsAndCredentialReferences') }}</span>
         </div>
         <NButton
           size="small"
           data-testid="open-remote-profiles"
           @click="openRemoteProfiles"
+          >{{ $t('ui.manage') }}</NButton
         >
-          Manage
-        </NButton>
       </div>
     </NCard>
 
     <NCard
-      title="Shared Sessions"
+      :title="$t('ui.sharedSessions')"
       size="small"
     >
       <div class="shared-session-config">
         <div class="settings-row">
           <div>
-            <strong>Session file paths</strong>
-            <span>Load team sessions as read-only entries.</span>
+            <strong>{{ $t('ui.sessionFilePaths') }}</strong>
+            <span>{{ $t('ui.loadTeamSessionsAsReadOnlyEntries') }}</span>
           </div>
         </div>
         <div class="shared-session-input">
           <NInput
             v-model:value="sharedSessionPathDraft"
             data-testid="shared-session-path-input"
-            placeholder="C:/team/shared.open-diff-session.json"
+            :placeholder="$t('ui.sharedSessionPathPlaceholder')"
           />
           <NButton
             size="small"
             data-testid="add-shared-session-path"
             @click="addSharedSessionPath"
+            >{{ $t('ui.add') }}</NButton
           >
-            Add
-          </NButton>
         </div>
         <ul class="shared-session-list">
           <li
@@ -135,16 +132,14 @@ function updateLocale(value: string): void {
               text
               size="small"
               @click="settings.removeSharedSessionPath(path)"
+              >{{ $t('ui.remove') }}</NButton
             >
-              Remove
-            </NButton>
           </li>
         </ul>
       </div>
     </NCard>
   </section>
 </template>
-
 <style scoped>
 .settings-view {
   display: grid;

@@ -7,7 +7,7 @@ export type CommandId =
 
 export interface AppCommand {
   id: CommandId
-  title: string
+  titleKey: string
   keywords: string[]
   enabled: boolean
 }
@@ -15,31 +15,31 @@ export interface AppCommand {
 export const commandRegistry: AppCommand[] = [
   {
     id: 'open.textCompare',
-    title: 'Open Text Compare',
+    titleKey: 'command.openTextCompare',
     keywords: ['text', 'compare', 'open'],
     enabled: true,
   },
   {
     id: 'open.settings',
-    title: 'Open Settings',
+    titleKey: 'command.openSettings',
     keywords: ['settings', 'preferences', 'open'],
     enabled: true,
   },
   {
     id: 'theme.toggle',
-    title: 'Toggle Theme',
+    titleKey: 'command.toggleTheme',
     keywords: ['theme', 'appearance', 'dark', 'light'],
     enabled: true,
   },
   {
     id: 'diff.previous',
-    title: 'Previous Difference',
+    titleKey: 'command.previousDifference',
     keywords: ['previous', 'diff', 'difference', 'navigation'],
     enabled: false,
   },
   {
     id: 'diff.next',
-    title: 'Next Difference',
+    titleKey: 'command.nextDifference',
     keywords: ['next', 'diff', 'difference', 'navigation'],
     enabled: false,
   },
@@ -53,7 +53,7 @@ export function filterCommands(commands: AppCommand[], query: string): AppComman
   }
 
   return commands.filter((command) => {
-    const searchable = [command.title, ...command.keywords].join(' ').toLowerCase()
+    const searchable = [command.titleKey, ...command.keywords].join(' ').toLowerCase()
 
     return terms.every((term) => searchable.includes(term))
   })

@@ -436,7 +436,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
 <template>
   <section class="text-compare-view">
     <div class="compare-toolbar">
-      <strong>Text Compare</strong>
+      <strong>{{ $t('ui.textCompare') }}</strong>
       <span class="stats">{{ statsLabel }}</span>
       <span
         class="status-chip"
@@ -461,7 +461,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="leftUndoStack.length === 0"
         @click="undoLeft"
       >
-        Undo
+        {{ $t('ui.undo') }}
       </button>
       <button
         type="button"
@@ -470,7 +470,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="leftRedoStack.length === 0"
         @click="redoLeft"
       >
-        Redo
+        {{ $t('ui.redo') }}
       </button>
       <button
         type="button"
@@ -479,7 +479,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="!result"
         @click="copyCurrentDiff('leftToRight')"
       >
-        Left to Right
+        {{ $t('ui.leftToRight') }}
       </button>
       <button
         type="button"
@@ -488,7 +488,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="!result"
         @click="copyCurrentDiff('rightToLeft')"
       >
-        Right to Left
+        {{ $t('ui.rightToLeft') }}
       </button>
       <button
         type="button"
@@ -497,7 +497,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="activeDiffRows.length === 0"
         @click="ignoreCurrentDiff"
       >
-        Ignore
+        {{ $t('ui.ignore') }}
       </button>
       <button
         type="button"
@@ -506,7 +506,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="!canPreviewHtml"
         @click="toggleHtmlPreview"
       >
-        Preview
+        {{ $t('ui.preview') }}
       </button>
       <select
         v-model.number="selectedBookmark"
@@ -528,7 +528,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="activeDiffRows.length === 0"
         @click="setBookmark"
       >
-        Set
+        {{ $t('ui.set') }}
       </button>
       <button
         type="button"
@@ -537,7 +537,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="!bookmarks[selectedBookmark]"
         @click="jumpToBookmark"
       >
-        Jump
+        {{ $t('ui.jump') }}
       </button>
       <button
         type="button"
@@ -546,7 +546,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="!bookmarks[selectedBookmark]"
         @click="clearBookmark"
       >
-        Clear
+        {{ $t('ui.clear') }}
       </button>
       <span
         class="status-chip"
@@ -558,9 +558,9 @@ function closeHtmlPreviewWhenUnavailable(): void {
         class="algorithm-select"
         data-testid="algorithm-select"
       >
-        <option value="myers">Myers</option>
-        <option value="patience">Patience</option>
-        <option value="histogram">Histogram</option>
+        <option value="myers">{{ $t('ui.myers') }}</option>
+        <option value="patience">{{ $t('ui.patience') }}</option>
+        <option value="histogram">{{ $t('ui.histogram') }}</option>
       </select>
       <NButton
         size="small"
@@ -568,7 +568,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :loading="loading"
         data-testid="run-diff"
         @click="runDiff"
-        >Run Diff</NButton
+        >{{ $t('ui.runDiff') }}</NButton
       >
     </div>
 
@@ -576,13 +576,13 @@ function closeHtmlPreviewWhenUnavailable(): void {
       <NInput
         :value="left"
         type="textarea"
-        placeholder="Left content"
+        :placeholder="$t('ui.leftContent')"
         @update:value="updateLeft"
       />
       <NInput
         :value="right"
         type="textarea"
-        placeholder="Right content"
+        :placeholder="$t('ui.rightContent')"
         @update:value="updateRight"
       />
     </div>
@@ -592,7 +592,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         class="find-input"
         data-testid="find-query"
         type="search"
-        placeholder="Find"
+        :placeholder="$t('ui.find')"
         :value="findQuery"
         @input="updateFindQuery"
       />
@@ -600,7 +600,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         class="find-input"
         data-testid="replace-query"
         type="text"
-        placeholder="Replace"
+        :placeholder="$t('ui.replace')"
         :value="replaceQuery"
         @input="updateReplaceQuery"
       />
@@ -609,25 +609,22 @@ function closeHtmlPreviewWhenUnavailable(): void {
           v-model="findRegex"
           data-testid="find-regex"
           type="checkbox"
-        />
-        Regex
-      </label>
+        />{{ $t('ui.regex') }}</label
+      >
       <label class="find-option">
         <input
           v-model="findCaseSensitive"
           data-testid="find-case-sensitive"
           type="checkbox"
-        />
-        Case
-      </label>
+        />{{ $t('ui.case') }}</label
+      >
       <label class="find-option">
         <input
           v-model="findWholeWord"
           data-testid="find-whole-word"
           type="checkbox"
-        />
-        Word
-      </label>
+        />{{ $t('ui.word') }}</label
+      >
       <button
         type="button"
         class="toolbar-button"
@@ -635,7 +632,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="findMatches.length === 0"
         @click="findPrevious"
       >
-        Previous
+        {{ $t('ui.previous') }}
       </button>
       <button
         type="button"
@@ -644,7 +641,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="findMatches.length === 0"
         @click="findNext"
       >
-        Next
+        {{ $t('ui.next') }}
       </button>
       <span
         class="status-chip"
@@ -658,7 +655,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :disabled="findMatches.length === 0"
         @click="replaceAll"
       >
-        Replace All
+        {{ $t('ui.replaceAll') }}
       </button>
     </div>
 
@@ -678,26 +675,26 @@ function closeHtmlPreviewWhenUnavailable(): void {
       v-else
       class="empty"
     >
-      Run the sample comparison to render the custom diff view.
+      {{ $t('ui.runTheSampleComparisonToRenderTheCustomDiffView') }}
     </div>
 
     <section
       v-if="result"
       class="details-panel"
-      aria-label="Text and hex details"
+      :aria-label="$t('ui.textAndHexDetails')"
     >
       <div
         class="details-cell"
         data-testid="text-details"
       >
-        <strong>Text Details</strong>
+        <strong>{{ $t('ui.textDetails') }}</strong>
         <span>{{ textDetails }}</span>
       </div>
       <div
         class="details-cell"
         data-testid="hex-details"
       >
-        <strong>Hex Details</strong>
+        <strong>{{ $t('ui.hexDetails') }}</strong>
         <span>{{ hexDetails }}</span>
       </div>
     </section>
@@ -705,25 +702,24 @@ function closeHtmlPreviewWhenUnavailable(): void {
     <section
       v-if="showHtmlPreview"
       class="html-preview-panel"
-      aria-label="HTML preview"
+      :aria-label="$t('ui.htmlPreview')"
     >
       <iframe
         class="html-preview-frame"
         data-testid="html-preview"
-        title="Left HTML preview"
+        :title="$t('ui.leftHtmlPreview')"
         sandbox=""
         :srcdoc="left"
       />
       <iframe
         class="html-preview-frame"
-        title="Right HTML preview"
+        :title="$t('ui.rightHtmlPreview')"
         sandbox=""
         :srcdoc="right"
       />
     </section>
   </section>
 </template>
-
 <style scoped>
 .text-compare-view {
   display: flex;

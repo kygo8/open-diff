@@ -201,12 +201,12 @@ function restoreWorkspaceFromRecovery(): void {
   <section class="home-view">
     <header class="home-header">
       <div>
-        <p class="eyebrow">Session launcher</p>
-        <h1>Choose a comparison workspace</h1>
+        <p class="eyebrow">{{ $t('ui.sessionLauncher') }}</p>
+        <h1>{{ $t('ui.chooseAComparisonWorkspace') }}</h1>
       </div>
       <div class="home-summary">
         <strong>{{ sessionCatalog.length }}</strong>
-        <span>session types</span>
+        <span>{{ $t('ui.sessionTypes') }}</span>
       </div>
     </header>
 
@@ -218,7 +218,7 @@ function restoreWorkspaceFromRecovery(): void {
       @drop="handleDrop"
     >
       <div>
-        <strong>Drop two files or folders</strong>
+        <strong>{{ $t('ui.dropTwoFilesOrFolders') }}</strong>
         <span v-if="dropResult.kind === 'invalid'">{{ dropResult.reason }}</span>
         <span v-else>
           {{ dropResult.kind }} detected: {{ dropResult.left.displayName }} and
@@ -233,23 +233,21 @@ function restoreWorkspaceFromRecovery(): void {
         size="small"
         :disabled="!selectedDropSession?.enabled"
         @click="openSelectedDropSession"
+        >{{ $t('ui.openSuggestedView') }}</NButton
       >
-        Open Suggested View
-      </NButton>
     </section>
 
     <section class="clipboard-source">
       <div>
-        <strong>Clipboard text</strong>
+        <strong>{{ $t('ui.clipboardText') }}</strong>
         <span>{{ clipboardStatus }}</span>
       </div>
       <NButton
         size="small"
         data-testid="open-clipboard-text"
         @click="openClipboardText"
+        >{{ $t('ui.openClipboard') }}</NButton
       >
-        Open Clipboard
-      </NButton>
     </section>
 
     <div class="home-content">
@@ -297,7 +295,7 @@ function restoreWorkspaceFromRecovery(): void {
         data-testid="saved-sessions"
       >
         <div class="saved-sessions-header">
-          <h2>Saved Sessions</h2>
+          <h2>{{ $t('ui.savedSessions') }}</h2>
           <span>{{ filteredSavedSessions.length }}</span>
         </div>
         <div
@@ -311,7 +309,7 @@ function restoreWorkspaceFromRecovery(): void {
             data-testid="restore-recovery"
             @click="restoreWorkspaceFromRecovery"
           >
-            Restore Recent
+            {{ $t('ui.restoreRecent') }}
           </button>
         </div>
         <div class="saved-session-filters">
@@ -319,7 +317,7 @@ function restoreWorkspaceFromRecovery(): void {
             v-model="sessionSearch"
             data-testid="session-search"
             type="search"
-            placeholder="Search sessions"
+            :placeholder="$t('ui.searchSessions')"
           />
           <label
             v-for="type in savedSessionTypes"
@@ -356,14 +354,13 @@ function restoreWorkspaceFromRecovery(): void {
             type="button"
             @click="saveAndClosePendingSession"
           >
-            Save
+            {{ $t('ui.save') }}
           </button>
         </div>
       </aside>
     </div>
   </section>
 </template>
-
 <style scoped>
 .home-view {
   height: 100%;

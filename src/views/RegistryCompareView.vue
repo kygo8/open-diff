@@ -147,12 +147,12 @@ function registryValueText(value?: RegistryValueSide): string {
   <section class="registry-compare-view">
     <header class="registry-header">
       <div>
-        <p class="eyebrow">Registry Compare</p>
-        <h1>Registry Compare</h1>
+        <p class="eyebrow">{{ $t('ui.registryCompare') }}</p>
+        <h1>{{ $t('ui.registryCompare') }}</h1>
       </div>
       <div class="registry-source-pair">
-        <span>Left: Current export</span>
-        <span>Right: Updated export</span>
+        <span>{{ $t('ui.leftCurrentExport') }}</span>
+        <span>{{ $t('ui.rightUpdatedExport') }}</span>
       </div>
     </header>
 
@@ -173,7 +173,7 @@ function registryValueText(value?: RegistryValueSide): string {
     <section class="registry-layout">
       <aside class="registry-key-pane">
         <header>
-          <strong>Keys</strong>
+          <strong>{{ $t('ui.keys') }}</strong>
           <span>{{ flatRegistryKeys.length }} keys</span>
         </header>
         <div class="registry-key-list">
@@ -195,16 +195,16 @@ function registryValueText(value?: RegistryValueSide): string {
 
       <section class="registry-value-pane">
         <header>
-          <strong>Values</strong>
+          <strong>{{ $t('ui.values') }}</strong>
           <span>{{ allRegistryValues.length }} values</span>
         </header>
         <div class="registry-value-table">
           <div class="registry-value-row registry-value-head">
-            <span>Key</span>
-            <span>Name</span>
-            <span>Left</span>
-            <span>Right</span>
-            <span>Status</span>
+            <span>{{ $t('ui.key') }}</span>
+            <span>{{ $t('ui.name') }}</span>
+            <span>{{ $t('ui.left') }}</span>
+            <span>{{ $t('ui.right') }}</span>
+            <span>{{ $t('ui.status') }}</span>
           </div>
           <div
             v-for="value in allRegistryValues"
@@ -224,7 +224,6 @@ function registryValueText(value?: RegistryValueSide): string {
     </section>
   </section>
 </template>
-
 <style scoped>
 .registry-compare-view {
   display: grid;

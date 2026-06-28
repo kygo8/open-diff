@@ -68,18 +68,18 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
   <section class="hex-compare-view">
     <header class="hex-header">
       <div>
-        <p class="eyebrow">Hex Compare</p>
-        <h1>Hex Compare</h1>
+        <p class="eyebrow">{{ $t('ui.hexCompare') }}</p>
+        <h1>{{ $t('ui.hexCompare') }}</h1>
       </div>
       <div class="hex-summary">
         <strong>{{ bytes.length }}</strong>
-        <span>bytes loaded</span>
+        <span>{{ $t('ui.bytesLoaded') }}</span>
       </div>
     </header>
 
     <section class="hex-wrap-controls">
       <label>
-        <span>Viewport width</span>
+        <span>{{ $t('ui.viewportWidth') }}</span>
         <input
           v-model.number="viewportWidth"
           type="range"
@@ -95,14 +95,14 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
           type="checkbox"
           data-testid="hex-diff-only-toggle"
         />
-        <span>Differences only</span>
+        <span>{{ $t('ui.differencesOnly') }}</span>
       </label>
       <strong data-testid="hex-bytes-per-row">{{ bytesPerRow }} bytes / row</strong>
     </section>
 
     <section class="hex-pane-grid">
       <section class="hex-side">
-        <h2>Left</h2>
+        <h2>{{ $t('ui.left') }}</h2>
         <div
           ref="leftViewport"
           class="hex-viewport"
@@ -146,7 +146,7 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
       </section>
 
       <section class="hex-side">
-        <h2>Right</h2>
+        <h2>{{ $t('ui.right') }}</h2>
         <div
           ref="rightViewport"
           class="hex-viewport"
@@ -167,7 +167,6 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
     </section>
   </section>
 </template>
-
 <style scoped>
 .hex-compare-view {
   display: grid;

@@ -10,6 +10,7 @@ import HexCompareView from '@/views/HexCompareView.vue'
 import PictureCompareView from '@/views/PictureCompareView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import FileFormatView from '@/views/FileFormatView.vue'
+import RemoteProfileView from '@/views/RemoteProfileView.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -25,5 +26,6 @@ export const router = createRouter({
     { path: '/compare/picture', name: 'picture-compare', component: PictureCompareView },
     { path: '/settings', name: 'settings', component: SettingsView },
     { path: '/settings/file-formats', name: 'file-formats', component: FileFormatView },
+    { path: '/settings/remote-profiles', name: 'remote-profiles', component: RemoteProfileView },
   ],
 })

@@ -44,4 +44,34 @@ describe('SettingsView', () => {
 
     expect(push).toHaveBeenCalledWith('/settings/file-formats')
   })
+
+  it('opens the remote profile management route', async () => {
+    const wrapper = mount(SettingsView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+          NCard: {
+            template: '<section><slot name="header" /><slot /></section>',
+          },
+          NSpace: {
+            template: '<div><slot /></div>',
+          },
+          NRadioGroup: {
+            template: '<div><slot /></div>',
+          },
+          NRadioButton: {
+            template: '<button><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="open-remote-profiles"]').trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/settings/remote-profiles')
+  })
 })

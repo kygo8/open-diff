@@ -8,6 +8,10 @@ const router = useRouter()
 function openFileFormats(): void {
   void router.push('/settings/file-formats')
 }
+
+function openRemoteProfiles(): void {
+  void router.push('/settings/remote-profiles')
+}
 </script>
 
 <template>
@@ -39,6 +43,25 @@ function openFileFormats(): void {
           size="small"
           data-testid="open-file-formats"
           @click="openFileFormats"
+        >
+          Manage
+        </NButton>
+      </div>
+    </NCard>
+
+    <NCard
+      title="Remote Profiles"
+      size="small"
+    >
+      <div class="settings-row">
+        <div>
+          <strong>Connection profiles</strong>
+          <span>Manage remote endpoints and credential references.</span>
+        </div>
+        <NButton
+          size="small"
+          data-testid="open-remote-profiles"
+          @click="openRemoteProfiles"
         >
           Manage
         </NButton>

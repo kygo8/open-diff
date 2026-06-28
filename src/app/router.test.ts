@@ -13,4 +13,10 @@ describe('router', () => {
 
     expect(route?.name).toBe('folder-merge')
   })
+
+  it('registers the remote profile management route under settings', () => {
+    const route = router.getRoutes().find((item) => item.path === '/settings/remote-profiles')
+
+    expect(route?.name).toBe('remote-profiles')
+  })
 })

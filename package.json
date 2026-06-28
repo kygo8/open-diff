@@ -33,7 +33,8 @@
     "test": "vitest run",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "tauri:portable:windows": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/windows/package-portable.ps1"
   },
   "dependencies": {
     "@lucide/vue": "1.21.0",

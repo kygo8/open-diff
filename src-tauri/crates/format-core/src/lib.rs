@@ -39,6 +39,70 @@ pub struct FileFormatRuleRefs {
     pub converter_id: Option<String>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextFormatDefinition {
+    pub id: String,
+    pub name: String,
+    pub general: TextFormatGeneralSettings,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextFormatGeneralSettings {
+    pub preferred_encoding: TextEncodingRule,
+    pub line_ending: LineEndingRule,
+    pub case_sensitivity: CaseSensitivityRule,
+    pub tab: TabRule,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum TextEncodingRule {
+    AutoDetect,
+    Utf8,
+    Utf16Le,
+    Gbk,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum LineEndingRule {
+    Preserve,
+    NormalizeLf,
+    NormalizeCrlf,
+    NormalizeCr,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum CaseSensitivityRule {
+    Sensitive,
+    Insensitive,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TabRule {
+    pub width: u8,
+    pub treatment: TabTreatment,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum TabTreatment {
+    Preserve,
+    ExpandToSpaces,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NormalizedText {
+    pub text: String,
+    pub encoding: TextEncodingRule,
+    pub line_ending: LineEndingRule,
+}
+
 impl FileFormatDefinition {
     pub fn matches_path(&self, path: impl AsRef<str>) -> bool {
         let path = path.as_ref();
@@ -72,6 +136,34 @@ pub fn select_file_format(
         .max_by_key(|format| format.priority)
 }
 
+pub fn normalize_text_with_format(
+    input: impl AsRef<str>,
+    settings: &TextFormatGeneralSettings,
+) -> NormalizedText {
+    let mut text = input.as_ref().to_owned();
+
+    text = match settings.line_ending {
+        LineEndingRule::Preserve => text,
+        LineEndingRule::NormalizeLf => normalize_line_endings(&text, "\n"),
+        LineEndingRule::NormalizeCrlf => normalize_line_endings(&text, "\r\n"),
+        LineEndingRule::NormalizeCr => normalize_line_endings(&text, "\r"),
+    };
+
+    if settings.tab.treatment == TabTreatment::ExpandToSpaces {
+        text = text.replace('\t', &" ".repeat(usize::from(settings.tab.width.max(1))));
+    }
+
+    if settings.case_sensitivity == CaseSensitivityRule::Insensitive {
+        text = text.to_lowercase();
+    }
+
+    NormalizedText {
+        text,
+        encoding: settings.preferred_encoding,
+        line_ending: settings.line_ending,
+    }
+}
+
 fn file_name(path: &str) -> &str {
     path.rsplit(['/', '\\']).next().unwrap_or(path)
 }
@@ -91,6 +183,13 @@ fn glob_matches(pattern: &str, path: &str) -> bool {
     }
 
     file_name(path).eq_ignore_ascii_case(pattern)
+}
+
+fn normalize_line_endings(input: &str, replacement: &str) -> String {
+    input
+        .replace("\r\n", "\n")
+        .replace('\r', "\n")
+        .replace('\n', replacement)
 }
 
 #[cfg(test)]
@@ -157,5 +256,50 @@ mod tests {
             selected.rule_refs.text_format_id.as_deref(),
             Some("readme-text")
         );
+    }
+
+    #[test]
+    fn text_format_general_settings_capture_encoding_line_case_and_tabs() {
+        let format = TextFormatDefinition {
+            id: "rust-text".to_owned(),
+            name: "Rust Text".to_owned(),
+            general: TextFormatGeneralSettings {
+                preferred_encoding: TextEncodingRule::Utf8,
+                line_ending: LineEndingRule::NormalizeLf,
+                case_sensitivity: CaseSensitivityRule::Insensitive,
+                tab: TabRule {
+                    width: 4,
+                    treatment: TabTreatment::ExpandToSpaces,
+                },
+            },
+        };
+
+        assert_eq!(format.general.preferred_encoding, TextEncodingRule::Utf8);
+        assert_eq!(format.general.line_ending, LineEndingRule::NormalizeLf);
+        assert_eq!(
+            format.general.case_sensitivity,
+            CaseSensitivityRule::Insensitive
+        );
+        assert_eq!(format.general.tab.width, 4);
+        assert_eq!(format.general.tab.treatment, TabTreatment::ExpandToSpaces);
+    }
+
+    #[test]
+    fn normalizes_text_with_text_format_general_settings() {
+        let settings = TextFormatGeneralSettings {
+            preferred_encoding: TextEncodingRule::Utf8,
+            line_ending: LineEndingRule::NormalizeLf,
+            case_sensitivity: CaseSensitivityRule::Insensitive,
+            tab: TabRule {
+                width: 2,
+                treatment: TabTreatment::ExpandToSpaces,
+            },
+        };
+
+        let normalized = normalize_text_with_format("A\tB\r\nC", &settings);
+
+        assert_eq!(normalized.text, "a  b\nc");
+        assert_eq!(normalized.encoding, TextEncodingRule::Utf8);
+        assert_eq!(normalized.line_ending, LineEndingRule::NormalizeLf);
     }
 }

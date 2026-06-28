@@ -170,6 +170,7 @@ impl RegistryDocument {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RegistryError {
     KeyNotFound(String),
+    Parse(String),
     ValueNotFound(String),
 }
 
@@ -209,6 +210,163 @@ fn is_direct_child(parent: &str, path: &str) -> bool {
 
     path.strip_prefix(&prefix)
         .is_some_and(|relative| !relative.is_empty() && !relative.contains('/'))
+}
+
+pub struct RegFileParser;
+
+impl RegFileParser {
+    pub fn parse(name: impl Into<String>, input: &str) -> RegistryResult<RegistryDocument> {
+        let mut lines = input.lines();
+        let Some(header) = lines.next().map(str::trim) else {
+            return Err(RegistryError::Parse("missing REG file header".to_owned()));
+        };
+
+        if header != "Windows Registry Editor Version 5.00" && header != "REGEDIT4" {
+            return Err(RegistryError::Parse(
+                "unsupported REG file header".to_owned(),
+            ));
+        }
+
+        let mut document = RegistryDocument::new(name);
+        let mut current_key: Option<RegistryKey> = None;
+
+        for raw_line in lines {
+            let line = raw_line.trim();
+
+            if line.is_empty() || line.starts_with(';') {
+                continue;
+            }
+
+            if line.starts_with('[') && line.ends_with(']') {
+                let key = parse_reg_key(&line[1..line.len() - 1])?;
+                document = document.with_key(key.clone());
+                current_key = Some(key);
+                continue;
+            }
+
+            let Some(key) = &current_key else {
+                return Err(RegistryError::Parse(
+                    "value line appeared before a registry key".to_owned(),
+                ));
+            };
+
+            let Some(value) = parse_reg_value(line, key)? else {
+                continue;
+            };
+
+            document = document.with_value(value);
+        }
+
+        Ok(document)
+    }
+}
+
+fn parse_reg_key(input: &str) -> RegistryResult<RegistryKey> {
+    let (hive_name, path) = input
+        .split_once('\\')
+        .ok_or_else(|| RegistryError::Parse(format!("invalid registry key: {input}")))?;
+    let hive = parse_hive(hive_name)?;
+
+    Ok(RegistryKey::new(hive, path))
+}
+
+fn parse_hive(input: &str) -> RegistryResult<RegistryHive> {
+    match input {
+        "HKEY_CLASSES_ROOT" | "HKCR" => Ok(RegistryHive::ClassesRoot),
+        "HKEY_CURRENT_USER" | "HKCU" => Ok(RegistryHive::CurrentUser),
+        "HKEY_LOCAL_MACHINE" | "HKLM" => Ok(RegistryHive::LocalMachine),
+        "HKEY_USERS" | "HKU" => Ok(RegistryHive::Users),
+        "HKEY_CURRENT_CONFIG" | "HKCC" => Ok(RegistryHive::CurrentConfig),
+        _ => Err(RegistryError::Parse(format!(
+            "unsupported registry hive: {input}"
+        ))),
+    }
+}
+
+fn parse_reg_value(line: &str, key: &RegistryKey) -> RegistryResult<Option<RegistryValue>> {
+    let (raw_name, raw_data) = line
+        .split_once('=')
+        .ok_or_else(|| RegistryError::Parse(format!("invalid registry value line: {line}")))?;
+
+    if raw_data == "-" {
+        return Ok(None);
+    }
+
+    let name = if raw_name == "@" {
+        "@".to_owned()
+    } else {
+        parse_quoted(raw_name)?
+    };
+    let data = parse_reg_value_data(raw_data)?;
+
+    Ok(Some(RegistryValue::new(key.hive, &key.path, name, data)))
+}
+
+fn parse_reg_value_data(input: &str) -> RegistryResult<RegistryValueData> {
+    if input.starts_with('"') {
+        return parse_quoted(input).map(RegistryValueData::String);
+    }
+
+    if let Some(hex) = input.strip_prefix("dword:") {
+        return u32::from_str_radix(hex, 16)
+            .map(RegistryValueData::Dword)
+            .map_err(|_| RegistryError::Parse(format!("invalid dword value: {input}")));
+    }
+
+    if let Some(hex) = input.strip_prefix("hex:") {
+        let mut bytes = Vec::new();
+
+        for part in hex
+            .split(',')
+            .map(str::trim)
+            .filter(|part| !part.is_empty())
+        {
+            bytes.push(
+                u8::from_str_radix(part, 16)
+                    .map_err(|_| RegistryError::Parse(format!("invalid hex byte: {part}")))?,
+            );
+        }
+
+        return Ok(RegistryValueData::Binary(bytes));
+    }
+
+    Err(RegistryError::Parse(format!(
+        "unsupported registry value data: {input}"
+    )))
+}
+
+fn parse_quoted(input: &str) -> RegistryResult<String> {
+    if !input.starts_with('"') || !input.ends_with('"') {
+        return Err(RegistryError::Parse(format!(
+            "expected quoted string: {input}"
+        )));
+    }
+
+    let mut output = String::new();
+    let mut escaped = false;
+
+    for character in input[1..input.len() - 1].chars() {
+        if escaped {
+            output.push(match character {
+                '\\' => '\\',
+                '"' => '"',
+                'n' => '\n',
+                'r' => '\r',
+                't' => '\t',
+                other => other,
+            });
+            escaped = false;
+            continue;
+        }
+
+        if character == '\\' {
+            escaped = true;
+        } else {
+            output.push(character);
+        }
+    }
+
+    Ok(output)
 }
 
 #[cfg(test)]
@@ -296,5 +454,78 @@ mod tests {
             error,
             RegistryError::KeyNotFound(path) if path == "HKLM/Software/Missing"
         ));
+    }
+
+    #[test]
+    fn parses_reg_files_into_registry_documents() {
+        let document = RegFileParser::parse(
+            "fixture.reg",
+            r#"Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Software\OpenDiff]
+@="Default Label"
+"InstallPath"="C:\\Program Files\\Open Diff"
+"Enabled"=dword:00000001
+"Payload"=hex:01,02,0a
+
+[HKEY_CURRENT_USER\Software\OpenDiff\Settings]
+"Theme"="dark"
+"Removed"=-
+"#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            document
+                .value(
+                    RegistryHive::LocalMachine,
+                    "Software/OpenDiff",
+                    "InstallPath"
+                )
+                .unwrap()
+                .data,
+            RegistryValueData::String("C:\\Program Files\\Open Diff".to_owned())
+        );
+        assert_eq!(
+            document
+                .value(RegistryHive::LocalMachine, "Software/OpenDiff", "Enabled")
+                .unwrap()
+                .data,
+            RegistryValueData::Dword(1)
+        );
+        assert_eq!(
+            document
+                .value(RegistryHive::LocalMachine, "Software/OpenDiff", "Payload")
+                .unwrap()
+                .data,
+            RegistryValueData::Binary(vec![0x01, 0x02, 0x0a])
+        );
+        assert_eq!(
+            document
+                .value(
+                    RegistryHive::CurrentUser,
+                    "Software/OpenDiff/Settings",
+                    "Theme"
+                )
+                .unwrap()
+                .data,
+            RegistryValueData::String("dark".to_owned())
+        );
+        assert!(matches!(
+            document.value(
+                RegistryHive::CurrentUser,
+                "Software/OpenDiff/Settings",
+                "Removed"
+            ),
+            Err(RegistryError::ValueNotFound(_))
+        ));
+    }
+
+    #[test]
+    fn rejects_reg_files_without_supported_header() {
+        let error =
+            RegFileParser::parse("broken.reg", "[HKEY_CURRENT_USER\\Software]").unwrap_err();
+
+        assert!(matches!(error, RegistryError::Parse(_)));
     }
 }

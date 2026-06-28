@@ -913,6 +913,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "format-core"
+version = "1.0.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "futures-channel"
 version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"

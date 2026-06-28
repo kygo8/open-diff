@@ -4,6 +4,7 @@ members = [
   "crates/cli-core",
   "crates/diff-core",
   "crates/file-core",
+  "crates/format-core",
   "crates/folder-core",
   "crates/hex-core",
   "crates/image-core",

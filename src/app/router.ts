@@ -10,6 +10,7 @@ import HexCompareView from '@/views/HexCompareView.vue'
 import PictureCompareView from '@/views/PictureCompareView.vue'
 import RegistryCompareView from '@/views/RegistryCompareView.vue'
 import MediaCompareView from '@/views/MediaCompareView.vue'
+import VersionCompareView from '@/views/VersionCompareView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import FileFormatView from '@/views/FileFormatView.vue'
 import RemoteProfileView from '@/views/RemoteProfileView.vue'
@@ -28,6 +29,7 @@ export const router = createRouter({
     { path: '/compare/picture', name: 'picture-compare', component: PictureCompareView },
     { path: '/compare/registry', name: 'registry-compare', component: RegistryCompareView },
     { path: '/compare/media', name: 'media-compare', component: MediaCompareView },
+    { path: '/compare/version', name: 'version-compare', component: VersionCompareView },
     { path: '/settings', name: 'settings', component: SettingsView },
     { path: '/settings/file-formats', name: 'file-formats', component: FileFormatView },
     { path: '/settings/remote-profiles', name: 'remote-profiles', component: RemoteProfileView },

@@ -111,7 +111,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Version Compare',
     summary: 'Executable version resources',
     priority: 'P3',
-    implemented: false,
+    implemented: true,
+    route: '/compare/version',
   },
 ]
 

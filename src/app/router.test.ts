@@ -31,4 +31,10 @@ describe('router', () => {
 
     expect(route?.name).toBe('media-compare')
   })
+
+  it('registers the version compare route', () => {
+    const route = router.getRoutes().find((item) => item.path === '/compare/version')
+
+    expect(route?.name).toBe('version-compare')
+  })
 })

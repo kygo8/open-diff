@@ -32,9 +32,17 @@ describe('AppLayout command palette', () => {
   it('opens folder compare from the toolbar', async () => {
     const wrapper = mountAppLayout()
 
-    await wrapper.find('[data-testid="open-folder-compare"]').trigger('click')
+    await wrapper.find('[data-testid="toolbar-command-open.folderCompare"]').trigger('click')
 
     expect(push).toHaveBeenCalledWith('/compare/folder')
+  })
+
+  it('opens settings through the shared top-bar command', async () => {
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="top-command-open.settings"]').trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/settings')
   })
 
   it('executes theme toggle command', async () => {

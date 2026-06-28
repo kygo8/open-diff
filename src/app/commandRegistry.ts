@@ -1,5 +1,6 @@
 export type CommandId =
   | 'open.textCompare'
+  | 'open.folderCompare'
   | 'open.settings'
   | 'theme.toggle'
   | 'diff.previous'
@@ -7,6 +8,11 @@ export type CommandId =
 
 export type CommandVisibility = 'global' | 'view' | 'hidden'
 export type ShortcutScope = 'global' | 'text-compare'
+export type CommandPlacement = 'command-palette' | 'toolbar' | 'menu'
+export type CommandAction =
+  | { type: 'navigate'; route: string; titleKey: string }
+  | { type: 'toggle-theme' }
+  | { type: 'view-action'; name: 'previous-difference' | 'next-difference' }
 
 export interface CommandShortcut {
   keys: string[]
@@ -20,6 +26,8 @@ export interface AppCommand {
   enabled: boolean
   visibility: CommandVisibility
   defaultShortcut: CommandShortcut
+  placements: CommandPlacement[]
+  action: CommandAction
 }
 
 interface ShortcutConflictCandidate {
@@ -42,6 +50,18 @@ export const commandRegistry: AppCommand[] = [
     enabled: true,
     visibility: 'global',
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'T'], scope: 'global' },
+    placements: ['command-palette', 'toolbar', 'menu'],
+    action: { type: 'navigate', route: '/compare/text', titleKey: 'ui.textCompare' },
+  },
+  {
+    id: 'open.folderCompare',
+    titleKey: 'ui.folderCompare',
+    keywords: ['folder', 'compare', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'F'], scope: 'global' },
+    placements: ['command-palette', 'toolbar', 'menu'],
+    action: { type: 'navigate', route: '/compare/folder', titleKey: 'ui.folderCompare' },
   },
   {
     id: 'open.settings',
@@ -50,6 +70,8 @@ export const commandRegistry: AppCommand[] = [
     enabled: true,
     visibility: 'global',
     defaultShortcut: { keys: ['Ctrl', ','], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/settings', titleKey: 'ui.settings' },
   },
   {
     id: 'theme.toggle',
@@ -58,6 +80,8 @@ export const commandRegistry: AppCommand[] = [
     enabled: true,
     visibility: 'global',
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'L'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'toggle-theme' },
   },
   {
     id: 'diff.previous',
@@ -66,6 +90,8 @@ export const commandRegistry: AppCommand[] = [
     enabled: false,
     visibility: 'view',
     defaultShortcut: { keys: ['Shift', 'F7'], scope: 'text-compare' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'previous-difference' },
   },
   {
     id: 'diff.next',
@@ -74,6 +100,8 @@ export const commandRegistry: AppCommand[] = [
     enabled: false,
     visibility: 'view',
     defaultShortcut: { keys: ['F7'], scope: 'text-compare' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'next-difference' },
   },
 ]
 

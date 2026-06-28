@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useRouter, RouterView } from 'vue-router'
 import { FileText, FolderTree, Search, Settings, SunMoon } from '@lucide/vue'
 import { commandRegistry, filterCommands } from '@/app/commandRegistry'
+import { createCommandExecutor, getCommandsForPlacement } from '@/app/commandSystem'
 import { useI18n } from '@/i18n'
 import { useSettingsStore } from '@/stores/settings'
 import { useTabsStore } from '@/stores/tabs'
@@ -16,6 +17,17 @@ const tabs = useTabsStore()
 const commandPaletteOpen = ref(false)
 const commandQuery = ref('')
 const visibleCommands = computed(() => filterCommands(commandRegistry, commandQuery.value))
+const toolbarCommands = computed(() => getCommandsForPlacement(commandRegistry, 'toolbar'))
+const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
+  navigate: (route) => {
+    void router.push(route)
+  },
+  openTab: (tab) => {
+    tabs.openTab(tab)
+  },
+  t,
+  toggleTheme: settings.toggleTheme,
+})
 
 function navigate(route: string, title: string): void {
   tabs.openTab({ route, title, dirty: false })
@@ -37,19 +49,24 @@ function closeCommandPalette(): void {
 }
 
 function executeCommand(commandId: CommandId): void {
-  if (commandId === 'open.textCompare') {
-    navigate('/compare/text', t('ui.textCompare'))
+  executeRegisteredCommand(commandId)
+  closeCommandPalette()
+}
+
+function commandIcon(commandId: CommandId): typeof FileText {
+  if (commandId === 'open.folderCompare') {
+    return FolderTree
   }
 
   if (commandId === 'open.settings') {
-    navigate('/settings', t('ui.settings'))
+    return Settings
   }
 
   if (commandId === 'theme.toggle') {
-    settings.toggleTheme()
+    return SunMoon
   }
 
-  closeCommandPalette()
+  return FileText
 }
 </script>
 
@@ -64,21 +81,20 @@ function executeCommand(commandId: CommandId): void {
       </button>
       <nav class="toolbar">
         <NButton
+          v-for="command in toolbarCommands"
+          :key="command.id"
           quaternary
           size="small"
-          @click="navigate('/compare/text', t('ui.textCompare'))"
+          :data-testid="`toolbar-command-${command.id}`"
+          @click="executeCommand(command.id)"
         >
-          <template #icon><FileText :size="16" /></template>
-          {{ t('ui.text') }}
-        </NButton>
-        <NButton
-          quaternary
-          size="small"
-          data-testid="open-folder-compare"
-          @click="navigate('/compare/folder', t('ui.folderCompare'))"
-        >
-          <template #icon><FolderTree :size="16" /></template>
-          {{ t('ui.folder') }}
+          <template #icon>
+            <component
+              :is="commandIcon(command.id)"
+              :size="16"
+            />
+          </template>
+          {{ t(command.titleKey) }}
         </NButton>
       </nav>
       <div class="top-spacer" />
@@ -95,7 +111,8 @@ function executeCommand(commandId: CommandId): void {
         quaternary
         circle
         size="small"
-        @click="settings.toggleTheme"
+        data-testid="top-command-theme.toggle"
+        @click="executeCommand('theme.toggle')"
       >
         <template #icon><SunMoon :size="16" /></template>
       </NButton>
@@ -103,7 +120,8 @@ function executeCommand(commandId: CommandId): void {
         quaternary
         circle
         size="small"
-        @click="navigate('/settings', t('ui.settings'))"
+        data-testid="top-command-open.settings"
+        @click="executeCommand('open.settings')"
       >
         <template #icon><Settings :size="16" /></template>
       </NButton>

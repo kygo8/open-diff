@@ -2389,6 +2389,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "policy-core"
+version = "1.0.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "potential_utf"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"

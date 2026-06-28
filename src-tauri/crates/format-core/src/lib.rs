@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::ops::Range;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -103,6 +104,66 @@ pub struct NormalizedText {
     pub line_ending: LineEndingRule,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GrammarDefinition {
+    pub id: String,
+    pub name: String,
+    pub items: Vec<GrammarItem>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GrammarItem {
+    pub id: String,
+    pub name: String,
+    pub kind: GrammarItemKind,
+    pub matcher: GrammarMatcher,
+    pub style_scope: String,
+    pub importance: GrammarImportance,
+    pub line_weight: i32,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum GrammarItemKind {
+    Comment,
+    String,
+    Keyword,
+    Number,
+    Operator,
+    Custom,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum GrammarMatcher {
+    LinePrefix(String),
+    Keywords(Vec<String>),
+    Delimited {
+        start: String,
+        end: String,
+        escape: Option<String>,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum GrammarImportance {
+    Important,
+    Unimportant,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GrammarItemMatch {
+    pub item_id: String,
+    pub kind: GrammarItemKind,
+    pub range: Range<usize>,
+    pub style_scope: String,
+    pub importance: GrammarImportance,
+    pub line_weight: i32,
+}
+
 impl FileFormatDefinition {
     pub fn matches_path(&self, path: impl AsRef<str>) -> bool {
         let path = path.as_ref();
@@ -164,6 +225,17 @@ pub fn normalize_text_with_format(
     }
 }
 
+pub fn find_grammar_item(
+    line: impl AsRef<str>,
+    grammar: &GrammarDefinition,
+) -> Option<GrammarItemMatch> {
+    let line = line.as_ref();
+
+    grammar.items.iter().find_map(|item| {
+        grammar_item_range(line, &item.matcher).map(|range| match_from_item(item, range))
+    })
+}
+
 fn file_name(path: &str) -> &str {
     path.rsplit(['/', '\\']).next().unwrap_or(path)
 }
@@ -190,6 +262,97 @@ fn normalize_line_endings(input: &str, replacement: &str) -> String {
         .replace("\r\n", "\n")
         .replace('\r', "\n")
         .replace('\n', replacement)
+}
+
+fn grammar_item_range(line: &str, matcher: &GrammarMatcher) -> Option<Range<usize>> {
+    match matcher {
+        GrammarMatcher::LinePrefix(prefix) => {
+            let start = line.find(prefix)?;
+
+            Some(start..line.len())
+        }
+        GrammarMatcher::Keywords(keywords) => keywords
+            .iter()
+            .find_map(|keyword| keyword_range(line, keyword)),
+        GrammarMatcher::Delimited { start, end, escape } => {
+            delimited_range(line, start, end, escape.as_deref())
+        }
+    }
+}
+
+fn match_from_item(item: &GrammarItem, range: Range<usize>) -> GrammarItemMatch {
+    GrammarItemMatch {
+        item_id: item.id.clone(),
+        kind: item.kind,
+        range,
+        style_scope: item.style_scope.clone(),
+        importance: item.importance,
+        line_weight: item.line_weight,
+    }
+}
+
+fn keyword_range(line: &str, keyword: &str) -> Option<Range<usize>> {
+    let mut offset = 0;
+
+    while let Some(index) = line[offset..].find(keyword) {
+        let start = offset + index;
+        let end = start + keyword.len();
+
+        if is_keyword_boundary(line, start, end) {
+            return Some(start..end);
+        }
+
+        offset = end;
+    }
+
+    None
+}
+
+fn is_keyword_boundary(line: &str, start: usize, end: usize) -> bool {
+    let before = line[..start].chars().next_back();
+    let after = line[end..].chars().next();
+
+    before.is_none_or(|character| !is_identifier_character(character))
+        && after.is_none_or(|character| !is_identifier_character(character))
+}
+
+fn is_identifier_character(character: char) -> bool {
+    character == '_' || character.is_ascii_alphanumeric()
+}
+
+fn delimited_range(
+    line: &str,
+    start_marker: &str,
+    end_marker: &str,
+    escape: Option<&str>,
+) -> Option<Range<usize>> {
+    let start = line.find(start_marker)?;
+    let content_start = start + start_marker.len();
+    let mut search_offset = content_start;
+
+    while let Some(relative_end) = line[search_offset..].find(end_marker) {
+        let end = search_offset + relative_end;
+
+        if !is_escaped(line, end, escape) {
+            return Some(start..end + end_marker.len());
+        }
+
+        search_offset = end + end_marker.len();
+    }
+
+    Some(start..line.len())
+}
+
+fn is_escaped(line: &str, marker_start: usize, escape: Option<&str>) -> bool {
+    let Some(escape) = escape else {
+        return false;
+    };
+
+    if escape.is_empty() || marker_start < escape.len() {
+        return false;
+    }
+
+    line[..marker_start].ends_with(escape)
 }
 
 #[cfg(test)]
@@ -301,5 +464,89 @@ mod tests {
         assert_eq!(normalized.text, "a  b\nc");
         assert_eq!(normalized.encoding, TextEncodingRule::Utf8);
         assert_eq!(normalized.line_ending, LineEndingRule::NormalizeLf);
+    }
+
+    #[test]
+    fn grammar_definition_carries_ordered_items_for_comments_strings_and_keywords() {
+        let grammar = GrammarDefinition {
+            id: "rust-grammar".to_owned(),
+            name: "Rust Grammar".to_owned(),
+            items: vec![
+                GrammarItem {
+                    id: "line-comment".to_owned(),
+                    name: "Line Comment".to_owned(),
+                    kind: GrammarItemKind::Comment,
+                    matcher: GrammarMatcher::LinePrefix("//".to_owned()),
+                    style_scope: "comment.line".to_owned(),
+                    importance: GrammarImportance::Unimportant,
+                    line_weight: -20,
+                },
+                GrammarItem {
+                    id: "string".to_owned(),
+                    name: "String".to_owned(),
+                    kind: GrammarItemKind::String,
+                    matcher: GrammarMatcher::Delimited {
+                        start: "\"".to_owned(),
+                        end: "\"".to_owned(),
+                        escape: Some("\\".to_owned()),
+                    },
+                    style_scope: "string.quoted".to_owned(),
+                    importance: GrammarImportance::Important,
+                    line_weight: 0,
+                },
+                GrammarItem {
+                    id: "keyword".to_owned(),
+                    name: "Keyword".to_owned(),
+                    kind: GrammarItemKind::Keyword,
+                    matcher: GrammarMatcher::Keywords(vec!["fn".to_owned(), "let".to_owned()]),
+                    style_scope: "keyword.control".to_owned(),
+                    importance: GrammarImportance::Important,
+                    line_weight: 30,
+                },
+            ],
+        };
+
+        assert_eq!(grammar.items[0].kind, GrammarItemKind::Comment);
+        assert_eq!(grammar.items[1].kind, GrammarItemKind::String);
+        assert_eq!(grammar.items[2].kind, GrammarItemKind::Keyword);
+        assert_eq!(grammar.items[0].line_weight, -20);
+    }
+
+    #[test]
+    fn finds_first_matching_grammar_item_by_priority_order() {
+        let grammar = GrammarDefinition {
+            id: "rust-grammar".to_owned(),
+            name: "Rust Grammar".to_owned(),
+            items: vec![
+                GrammarItem {
+                    id: "line-comment".to_owned(),
+                    name: "Line Comment".to_owned(),
+                    kind: GrammarItemKind::Comment,
+                    matcher: GrammarMatcher::LinePrefix("//".to_owned()),
+                    style_scope: "comment.line".to_owned(),
+                    importance: GrammarImportance::Unimportant,
+                    line_weight: -20,
+                },
+                GrammarItem {
+                    id: "keyword".to_owned(),
+                    name: "Keyword".to_owned(),
+                    kind: GrammarItemKind::Keyword,
+                    matcher: GrammarMatcher::Keywords(vec!["fn".to_owned(), "let".to_owned()]),
+                    style_scope: "keyword.control".to_owned(),
+                    importance: GrammarImportance::Important,
+                    line_weight: 30,
+                },
+            ],
+        };
+
+        let comment_match = find_grammar_item("// fn is ignored", &grammar)
+            .expect("line comment should match before keyword");
+        let keyword_match =
+            find_grammar_item("pub fn main()", &grammar).expect("keyword should match");
+
+        assert_eq!(comment_match.item_id, "line-comment");
+        assert_eq!(comment_match.kind, GrammarItemKind::Comment);
+        assert_eq!(keyword_match.item_id, "keyword");
+        assert_eq!(keyword_match.range, 4..6);
     }
 }

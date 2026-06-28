@@ -500,6 +500,63 @@ impl MemoryDropboxProvider {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct MemoryOneDriveProvider {
+    profile: RemoteProfile,
+    authentication: OAuthAuthentication,
+    root_path: String,
+    drive_id: Option<String>,
+    files: BTreeMap<String, Vec<u8>>,
+}
+
+impl MemoryOneDriveProvider {
+    pub fn connect(
+        profile: RemoteProfile,
+        credential: RemoteCredential,
+    ) -> RemoteProviderResult<Self> {
+        if profile.protocol != RemoteProtocol::OneDrive {
+            return Err(RemoteProviderError::UnsupportedProtocol(profile.protocol));
+        }
+
+        let authentication = OAuthAuthentication::from_credential(
+            &credential,
+            "OneDrive requires OAuth bearer token authentication",
+        )?;
+        let root_path = profile
+            .endpoint
+            .root_path
+            .as_deref()
+            .map(normalize_remote_path)
+            .transpose()?
+            .unwrap_or_else(|| "/".to_owned());
+        let drive_id = profile.options.get("driveId").cloned();
+
+        Ok(Self {
+            profile,
+            authentication,
+            root_path,
+            drive_id,
+            files: BTreeMap::new(),
+        })
+    }
+
+    pub fn profile(&self) -> &RemoteProfile {
+        &self.profile
+    }
+
+    pub fn authentication(&self) -> OAuthAuthentication {
+        self.authentication.clone()
+    }
+
+    pub fn root_path(&self) -> &str {
+        &self.root_path
+    }
+
+    pub fn drive_id(&self) -> Option<&str> {
+        self.drive_id.as_deref()
+    }
+}
+
 impl OAuthAuthentication {
     fn from_credential(
         credential: &RemoteCredential,
@@ -805,6 +862,28 @@ impl RemoteFileProvider for MemoryS3Provider {
 }
 
 impl RemoteFileProvider for MemoryDropboxProvider {
+    fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
+        list_memory_remote_entries(&self.files, path)
+    }
+
+    fn download(&self, path: &str) -> RemoteProviderResult<Vec<u8>> {
+        download_memory_remote_file(&self.files, path)
+    }
+
+    fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()> {
+        upload_memory_remote_file(&mut self.files, path, bytes)
+    }
+
+    fn delete(&mut self, path: &str) -> RemoteProviderResult<()> {
+        delete_memory_remote_file(&mut self.files, path)
+    }
+
+    fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
+        rename_memory_remote_file(&mut self.files, from, to)
+    }
+}
+
+impl RemoteFileProvider for MemoryOneDriveProvider {
     fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
         list_memory_remote_entries(&self.files, path)
     }
@@ -1325,6 +1404,76 @@ mod tests {
         assert!(matches!(
             error,
             RemoteProviderError::UnsupportedProtocol(RemoteProtocol::WebDav)
+        ));
+    }
+
+    #[test]
+    fn onedrive_provider_connects_with_oauth_token_and_file_operations() {
+        let profile = RemoteProfile::new(
+            "work-onedrive",
+            "Work OneDrive",
+            RemoteProtocol::OneDrive,
+            RemoteEndpoint::new("graph.microsoft.com").with_root_path("/Documents"),
+            CredentialReference::profile_store("work-onedrive"),
+        )
+        .with_option("driveId", "drive-123");
+        let credential = RemoteCredential::bearer_token("microsoft-oauth-token");
+        let mut provider = MemoryOneDriveProvider::connect(profile, credential).unwrap();
+
+        provider
+            .upload("/Documents/plan.docx", b"doc".to_vec())
+            .unwrap();
+
+        assert_eq!(provider.drive_id(), Some("drive-123"));
+        assert_eq!(provider.root_path(), "/Documents");
+        assert_eq!(
+            provider.authentication(),
+            OAuthAuthentication {
+                token_present: true,
+            }
+        );
+        assert_eq!(provider.download("/Documents/plan.docx").unwrap(), b"doc");
+        assert_eq!(
+            provider.list("/Documents").unwrap()[0].path,
+            "/Documents/plan.docx"
+        );
+    }
+
+    #[test]
+    fn onedrive_provider_rejects_password_credentials() {
+        let profile = RemoteProfile::new(
+            "work-onedrive",
+            "Work OneDrive",
+            RemoteProtocol::OneDrive,
+            RemoteEndpoint::new("graph.microsoft.com"),
+            CredentialReference::profile_store("work-onedrive"),
+        );
+        let credential = RemoteCredential::username_password("user", "password");
+
+        let error = MemoryOneDriveProvider::connect(profile, credential).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::Backend(message) if message == "OneDrive requires OAuth bearer token authentication"
+        ));
+    }
+
+    #[test]
+    fn onedrive_provider_rejects_non_onedrive_profiles() {
+        let profile = RemoteProfile::new(
+            "team-dropbox",
+            "Team Dropbox",
+            RemoteProtocol::Dropbox,
+            RemoteEndpoint::new("api.dropboxapi.com"),
+            CredentialReference::profile_store("team-dropbox"),
+        );
+        let credential = RemoteCredential::bearer_token("microsoft-oauth-token");
+
+        let error = MemoryOneDriveProvider::connect(profile, credential).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::Dropbox)
         ));
     }
 }

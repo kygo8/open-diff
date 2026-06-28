@@ -393,6 +393,52 @@ impl MemoryWebDavProvider {
 }
 
 #[derive(Debug, Clone)]
+pub struct MemoryS3Provider {
+    profile: RemoteProfile,
+    bucket: String,
+    region: Option<String>,
+    objects: BTreeMap<String, Vec<u8>>,
+}
+
+impl MemoryS3Provider {
+    pub fn connect(profile: RemoteProfile) -> RemoteProviderResult<Self> {
+        if profile.protocol != RemoteProtocol::S3 {
+            return Err(RemoteProviderError::UnsupportedProtocol(profile.protocol));
+        }
+
+        let bucket = profile
+            .endpoint
+            .root_path
+            .as_deref()
+            .map(str::trim)
+            .map(|path| path.trim_matches('/'))
+            .filter(|path| !path.is_empty())
+            .map(str::to_owned)
+            .ok_or_else(|| RemoteProviderError::InvalidPath("S3 bucket is required".to_owned()))?;
+        let region = profile.options.get("region").cloned();
+
+        Ok(Self {
+            profile,
+            bucket,
+            region,
+            objects: BTreeMap::new(),
+        })
+    }
+
+    pub fn profile(&self) -> &RemoteProfile {
+        &self.profile
+    }
+
+    pub fn bucket(&self) -> &str {
+        &self.bucket
+    }
+
+    pub fn region(&self) -> Option<&str> {
+        self.region.as_deref()
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct MemorySftpProvider {
     profile: RemoteProfile,
     authentication: SftpAuthentication,
@@ -655,6 +701,28 @@ impl RemoteFileProvider for MemoryWebDavProvider {
 
     fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
         rename_memory_remote_file(&mut self.files, from, to)
+    }
+}
+
+impl RemoteFileProvider for MemoryS3Provider {
+    fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
+        list_memory_remote_entries(&self.objects, path)
+    }
+
+    fn download(&self, path: &str) -> RemoteProviderResult<Vec<u8>> {
+        download_memory_remote_file(&self.objects, path)
+    }
+
+    fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()> {
+        upload_memory_remote_file(&mut self.objects, path, bytes)
+    }
+
+    fn delete(&mut self, path: &str) -> RemoteProviderResult<()> {
+        delete_memory_remote_file(&mut self.objects, path)
+    }
+
+    fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
+        rename_memory_remote_file(&mut self.objects, from, to)
     }
 }
 
@@ -1026,6 +1094,64 @@ mod tests {
         assert!(matches!(
             error,
             RemoteProviderError::UnsupportedProtocol(RemoteProtocol::Sftp)
+        ));
+    }
+
+    #[test]
+    fn s3_provider_lists_and_downloads_bucket_objects() {
+        let profile = RemoteProfile::new(
+            "release-s3",
+            "Release S3",
+            RemoteProtocol::S3,
+            RemoteEndpoint::new("s3.amazonaws.com").with_root_path("open-diff-release"),
+            CredentialReference::profile_store("release-s3"),
+        )
+        .with_option("region", "us-east-1");
+        let mut provider = MemoryS3Provider::connect(profile).unwrap();
+
+        provider
+            .upload("/builds/app.zip", b"package".to_vec())
+            .unwrap();
+
+        assert_eq!(provider.bucket(), "open-diff-release");
+        assert_eq!(provider.region(), Some("us-east-1"));
+        assert_eq!(provider.download("/builds/app.zip").unwrap(), b"package");
+        assert_eq!(provider.list("/builds").unwrap()[0].path, "/builds/app.zip");
+    }
+
+    #[test]
+    fn s3_provider_rejects_profiles_without_bucket_name() {
+        let profile = RemoteProfile::new(
+            "release-s3",
+            "Release S3",
+            RemoteProtocol::S3,
+            RemoteEndpoint::new("s3.amazonaws.com"),
+            CredentialReference::profile_store("release-s3"),
+        );
+
+        let error = MemoryS3Provider::connect(profile).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::InvalidPath(message) if message == "S3 bucket is required"
+        ));
+    }
+
+    #[test]
+    fn s3_provider_rejects_non_s3_profiles() {
+        let profile = RemoteProfile::new(
+            "team-webdav",
+            "Team WebDAV",
+            RemoteProtocol::WebDav,
+            RemoteEndpoint::new("dav.example.com"),
+            CredentialReference::profile_store("team-webdav"),
+        );
+
+        let error = MemoryS3Provider::connect(profile).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::WebDav)
         ));
     }
 }

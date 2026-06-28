@@ -12,6 +12,32 @@ pub enum TextDiffAlgorithm {
     Histogram,
 }
 
+const DEFAULT_LINE_ALIGNMENT_WEIGHT: i32 = 100;
+const MIN_LINE_ALIGNMENT_WEIGHT: i32 = 1;
+
+#[derive(Debug, Clone, Copy)]
+struct LineAlignmentWeights<'a> {
+    left: &'a [i32],
+    right: &'a [i32],
+}
+
+impl LineAlignmentWeights<'_> {
+    fn match_weight(&self, left_index: usize, right_index: usize) -> i32 {
+        let left_weight = self
+            .left
+            .get(left_index)
+            .copied()
+            .unwrap_or(DEFAULT_LINE_ALIGNMENT_WEIGHT);
+        let right_weight = self
+            .right
+            .get(right_index)
+            .copied()
+            .unwrap_or(DEFAULT_LINE_ALIGNMENT_WEIGHT);
+
+        left_weight.max(right_weight).max(MIN_LINE_ALIGNMENT_WEIGHT)
+    }
+}
+
 pub fn diff_text(request: &TextDiffRequest) -> TextDiffResponse {
     diff_text_with_algorithm(
         request,
@@ -181,18 +207,31 @@ pub fn diff_text_with_algorithm(
     request: &TextDiffRequest,
     algorithm: TextDiffAlgorithm,
 ) -> TextDiffResponse {
+    diff_text_with_algorithm_and_weights(request, algorithm, None)
+}
+
+fn diff_text_with_algorithm_and_weights(
+    request: &TextDiffRequest,
+    algorithm: TextDiffAlgorithm,
+    weights: Option<LineAlignmentWeights<'_>>,
+) -> TextDiffResponse {
     let left_lines = split_lines(&request.left);
     let right_lines = split_lines(&request.right);
     let ignore_regexes = compiled_ignore_regexes(&request.ignore_regexes);
     let comparable_left_lines = comparable_lines(&left_lines, request, &ignore_regexes);
     let comparable_right_lines = comparable_lines(&right_lines, request, &ignore_regexes);
     let edits = match algorithm {
-        TextDiffAlgorithm::Myers => diff_lines(&comparable_left_lines, &comparable_right_lines),
+        TextDiffAlgorithm::Myers => match weights {
+            Some(weights) => {
+                weighted_diff_lines(&comparable_left_lines, &comparable_right_lines, weights)
+            }
+            None => diff_lines(&comparable_left_lines, &comparable_right_lines),
+        },
         TextDiffAlgorithm::Patience => {
-            patience_diff_lines(&comparable_left_lines, &comparable_right_lines)
+            patience_diff_lines(&comparable_left_lines, &comparable_right_lines, weights)
         }
         TextDiffAlgorithm::Histogram => {
-            histogram_diff_lines(&comparable_left_lines, &comparable_right_lines)
+            histogram_diff_lines(&comparable_left_lines, &comparable_right_lines, weights)
         }
     };
     let rows = rows_from_edits(&edits, &left_lines, &right_lines);
@@ -205,7 +244,19 @@ pub fn diff_text_with_grammar(
     request: &TextDiffRequest,
     grammar: &format_core::GrammarDefinition,
 ) -> TextDiffResponse {
-    let mut response = diff_text(request);
+    let left_lines = split_lines(&request.left);
+    let right_lines = split_lines(&request.right);
+    let left_weights = grammar_line_weights(&left_lines, grammar);
+    let right_weights = grammar_line_weights(&right_lines, grammar);
+    let weights = LineAlignmentWeights {
+        left: &left_weights,
+        right: &right_weights,
+    };
+    let mut response = diff_text_with_algorithm_and_weights(
+        request,
+        algorithm_from_request(request.algorithm.as_deref()),
+        Some(weights),
+    );
 
     for line in &mut response.lines {
         line.important = grammar_diff_is_important(line, grammar);
@@ -322,7 +373,85 @@ fn diff_lines(left_lines: &[String], right_lines: &[String]) -> Vec<Edit> {
     edits
 }
 
-fn patience_diff_lines(left_lines: &[String], right_lines: &[String]) -> Vec<Edit> {
+fn weighted_diff_lines(
+    left_lines: &[String],
+    right_lines: &[String],
+    weights: LineAlignmentWeights<'_>,
+) -> Vec<Edit> {
+    weighted_diff_lines_range(
+        left_lines,
+        right_lines,
+        0,
+        left_lines.len(),
+        0,
+        right_lines.len(),
+        weights,
+    )
+}
+
+fn weighted_diff_lines_range(
+    left_lines: &[String],
+    right_lines: &[String],
+    left_start: usize,
+    left_end: usize,
+    right_start: usize,
+    right_end: usize,
+    weights: LineAlignmentWeights<'_>,
+) -> Vec<Edit> {
+    let table = weighted_lcs_table(
+        left_lines,
+        right_lines,
+        left_start,
+        left_end,
+        right_start,
+        right_end,
+        weights,
+    );
+    let mut edits = Vec::new();
+    let mut left_index = left_start;
+    let mut right_index = right_start;
+
+    while left_index < left_end && right_index < right_end {
+        if left_lines[left_index] == right_lines[right_index] {
+            edits.push(Edit::Equal {
+                left_index,
+                right_index,
+            });
+            left_index += 1;
+            right_index += 1;
+            continue;
+        }
+
+        let relative_left = left_index - left_start;
+        let relative_right = right_index - right_start;
+
+        if table[relative_left + 1][relative_right] >= table[relative_left][relative_right + 1] {
+            edits.push(Edit::Delete { left_index });
+            left_index += 1;
+        } else {
+            edits.push(Edit::Add { right_index });
+            right_index += 1;
+        }
+    }
+
+    while left_index < left_end {
+        edits.push(Edit::Delete { left_index });
+        left_index += 1;
+    }
+
+    while right_index < right_end {
+        edits.push(Edit::Add { right_index });
+        right_index += 1;
+    }
+
+    edits
+}
+
+fn patience_diff_lines(
+    left_lines: &[String],
+    right_lines: &[String],
+    weights: Option<LineAlignmentWeights<'_>>,
+) -> Vec<Edit> {
     patience_diff_range(
         left_lines,
         right_lines,
@@ -330,10 +459,15 @@ fn patience_diff_lines(left_lines: &[String], right_lines: &[String]) -> Vec<Edi
         left_lines.len(),
         0,
         right_lines.len(),
+        weights,
     )
 }
 
-fn histogram_diff_lines(left_lines: &[String], right_lines: &[String]) -> Vec<Edit> {
+fn histogram_diff_lines(
+    left_lines: &[String],
+    right_lines: &[String],
+    weights: Option<LineAlignmentWeights<'_>>,
+) -> Vec<Edit> {
     histogram_diff_range(
         left_lines,
         right_lines,
@@ -341,6 +475,7 @@ fn histogram_diff_lines(left_lines: &[String], right_lines: &[String]) -> Vec<Ed
         left_lines.len(),
         0,
         right_lines.len(),
+        weights,
     )
 }
 
@@ -351,23 +486,36 @@ fn histogram_diff_range(
     left_end: usize,
     right_start: usize,
     right_end: usize,
+    weights: Option<LineAlignmentWeights<'_>>,
 ) -> Vec<Edit> {
     let anchors = histogram_anchors(
         &left_lines[left_start..left_end],
         &right_lines[right_start..right_end],
         left_start,
         right_start,
+        weights,
     );
 
     if anchors.is_empty() {
-        return offset_edits(
-            diff_lines(
-                &left_lines[left_start..left_end],
-                &right_lines[right_start..right_end],
+        return match weights {
+            Some(weights) => weighted_diff_lines_range(
+                left_lines,
+                right_lines,
+                left_start,
+                left_end,
+                right_start,
+                right_end,
+                weights,
             ),
-            left_start,
-            right_start,
-        );
+            None => offset_edits(
+                diff_lines(
+                    &left_lines[left_start..left_end],
+                    &right_lines[right_start..right_end],
+                ),
+                left_start,
+                right_start,
+            ),
+        };
     }
 
     let mut edits = Vec::new();
@@ -382,6 +530,7 @@ fn histogram_diff_range(
             anchor_left,
             current_right,
             anchor_right,
+            weights,
         ));
         edits.push(Edit::Equal {
             left_index: anchor_left,
@@ -398,6 +547,7 @@ fn histogram_diff_range(
         left_end,
         current_right,
         right_end,
+        weights,
     ));
 
     edits
@@ -408,10 +558,11 @@ fn histogram_anchors(
     right_lines: &[String],
     left_offset: usize,
     right_offset: usize,
+    weights: Option<LineAlignmentWeights<'_>>,
 ) -> Vec<(usize, usize)> {
     let left_positions = line_positions(left_lines);
     let right_positions = line_positions(right_lines);
-    let mut candidates = Vec::<(usize, usize, usize)>::new();
+    let mut candidates = Vec::<(usize, i32, usize, usize)>::new();
 
     for (line, left_indexes) in left_positions {
         let Some(right_indexes) = right_positions.get(&line) else {
@@ -421,24 +572,25 @@ fn histogram_anchors(
 
         for left_index in left_indexes {
             for right_index in right_indexes {
-                candidates.push((
-                    frequency,
-                    left_index + left_offset,
-                    *right_index + right_offset,
-                ));
+                let absolute_left = left_index + left_offset;
+                let absolute_right = *right_index + right_offset;
+                let alignment_weight = weights
+                    .map(|weights| weights.match_weight(absolute_left, absolute_right))
+                    .unwrap_or(DEFAULT_LINE_ALIGNMENT_WEIGHT);
+                candidates.push((frequency, alignment_weight, absolute_left, absolute_right));
             }
         }
     }
 
-    candidates.sort_by_key(|(frequency, left_index, right_index)| {
-        (*frequency, *left_index, *right_index)
+    candidates.sort_by_key(|(frequency, alignment_weight, left_index, right_index)| {
+        (*frequency, -*alignment_weight, *left_index, *right_index)
     });
 
     let mut anchors = Vec::<(usize, usize)>::new();
     let mut last_left = None;
     let mut last_right = None;
 
-    for (_, left_index, right_index) in candidates {
+    for (_, _, left_index, right_index) in candidates {
         if last_left.is_none_or(|left| left_index > left)
             && last_right.is_none_or(|right| right_index > right)
         {
@@ -468,23 +620,36 @@ fn patience_diff_range(
     left_end: usize,
     right_start: usize,
     right_end: usize,
+    weights: Option<LineAlignmentWeights<'_>>,
 ) -> Vec<Edit> {
     let anchors = patience_anchors(
         &left_lines[left_start..left_end],
         &right_lines[right_start..right_end],
         left_start,
         right_start,
+        weights,
     );
 
     if anchors.is_empty() {
-        return offset_edits(
-            diff_lines(
-                &left_lines[left_start..left_end],
-                &right_lines[right_start..right_end],
+        return match weights {
+            Some(weights) => weighted_diff_lines_range(
+                left_lines,
+                right_lines,
+                left_start,
+                left_end,
+                right_start,
+                right_end,
+                weights,
             ),
-            left_start,
-            right_start,
-        );
+            None => offset_edits(
+                diff_lines(
+                    &left_lines[left_start..left_end],
+                    &right_lines[right_start..right_end],
+                ),
+                left_start,
+                right_start,
+            ),
+        };
     }
 
     let mut edits = Vec::new();
@@ -499,6 +664,7 @@ fn patience_diff_range(
             anchor_left,
             current_right,
             anchor_right,
+            weights,
         ));
         edits.push(Edit::Equal {
             left_index: anchor_left,
@@ -515,6 +681,7 @@ fn patience_diff_range(
         left_end,
         current_right,
         right_end,
+        weights,
     ));
 
     edits
@@ -525,6 +692,7 @@ fn patience_anchors(
     right_lines: &[String],
     left_offset: usize,
     right_offset: usize,
+    _weights: Option<LineAlignmentWeights<'_>>,
 ) -> Vec<(usize, usize)> {
     let left_unique = unique_line_positions(left_lines);
     let right_unique = unique_line_positions(right_lines);
@@ -602,6 +770,37 @@ fn lcs_table(left_lines: &[String], right_lines: &[String]) -> Vec<Vec<usize>> {
             } else {
                 table[left_index + 1][right_index].max(table[left_index][right_index + 1])
             };
+        }
+    }
+
+    table
+}
+
+fn weighted_lcs_table(
+    left_lines: &[String],
+    right_lines: &[String],
+    left_start: usize,
+    left_end: usize,
+    right_start: usize,
+    right_end: usize,
+    weights: LineAlignmentWeights<'_>,
+) -> Vec<Vec<i32>> {
+    let left_len = left_end - left_start;
+    let right_len = right_end - right_start;
+    let mut table = vec![vec![0; right_len + 1]; left_len + 1];
+
+    for relative_left in (0..left_len).rev() {
+        for relative_right in (0..right_len).rev() {
+            let left_index = left_start + relative_left;
+            let right_index = right_start + relative_right;
+            table[relative_left][relative_right] =
+                if left_lines[left_index] == right_lines[right_index] {
+                    table[relative_left + 1][relative_right + 1]
+                        + weights.match_weight(left_index, right_index)
+                } else {
+                    table[relative_left + 1][relative_right]
+                        .max(table[relative_left][relative_right + 1])
+                };
         }
     }
 
@@ -727,6 +926,20 @@ fn line(
 
 fn diff_line_is_important(kind: &DiffLineKind) -> bool {
     *kind != DiffLineKind::Equal
+}
+
+fn grammar_line_weights(lines: &[String], grammar: &format_core::GrammarDefinition) -> Vec<i32> {
+    lines
+        .iter()
+        .map(|line| {
+            format_core::find_grammar_item(line, grammar)
+                .map(|item_match| {
+                    (DEFAULT_LINE_ALIGNMENT_WEIGHT + item_match.line_weight)
+                        .max(MIN_LINE_ALIGNMENT_WEIGHT)
+                })
+                .unwrap_or(DEFAULT_LINE_ALIGNMENT_WEIGHT)
+        })
+        .collect()
 }
 
 fn grammar_diff_is_important(line: &DiffLine, grammar: &format_core::GrammarDefinition) -> bool {
@@ -1013,6 +1226,47 @@ mod tests {
 
         assert_eq!(result.stats.modified, 1);
         assert!(result.lines[0].important);
+    }
+
+    #[test]
+    fn grammar_line_weight_prefers_structural_alignment_over_low_value_lines() {
+        let grammar = format_core::GrammarDefinition {
+            id: "rust-grammar".to_owned(),
+            name: "Rust Grammar".to_owned(),
+            items: vec![
+                format_core::GrammarItem {
+                    id: "line-comment".to_owned(),
+                    name: "Line Comment".to_owned(),
+                    kind: format_core::GrammarItemKind::Comment,
+                    matcher: format_core::GrammarMatcher::LinePrefix("//".to_owned()),
+                    style_scope: "comment.line".to_owned(),
+                    importance: format_core::GrammarImportance::Unimportant,
+                    line_weight: -20,
+                },
+                format_core::GrammarItem {
+                    id: "keyword".to_owned(),
+                    name: "Keyword".to_owned(),
+                    kind: format_core::GrammarItemKind::Keyword,
+                    matcher: format_core::GrammarMatcher::Keywords(vec!["fn".to_owned()]),
+                    style_scope: "keyword.control".to_owned(),
+                    importance: format_core::GrammarImportance::Important,
+                    line_weight: 30,
+                },
+            ],
+        };
+        let request = request(
+            "// shared\nfn important()\n// shared",
+            "// shared\n// shared\nfn important()",
+        );
+
+        let result = diff_text_with_grammar(&request, &grammar);
+
+        assert!(result.lines.iter().any(|line| {
+            line.kind == DiffLineKind::Equal
+                && line.left_number == Some(2)
+                && line.right_number == Some(3)
+                && line.left_text == "fn important()"
+        }));
     }
 
     #[test]

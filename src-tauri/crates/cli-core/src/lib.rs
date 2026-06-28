@@ -13,6 +13,7 @@ pub struct CliInvocation {
 #[serde(rename_all = "camelCase")]
 pub enum CliCommand {
     Help,
+    ShellCompare { path: String },
     CompareFiles { left: String, right: String },
     CompareFolders { left: String, right: String },
     OpenSession { store_root: String, name: String },
@@ -121,6 +122,7 @@ where
 
     match command.as_str() {
         "--help" | "-h" | "help" => Ok(help_invocation()),
+        "--shell-compare" | "shell-compare" => parse_shell_compare(args.collect()),
         "compare" => parse_compare_files(args.collect()),
         "compare-folders" => parse_compare_folders(args.collect()),
         "open-session" => parse_open_session(args.collect()),
@@ -292,6 +294,19 @@ fn help_invocation() -> CliInvocation {
     }
 }
 
+fn parse_shell_compare(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    if args.len() != 1 {
+        return Err(usage_error("shell-compare requires PATH"));
+    }
+
+    Ok(CliInvocation {
+        command: CliCommand::ShellCompare {
+            path: args[0].clone(),
+        },
+        exit_code: CliExitCode::Success,
+    })
+}
+
 fn parse_compare_files(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
     if args.len() != 2 {
         return Err(usage_error("compare requires LEFT and RIGHT paths"));
@@ -437,6 +452,16 @@ mod tests {
             CliCommand::CompareFiles {
                 left: "left.txt".to_owned(),
                 right: "right.txt".to_owned(),
+            }
+        );
+
+        let shell_compare =
+            parse_cli_args(["open-diff-app", "--shell-compare", "D:/work/file.txt"])
+                .expect("shell compare should parse");
+        assert_eq!(
+            shell_compare.command,
+            CliCommand::ShellCompare {
+                path: "D:/work/file.txt".to_owned(),
             }
         );
 

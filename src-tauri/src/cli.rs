@@ -18,6 +18,7 @@ fn main() {
             println!("Commands:");
             println!("  compare <left> <right>");
             println!("  compare-folders <left> <right>");
+            println!("  shell-compare <path>");
             println!("  open-session <store-root> <name>");
             println!("  merge-text <base> <left> <right> [output]");
             println!("Exit codes:");
@@ -39,6 +40,9 @@ fn main() {
                 result.added, result.deleted, result.modified
             );
             std::process::exit(cli_exit_code_value(result.exit_code));
+        }
+        CliCommand::ShellCompare { path } => {
+            println!("shell compare path: {path}");
         }
         CliCommand::CompareFolders { left, right } => {
             let result = match compare_folders(&left, &right) {

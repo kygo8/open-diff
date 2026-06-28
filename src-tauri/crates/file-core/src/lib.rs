@@ -7,13 +7,14 @@ use vfs_core::{LocalVfs, VfsPath};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FileReadError {
+    NotFound(String),
     Io(String),
     UnsupportedEncoding,
 }
 
 pub fn read_text_file(path: impl AsRef<Path>) -> Result<ReadTextFileResponse, FileReadError> {
     let path_ref = path.as_ref();
-    let bytes = fs::read(path_ref).map_err(|error| FileReadError::Io(error.to_string()))?;
+    let bytes = fs::read(path_ref).map_err(file_io_error)?;
     let (text, encoding) = decode_text_bytes(&bytes)?;
     let file_stamp = file_stamp(path_ref)?;
 
@@ -57,7 +58,7 @@ pub fn save_text_file(
 }
 
 fn file_stamp(path: &Path) -> Result<FileStamp, FileReadError> {
-    let metadata = fs::metadata(path).map_err(|error| FileReadError::Io(error.to_string()))?;
+    let metadata = fs::metadata(path).map_err(file_io_error)?;
     let modified_at_ms = metadata
         .modified()
         .map_err(|error| FileReadError::Io(error.to_string()))?
@@ -69,6 +70,14 @@ fn file_stamp(path: &Path) -> Result<FileStamp, FileReadError> {
         size: metadata.len(),
         modified_at_ms,
     })
+}
+
+fn file_io_error(error: std::io::Error) -> FileReadError {
+    if error.kind() == std::io::ErrorKind::NotFound {
+        return FileReadError::NotFound(error.to_string());
+    }
+
+    FileReadError::Io(error.to_string())
 }
 
 fn detect_line_ending(text: &str) -> &'static str {

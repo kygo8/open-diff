@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -133,4 +134,87 @@ pub enum PatchLineKind {
     Context,
     Added,
     Removed,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct AppErrorPayload {
+    pub code: AppErrorCode,
+    pub message_key: String,
+    pub params: BTreeMap<String, String>,
+    pub debug_message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub suggestion_key: Option<String>,
+}
+
+impl AppErrorPayload {
+    pub fn new(
+        code: AppErrorCode,
+        message_key: impl Into<String>,
+        debug_message: impl Into<String>,
+    ) -> Self {
+        Self {
+            code,
+            message_key: message_key.into(),
+            params: BTreeMap::new(),
+            debug_message: debug_message.into(),
+            suggestion_key: None,
+        }
+    }
+
+    pub fn with_param(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+        self.params.insert(key.into(), value.into());
+
+        self
+    }
+
+    pub fn with_suggestion_key(mut self, suggestion_key: impl Into<String>) -> Self {
+        self.suggestion_key = Some(suggestion_key.into());
+
+        self
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum AppErrorCode {
+    #[serde(rename = "app.unknown")]
+    Unknown,
+    #[serde(rename = "file.notFound")]
+    FileNotFound,
+    #[serde(rename = "file.readFailed")]
+    FileReadFailed,
+    #[serde(rename = "file.writeFailed")]
+    FileWriteFailed,
+    #[serde(rename = "file.unsupportedEncoding")]
+    FileUnsupportedEncoding,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn app_error_payload_serializes_with_stable_code_and_localization_fields() {
+        let error = AppErrorPayload::new(
+            AppErrorCode::FileNotFound,
+            "error.file.notFound.message",
+            "file is missing",
+        )
+        .with_param("path", "C:/work/missing.txt")
+        .with_suggestion_key("error.file.notFound.suggestion");
+
+        assert_eq!(
+            serde_json::to_value(error).expect("error payload should serialize"),
+            json!({
+                "code": "file.notFound",
+                "messageKey": "error.file.notFound.message",
+                "params": {
+                    "path": "C:/work/missing.txt"
+                },
+                "debugMessage": "file is missing",
+                "suggestionKey": "error.file.notFound.suggestion"
+            })
+        );
+    }
 }

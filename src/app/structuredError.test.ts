@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { createFileOperationError } from './structuredError'
+import { createAppI18n } from '@/i18n'
+import { createFileOperationError, resolveLocalizedAppError } from './structuredError'
 
 describe('createFileOperationError', () => {
   it('creates a structured file operation error with path and suggestion', () => {
@@ -27,6 +28,28 @@ describe('createFileOperationError', () => {
       }),
     ).toMatchObject({
       suggestion: 'Choose overwrite to replace the target.',
+    })
+  })
+
+  it('maps backend error codes to localized user-facing copy', () => {
+    const i18n = createAppI18n('zh-CN')
+
+    expect(
+      resolveLocalizedAppError(
+        {
+          code: 'file.notFound',
+          messageKey: 'error.file.notFound.message',
+          params: { path: 'C:/work/missing.txt' },
+          debugMessage: 'No such file or directory',
+        },
+        i18n.t,
+      ),
+    ).toEqual({
+      code: 'file.notFound',
+      title: '文件不存在',
+      message: '找不到 C:/work/missing.txt。',
+      suggestion: '确认路径存在后重试。',
+      debugMessage: 'No such file or directory',
     })
   })
 })

@@ -15,6 +15,22 @@ export const enUS: LanguagePack = {
     'command.ready': 'Ready',
     'command.searchPlaceholder': 'Search commands',
     'command.toggleTheme': 'Toggle Theme',
+    'error.app.unknown.title': 'Unexpected error',
+    'error.file.notFound.message': 'Could not find {path}.',
+    'error.file.notFound.suggestion': 'Confirm the path exists, then try again.',
+    'error.file.notFound.title': 'File not found',
+    'error.file.readFailed.message': 'Could not read {path}.',
+    'error.file.readFailed.suggestion':
+      'Check file permissions and whether another app is using it.',
+    'error.file.readFailed.title': 'Read failed',
+    'error.file.unsupportedEncoding.message': 'Could not decode {path} as a supported text file.',
+    'error.file.unsupportedEncoding.suggestion':
+      'Open the file with a known UTF-8, UTF-16, or GBK encoding.',
+    'error.file.unsupportedEncoding.title': 'Unsupported encoding',
+    'error.file.writeFailed.message': 'Could not write {path}.',
+    'error.file.writeFailed.suggestion':
+      'Check file permissions, free disk space, and whether the file is locked.',
+    'error.file.writeFailed.title': 'Write failed',
     'ui.acceptBase': 'Accept Base',
     'ui.acceptLeft': 'Accept Left',
     'ui.acceptRight': 'Accept Right',

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 type MergeRole = 'Base' | 'Left' | 'Right'
 type MergeEntryKind = 'File' | 'Directory' | 'Missing'
@@ -41,6 +42,8 @@ const basePath = ref('D:/workspace/merge/base')
 const rightPath = ref('D:/workspace/merge/right')
 const outputPath = ref('D:/workspace/merge/output')
 const planRows = ref<MergePlanRow[]>([])
+const router = useRouter()
+const lastOpenedConflictPath = ref('')
 
 const hasPlan = computed(() => planRows.value.length > 0)
 const conflicts = computed(() =>
@@ -133,6 +136,11 @@ function sideLabel(side: MergeSide): string {
 
   return `${side.kind} | ${side.size ?? '--'} | ${side.modified ?? '--'}`
 }
+
+function openConflictInTextMerge(conflict: MergeConflict): void {
+  lastOpenedConflictPath.value = conflict.path
+  void router.push('/merge/text')
+}
 </script>
 
 <template>
@@ -203,6 +211,14 @@ function sideLabel(side: MergeSide): string {
     </section>
 
     <section
+      v-if="lastOpenedConflictPath"
+      class="merge-open-status"
+      data-testid="folder-merge-open-status"
+    >
+      Opening Text Merge for {{ lastOpenedConflictPath }} -> /merge/text
+    </section>
+
+    <section
       v-if="hasPlan"
       class="merge-plan"
       data-testid="folder-merge-plan"
@@ -256,6 +272,14 @@ function sideLabel(side: MergeSide): string {
           <span>{{ conflict.baseContext }}</span>
           <span>{{ conflict.leftContext }}</span>
           <span>{{ conflict.rightContext }}</span>
+          <NButton
+            size="tiny"
+            secondary
+            :data-testid="`open-folder-conflict-${conflict.path}`"
+            @click="openConflictInTextMerge(conflict)"
+          >
+            Open Text Merge
+          </NButton>
         </li>
       </ul>
     </section>
@@ -360,6 +384,7 @@ h1 {
   justify-content: flex-end;
 }
 
+.merge-open-status,
 .merge-plan,
 .conflict-panel {
   display: grid;
@@ -368,6 +393,11 @@ h1 {
   border: 1px solid var(--app-border);
   border-radius: 8px;
   background: var(--app-surface);
+}
+
+.merge-open-status {
+  color: var(--app-text-muted);
+  font-size: 12px;
 }
 
 .merge-plan header,
@@ -449,7 +479,9 @@ h1 {
 
 .conflict-panel li {
   display: grid;
-  grid-template-columns: minmax(120px, 0.5fr) minmax(200px, 1fr) repeat(3, minmax(120px, 0.7fr));
+  grid-template-columns:
+    minmax(120px, 0.5fr) minmax(200px, 1fr) repeat(3, minmax(120px, 0.7fr))
+    130px;
   gap: 8px;
   padding: 8px;
   border: 1px solid var(--diff-deleted-fg);

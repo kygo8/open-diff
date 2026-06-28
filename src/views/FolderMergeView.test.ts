@@ -1,7 +1,13 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderMergeView from './FolderMergeView.vue'
 import type { VueWrapper } from '@vue/test-utils'
+
+const push = vi.fn()
+
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push }),
+}))
 
 function mountFolderMergeView(): VueWrapper {
   return mount(FolderMergeView, {
@@ -18,6 +24,10 @@ function mountFolderMergeView(): VueWrapper {
 }
 
 describe('FolderMergeView', () => {
+  beforeEach(() => {
+    push.mockClear()
+  })
+
   it('renders left, base, right, and output folder inputs', () => {
     const wrapper = mountFolderMergeView()
 
@@ -65,5 +75,16 @@ describe('FolderMergeView', () => {
     expect(conflicts.text()).toContain('Left: File')
     expect(conflicts.text()).toContain('Right: Directory')
     expect(conflicts.text()).toContain('Left and right changed the same path differently')
+  })
+
+  it('opens a folder conflict in the text merge workspace', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await wrapper.find('[data-testid="open-folder-conflict-config"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Opening Text Merge for config')
+    expect(wrapper.text()).toContain('/merge/text')
+    expect(push).toHaveBeenCalledWith('/merge/text')
   })
 })

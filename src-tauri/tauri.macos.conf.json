@@ -1,0 +1,28 @@
+{
+  "bundle": {
+    "targets": ["app", "dmg"],
+    "category": "DeveloperTool",
+    "icon": ["icons/icon.icns"],
+    "macOS": {
+      "bundleName": "Open Diff",
+      "bundleVersion": "1.0.0",
+      "minimumSystemVersion": "11.0",
+      "hardenedRuntime": true,
+      "exceptionDomain": "github.com",
+      "dmg": {
+        "windowSize": {
+          "width": 660,
+          "height": 400
+        },
+        "appPosition": {
+          "x": 180,
+          "y": 170
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 170
+        }
+      }
+    }
+  }
+}

@@ -34,6 +34,7 @@
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
+    "tauri:build:macos": "bash scripts/macos/package-macos.sh",
     "tauri:portable:windows": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/windows/package-portable.ps1"
   },
   "dependencies": {

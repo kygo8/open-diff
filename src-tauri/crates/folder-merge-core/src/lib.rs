@@ -72,6 +72,7 @@ pub struct FolderMergeAction {
     pub relative_path: String,
     pub kind: FolderMergeActionKind,
     pub conflict: bool,
+    pub conflict_detail: Option<FolderMergeConflict>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -82,6 +83,22 @@ pub enum FolderMergeActionKind {
     CopyRightToOutput,
     DeleteOutput,
     MarkConflict,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergeConflict {
+    pub reason: FolderMergeConflictReason,
+    pub base: Option<FolderMergeEntry>,
+    pub left: Option<FolderMergeEntry>,
+    pub right: Option<FolderMergeEntry>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FolderMergeConflictReason {
+    BothSidesChanged,
+    IncompatibleEntryKind,
 }
 
 impl FolderMergeSide {
@@ -179,11 +196,29 @@ fn action_for_row(row: FolderMergeAlignmentRow) -> FolderMergeAction {
         _ => FolderMergeActionKind::MarkConflict,
     };
     let conflict = kind == FolderMergeActionKind::MarkConflict;
+    let conflict_detail = conflict.then(|| FolderMergeConflict {
+        reason: conflict_reason_for_row(&row),
+        base: row.base.clone(),
+        left: row.left.clone(),
+        right: row.right.clone(),
+    });
 
     FolderMergeAction {
         relative_path: row.relative_path,
         kind,
         conflict,
+        conflict_detail,
+    }
+}
+
+fn conflict_reason_for_row(row: &FolderMergeAlignmentRow) -> FolderMergeConflictReason {
+    match (&row.base, &row.left, &row.right) {
+        (Some(base), Some(left), Some(right))
+            if base.kind != left.kind || base.kind != right.kind =>
+        {
+            FolderMergeConflictReason::BothSidesChanged
+        }
+        _ => FolderMergeConflictReason::IncompatibleEntryKind,
     }
 }
 
@@ -294,18 +329,57 @@ mod tests {
                     relative_path: "left-add.txt".to_owned(),
                     kind: FolderMergeActionKind::CopyLeftToOutput,
                     conflict: false,
+                    conflict_detail: None,
                 },
                 FolderMergeAction {
                     relative_path: "right-delete.txt".to_owned(),
                     kind: FolderMergeActionKind::DeleteOutput,
                     conflict: false,
+                    conflict_detail: None,
                 },
                 FolderMergeAction {
                     relative_path: "same.txt".to_owned(),
                     kind: FolderMergeActionKind::KeepOutput,
                     conflict: false,
+                    conflict_detail: None,
                 },
             ]
+        );
+    }
+
+    #[test]
+    fn marks_conflicting_same_path_folder_changes_with_context() {
+        let document = FolderMergeDocument {
+            base: side(
+                FolderMergeRole::Base,
+                "D:/base",
+                vec![entry("config", FolderMergeEntryKind::File)],
+            ),
+            left: side(
+                FolderMergeRole::Left,
+                "D:/left",
+                vec![entry("config", FolderMergeEntryKind::Directory)],
+            ),
+            right: side(
+                FolderMergeRole::Right,
+                "D:/right",
+                vec![entry("config", FolderMergeEntryKind::File)],
+            ),
+            output: FolderMergeSide::new(FolderMergeRole::Output, "D:/out"),
+        };
+
+        let plan = build_folder_merge_plan(&document);
+
+        assert_eq!(plan.conflicts, 1);
+        assert_eq!(plan.actions[0].kind, FolderMergeActionKind::MarkConflict);
+        assert_eq!(
+            plan.actions[0].conflict_detail,
+            Some(FolderMergeConflict {
+                reason: FolderMergeConflictReason::BothSidesChanged,
+                base: Some(entry("config", FolderMergeEntryKind::File)),
+                left: Some(entry("config", FolderMergeEntryKind::Directory)),
+                right: Some(entry("config", FolderMergeEntryKind::File)),
+            })
         );
     }
 

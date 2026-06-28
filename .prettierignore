@@ -3,6 +3,9 @@ node_modules
 src-tauri/target
 src-tauri/gen/schemas
 coverage
+playwright-report
+test-results
 *.log
 *.lock
+pnpm-lock.yaml
 *.ico

@@ -30,7 +30,9 @@
     "quality:fix": "corepack pnpm format && corepack pnpm lint:fix && corepack pnpm stylelint:fix && corepack pnpm rust:fmt",
     "prepare": "husky",
     "typecheck": "vue-tsc --noEmit",
-    "test": "vitest run",
+    "test": "corepack pnpm test:unit && corepack pnpm test:e2e",
+    "test:e2e": "playwright test",
+    "test:unit": "vitest run",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
@@ -51,6 +53,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.61.1",
     "@stylistic/eslint-plugin": "5.10.0",
     "@tauri-apps/cli": "2.11.3",
     "@types/node": "26.0.1",

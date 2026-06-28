@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint'
 import vue from 'eslint-plugin-vue'
 import vueParser from 'vue-eslint-parser'
 
-const typedFiles = ['src/**/*.{ts,vue}', 'vite.config.ts']
+const typedFiles = ['src/**/*.{ts,vue}', 'tests/**/*.ts', 'vite.config.ts', 'playwright.config.ts']
 const typedConfigs = [
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
@@ -44,6 +44,7 @@ export default tseslint.config(
       },
     },
     plugins: {
+      '@typescript-eslint': tseslint.plugin,
       '@stylistic': stylistic,
     },
     rules: {
@@ -160,7 +161,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['*.config.{js,ts}', 'vite.config.ts', 'eslint.config.js'],
+    files: ['*.config.{js,ts}', 'vite.config.ts', 'playwright.config.ts', 'eslint.config.js'],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -180,7 +181,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/**/*.test.ts'],
+    files: ['src/**/*.test.ts', 'tests/**/*.ts'],
     languageOptions: {
       globals: {
         ...globals.vitest,

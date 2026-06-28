@@ -3,7 +3,9 @@ node_modules/
 
 # Build output
 dist/
+playwright-report/
 src-tauri/target/
+test-results/
 
 # Logs
 *.log

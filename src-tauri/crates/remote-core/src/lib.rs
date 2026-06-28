@@ -350,6 +350,48 @@ impl MemoryFtpsProvider {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum WebDavOverwritePolicy {
+    Allow,
+    Deny,
+}
+
+#[derive(Debug, Clone)]
+pub struct MemoryWebDavProvider {
+    profile: RemoteProfile,
+    overwrite_policy: WebDavOverwritePolicy,
+    files: BTreeMap<String, Vec<u8>>,
+}
+
+impl MemoryWebDavProvider {
+    pub fn connect(profile: RemoteProfile) -> RemoteProviderResult<Self> {
+        if profile.protocol != RemoteProtocol::WebDav {
+            return Err(RemoteProviderError::UnsupportedProtocol(profile.protocol));
+        }
+
+        let overwrite_policy = profile
+            .options
+            .get("allowOverwrite")
+            .filter(|value| value.eq_ignore_ascii_case("false"))
+            .map(|_| WebDavOverwritePolicy::Deny)
+            .unwrap_or(WebDavOverwritePolicy::Allow);
+
+        Ok(Self {
+            profile,
+            overwrite_policy,
+            files: BTreeMap::new(),
+        })
+    }
+
+    pub fn profile(&self) -> &RemoteProfile {
+        &self.profile
+    }
+
+    pub fn overwrite_policy(&self) -> WebDavOverwritePolicy {
+        self.overwrite_policy.clone()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct MemorySftpProvider {
     profile: RemoteProfile,
@@ -573,6 +615,38 @@ impl RemoteFileProvider for MemoryFtpsProvider {
 
     fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()> {
         upload_memory_remote_file(&mut self.files, path, bytes)
+    }
+
+    fn delete(&mut self, path: &str) -> RemoteProviderResult<()> {
+        delete_memory_remote_file(&mut self.files, path)
+    }
+
+    fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
+        rename_memory_remote_file(&mut self.files, from, to)
+    }
+}
+
+impl RemoteFileProvider for MemoryWebDavProvider {
+    fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
+        list_memory_remote_entries(&self.files, path)
+    }
+
+    fn download(&self, path: &str) -> RemoteProviderResult<Vec<u8>> {
+        download_memory_remote_file(&self.files, path)
+    }
+
+    fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()> {
+        let normalized_path = normalize_remote_path(path)?;
+
+        if self.overwrite_policy == WebDavOverwritePolicy::Deny
+            && self.files.contains_key(&normalized_path)
+        {
+            return Err(RemoteProviderError::AlreadyExists(normalized_path));
+        }
+
+        self.files.insert(normalized_path, bytes);
+
+        Ok(())
     }
 
     fn delete(&mut self, path: &str) -> RemoteProviderResult<()> {
@@ -883,6 +957,75 @@ mod tests {
         assert!(matches!(
             error,
             RemoteProviderError::UnsupportedProtocol(RemoteProtocol::Ftp)
+        ));
+    }
+
+    #[test]
+    fn webdav_provider_uploads_lists_and_downloads_remote_resources() {
+        let profile = RemoteProfile::new(
+            "team-webdav",
+            "Team WebDAV",
+            RemoteProtocol::WebDav,
+            RemoteEndpoint::new("dav.example.com")
+                .with_port(443)
+                .with_root_path("/shared"),
+            CredentialReference::profile_store("team-webdav"),
+        )
+        .with_option("allowOverwrite", "false");
+        let mut provider = MemoryWebDavProvider::connect(profile).unwrap();
+
+        provider
+            .upload("/shared/specs/readme.md", b"# Docs".to_vec())
+            .unwrap();
+
+        assert_eq!(provider.overwrite_policy(), WebDavOverwritePolicy::Deny);
+        assert_eq!(
+            provider.download("/shared/specs/readme.md").unwrap(),
+            b"# Docs"
+        );
+        assert_eq!(provider.list("/shared/specs").unwrap()[0].size, 6);
+    }
+
+    #[test]
+    fn webdav_provider_rejects_overwrite_when_policy_denies_it() {
+        let profile = RemoteProfile::new(
+            "locked-webdav",
+            "Locked WebDAV",
+            RemoteProtocol::WebDav,
+            RemoteEndpoint::new("dav.example.com"),
+            CredentialReference::profile_store("locked-webdav"),
+        )
+        .with_option("allowOverwrite", "false");
+        let mut provider = MemoryWebDavProvider::connect(profile).unwrap();
+
+        provider
+            .upload("/shared/plan.txt", b"one".to_vec())
+            .unwrap();
+        let error = provider
+            .upload("/shared/plan.txt", b"two".to_vec())
+            .unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::AlreadyExists(path) if path == "/shared/plan.txt"
+        ));
+    }
+
+    #[test]
+    fn webdav_provider_rejects_non_webdav_profiles() {
+        let profile = RemoteProfile::new(
+            "release-sftp",
+            "Release SFTP",
+            RemoteProtocol::Sftp,
+            RemoteEndpoint::new("sftp.example.com"),
+            CredentialReference::profile_store("release-sftp"),
+        );
+
+        let error = MemoryWebDavProvider::connect(profile).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::Sftp)
         ));
     }
 }

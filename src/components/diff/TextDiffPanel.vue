@@ -26,10 +26,41 @@ interface DisplaySegmentPart {
   text: string
   changed: boolean
   whitespace: boolean
+  grammarKind: string | null
+  grammarScope: string | null
+}
+
+interface SyntaxGrammar {
+  items: SyntaxGrammarItem[]
+}
+
+interface SyntaxGrammarItem {
+  id: string
+  kind: string
+  matcher: SyntaxGrammarMatcher
+  styleScope: string
+}
+
+type SyntaxGrammarMatcher =
+  | {
+      type: 'linePrefix'
+      value: string
+    }
+  | {
+      type: 'keywords'
+      values: string[]
+    }
+
+interface SyntaxToken {
+  start: number
+  end: number
+  kind: string
+  scope: string
 }
 
 const props = defineProps<{
   lines: DiffLine[]
+  grammar?: SyntaxGrammar
 }>()
 
 const scrollContainer = ref<HTMLElement | null>(null)
@@ -212,21 +243,172 @@ const splitTextByGrapheme = (text: string): string[] => {
 }
 
 const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[] => {
+  const syntaxTokens = getSyntaxTokens(segment.text)
+  const textParts = splitBySyntaxTokens(segment, syntaxTokens)
+
   if (!showWhitespace.value) {
-    return [{ text: segment.text, changed: segment.changed, whitespace: false }]
+    return textParts
   }
 
-  return splitTextByGrapheme(segment.text).map((character): DisplaySegmentPart => {
-    if (character === ' ') {
-      return { text: '·', changed: segment.changed, whitespace: true }
+  return textParts.flatMap((part) =>
+    splitTextByGrapheme(part.text).map((character): DisplaySegmentPart => {
+      if (character === ' ') {
+        return {
+          ...part,
+          text: '·',
+          whitespace: true,
+        }
+      }
+
+      if (character === '\t') {
+        return {
+          ...part,
+          text: '→',
+          whitespace: true,
+        }
+      }
+
+      return { ...part, text: character, whitespace: false }
+    }),
+  )
+}
+
+const getSyntaxTokens = (text: string): SyntaxToken[] => {
+  const grammar = props.grammar
+
+  if (!grammar || text.length === 0) {
+    return []
+  }
+
+  for (const item of grammar.items) {
+    const range = getSyntaxRange(text, item.matcher)
+
+    if (range) {
+      return [
+        {
+          ...range,
+          kind: item.kind,
+          scope: item.styleScope,
+        },
+      ]
+    }
+  }
+
+  return []
+}
+
+const getSyntaxRange = (
+  text: string,
+  matcher: SyntaxGrammarMatcher,
+): Pick<SyntaxToken, 'start' | 'end'> | null => {
+  if (matcher.type === 'linePrefix') {
+    const start = text.indexOf(matcher.value)
+
+    if (start < 0) {
+      return null
     }
 
-    if (character === '\t') {
-      return { text: '→', changed: segment.changed, whitespace: true }
+    return { start, end: text.length }
+  }
+
+  for (const keyword of matcher.values) {
+    const range = getKeywordRange(text, keyword)
+
+    if (range) {
+      return range
+    }
+  }
+
+  return null
+}
+
+const getKeywordRange = (
+  text: string,
+  keyword: string,
+): Pick<SyntaxToken, 'start' | 'end'> | null => {
+  let offset = 0
+
+  while (offset < text.length) {
+    const index = text.slice(offset).indexOf(keyword)
+
+    if (index < 0) {
+      return null
     }
 
-    return { text: character, changed: segment.changed, whitespace: false }
-  })
+    const start = offset + index
+    const end = start + keyword.length
+
+    if (isKeywordBoundary(text, start, end)) {
+      return { start, end }
+    }
+
+    offset = end
+  }
+
+  return null
+}
+
+const isKeywordBoundary = (text: string, start: number, end: number): boolean => {
+  const before = start > 0 ? text[start - 1] : ''
+  const after = end < text.length ? text[end] : ''
+
+  return !isIdentifierCharacter(before) && !isIdentifierCharacter(after)
+}
+
+const isIdentifierCharacter = (value: string): boolean => /^[A-Za-z0-9_]$/u.test(value)
+
+const splitBySyntaxTokens = (
+  segment: InlineDiffSegment,
+  tokens: SyntaxToken[],
+): DisplaySegmentPart[] => {
+  if (tokens.length === 0) {
+    return [
+      {
+        text: segment.text,
+        changed: segment.changed,
+        whitespace: false,
+        grammarKind: null,
+        grammarScope: null,
+      },
+    ]
+  }
+
+  const parts: DisplaySegmentPart[] = []
+  let cursor = 0
+
+  for (const token of tokens) {
+    if (token.start > cursor) {
+      parts.push({
+        text: segment.text.slice(cursor, token.start),
+        changed: segment.changed,
+        whitespace: false,
+        grammarKind: null,
+        grammarScope: null,
+      })
+    }
+
+    parts.push({
+      text: segment.text.slice(token.start, token.end),
+      changed: segment.changed,
+      whitespace: false,
+      grammarKind: token.kind,
+      grammarScope: token.scope,
+    })
+
+    cursor = token.end
+  }
+
+  if (cursor < segment.text.length) {
+    parts.push({
+      text: segment.text.slice(cursor),
+      changed: segment.changed,
+      whitespace: false,
+      grammarKind: null,
+      grammarScope: null,
+    })
+  }
+
+  return parts
 }
 </script>
 
@@ -354,7 +536,14 @@ const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[
             ><span
               v-for="(part, partIndex) in getDisplaySegmentParts(segment)"
               :key="`left-${segmentIndex}-${partIndex}`"
-              :class="{ 'visible-whitespace': part.whitespace }"
+              class="syntax-part"
+              :class="{
+                'visible-whitespace': part.whitespace,
+                'syntax-keyword': part.grammarKind === 'keyword',
+                'syntax-comment': part.grammarKind === 'comment',
+              }"
+              :data-grammar-token="part.grammarKind ?? undefined"
+              :data-grammar-scope="part.grammarScope ?? undefined"
             >{{ part.text }}</span></span></pre>
             <div class="gutter">{{ line.rightNumber ?? '' }}</div>
             <pre
@@ -368,7 +557,14 @@ const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[
             ><span
               v-for="(part, partIndex) in getDisplaySegmentParts(segment)"
               :key="`right-${segmentIndex}-${partIndex}`"
-              :class="{ 'visible-whitespace': part.whitespace }"
+              class="syntax-part"
+              :class="{
+                'visible-whitespace': part.whitespace,
+                'syntax-keyword': part.grammarKind === 'keyword',
+                'syntax-comment': part.grammarKind === 'comment',
+              }"
+              :data-grammar-token="part.grammarKind ?? undefined"
+              :data-grammar-scope="part.grammarScope ?? undefined"
             >{{ part.text }}</span></span></pre>
           </div>
         </div>
@@ -577,6 +773,20 @@ const getDisplaySegmentParts = (segment: InlineDiffSegment): DisplaySegmentPart[
 
 .visible-whitespace {
   color: var(--app-text-muted);
+}
+
+.syntax-part {
+  border-radius: 2px;
+}
+
+.syntax-keyword {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.syntax-comment {
+  color: #64748b;
+  font-style: italic;
 }
 
 .diff-minimap {

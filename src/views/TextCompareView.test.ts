@@ -24,6 +24,22 @@ const NInputStub = defineComponent({
   template: '<textarea :value="value" @input="$emit(\'update:value\', $event.target.value)" />',
 })
 
+const TextDiffPanelStub = {
+  name: 'TextDiffPanel',
+  props: {
+    lines: {
+      type: Array,
+      default: () => [],
+    },
+    grammar: {
+      type: Object,
+      default: undefined,
+    },
+  },
+  template:
+    '<section data-testid="text-diff-panel-stub" :data-grammar-items="grammar?.items?.length ?? 0" />',
+}
+
 function mountTextCompareView(): VueWrapper {
   return mount(TextCompareView, {
     global: {
@@ -37,6 +53,7 @@ function mountTextCompareView(): VueWrapper {
           ...NInputStub,
         },
         NAlert: { template: '<div><slot /></div>' },
+        TextDiffPanel: TextDiffPanelStub,
       },
     },
   })
@@ -359,5 +376,30 @@ describe('TextCompareView', () => {
 
     expect(preview.exists()).toBe(true)
     expect(preview.attributes('srcdoc')).toContain('<h1>Hello preview</h1>')
+  })
+
+  it('passes a built-in syntax grammar to the text diff panel', async () => {
+    vi.mocked(diffText).mockResolvedValueOnce({
+      lines: [
+        {
+          leftNumber: 1,
+          rightNumber: 1,
+          leftText: 'fn main()',
+          rightText: '// comment',
+          kind: 'modified',
+          inlineSegments: { left: [], right: [] },
+        },
+      ],
+      stats: { added: 0, deleted: 0, modified: 1, equal: 0 },
+    })
+
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(
+      wrapper.find('[data-testid="text-diff-panel-stub"]').attributes('data-grammar-items'),
+    ).toBe('2')
   })
 })

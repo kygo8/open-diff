@@ -6,6 +6,23 @@ import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
 
 type DiffLine = TextDiffResponse['lines'][number]
 
+const builtInSyntaxGrammar = {
+  items: [
+    {
+      id: 'line-comment',
+      kind: 'comment',
+      matcher: { type: 'linePrefix' as const, value: '//' },
+      styleScope: 'comment.line',
+    },
+    {
+      id: 'keyword',
+      kind: 'keyword',
+      matcher: { type: 'keywords' as const, values: ['fn', 'let', 'const', 'function'] },
+      styleScope: 'keyword.control',
+    },
+  ],
+}
+
 const left = ref('line one\nline two\nline four')
 const right = ref('line one\nline 2\nline three\nline four')
 const algorithm = ref<TextDiffAlgorithm>('myers')
@@ -655,6 +672,7 @@ function closeHtmlPreviewWhenUnavailable(): void {
     <TextDiffPanel
       v-if="result"
       :lines="result.lines"
+      :grammar="builtInSyntaxGrammar"
     />
     <div
       v-else

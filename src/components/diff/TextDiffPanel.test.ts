@@ -347,4 +347,42 @@ describe('TextDiffPanel', () => {
     expect(panel.classes()).toContain('diff-panel-word-wrap')
     expect(wrapper.find('.cell').classes()).toContain('cell-word-wrap')
   })
+
+  it('renders syntax tokens from grammar rules', () => {
+    const lines: DiffLine[] = [
+      {
+        leftNumber: 1,
+        rightNumber: 1,
+        leftText: 'fn main()',
+        rightText: '// fn comment',
+        kind: 'modified',
+        inlineSegments: { left: [], right: [] },
+      },
+    ]
+    const grammar = {
+      items: [
+        {
+          id: 'line-comment',
+          kind: 'comment',
+          matcher: { type: 'linePrefix' as const, value: '//' },
+          styleScope: 'comment.line',
+        },
+        {
+          id: 'keyword',
+          kind: 'keyword',
+          matcher: { type: 'keywords' as const, values: ['fn', 'let'] },
+          styleScope: 'keyword.control',
+        },
+      ],
+    }
+
+    const wrapper = mount(TextDiffPanel, { props: { lines, grammar } })
+
+    expect(wrapper.text()).toContain('fn main()')
+    expect(wrapper.text()).toContain('// fn comment')
+    expect(wrapper.find('[data-grammar-token="keyword"]').text()).toBe('fn')
+    expect(wrapper.find('[data-grammar-token="comment"]').text()).toBe('// fn comment')
+    expect(wrapper.find('[data-grammar-scope="keyword.control"]').exists()).toBe(true)
+    expect(wrapper.find('[data-grammar-scope="comment.line"]').exists()).toBe(true)
+  })
 })

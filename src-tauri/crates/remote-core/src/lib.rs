@@ -217,6 +217,178 @@ impl CredentialStore for MemoryCredentialStore {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoteEntry {
+    pub path: String,
+    pub kind: RemoteEntryKind,
+    pub size: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RemoteEntryKind {
+    File,
+    Directory,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RemoteProviderError {
+    UnsupportedProtocol(RemoteProtocol),
+    NotFound(String),
+    AlreadyExists(String),
+    InvalidPath(String),
+    Backend(String),
+}
+
+pub type RemoteProviderResult<T> = Result<T, RemoteProviderError>;
+
+pub trait RemoteFileProvider {
+    fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>>;
+
+    fn download(&self, path: &str) -> RemoteProviderResult<Vec<u8>>;
+
+    fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()>;
+
+    fn delete(&mut self, path: &str) -> RemoteProviderResult<()>;
+
+    fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()>;
+}
+
+#[derive(Debug, Clone)]
+pub struct MemoryFtpProvider {
+    profile: RemoteProfile,
+    files: BTreeMap<String, Vec<u8>>,
+}
+
+impl MemoryFtpProvider {
+    pub fn connect(profile: RemoteProfile) -> RemoteProviderResult<Self> {
+        if profile.protocol != RemoteProtocol::Ftp {
+            return Err(RemoteProviderError::UnsupportedProtocol(profile.protocol));
+        }
+
+        Ok(Self {
+            profile,
+            files: BTreeMap::new(),
+        })
+    }
+
+    pub fn profile(&self) -> &RemoteProfile {
+        &self.profile
+    }
+}
+
+impl RemoteFileProvider for MemoryFtpProvider {
+    fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
+        let directory = normalize_remote_path(path)?;
+        let prefix = if directory == "/" {
+            "/".to_owned()
+        } else {
+            format!("{}/", directory.trim_end_matches('/'))
+        };
+        let mut entries = BTreeMap::<String, RemoteEntry>::new();
+
+        for (file_path, bytes) in &self.files {
+            let Some(relative) = file_path.strip_prefix(&prefix) else {
+                continue;
+            };
+
+            if relative.is_empty() {
+                continue;
+            }
+
+            let entry_path = if let Some((directory_name, _)) = relative.split_once('/') {
+                format!("{prefix}{directory_name}")
+            } else {
+                file_path.clone()
+            };
+            let kind = if entry_path == *file_path {
+                RemoteEntryKind::File
+            } else {
+                RemoteEntryKind::Directory
+            };
+            let size = if kind == RemoteEntryKind::File {
+                bytes.len() as u64
+            } else {
+                0
+            };
+
+            entries.entry(entry_path.clone()).or_insert(RemoteEntry {
+                path: entry_path,
+                kind,
+                size,
+            });
+        }
+
+        Ok(entries.into_values().collect())
+    }
+
+    fn download(&self, path: &str) -> RemoteProviderResult<Vec<u8>> {
+        let path = normalize_remote_path(path)?;
+
+        self.files
+            .get(&path)
+            .cloned()
+            .ok_or(RemoteProviderError::NotFound(path))
+    }
+
+    fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()> {
+        let path = normalize_remote_path(path)?;
+
+        self.files.insert(path, bytes);
+
+        Ok(())
+    }
+
+    fn delete(&mut self, path: &str) -> RemoteProviderResult<()> {
+        let path = normalize_remote_path(path)?;
+
+        self.files
+            .remove(&path)
+            .map(|_| ())
+            .ok_or(RemoteProviderError::NotFound(path))
+    }
+
+    fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
+        let from = normalize_remote_path(from)?;
+        let to = normalize_remote_path(to)?;
+
+        if self.files.contains_key(&to) {
+            return Err(RemoteProviderError::AlreadyExists(to));
+        }
+
+        let bytes = self
+            .files
+            .remove(&from)
+            .ok_or_else(|| RemoteProviderError::NotFound(from.clone()))?;
+
+        self.files.insert(to, bytes);
+
+        Ok(())
+    }
+}
+
+fn normalize_remote_path(path: &str) -> RemoteProviderResult<String> {
+    let normalized = path.replace('\\', "/");
+    let mut segments = Vec::<&str>::new();
+
+    for segment in normalized.split('/') {
+        match segment {
+            "" | "." => {}
+            ".." => {
+                segments.pop().ok_or_else(|| {
+                    RemoteProviderError::InvalidPath("path escapes remote root".to_owned())
+                })?;
+            }
+            _ => segments.push(segment),
+        }
+    }
+
+    if segments.is_empty() {
+        return Ok("/".to_owned());
+    }
+
+    Ok(format!("/{}", segments.join("/")))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -300,6 +472,67 @@ mod tests {
         assert!(matches!(
             error,
             CredentialStoreError::NotFound(CredentialReference { key, .. }) if key == "missing-sftp"
+        ));
+    }
+
+    #[test]
+    fn ftp_provider_uploads_lists_downloads_renames_and_deletes_files() {
+        let profile = RemoteProfile::new(
+            "release-ftp",
+            "Release FTP",
+            RemoteProtocol::Ftp,
+            RemoteEndpoint::new("ftp.example.com")
+                .with_port(21)
+                .with_root_path("/releases"),
+            CredentialReference::profile_store("release-ftp"),
+        );
+        let mut provider = MemoryFtpProvider::connect(profile).unwrap();
+
+        provider
+            .upload("/releases/app.zip", b"package".to_vec())
+            .unwrap();
+
+        let entries = provider.list("/releases").unwrap();
+
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].path, "/releases/app.zip");
+        assert_eq!(entries[0].kind, RemoteEntryKind::File);
+        assert_eq!(entries[0].size, 7);
+        assert_eq!(provider.download("/releases/app.zip").unwrap(), b"package");
+
+        provider
+            .rename("/releases/app.zip", "/releases/app-1.0.zip")
+            .unwrap();
+
+        assert!(matches!(
+            provider.download("/releases/app.zip"),
+            Err(RemoteProviderError::NotFound(path)) if path == "/releases/app.zip"
+        ));
+        assert_eq!(
+            provider.download("/releases/app-1.0.zip").unwrap(),
+            b"package"
+        );
+
+        provider.delete("/releases/app-1.0.zip").unwrap();
+
+        assert!(provider.list("/releases").unwrap().is_empty());
+    }
+
+    #[test]
+    fn ftp_provider_rejects_non_ftp_profiles() {
+        let profile = RemoteProfile::new(
+            "team-webdav",
+            "Team WebDAV",
+            RemoteProtocol::WebDav,
+            RemoteEndpoint::new("dav.example.com"),
+            CredentialReference::environment("OPEN_DIFF_WEBDAV_CREDENTIAL"),
+        );
+
+        let error = MemoryFtpProvider::connect(profile).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::WebDav)
         ));
     }
 }

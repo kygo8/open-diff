@@ -557,6 +557,50 @@ impl MemoryOneDriveProvider {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct MemorySubversionProvider {
+    profile: RemoteProfile,
+    repository_path: String,
+    revision: Option<String>,
+    files: BTreeMap<String, Vec<u8>>,
+}
+
+impl MemorySubversionProvider {
+    pub fn connect(profile: RemoteProfile) -> RemoteProviderResult<Self> {
+        if profile.protocol != RemoteProtocol::Subversion {
+            return Err(RemoteProviderError::UnsupportedProtocol(profile.protocol));
+        }
+
+        let repository_path = profile
+            .endpoint
+            .root_path
+            .as_deref()
+            .map(normalize_remote_path)
+            .transpose()?
+            .unwrap_or_else(|| "/".to_owned());
+        let revision = profile.options.get("revision").cloned();
+
+        Ok(Self {
+            profile,
+            repository_path,
+            revision,
+            files: BTreeMap::new(),
+        })
+    }
+
+    pub fn profile(&self) -> &RemoteProfile {
+        &self.profile
+    }
+
+    pub fn repository_path(&self) -> &str {
+        &self.repository_path
+    }
+
+    pub fn revision(&self) -> Option<&str> {
+        self.revision.as_deref()
+    }
+}
+
 impl OAuthAuthentication {
     fn from_credential(
         credential: &RemoteCredential,
@@ -884,6 +928,28 @@ impl RemoteFileProvider for MemoryDropboxProvider {
 }
 
 impl RemoteFileProvider for MemoryOneDriveProvider {
+    fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
+        list_memory_remote_entries(&self.files, path)
+    }
+
+    fn download(&self, path: &str) -> RemoteProviderResult<Vec<u8>> {
+        download_memory_remote_file(&self.files, path)
+    }
+
+    fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()> {
+        upload_memory_remote_file(&mut self.files, path, bytes)
+    }
+
+    fn delete(&mut self, path: &str) -> RemoteProviderResult<()> {
+        delete_memory_remote_file(&mut self.files, path)
+    }
+
+    fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
+        rename_memory_remote_file(&mut self.files, from, to)
+    }
+}
+
+impl RemoteFileProvider for MemorySubversionProvider {
     fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
         list_memory_remote_entries(&self.files, path)
     }
@@ -1474,6 +1540,69 @@ mod tests {
         assert!(matches!(
             error,
             RemoteProviderError::UnsupportedProtocol(RemoteProtocol::Dropbox)
+        ));
+    }
+
+    #[test]
+    fn subversion_provider_lists_and_downloads_repository_files() {
+        let profile = RemoteProfile::new(
+            "project-svn",
+            "Project SVN",
+            RemoteProtocol::Subversion,
+            RemoteEndpoint::new("svn.example.com").with_root_path("/repos/project/trunk"),
+            CredentialReference::profile_store("project-svn"),
+        )
+        .with_option("revision", "42");
+        let mut provider = MemorySubversionProvider::connect(profile).unwrap();
+
+        provider
+            .upload("/repos/project/trunk/src/main.rs", b"fn main() {}".to_vec())
+            .unwrap();
+
+        assert_eq!(provider.repository_path(), "/repos/project/trunk");
+        assert_eq!(provider.revision(), Some("42"));
+        assert_eq!(
+            provider
+                .download("/repos/project/trunk/src/main.rs")
+                .unwrap(),
+            b"fn main() {}"
+        );
+        assert_eq!(
+            provider.list("/repos/project/trunk/src").unwrap()[0].path,
+            "/repos/project/trunk/src/main.rs"
+        );
+    }
+
+    #[test]
+    fn subversion_provider_defaults_repository_path_to_root() {
+        let profile = RemoteProfile::new(
+            "project-svn",
+            "Project SVN",
+            RemoteProtocol::Subversion,
+            RemoteEndpoint::new("svn.example.com"),
+            CredentialReference::profile_store("project-svn"),
+        );
+
+        let provider = MemorySubversionProvider::connect(profile).unwrap();
+
+        assert_eq!(provider.repository_path(), "/");
+    }
+
+    #[test]
+    fn subversion_provider_rejects_non_subversion_profiles() {
+        let profile = RemoteProfile::new(
+            "release-s3",
+            "Release S3",
+            RemoteProtocol::S3,
+            RemoteEndpoint::new("s3.amazonaws.com").with_root_path("release"),
+            CredentialReference::profile_store("release-s3"),
+        );
+
+        let error = MemorySubversionProvider::connect(profile).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::S3)
         ));
     }
 }

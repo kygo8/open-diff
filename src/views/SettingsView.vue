@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 
 const settings = useSettingsStore()
+const router = useRouter()
+
+function openFileFormats(): void {
+  void router.push('/settings/file-formats')
+}
 </script>
 
 <template>
@@ -19,11 +25,33 @@ const settings = useSettingsStore()
         </NRadioGroup>
       </NSpace>
     </NCard>
+
+    <NCard
+      title="File Formats"
+      size="small"
+    >
+      <div class="settings-row">
+        <div>
+          <strong>Format definitions</strong>
+          <span>Manage matching rules, default views, and rule references.</span>
+        </div>
+        <NButton
+          size="small"
+          data-testid="open-file-formats"
+          @click="openFileFormats"
+        >
+          Manage
+        </NButton>
+      </div>
+    </NCard>
   </section>
 </template>
 
 <style scoped>
 .settings-view {
+  display: grid;
+  align-content: start;
+  gap: 14px;
   height: 100%;
   padding: 24px;
   overflow: auto;
@@ -31,5 +59,22 @@ const settings = useSettingsStore()
 
 h1 {
   margin-top: 0;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-row div {
+  display: grid;
+  gap: 4px;
+}
+
+.settings-row span {
+  color: var(--app-text-muted);
+  font-size: 12px;
 }
 </style>

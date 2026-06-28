@@ -25,6 +25,7 @@ members = [
   "crates/sync-core",
   "crates/table-core",
   "crates/shared-types",
+  "crates/version-core",
   "crates/vfs-core"
 ]
 resolver = "2"

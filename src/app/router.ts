@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import TextCompareView from '@/views/TextCompareView.vue'
+import TextEditView from '@/views/TextEditView.vue'
 import TextMergeView from '@/views/TextMergeView.vue'
 import FolderCompareView from '@/views/FolderCompareView.vue'
 import FolderMergeView from '@/views/FolderMergeView.vue'
@@ -20,6 +21,7 @@ export const router = createRouter({
   routes: [
     { path: '/', name: 'home', component: HomeView },
     { path: '/compare/text', name: 'text-compare', component: TextCompareView },
+    { path: '/edit/text', name: 'text-edit', component: TextEditView },
     { path: '/merge/text', name: 'text-merge', component: TextMergeView },
     { path: '/compare/folder', name: 'folder-compare', component: FolderCompareView },
     { path: '/merge/folder', name: 'folder-merge', component: FolderMergeView },

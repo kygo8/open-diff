@@ -37,4 +37,10 @@ describe('router', () => {
 
     expect(route?.name).toBe('version-compare')
   })
+
+  it('registers the text edit route', () => {
+    const route = router.getRoutes().find((item) => item.path === '/edit/text')
+
+    expect(route?.name).toBe('text-edit')
+  })
 })

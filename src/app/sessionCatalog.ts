@@ -81,7 +81,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Text Edit',
     summary: 'Single-pane editor',
     priority: 'P2',
-    implemented: false,
+    implemented: true,
+    route: '/edit/text',
   },
   {
     type: 'text-patch',

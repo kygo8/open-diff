@@ -43,4 +43,10 @@ describe('router', () => {
 
     expect(route?.name).toBe('text-edit')
   })
+
+  it('registers the clipboard compare route', () => {
+    const route = router.getRoutes().find((item) => item.path === '/compare/clipboard')
+
+    expect(route?.name).toBe('clipboard-compare')
+  })
 })

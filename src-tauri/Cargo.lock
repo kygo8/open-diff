@@ -375,6 +375,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "clipboard-core"
+version = "1.0.0"
+dependencies = [
+ "serde",
+ "shared-types",
+]
+
+[[package]]
 name = "codepage"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

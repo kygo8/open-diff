@@ -10,6 +10,7 @@ export const sessionTypes = [
   'registry-compare',
   'text-edit',
   'text-patch',
+  'clipboard-compare',
   'media-compare',
   'version-compare',
 ] as const

@@ -72,6 +72,7 @@ describe('HomeView', () => {
     const mediaCompare = wrapper.find('[data-session-type="media-compare"] button')
     const versionCompare = wrapper.find('[data-session-type="version-compare"] button')
     const textEdit = wrapper.find('[data-session-type="text-edit"] button')
+    const clipboardCompare = wrapper.find('[data-session-type="clipboard-compare"] button')
 
     expect(textCompare.attributes('disabled')).toBeUndefined()
     expect(folderCompare.attributes('disabled')).toBeUndefined()
@@ -85,6 +86,7 @@ describe('HomeView', () => {
     expect(mediaCompare.attributes('disabled')).toBeUndefined()
     expect(versionCompare.attributes('disabled')).toBeUndefined()
     expect(textEdit.attributes('disabled')).toBeUndefined()
+    expect(clipboardCompare.attributes('disabled')).toBeUndefined()
 
     await textCompare.trigger('click')
 
@@ -133,6 +135,10 @@ describe('HomeView', () => {
     await textEdit.trigger('click')
 
     expect(push).toHaveBeenCalledWith('/edit/text')
+
+    await clipboardCompare.trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/compare/clipboard')
   })
 
   it('shows saved sessions grouped by folder', () => {

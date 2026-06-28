@@ -2,6 +2,7 @@
 members = [
   ".",
   "crates/archive-core",
+  "crates/clipboard-core",
   "crates/cli-core",
   "crates/diff-core",
   "crates/document-core",

@@ -92,6 +92,14 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     implemented: false,
   },
   {
+    type: 'clipboard-compare',
+    title: 'Clipboard Compare',
+    summary: 'Clipboard text history',
+    priority: 'P2',
+    implemented: true,
+    route: '/compare/clipboard',
+  },
+  {
     type: 'registry-compare',
     title: 'Registry Compare',
     summary: 'Registry and .reg diff',

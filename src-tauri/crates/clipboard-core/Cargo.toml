@@ -1,0 +1,10 @@
+[package]
+name = "clipboard-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+shared-types = { path = "../shared-types" }

@@ -33,6 +33,15 @@ pub struct ReadTextFileResponse {
     pub file_stamp: FileStamp,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct SaveTextFileResponse {
+    pub path: String,
+    pub bytes_written: u64,
+    pub backup_path: Option<String>,
+    pub file_stamp: FileStamp,
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct FileStamp {

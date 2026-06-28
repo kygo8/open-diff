@@ -1,8 +1,21 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextMergeView from './TextMergeView.vue'
+import { saveTextFile } from '@/api/diff'
+
+vi.mock('@/api/diff', () => ({
+  saveTextFile: vi.fn().mockResolvedValue({
+    path: 'D:/workspace/output.txt',
+    bytesWritten: 32,
+    backupPath: 'D:/workspace/output.txt.bak',
+  }),
+}))
 
 describe('TextMergeView', () => {
+  beforeEach(() => {
+    vi.mocked(saveTextFile).mockClear()
+  })
+
   it('renders the four text merge panes', () => {
     const wrapper = mount(TextMergeView)
 
@@ -16,7 +29,7 @@ describe('TextMergeView', () => {
     const wrapper = mount(TextMergeView)
 
     expect(wrapper.find('[data-testid="merge-conflict-status"]').text()).toContain('1 conflict')
-    expect(wrapper.find('[data-testid="merge-pane-output"]').text()).toContain('<<<<<<< LEFT')
+    expect(outputEditorValue(wrapper)).toContain('<<<<<<< LEFT')
     expect(wrapper.find('[data-testid="merge-conflict-list"]').text()).toContain('Line 2')
   })
 
@@ -25,8 +38,8 @@ describe('TextMergeView', () => {
 
     await wrapper.find('[data-testid="accept-left-conflict"]').trigger('click')
 
-    expect(wrapper.find('[data-testid="merge-pane-output"]').text()).toContain('timeout = 45')
-    expect(wrapper.find('[data-testid="merge-pane-output"]').text()).not.toContain('<<<<<<< LEFT')
+    expect(outputEditorValue(wrapper)).toContain('timeout = 45')
+    expect(outputEditorValue(wrapper)).not.toContain('<<<<<<< LEFT')
     expect(wrapper.find('[data-testid="merge-conflict-status"]').text()).toContain('0 conflicts')
   })
 
@@ -35,8 +48,8 @@ describe('TextMergeView', () => {
 
     await wrapper.find('[data-testid="accept-right-conflict"]').trigger('click')
 
-    expect(wrapper.find('[data-testid="merge-pane-output"]').text()).toContain('timeout = 60')
-    expect(wrapper.find('[data-testid="merge-pane-output"]').text()).not.toContain('>>>>>>> RIGHT')
+    expect(outputEditorValue(wrapper)).toContain('timeout = 60')
+    expect(outputEditorValue(wrapper)).not.toContain('>>>>>>> RIGHT')
     expect(wrapper.find('[data-testid="merge-conflict-status"]').text()).toContain('0 conflicts')
   })
 
@@ -45,8 +58,25 @@ describe('TextMergeView', () => {
 
     await wrapper.find('[data-testid="accept-base-conflict"]').trigger('click')
 
-    expect(wrapper.find('[data-testid="merge-pane-output"]').text()).toContain('timeout = 30')
-    expect(wrapper.find('[data-testid="merge-pane-output"]').text()).not.toContain('=======')
+    expect(outputEditorValue(wrapper)).toContain('timeout = 30')
+    expect(outputEditorValue(wrapper)).not.toContain('=======')
     expect(wrapper.find('[data-testid="merge-conflict-status"]').text()).toContain('0 conflicts')
   })
+
+  it('edits the output text and saves it to the configured output path', async () => {
+    const wrapper = mount(TextMergeView)
+
+    await wrapper.find('[data-testid="merge-output-editor"]').setValue('merged output\nsaved')
+    await wrapper.find('[data-testid="save-merge-output"]').trigger('click')
+
+    expect(saveTextFile).toHaveBeenCalledWith({
+      path: 'D:/workspace/output.txt',
+      text: 'merged output\nsaved',
+    })
+    expect(wrapper.find('[data-testid="merge-save-status"]').text()).toContain('Saved 32 bytes')
+  })
 })
+
+function outputEditorValue(wrapper: ReturnType<typeof mount>): string {
+  return (wrapper.find('[data-testid="merge-output-editor"]').element as HTMLTextAreaElement).value
+}

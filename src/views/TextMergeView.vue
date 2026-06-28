@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { saveTextFile } from '@/api/diff'
 
 type MergePaneId = 'left' | 'base' | 'right' | 'output'
 type MergeSource = 'left' | 'base' | 'right'
@@ -30,6 +31,9 @@ const initialOutputLines = [
   'retry = true',
 ]
 const outputLines = ref([...initialOutputLines])
+const outputPath = ref('D:/workspace/output.txt')
+const saveStatus = ref('Output not saved')
+const saving = ref(false)
 const conflicts = ref<MergeConflict[]>([
   {
     line: 2,
@@ -68,6 +72,13 @@ const panes = computed<MergePane[]>(() => [
 ])
 const unresolvedConflicts = computed(() => conflicts.value.filter((conflict) => !conflict.resolved))
 const currentConflict = computed<MergeConflict | undefined>(() => unresolvedConflicts.value.at(0))
+const outputText = computed({
+  get: () => outputLines.value.join('\n'),
+  set: (value: string) => {
+    outputLines.value = value.split('\n')
+    saveStatus.value = 'Output has unsaved edits'
+  },
+})
 
 const conflictStatus = computed(() => {
   const count = unresolvedConflicts.value.length
@@ -86,6 +97,28 @@ function acceptConflict(source: MergeSource): void {
   conflicts.value = conflicts.value.map((item) =>
     item.line === conflict.line ? { ...item, resolved: true } : item,
   )
+}
+
+async function saveOutput(): Promise<void> {
+  saving.value = true
+  saveStatus.value = 'Saving output'
+  try {
+    const result = await saveTextFile({
+      path: outputPath.value,
+      text: outputText.value,
+    })
+
+    saveStatus.value = `Saved ${String(result.bytesWritten)} bytes${
+      result.backupPath ? `, backup: ${result.backupPath}` : ''
+    }`
+  } catch (error) {
+    saveStatus.value =
+      typeof error === 'object' && error !== null && 'message' in error
+        ? String(error.message)
+        : String(error)
+  } finally {
+    saving.value = false
+  }
 }
 
 function lineClass(line: string, paneId: MergePaneId): string {
@@ -115,6 +148,28 @@ function lineClass(line: string, paneId: MergePaneId): string {
         {{ conflictStatus }}
       </span>
       <span class="status-chip">Output has conflict markers</span>
+      <input
+        v-model="outputPath"
+        class="output-path-input"
+        data-testid="merge-output-path"
+        type="text"
+        aria-label="Merge output path"
+      />
+      <button
+        type="button"
+        class="toolbar-button"
+        data-testid="save-merge-output"
+        :disabled="saving"
+        @click="saveOutput"
+      >
+        Save Output
+      </button>
+      <span
+        class="status-chip"
+        data-testid="merge-save-status"
+      >
+        {{ saveStatus }}
+      </span>
     </div>
 
     <div class="merge-grid">
@@ -131,7 +186,17 @@ function lineClass(line: string, paneId: MergePaneId): string {
           </div>
           <small>{{ pane.lines.length }} lines</small>
         </header>
-        <ol class="merge-lines">
+        <textarea
+          v-if="pane.id === 'output'"
+          v-model="outputText"
+          class="output-editor"
+          data-testid="merge-output-editor"
+          spellcheck="false"
+        />
+        <ol
+          v-else
+          class="merge-lines"
+        >
           <li
             v-for="(line, index) in pane.lines"
             :key="`${pane.id}-${String(index)}`"
@@ -209,6 +274,7 @@ function lineClass(line: string, paneId: MergePaneId): string {
 
 .merge-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   min-height: 34px;
@@ -233,6 +299,33 @@ function lineClass(line: string, paneId: MergePaneId): string {
   border-radius: 6px;
   background: var(--app-surface);
   white-space: nowrap;
+}
+
+.output-path-input {
+  width: 220px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 12px;
+}
+
+.toolbar-button {
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.toolbar-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .merge-grid {
@@ -286,6 +379,22 @@ function lineClass(line: string, paneId: MergePaneId): string {
   font-family: var(--font-mono);
   font-size: 12px;
   list-style: none;
+}
+
+.output-editor {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+  border: 0;
+  outline: 0;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 24px;
+  resize: none;
+  white-space: pre;
 }
 
 .merge-lines li {

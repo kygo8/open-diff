@@ -49,6 +49,18 @@ export interface ReadTextFileResponse {
   fileStamp: FileStamp
 }
 
+export interface SaveTextFileRequest {
+  path: string
+  text: string
+}
+
+export interface SaveTextFileResponse {
+  path: string
+  bytesWritten: number
+  backupPath: string | null
+  fileStamp: FileStamp
+}
+
 export interface FileStamp {
   size: number
   modifiedAtMs: number

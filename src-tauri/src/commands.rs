@@ -1,5 +1,6 @@
 use shared_types::{
-    FileStamp, ReadTextFileResponse, TextDiffRequest, TextDiffResponse, TextPatchResponse,
+    FileStamp, ReadTextFileResponse, SaveTextFileResponse, TextDiffRequest, TextDiffResponse,
+    TextPatchResponse,
 };
 
 #[tauri::command]
@@ -32,6 +33,11 @@ pub fn parse_text_patch(input: String) -> TextPatchResponse {
 #[tauri::command]
 pub fn read_text_file(path: String) -> Result<ReadTextFileResponse, String> {
     file_core::read_text_file(path).map_err(|error| format!("{error:?}"))
+}
+
+#[tauri::command]
+pub fn save_text_file(path: String, text: String) -> Result<SaveTextFileResponse, String> {
+    file_core::save_text_file(path, text).map_err(|error| format!("{error:?}"))
 }
 
 #[tauri::command]

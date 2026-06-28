@@ -1,8 +1,9 @@
 use encoding_rs::GBK;
-use shared_types::{FileStamp, ReadTextFileResponse};
+use shared_types::{FileStamp, ReadTextFileResponse, SaveTextFileResponse};
 use std::fs;
 use std::path::Path;
 use std::time::UNIX_EPOCH;
+use vfs_core::{LocalVfs, VfsPath};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FileReadError {
@@ -32,6 +33,27 @@ pub fn check_text_file_changed(
     let current_stamp = file_stamp(path.as_ref())?;
 
     Ok(&current_stamp != previous_stamp)
+}
+
+pub fn save_text_file(
+    path: impl AsRef<Path>,
+    text: impl AsRef<str>,
+) -> Result<SaveTextFileResponse, FileReadError> {
+    let path_ref = path.as_ref();
+    let path_text = path_ref.display().to_string();
+    let bytes = text.as_ref().as_bytes();
+    let mut vfs = LocalVfs::new();
+    let backup = vfs
+        .write_with_backup(&VfsPath::new(path_text.clone()), bytes)
+        .map_err(|error| FileReadError::Io(format!("{error:?}")))?;
+    let file_stamp = file_stamp(path_ref)?;
+
+    Ok(SaveTextFileResponse {
+        path: path_text,
+        bytes_written: bytes.len() as u64,
+        backup_path: backup.map(|path| path.as_str().to_owned()),
+        file_stamp,
+    })
 }
 
 fn file_stamp(path: &Path) -> Result<FileStamp, FileReadError> {
@@ -216,5 +238,32 @@ mod tests {
         assert!(!unchanged);
 
         fs::remove_file(path).expect("fixture should be removable");
+    }
+
+    #[test]
+    fn saves_text_file_with_backup_and_stamp() {
+        let path = temp_file_path("save-output");
+
+        fs::write(&path, "before").expect("fixture should be writable");
+
+        let result = save_text_file(&path, "after\nmerged").expect("text file should save");
+
+        assert_eq!(
+            fs::read_to_string(&path).expect("saved text should be readable"),
+            "after\nmerged"
+        );
+        assert_eq!(result.path, path.display().to_string());
+        assert_eq!(result.bytes_written, 12);
+        assert!(result.file_stamp.size > 0);
+        let backup_path = result
+            .backup_path
+            .expect("existing file should be backed up");
+        assert_eq!(
+            fs::read_to_string(&backup_path).expect("backup should be readable"),
+            "before"
+        );
+
+        fs::remove_file(path).expect("fixture should be removable");
+        fs::remove_file(backup_path).expect("backup should be removable");
     }
 }

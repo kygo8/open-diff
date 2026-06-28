@@ -3,6 +3,8 @@ import type {
   FileStamp,
   TextPatchResponse,
   ReadTextFileResponse,
+  SaveTextFileRequest,
+  SaveTextFileResponse,
   TextDiffRequest,
   TextDiffResponse,
 } from '@/types/diff'
@@ -25,6 +27,13 @@ export function parseTextPatch(input: string): Promise<TextPatchResponse> {
 
 export function readTextFile(path: string): Promise<ReadTextFileResponse> {
   return invoke<ReadTextFileResponse>('read_text_file', { path })
+}
+
+export function saveTextFile(request: SaveTextFileRequest): Promise<SaveTextFileResponse> {
+  return invoke<SaveTextFileResponse>('save_text_file', {
+    path: request.path,
+    text: request.text,
+  })
 }
 
 export function checkTextFileChanged(path: string, previousStamp: FileStamp): Promise<boolean> {

@@ -832,6 +832,7 @@ version = "1.0.0"
 dependencies = [
  "encoding_rs",
  "shared-types",
+ "vfs-core",
 ]
 
 [[package]]

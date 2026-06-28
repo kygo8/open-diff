@@ -6,7 +6,8 @@ pub fn run() {
             commands::check_text_file_changed,
             commands::diff_text,
             commands::parse_text_patch,
-            commands::read_text_file
+            commands::read_text_file,
+            commands::save_text_file
         ])
         .run(tauri::generate_context!())
         .expect("failed to run Open Diff application");

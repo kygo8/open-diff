@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "fixtures": [
+    {
+      "category": "text",
+      "path": "text/left.txt",
+      "description": "Left text sample with a stable middle line and trailing newline."
+    },
+    {
+      "category": "text",
+      "path": "text/right.txt",
+      "description": "Right text sample with one modified line and one added line."
+    },
+    {
+      "category": "table",
+      "path": "table/products-left.csv",
+      "description": "Left CSV sample with stable product keys and numeric values."
+    },
+    {
+      "category": "table",
+      "path": "table/products-right.csv",
+      "description": "Right CSV sample with changed price and one added product."
+    },
+    {
+      "category": "image",
+      "path": "image/red-blue.png",
+      "description": "Two-pixel PNG sample for image decoding and pixel comparison."
+    },
+    {
+      "category": "binary",
+      "path": "binary/sample.bin",
+      "description": "Deterministic binary payload for hex and byte range tests."
+    },
+    {
+      "category": "folder",
+      "path": "folder/left",
+      "description": "Left folder tree with shared, changed, and left-only files."
+    },
+    {
+      "category": "folder",
+      "path": "folder/right",
+      "description": "Right folder tree with shared, changed, and right-only files."
+    }
+  ]
+}

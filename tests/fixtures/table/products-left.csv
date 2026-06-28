@@ -1,0 +1,4 @@
+id,name,price,status
+1,Alpha,10.00,active
+2,Beta,20.00,active
+3,Gamma,30.00,archived

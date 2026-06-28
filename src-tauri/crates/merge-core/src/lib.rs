@@ -50,6 +50,15 @@ pub struct TextMergeSection {
     pub line_index: usize,
     pub kind: TextMergeSectionKind,
     pub output: Vec<String>,
+    pub conflict: Option<TextMergeConflict>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextMergeConflict {
+    pub base: Vec<String>,
+    pub left: Vec<String>,
+    pub right: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -115,6 +124,7 @@ pub fn auto_merge_text(document: &TextMergeDocument) -> TextMergeResult {
         let right = document.right.lines.get(index);
         let left_changed = left != base;
         let right_changed = right != base;
+        let mut conflict = None;
         let (kind, selected) = match (left_changed, right_changed) {
             (false, false) => (TextMergeSectionKind::Unchanged, base),
             (true, false) => (TextMergeSectionKind::AcceptedLeft, left),
@@ -122,6 +132,11 @@ pub fn auto_merge_text(document: &TextMergeDocument) -> TextMergeResult {
             (true, true) if left == right => (TextMergeSectionKind::AcceptedLeft, left),
             (true, true) => {
                 conflicts += 1;
+                conflict = Some(TextMergeConflict {
+                    base: optional_line(base),
+                    left: optional_line(left),
+                    right: optional_line(right),
+                });
                 (TextMergeSectionKind::Conflict, base)
             }
         };
@@ -132,6 +147,7 @@ pub fn auto_merge_text(document: &TextMergeDocument) -> TextMergeResult {
             line_index: index,
             kind,
             output,
+            conflict,
         });
     }
 
@@ -140,6 +156,10 @@ pub fn auto_merge_text(document: &TextMergeDocument) -> TextMergeResult {
         conflicts,
         sections,
     }
+}
+
+fn optional_line(line: Option<&String>) -> Vec<String> {
+    line.cloned().into_iter().collect()
 }
 
 fn split_lines(input: &str) -> Vec<String> {
@@ -223,18 +243,49 @@ mod tests {
                     line_index: 0,
                     kind: TextMergeSectionKind::AcceptedLeft,
                     output: vec!["ONE".to_owned()],
+                    conflict: None,
                 },
                 TextMergeSection {
                     line_index: 1,
                     kind: TextMergeSectionKind::Unchanged,
                     output: vec!["two".to_owned()],
+                    conflict: None,
                 },
                 TextMergeSection {
                     line_index: 2,
                     kind: TextMergeSectionKind::AcceptedRight,
                     output: vec!["THREE".to_owned()],
+                    conflict: None,
                 },
             ]
+        );
+    }
+
+    #[test]
+    fn detects_conflict_sections_with_all_three_versions() {
+        let document = TextMergeDocument::from_inputs(TextMergeInput {
+            base: TextMergeSide::new("base.txt", "one\ntwo\nthree"),
+            left: TextMergeSide::new("left.txt", "one\nleft change\nthree"),
+            right: TextMergeSide::new("right.txt", "one\nright change\nthree"),
+            output_path: None,
+        });
+
+        let result = auto_merge_text(&document);
+
+        assert_eq!(result.conflicts, 1);
+        assert_eq!(result.output_text, "one\ntwo\nthree");
+        assert_eq!(
+            result.sections[1],
+            TextMergeSection {
+                line_index: 1,
+                kind: TextMergeSectionKind::Conflict,
+                output: vec!["two".to_owned()],
+                conflict: Some(TextMergeConflict {
+                    base: vec!["two".to_owned()],
+                    left: vec!["left change".to_owned()],
+                    right: vec!["right change".to_owned()],
+                }),
+            }
         );
     }
 }

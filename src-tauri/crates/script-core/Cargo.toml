@@ -6,4 +6,5 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+logging-core = { path = "../logging-core" }
 serde.workspace = true

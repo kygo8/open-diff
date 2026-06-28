@@ -1,11 +1,10 @@
 [package]
-name = "report-core"
+name = "logging-core"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 
 [dependencies]
-logging-core = { path = "../logging-core" }
 serde.workspace = true
 serde_json.workspace = true

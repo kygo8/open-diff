@@ -1,3 +1,4 @@
+use logging_core::{LogDomain, LogStatus, StructuredLogEvent};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt::{Debug, Formatter};
@@ -1047,6 +1048,31 @@ impl RemoteTransferPlan {
             total_bytes: self.total_bytes,
         }
     }
+
+    pub fn structured_log_event(&self) -> StructuredLogEvent {
+        StructuredLogEvent::new(
+            LogDomain::Remote,
+            remote_transfer_action_label(&self.direction),
+            LogStatus::Started,
+            format!(
+                "Planned remote {} for {}",
+                remote_transfer_action_label(&self.direction),
+                self.remote_path
+            ),
+        )
+        .with_detail("remotePath", &self.remote_path)
+        .with_detail("totalBytes", self.total_bytes)
+        .with_detail("resumeOffset", self.resume_offset)
+        .with_detail("chunkCount", self.chunks.len())
+        .with_detail("maxConnections", self.max_connections)
+    }
+}
+
+fn remote_transfer_action_label(direction: &RemoteTransferDirection) -> &'static str {
+    match direction {
+        RemoteTransferDirection::Download => "download",
+        RemoteTransferDirection::Upload => "upload",
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -1803,6 +1829,30 @@ mod tests {
         );
         assert_eq!(plan.progress().completed_bytes, 10);
         assert_eq!(plan.progress().remaining_bytes, 6);
+    }
+
+    #[test]
+    fn remote_transfer_plan_emits_structured_log_event() {
+        let planner = RemoteTransferPlanner::new(
+            RemoteTransferConfig::new(2).with_chunk_size(5),
+            RemoteTransferDirection::Upload,
+            "/remote/app.bin",
+            16,
+        )
+        .unwrap();
+
+        let plan = planner
+            .plan_from_checkpoint(RemoteTransferCheckpoint::new(10))
+            .unwrap();
+        let event = plan.structured_log_event();
+
+        assert_eq!(event.domain, logging_core::LogDomain::Remote);
+        assert_eq!(event.action, "upload");
+        assert_eq!(event.status, logging_core::LogStatus::Started);
+        assert_eq!(event.details["remotePath"], "/remote/app.bin");
+        assert_eq!(event.details["totalBytes"], 16);
+        assert_eq!(event.details["resumeOffset"], 10);
+        assert_eq!(event.details["chunkCount"], 2);
     }
 
     #[test]

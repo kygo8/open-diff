@@ -1,3 +1,4 @@
+use logging_core::{LogDomain, LogStatus, StructuredLogEvent};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -160,6 +161,20 @@ pub fn render_html_report(report: &UnifiedReport) -> String {
     html
 }
 
+pub fn build_report_render_log_event(report: &UnifiedReport, format: &str) -> StructuredLogEvent {
+    StructuredLogEvent::new(
+        LogDomain::Report,
+        format!("render{}", title_case_ascii(format)),
+        LogStatus::Succeeded,
+        format!("Rendered {format} report {}", report.title),
+    )
+    .with_detail("title", &report.title)
+    .with_detail("kind", report_kind_label(&report.kind))
+    .with_detail("format", format)
+    .with_detail("sectionCount", report.sections.len())
+    .with_detail("artifactCount", report.artifacts.len())
+}
+
 pub fn render_text_report(report: &UnifiedReport) -> String {
     let mut output = String::new();
 
@@ -301,6 +316,15 @@ fn report_kind_label(kind: &ReportKind) -> &'static str {
         ReportKind::Table => "table",
         ReportKind::Image => "image",
     }
+}
+
+fn title_case_ascii(value: &str) -> String {
+    let mut characters = value.chars();
+    let Some(first) = characters.next() else {
+        return String::new();
+    };
+
+    format!("{}{}", first.to_ascii_uppercase(), characters.as_str())
 }
 
 fn report_section_kind_label(kind: &ReportSectionKind) -> &'static str {
@@ -497,5 +521,32 @@ mod tests {
         assert!(xml.contains("<section kind=\"differences\" title=\"Rows\">"));
         assert!(xml.contains("<left>A&amp;B</left>"));
         assert!(xml.contains("<right>A&lt;C</right>"));
+    }
+
+    #[test]
+    fn report_rendering_emits_structured_log_event() {
+        let report = UnifiedReport::new(
+            ReportKind::Folder,
+            "Folder Report",
+            ReportMetadata {
+                generated_at: "2026-06-27T03:10:00Z".to_owned(),
+                left_source: Some("left/".to_owned()),
+                right_source: Some("right/".to_owned()),
+            },
+        )
+        .with_section(ReportSection {
+            kind: ReportSectionKind::Summary,
+            title: "Summary".to_owned(),
+            rows: Vec::new(),
+        });
+
+        let event = build_report_render_log_event(&report, "html");
+
+        assert_eq!(event.domain, logging_core::LogDomain::Report);
+        assert_eq!(event.action, "renderHtml");
+        assert_eq!(event.status, logging_core::LogStatus::Succeeded);
+        assert_eq!(event.details["title"], "Folder Report");
+        assert_eq!(event.details["kind"], "folder");
+        assert_eq!(event.details["sectionCount"], 1);
     }
 }

@@ -1,4 +1,5 @@
 use folder_core::FolderAlignmentRow;
+use logging_core::{LogDomain, LogStatus, StructuredLogEvent};
 use serde::{Deserialize, Serialize};
 use vfs_core::{VfsPath, VfsProvider};
 
@@ -60,6 +61,7 @@ pub struct SyncExecutionResult {
     pub cancelled: usize,
     pub items: Vec<SyncExecutionItemResult>,
     pub logs: Vec<SyncExecutionLogEntry>,
+    pub structured_logs: Vec<StructuredLogEvent>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -134,6 +136,10 @@ fn summarize_sync_execution(items: Vec<SyncExecutionItemResult>) -> SyncExecutio
         .iter()
         .map(sync_execution_log_entry)
         .collect::<Vec<_>>();
+    let structured_logs = logs
+        .iter()
+        .map(sync_structured_log_event)
+        .collect::<Vec<_>>();
     let succeeded = items
         .iter()
         .filter(|item| item.status == SyncExecutionStatus::Succeeded)
@@ -154,6 +160,7 @@ fn summarize_sync_execution(items: Vec<SyncExecutionItemResult>) -> SyncExecutio
         cancelled,
         items,
         logs,
+        structured_logs,
     }
 }
 
@@ -239,6 +246,35 @@ fn sync_copy_action_label(direction: &SyncDirection) -> &'static str {
     match direction {
         SyncDirection::LeftToRight => "copyLeftToRight",
         SyncDirection::RightToLeft => "copyRightToLeft",
+    }
+}
+
+fn sync_structured_log_event(entry: &SyncExecutionLogEntry) -> StructuredLogEvent {
+    StructuredLogEvent::new(
+        LogDomain::Sync,
+        entry.action.clone(),
+        sync_log_status(&entry.status),
+        sync_log_message(entry),
+    )
+    .with_detail("relativePath", &entry.relative_path)
+    .with_detail("sourcePath", &entry.source_path)
+    .with_detail("targetPath", &entry.target_path)
+    .with_detail("error", &entry.error)
+}
+
+fn sync_log_status(status: &SyncExecutionStatus) -> LogStatus {
+    match status {
+        SyncExecutionStatus::Succeeded => LogStatus::Succeeded,
+        SyncExecutionStatus::Failed => LogStatus::Failed,
+        SyncExecutionStatus::Cancelled => LogStatus::Cancelled,
+    }
+}
+
+fn sync_log_message(entry: &SyncExecutionLogEntry) -> String {
+    match entry.status {
+        SyncExecutionStatus::Succeeded => format!("Sync action succeeded: {}", entry.relative_path),
+        SyncExecutionStatus::Failed => format!("Sync action failed: {}", entry.relative_path),
+        SyncExecutionStatus::Cancelled => format!("Sync action cancelled: {}", entry.relative_path),
     }
 }
 
@@ -1115,6 +1151,43 @@ mod tests {
             .error
             .as_deref()
             .is_some_and(|error| error.contains("NotFound")));
+    }
+
+    #[test]
+    fn sync_execution_emits_structured_log_events() {
+        let mut vfs = MemoryVfs::default().with_file("/left/good.txt", b"good");
+        let mut plan = SyncPlan::new("Structured sync log");
+
+        plan.add_item(SyncPlanItem {
+            relative_path: "good.txt".to_owned(),
+            action: SyncAction::Copy {
+                direction: SyncDirection::LeftToRight,
+                source_path: "/left/good.txt".to_owned(),
+                target_path: "/right/good.txt".to_owned(),
+            },
+            reason: "copy".to_owned(),
+        });
+
+        let result = execute_sync_plan(&mut vfs, &plan);
+
+        assert_eq!(result.structured_logs.len(), 1);
+        assert_eq!(
+            result.structured_logs[0].domain,
+            logging_core::LogDomain::Sync
+        );
+        assert_eq!(result.structured_logs[0].action, "copyLeftToRight");
+        assert_eq!(
+            result.structured_logs[0].status,
+            logging_core::LogStatus::Succeeded
+        );
+        assert_eq!(
+            result.structured_logs[0].details["relativePath"],
+            "good.txt"
+        );
+        assert_eq!(
+            result.structured_logs[0].details["targetPath"],
+            "/right/good.txt"
+        );
     }
 
     fn file_row(

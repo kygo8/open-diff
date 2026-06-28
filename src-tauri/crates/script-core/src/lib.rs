@@ -1,3 +1,4 @@
+use logging_core::{LogDomain, LogStatus, StructuredLogEvent};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -102,6 +103,7 @@ pub struct ScriptCompareExecutionResult {
     pub state: ScriptRuntimeState,
     pub mode: ScriptExecutionMode,
     pub progress: Vec<ScriptProgressEvent>,
+    pub structured_logs: Vec<StructuredLogEvent>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -295,6 +297,7 @@ where
         state,
         mode: execution.mode,
         progress: Vec::new(),
+        structured_logs: Vec::new(),
     })
 }
 
@@ -311,6 +314,7 @@ where
     let mut state = ScriptRuntimeState::default();
     let mut executed = 0;
     let mut progress = Vec::new();
+    let mut structured_logs = Vec::new();
     let total = script.commands.len();
 
     for command in &script.commands {
@@ -388,6 +392,7 @@ where
         }
 
         executed += 1;
+        structured_logs.push(script_command_log_event(command, executed, total));
         if execution.mode == ScriptExecutionMode::Visible {
             progress.push(ScriptProgressEvent {
                 line: command.line,
@@ -403,6 +408,7 @@ where
         state,
         mode: execution.mode,
         progress,
+        structured_logs,
     })
 }
 
@@ -502,6 +508,31 @@ fn execution_error(command: &ScriptCommand, reason: impl Into<String>) -> Script
         line: command.line,
         command: command.kind.command_name().to_owned(),
         reason: reason.into(),
+    }
+}
+
+fn script_command_log_event(
+    command: &ScriptCommand,
+    completed: usize,
+    total: usize,
+) -> StructuredLogEvent {
+    StructuredLogEvent::new(
+        LogDomain::Script,
+        command.kind.command_name(),
+        script_command_log_status(&command.kind),
+        format!("Executed script command {}", command.kind.command_name()),
+    )
+    .with_detail("line", command.line)
+    .with_detail("completed", completed)
+    .with_detail("total", total)
+}
+
+fn script_command_log_status(command: &ScriptCommandKind) -> LogStatus {
+    match command {
+        ScriptCommandKind::Log { .. }
+        | ScriptCommandKind::Option { .. }
+        | ScriptCommandKind::Select { .. } => LogStatus::Info,
+        _ => LogStatus::Succeeded,
     }
 }
 
@@ -1128,6 +1159,49 @@ mod tests {
                 },
             ]
         );
+    }
+
+    #[test]
+    fn automation_script_records_structured_logs_for_commands() {
+        struct NoopCompareEngine;
+        struct NoopReportEngine;
+
+        impl ScriptCompareEngine for NoopCompareEngine {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+
+        impl ScriptReportEngine for NoopReportEngine {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script("LOG start\nBEEP").expect("script parses");
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext::default(),
+            &mut NoopCompareEngine,
+            &mut NoopReportEngine,
+        )
+        .expect("script should execute");
+
+        assert_eq!(result.structured_logs.len(), 2);
+        assert_eq!(
+            result.structured_logs[0].domain,
+            logging_core::LogDomain::Script
+        );
+        assert_eq!(result.structured_logs[0].action, "LOG");
+        assert_eq!(
+            result.structured_logs[0].status,
+            logging_core::LogStatus::Info
+        );
+        assert_eq!(result.structured_logs[0].details["line"], 1);
+        assert_eq!(result.structured_logs[1].action, "BEEP");
     }
 
     #[test]

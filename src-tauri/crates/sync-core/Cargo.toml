@@ -7,5 +7,6 @@ license.workspace = true
 
 [dependencies]
 folder-core = { path = "../folder-core" }
+logging-core = { path = "../logging-core" }
 serde.workspace = true
 vfs-core = { path = "../vfs-core" }

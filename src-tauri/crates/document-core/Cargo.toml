@@ -7,3 +7,4 @@ license.workspace = true
 
 [dependencies]
 format-core = { path = "../format-core" }
+logging-core = { path = "../logging-core" }

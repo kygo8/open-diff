@@ -1,6 +1,7 @@
 use format_core::{
     ConverterCommand, ConverterDefinition, ConverterDirection, ConverterStreamFormat,
 };
+use logging_core::{LogDomain, LogStatus, StructuredLogEvent};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DocumentConversionRequest {
@@ -14,6 +15,20 @@ pub struct DocumentConversionResult {
     pub source_path: String,
     pub converter_id: String,
     pub text: String,
+}
+
+impl DocumentConversionResult {
+    pub fn structured_log_event(&self) -> StructuredLogEvent {
+        StructuredLogEvent::new(
+            LogDomain::Conversion,
+            self.converter_id.clone(),
+            LogStatus::Succeeded,
+            format!("Converted document {}", self.source_path),
+        )
+        .with_detail("sourcePath", &self.source_path)
+        .with_detail("converterId", &self.converter_id)
+        .with_detail("textLength", self.text.len())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -199,6 +214,24 @@ mod tests {
         assert_eq!(result.text, "Hello world\nNext line");
         assert_eq!(result.source_path, "C:/docs/sample.rtf");
         assert_eq!(result.converter_id, "rtf-text");
+    }
+
+    #[test]
+    fn document_conversion_result_emits_structured_log_event() {
+        let request = DocumentConversionRequest {
+            source_path: "C:/docs/sample.rtf".to_owned(),
+            bytes: br"{\rtf1\ansi Hello}".to_vec(),
+            converter: built_in_converter("rtf-text").expect("rtf converter should exist"),
+        };
+
+        let result = convert_document_to_text(&request).expect("rtf should convert to text");
+        let event = result.structured_log_event();
+
+        assert_eq!(event.domain, logging_core::LogDomain::Conversion);
+        assert_eq!(event.action, "rtf-text");
+        assert_eq!(event.status, logging_core::LogStatus::Succeeded);
+        assert_eq!(event.details["sourcePath"], "C:/docs/sample.rtf");
+        assert_eq!(event.details["textLength"], result.text.len());
     }
 
     #[test]

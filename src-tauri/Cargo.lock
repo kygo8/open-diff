@@ -705,6 +705,7 @@ name = "document-core"
 version = "1.0.0"
 dependencies = [
  "format-core",
+ "logging-core",
 ]
 
 [[package]]
@@ -1860,6 +1861,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
 
 [[package]]
+name = "logging-core"
+version = "1.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "markup5ever"
 version = "0.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2627,6 +2636,7 @@ dependencies = [
 name = "remote-core"
 version = "1.0.0"
 dependencies = [
+ "logging-core",
  "serde",
  "serde_json",
 ]
@@ -2635,6 +2645,7 @@ dependencies = [
 name = "report-core"
 version = "1.0.0"
 dependencies = [
+ "logging-core",
  "serde",
  "serde_json",
 ]
@@ -2773,6 +2784,7 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 name = "script-core"
 version = "1.0.0"
 dependencies = [
+ "logging-core",
  "serde",
 ]
 
@@ -3173,6 +3185,7 @@ name = "sync-core"
 version = "1.0.0"
 dependencies = [
  "folder-core",
+ "logging-core",
  "serde",
  "vfs-core",
 ]

@@ -175,6 +175,51 @@ pub struct TextReplacementIgnoreRule {
     pub whole_word: bool,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConverterDefinition {
+    pub id: String,
+    pub name: String,
+    pub built_in: bool,
+    pub direction: ConverterDirection,
+    pub input: ConverterStreamFormat,
+    pub output: ConverterStreamFormat,
+    pub command: ConverterCommand,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ConverterDirection {
+    ImportOnly,
+    ExportOnly,
+    RoundTrip,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ConverterStreamFormat {
+    FilePath,
+    Utf8Text,
+    Binary,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConverterCommand {
+    pub program: String,
+    pub args: Vec<String>,
+    pub working_directory: Option<String>,
+    pub timeout_ms: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RenderedConverterCommand {
+    pub program: String,
+    pub args: Vec<String>,
+    pub working_directory: Option<String>,
+    pub timeout_ms: u64,
+}
+
 impl FileFormatDefinition {
     pub fn matches_path(&self, path: impl AsRef<str>) -> bool {
         let path = path.as_ref();
@@ -182,6 +227,39 @@ impl FileFormatDefinition {
         self.matchers
             .iter()
             .any(|matcher| matcher.matches_path(path))
+    }
+}
+
+impl ConverterDefinition {
+    pub fn render_command(
+        &self,
+        input_path: impl AsRef<str>,
+        output_path: impl AsRef<str>,
+    ) -> RenderedConverterCommand {
+        let input_path = input_path.as_ref();
+        let output_path = output_path.as_ref();
+        let variables = ConverterTemplateVariables {
+            input_path,
+            output_path,
+            input_dir: path_parent(input_path),
+            input_file_name: file_name(input_path),
+        };
+
+        RenderedConverterCommand {
+            program: render_converter_template(&self.command.program, &variables),
+            args: self
+                .command
+                .args
+                .iter()
+                .map(|arg| render_converter_template(arg, &variables))
+                .collect(),
+            working_directory: self
+                .command
+                .working_directory
+                .as_ref()
+                .map(|value| render_converter_template(value, &variables)),
+            timeout_ms: self.command.timeout_ms,
+        }
     }
 }
 
@@ -282,8 +360,29 @@ fn file_name(path: &str) -> &str {
     path.rsplit(['/', '\\']).next().unwrap_or(path)
 }
 
+fn path_parent(path: &str) -> &str {
+    path.rsplit_once(['/', '\\'])
+        .map(|(parent, _)| parent)
+        .unwrap_or("")
+}
+
 fn file_extension(file_name: &str) -> Option<&str> {
     file_name.rsplit_once('.').map(|(_, extension)| extension)
+}
+
+struct ConverterTemplateVariables<'a> {
+    input_path: &'a str,
+    output_path: &'a str,
+    input_dir: &'a str,
+    input_file_name: &'a str,
+}
+
+fn render_converter_template(template: &str, variables: &ConverterTemplateVariables<'_>) -> String {
+    template
+        .replace("{input}", variables.input_path)
+        .replace("{output}", variables.output_path)
+        .replace("{inputDir}", variables.input_dir)
+        .replace("{inputFileName}", variables.input_file_name)
 }
 
 fn glob_matches(pattern: &str, path: &str) -> bool {
@@ -639,5 +738,41 @@ mod tests {
             "let newConfig = 1;",
             &rule
         ));
+    }
+
+    #[test]
+    fn external_converter_definition_builds_compare_command() {
+        let converter = ConverterDefinition {
+            id: "pdf-text".to_owned(),
+            name: "PDF to Text".to_owned(),
+            built_in: false,
+            direction: ConverterDirection::ImportOnly,
+            input: ConverterStreamFormat::FilePath,
+            output: ConverterStreamFormat::Utf8Text,
+            command: ConverterCommand {
+                program: "pdftotext".to_owned(),
+                args: vec![
+                    "-layout".to_owned(),
+                    "{input}".to_owned(),
+                    "{output}".to_owned(),
+                ],
+                working_directory: Some("{inputDir}".to_owned()),
+                timeout_ms: 30_000,
+            },
+        };
+
+        let command = converter.render_command("C:/docs/report.pdf", "C:/temp/report.txt");
+
+        assert_eq!(command.program, "pdftotext");
+        assert_eq!(
+            command.args,
+            vec![
+                "-layout".to_owned(),
+                "C:/docs/report.pdf".to_owned(),
+                "C:/temp/report.txt".to_owned()
+            ]
+        );
+        assert_eq!(command.working_directory.as_deref(), Some("C:/docs"));
+        assert_eq!(command.timeout_ms, 30_000);
     }
 }

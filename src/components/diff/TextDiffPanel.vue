@@ -521,7 +521,8 @@ const splitBySyntaxTokens = (
             v-for="{ line, sourceIndex } in visibleRows"
             :key="sourceIndex"
             class="diff-row"
-            :class="line.kind"
+            :class="[line.kind, { 'diff-row-unimportant': line.important === false }]"
+            :data-testid="line.important === false ? 'text-diff-unimportant-row' : undefined"
             :style="{ '--text-diff-row-height': textDiffRowHeight }"
           >
             <div class="gutter">{{ line.leftNumber ?? '' }}</div>
@@ -741,6 +742,15 @@ const splitBySyntaxTokens = (
 .diff-row.modified {
   background: var(--diff-modified-bg);
   color: var(--diff-modified-fg);
+}
+
+.diff-row-unimportant {
+  opacity: 0.72;
+}
+
+.diff-row-unimportant .cell {
+  text-decoration: underline dotted color-mix(in srgb, currentcolor 34%, transparent);
+  text-underline-offset: 3px;
 }
 
 .gutter {

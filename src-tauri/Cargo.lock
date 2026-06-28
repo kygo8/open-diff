@@ -603,6 +603,7 @@ dependencies = [
 name = "diff-core"
 version = "1.0.0"
 dependencies = [
+ "format-core",
  "regex",
  "shared-types",
 ]

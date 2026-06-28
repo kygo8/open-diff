@@ -201,6 +201,19 @@ pub fn diff_text_with_algorithm(
     TextDiffResponse { lines: rows, stats }
 }
 
+pub fn diff_text_with_grammar(
+    request: &TextDiffRequest,
+    grammar: &format_core::GrammarDefinition,
+) -> TextDiffResponse {
+    let mut response = diff_text(request);
+
+    for line in &mut response.lines {
+        line.important = grammar_diff_is_important(line, grammar);
+    }
+
+    response
+}
+
 fn compiled_ignore_regexes(patterns: &[String]) -> Vec<Regex> {
     patterns
         .iter()
@@ -684,6 +697,7 @@ fn line(
     kind: DiffLineKind,
 ) -> DiffLine {
     let inline_segments = inline_segments_for(left_text, right_text, &kind);
+    let important = diff_line_is_important(&kind);
 
     DiffLine {
         left_number,
@@ -692,7 +706,29 @@ fn line(
         right_text: right_text.to_owned(),
         kind,
         inline_segments,
+        important,
     }
+}
+
+fn diff_line_is_important(kind: &DiffLineKind) -> bool {
+    *kind != DiffLineKind::Equal
+}
+
+fn grammar_diff_is_important(line: &DiffLine, grammar: &format_core::GrammarDefinition) -> bool {
+    if line.kind == DiffLineKind::Equal {
+        return false;
+    }
+
+    let left_match = format_core::find_grammar_item(&line.left_text, grammar);
+    let right_match = format_core::find_grammar_item(&line.right_text, grammar);
+
+    !matches!(
+        (left_match, right_match),
+        (Some(left), Some(right))
+            if left.importance == format_core::GrammarImportance::Unimportant
+                && right.importance == format_core::GrammarImportance::Unimportant
+                && left.item_id == right.item_id
+    )
 }
 
 fn inline_segments_for(
@@ -902,6 +938,53 @@ mod tests {
 
         assert_eq!(result.stats.equal, 1);
         assert_eq!(result.stats.modified, 0);
+    }
+
+    #[test]
+    fn marks_comment_differences_as_unimportant_with_grammar_rules() {
+        let grammar = format_core::GrammarDefinition {
+            id: "rust-grammar".to_owned(),
+            name: "Rust Grammar".to_owned(),
+            items: vec![format_core::GrammarItem {
+                id: "line-comment".to_owned(),
+                name: "Line Comment".to_owned(),
+                kind: format_core::GrammarItemKind::Comment,
+                matcher: format_core::GrammarMatcher::LinePrefix("//".to_owned()),
+                style_scope: "comment.line".to_owned(),
+                importance: format_core::GrammarImportance::Unimportant,
+                line_weight: -20,
+            }],
+        };
+        let request = request("// old comment", "// new comment");
+
+        let result = diff_text_with_grammar(&request, &grammar);
+
+        assert_eq!(result.stats.modified, 1);
+        assert_eq!(result.lines[0].kind, DiffLineKind::Modified);
+        assert!(!result.lines[0].important);
+    }
+
+    #[test]
+    fn keeps_keyword_differences_important_with_grammar_rules() {
+        let grammar = format_core::GrammarDefinition {
+            id: "rust-grammar".to_owned(),
+            name: "Rust Grammar".to_owned(),
+            items: vec![format_core::GrammarItem {
+                id: "keyword".to_owned(),
+                name: "Keyword".to_owned(),
+                kind: format_core::GrammarItemKind::Keyword,
+                matcher: format_core::GrammarMatcher::Keywords(vec!["fn".to_owned()]),
+                style_scope: "keyword.control".to_owned(),
+                importance: format_core::GrammarImportance::Important,
+                line_weight: 30,
+            }],
+        };
+        let request = request("fn main()", "function main()");
+
+        let result = diff_text_with_grammar(&request, &grammar);
+
+        assert_eq!(result.stats.modified, 1);
+        assert!(result.lines[0].important);
     }
 
     #[test]

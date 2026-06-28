@@ -7,6 +7,7 @@ export interface DiffLine {
   rightText: string
   kind: DiffLineKind
   inlineSegments: InlineDiffSegments
+  important?: boolean
 }
 
 export interface InlineDiffSegments {

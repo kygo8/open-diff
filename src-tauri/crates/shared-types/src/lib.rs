@@ -58,6 +58,7 @@ pub struct DiffLine {
     pub right_text: String,
     pub kind: DiffLineKind,
     pub inline_segments: InlineDiffSegments,
+    pub important: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq, Default)]

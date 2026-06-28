@@ -385,4 +385,23 @@ describe('TextDiffPanel', () => {
     expect(wrapper.find('[data-grammar-scope="keyword.control"]').exists()).toBe(true)
     expect(wrapper.find('[data-grammar-scope="comment.line"]').exists()).toBe(true)
   })
+
+  it('marks unimportant text differences from diff results', () => {
+    const lines: DiffLine[] = [
+      {
+        leftNumber: 1,
+        rightNumber: 1,
+        leftText: '// old comment',
+        rightText: '// new comment',
+        kind: 'modified',
+        inlineSegments: { left: [], right: [] },
+        important: false,
+      },
+    ]
+
+    const wrapper = mount(TextDiffPanel, { props: { lines } })
+
+    expect(wrapper.find('.diff-row-unimportant').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="text-diff-unimportant-row"]').exists()).toBe(true)
+  })
 })

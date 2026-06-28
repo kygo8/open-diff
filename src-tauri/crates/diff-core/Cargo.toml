@@ -6,5 +6,6 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+format-core = { path = "../format-core" }
 regex.workspace = true
 shared-types = { path = "../shared-types" }

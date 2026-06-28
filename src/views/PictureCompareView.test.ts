@@ -1,8 +1,76 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import PictureCompareView from './PictureCompareView.vue'
+import { comparePictureFiles } from '@/api/diff'
+
+vi.mock('@/api/diff', () => ({
+  comparePictureFiles: vi.fn().mockResolvedValue({
+    left: {
+      name: 'left-fixture.png',
+      format: 'PNG',
+      dimensions: '2 x 1',
+      colorDepth: '32-bit',
+    },
+    right: {
+      name: 'right-fixture.png',
+      format: 'PNG',
+      dimensions: '2 x 1',
+      colorDepth: '32-bit',
+    },
+    statistics: {
+      totalPixels: 2,
+      differentPixels: 1,
+      differenceRatio: 0.5,
+      boundingRect: {
+        x: 1,
+        y: 0,
+        width: 1,
+        height: 1,
+      },
+    },
+    metadataRows: [
+      {
+        key: 'dimensions',
+        label: 'Dimensions',
+        left: '2 x 1',
+        right: '2 x 1',
+        status: 'equal',
+      },
+      {
+        key: 'color-depth',
+        label: 'Color Depth',
+        left: '32-bit',
+        right: '32-bit',
+        status: 'equal',
+      },
+    ],
+  }),
+}))
 
 describe('PictureCompareView', () => {
+  beforeEach(() => {
+    vi.mocked(comparePictureFiles).mockClear()
+  })
+
+  it('runs a real picture comparison request and renders returned pixel statistics', async () => {
+    const wrapper = mount(PictureCompareView)
+
+    await wrapper.find('[data-testid="picture-left-path"]').setValue('C:/images/left-fixture.png')
+    await wrapper.find('[data-testid="picture-right-path"]').setValue('C:/images/right-fixture.png')
+    await wrapper.find('[data-testid="run-picture-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(comparePictureFiles).toHaveBeenCalledWith({
+      leftPath: 'C:/images/left-fixture.png',
+      rightPath: 'C:/images/right-fixture.png',
+    })
+    expect(wrapper.text()).toContain('left-fixture.png')
+    expect(wrapper.text()).toContain('right-fixture.png')
+    expect(wrapper.find('[data-testid="picture-different-pixels"]').text()).toContain('1')
+    expect(wrapper.find('[data-testid="picture-difference-ratio"]').text()).toContain('50.00%')
+    expect(wrapper.find('[data-testid="picture-bounding-rect"]').text()).toContain('1, 0, 1 x 1')
+  })
+
   it('renders left and right image panes with synced pan controls', async () => {
     const wrapper = mount(PictureCompareView)
 

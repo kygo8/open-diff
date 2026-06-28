@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { compareMediaFiles, compareTableCsv, saveTextFile } from './diff'
+import { compareMediaFiles, comparePictureFiles, compareTableCsv, saveTextFile } from './diff'
 import { invoke } from '@tauri-apps/api/core'
 
 vi.mock('@tauri-apps/api/core', () => ({
@@ -118,5 +118,45 @@ describe('diff api', () => {
       rightPath: 'C:/music/right.mp3',
     })
     expect(result.fields[0]?.status).toBe('modified')
+  })
+
+  it('compares picture files through the Tauri command contract', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      left: {
+        name: 'left.png',
+        format: 'PNG',
+        dimensions: '2 x 1',
+        colorDepth: '32-bit',
+      },
+      right: {
+        name: 'right.png',
+        format: 'PNG',
+        dimensions: '2 x 1',
+        colorDepth: '32-bit',
+      },
+      statistics: {
+        totalPixels: 2,
+        differentPixels: 1,
+        differenceRatio: 0.5,
+        boundingRect: {
+          x: 1,
+          y: 0,
+          width: 1,
+          height: 1,
+        },
+      },
+      metadataRows: [],
+    })
+
+    const result = await comparePictureFiles({
+      leftPath: 'C:/images/left.png',
+      rightPath: 'C:/images/right.png',
+    })
+
+    expect(invoke).toHaveBeenCalledWith('compare_picture_files', {
+      leftPath: 'C:/images/left.png',
+      rightPath: 'C:/images/right.png',
+    })
+    expect(result.statistics.differentPixels).toBe(1)
   })
 })

@@ -1,4 +1,7 @@
 use file_core::FileReadError;
+use image_core::{
+    DecodedImage, ImageDecodeError, ImageFormat, ImageMetadata, ImageRect, PixelDiffError,
+};
 use media_core::{
     AudioCodec, MediaCodec, MediaContainer, MediaDiffStatistics, MediaDocument, MediaFieldStatus,
     MediaReadError, MediaStream, VideoCodec,
@@ -110,6 +113,43 @@ pub struct MediaCompareSummary {
     pub removed: u32,
     pub modified: u32,
     pub unchanged: u32,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct PictureCompareResponse {
+    pub left: PictureSideSummary,
+    pub right: PictureSideSummary,
+    pub statistics: PictureCompareStatistics,
+    pub metadata_rows: Vec<PictureMetadataRow>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct PictureSideSummary {
+    pub name: String,
+    pub format: String,
+    pub dimensions: String,
+    pub color_depth: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct PictureCompareStatistics {
+    pub total_pixels: u64,
+    pub different_pixels: u64,
+    pub difference_ratio: f64,
+    pub bounding_rect: Option<ImageRect>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct PictureMetadataRow {
+    pub key: String,
+    pub label: String,
+    pub left: String,
+    pub right: String,
+    pub status: String,
 }
 
 #[tauri::command]
@@ -276,6 +316,54 @@ pub fn compare_media_files(
             })
             .collect(),
         summary: media_compare_summary(diff.statistics),
+    })
+}
+
+#[tauri::command]
+pub fn compare_picture_files(
+    left_path: String,
+    right_path: String,
+) -> Result<PictureCompareResponse, AppErrorPayload> {
+    let left = read_picture_path(&left_path)?;
+    let right = read_picture_path(&right_path)?;
+    let metadata_rows = picture_metadata_rows(&left.metadata, &right.metadata);
+    let total_pixels = u64::from(left.metadata.width) * u64::from(left.metadata.height);
+    let diff = if left.metadata.width == right.metadata.width
+        && left.metadata.height == right.metadata.height
+    {
+        image_core::scan_pixel_differences(
+            &left.pixels,
+            &right.pixels,
+            left.metadata.width,
+            left.metadata.height,
+        )
+        .map_err(picture_pixel_error)?
+    } else {
+        image_core::PixelDiff {
+            different_pixels: total_pixels,
+            bounding_rect: Some(ImageRect {
+                x: 0,
+                y: 0,
+                width: left.metadata.width,
+                height: left.metadata.height,
+            }),
+        }
+    };
+
+    Ok(PictureCompareResponse {
+        left: picture_side_summary(&left_path, &left.metadata),
+        right: picture_side_summary(&right_path, &right.metadata),
+        statistics: PictureCompareStatistics {
+            total_pixels,
+            different_pixels: diff.different_pixels,
+            difference_ratio: if total_pixels == 0 {
+                0.0
+            } else {
+                diff.different_pixels as f64 / total_pixels as f64
+            },
+            bounding_rect: diff.bounding_rect,
+        },
+        metadata_rows,
     })
 }
 
@@ -539,6 +627,96 @@ fn media_field_status_label(status: MediaFieldStatus) -> String {
     .to_owned()
 }
 
+fn read_picture_path(path: &str) -> Result<DecodedImage, AppErrorPayload> {
+    let bytes = fs::read(path).map_err(|error| file_io_error(path, error))?;
+
+    image_core::decode_image(&bytes).map_err(|error| picture_read_error(path, error))
+}
+
+fn picture_read_error(path: &str, error: ImageDecodeError) -> AppErrorPayload {
+    AppErrorPayload::new(
+        AppErrorCode::FileReadFailed,
+        "error.picture.readFailed.message",
+        error.to_string(),
+    )
+    .with_param("path", path)
+    .with_suggestion_key("error.picture.readFailed.suggestion")
+}
+
+fn picture_pixel_error(error: PixelDiffError) -> AppErrorPayload {
+    AppErrorPayload::new(
+        AppErrorCode::Unknown,
+        "error.picture.readFailed.message",
+        error.to_string(),
+    )
+    .with_suggestion_key("error.picture.readFailed.suggestion")
+}
+
+fn picture_side_summary(path: &str, metadata: &ImageMetadata) -> PictureSideSummary {
+    PictureSideSummary {
+        name: Path::new(path)
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or(path)
+            .to_owned(),
+        format: image_format_label(&metadata.format),
+        dimensions: picture_dimensions(metadata),
+        color_depth: format!("{}-bit", metadata.color_depth_bits),
+    }
+}
+
+fn picture_metadata_rows(left: &ImageMetadata, right: &ImageMetadata) -> Vec<PictureMetadataRow> {
+    [
+        (
+            "dimensions",
+            "Dimensions",
+            picture_dimensions(left),
+            picture_dimensions(right),
+        ),
+        (
+            "format",
+            "Format",
+            image_format_label(&left.format),
+            image_format_label(&right.format),
+        ),
+        (
+            "color-depth",
+            "Color Depth",
+            format!("{}-bit", left.color_depth_bits),
+            format!("{}-bit", right.color_depth_bits),
+        ),
+        (
+            "alpha",
+            "Alpha",
+            left.color.has_alpha.to_string(),
+            right.color.has_alpha.to_string(),
+        ),
+    ]
+    .into_iter()
+    .map(|(key, label, left, right)| PictureMetadataRow {
+        key: key.to_owned(),
+        label: label.to_owned(),
+        status: if left == right { "equal" } else { "different" }.to_owned(),
+        left,
+        right,
+    })
+    .collect()
+}
+
+fn picture_dimensions(metadata: &ImageMetadata) -> String {
+    format!("{} x {}", metadata.width, metadata.height)
+}
+
+fn image_format_label(format: &ImageFormat) -> String {
+    match format {
+        ImageFormat::Png => "PNG",
+        ImageFormat::Jpeg => "JPEG",
+        ImageFormat::WebP => "WebP",
+        ImageFormat::Unknown => "Unknown",
+    }
+    .to_owned()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -622,6 +800,40 @@ mod tests {
         );
     }
 
+    #[test]
+    fn compare_picture_files_reads_images_and_returns_pixel_statistics() {
+        let root = unique_temp_dir("picture-command");
+        fs::create_dir_all(&root).expect("fixture directory should be created");
+        let left = root.join("left.png");
+        let right = root.join("right.png");
+
+        fs::write(&left, fixture_png(&[[255, 0, 0, 255], [0, 128, 255, 255]]))
+            .expect("left fixture should be writable");
+        fs::write(&right, fixture_png(&[[255, 0, 0, 255], [0, 255, 0, 255]]))
+            .expect("right fixture should be writable");
+
+        let response =
+            compare_picture_files(left.display().to_string(), right.display().to_string())
+                .expect("valid image fixtures should compare");
+
+        assert_eq!(response.left.name, "left.png");
+        assert_eq!(response.right.name, "right.png");
+        assert_eq!(response.statistics.total_pixels, 2);
+        assert_eq!(response.statistics.different_pixels, 1);
+        assert_eq!(
+            response
+                .statistics
+                .bounding_rect
+                .expect("bounding rect should exist")
+                .x,
+            1
+        );
+        assert!(response
+            .metadata_rows
+            .iter()
+            .any(|row| row.key == "dimensions"));
+    }
+
     fn fixture_mp3_with_text_frames(frames: &[(&str, &str)]) -> Vec<u8> {
         let frame_bytes = frames
             .iter()
@@ -644,6 +856,17 @@ mod tests {
         frame.extend([0, 0]);
         frame.extend(payload);
         frame
+    }
+
+    fn fixture_png(pixels: &[[u8; 4]; 2]) -> Vec<u8> {
+        let mut bytes = std::io::Cursor::new(Vec::new());
+
+        image::RgbaImage::from_raw(2, 1, pixels.iter().flatten().copied().collect())
+            .expect("fixture pixels should match dimensions")
+            .write_to(&mut bytes, image::ImageFormat::Png)
+            .expect("fixture image should encode");
+
+        bytes.into_inner()
     }
 
     fn syncsafe(value: u32) -> [u8; 4] {

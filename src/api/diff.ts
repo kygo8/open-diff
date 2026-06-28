@@ -3,6 +3,8 @@ import type {
   FileStamp,
   MediaCompareRequest,
   MediaCompareResponse,
+  PictureCompareRequest,
+  PictureCompareResponse,
   TextPatchResponse,
   ReadTextFileResponse,
   SaveTextFileRequest,
@@ -56,6 +58,15 @@ export function compareTableCsv(request: TableCompareRequest): Promise<TableComp
 
 export function compareMediaFiles(request: MediaCompareRequest): Promise<MediaCompareResponse> {
   return invoke<MediaCompareResponse>('compare_media_files', {
+    leftPath: request.leftPath,
+    rightPath: request.rightPath,
+  })
+}
+
+export function comparePictureFiles(
+  request: PictureCompareRequest,
+): Promise<PictureCompareResponse> {
+  return invoke<PictureCompareResponse>('compare_picture_files', {
     leftPath: request.leftPath,
     rightPath: request.rightPath,
   })

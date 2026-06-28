@@ -5,6 +5,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::check_text_file_changed,
             commands::compare_media_files,
+            commands::compare_picture_files,
             commands::compare_table_csv,
             commands::diff_text,
             commands::parse_text_patch,

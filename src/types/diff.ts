@@ -173,3 +173,40 @@ export interface MediaCompareResponse {
   fields: MediaFieldRow[]
   summary: Record<MediaFieldStatus, number>
 }
+
+export interface PictureCompareRequest {
+  leftPath: string
+  rightPath: string
+}
+
+export interface PictureSideSummary {
+  name: string
+  format: string
+  dimensions: string
+  colorDepth: string
+}
+
+export interface PictureMetadataRow {
+  key: string
+  label: string
+  left: string
+  right: string
+  status: 'different' | 'equal'
+}
+
+export interface PictureCompareResponse {
+  left: PictureSideSummary
+  right: PictureSideSummary
+  statistics: {
+    totalPixels: number
+    differentPixels: number
+    differenceRatio: number
+    boundingRect?: {
+      x: number
+      y: number
+      width: number
+      height: number
+    }
+  }
+  metadataRows: PictureMetadataRow[]
+}

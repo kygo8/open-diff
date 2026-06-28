@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { comparePictureFiles } from '@/api/diff'
+import type { PictureCompareResponse, PictureMetadataRow } from '@/types/diff'
 
 const zoom = ref(100)
 const panX = ref(0)
@@ -16,7 +18,7 @@ const pixelPreview = ref<{
   y: number
   color: string
 } | null>(null)
-const metadataRows = [
+const defaultMetadataRows: PictureMetadataRow[] = [
   {
     key: 'dimensions',
     label: 'Dimensions',
@@ -46,6 +48,24 @@ const metadataRows = [
     status: 'different',
   },
 ] as const
+const leftPath = ref('C:/images/left.png')
+const rightPath = ref('C:/images/right.png')
+const leftPictureName = ref('left.png')
+const rightPictureName = ref('right.png')
+const loading = ref(false)
+const error = ref('')
+const metadataRows = ref<PictureMetadataRow[]>(defaultMetadataRows)
+const pictureStatistics = ref<PictureCompareResponse['statistics']>({
+  totalPixels: 786_432,
+  differentPixels: 18_240,
+  differenceRatio: 18_240 / 786_432,
+  boundingRect: {
+    x: 752,
+    y: 572,
+    width: 210,
+    height: 166,
+  },
+})
 
 const sharedTransformParts = computed(() => [
   `translate(${String(panX.value)}px, ${String(panY.value)}px)`,
@@ -72,6 +92,20 @@ const rightImageStyle = computed<Record<string, string>>(() => ({
   transform: rightImageTransform.value,
 }))
 
+const pictureDifferenceRatioText = computed(
+  () => `${(pictureStatistics.value.differenceRatio * 100).toFixed(2)}%`,
+)
+
+const pictureBoundingRectText = computed(() => {
+  const rect = pictureStatistics.value.boundingRect
+
+  if (!rect) {
+    return '--'
+  }
+
+  return `${String(rect.x)}, ${String(rect.y)}, ${String(rect.width)} x ${String(rect.height)}`
+})
+
 function rotatePicture(delta: number): void {
   rotationDeg.value = (rotationDeg.value + delta + 360) % 360
 }
@@ -95,6 +129,30 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
     color: buildPreviewColor(side, x, y),
   }
 }
+
+function applyPictureResult(result: PictureCompareResponse): void {
+  leftPictureName.value = result.left.name
+  rightPictureName.value = result.right.name
+  metadataRows.value = result.metadataRows
+  pictureStatistics.value = result.statistics
+}
+
+async function runPictureCompare(): Promise<void> {
+  loading.value = true
+  error.value = ''
+  try {
+    const result = await comparePictureFiles({
+      leftPath: leftPath.value,
+      rightPath: rightPath.value,
+    })
+
+    applyPictureResult(result)
+  } catch (event) {
+    error.value = String(event)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -109,6 +167,61 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
         <span>{{ $t('ui.sharedZoom') }}</span>
       </div>
     </header>
+
+    <section class="picture-path-panel">
+      <label>
+        <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
+        <input
+          v-model="leftPath"
+          type="text"
+          data-testid="picture-left-path"
+        />
+      </label>
+      <label>
+        <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
+        <input
+          v-model="rightPath"
+          type="text"
+          data-testid="picture-right-path"
+        />
+      </label>
+      <button
+        type="button"
+        data-testid="run-picture-compare"
+        :disabled="loading"
+        @click="runPictureCompare"
+      >
+        {{ $t('ui.runDiff') }}
+      </button>
+    </section>
+    <p
+      v-if="error"
+      class="picture-error"
+      data-testid="picture-compare-error"
+    >
+      {{ error }}
+    </p>
+
+    <section class="picture-stat-grid">
+      <article>
+        <span>{{ $t('ui.totalPixels') }}</span>
+        <strong data-testid="picture-total-pixels">{{ pictureStatistics.totalPixels }}</strong>
+      </article>
+      <article>
+        <span>{{ $t('ui.differentPixels') }}</span>
+        <strong data-testid="picture-different-pixels">
+          {{ pictureStatistics.differentPixels }}
+        </strong>
+      </article>
+      <article>
+        <span>{{ $t('ui.differenceRatio') }}</span>
+        <strong data-testid="picture-difference-ratio">{{ pictureDifferenceRatioText }}</strong>
+      </article>
+      <article>
+        <span>{{ $t('ui.boundingRect') }}</span>
+        <strong data-testid="picture-bounding-rect">{{ pictureBoundingRectText }}</strong>
+      </article>
+    </section>
 
     <section class="picture-controls">
       <label>
@@ -229,7 +342,7 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
         class="picture-side"
         data-testid="left-picture-pane"
       >
-        <h2>{{ $t('ui.left') }}</h2>
+        <h2>{{ $t('ui.left') }}: {{ leftPictureName }}</h2>
         <div
           class="picture-canvas-frame"
           data-testid="picture-canvas-frame"
@@ -261,7 +374,7 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
         class="picture-side"
         data-testid="right-picture-pane"
       >
-        <h2>{{ $t('ui.right') }}</h2>
+        <h2>{{ $t('ui.right') }}: {{ rightPictureName }}</h2>
         <div
           class="picture-canvas-frame"
           data-testid="picture-canvas-frame"
@@ -381,6 +494,86 @@ h2 {
 .picture-summary span {
   color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.picture-path-panel,
+.picture-stat-grid {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.picture-path-panel {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+}
+
+.picture-path-panel label,
+.picture-stat-grid article {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.picture-path-panel span,
+.picture-stat-grid span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.picture-path-panel input {
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.picture-path-panel button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.picture-path-panel button:hover {
+  border-color: var(--app-accent);
+}
+
+.picture-path-panel button:disabled {
+  opacity: 0.65;
+}
+
+.picture-error {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--app-danger);
+  border-radius: 6px;
+  background: var(--diff-deleted-bg);
+  color: var(--diff-deleted-fg);
+  font-size: 12px;
+}
+
+.picture-stat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.picture-stat-grid strong {
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .picture-controls {
@@ -657,7 +850,9 @@ h2 {
 
 @media (width <= 860px) {
   .picture-controls,
-  .picture-pane-grid {
+  .picture-pane-grid,
+  .picture-path-panel,
+  .picture-stat-grid {
     grid-template-columns: 1fr;
   }
 

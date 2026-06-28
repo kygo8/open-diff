@@ -41,7 +41,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Text Merge',
     summary: 'Three-way text merge',
     priority: 'P1',
-    implemented: false,
+    implemented: true,
+    route: '/merge/text',
   },
   {
     type: 'table-compare',

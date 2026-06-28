@@ -62,6 +62,39 @@ describe('buildSavedSessionTree', () => {
     ])
   })
 
+  it('groups shared sessions under a read-only branch', () => {
+    const sharedSession: SessionDocument = {
+      ...baseSession,
+      id: 'shared-session',
+      metadata: {
+        ...baseSession.metadata,
+        folder: 'Team/Review',
+        locked: true,
+        shared: true,
+      },
+    }
+
+    expect(buildSavedSessionTree([sharedSession])).toMatchObject([
+      {
+        kind: 'folder',
+        name: 'Shared Sessions',
+        children: [
+          {
+            kind: 'folder',
+            name: 'Team',
+            children: [
+              {
+                kind: 'folder',
+                name: 'Review',
+                children: [{ kind: 'session', session: sharedSession }],
+              },
+            ],
+          },
+        ],
+      },
+    ])
+  })
+
   it('filters sessions by keyword and type together', () => {
     const sessions: SessionDocument[] = [
       baseSession,

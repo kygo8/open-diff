@@ -77,7 +77,7 @@ export function buildSavedSessionTree(sessions: SessionDocument[]): SavedSession
   const roots: SavedSessionTreeNode[] = []
 
   for (const session of sessions) {
-    const folderPath = session.metadata.folder
+    const folderPath = sessionFolderPath(session)
     const leaf: SavedSessionLeafNode = {
       kind: 'session',
       id: session.id,
@@ -96,6 +96,14 @@ export function buildSavedSessionTree(sessions: SessionDocument[]): SavedSession
   }
 
   return sortTree(roots)
+}
+
+function sessionFolderPath(session: SessionDocument): string | undefined {
+  if (!session.metadata.shared) {
+    return session.metadata.folder
+  }
+
+  return ['Shared Sessions', session.metadata.folder].filter(Boolean).join('/')
 }
 
 export function filterSavedSessions(

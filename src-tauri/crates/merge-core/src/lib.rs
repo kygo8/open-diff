@@ -36,6 +36,31 @@ pub struct TextMergeDocument {
     pub output: TextMergeSide,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextMergeResult {
+    pub output_text: String,
+    pub conflicts: usize,
+    pub sections: Vec<TextMergeSection>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextMergeSection {
+    pub line_index: usize,
+    pub kind: TextMergeSectionKind,
+    pub output: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum TextMergeSectionKind {
+    Unchanged,
+    AcceptedLeft,
+    AcceptedRight,
+    Conflict,
+}
+
 impl TextMergeSide {
     pub fn new(path: impl Into<String>, text: impl Into<String>) -> Self {
         let text = text.into();
@@ -70,6 +95,50 @@ impl TextMergeDocument {
             },
             base,
         }
+    }
+}
+
+pub fn auto_merge_text(document: &TextMergeDocument) -> TextMergeResult {
+    let max_len = document
+        .base
+        .lines
+        .len()
+        .max(document.left.lines.len())
+        .max(document.right.lines.len());
+    let mut sections = Vec::new();
+    let mut output_lines = Vec::new();
+    let mut conflicts = 0;
+
+    for index in 0..max_len {
+        let base = document.base.lines.get(index);
+        let left = document.left.lines.get(index);
+        let right = document.right.lines.get(index);
+        let left_changed = left != base;
+        let right_changed = right != base;
+        let (kind, selected) = match (left_changed, right_changed) {
+            (false, false) => (TextMergeSectionKind::Unchanged, base),
+            (true, false) => (TextMergeSectionKind::AcceptedLeft, left),
+            (false, true) => (TextMergeSectionKind::AcceptedRight, right),
+            (true, true) if left == right => (TextMergeSectionKind::AcceptedLeft, left),
+            (true, true) => {
+                conflicts += 1;
+                (TextMergeSectionKind::Conflict, base)
+            }
+        };
+        let output = selected.cloned().into_iter().collect::<Vec<_>>();
+
+        output_lines.extend(output.clone());
+        sections.push(TextMergeSection {
+            line_index: index,
+            kind,
+            output,
+        });
+    }
+
+    TextMergeResult {
+        output_text: output_lines.join("\n"),
+        conflicts,
+        sections,
     }
 }
 
@@ -132,5 +201,40 @@ mod tests {
         assert_eq!(document.output.path, None);
         assert_eq!(document.output.text, "base");
         assert_eq!(document.output.lines, vec!["base".to_owned()]);
+    }
+
+    #[test]
+    fn automatically_merges_non_overlapping_left_and_right_changes() {
+        let document = TextMergeDocument::from_inputs(TextMergeInput {
+            base: TextMergeSide::new("base.txt", "one\ntwo\nthree"),
+            left: TextMergeSide::new("left.txt", "ONE\ntwo\nthree"),
+            right: TextMergeSide::new("right.txt", "one\ntwo\nTHREE"),
+            output_path: Some("merged.txt".to_owned()),
+        });
+
+        let result = auto_merge_text(&document);
+
+        assert_eq!(result.conflicts, 0);
+        assert_eq!(result.output_text, "ONE\ntwo\nTHREE");
+        assert_eq!(
+            result.sections,
+            vec![
+                TextMergeSection {
+                    line_index: 0,
+                    kind: TextMergeSectionKind::AcceptedLeft,
+                    output: vec!["ONE".to_owned()],
+                },
+                TextMergeSection {
+                    line_index: 1,
+                    kind: TextMergeSectionKind::Unchanged,
+                    output: vec!["two".to_owned()],
+                },
+                TextMergeSection {
+                    line_index: 2,
+                    kind: TextMergeSectionKind::AcceptedRight,
+                    output: vec!["THREE".to_owned()],
+                },
+            ]
+        );
     }
 }

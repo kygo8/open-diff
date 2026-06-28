@@ -103,7 +103,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Media Compare',
     summary: 'Audio and video metadata',
     priority: 'P3',
-    implemented: false,
+    implemented: true,
+    route: '/compare/media',
   },
   {
     type: 'version-compare',

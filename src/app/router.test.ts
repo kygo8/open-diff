@@ -25,4 +25,10 @@ describe('router', () => {
 
     expect(route?.name).toBe('registry-compare')
   })
+
+  it('registers the media compare route', () => {
+    const route = router.getRoutes().find((item) => item.path === '/compare/media')
+
+    expect(route?.name).toBe('media-compare')
+  })
 })

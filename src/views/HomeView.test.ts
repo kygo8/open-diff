@@ -69,6 +69,7 @@ describe('HomeView', () => {
     const hexCompare = wrapper.find('[data-session-type="hex-compare"] button')
     const pictureCompare = wrapper.find('[data-session-type="picture-compare"] button')
     const registryCompare = wrapper.find('[data-session-type="registry-compare"] button')
+    const mediaCompare = wrapper.find('[data-session-type="media-compare"] button')
 
     expect(textCompare.attributes('disabled')).toBeUndefined()
     expect(folderCompare.attributes('disabled')).toBeUndefined()
@@ -79,6 +80,7 @@ describe('HomeView', () => {
     expect(hexCompare.attributes('disabled')).toBeUndefined()
     expect(pictureCompare.attributes('disabled')).toBeUndefined()
     expect(registryCompare.attributes('disabled')).toBeUndefined()
+    expect(mediaCompare.attributes('disabled')).toBeUndefined()
 
     await textCompare.trigger('click')
 
@@ -115,6 +117,10 @@ describe('HomeView', () => {
     await registryCompare.trigger('click')
 
     expect(push).toHaveBeenCalledWith('/compare/registry')
+
+    await mediaCompare.trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/compare/media')
   })
 
   it('shows saved sessions grouped by folder', () => {

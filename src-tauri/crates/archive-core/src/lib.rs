@@ -44,9 +44,88 @@ pub enum ArchiveError {
     NotFound(String),
     NotDirectory(String),
     InvalidArchive(String),
+    UnsupportedFormat(String),
 }
 
 pub type ArchiveResult<T> = Result<T, ArchiveError>;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ArchiveFormat {
+    Zip,
+    Tar,
+    TarGz,
+    Gz,
+    SevenZip,
+}
+
+impl ArchiveFormat {
+    pub fn detect(name: impl AsRef<str>) -> ArchiveResult<Self> {
+        let name = name.as_ref();
+        let lower_name = name.to_ascii_lowercase();
+
+        if lower_name.ends_with(".tar.gz") || lower_name.ends_with(".tgz") {
+            return Ok(Self::TarGz);
+        }
+
+        if lower_name.ends_with(".zip") {
+            return Ok(Self::Zip);
+        }
+
+        if lower_name.ends_with(".tar") {
+            return Ok(Self::Tar);
+        }
+
+        if lower_name.ends_with(".gz") {
+            return Ok(Self::Gz);
+        }
+
+        if lower_name.ends_with(".7z") {
+            return Ok(Self::SevenZip);
+        }
+
+        Err(ArchiveError::UnsupportedFormat(name.to_owned()))
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ArchiveSourceEntry {
+    path: String,
+    bytes: Vec<u8>,
+}
+
+impl ArchiveSourceEntry {
+    pub fn file(path: impl AsRef<str>, bytes: impl AsRef<[u8]>) -> Self {
+        Self {
+            path: normalize_archive_path(path.as_ref()),
+            bytes: bytes.as_ref().to_vec(),
+        }
+    }
+}
+
+pub struct ArchiveReader;
+
+impl ArchiveReader {
+    pub fn open(
+        name: impl Into<String>,
+        format: ArchiveFormat,
+        entries: Vec<ArchiveSourceEntry>,
+    ) -> ArchiveResult<ArchiveDocument> {
+        let mut document = ArchiveDocument::new(name);
+
+        for entry in entries {
+            document = document.with_file(entry.path, entry.bytes);
+        }
+
+        match format {
+            ArchiveFormat::Zip
+            | ArchiveFormat::Tar
+            | ArchiveFormat::TarGz
+            | ArchiveFormat::Gz
+            | ArchiveFormat::SevenZip => Ok(document),
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ArchiveVfs {
@@ -368,6 +447,60 @@ mod tests {
         assert!(matches!(
             error,
             ArchiveError::InvalidArchive(message) if message == "ZIP payload is empty"
+        ));
+    }
+
+    #[test]
+    fn archive_reader_detects_common_archive_formats_from_name() {
+        assert_eq!(
+            ArchiveFormat::detect("release.zip").unwrap(),
+            ArchiveFormat::Zip
+        );
+        assert_eq!(
+            ArchiveFormat::detect("release.tar").unwrap(),
+            ArchiveFormat::Tar
+        );
+        assert_eq!(
+            ArchiveFormat::detect("release.tar.gz").unwrap(),
+            ArchiveFormat::TarGz
+        );
+        assert_eq!(
+            ArchiveFormat::detect("release.gz").unwrap(),
+            ArchiveFormat::Gz
+        );
+        assert_eq!(
+            ArchiveFormat::detect("release.7z").unwrap(),
+            ArchiveFormat::SevenZip
+        );
+    }
+
+    #[test]
+    fn archive_reader_opens_supported_formats_as_readable_documents() {
+        for (name, format) in [
+            ("release.tar", ArchiveFormat::Tar),
+            ("release.tar.gz", ArchiveFormat::TarGz),
+            ("release.gz", ArchiveFormat::Gz),
+            ("release.7z", ArchiveFormat::SevenZip),
+        ] {
+            let document = ArchiveReader::open(
+                name,
+                format,
+                vec![ArchiveSourceEntry::file("/docs/readme.md", b"readme")],
+            )
+            .unwrap();
+            let vfs = ArchiveVfs::from_document(document);
+
+            assert_eq!(vfs.read("/docs/readme.md").unwrap(), b"readme");
+        }
+    }
+
+    #[test]
+    fn archive_reader_rejects_unknown_extensions() {
+        let error = ArchiveFormat::detect("release.rar").unwrap_err();
+
+        assert!(matches!(
+            error,
+            ArchiveError::UnsupportedFormat(format) if format == "release.rar"
         ));
     }
 }

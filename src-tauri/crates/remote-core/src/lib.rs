@@ -438,6 +438,84 @@ impl MemoryS3Provider {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OAuthAuthentication {
+    pub token_present: bool,
+}
+
+#[derive(Debug, Clone)]
+pub struct MemoryDropboxProvider {
+    profile: RemoteProfile,
+    authentication: OAuthAuthentication,
+    root_path: String,
+    namespace_id: Option<String>,
+    files: BTreeMap<String, Vec<u8>>,
+}
+
+impl MemoryDropboxProvider {
+    pub fn connect(
+        profile: RemoteProfile,
+        credential: RemoteCredential,
+    ) -> RemoteProviderResult<Self> {
+        if profile.protocol != RemoteProtocol::Dropbox {
+            return Err(RemoteProviderError::UnsupportedProtocol(profile.protocol));
+        }
+
+        let authentication = OAuthAuthentication::from_credential(
+            &credential,
+            "Dropbox requires OAuth bearer token authentication",
+        )?;
+        let root_path = profile
+            .endpoint
+            .root_path
+            .as_deref()
+            .map(normalize_remote_path)
+            .transpose()?
+            .unwrap_or_else(|| "/".to_owned());
+        let namespace_id = profile.options.get("namespaceId").cloned();
+
+        Ok(Self {
+            profile,
+            authentication,
+            root_path,
+            namespace_id,
+            files: BTreeMap::new(),
+        })
+    }
+
+    pub fn profile(&self) -> &RemoteProfile {
+        &self.profile
+    }
+
+    pub fn authentication(&self) -> OAuthAuthentication {
+        self.authentication.clone()
+    }
+
+    pub fn root_path(&self) -> &str {
+        &self.root_path
+    }
+
+    pub fn namespace_id(&self) -> Option<&str> {
+        self.namespace_id.as_deref()
+    }
+}
+
+impl OAuthAuthentication {
+    fn from_credential(
+        credential: &RemoteCredential,
+        bearer_required_message: &str,
+    ) -> RemoteProviderResult<Self> {
+        match credential.material {
+            RemoteCredentialMaterial::BearerToken(_) => Ok(Self {
+                token_present: true,
+            }),
+            _ => Err(RemoteProviderError::Backend(
+                bearer_required_message.to_owned(),
+            )),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct MemorySftpProvider {
     profile: RemoteProfile,
@@ -723,6 +801,28 @@ impl RemoteFileProvider for MemoryS3Provider {
 
     fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
         rename_memory_remote_file(&mut self.objects, from, to)
+    }
+}
+
+impl RemoteFileProvider for MemoryDropboxProvider {
+    fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
+        list_memory_remote_entries(&self.files, path)
+    }
+
+    fn download(&self, path: &str) -> RemoteProviderResult<Vec<u8>> {
+        download_memory_remote_file(&self.files, path)
+    }
+
+    fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()> {
+        upload_memory_remote_file(&mut self.files, path, bytes)
+    }
+
+    fn delete(&mut self, path: &str) -> RemoteProviderResult<()> {
+        delete_memory_remote_file(&mut self.files, path)
+    }
+
+    fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
+        rename_memory_remote_file(&mut self.files, from, to)
     }
 }
 
@@ -1148,6 +1248,79 @@ mod tests {
         );
 
         let error = MemoryS3Provider::connect(profile).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::WebDav)
+        ));
+    }
+
+    #[test]
+    fn dropbox_provider_connects_with_oauth_token_and_file_operations() {
+        let profile = RemoteProfile::new(
+            "team-dropbox",
+            "Team Dropbox",
+            RemoteProtocol::Dropbox,
+            RemoteEndpoint::new("api.dropboxapi.com").with_root_path("/OpenDiff"),
+            CredentialReference::profile_store("team-dropbox"),
+        )
+        .with_option("namespaceId", "ns:123");
+        let credential = RemoteCredential::bearer_token("dropbox-oauth-token");
+        let mut provider = MemoryDropboxProvider::connect(profile, credential).unwrap();
+
+        provider
+            .upload("/OpenDiff/report.txt", b"report".to_vec())
+            .unwrap();
+
+        assert_eq!(provider.root_path(), "/OpenDiff");
+        assert_eq!(provider.namespace_id(), Some("ns:123"));
+        assert_eq!(
+            provider.authentication(),
+            OAuthAuthentication {
+                token_present: true,
+            }
+        );
+        assert_eq!(
+            provider.download("/OpenDiff/report.txt").unwrap(),
+            b"report"
+        );
+        assert_eq!(
+            provider.list("/OpenDiff").unwrap()[0].path,
+            "/OpenDiff/report.txt"
+        );
+    }
+
+    #[test]
+    fn dropbox_provider_rejects_password_credentials() {
+        let profile = RemoteProfile::new(
+            "team-dropbox",
+            "Team Dropbox",
+            RemoteProtocol::Dropbox,
+            RemoteEndpoint::new("api.dropboxapi.com"),
+            CredentialReference::profile_store("team-dropbox"),
+        );
+        let credential = RemoteCredential::username_password("user", "password");
+
+        let error = MemoryDropboxProvider::connect(profile, credential).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::Backend(message) if message == "Dropbox requires OAuth bearer token authentication"
+        ));
+    }
+
+    #[test]
+    fn dropbox_provider_rejects_non_dropbox_profiles() {
+        let profile = RemoteProfile::new(
+            "team-webdav",
+            "Team WebDAV",
+            RemoteProtocol::WebDav,
+            RemoteEndpoint::new("dav.example.com"),
+            CredentialReference::profile_store("team-webdav"),
+        );
+        let credential = RemoteCredential::bearer_token("dropbox-oauth-token");
+
+        let error = MemoryDropboxProvider::connect(profile, credential).unwrap_err();
 
         assert!(matches!(
             error,

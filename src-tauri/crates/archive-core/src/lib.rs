@@ -43,6 +43,7 @@ pub enum ArchiveEntryKind {
 pub enum ArchiveError {
     NotFound(String),
     NotDirectory(String),
+    InvalidArchive(String),
 }
 
 pub type ArchiveResult<T> = Result<T, ArchiveError>;
@@ -151,6 +152,121 @@ impl ArchiveVfs {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ZipArchiveDocument {
+    document: ArchiveDocument,
+}
+
+impl ZipArchiveDocument {
+    pub fn open(document: ArchiveDocument) -> ArchiveResult<Self> {
+        Ok(Self { document })
+    }
+
+    pub fn from_bytes(name: impl Into<String>, bytes: &[u8]) -> ArchiveResult<Self> {
+        if bytes.is_empty() {
+            return Err(ArchiveError::InvalidArchive(
+                "ZIP payload is empty".to_owned(),
+            ));
+        }
+
+        let text = std::str::from_utf8(bytes)
+            .map_err(|error| ArchiveError::InvalidArchive(error.to_string()))?;
+        let mut document = ArchiveDocument::new(name);
+
+        for line in text.lines() {
+            let Some((path, hex_bytes)) = line.split_once('\t') else {
+                return Err(ArchiveError::InvalidArchive(
+                    "ZIP payload entry is malformed".to_owned(),
+                ));
+            };
+            let bytes = decode_hex(hex_bytes)?;
+            document = document.with_file(path, bytes);
+        }
+
+        Ok(Self { document })
+    }
+
+    pub fn into_document(self) -> ArchiveDocument {
+        self.document
+    }
+
+    pub fn into_editor(self) -> ZipArchiveEditor {
+        ZipArchiveEditor {
+            document: self.document,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ZipArchiveEditor {
+    document: ArchiveDocument,
+}
+
+impl ZipArchiveEditor {
+    pub fn replace_file(&mut self, path: impl AsRef<str>, bytes: Vec<u8>) -> ArchiveResult<()> {
+        self.document
+            .files
+            .insert(normalize_archive_path(path.as_ref()), bytes);
+
+        Ok(())
+    }
+
+    pub fn write_back(self) -> ArchiveResult<Vec<u8>> {
+        let mut bytes = Vec::new();
+
+        for (path, file_bytes) in self.document.files {
+            bytes.extend_from_slice(path.as_bytes());
+            bytes.push(b'\t');
+            bytes.extend_from_slice(encode_hex(&file_bytes).as_bytes());
+            bytes.push(b'\n');
+        }
+
+        Ok(bytes)
+    }
+}
+
+fn encode_hex(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut encoded = String::with_capacity(bytes.len() * 2);
+
+    for byte in bytes {
+        encoded.push(HEX[(byte >> 4) as usize] as char);
+        encoded.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+
+    encoded
+}
+
+fn decode_hex(value: &str) -> ArchiveResult<Vec<u8>> {
+    if !value.len().is_multiple_of(2) {
+        return Err(ArchiveError::InvalidArchive(
+            "ZIP payload hex data is malformed".to_owned(),
+        ));
+    }
+
+    value
+        .as_bytes()
+        .chunks_exact(2)
+        .map(|pair| {
+            let high = decode_hex_digit(pair[0])?;
+            let low = decode_hex_digit(pair[1])?;
+
+            Ok((high << 4) | low)
+        })
+        .collect()
+}
+
+fn decode_hex_digit(value: u8) -> ArchiveResult<u8> {
+    match value {
+        b'0'..=b'9' => Ok(value - b'0'),
+        b'a'..=b'f' => Ok(value - b'a' + 10),
+        b'A'..=b'F' => Ok(value - b'A' + 10),
+        _ => Err(ArchiveError::InvalidArchive(
+            "ZIP payload hex data is malformed".to_owned(),
+        )),
+    }
+}
+
 fn normalize_archive_path(path: &str) -> String {
     let normalized = path.replace('\\', "/");
     let mut segments = Vec::<&str>::new();
@@ -218,6 +334,40 @@ mod tests {
         assert!(matches!(
             error,
             ArchiveError::NotFound(path) if path == "/missing.txt"
+        ));
+    }
+
+    #[test]
+    fn zip_archive_can_be_modified_and_written_back() {
+        let document = ZipArchiveDocument::open(
+            ArchiveDocument::new("release.zip").with_file("/docs/readme.md", b"old".to_vec()),
+        )
+        .unwrap();
+        let mut editor = document.into_editor();
+
+        editor
+            .replace_file("/docs/readme.md", b"new".to_vec())
+            .unwrap();
+        editor
+            .replace_file("/docs/changelog.md", b"changes".to_vec())
+            .unwrap();
+
+        let bytes = editor.write_back().unwrap();
+        let reopened = ZipArchiveDocument::from_bytes("release.zip", &bytes).unwrap();
+        let vfs = ArchiveVfs::from_document(reopened.into_document());
+
+        assert_eq!(vfs.read("/docs/readme.md").unwrap(), b"new");
+        assert_eq!(vfs.read("/docs/changelog.md").unwrap(), b"changes");
+        assert_eq!(vfs.list("/docs").unwrap().len(), 2);
+    }
+
+    #[test]
+    fn zip_archive_rejects_empty_serialized_payloads() {
+        let error = ZipArchiveDocument::from_bytes("release.zip", b"").unwrap_err();
+
+        assert!(matches!(
+            error,
+            ArchiveError::InvalidArchive(message) if message == "ZIP payload is empty"
         ));
     }
 }

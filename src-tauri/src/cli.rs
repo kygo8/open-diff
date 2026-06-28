@@ -1,7 +1,7 @@
 use cli_core::{
     automerge_text_files, build_git_difftool_config, build_git_mergetool_config,
-    cli_exit_code_contract, cli_exit_code_value, compare_folders, compare_text_files,
-    open_named_session, parse_cli_args, CliCommand,
+    build_svn_diff_config, cli_exit_code_contract, cli_exit_code_value, compare_folders,
+    compare_text_files, open_named_session, parse_cli_args, CliCommand,
 };
 
 fn main() {
@@ -22,6 +22,8 @@ fn main() {
             println!("  shell-compare <path>");
             println!("  git-difftool-config [--global|--local] <executable-path>");
             println!("  git-mergetool-config [--global|--local] <executable-path>");
+            println!("  svn-diff <svn external diff args>");
+            println!("  svn-diff-config <executable-path> <wrapper-path>");
             println!("  open-session <store-root> <name>");
             println!("  merge-text <base> <left> <right> [output]");
             println!("Exit codes:");
@@ -80,6 +82,41 @@ fn main() {
             for command in config.commands {
                 println!("{command}");
             }
+        }
+        CliCommand::SvnDiff { left, right } => {
+            let result = match compare_text_files(&left, &right) {
+                Ok(result) => result,
+                Err(error) => {
+                    eprintln!("{}", error.message);
+                    std::process::exit(cli_exit_code_value(error.exit_code));
+                }
+            };
+
+            println!(
+                "added: {}, deleted: {}, modified: {}",
+                result.added, result.deleted, result.modified
+            );
+            std::process::exit(cli_exit_code_value(result.exit_code));
+        }
+        CliCommand::SvnDiffConfig {
+            executable_path,
+            wrapper_path,
+        } => {
+            let config = match build_svn_diff_config(&executable_path, &wrapper_path) {
+                Ok(config) => config,
+                Err(error) => {
+                    eprintln!("{}", error.message);
+                    std::process::exit(cli_exit_code_value(error.exit_code));
+                }
+            };
+
+            println!("{}", config.description);
+            println!("Subversion config:");
+            println!("{}", config.config_snippet);
+            println!("Wrapper script:");
+            println!("{}", config.wrapper_script);
+            println!("One-off command:");
+            println!("{}", config.example_command);
         }
         CliCommand::CompareFolders { left, right } => {
             let result = match compare_folders(&left, &right) {

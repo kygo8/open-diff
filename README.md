@@ -219,6 +219,7 @@ Open Diff is planned to support repeatable command-line and scripted workflows.
 - Generate machine-readable results.
 - Execute scripted comparison tasks.
 - Support repeatable folder comparison, synchronization, and report generation.
+- Generate Git difftool, Git mergetool, and Subversion external diff setup commands.
 
 ## Planned Capabilities
 
@@ -231,7 +232,7 @@ The following areas are part of the product direction:
 - Image tolerance controls and visual diff overlays.
 - Remote file access profiles.
 - Archive comparison.
-- Git difftool and mergetool integration.
+- Git difftool, Git mergetool, and Subversion external diff integration.
 - Custom keyboard shortcuts.
 - Additional report formats.
 

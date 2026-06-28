@@ -24,6 +24,14 @@ pub enum CliCommand {
         executable_path: String,
         scope: GitConfigScope,
     },
+    SvnDiff {
+        left: String,
+        right: String,
+    },
+    SvnDiffConfig {
+        executable_path: String,
+        wrapper_path: String,
+    },
     CompareFiles {
         left: String,
         right: String,
@@ -138,6 +146,15 @@ pub struct GitToolConfigDocument {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SvnDiffConfigDocument {
+    pub description: String,
+    pub config_snippet: String,
+    pub wrapper_script: String,
+    pub example_command: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CliRuntimeError {
     pub message: String,
     pub exit_code: CliExitCode,
@@ -159,6 +176,8 @@ where
         "--shell-compare" | "shell-compare" => parse_shell_compare(args.collect()),
         "git-difftool-config" => parse_git_difftool_config(args.collect()),
         "git-mergetool-config" => parse_git_mergetool_config(args.collect()),
+        "svn-diff" => parse_svn_diff(args.collect()),
+        "svn-diff-config" => parse_svn_diff_config(args.collect()),
         "compare" => parse_compare_files(args.collect()),
         "compare-folders" => parse_compare_folders(args.collect()),
         "open-session" => parse_open_session(args.collect()),
@@ -392,6 +411,38 @@ pub fn build_git_mergetool_config(
     })
 }
 
+pub fn build_svn_diff_config(
+    executable_path: impl AsRef<str>,
+    wrapper_path: impl AsRef<str>,
+) -> Result<SvnDiffConfigDocument, CliRuntimeError> {
+    let executable_path = executable_path.as_ref().trim();
+    let wrapper_path = wrapper_path.as_ref().trim();
+
+    if executable_path.is_empty() {
+        return Err(CliRuntimeError {
+            message: "svn diff executable path is required".to_owned(),
+            exit_code: CliExitCode::UsageError,
+        });
+    }
+
+    if wrapper_path.is_empty() {
+        return Err(CliRuntimeError {
+            message: "svn diff wrapper path is required".to_owned(),
+            exit_code: CliExitCode::UsageError,
+        });
+    }
+
+    Ok(SvnDiffConfigDocument {
+        description: "Subversion external diff configuration for Open Diff.".to_owned(),
+        config_snippet: format!("[helpers]\ndiff-cmd = {wrapper_path}\ndiff-extensions = -u"),
+        wrapper_script: format!(
+            "@echo off\r\n{} svn-diff %*\r\n",
+            quote_windows_command_path(executable_path)
+        ),
+        example_command: format!("svn diff --diff-cmd {}", quote_shell_argument(wrapper_path)),
+    })
+}
+
 fn help_invocation() -> CliInvocation {
     CliInvocation {
         command: CliCommand::Help,
@@ -407,6 +458,36 @@ fn parse_shell_compare(args: Vec<String>) -> Result<CliInvocation, CliParseError
     Ok(CliInvocation {
         command: CliCommand::ShellCompare {
             path: args[0].clone(),
+        },
+        exit_code: CliExitCode::Success,
+    })
+}
+
+fn parse_svn_diff(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    if args.len() < 2 {
+        return Err(usage_error("svn-diff requires SVN external diff arguments"));
+    }
+
+    let right = args[args.len() - 1].clone();
+    let left = args[args.len() - 2].clone();
+
+    Ok(CliInvocation {
+        command: CliCommand::SvnDiff { left, right },
+        exit_code: CliExitCode::Success,
+    })
+}
+
+fn parse_svn_diff_config(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    if args.len() != 2 {
+        return Err(usage_error(
+            "svn-diff-config requires EXECUTABLE_PATH and WRAPPER_PATH",
+        ));
+    }
+
+    Ok(CliInvocation {
+        command: CliCommand::SvnDiffConfig {
+            executable_path: args[0].clone(),
+            wrapper_path: args[1].clone(),
         },
         exit_code: CliExitCode::Success,
     })
@@ -569,6 +650,10 @@ fn quote_executable_for_git_command(executable_path: &str) -> String {
 
 fn quote_shell_argument(value: &str) -> String {
     format!("'{}'", value.replace('\'', "''"))
+}
+
+fn quote_windows_command_path(value: &str) -> String {
+    format!("\"{}\"", value.replace('"', "\"\""))
 }
 
 fn usage_error(message: impl Into<String>) -> CliParseError {
@@ -827,6 +912,65 @@ mod tests {
             CliCommand::GitMergetoolConfig {
                 executable_path: "D:/tools/open-diff-cli.exe".to_owned(),
                 scope: GitConfigScope::Local,
+            }
+        );
+    }
+
+    #[test]
+    fn parses_svn_diff_wrapper_arguments_and_builds_config() {
+        let invocation = parse_cli_args([
+            "open-diff-cli",
+            "svn-diff",
+            "-u",
+            "-L",
+            "file.txt (revision 1)",
+            "-L",
+            "file.txt (working copy)",
+            "C:/work/.svn/text-base/file.txt.svn-base",
+            "C:/work/file.txt",
+        ])
+        .expect("svn diff wrapper arguments should parse");
+
+        assert_eq!(
+            invocation.command,
+            CliCommand::SvnDiff {
+                left: "C:/work/.svn/text-base/file.txt.svn-base".to_owned(),
+                right: "C:/work/file.txt".to_owned(),
+            }
+        );
+
+        let config = build_svn_diff_config(
+            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            "C:/Tools/open-diff-svn-diff.cmd",
+        )
+        .expect("svn config should build");
+
+        assert!(config.description.contains("Subversion external diff"));
+        assert_eq!(
+            config.config_snippet,
+            "[helpers]\ndiff-cmd = C:/Tools/open-diff-svn-diff.cmd\ndiff-extensions = -u"
+        );
+        assert_eq!(
+            config.wrapper_script,
+            "@echo off\r\n\"C:/Program Files/Open Diff/open-diff-cli.exe\" svn-diff %*\r\n"
+        );
+        assert_eq!(
+            config.example_command,
+            "svn diff --diff-cmd 'C:/Tools/open-diff-svn-diff.cmd'"
+        );
+
+        let config_invocation = parse_cli_args([
+            "open-diff-cli",
+            "svn-diff-config",
+            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            "C:/Tools/open-diff-svn-diff.cmd",
+        ])
+        .expect("svn diff config should parse");
+        assert_eq!(
+            config_invocation.command,
+            CliCommand::SvnDiffConfig {
+                executable_path: "C:/Program Files/Open Diff/open-diff-cli.exe".to_owned(),
+                wrapper_path: "C:/Tools/open-diff-svn-diff.cmd".to_owned(),
             }
         );
     }

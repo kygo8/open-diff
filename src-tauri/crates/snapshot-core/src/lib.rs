@@ -266,6 +266,108 @@ impl SnapshotStore {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum SnapshotDiffStatus {
+    Added,
+    Removed,
+    Modified,
+    Unchanged,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SnapshotDiffRow {
+    pub path: String,
+    pub status: SnapshotDiffStatus,
+    pub baseline: Option<SnapshotEntry>,
+    pub current: Option<SnapshotEntry>,
+}
+
+impl SnapshotDiffRow {
+    fn new(
+        path: impl Into<String>,
+        baseline: Option<&SnapshotEntry>,
+        current: Option<&SnapshotEntry>,
+    ) -> Self {
+        let status = match (baseline, current) {
+            (None, Some(_)) => SnapshotDiffStatus::Added,
+            (Some(_), None) => SnapshotDiffStatus::Removed,
+            (Some(baseline), Some(current)) if baseline == current => SnapshotDiffStatus::Unchanged,
+            (Some(_), Some(_)) => SnapshotDiffStatus::Modified,
+            (None, None) => SnapshotDiffStatus::Unchanged,
+        };
+
+        Self {
+            path: path.into(),
+            status,
+            baseline: baseline.cloned(),
+            current: current.cloned(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SnapshotDiff {
+    rows: BTreeMap<String, SnapshotDiffRow>,
+}
+
+impl SnapshotDiff {
+    fn new(rows: BTreeMap<String, SnapshotDiffRow>) -> Self {
+        Self { rows }
+    }
+
+    pub fn rows(&self) -> Vec<&SnapshotDiffRow> {
+        self.rows.values().collect()
+    }
+
+    pub fn row(&self, path: impl AsRef<str>) -> SnapshotResult<&SnapshotDiffRow> {
+        let path = normalize_snapshot_path(path.as_ref());
+
+        self.rows.get(&path).ok_or(SnapshotError::NotFound(path))
+    }
+
+    pub fn added_count(&self) -> usize {
+        self.count_by_status(SnapshotDiffStatus::Added)
+    }
+
+    pub fn removed_count(&self) -> usize {
+        self.count_by_status(SnapshotDiffStatus::Removed)
+    }
+
+    pub fn modified_count(&self) -> usize {
+        self.count_by_status(SnapshotDiffStatus::Modified)
+    }
+
+    pub fn unchanged_count(&self) -> usize {
+        self.count_by_status(SnapshotDiffStatus::Unchanged)
+    }
+
+    fn count_by_status(&self, status: SnapshotDiffStatus) -> usize {
+        self.rows
+            .values()
+            .filter(|row| row.status == status)
+            .count()
+    }
+}
+
+pub struct SnapshotComparer;
+
+impl SnapshotComparer {
+    pub fn compare(baseline: &SnapshotDocument, current: &SnapshotDocument) -> SnapshotDiff {
+        let mut rows = BTreeMap::new();
+
+        for path in baseline.entries.keys().chain(current.entries.keys()) {
+            rows.entry(path.clone()).or_insert_with(|| {
+                SnapshotDiffRow::new(path, baseline.entries.get(path), current.entries.get(path))
+            });
+        }
+
+        SnapshotDiff::new(rows)
+    }
+}
+
 fn is_direct_child(directory: &str, path: &str) -> bool {
     if path == directory {
         return false;
@@ -419,5 +521,53 @@ mod tests {
             error,
             SnapshotError::OutsideRoot(path) if path == "/other/file.txt"
         ));
+    }
+
+    #[test]
+    fn snapshot_comparer_classifies_added_removed_modified_and_unchanged_entries() {
+        let baseline = SnapshotDocument::new(SnapshotMetadata::new("baseline"))
+            .with_entry(SnapshotEntry::file("/removed.txt", 4).with_content_hash("sha256:old"))
+            .with_entry(SnapshotEntry::file("/changed.txt", 8).with_content_hash("sha256:old"))
+            .with_entry(SnapshotEntry::file("/same.txt", 6).with_content_hash("sha256:same"));
+        let current = SnapshotDocument::new(SnapshotMetadata::new("current"))
+            .with_entry(SnapshotEntry::file("/added.txt", 3).with_content_hash("sha256:new"))
+            .with_entry(SnapshotEntry::file("/changed.txt", 8).with_content_hash("sha256:new"))
+            .with_entry(SnapshotEntry::file("/same.txt", 6).with_content_hash("sha256:same"));
+
+        let diff = SnapshotComparer::compare(&baseline, &current);
+
+        assert_eq!(diff.rows().len(), 4);
+        assert_eq!(
+            diff.row("/added.txt").unwrap().status,
+            SnapshotDiffStatus::Added
+        );
+        assert_eq!(
+            diff.row("/removed.txt").unwrap().status,
+            SnapshotDiffStatus::Removed
+        );
+        assert_eq!(
+            diff.row("/changed.txt").unwrap().status,
+            SnapshotDiffStatus::Modified
+        );
+        assert_eq!(
+            diff.row("/same.txt").unwrap().status,
+            SnapshotDiffStatus::Unchanged
+        );
+    }
+
+    #[test]
+    fn snapshot_comparer_marks_metadata_changes_as_modified() {
+        let baseline = SnapshotDocument::new(SnapshotMetadata::new("baseline"))
+            .with_entry(SnapshotEntry::file("/main.rs", 8).with_modified_at_ms(100));
+        let current = SnapshotDocument::new(SnapshotMetadata::new("current"))
+            .with_entry(SnapshotEntry::file("/main.rs", 12).with_modified_at_ms(200));
+
+        let diff = SnapshotComparer::compare(&baseline, &current);
+
+        assert_eq!(
+            diff.row("/main.rs").unwrap().status,
+            SnapshotDiffStatus::Modified
+        );
+        assert_eq!(diff.modified_count(), 1);
     }
 }

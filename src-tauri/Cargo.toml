@@ -1,6 +1,7 @@
 [workspace]
 members = [
   ".",
+  "crates/archive-core",
   "crates/cli-core",
   "crates/diff-core",
   "crates/document-core",

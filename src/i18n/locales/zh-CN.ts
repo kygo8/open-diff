@@ -34,6 +34,13 @@ export const zhCN: LanguagePack = {
     'error.picture.readFailed.message': '无法从 {path} 读取图片元数据。',
     'error.picture.readFailed.suggestion': '请使用受支持的 PNG、JPEG 或 WebP 图片文件。',
     'error.picture.readFailed.title': '图片读取失败',
+    'error.version.readFailed.message': '无法从 {path} 读取版本信息。',
+    'error.version.readFailed.suggestion': '请使用包含可读版本资源的 Windows 可执行文件或库文件。',
+    'error.version.readFailed.title': '版本读取失败',
+    'error.version.unsupportedPlatform.message': '原生版本资源读取仅支持 Windows。',
+    'error.version.unsupportedPlatform.suggestion':
+      '请在 Windows 上执行该比较，或比较已导出元数据的文件。',
+    'error.version.unsupportedPlatform.title': '不支持的平台',
     'ui.acceptBase': '接受基准',
     'ui.acceptLeft': '接受左侧',
     'ui.acceptRight': '接受右侧',

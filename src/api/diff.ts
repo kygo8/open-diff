@@ -6,6 +6,8 @@ import type {
   PictureCompareRequest,
   PictureCompareResponse,
   TextPatchResponse,
+  VersionCompareRequest,
+  VersionCompareResponse,
   ReadTextFileResponse,
   SaveTextFileRequest,
   SaveTextFileResponse,
@@ -67,6 +69,15 @@ export function comparePictureFiles(
   request: PictureCompareRequest,
 ): Promise<PictureCompareResponse> {
   return invoke<PictureCompareResponse>('compare_picture_files', {
+    leftPath: request.leftPath,
+    rightPath: request.rightPath,
+  })
+}
+
+export function compareVersionFiles(
+  request: VersionCompareRequest,
+): Promise<VersionCompareResponse> {
+  return invoke<VersionCompareResponse>('compare_version_files', {
     leftPath: request.leftPath,
     rightPath: request.rightPath,
   })

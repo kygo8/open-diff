@@ -34,6 +34,14 @@ export const zhTW: LanguagePack = {
     'error.picture.readFailed.message': '無法從 {path} 讀取圖片中繼資料。',
     'error.picture.readFailed.suggestion': '請使用受支援的 PNG、JPEG 或 WebP 圖片檔案。',
     'error.picture.readFailed.title': '圖片讀取失敗',
+    'error.version.readFailed.message': '無法從 {path} 讀取版本資訊。',
+    'error.version.readFailed.suggestion':
+      '請使用包含可讀版本資源的 Windows 可執行檔或程式庫檔案。',
+    'error.version.readFailed.title': '版本讀取失敗',
+    'error.version.unsupportedPlatform.message': '原生版本資源讀取僅支援 Windows。',
+    'error.version.unsupportedPlatform.suggestion':
+      '請在 Windows 上執行此比較，或比較已匯出中繼資料的檔案。',
+    'error.version.unsupportedPlatform.title': '不支援的平台',
     'ui.acceptBase': '接受基準',
     'ui.acceptLeft': '接受左側',
     'ui.acceptRight': '接受右側',

@@ -16,6 +16,10 @@ use std::path::Path;
 use table_core::{
     ColumnMappingSource, RowAlignmentOptions, TableCellValue, TableDiffStatus, TableParseError,
 };
+use version_core::{
+    NativeVersionInfoReader, VersionDiffStatistics, VersionDocument, VersionFieldStatus,
+    VersionFileType, VersionReadError, VersionTargetOs,
+};
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -150,6 +154,44 @@ pub struct PictureMetadataRow {
     pub left: String,
     pub right: String,
     pub status: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct VersionCompareResponse {
+    pub left: VersionSideSummary,
+    pub right: VersionSideSummary,
+    pub fields: Vec<VersionFieldRow>,
+    pub summary: VersionCompareSummary,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct VersionSideSummary {
+    pub name: String,
+    pub file_type: String,
+    pub target_os: String,
+    pub file_version: String,
+    pub product_version: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct VersionFieldRow {
+    pub field: String,
+    pub group: String,
+    pub left: Option<String>,
+    pub right: Option<String>,
+    pub status: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct VersionCompareSummary {
+    pub added: u32,
+    pub removed: u32,
+    pub modified: u32,
+    pub unchanged: u32,
 }
 
 #[tauri::command]
@@ -365,6 +407,31 @@ pub fn compare_picture_files(
         },
         metadata_rows,
     })
+}
+
+#[tauri::command]
+pub fn compare_version_files(
+    left_path: String,
+    right_path: String,
+) -> Result<VersionCompareResponse, AppErrorPayload> {
+    #[cfg(windows)]
+    {
+        let reader = version_core::WindowsVersionInfoReader;
+
+        compare_version_files_from_reader(&reader, &left_path, &right_path)
+    }
+
+    #[cfg(not(windows))]
+    {
+        let _ = (left_path, right_path);
+
+        Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.version.unsupportedPlatform.message",
+            "native version resource reading is only available on Windows",
+        )
+        .with_suggestion_key("error.version.unsupportedPlatform.suggestion"))
+    }
 }
 
 #[tauri::command]
@@ -717,6 +784,114 @@ fn image_format_label(format: &ImageFormat) -> String {
     .to_owned()
 }
 
+fn compare_version_files_from_reader(
+    reader: &impl NativeVersionInfoReader,
+    left_path: &str,
+    right_path: &str,
+) -> Result<VersionCompareResponse, AppErrorPayload> {
+    let left = version_core::NativeVersionLoader::load_file(reader, left_path)
+        .map_err(|error| version_read_error(left_path, error))?;
+    let right = version_core::NativeVersionLoader::load_file(reader, right_path)
+        .map_err(|error| version_read_error(right_path, error))?;
+    let diff = version_core::compare_version_documents(&left, &right);
+
+    Ok(VersionCompareResponse {
+        left: version_side_summary(&left),
+        right: version_side_summary(&right),
+        fields: diff
+            .fields
+            .into_iter()
+            .map(|field| VersionFieldRow {
+                group: version_field_group(&field.field),
+                field: field.field,
+                left: field.left,
+                right: field.right,
+                status: version_field_status_label(field.status),
+            })
+            .collect(),
+        summary: version_compare_summary(diff.statistics),
+    })
+}
+
+fn version_read_error(path: &str, error: VersionReadError) -> AppErrorPayload {
+    AppErrorPayload::new(
+        AppErrorCode::FileReadFailed,
+        "error.version.readFailed.message",
+        error.to_string(),
+    )
+    .with_param("path", path)
+    .with_suggestion_key("error.version.readFailed.suggestion")
+}
+
+fn version_side_summary(document: &VersionDocument) -> VersionSideSummary {
+    let fixed_info = document.fixed_info.as_ref();
+
+    VersionSideSummary {
+        name: document.name.clone(),
+        file_type: fixed_info
+            .map(|info| version_file_type_label(&info.file_type))
+            .unwrap_or_else(|| "Unknown".to_owned()),
+        target_os: fixed_info
+            .map(|info| version_target_os_label(&info.os))
+            .unwrap_or_else(|| "Unknown".to_owned()),
+        file_version: fixed_info
+            .map(|info| info.file_version.to_string())
+            .unwrap_or_else(|| "Unknown".to_owned()),
+        product_version: fixed_info
+            .map(|info| info.product_version.to_string())
+            .unwrap_or_else(|| "Unknown".to_owned()),
+    }
+}
+
+fn version_compare_summary(statistics: VersionDiffStatistics) -> VersionCompareSummary {
+    VersionCompareSummary {
+        added: statistics.added,
+        removed: statistics.removed,
+        modified: statistics.modified,
+        unchanged: statistics.unchanged,
+    }
+}
+
+fn version_field_group(field: &str) -> String {
+    match field {
+        "FileVersion" | "ProductVersion" => "Fixed Info",
+        _ => "String Info",
+    }
+    .to_owned()
+}
+
+fn version_field_status_label(status: VersionFieldStatus) -> String {
+    match status {
+        VersionFieldStatus::Added => "added",
+        VersionFieldStatus::Removed => "removed",
+        VersionFieldStatus::Modified => "modified",
+        VersionFieldStatus::Unchanged => "unchanged",
+    }
+    .to_owned()
+}
+
+fn version_file_type_label(file_type: &VersionFileType) -> String {
+    match file_type {
+        VersionFileType::Application => "Application",
+        VersionFileType::DynamicLibrary => "Dynamic Library",
+        VersionFileType::Driver => "Driver",
+        VersionFileType::Font => "Font",
+        VersionFileType::Unknown => "Unknown",
+    }
+    .to_owned()
+}
+
+fn version_target_os_label(target_os: &VersionTargetOs) -> String {
+    match target_os {
+        VersionTargetOs::Windows16 => "Windows 16-bit",
+        VersionTargetOs::Windows32 => "Windows 32-bit",
+        VersionTargetOs::Dos => "DOS",
+        VersionTargetOs::Os2 => "OS/2",
+        VersionTargetOs::Unknown => "Unknown",
+    }
+    .to_owned()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -832,6 +1007,54 @@ mod tests {
             .metadata_rows
             .iter()
             .any(|row| row.key == "dimensions"));
+    }
+
+    #[test]
+    fn compare_version_files_from_reader_returns_fixed_and_string_diffs() {
+        let reader = version_core::MemoryVersionInfoReader::new()
+            .with_document(
+                "C:/apps/left.exe",
+                version_core::VersionDocument::new("left.exe")
+                    .with_fixed_info(version_core::VersionFixedInfo {
+                        file_version: version_core::VersionNumber::new(1, 0, 0, 0),
+                        product_version: version_core::VersionNumber::new(1, 0, 0, 0),
+                        file_flags: Vec::new(),
+                        file_type: version_core::VersionFileType::Application,
+                        os: version_core::VersionTargetOs::Windows32,
+                    })
+                    .with_string("CompanyName", "Open Diff"),
+            )
+            .with_document(
+                "C:/apps/right.exe",
+                version_core::VersionDocument::new("right.exe")
+                    .with_fixed_info(version_core::VersionFixedInfo {
+                        file_version: version_core::VersionNumber::new(1, 1, 0, 0),
+                        product_version: version_core::VersionNumber::new(1, 0, 0, 0),
+                        file_flags: Vec::new(),
+                        file_type: version_core::VersionFileType::Application,
+                        os: version_core::VersionTargetOs::Windows32,
+                    })
+                    .with_string("CompanyName", "Open Diff"),
+            );
+
+        let response =
+            compare_version_files_from_reader(&reader, "C:/apps/left.exe", "C:/apps/right.exe")
+                .expect("fixtures should compare");
+
+        assert_eq!(response.left.name, "left.exe");
+        assert_eq!(response.right.name, "right.exe");
+        assert_eq!(response.summary.modified, 1);
+        assert_eq!(response.summary.unchanged, 2);
+        assert_eq!(
+            response
+                .fields
+                .iter()
+                .find(|field| field.field == "FileVersion")
+                .expect("file version row should exist")
+                .right
+                .as_deref(),
+            Some("1.1.0.0")
+        );
     }
 
     fn fixture_mp3_with_text_frames(frames: &[(&str, &str)]) -> Vec<u8> {

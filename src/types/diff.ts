@@ -210,3 +210,33 @@ export interface PictureCompareResponse {
   }
   metadataRows: PictureMetadataRow[]
 }
+
+export interface VersionCompareRequest {
+  leftPath: string
+  rightPath: string
+}
+
+export type VersionFieldStatus = 'added' | 'removed' | 'modified' | 'unchanged'
+
+export interface VersionSideSummary {
+  name: string
+  fileType: string
+  targetOs: string
+  fileVersion: string
+  productVersion: string
+}
+
+export interface VersionFieldRow {
+  field: string
+  group: 'Fixed Info' | 'String Info'
+  left?: string
+  right?: string
+  status: VersionFieldStatus
+}
+
+export interface VersionCompareResponse {
+  left: VersionSideSummary
+  right: VersionSideSummary
+  fields: VersionFieldRow[]
+  summary: Record<VersionFieldStatus, number>
+}

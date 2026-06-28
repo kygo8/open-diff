@@ -2250,6 +2250,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tokio",
+ "version-core",
 ]
 
 [[package]]

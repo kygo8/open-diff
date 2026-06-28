@@ -1,40 +1,29 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-
-type VersionFieldStatus = 'added' | 'removed' | 'modified' | 'unchanged'
-
-interface VersionSideSummary {
-  name: string
-  fileType: string
-  targetOs: string
-  fileVersion: string
-  productVersion: string
-}
-
-interface VersionFieldRow {
-  field: string
-  group: 'Fixed Info' | 'String Info'
-  left?: string
-  right?: string
-  status: VersionFieldStatus
-}
+import { computed, ref } from 'vue'
+import { compareVersionFiles } from '@/api/diff'
+import type {
+  VersionCompareResponse,
+  VersionFieldRow,
+  VersionFieldStatus,
+  VersionSideSummary,
+} from '@/types/diff'
 
 const versionStatuses: VersionFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
-const leftVersion: VersionSideSummary = {
+const defaultLeftVersion: VersionSideSummary = {
   name: 'left-app.exe',
   fileType: 'Application',
   targetOs: 'Windows 32-bit',
   fileVersion: '1.4.2.0',
   productVersion: '1.5.0.0',
 }
-const rightVersion: VersionSideSummary = {
+const defaultRightVersion: VersionSideSummary = {
   name: 'right-app.exe',
   fileType: 'Application',
   targetOs: 'Windows 32-bit',
   fileVersion: '1.5.0.0',
   productVersion: '1.5.0.0',
 }
-const versionFields: VersionFieldRow[] = [
+const defaultVersionFields: VersionFieldRow[] = [
   {
     field: 'FileVersion',
     group: 'Fixed Info',
@@ -76,8 +65,20 @@ const versionFields: VersionFieldRow[] = [
     status: 'removed',
   },
 ]
+const leftPath = ref('C:/apps/left-app.exe')
+const rightPath = ref('C:/apps/right-app.exe')
+const leftVersion = ref<VersionSideSummary>(defaultLeftVersion)
+const rightVersion = ref<VersionSideSummary>(defaultRightVersion)
+const versionFields = ref<VersionFieldRow[]>(defaultVersionFields)
+const versionSummaryOverride = ref<Record<VersionFieldStatus, number> | null>(null)
+const loading = ref(false)
+const error = ref('')
 
 const versionSummary = computed<Record<VersionFieldStatus, number>>(() => {
+  if (versionSummaryOverride.value) {
+    return versionSummaryOverride.value
+  }
+
   const summary: Record<VersionFieldStatus, number> = {
     added: 0,
     removed: 0,
@@ -85,7 +86,7 @@ const versionSummary = computed<Record<VersionFieldStatus, number>>(() => {
     unchanged: 0,
   }
 
-  for (const field of versionFields) {
+  for (const field of versionFields.value) {
     summary[field.status] += 1
   }
 
@@ -106,6 +107,30 @@ function statusLabel(status: VersionFieldStatus): string {
 function valueText(value?: string): string {
   return value ?? '--'
 }
+
+function applyVersionResult(result: VersionCompareResponse): void {
+  leftVersion.value = result.left
+  rightVersion.value = result.right
+  versionFields.value = result.fields
+  versionSummaryOverride.value = result.summary
+}
+
+async function runVersionCompare(): Promise<void> {
+  loading.value = true
+  error.value = ''
+  try {
+    const result = await compareVersionFiles({
+      leftPath: leftPath.value,
+      rightPath: rightPath.value,
+    })
+
+    applyVersionResult(result)
+  } catch (event) {
+    error.value = String(event)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -120,6 +145,40 @@ function valueText(value?: string): string {
         <span>Right: {{ rightVersion.name }}</span>
       </div>
     </header>
+
+    <section class="version-path-panel">
+      <label>
+        <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
+        <input
+          v-model="leftPath"
+          type="text"
+          data-testid="version-left-path"
+        />
+      </label>
+      <label>
+        <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
+        <input
+          v-model="rightPath"
+          type="text"
+          data-testid="version-right-path"
+        />
+      </label>
+      <button
+        type="button"
+        data-testid="run-version-compare"
+        :disabled="loading"
+        @click="runVersionCompare"
+      >
+        {{ $t('ui.runDiff') }}
+      </button>
+    </section>
+    <p
+      v-if="error"
+      class="version-error"
+      data-testid="version-compare-error"
+    >
+      {{ error }}
+    </p>
 
     <section class="version-summary-grid">
       <article
@@ -252,6 +311,68 @@ h1 {
   color: var(--app-text-muted);
   font-size: 12px;
   text-align: right;
+}
+
+.version-path-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+}
+
+.version-path-panel label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.version-path-panel span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.version-path-panel input {
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.version-path-panel button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.version-path-panel button:hover {
+  border-color: var(--app-accent);
+}
+
+.version-path-panel button:disabled {
+  opacity: 0.65;
+}
+
+.version-error {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--app-danger);
+  border-radius: 6px;
+  background: var(--diff-deleted-bg);
+  color: var(--diff-deleted-fg);
+  font-size: 12px;
 }
 
 .version-summary-grid,
@@ -419,6 +540,7 @@ h1 {
 
 @media (width <= 820px) {
   .version-header,
+  .version-path-panel,
   .version-summary-grid,
   .version-side-grid {
     grid-template-columns: 1fr;

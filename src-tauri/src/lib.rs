@@ -7,6 +7,7 @@ pub fn run() {
             commands::compare_media_files,
             commands::compare_picture_files,
             commands::compare_table_csv,
+            commands::compare_version_files,
             commands::diff_text,
             commands::parse_text_patch,
             commands::read_text_file,

@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { compareMediaFiles, comparePictureFiles, compareTableCsv, saveTextFile } from './diff'
+import {
+  compareMediaFiles,
+  comparePictureFiles,
+  compareTableCsv,
+  compareVersionFiles,
+  saveTextFile,
+} from './diff'
 import { invoke } from '@tauri-apps/api/core'
 
 vi.mock('@tauri-apps/api/core', () => ({
@@ -158,5 +164,50 @@ describe('diff api', () => {
       rightPath: 'C:/images/right.png',
     })
     expect(result.statistics.differentPixels).toBe(1)
+  })
+
+  it('compares version files through the Tauri command contract', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      left: {
+        name: 'left.exe',
+        fileType: 'Application',
+        targetOs: 'Windows 32-bit',
+        fileVersion: '1.0.0.0',
+        productVersion: '1.0.0.0',
+      },
+      right: {
+        name: 'right.exe',
+        fileType: 'Application',
+        targetOs: 'Windows 32-bit',
+        fileVersion: '1.1.0.0',
+        productVersion: '1.0.0.0',
+      },
+      fields: [
+        {
+          field: 'FileVersion',
+          group: 'Fixed Info',
+          left: '1.0.0.0',
+          right: '1.1.0.0',
+          status: 'modified',
+        },
+      ],
+      summary: {
+        added: 0,
+        removed: 0,
+        modified: 1,
+        unchanged: 0,
+      },
+    })
+
+    const result = await compareVersionFiles({
+      leftPath: 'C:/apps/left.exe',
+      rightPath: 'C:/apps/right.exe',
+    })
+
+    expect(invoke).toHaveBeenCalledWith('compare_version_files', {
+      leftPath: 'C:/apps/left.exe',
+      rightPath: 'C:/apps/right.exe',
+    })
+    expect(result.fields[0]?.field).toBe('FileVersion')
   })
 })

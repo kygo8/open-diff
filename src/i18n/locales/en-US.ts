@@ -38,6 +38,15 @@ export const enUS: LanguagePack = {
     'error.picture.readFailed.message': 'Could not read picture metadata from {path}.',
     'error.picture.readFailed.suggestion': 'Use a supported PNG, JPEG, or WebP image file.',
     'error.picture.readFailed.title': 'Picture read failed',
+    'error.version.readFailed.message': 'Could not read version information from {path}.',
+    'error.version.readFailed.suggestion':
+      'Use a Windows executable or library file that contains readable version resources.',
+    'error.version.readFailed.title': 'Version read failed',
+    'error.version.unsupportedPlatform.message':
+      'Native version resource reading is only available on Windows.',
+    'error.version.unsupportedPlatform.suggestion':
+      'Run this comparison on Windows, or compare files that have exported metadata.',
+    'error.version.unsupportedPlatform.title': 'Unsupported platform',
     'ui.acceptBase': 'Accept Base',
     'ui.acceptLeft': 'Accept Left',
     'ui.acceptRight': 'Accept Right',

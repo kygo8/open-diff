@@ -16,6 +16,7 @@ members = [
   "crates/merge-core",
   "crates/media-core",
   "crates/policy-core",
+  "crates/performance-core",
   "crates/registry-core",
   "crates/report-core",
   "crates/remote-core",

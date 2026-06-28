@@ -1,6 +1,8 @@
 import { invoke } from '@tauri-apps/api/core'
 import type {
   FileStamp,
+  HexCompareRequest,
+  HexCompareResponse,
   MediaCompareRequest,
   MediaCompareResponse,
   PictureCompareRequest,
@@ -64,6 +66,15 @@ export function compareMediaFiles(request: MediaCompareRequest): Promise<MediaCo
   return invoke<MediaCompareResponse>('compare_media_files', {
     leftPath: request.leftPath,
     rightPath: request.rightPath,
+  })
+}
+
+export function compareHexFiles(request: HexCompareRequest): Promise<HexCompareResponse> {
+  return invoke<HexCompareResponse>('compare_hex_files', {
+    leftPath: request.leftPath,
+    rightPath: request.rightPath,
+    offset: request.offset,
+    length: request.length,
   })
 }
 

@@ -122,6 +122,31 @@ pub struct MediaCompareSummary {
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
+pub struct HexCompareResponse {
+    pub left: HexSideWindow,
+    pub right: HexSideWindow,
+    pub diff_ranges: Vec<hex_core::BinaryDiffRange>,
+    pub summary: HexCompareSummary,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct HexSideWindow {
+    pub path: String,
+    pub total_len: u64,
+    pub cells: Vec<hex_core::HexViewCell>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct HexCompareSummary {
+    pub left_bytes: u64,
+    pub right_bytes: u64,
+    pub different_ranges: usize,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct PictureCompareResponse {
     pub left: PictureSideSummary,
     pub right: PictureSideSummary,
@@ -404,6 +429,42 @@ pub fn compare_media_files(
             })
             .collect(),
         summary: media_compare_summary(diff.statistics),
+    })
+}
+
+#[tauri::command]
+pub fn compare_hex_files(
+    left_path: String,
+    right_path: String,
+    offset: Option<u64>,
+    length: Option<usize>,
+) -> Result<HexCompareResponse, AppErrorPayload> {
+    let left_bytes = fs::read(&left_path).map_err(|error| file_io_error(&left_path, error))?;
+    let right_bytes = fs::read(&right_path).map_err(|error| file_io_error(&right_path, error))?;
+    let diff = hex_core::scan_binary_differences(&left_bytes, &right_bytes);
+    let offset = offset.unwrap_or(0);
+    let length = length.unwrap_or(256);
+    let left_window = hex_core::build_hex_view_window(&left_bytes, offset, length, Some(&diff));
+    let right_window = hex_core::build_hex_view_window(&right_bytes, offset, length, Some(&diff));
+    let different_ranges = diff.ranges.len();
+
+    Ok(HexCompareResponse {
+        left: HexSideWindow {
+            path: left_path,
+            total_len: left_window.total_len,
+            cells: left_window.cells,
+        },
+        right: HexSideWindow {
+            path: right_path,
+            total_len: right_window.total_len,
+            cells: right_window.cells,
+        },
+        diff_ranges: diff.ranges,
+        summary: HexCompareSummary {
+            left_bytes: diff.left_len,
+            right_bytes: diff.right_len,
+            different_ranges,
+        },
     })
 }
 
@@ -1321,6 +1382,34 @@ mod tests {
                 .map(|side| side.data.as_str()),
             Some("light")
         );
+    }
+
+    #[test]
+    fn compare_hex_files_reads_binary_windows_and_marks_diffs() {
+        let root = unique_temp_dir("hex-command");
+        fs::create_dir_all(&root).expect("fixture directory should be created");
+        let left = root.join("left.bin");
+        let right = root.join("right.bin");
+
+        fs::write(&left, b"ABCD").expect("left fixture should be writable");
+        fs::write(&right, b"AXCD").expect("right fixture should be writable");
+
+        let response = compare_hex_files(
+            left.display().to_string(),
+            right.display().to_string(),
+            Some(0),
+            Some(16),
+        )
+        .expect("valid binary fixtures should compare");
+
+        assert_eq!(response.summary.left_bytes, 4);
+        assert_eq!(response.summary.right_bytes, 4);
+        assert_eq!(response.summary.different_ranges, 1);
+        assert_eq!(response.left.cells[1].hex, "42");
+        assert_eq!(response.right.cells[1].hex, "58");
+        assert!(response.left.cells[1].different);
+        assert!(response.right.cells[1].different);
+        assert_eq!(response.diff_ranges[0].offset, 1);
     }
 
     #[test]

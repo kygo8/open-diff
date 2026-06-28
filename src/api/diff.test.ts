@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  compareHexFiles,
   compareMediaFiles,
   comparePictureFiles,
   compareRegistryExports,
@@ -125,6 +126,48 @@ describe('diff api', () => {
       rightPath: 'C:/music/right.mp3',
     })
     expect(result.fields[0]?.status).toBe('modified')
+  })
+
+  it('compares hex files through the Tauri command contract', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      left: {
+        path: 'C:/bin/left.bin',
+        totalLen: 4,
+        cells: [
+          { offset: 0, byte: 65, hex: '41', ascii: 'A', different: false },
+          { offset: 1, byte: 66, hex: '42', ascii: 'B', different: true },
+        ],
+      },
+      right: {
+        path: 'C:/bin/right.bin',
+        totalLen: 4,
+        cells: [
+          { offset: 0, byte: 65, hex: '41', ascii: 'A', different: false },
+          { offset: 1, byte: 88, hex: '58', ascii: 'X', different: true },
+        ],
+      },
+      diffRanges: [{ offset: 1, leftBytes: [66], rightBytes: [88] }],
+      summary: {
+        leftBytes: 4,
+        rightBytes: 4,
+        differentRanges: 1,
+      },
+    })
+
+    const result = await compareHexFiles({
+      leftPath: 'C:/bin/left.bin',
+      rightPath: 'C:/bin/right.bin',
+      offset: 0,
+      length: 64,
+    })
+
+    expect(invoke).toHaveBeenCalledWith('compare_hex_files', {
+      leftPath: 'C:/bin/left.bin',
+      rightPath: 'C:/bin/right.bin',
+      offset: 0,
+      length: 64,
+    })
+    expect(result.right.cells[1]?.hex).toBe('58')
   })
 
   it('compares picture files through the Tauri command contract', async () => {

@@ -2241,6 +2241,7 @@ dependencies = [
  "cli-core",
  "diff-core",
  "file-core",
+ "hex-core",
  "image",
  "image-core",
  "media-core",

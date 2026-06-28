@@ -174,6 +174,44 @@ export interface MediaCompareResponse {
   summary: Record<MediaFieldStatus, number>
 }
 
+export interface HexCompareRequest {
+  leftPath: string
+  rightPath: string
+  offset?: number
+  length?: number
+}
+
+export interface HexViewCell {
+  offset: number
+  byte: number
+  hex: string
+  ascii: string
+  different: boolean
+}
+
+export interface HexSideWindow {
+  path: string
+  totalLen: number
+  cells: HexViewCell[]
+}
+
+export interface HexDiffRange {
+  offset: number
+  leftBytes: number[]
+  rightBytes: number[]
+}
+
+export interface HexCompareResponse {
+  left: HexSideWindow
+  right: HexSideWindow
+  diffRanges: HexDiffRange[]
+  summary: {
+    leftBytes: number
+    rightBytes: number
+    differentRanges: number
+  }
+}
+
 export interface PictureCompareRequest {
   leftPath: string
   rightPath: string

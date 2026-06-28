@@ -1,56 +1,102 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { compareHexFiles } from '@/api/diff'
+import type { HexCompareResponse, HexViewCell } from '@/types/diff'
 
 interface HexRow {
   offset: string
   hex: string
   ascii: string
-  cells: HexCell[]
+  cells: HexViewCell[]
 }
 
-interface HexCell {
-  offset: string
-  hex: string
-  different: boolean
+interface HexSideRows {
+  rows: HexRow[]
+  totalLen: number
+  path: string
 }
 
 const leftViewport = ref<HTMLElement | null>(null)
 const rightViewport = ref<HTMLElement | null>(null)
 const bytes = Array.from({ length: 64 }, (_, index) => 0x41 + (index % 26))
 const differentOffsets = new Set([1])
+const leftPath = ref('C:/bin/left.bin')
+const rightPath = ref('C:/bin/right.bin')
+const leftCells = ref<HexViewCell[]>(defaultCells(bytes))
+const rightCells = ref<HexViewCell[]>(defaultCells(bytes))
+const leftTotalLen = ref(bytes.length)
+const rightTotalLen = ref(bytes.length)
+const diffRangeCount = ref(1)
 const viewportWidth = ref(640)
 const diffOnly = ref(false)
+const loading = ref(false)
+const error = ref('')
 const bytesPerRow = computed(() => (viewportWidth.value < 480 ? 8 : 16))
 
-const hexRows = computed<HexRow[]>(() =>
-  Array.from({ length: Math.ceil(bytes.length / bytesPerRow.value) }, (_, rowIndex) => {
-    const rowOffset = rowIndex * bytesPerRow.value
-    const rowBytes = bytes.slice(rowOffset, rowOffset + bytesPerRow.value)
-
-    return {
-      offset: rowOffset.toString(16).toUpperCase().padStart(8, '0'),
-      hex: rowBytes.map((byte) => byte.toString(16).toUpperCase().padStart(2, '0')).join(' '),
-      ascii: rowBytes.map((byte) => String.fromCharCode(byte)).join(''),
-      cells: rowBytes.map((byte, byteIndex) => {
-        const absoluteOffset = rowOffset + byteIndex
-
-        return {
-          offset: absoluteOffset.toString(16).toUpperCase().padStart(8, '0'),
-          hex: byte.toString(16).toUpperCase().padStart(2, '0'),
-          different: differentOffsets.has(absoluteOffset),
-        }
-      }),
-    }
-  }),
+const leftHex = computed<HexSideRows>(() =>
+  buildHexRows(leftCells.value, bytesPerRow.value, leftTotalLen.value, leftPath.value),
+)
+const rightHex = computed<HexSideRows>(() =>
+  buildHexRows(rightCells.value, bytesPerRow.value, rightTotalLen.value, rightPath.value),
 )
 
-const visibleHexRows = computed(() => {
+const visibleLeftHexRows = computed(() => visibleRows(leftHex.value.rows))
+const visibleRightHexRows = computed(() => visibleRows(rightHex.value.rows))
+const visiblePairedHexRows = computed(() => {
+  const maxRows = Math.max(visibleLeftHexRows.value.length, visibleRightHexRows.value.length)
+
+  return Array.from({ length: maxRows }, (_, index) => ({
+    left: visibleLeftHexRows.value[index],
+    right: visibleRightHexRows.value[index],
+    key: visibleLeftHexRows.value[index]?.offset ?? `row-${String(index)}`,
+  }))
+})
+const loadedBytesLabel = computed(
+  () => `${String(leftTotalLen.value)} / ${String(rightTotalLen.value)}`,
+)
+
+function defaultCells(source: number[]): HexViewCell[] {
+  return source.map((byte, offset) => ({
+    offset,
+    byte,
+    hex: byte.toString(16).toUpperCase().padStart(2, '0'),
+    ascii: String.fromCharCode(byte),
+    different: differentOffsets.has(offset),
+  }))
+}
+
+function buildHexRows(
+  cells: HexViewCell[],
+  rowSize: number,
+  totalLen: number,
+  path: string,
+): HexSideRows {
+  const rows = Array.from({ length: Math.ceil(cells.length / rowSize) }, (_, rowIndex) => {
+    const rowCells = cells.slice(rowIndex * rowSize, rowIndex * rowSize + rowSize)
+    const rowOffset = rowCells[0]?.offset ?? rowIndex * rowSize
+
+    return {
+      offset: formatOffset(rowOffset),
+      hex: rowCells.map((cell) => cell.hex).join(' '),
+      ascii: rowCells.map((cell) => cell.ascii).join(''),
+      cells: rowCells,
+    }
+  })
+
+  return { rows, totalLen, path }
+}
+
+function visibleRows(rows: HexRow[]): HexRow[] {
   if (!diffOnly.value) {
-    return hexRows.value
+    return rows
   }
 
-  return hexRows.value.filter((row) => row.cells.some((cell) => cell.different))
-})
+  return rows.filter((row) => row.cells.some((cell) => cell.different))
+}
+
+function formatOffset(offset: number): string {
+  return offset.toString(16).toUpperCase().padStart(8, '0')
+}
 
 function syncHexScroll(source: 'left' | 'right', event: Event): void {
   const sourceElement = event.currentTarget
@@ -62,6 +108,35 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
 
   targetElement.scrollTop = sourceElement.scrollTop
 }
+
+function applyHexResult(result: HexCompareResponse): void {
+  leftPath.value = result.left.path
+  rightPath.value = result.right.path
+  leftCells.value = result.left.cells
+  rightCells.value = result.right.cells
+  leftTotalLen.value = result.summary.leftBytes
+  rightTotalLen.value = result.summary.rightBytes
+  diffRangeCount.value = result.summary.differentRanges
+}
+
+async function runHexCompare(): Promise<void> {
+  loading.value = true
+  error.value = ''
+  try {
+    const result = await compareHexFiles({
+      leftPath: leftPath.value,
+      rightPath: rightPath.value,
+      offset: 0,
+      length: 256,
+    })
+
+    applyHexResult(result)
+  } catch (event) {
+    error.value = String(event)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -72,12 +147,28 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
         <h1>{{ $t('ui.hexCompare') }}</h1>
       </div>
       <div class="hex-summary">
-        <strong>{{ bytes.length }}</strong>
+        <strong>{{ loadedBytesLabel }}</strong>
         <span>{{ $t('ui.bytesLoaded') }}</span>
       </div>
     </header>
 
     <section class="hex-wrap-controls">
+      <label>
+        <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
+        <input
+          v-model="leftPath"
+          type="text"
+          data-testid="hex-left-path"
+        />
+      </label>
+      <label>
+        <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
+        <input
+          v-model="rightPath"
+          type="text"
+          data-testid="hex-right-path"
+        />
+      </label>
       <label>
         <span>{{ $t('ui.viewportWidth') }}</span>
         <input
@@ -98,11 +189,28 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
         <span>{{ $t('ui.differencesOnly') }}</span>
       </label>
       <strong data-testid="hex-bytes-per-row">{{ bytesPerRow }} bytes / row</strong>
+      <strong data-testid="hex-diff-ranges">{{ diffRangeCount }} ranges</strong>
+      <button
+        type="button"
+        data-testid="run-hex-compare"
+        :disabled="loading"
+        @click="runHexCompare"
+      >
+        {{ $t('ui.runDiff') }}
+      </button>
     </section>
+
+    <p
+      v-if="error"
+      class="hex-error"
+      data-testid="hex-compare-error"
+    >
+      {{ error }}
+    </p>
 
     <section class="hex-pane-grid">
       <section class="hex-side">
-        <h2>{{ $t('ui.left') }}</h2>
+        <h2>{{ $t('ui.left') }} · {{ leftHex.path }}</h2>
         <div
           ref="leftViewport"
           class="hex-viewport"
@@ -110,8 +218,8 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
           @scroll="syncHexScroll('left', $event)"
         >
           <div
-            v-for="row in visibleHexRows"
-            :key="`left-${row.offset}`"
+            v-for="pair in visiblePairedHexRows"
+            :key="`left-${pair.key}`"
             class="hex-row"
             data-testid="hex-row"
           >
@@ -119,18 +227,20 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
               class="hex-offset"
               data-testid="hex-offset-pane"
             >
-              {{ row.offset }}
+              {{ pair.left?.offset ?? pair.right?.offset }}
             </span>
             <span
               class="hex-bytes"
               data-testid="hex-byte-pane"
             >
               <span
-                v-for="cell in row.cells"
+                v-for="cell in pair.left?.cells ?? []"
                 :key="cell.offset"
                 class="hex-byte"
                 :class="{ 'hex-byte-different': cell.different }"
-                :data-testid="cell.different ? `hex-byte-diff-${cell.offset}` : undefined"
+                :data-testid="
+                  cell.different ? `left-hex-byte-diff-${formatOffset(cell.offset)}` : undefined
+                "
               >
                 {{ cell.hex }}
               </span>
@@ -139,14 +249,14 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
               class="hex-ascii"
               data-testid="hex-ascii-pane"
             >
-              {{ row.ascii }}
+              {{ pair.left?.ascii ?? '' }}
             </span>
           </div>
         </div>
       </section>
 
       <section class="hex-side">
-        <h2>{{ $t('ui.right') }}</h2>
+        <h2>{{ $t('ui.right') }} · {{ rightHex.path }}</h2>
         <div
           ref="rightViewport"
           class="hex-viewport"
@@ -154,13 +264,25 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
           @scroll="syncHexScroll('right', $event)"
         >
           <div
-            v-for="row in visibleHexRows"
-            :key="`right-${row.offset}`"
+            v-for="pair in visiblePairedHexRows"
+            :key="`right-${pair.key}`"
             class="hex-row"
           >
-            <span class="hex-offset">{{ row.offset }}</span>
-            <span class="hex-bytes">{{ row.hex }}</span>
-            <span class="hex-ascii">{{ row.ascii }}</span>
+            <span class="hex-offset">{{ pair.right?.offset ?? pair.left?.offset }}</span>
+            <span class="hex-bytes">
+              <span
+                v-for="cell in pair.right?.cells ?? []"
+                :key="cell.offset"
+                class="hex-byte"
+                :class="{ 'hex-byte-different': cell.different }"
+                :data-testid="
+                  cell.different ? `right-hex-byte-diff-${formatOffset(cell.offset)}` : undefined
+                "
+              >
+                {{ cell.hex }}
+              </span>
+            </span>
+            <span class="hex-ascii">{{ pair.right?.ascii ?? '' }}</span>
           </div>
         </div>
       </section>

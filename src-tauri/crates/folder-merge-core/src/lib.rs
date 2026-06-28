@@ -59,6 +59,31 @@ pub struct FolderMergeAlignmentRow {
     pub right: Option<FolderMergeEntry>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergePlan {
+    pub actions: Vec<FolderMergeAction>,
+    pub conflicts: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergeAction {
+    pub relative_path: String,
+    pub kind: FolderMergeActionKind,
+    pub conflict: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FolderMergeActionKind {
+    KeepOutput,
+    CopyLeftToOutput,
+    CopyRightToOutput,
+    DeleteOutput,
+    MarkConflict,
+}
+
 impl FolderMergeSide {
     pub fn new(role: FolderMergeRole, root_path: impl Into<String>) -> Self {
         Self {
@@ -107,6 +132,16 @@ pub fn align_folder_merge_entries(document: &FolderMergeDocument) -> Vec<FolderM
     rows.into_values().collect()
 }
 
+pub fn build_folder_merge_plan(document: &FolderMergeDocument) -> FolderMergePlan {
+    let actions = align_folder_merge_entries(document)
+        .into_iter()
+        .map(action_for_row)
+        .collect::<Vec<_>>();
+    let conflicts = actions.iter().filter(|action| action.conflict).count();
+
+    FolderMergePlan { actions, conflicts }
+}
+
 fn collect_side_entries(
     side: &FolderMergeSide,
     apply: impl Fn(&mut FolderMergeAlignmentRow, FolderMergeEntry),
@@ -124,6 +159,31 @@ fn collect_side_entries(
             });
 
         apply(row, entry.clone());
+    }
+}
+
+fn action_for_row(row: FolderMergeAlignmentRow) -> FolderMergeAction {
+    let kind = match (&row.base, &row.left, &row.right) {
+        (None, Some(_), None) => FolderMergeActionKind::CopyLeftToOutput,
+        (None, None, Some(_)) => FolderMergeActionKind::CopyRightToOutput,
+        (None, Some(left), Some(right)) if left.kind == right.kind => {
+            FolderMergeActionKind::CopyLeftToOutput
+        }
+        (Some(_), None, Some(_)) => FolderMergeActionKind::DeleteOutput,
+        (Some(_), Some(_), None) => FolderMergeActionKind::DeleteOutput,
+        (Some(base), Some(left), Some(right))
+            if base.kind == left.kind && base.kind == right.kind =>
+        {
+            FolderMergeActionKind::KeepOutput
+        }
+        _ => FolderMergeActionKind::MarkConflict,
+    };
+    let conflict = kind == FolderMergeActionKind::MarkConflict;
+
+    FolderMergeAction {
+        relative_path: row.relative_path,
+        kind,
+        conflict,
     }
 }
 
@@ -194,6 +254,59 @@ mod tests {
         assert!(rows[4].base.is_some());
         assert!(rows[4].left.is_some());
         assert!(rows[4].right.is_some());
+    }
+
+    #[test]
+    fn plans_non_conflicting_folder_structure_changes() {
+        let document = FolderMergeDocument {
+            base: side(
+                FolderMergeRole::Base,
+                "D:/base",
+                vec![
+                    entry("same.txt", FolderMergeEntryKind::File),
+                    entry("right-delete.txt", FolderMergeEntryKind::File),
+                ],
+            ),
+            left: side(
+                FolderMergeRole::Left,
+                "D:/left",
+                vec![
+                    entry("same.txt", FolderMergeEntryKind::File),
+                    entry("left-add.txt", FolderMergeEntryKind::File),
+                    entry("right-delete.txt", FolderMergeEntryKind::File),
+                ],
+            ),
+            right: side(
+                FolderMergeRole::Right,
+                "D:/right",
+                vec![entry("same.txt", FolderMergeEntryKind::File)],
+            ),
+            output: FolderMergeSide::new(FolderMergeRole::Output, "D:/out"),
+        };
+
+        let plan = build_folder_merge_plan(&document);
+
+        assert_eq!(plan.conflicts, 0);
+        assert_eq!(
+            plan.actions,
+            vec![
+                FolderMergeAction {
+                    relative_path: "left-add.txt".to_owned(),
+                    kind: FolderMergeActionKind::CopyLeftToOutput,
+                    conflict: false,
+                },
+                FolderMergeAction {
+                    relative_path: "right-delete.txt".to_owned(),
+                    kind: FolderMergeActionKind::DeleteOutput,
+                    conflict: false,
+                },
+                FolderMergeAction {
+                    relative_path: "same.txt".to_owned(),
+                    kind: FolderMergeActionKind::KeepOutput,
+                    conflict: false,
+                },
+            ]
+        );
     }
 
     fn side(

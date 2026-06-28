@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 type MergePaneId = 'left' | 'base' | 'right' | 'output'
+type MergeSource = 'left' | 'base' | 'right'
 
 interface MergePane {
   id: MergePaneId
@@ -16,9 +17,30 @@ interface MergeConflict {
   base: string
   left: string
   right: string
+  resolved: boolean
 }
 
-const panes: MergePane[] = [
+const initialOutputLines = [
+  'export const mode = "fast"',
+  '<<<<<<< LEFT',
+  'timeout = 45',
+  '=======',
+  'timeout = 60',
+  '>>>>>>> RIGHT',
+  'retry = true',
+]
+const outputLines = ref([...initialOutputLines])
+const conflicts = ref<MergeConflict[]>([
+  {
+    line: 2,
+    title: 'Timeout changed on both sides',
+    base: 'timeout = 30',
+    left: 'timeout = 45',
+    right: 'timeout = 60',
+    resolved: false,
+  },
+])
+const panes = computed<MergePane[]>(() => [
   {
     id: 'left',
     title: 'Left',
@@ -41,33 +63,30 @@ const panes: MergePane[] = [
     id: 'output',
     title: 'Output',
     subtitle: 'Merge result',
-    lines: [
-      'export const mode = "fast"',
-      '<<<<<<< LEFT',
-      'timeout = 45',
-      '=======',
-      'timeout = 60',
-      '>>>>>>> RIGHT',
-      'retry = true',
-    ],
+    lines: outputLines.value,
   },
-]
-
-const conflicts: MergeConflict[] = [
-  {
-    line: 2,
-    title: 'Timeout changed on both sides',
-    base: 'timeout = 30',
-    left: 'timeout = 45',
-    right: 'timeout = 60',
-  },
-]
+])
+const unresolvedConflicts = computed(() => conflicts.value.filter((conflict) => !conflict.resolved))
+const currentConflict = computed<MergeConflict | undefined>(() => unresolvedConflicts.value.at(0))
 
 const conflictStatus = computed(() => {
-  const count = conflicts.length
+  const count = unresolvedConflicts.value.length
 
   return `${String(count)} ${count === 1 ? 'conflict' : 'conflicts'}`
 })
+
+function acceptConflict(source: MergeSource): void {
+  const conflict = currentConflict.value
+
+  if (!conflict) {
+    return
+  }
+
+  outputLines.value = ['export const mode = "fast"', conflict[source], 'retry = true']
+  conflicts.value = conflicts.value.map((item) =>
+    item.line === conflict.line ? { ...item, resolved: true } : item,
+  )
+}
 
 function lineClass(line: string, paneId: MergePaneId): string {
   if (paneId === 'output' && /^(<{7}|={7}|>{7})/.test(line)) {
@@ -138,13 +157,40 @@ function lineClass(line: string, paneId: MergePaneId): string {
         data-testid="merge-conflict-list"
       >
         <li
-          v-for="conflict in conflicts"
+          v-for="conflict in unresolvedConflicts"
           :key="conflict.line"
         >
           <strong>Line {{ conflict.line }}: {{ conflict.title }}</strong>
-          <span>Base: {{ conflict.base }}</span>
-          <span>Left: {{ conflict.left }}</span>
-          <span>Right: {{ conflict.right }}</span>
+          <div class="conflict-source">
+            <span>Left: {{ conflict.left }}</span>
+            <button
+              type="button"
+              data-testid="accept-left-conflict"
+              @click="acceptConflict('left')"
+            >
+              Accept Left
+            </button>
+          </div>
+          <div class="conflict-source">
+            <span>Base: {{ conflict.base }}</span>
+            <button
+              type="button"
+              data-testid="accept-base-conflict"
+              @click="acceptConflict('base')"
+            >
+              Accept Base
+            </button>
+          </div>
+          <div class="conflict-source">
+            <span>Right: {{ conflict.right }}</span>
+            <button
+              type="button"
+              data-testid="accept-right-conflict"
+              @click="acceptConflict('right')"
+            >
+              Accept Right
+            </button>
+          </div>
         </li>
       </ul>
     </section>
@@ -328,6 +374,28 @@ function lineClass(line: string, paneId: MergePaneId): string {
 .conflict-list strong {
   color: var(--app-text);
   font-family: inherit;
+}
+
+.conflict-source {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.conflict-source button {
+  justify-self: start;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.conflict-source button:hover {
+  background: var(--app-bg);
 }
 
 @media (width <= 1100px) {

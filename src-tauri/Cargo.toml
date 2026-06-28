@@ -5,6 +5,7 @@ members = [
   "crates/diff-core",
   "crates/document-core",
   "crates/file-core",
+  "crates/folder-merge-core",
   "crates/format-core",
   "crates/folder-core",
   "crates/hex-core",

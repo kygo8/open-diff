@@ -879,6 +879,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "folder-merge-core"
+version = "1.0.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "foldhash"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

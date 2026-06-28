@@ -20,6 +20,10 @@ pub enum CliCommand {
         executable_path: String,
         scope: GitConfigScope,
     },
+    GitMergetoolConfig {
+        executable_path: String,
+        scope: GitConfigScope,
+    },
     CompareFiles {
         left: String,
         right: String,
@@ -154,6 +158,7 @@ where
         "--help" | "-h" | "help" => Ok(help_invocation()),
         "--shell-compare" | "shell-compare" => parse_shell_compare(args.collect()),
         "git-difftool-config" => parse_git_difftool_config(args.collect()),
+        "git-mergetool-config" => parse_git_mergetool_config(args.collect()),
         "compare" => parse_compare_files(args.collect()),
         "compare-folders" => parse_compare_folders(args.collect()),
         "open-session" => parse_open_session(args.collect()),
@@ -352,6 +357,41 @@ pub fn build_git_difftool_config(
     })
 }
 
+pub fn build_git_mergetool_config(
+    executable_path: impl AsRef<str>,
+    scope: GitConfigScope,
+) -> Result<GitToolConfigDocument, CliRuntimeError> {
+    let executable_path = executable_path.as_ref().trim();
+
+    if executable_path.is_empty() {
+        return Err(CliRuntimeError {
+            message: "git mergetool executable path is required".to_owned(),
+            exit_code: CliExitCode::UsageError,
+        });
+    }
+
+    let scope_flag = git_config_scope_flag(scope);
+    let merge_command = format!(
+        "{} merge-text \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"",
+        quote_executable_for_git_command(executable_path)
+    );
+
+    Ok(GitToolConfigDocument {
+        tool_name: "open-diff".to_owned(),
+        description: "Git mergetool configuration for Open Diff text merges.".to_owned(),
+        commands: vec![
+            format!("git config {scope_flag} merge.tool open-diff"),
+            format!(
+                "git config {scope_flag} mergetool.open-diff.cmd {}",
+                quote_shell_argument(&merge_command)
+            ),
+            format!("git config {scope_flag} mergetool.open-diff.prompt false"),
+            format!("git config {scope_flag} mergetool.open-diff.trustExitCode true"),
+            format!("git config {scope_flag} mergetool.open-diff.keepBackup false"),
+        ],
+    })
+}
+
 fn help_invocation() -> CliInvocation {
     CliInvocation {
         command: CliCommand::Help,
@@ -372,7 +412,43 @@ fn parse_shell_compare(args: Vec<String>) -> Result<CliInvocation, CliParseError
     })
 }
 
+fn parse_git_mergetool_config(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    let (executable_path, scope) = parse_git_tool_config_args(
+        args,
+        "git-mergetool-config",
+        "git-mergetool-config requires EXECUTABLE_PATH",
+    )?;
+
+    Ok(CliInvocation {
+        command: CliCommand::GitMergetoolConfig {
+            executable_path,
+            scope,
+        },
+        exit_code: CliExitCode::Success,
+    })
+}
+
 fn parse_git_difftool_config(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    let (executable_path, scope) = parse_git_tool_config_args(
+        args,
+        "git-difftool-config",
+        "git-difftool-config requires EXECUTABLE_PATH",
+    )?;
+
+    Ok(CliInvocation {
+        command: CliCommand::GitDifftoolConfig {
+            executable_path,
+            scope,
+        },
+        exit_code: CliExitCode::Success,
+    })
+}
+
+fn parse_git_tool_config_args(
+    args: Vec<String>,
+    command_name: &str,
+    missing_path_message: &str,
+) -> Result<(String, GitConfigScope), CliParseError> {
     let mut scope = GitConfigScope::Global;
     let mut paths = Vec::new();
 
@@ -382,7 +458,7 @@ fn parse_git_difftool_config(args: Vec<String>) -> Result<CliInvocation, CliPars
             Some("local") => scope = GitConfigScope::Local,
             Some(unknown) => {
                 return Err(usage_error(format!(
-                    "unknown git-difftool-config switch: {unknown}"
+                    "unknown {command_name} switch: {unknown}"
                 )))
             }
             None => paths.push(arg),
@@ -390,16 +466,10 @@ fn parse_git_difftool_config(args: Vec<String>) -> Result<CliInvocation, CliPars
     }
 
     if paths.len() != 1 {
-        return Err(usage_error("git-difftool-config requires EXECUTABLE_PATH"));
+        return Err(usage_error(missing_path_message));
     }
 
-    Ok(CliInvocation {
-        command: CliCommand::GitDifftoolConfig {
-            executable_path: paths[0].clone(),
-            scope,
-        },
-        exit_code: CliExitCode::Success,
-    })
+    Ok((paths[0].clone(), scope))
 }
 
 fn parse_compare_files(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
@@ -703,6 +773,58 @@ mod tests {
         assert_eq!(
             local.command,
             CliCommand::GitDifftoolConfig {
+                executable_path: "D:/tools/open-diff-cli.exe".to_owned(),
+                scope: GitConfigScope::Local,
+            }
+        );
+    }
+
+    #[test]
+    fn builds_git_mergetool_configuration_commands() {
+        let invocation = parse_cli_args([
+            "open-diff-cli",
+            "git-mergetool-config",
+            "C:/Program Files/Open Diff/open-diff-cli.exe",
+        ])
+        .expect("git mergetool config should parse");
+
+        assert_eq!(
+            invocation.command,
+            CliCommand::GitMergetoolConfig {
+                executable_path: "C:/Program Files/Open Diff/open-diff-cli.exe".to_owned(),
+                scope: GitConfigScope::Global,
+            }
+        );
+
+        let config = build_git_mergetool_config(
+            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            GitConfigScope::Global,
+        )
+        .expect("config should build");
+
+        assert_eq!(config.tool_name, "open-diff");
+        assert!(config.description.contains("Git mergetool"));
+        assert_eq!(
+            config.commands,
+            vec![
+                "git config --global merge.tool open-diff".to_owned(),
+                "git config --global mergetool.open-diff.cmd '\"C:/Program Files/Open Diff/open-diff-cli.exe\" merge-text \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"'".to_owned(),
+                "git config --global mergetool.open-diff.prompt false".to_owned(),
+                "git config --global mergetool.open-diff.trustExitCode true".to_owned(),
+                "git config --global mergetool.open-diff.keepBackup false".to_owned(),
+            ]
+        );
+
+        let local = parse_cli_args([
+            "open-diff-cli",
+            "git-mergetool-config",
+            "--local",
+            "D:/tools/open-diff-cli.exe",
+        ])
+        .expect("local git mergetool config should parse");
+        assert_eq!(
+            local.command,
+            CliCommand::GitMergetoolConfig {
                 executable_path: "D:/tools/open-diff-cli.exe".to_owned(),
                 scope: GitConfigScope::Local,
             }

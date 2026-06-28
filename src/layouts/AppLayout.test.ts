@@ -1,7 +1,8 @@
-import { mount } from '@vue/test-utils'
+import { mount, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import AppLayout from './AppLayout.vue'
+import { createAppI18n, installI18n } from '@/i18n'
 import { useSettingsStore } from '@/stores/settings'
 
 const push = vi.fn()
@@ -19,17 +20,7 @@ describe('AppLayout command palette', () => {
   })
 
   it('searches and executes navigation commands', async () => {
-    const wrapper = mount(AppLayout, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountAppLayout()
 
     await wrapper.find('[data-testid="open-command-palette"]').trigger('click')
     await wrapper.find('[data-testid="command-search"]').setValue('text')
@@ -39,17 +30,7 @@ describe('AppLayout command palette', () => {
   })
 
   it('opens folder compare from the toolbar', async () => {
-    const wrapper = mount(AppLayout, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountAppLayout()
 
     await wrapper.find('[data-testid="open-folder-compare"]').trigger('click')
 
@@ -57,17 +38,7 @@ describe('AppLayout command palette', () => {
   })
 
   it('executes theme toggle command', async () => {
-    const wrapper = mount(AppLayout, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountAppLayout()
     const settings = useSettingsStore()
 
     expect(settings.theme).toBe('dark')
@@ -79,3 +50,24 @@ describe('AppLayout command palette', () => {
     expect(settings.theme).toBe('light')
   })
 })
+
+function mountAppLayout(): VueWrapper {
+  return mount(AppLayout, {
+    global: {
+      plugins: [
+        {
+          install(app) {
+            installI18n(app, createAppI18n('en-US'))
+          },
+        },
+      ],
+      stubs: {
+        NButton: {
+          props: ['disabled'],
+          emits: ['click'],
+          template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+        },
+      },
+    },
+  })
+}

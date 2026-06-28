@@ -31,4 +31,19 @@ describe('useSettingsStore', () => {
     expect(store.removeSharedSessionPath('missing')).toBe(false)
     expect(store.sharedSessionPaths).toEqual(['C:/team/two.open-diff-session.json'])
   })
+
+  it('stores locale preferences and falls back from unsupported values', () => {
+    localStorage.setItem('open-diff-locale', 'zh-CN')
+
+    const store = useSettingsStore()
+
+    expect(store.locale).toBe('zh-CN')
+
+    expect(store.setLocale('fr-FR')).toBe(true)
+    expect(store.locale).toBe('fr-FR')
+    expect(localStorage.getItem('open-diff-locale')).toBe('fr-FR')
+
+    expect(store.setLocale('invalid-locale')).toBe(false)
+    expect(store.locale).toBe('fr-FR')
+  })
 })

@@ -3,12 +3,14 @@ import { computed, ref } from 'vue'
 import { useRouter, RouterView } from 'vue-router'
 import { FileText, FolderTree, Search, Settings, SunMoon } from '@lucide/vue'
 import { commandRegistry, filterCommands } from '@/app/commandRegistry'
+import { useI18n } from '@/i18n'
 import { useSettingsStore } from '@/stores/settings'
 import { useTabsStore } from '@/stores/tabs'
 import type { CommandId } from '@/app/commandRegistry'
 import type { AppTab } from '@/stores/tabs'
 
 const router = useRouter()
+const { t } = useI18n()
 const settings = useSettingsStore()
 const tabs = useTabsStore()
 const commandPaletteOpen = ref(false)
@@ -58,7 +60,7 @@ function executeCommand(commandId: CommandId): void {
         class="brand"
         @click="navigate('/', 'Home')"
       >
-        Open Diff
+        {{ t('app.brand') }}
       </button>
       <nav class="toolbar">
         <NButton
@@ -124,8 +126,8 @@ function executeCommand(commandId: CommandId): void {
     </main>
 
     <footer class="status-bar">
-      <span>Ready</span>
-      <span>Local-first comparison workspace</span>
+      <span>{{ t('app.ready') }}</span>
+      <span>{{ t('app.workspaceStatus') }}</span>
     </footer>
 
     <div
@@ -138,7 +140,7 @@ function executeCommand(commandId: CommandId): void {
           v-model="commandQuery"
           data-testid="command-search"
           type="search"
-          placeholder="Search commands"
+          :placeholder="t('command.searchPlaceholder')"
         />
         <div class="command-list">
           <button

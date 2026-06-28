@@ -1,11 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import type { SelectOption } from 'naive-ui'
 import { useSettingsStore } from '@/stores/settings'
 
 const settings = useSettingsStore()
 const router = useRouter()
 const sharedSessionPathDraft = ref('')
+const localeOptions: SelectOption[] = [
+  { label: 'English', value: 'en-US' },
+  { label: '简体中文', value: 'zh-CN' },
+  { label: '繁體中文', value: 'zh-TW' },
+  { label: 'Deutsch', value: 'de-DE' },
+  { label: 'Français', value: 'fr-FR' },
+  { label: 'Español', value: 'es-ES' },
+  { label: '한국어', value: 'ko-KR' },
+]
 
 function openFileFormats(): void {
   void router.push('/settings/file-formats')
@@ -19,6 +29,10 @@ function addSharedSessionPath(): void {
   if (settings.addSharedSessionPath(sharedSessionPathDraft.value)) {
     sharedSessionPathDraft.value = ''
   }
+}
+
+function updateLocale(value: string): void {
+  settings.setLocale(value)
 }
 </script>
 
@@ -35,6 +49,16 @@ function addSharedSessionPath(): void {
           <NRadioButton value="dark">Dark</NRadioButton>
           <NRadioButton value="light">Light</NRadioButton>
         </NRadioGroup>
+      </NSpace>
+      <NSpace align="center">
+        <span>Language</span>
+        <NSelect
+          :value="settings.locale"
+          class="locale-select"
+          data-testid="locale-select"
+          :options="localeOptions"
+          @update:value="updateLocale"
+        />
       </NSpace>
     </NCard>
 
@@ -150,6 +174,10 @@ h1 {
 .settings-row span {
   color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.locale-select {
+  width: 180px;
 }
 
 .shared-session-config {

@@ -1,14 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
+import { fallbackLocale, isSupportedLocale, type SupportedLocale } from '@/i18n/core'
 
 export type ThemeMode = 'light' | 'dark'
 
 const sharedSessionPathsStorageKey = 'open-diff-shared-session-paths'
+const localeStorageKey = 'open-diff-locale'
 
 export const useSettingsStore = defineStore('settings', () => {
   const theme = ref<ThemeMode>(
     (localStorage.getItem('open-diff-theme') as ThemeMode | null) ?? 'dark',
   )
+  const locale = ref<SupportedLocale>(loadLocale())
   const sharedSessionPaths = ref<string[]>(loadSharedSessionPaths())
 
   watch(
@@ -26,6 +29,15 @@ export const useSettingsStore = defineStore('settings', () => {
       localStorage.setItem(sharedSessionPathsStorageKey, JSON.stringify(value))
     },
     { deep: true, flush: 'sync' },
+  )
+
+  watch(
+    locale,
+    (value) => {
+      localStorage.setItem(localeStorageKey, value)
+      document.documentElement.lang = value
+    },
+    { immediate: true, flush: 'sync' },
   )
 
   function toggleTheme(): void {
@@ -54,8 +66,36 @@ export const useSettingsStore = defineStore('settings', () => {
     return true
   }
 
-  return { theme, sharedSessionPaths, toggleTheme, addSharedSessionPath, removeSharedSessionPath }
+  function setLocale(nextLocale: string): boolean {
+    if (!isSupportedLocale(nextLocale)) {
+      return false
+    }
+
+    locale.value = nextLocale
+
+    return true
+  }
+
+  return {
+    theme,
+    locale,
+    sharedSessionPaths,
+    toggleTheme,
+    setLocale,
+    addSharedSessionPath,
+    removeSharedSessionPath,
+  }
 })
+
+function loadLocale(): SupportedLocale {
+  const storedLocale = localStorage.getItem(localeStorageKey)
+
+  if (!storedLocale || !isSupportedLocale(storedLocale)) {
+    return fallbackLocale
+  }
+
+  return storedLocale
+}
 
 function loadSharedSessionPaths(): string[] {
   try {

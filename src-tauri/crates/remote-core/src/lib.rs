@@ -308,6 +308,48 @@ impl MemoryFtpProvider {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum FtpsTlsMode {
+    Explicit,
+    Implicit,
+}
+
+#[derive(Debug, Clone)]
+pub struct MemoryFtpsProvider {
+    profile: RemoteProfile,
+    tls_mode: FtpsTlsMode,
+    files: BTreeMap<String, Vec<u8>>,
+}
+
+impl MemoryFtpsProvider {
+    pub fn connect(profile: RemoteProfile) -> RemoteProviderResult<Self> {
+        if profile.protocol != RemoteProtocol::Ftps {
+            return Err(RemoteProviderError::UnsupportedProtocol(profile.protocol));
+        }
+
+        let tls_mode = profile
+            .options
+            .get("tlsMode")
+            .filter(|mode| mode.eq_ignore_ascii_case("implicit"))
+            .map(|_| FtpsTlsMode::Implicit)
+            .unwrap_or(FtpsTlsMode::Explicit);
+
+        Ok(Self {
+            profile,
+            tls_mode,
+            files: BTreeMap::new(),
+        })
+    }
+
+    pub fn profile(&self) -> &RemoteProfile {
+        &self.profile
+    }
+
+    pub fn tls_mode(&self) -> FtpsTlsMode {
+        self.tls_mode.clone()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct MemorySftpProvider {
     profile: RemoteProfile,
@@ -499,6 +541,28 @@ fn rename_memory_remote_file(
 }
 
 impl RemoteFileProvider for MemoryFtpProvider {
+    fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
+        list_memory_remote_entries(&self.files, path)
+    }
+
+    fn download(&self, path: &str) -> RemoteProviderResult<Vec<u8>> {
+        download_memory_remote_file(&self.files, path)
+    }
+
+    fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()> {
+        upload_memory_remote_file(&mut self.files, path, bytes)
+    }
+
+    fn delete(&mut self, path: &str) -> RemoteProviderResult<()> {
+        delete_memory_remote_file(&mut self.files, path)
+    }
+
+    fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
+        rename_memory_remote_file(&mut self.files, from, to)
+    }
+}
+
+impl RemoteFileProvider for MemoryFtpsProvider {
     fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
         list_memory_remote_entries(&self.files, path)
     }
@@ -758,6 +822,63 @@ mod tests {
         let credential = RemoteCredential::username_password("deploy", "correct-horse");
 
         let error = MemorySftpProvider::connect(profile, credential).unwrap_err();
+
+        assert!(matches!(
+            error,
+            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::Ftp)
+        ));
+    }
+
+    #[test]
+    fn ftps_provider_connects_with_explicit_tls_and_file_operations() {
+        let profile = RemoteProfile::new(
+            "release-ftps",
+            "Release FTPS",
+            RemoteProtocol::Ftps,
+            RemoteEndpoint::new("ftps.example.com")
+                .with_port(21)
+                .with_root_path("/secure"),
+            CredentialReference::profile_store("release-ftps"),
+        )
+        .with_option("tlsMode", "explicit");
+        let mut provider = MemoryFtpsProvider::connect(profile).unwrap();
+
+        provider
+            .upload("/secure/app.zip", b"secure".to_vec())
+            .unwrap();
+
+        assert_eq!(provider.tls_mode(), FtpsTlsMode::Explicit);
+        assert_eq!(provider.download("/secure/app.zip").unwrap(), b"secure");
+        assert_eq!(provider.list("/secure").unwrap()[0].path, "/secure/app.zip");
+    }
+
+    #[test]
+    fn ftps_provider_supports_implicit_tls_mode() {
+        let profile = RemoteProfile::new(
+            "legacy-ftps",
+            "Legacy FTPS",
+            RemoteProtocol::Ftps,
+            RemoteEndpoint::new("legacy.example.com").with_port(990),
+            CredentialReference::profile_store("legacy-ftps"),
+        )
+        .with_option("tlsMode", "implicit");
+
+        let provider = MemoryFtpsProvider::connect(profile).unwrap();
+
+        assert_eq!(provider.tls_mode(), FtpsTlsMode::Implicit);
+    }
+
+    #[test]
+    fn ftps_provider_rejects_non_ftps_profiles() {
+        let profile = RemoteProfile::new(
+            "release-ftp",
+            "Release FTP",
+            RemoteProtocol::Ftp,
+            RemoteEndpoint::new("ftp.example.com"),
+            CredentialReference::profile_store("release-ftp"),
+        );
+
+        let error = MemoryFtpsProvider::connect(profile).unwrap_err();
 
         assert!(matches!(
             error,

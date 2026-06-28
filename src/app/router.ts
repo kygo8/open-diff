@@ -8,6 +8,7 @@ import FolderSyncView from '@/views/FolderSyncView.vue'
 import TableCompareView from '@/views/TableCompareView.vue'
 import HexCompareView from '@/views/HexCompareView.vue'
 import PictureCompareView from '@/views/PictureCompareView.vue'
+import RegistryCompareView from '@/views/RegistryCompareView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import FileFormatView from '@/views/FileFormatView.vue'
 import RemoteProfileView from '@/views/RemoteProfileView.vue'
@@ -24,6 +25,7 @@ export const router = createRouter({
     { path: '/compare/table', name: 'table-compare', component: TableCompareView },
     { path: '/compare/hex', name: 'hex-compare', component: HexCompareView },
     { path: '/compare/picture', name: 'picture-compare', component: PictureCompareView },
+    { path: '/compare/registry', name: 'registry-compare', component: RegistryCompareView },
     { path: '/settings', name: 'settings', component: SettingsView },
     { path: '/settings/file-formats', name: 'file-formats', component: FileFormatView },
     { path: '/settings/remote-profiles', name: 'remote-profiles', component: RemoteProfileView },

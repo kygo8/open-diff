@@ -19,4 +19,10 @@ describe('router', () => {
 
     expect(route?.name).toBe('remote-profiles')
   })
+
+  it('registers the registry compare route', () => {
+    const route = router.getRoutes().find((item) => item.path === '/compare/registry')
+
+    expect(route?.name).toBe('registry-compare')
+  })
 })

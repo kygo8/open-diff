@@ -95,7 +95,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Registry Compare',
     summary: 'Registry and .reg diff',
     priority: 'P3',
-    implemented: false,
+    implemented: true,
+    route: '/compare/registry',
   },
   {
     type: 'media-compare',

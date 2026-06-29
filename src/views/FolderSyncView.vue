@@ -6,6 +6,8 @@ import type {
   FolderSyncStrategy,
 } from '@/types/sync'
 import { computed, ref } from 'vue'
+import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 
 interface SyncStrategyOption {
   value: FolderSyncStrategy
@@ -105,122 +107,155 @@ function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreview
 </script>
 
 <template>
-  <section class="folder-sync-view">
-    <header class="folder-sync-header">
-      <div>
-        <p class="eyebrow">{{ $t('ui.folderSync') }}</p>
-        <h1>{{ $t('ui.folderSync') }}</h1>
-      </div>
-      <div class="sync-progress">
-        <strong>{{ completedOperations }} / {{ previewRows.length }}</strong>
-        <span>{{ $t('ui.completed') }}</span>
-      </div>
-    </header>
-
-    <section class="sync-settings">
-      <label>
-        <span>{{ $t('ui.leftFolder') }}</span>
-        <input
-          v-model="leftPath"
-          data-testid="folder-sync-left-path"
-        />
-      </label>
-      <label>
-        <span>{{ $t('ui.rightFolder') }}</span>
-        <input
-          v-model="rightPath"
-          data-testid="folder-sync-right-path"
-        />
-      </label>
-      <label>
-        <span>{{ $t('ui.strategy') }}</span>
-        <select
-          v-model="selectedStrategy"
-          data-testid="folder-sync-strategy"
-        >
-          <option
-            v-for="option in strategyOptions"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-      </label>
-      <div class="sync-setting-actions">
-        <NButton
-          size="small"
-          secondary
-          data-testid="folder-sync-preview"
-          :disabled="previewLoading || !leftPath || !rightPath"
-          :loading="previewLoading"
-          @click="previewSync"
-          >{{ $t('ui.preview') }}</NButton
-        >
-        <NButton
-          size="small"
-          type="primary"
-          data-testid="folder-sync-run"
-          :disabled="!canRunSync"
-          @click="runSync"
-          >{{ $t('ui.runSync') }}</NButton
-        >
-      </div>
-    </section>
-
-    <section
-      v-if="previewError"
-      class="sync-run-status"
-      data-testid="folder-sync-preview-error"
-    >
-      {{ previewError }}
-    </section>
-
-    <section
-      v-if="previewRows.length > 0"
-      class="sync-preview"
-      data-testid="folder-sync-preview-panel"
-    >
-      <header>
-        <strong>{{ previewName || selectedStrategyLabel }}</strong>
-        <span>{{ leftPath }} -> {{ rightPath }}</span>
+  <WorkbenchShell
+    :title="$t('ui.folderSync')"
+    eyebrow="Sync"
+    :subtitle="selectedStrategyLabel"
+    inspector-label="Folder sync inspector"
+  >
+    <section class="folder-sync-view">
+      <header class="folder-sync-header">
+        <div>
+          <p class="eyebrow">{{ $t('ui.folderSync') }}</p>
+          <h1>{{ $t('ui.folderSync') }}</h1>
+        </div>
+        <div class="sync-progress">
+          <strong>{{ completedOperations }} / {{ previewRows.length }}</strong>
+          <span>{{ $t('ui.completed') }}</span>
+        </div>
       </header>
-      <div class="sync-preview-table">
-        <div class="sync-preview-row sync-preview-head">
-          <span>{{ $t('ui.action') }}</span>
-          <span>{{ $t('ui.source') }}</span>
-          <span>{{ $t('ui.target') }}</span>
-          <span>{{ $t('ui.detail') }}</span>
+
+      <section class="sync-settings">
+        <label>
+          <span>{{ $t('ui.leftFolder') }}</span>
+          <input
+            v-model="leftPath"
+            data-testid="folder-sync-left-path"
+          />
+        </label>
+        <label>
+          <span>{{ $t('ui.rightFolder') }}</span>
+          <input
+            v-model="rightPath"
+            data-testid="folder-sync-right-path"
+          />
+        </label>
+        <label>
+          <span>{{ $t('ui.strategy') }}</span>
+          <select
+            v-model="selectedStrategy"
+            data-testid="folder-sync-strategy"
+          >
+            <option
+              v-for="option in strategyOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+        <div class="sync-setting-actions">
+          <NButton
+            size="small"
+            secondary
+            data-testid="folder-sync-preview"
+            :disabled="previewLoading || !leftPath || !rightPath"
+            :loading="previewLoading"
+            @click="previewSync"
+            >{{ $t('ui.preview') }}</NButton
+          >
+          <NButton
+            size="small"
+            type="primary"
+            data-testid="folder-sync-run"
+            :disabled="!canRunSync"
+            @click="runSync"
+            >{{ $t('ui.runSync') }}</NButton
+          >
         </div>
-        <div
-          v-for="row in previewRows"
-          :key="row.id"
-          class="sync-preview-row"
-        >
-          <strong>{{ row.action }}</strong>
-          <span>{{ row.sourcePath ?? '--' }}</span>
-          <span>{{ row.targetPath ?? '--' }}</span>
-          <span>{{ row.detail }}</span>
+      </section>
+
+      <section
+        v-if="previewError"
+        class="sync-run-status"
+        data-testid="folder-sync-preview-error"
+      >
+        {{ previewError }}
+      </section>
+
+      <section
+        v-if="previewRows.length > 0"
+        class="sync-preview"
+        data-testid="folder-sync-preview-panel"
+      >
+        <header>
+          <strong>{{ previewName || selectedStrategyLabel }}</strong>
+          <span>{{ leftPath }} -> {{ rightPath }}</span>
+        </header>
+        <div class="sync-preview-table">
+          <div class="sync-preview-row sync-preview-head">
+            <span>{{ $t('ui.action') }}</span>
+            <span>{{ $t('ui.source') }}</span>
+            <span>{{ $t('ui.target') }}</span>
+            <span>{{ $t('ui.detail') }}</span>
+          </div>
+          <div
+            v-for="row in previewRows"
+            :key="row.id"
+            class="sync-preview-row"
+          >
+            <strong>{{ row.action }}</strong>
+            <span>{{ row.sourcePath ?? '--' }}</span>
+            <span>{{ row.targetPath ?? '--' }}</span>
+            <span>{{ row.detail }}</span>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section
+        v-if="completedOperations > 0"
+        class="sync-run-status"
+        data-testid="folder-sync-run-status"
+      >
+        <strong>Completed {{ completedOperations }} / {{ previewRows.length }}</strong>
+        <ul>
+          <li
+            v-for="log in syncLogs"
+            :key="log"
+          >
+            {{ log }}
+          </li>
+        </ul>
+      </section>
     </section>
 
-    <section
-      v-if="completedOperations > 0"
-      class="sync-run-status"
-      data-testid="folder-sync-run-status"
-    >
-      <strong>Completed {{ completedOperations }} / {{ previewRows.length }}</strong>
-      <ul>
-        <li
-          v-for="log in syncLogs"
-          :key="log"
-        >
-          {{ log }}
-        </li>
-      </ul>
-    </section>
-  </section>
+    <template #inspector>
+      <WorkbenchInspector>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.syncPreview') }}</h2>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.strategy') }}</dt>
+              <dd>{{ selectedStrategyLabel }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.items') }}</dt>
+              <dd>{{ previewRows.length }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.completed') }}</dt>
+              <dd>{{ completedOperations }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.status') }}</dt>
+              <dd>{{ previewLoading ? 'Running' : previewName }}</dd>
+            </div>
+          </dl>
+        </section>
+      </WorkbenchInspector>
+    </template>
+  </WorkbenchShell>
 </template>
 <style scoped>
 .folder-sync-view {

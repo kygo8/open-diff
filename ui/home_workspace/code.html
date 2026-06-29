@@ -1,0 +1,626 @@
+<!doctype html>
+
+<html
+  class="light"
+  lang="en"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      content="width=device-width, initial-scale=1.0"
+      name="viewport"
+    />
+    <title>OpenDiff - Workspace</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-container-low': '#f3f4f6',
+              'tertiary-fixed-dim': '#ffb786',
+              outline: '#727785',
+              'on-surface': '#191c1e',
+              'on-tertiary-container': '#fffbff',
+              error: '#ba1a1a',
+              'primary-container': '#2170e4',
+              'primary-fixed-dim': '#adc6ff',
+              'on-primary-fixed-variant': '#004395',
+              'surface-bright': '#f8f9fb',
+              'inverse-on-surface': '#f0f1f3',
+              'surface-variant': '#e1e2e4',
+              surface: '#f8f9fb',
+              secondary: '#585f6c',
+              'on-primary-container': '#fefcff',
+              'on-secondary-fixed': '#151c27',
+              'tertiary-container': '#b75b00',
+              'secondary-container': '#dce2f3',
+              'inverse-surface': '#2e3132',
+              'on-secondary-fixed-variant': '#404754',
+              'on-error-container': '#93000a',
+              'inverse-primary': '#adc6ff',
+              'on-tertiary': '#ffffff',
+              primary: '#0058be',
+              'on-error': '#ffffff',
+              background: '#f8f9fb',
+              'outline-variant': '#c2c6d6',
+              'on-tertiary-fixed-variant': '#723600',
+              'on-background': '#191c1e',
+              'surface-dim': '#d9dadc',
+              'secondary-fixed-dim': '#c0c7d6',
+              'tertiary-fixed': '#ffdcc6',
+              'error-container': '#ffdad6',
+              'surface-container-highest': '#e1e2e4',
+              'on-surface-variant': '#424754',
+              'primary-fixed': '#d8e2ff',
+              'on-secondary-container': '#5e6572',
+              'surface-container-lowest': '#ffffff',
+              'secondary-fixed': '#dce2f3',
+              'on-tertiary-fixed': '#311400',
+              'on-secondary': '#ffffff',
+              'on-primary': '#ffffff',
+              'on-primary-fixed': '#001a42',
+              tertiary: '#924700',
+              'surface-tint': '#005ac2',
+              'surface-container-high': '#e7e8ea',
+              'surface-container': '#edeef0',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              lg: '0.75rem',
+              sidebar_width: '240px',
+              xs: '0.125rem',
+              md: '0.5rem',
+              toolbar_height: '32px',
+              xl: '1rem',
+              tab_height: '28px',
+              sm: '0.25rem',
+            },
+            fontFamily: {
+              'code-sm': ['JetBrains Mono'],
+              'label-caps': ['Inter'],
+              'code-base': ['JetBrains Mono'],
+              'ui-sm': ['Inter'],
+              'header-section': ['Inter'],
+              'ui-medium': ['Inter'],
+              'ui-base': ['Inter'],
+            },
+            fontSize: {
+              'code-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'label-caps': [
+                '10px',
+                { lineHeight: '12px', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+              'code-base': ['12px', { lineHeight: '20px', fontWeight: '400' }],
+              'ui-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'header-section': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+              'ui-medium': ['13px', { lineHeight: '18px', fontWeight: '600' }],
+              'ui-base': ['13px', { lineHeight: '18px', fontWeight: '400' }],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        font-size: 16px;
+      }
+      .material-symbols-outlined.fill-1 {
+        font-variation-settings: 'FILL' 1;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: #c2c6d6;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-surface text-on-surface h-screen w-screen overflow-hidden flex flex-col font-ui-base text-ui-base"
+  >
+    <!-- TopNavBar -->
+    <header
+      class="flex items-center w-full px-md space-x-xl bg-surface-container-low border-b border-outline-variant h-toolbar_height flex-shrink-0 z-10 relative shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+    >
+      <div
+        class="font-header-section text-header-section text-primary flex items-center space-x-sm"
+      >
+        <span class="material-symbols-outlined fill-1">difference</span>
+        <span>OpenDiff</span>
+      </div>
+      <nav class="flex space-x-md">
+        <button
+          class="font-ui-base text-ui-base text-on-surface-variant hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+        >
+          File
+        </button>
+        <button
+          class="font-ui-base text-ui-base text-on-surface-variant hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+        >
+          Edit
+        </button>
+        <button
+          class="font-ui-base text-ui-base text-on-surface-variant hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+        >
+          Search
+        </button>
+        <button
+          class="font-ui-base text-ui-base text-on-surface-variant hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+        >
+          View
+        </button>
+        <button
+          class="font-ui-base text-ui-base text-on-surface-variant hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+        >
+          Session
+        </button>
+        <button
+          class="font-ui-base text-ui-base text-on-surface-variant hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+        >
+          Actions
+        </button>
+      </nav>
+      <div class="flex-grow"></div>
+      <div class="flex items-center space-x-sm">
+        <button
+          class="p-xs text-on-surface-variant hover:bg-surface-variant rounded transition-colors duration-150 flex items-center justify-center"
+        >
+          <span class="material-symbols-outlined">language</span>
+        </button>
+        <button
+          class="p-xs text-on-surface-variant hover:bg-surface-variant rounded transition-colors duration-150 flex items-center justify-center"
+        >
+          <span class="material-symbols-outlined">settings</span>
+        </button>
+        <button
+          class="p-xs text-on-surface-variant hover:bg-surface-variant rounded transition-colors duration-150 flex items-center justify-center"
+        >
+          <span class="material-symbols-outlined">help</span>
+        </button>
+      </div>
+    </header>
+    <div class="flex flex-1 overflow-hidden relative">
+      <!-- SideNavBar -->
+      <aside
+        class="flex flex-col h-full py-md overflow-y-auto bg-surface-container-low border-r border-outline-variant w-sidebar_width flex-shrink-0 z-10 shadow-[1px_0_2px_rgba(0,0,0,0.02)]"
+      >
+        <div class="px-md mb-md">
+          <div class="font-header-section text-header-section text-on-surface">Workspace</div>
+          <div class="font-ui-sm text-ui-sm text-on-surface-variant">Active Session</div>
+        </div>
+        <nav class="flex flex-col space-y-xs px-xs">
+          <button
+            class="flex items-center space-x-md px-md py-sm bg-primary-container text-on-primary-container font-ui-medium rounded transition-all duration-100 ease-in-out"
+          >
+            <span class="material-symbols-outlined">home</span>
+            <span>Home</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">difference</span>
+            <span>Text Compare</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">call_merge</span>
+            <span>Three-Way Merge</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">folder_open</span>
+            <span>Folder Compare</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">sync</span>
+            <span>Folder Sync</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">account_tree</span>
+            <span>Folder Merge</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">table_chart</span>
+            <span>Table Compare</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">heart_check</span>
+            <span>Hex Compare</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">image</span>
+            <span>Picture Compare</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">settings_input_component</span>
+            <span>Registry Compare</span>
+          </button>
+          <div class="my-sm border-t border-outline-variant/50"></div>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">info</span>
+            <span>Metadata</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">cloud_queue</span>
+            <span>Remotes</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">terminal</span>
+            <span>Scripts</span>
+          </button>
+          <button
+            class="flex items-center space-x-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded transition-all duration-100 ease-in-out font-ui-sm text-ui-sm"
+          >
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+          </button>
+        </nav>
+      </aside>
+      <!-- Main Workspace Area -->
+      <main class="flex-1 flex flex-col bg-surface overflow-hidden relative">
+        <div class="flex-1 overflow-y-auto p-xl space-y-xl">
+          <!-- Quick Start Bento Grid -->
+          <section>
+            <h2 class="font-header-section text-header-section text-on-surface mb-md">
+              New Session
+            </h2>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-md">
+              <div
+                class="bg-surface-container-lowest border border-outline-variant p-md rounded flex flex-col items-start hover:border-primary cursor-pointer transition-colors group"
+              >
+                <div
+                  class="bg-surface-container-low p-sm rounded mb-sm group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary group-hover:text-on-primary-container"
+                    >difference</span
+                  >
+                </div>
+                <h3 class="font-ui-medium text-ui-medium text-on-surface">Text Compare</h3>
+                <p class="font-ui-sm text-ui-sm text-on-surface-variant mt-xs line-clamp-2">
+                  Compare two text files side-by-side with line-level details.
+                </p>
+              </div>
+              <div
+                class="bg-surface-container-lowest border border-outline-variant p-md rounded flex flex-col items-start hover:border-primary cursor-pointer transition-colors group"
+              >
+                <div
+                  class="bg-surface-container-low p-sm rounded mb-sm group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary group-hover:text-on-primary-container"
+                    >folder_open</span
+                  >
+                </div>
+                <h3 class="font-ui-medium text-ui-medium text-on-surface">Folder Compare</h3>
+                <p class="font-ui-sm text-ui-sm text-on-surface-variant mt-xs line-clamp-2">
+                  Compare directory trees and identify missing or changed files.
+                </p>
+              </div>
+              <div
+                class="bg-surface-container-lowest border border-outline-variant p-md rounded flex flex-col items-start hover:border-primary cursor-pointer transition-colors group"
+              >
+                <div
+                  class="bg-surface-container-low p-sm rounded mb-sm group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary group-hover:text-on-primary-container"
+                    >call_merge</span
+                  >
+                </div>
+                <h3 class="font-ui-medium text-ui-medium text-on-surface">3-Way Merge</h3>
+                <p class="font-ui-sm text-ui-sm text-on-surface-variant mt-xs line-clamp-2">
+                  Resolve version control conflicts with a common ancestor.
+                </p>
+              </div>
+              <div
+                class="bg-surface-container-lowest border border-outline-variant p-md rounded flex flex-col items-start hover:border-primary cursor-pointer transition-colors group"
+              >
+                <div
+                  class="bg-surface-container-low p-sm rounded mb-sm group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary group-hover:text-on-primary-container"
+                    >sync</span
+                  >
+                </div>
+                <h3 class="font-ui-medium text-ui-medium text-on-surface">Folder Sync</h3>
+                <p class="font-ui-sm text-ui-sm text-on-surface-variant mt-xs line-clamp-2">
+                  Synchronize contents between two directories automatically.
+                </p>
+              </div>
+            </div>
+          </section>
+          <!-- Recent Sessions Table -->
+          <section>
+            <div class="flex justify-between items-end mb-md">
+              <h2 class="font-header-section text-header-section text-on-surface">
+                Recent Sessions
+              </h2>
+              <div class="relative">
+                <span
+                  class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]"
+                  >search</span
+                >
+                <input
+                  class="bg-surface-container-lowest border border-outline-variant rounded pl-8 pr-sm py-1 font-ui-sm text-ui-sm text-on-surface focus:border-primary focus:ring-0 focus:outline-none w-64 h-[24px]"
+                  placeholder="Filter sessions..."
+                  type="text"
+                />
+              </div>
+            </div>
+            <div
+              class="bg-surface-container-lowest border border-outline-variant rounded overflow-hidden"
+            >
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-surface-container-low border-b border-outline-variant">
+                    <th
+                      class="font-label-caps text-label-caps text-on-surface-variant px-md py-sm font-semibold w-8"
+                    ></th>
+                    <th
+                      class="font-label-caps text-label-caps text-on-surface-variant px-md py-sm font-semibold"
+                    >
+                      Name
+                    </th>
+                    <th
+                      class="font-label-caps text-label-caps text-on-surface-variant px-md py-sm font-semibold w-24"
+                    >
+                      Type
+                    </th>
+                    <th
+                      class="font-label-caps text-label-caps text-on-surface-variant px-md py-sm font-semibold truncate"
+                    >
+                      Left Path
+                    </th>
+                    <th
+                      class="font-label-caps text-label-caps text-on-surface-variant px-md py-sm font-semibold truncate"
+                    >
+                      Right Path
+                    </th>
+                    <th
+                      class="font-label-caps text-label-caps text-on-surface-variant px-md py-sm font-semibold w-32"
+                    >
+                      Last Opened
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="font-ui-sm text-ui-sm">
+                  <tr
+                    class="border-b border-outline-variant/50 hover:bg-surface-container-low cursor-pointer group"
+                  >
+                    <td class="px-md py-sm text-center">
+                      <span
+                        class="material-symbols-outlined text-primary group-hover:fill-1 text-[16px]"
+                        >difference</span
+                      >
+                    </td>
+                    <td class="px-md py-sm font-ui-medium text-on-surface">config_update.json</td>
+                    <td class="px-md py-sm text-on-surface-variant">Text</td>
+                    <td
+                      class="px-md py-sm font-code-sm text-code-sm text-on-surface-variant truncate max-w-[200px]"
+                    >
+                      C:\Projects\app\config.json
+                    </td>
+                    <td
+                      class="px-md py-sm font-code-sm text-code-sm text-on-surface-variant truncate max-w-[200px]"
+                    >
+                      C:\Projects\app\config_v2.json
+                    </td>
+                    <td class="px-md py-sm text-on-surface-variant">2 mins ago</td>
+                  </tr>
+                  <tr
+                    class="border-b border-outline-variant/50 hover:bg-surface-container-low cursor-pointer group"
+                  >
+                    <td class="px-md py-sm text-center">
+                      <span
+                        class="material-symbols-outlined text-tertiary-container group-hover:fill-1 text-[16px]"
+                        >folder_open</span
+                      >
+                    </td>
+                    <td class="px-md py-sm font-ui-medium text-on-surface">Release v1.2</td>
+                    <td class="px-md py-sm text-on-surface-variant">Folder</td>
+                    <td
+                      class="px-md py-sm font-code-sm text-code-sm text-on-surface-variant truncate max-w-[200px]"
+                    >
+                      /var/www/staging/
+                    </td>
+                    <td
+                      class="px-md py-sm font-code-sm text-code-sm text-on-surface-variant truncate max-w-[200px]"
+                    >
+                      /var/www/production/
+                    </td>
+                    <td class="px-md py-sm text-on-surface-variant">Yesterday</td>
+                  </tr>
+                  <tr
+                    class="border-b border-outline-variant/50 hover:bg-surface-container-low cursor-pointer group"
+                  >
+                    <td class="px-md py-sm text-center">
+                      <span
+                        class="material-symbols-outlined text-primary group-hover:fill-1 text-[16px]"
+                        >call_merge</span
+                      >
+                    </td>
+                    <td class="px-md py-sm font-ui-medium text-on-surface">Merge feature/auth</td>
+                    <td class="px-md py-sm text-on-surface-variant">3-Way</td>
+                    <td
+                      class="px-md py-sm font-code-sm text-code-sm text-on-surface-variant truncate max-w-[200px]"
+                    >
+                      ~/git/repo/auth.js (Local)
+                    </td>
+                    <td
+                      class="px-md py-sm font-code-sm text-code-sm text-on-surface-variant truncate max-w-[200px]"
+                    >
+                      ~/git/repo/auth.js (Remote)
+                    </td>
+                    <td class="px-md py-sm text-on-surface-variant">Oct 12, 14:30</td>
+                  </tr>
+                  <tr class="hover:bg-surface-container-low cursor-pointer group">
+                    <td class="px-md py-sm text-center">
+                      <span
+                        class="material-symbols-outlined text-secondary group-hover:fill-1 text-[16px]"
+                        >sync</span
+                      >
+                    </td>
+                    <td class="px-md py-sm font-ui-medium text-on-surface">Backup Documents</td>
+                    <td class="px-md py-sm text-on-surface-variant">Sync</td>
+                    <td
+                      class="px-md py-sm font-code-sm text-code-sm text-on-surface-variant truncate max-w-[200px]"
+                    >
+                      D:\Documents\
+                    </td>
+                    <td
+                      class="px-md py-sm font-code-sm text-code-sm text-on-surface-variant truncate max-w-[200px]"
+                    >
+                      E:\Backups\Docs\
+                    </td>
+                    <td class="px-md py-sm text-on-surface-variant">Oct 10, 09:15</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+      <!-- Right Inspector -->
+      <aside
+        class="w-sidebar_width bg-surface-container-lowest border-l border-outline-variant flex-shrink-0 flex flex-col z-10 shadow-[-1px_0_2px_rgba(0,0,0,0.02)]"
+      >
+        <div
+          class="h-tab_height bg-surface-container-low border-b border-outline-variant flex items-center px-sm"
+        >
+          <span class="font-ui-sm text-ui-sm font-medium text-on-surface">Inspector</span>
+        </div>
+        <div class="flex-1 overflow-y-auto p-md space-y-md font-ui-sm text-ui-sm">
+          <div class="border border-outline-variant rounded overflow-hidden">
+            <div
+              class="bg-surface-container-low px-sm py-xs border-b border-outline-variant font-medium text-on-surface flex items-center justify-between"
+            >
+              <span>Workspace Properties</span>
+              <span class="material-symbols-outlined text-[14px] text-on-surface-variant"
+                >expand_more</span
+              >
+            </div>
+            <div class="p-sm bg-surface-container-lowest space-y-xs">
+              <div class="flex justify-between">
+                <span class="text-on-surface-variant">Total Sessions:</span>
+                <span class="text-on-surface font-code-sm text-code-sm">142</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-on-surface-variant">Default Encoding:</span>
+                <span class="text-on-surface font-code-sm text-code-sm">UTF-8</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-on-surface-variant">Line Endings:</span>
+                <span class="text-on-surface font-code-sm text-code-sm">CRLF</span>
+              </div>
+            </div>
+          </div>
+          <div class="border border-outline-variant rounded overflow-hidden">
+            <div
+              class="bg-surface-container-low px-sm py-xs border-b border-outline-variant font-medium text-on-surface flex items-center justify-between"
+            >
+              <span>Session History</span>
+              <span class="material-symbols-outlined text-[14px] text-on-surface-variant"
+                >expand_more</span
+              >
+            </div>
+            <div class="p-sm bg-surface-container-lowest space-y-sm">
+              <div class="flex space-x-sm items-start">
+                <div class="w-[2px] bg-primary h-full mt-1 self-stretch rounded-full relative">
+                  <div class="absolute -left-[3px] top-0 w-2 h-2 bg-primary rounded-full"></div>
+                </div>
+                <div class="flex-1">
+                  <div class="text-on-surface">Config updated</div>
+                  <div class="text-on-surface-variant text-[10px]">2 mins ago • Text Compare</div>
+                </div>
+              </div>
+              <div class="flex space-x-sm items-start opacity-70">
+                <div
+                  class="w-[2px] bg-outline-variant h-full mt-1 self-stretch rounded-full relative"
+                >
+                  <div
+                    class="absolute -left-[3px] top-0 w-2 h-2 bg-outline-variant rounded-full"
+                  ></div>
+                </div>
+                <div class="flex-1">
+                  <div class="text-on-surface">Release v1.2 diff</div>
+                  <div class="text-on-surface-variant text-[10px]">Yesterday • Folder Compare</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <!-- Footer -->
+    <footer
+      class="fixed bottom-0 w-full flex justify-between items-center px-xl z-50 bg-secondary border-t border-outline h-6 flex-shrink-0"
+    >
+      <div class="font-code-sm text-code-sm text-on-secondary opacity-80">
+        Ln 12, Col 45 | UTF-8 | Matches: 85% | Ready
+      </div>
+      <div class="flex space-x-md">
+        <button
+          class="font-code-sm text-code-sm text-primary-fixed hover:opacity-100 transition-opacity"
+        >
+          English
+        </button>
+        <button
+          class="font-code-sm text-code-sm text-on-secondary opacity-80 hover:opacity-100 transition-opacity"
+        >
+          中文
+        </button>
+      </div>
+    </footer>
+  </body>
+</html>

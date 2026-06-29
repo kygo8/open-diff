@@ -9,6 +9,8 @@ import {
   type CommandShortcut,
 } from '@/app/commandRegistry'
 import { useSettingsStore } from '@/stores/settings'
+import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 
 const settings = useSettingsStore()
 const router = useRouter()
@@ -84,162 +86,194 @@ function parseShortcutText(value: string): string[] {
 </script>
 
 <template>
-  <section class="settings-view">
-    <h1>{{ $t('ui.settings') }}</h1>
-    <NCard
-      :title="$t('ui.appearance')"
-      size="small"
-    >
-      <NSpace align="center">
-        <span>{{ $t('ui.theme') }}</span>
-        <NRadioGroup v-model:value="settings.theme">
-          <NRadioButton value="dark">{{ $t('ui.dark') }}</NRadioButton>
-          <NRadioButton value="light">{{ $t('ui.light') }}</NRadioButton>
-        </NRadioGroup>
-      </NSpace>
-      <NSpace align="center">
-        <span>{{ $t('ui.language') }}</span>
-        <NSelect
-          :value="settings.locale"
-          class="locale-select"
-          data-testid="locale-select"
-          :options="localeOptions"
-          @update:value="updateLocale"
-        />
-      </NSpace>
-    </NCard>
+  <WorkbenchShell
+    :title="$t('ui.settings')"
+    eyebrow="Policy"
+    :subtitle="$t('ui.manageMatchingRulesDefaultViewsAndRuleReferences')"
+    inspector-label="Settings inspector"
+  >
+    <section class="settings-view">
+      <NCard
+        :title="$t('ui.appearance')"
+        size="small"
+      >
+        <NSpace align="center">
+          <span>{{ $t('ui.theme') }}</span>
+          <NRadioGroup v-model:value="settings.theme">
+            <NRadioButton value="dark">{{ $t('ui.dark') }}</NRadioButton>
+            <NRadioButton value="light">{{ $t('ui.light') }}</NRadioButton>
+          </NRadioGroup>
+        </NSpace>
+        <NSpace align="center">
+          <span>{{ $t('ui.language') }}</span>
+          <NSelect
+            :value="settings.locale"
+            class="locale-select"
+            data-testid="locale-select"
+            :options="localeOptions"
+            @update:value="updateLocale"
+          />
+        </NSpace>
+      </NCard>
 
-    <NCard
-      :title="$t('ui.fileFormats')"
-      size="small"
-    >
-      <div class="settings-row">
-        <div>
-          <strong>{{ $t('ui.formatDefinitions') }}</strong>
-          <span>{{ $t('ui.manageMatchingRulesDefaultViewsAndRuleReferences') }}</span>
-        </div>
-        <NButton
-          size="small"
-          data-testid="open-file-formats"
-          @click="openFileFormats"
-          >{{ $t('ui.manage') }}</NButton
-        >
-      </div>
-    </NCard>
-
-    <NCard
-      :title="$t('ui.remoteProfiles')"
-      size="small"
-    >
-      <div class="settings-row">
-        <div>
-          <strong>{{ $t('ui.connectionProfiles') }}</strong>
-          <span>{{ $t('ui.manageRemoteEndpointsAndCredentialReferences') }}</span>
-        </div>
-        <NButton
-          size="small"
-          data-testid="open-remote-profiles"
-          @click="openRemoteProfiles"
-          >{{ $t('ui.manage') }}</NButton
-        >
-      </div>
-    </NCard>
-
-    <NCard
-      :title="$t('ui.shortcuts')"
-      size="small"
-    >
-      <div class="shortcut-config">
+      <NCard
+        :title="$t('ui.fileFormats')"
+        size="small"
+      >
         <div class="settings-row">
           <div>
-            <strong>{{ $t('ui.keyboardShortcuts') }}</strong>
-            <span>{{ $t('ui.searchModifyAndRestoreCommandShortcuts') }}</span>
+            <strong>{{ $t('ui.formatDefinitions') }}</strong>
+            <span>{{ $t('ui.manageMatchingRulesDefaultViewsAndRuleReferences') }}</span>
+          </div>
+          <NButton
+            size="small"
+            data-testid="open-file-formats"
+            @click="openFileFormats"
+            >{{ $t('ui.manage') }}</NButton
+          >
+        </div>
+      </NCard>
+
+      <NCard
+        :title="$t('ui.remoteProfiles')"
+        size="small"
+      >
+        <div class="settings-row">
+          <div>
+            <strong>{{ $t('ui.connectionProfiles') }}</strong>
+            <span>{{ $t('ui.manageRemoteEndpointsAndCredentialReferences') }}</span>
+          </div>
+          <NButton
+            size="small"
+            data-testid="open-remote-profiles"
+            @click="openRemoteProfiles"
+            >{{ $t('ui.manage') }}</NButton
+          >
+        </div>
+      </NCard>
+
+      <NCard
+        :title="$t('ui.shortcuts')"
+        size="small"
+      >
+        <div class="shortcut-config">
+          <div class="settings-row">
+            <div>
+              <strong>{{ $t('ui.keyboardShortcuts') }}</strong>
+              <span>{{ $t('ui.searchModifyAndRestoreCommandShortcuts') }}</span>
+            </div>
+          </div>
+          <NInput
+            v-model:value="shortcutSearch"
+            data-testid="shortcut-search"
+            :placeholder="$t('ui.searchCommands')"
+          />
+          <div class="shortcut-list">
+            <div
+              v-for="command in filteredShortcutCommands"
+              :key="command.id"
+              class="shortcut-row"
+            >
+              <div class="shortcut-command">
+                <strong>{{ $t(command.titleKey) }}</strong>
+                <span>{{ command.id }}</span>
+              </div>
+              <span class="shortcut-default">{{ shortcutToText(command.defaultShortcut) }}</span>
+              <span
+                class="shortcut-current"
+                :data-testid="`shortcut-current-${command.id}`"
+                >{{ shortcutToText(settings.getEffectiveShortcut(command)) }}</span
+              >
+              <NInput
+                v-model:value="shortcutDrafts[command.id]"
+                class="shortcut-input"
+                :data-testid="`shortcut-input-${command.id}`"
+              />
+              <NButton
+                size="small"
+                :data-testid="`save-shortcut-${command.id}`"
+                @click="saveShortcut(command)"
+                >{{ $t('ui.save') }}</NButton
+              >
+              <NButton
+                size="small"
+                :data-testid="`reset-shortcut-${command.id}`"
+                @click="resetShortcut(command)"
+                >{{ $t('ui.restoreDefault') }}</NButton
+              >
+            </div>
           </div>
         </div>
-        <NInput
-          v-model:value="shortcutSearch"
-          data-testid="shortcut-search"
-          :placeholder="$t('ui.searchCommands')"
-        />
-        <div class="shortcut-list">
-          <div
-            v-for="command in filteredShortcutCommands"
-            :key="command.id"
-            class="shortcut-row"
-          >
-            <div class="shortcut-command">
-              <strong>{{ $t(command.titleKey) }}</strong>
-              <span>{{ command.id }}</span>
+      </NCard>
+
+      <NCard
+        :title="$t('ui.sharedSessions')"
+        size="small"
+      >
+        <div class="shared-session-config">
+          <div class="settings-row">
+            <div>
+              <strong>{{ $t('ui.sessionFilePaths') }}</strong>
+              <span>{{ $t('ui.loadTeamSessionsAsReadOnlyEntries') }}</span>
             </div>
-            <span class="shortcut-default">{{ shortcutToText(command.defaultShortcut) }}</span>
-            <span
-              class="shortcut-current"
-              :data-testid="`shortcut-current-${command.id}`"
-              >{{ shortcutToText(settings.getEffectiveShortcut(command)) }}</span
-            >
+          </div>
+          <div class="shared-session-input">
             <NInput
-              v-model:value="shortcutDrafts[command.id]"
-              class="shortcut-input"
-              :data-testid="`shortcut-input-${command.id}`"
+              v-model:value="sharedSessionPathDraft"
+              data-testid="shared-session-path-input"
+              :placeholder="$t('ui.sharedSessionPathPlaceholder')"
             />
             <NButton
               size="small"
-              :data-testid="`save-shortcut-${command.id}`"
-              @click="saveShortcut(command)"
-              >{{ $t('ui.save') }}</NButton
-            >
-            <NButton
-              size="small"
-              :data-testid="`reset-shortcut-${command.id}`"
-              @click="resetShortcut(command)"
-              >{{ $t('ui.restoreDefault') }}</NButton
+              data-testid="add-shared-session-path"
+              @click="addSharedSessionPath"
+              >{{ $t('ui.add') }}</NButton
             >
           </div>
+          <ul class="shared-session-list">
+            <li
+              v-for="path in settings.sharedSessionPaths"
+              :key="path"
+            >
+              <span>{{ path }}</span>
+              <NButton
+                text
+                size="small"
+                @click="settings.removeSharedSessionPath(path)"
+                >{{ $t('ui.remove') }}</NButton
+              >
+            </li>
+          </ul>
         </div>
-      </div>
-    </NCard>
+      </NCard>
+    </section>
 
-    <NCard
-      :title="$t('ui.sharedSessions')"
-      size="small"
-    >
-      <div class="shared-session-config">
-        <div class="settings-row">
-          <div>
-            <strong>{{ $t('ui.sessionFilePaths') }}</strong>
-            <span>{{ $t('ui.loadTeamSessionsAsReadOnlyEntries') }}</span>
-          </div>
-        </div>
-        <div class="shared-session-input">
-          <NInput
-            v-model:value="sharedSessionPathDraft"
-            data-testid="shared-session-path-input"
-            :placeholder="$t('ui.sharedSessionPathPlaceholder')"
-          />
-          <NButton
-            size="small"
-            data-testid="add-shared-session-path"
-            @click="addSharedSessionPath"
-            >{{ $t('ui.add') }}</NButton
-          >
-        </div>
-        <ul class="shared-session-list">
-          <li
-            v-for="path in settings.sharedSessionPaths"
-            :key="path"
-          >
-            <span>{{ path }}</span>
-            <NButton
-              text
-              size="small"
-              @click="settings.removeSharedSessionPath(path)"
-              >{{ $t('ui.remove') }}</NButton
-            >
-          </li>
-        </ul>
-      </div>
-    </NCard>
-  </section>
+    <template #inspector>
+      <WorkbenchInspector>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.shortcuts') }}</h2>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.theme') }}</dt>
+              <dd>{{ settings.theme }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.language') }}</dt>
+              <dd>{{ settings.locale }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.searchCommands') }}</dt>
+              <dd>{{ filteredShortcutCommands.length }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.sharedSessions') }}</dt>
+              <dd>{{ settings.sharedSessionPaths.length }}</dd>
+            </div>
+          </dl>
+        </section>
+      </WorkbenchInspector>
+    </template>
+  </WorkbenchShell>
 </template>
 <style scoped>
 .settings-view {

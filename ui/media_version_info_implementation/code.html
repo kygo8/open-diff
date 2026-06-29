@@ -1,0 +1,752 @@
+<!doctype html>
+
+<html
+  class="light"
+  lang="en"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      content="width=device-width, initial-scale=1.0"
+      name="viewport"
+    />
+    <title>OpenDiff - Media & Version Info</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 20;
+        font-size: 16px;
+      }
+      /* Custom scrollbar for high-density UI */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #c2c6d6;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #727785;
+      }
+
+      .diff-changed {
+        background-color: #fef08a;
+      } /* yellow-200 */
+      .diff-added {
+        background-color: #dcfce7;
+      } /* green-100 */
+      .diff-removed {
+        background-color: #fee2e2;
+      } /* red-100 */
+
+      .tab-ear {
+        clip-path: polygon(0% 0%, 90% 0%, 100% 100%, 0% 100%);
+      }
+    </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-tertiary': '#ffffff',
+              'on-primary': '#ffffff',
+              surface: '#f8f9fb',
+              'on-secondary-fixed': '#151c27',
+              'surface-dim': '#d9dadc',
+              'surface-variant': '#e1e2e4',
+              'secondary-fixed-dim': '#c0c7d6',
+              'on-secondary': '#ffffff',
+              'inverse-on-surface': '#f0f1f3',
+              'on-primary-fixed-variant': '#004395',
+              error: '#ba1a1a',
+              'surface-container-low': '#f3f4f6',
+              'tertiary-container': '#b75b00',
+              'surface-tint': '#005ac2',
+              'secondary-container': '#dce2f3',
+              'surface-bright': '#f8f9fb',
+              outline: '#727785',
+              'tertiary-fixed-dim': '#ffb786',
+              'on-primary-container': '#fefcff',
+              'on-error': '#ffffff',
+              'on-error-container': '#93000a',
+              'tertiary-fixed': '#ffdcc6',
+              'on-surface-variant': '#424754',
+              secondary: '#585f6c',
+              'primary-fixed-dim': '#adc6ff',
+              'surface-container-high': '#e7e8ea',
+              'inverse-surface': '#2e3132',
+              primary: '#0058be',
+              'error-container': '#ffdad6',
+              'on-background': '#191c1e',
+              'on-tertiary-fixed-variant': '#723600',
+              'on-tertiary-container': '#fffbff',
+              'primary-fixed': '#d8e2ff',
+              'outline-variant': '#c2c6d6',
+              'on-surface': '#191c1e',
+              'on-tertiary-fixed': '#311400',
+              tertiary: '#924700',
+              'surface-container-highest': '#e1e2e4',
+              'on-secondary-container': '#5e6572',
+              'surface-container': '#edeef0',
+              'secondary-fixed': '#dce2f3',
+              background: '#f8f9fb',
+              'inverse-primary': '#adc6ff',
+              'primary-container': '#2170e4',
+              'on-secondary-fixed-variant': '#404754',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              xs: '0.125rem',
+              sm: '0.25rem',
+              toolbar_height: '32px',
+              md: '0.5rem',
+              xl: '1rem',
+              sidebar_width: '240px',
+              lg: '0.75rem',
+              tab_height: '28px',
+            },
+            fontFamily: {
+              'ui-sm': ['Inter'],
+              'code-base': ['JetBrains Mono'],
+              'ui-medium': ['Inter'],
+              'header-section': ['Inter'],
+              'code-sm': ['JetBrains Mono'],
+              'ui-base': ['Inter'],
+              'label-caps': ['Inter'],
+            },
+            fontSize: {
+              'ui-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'code-base': ['12px', { lineHeight: '20px', fontWeight: '400' }],
+              'ui-medium': ['13px', { lineHeight: '18px', fontWeight: '600' }],
+              'header-section': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+              'code-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'ui-base': ['13px', { lineHeight: '18px', fontWeight: '400' }],
+              'label-caps': [
+                '10px',
+                { lineHeight: '12px', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+            },
+          },
+        },
+      }
+    </script>
+  </head>
+  <body
+    class="bg-surface text-on-surface h-screen flex flex-col overflow-hidden font-ui-base text-ui-base"
+  >
+    <!-- TopAppBar -->
+    <header
+      class="h-toolbar_height w-full flex items-center px-md justify-between bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline z-50"
+    >
+      <div class="flex items-center gap-xl">
+        <span
+          class="font-header-section text-header-section text-primary dark:text-primary-fixed-dim flex items-center gap-xs"
+        >
+          <span
+            class="material-symbols-outlined"
+            data-icon="difference"
+            >difference</span
+          >
+          OpenDiff
+        </span>
+        <nav class="flex h-full items-center">
+          <div class="flex gap-md h-full items-center">
+            <span
+              class="px-sm text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant cursor-pointer transition-colors duration-150"
+              >File</span
+            >
+            <span
+              class="px-sm text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant cursor-pointer transition-colors duration-150"
+              >Edit</span
+            >
+            <span
+              class="px-sm text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant cursor-pointer transition-colors duration-150"
+              >Search</span
+            >
+            <span
+              class="px-sm text-primary dark:text-primary-fixed-dim border-b-2 border-primary h-full flex items-center"
+              >View</span
+            >
+            <span
+              class="px-sm text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant cursor-pointer transition-colors duration-150"
+              >Session</span
+            >
+            <span
+              class="px-sm text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant cursor-pointer transition-colors duration-150"
+              >Actions</span
+            >
+          </div>
+        </nav>
+      </div>
+      <div class="flex items-center gap-md">
+        <div class="relative">
+          <input
+            class="bg-surface-container-low border border-outline-variant px-sm py-xs text-ui-sm focus:outline-none focus:border-primary w-48"
+            placeholder="Search parameters..."
+            type="text"
+          />
+          <span
+            class="material-symbols-outlined absolute right-2 top-1.5 text-on-surface-variant"
+            data-icon="search"
+            >search</span
+          >
+        </div>
+        <span
+          class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-high p-xs"
+          data-icon="settings"
+          >settings</span
+        >
+        <span
+          class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-high p-xs"
+          data-icon="help"
+          >help</span
+        >
+      </div>
+    </header>
+    <div class="flex-1 flex overflow-hidden">
+      <!-- SideNavBar -->
+      <aside
+        class="w-sidebar_width h-full flex flex-col border-r bg-surface-container-low dark:bg-surface-container border-outline-variant dark:border-outline"
+      >
+        <div class="p-md border-b border-outline-variant">
+          <div class="flex items-center gap-md">
+            <div
+              class="w-8 h-8 bg-primary rounded-sm flex items-center justify-center text-on-primary"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="folder_open"
+                >folder_open</span
+              >
+            </div>
+            <div>
+              <div
+                class="font-header-section text-header-section text-primary dark:text-primary-fixed-dim"
+              >
+                Workspace
+              </div>
+              <div class="text-[10px] text-on-surface-variant uppercase tracking-wider">
+                Active Project
+              </div>
+            </div>
+          </div>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-sm">
+          <div class="space-y-xs px-xs">
+            <div
+              class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant hover:bg-surface-container-highest transition-all duration-100 cursor-pointer"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="folder_open"
+                >folder_open</span
+              >
+              <span class="font-ui-sm text-ui-sm">Workspace</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant hover:bg-surface-container-highest transition-all duration-100 cursor-pointer"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="rule"
+                >rule</span
+              >
+              <span class="font-ui-sm text-ui-sm">Changes</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant hover:bg-surface-container-highest transition-all duration-100 cursor-pointer"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="history"
+                >history</span
+              >
+              <span class="font-ui-sm text-ui-sm">History</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-sm rounded-sm bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed transition-all duration-100 cursor-pointer"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="difference"
+                >difference</span
+              >
+              <span class="font-ui-sm text-ui-sm">Diffs</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant hover:bg-surface-container-highest transition-all duration-100 cursor-pointer"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="account_tree"
+                >account_tree</span
+              >
+              <span class="font-ui-sm text-ui-sm">Branches</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant hover:bg-surface-container-highest transition-all duration-100 cursor-pointer"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="archive"
+                >archive</span
+              >
+              <span class="font-ui-sm text-ui-sm">Stash</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant hover:bg-surface-container-highest transition-all duration-100 cursor-pointer"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="terminal"
+                >terminal</span
+              >
+              <span class="font-ui-sm text-ui-sm">Terminal</span>
+            </div>
+            <div class="mt-md px-md text-[10px] text-outline font-bold uppercase">Utility</div>
+            <div
+              class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant hover:bg-surface-container-highest transition-all duration-100 cursor-pointer"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="search"
+                >search</span
+              >
+              <span class="font-ui-sm text-ui-sm">Search</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant hover:bg-surface-container-highest transition-all duration-100 cursor-pointer"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="extension"
+                >extension</span
+              >
+              <span class="font-ui-sm text-ui-sm">Plugins</span>
+            </div>
+          </div>
+        </nav>
+      </aside>
+      <!-- Main Content Area -->
+      <main class="flex-1 flex flex-col bg-background min-w-0">
+        <!-- Tabs Bar -->
+        <div
+          class="h-tab_height flex bg-surface-container border-b border-outline-variant items-end px-sm"
+        >
+          <div class="flex h-full items-end gap-[1px]">
+            <div
+              class="h-[24px] bg-surface px-md border-x border-t border-outline-variant flex items-center gap-sm z-10"
+            >
+              <span
+                class="material-symbols-outlined text-[14px]"
+                data-icon="info"
+                >info</span
+              >
+              <span class="text-ui-sm">Media & Version Info</span>
+              <span
+                class="material-symbols-outlined text-[12px] hover:text-error"
+                data-icon="close"
+                >close</span
+              >
+            </div>
+            <div
+              class="h-[22px] bg-surface-container-high px-md border-x border-t border-outline-variant flex items-center gap-sm text-on-surface-variant opacity-70"
+            >
+              <span class="text-ui-sm">diff_worker.cpp</span>
+            </div>
+          </div>
+        </div>
+        <!-- Path Bars -->
+        <div
+          class="grid grid-cols-2 bg-surface-container-low border-b border-outline-variant divide-x divide-outline-variant"
+        >
+          <div class="flex items-center px-md py-xs gap-md group">
+            <span
+              class="material-symbols-outlined text-primary"
+              data-icon="description"
+              >description</span
+            >
+            <span class="font-code-sm text-code-sm truncate text-on-surface"
+              >D:/bin/OpenDiff.exe</span
+            >
+            <span
+              class="material-symbols-outlined ml-auto opacity-0 group-hover:opacity-100 cursor-pointer"
+              data-icon="content_copy"
+              >content_copy</span
+            >
+          </div>
+          <div class="flex items-center px-md py-xs gap-md group">
+            <span
+              class="material-symbols-outlined text-primary"
+              data-icon="description"
+              >description</span
+            >
+            <span class="font-code-sm text-code-sm truncate text-on-surface"
+              >D:/bin/OpenDiff-preview.exe</span
+            >
+            <span
+              class="material-symbols-outlined ml-auto opacity-0 group-hover:opacity-100 cursor-pointer"
+              data-icon="content_copy"
+              >content_copy</span
+            >
+          </div>
+        </div>
+        <!-- Comparison Table Container -->
+        <div class="flex-1 overflow-auto p-md">
+          <div class="bg-white border border-outline-variant shadow-sm overflow-hidden">
+            <table class="w-full border-collapse font-ui-base text-ui-base">
+              <thead class="bg-surface-container sticky top-0 z-20">
+                <tr class="text-left border-b border-outline-variant">
+                  <th
+                    class="py-sm px-md w-48 font-ui-medium text-ui-medium border-r border-outline-variant"
+                  >
+                    Field Name
+                  </th>
+                  <th
+                    class="py-sm px-md border-r border-outline-variant font-ui-medium text-ui-medium"
+                  >
+                    Base File (Left)
+                  </th>
+                  <th class="py-sm px-md font-ui-medium text-ui-medium">Modified File (Right)</th>
+                </tr>
+              </thead>
+              <tbody class="font-code-sm text-code-sm">
+                <!-- Version Info Section -->
+                <tr class="bg-surface-container-low">
+                  <td
+                    class="px-md py-xs font-bold text-on-surface-variant border-b border-outline-variant"
+                    colspan="3"
+                  >
+                    <span class="flex items-center gap-sm">
+                      <span
+                        class="material-symbols-outlined"
+                        data-icon="settings_applications"
+                        >settings_applications</span
+                      >
+                      Version Information
+                    </span>
+                  </td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    ProductName
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant">OpenDiff Professional</td>
+                  <td class="px-md py-xs">OpenDiff Professional</td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    FileVersion
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant">1.4.2.108</td>
+                  <td class="px-md py-xs diff-changed">1.5.0.012</td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    ProductVersion
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant">1.4.2-stable</td>
+                  <td class="px-md py-xs diff-changed">1.5.0-preview</td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    CompanyName
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant">OpenDiff LLC</td>
+                  <td class="px-md py-xs">OpenDiff LLC</td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    OriginalFilename
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant">OpenDiff.exe</td>
+                  <td class="px-md py-xs">OpenDiff.exe</td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    Signature (Authenticode)
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant text-tertiary">
+                    Valid Digital Signature
+                  </td>
+                  <td class="px-md py-xs diff-changed text-primary">
+                    Valid Digital Signature (Updated Cert)
+                  </td>
+                </tr>
+                <!-- Media Info Section -->
+                <tr class="bg-surface-container-low">
+                  <td
+                    class="px-md py-xs font-bold text-on-surface-variant border-b border-outline-variant"
+                    colspan="3"
+                  >
+                    <span class="flex items-center gap-sm">
+                      <span
+                        class="material-symbols-outlined"
+                        data-icon="movie"
+                        >movie</span
+                      >
+                      Embedded Media Assets
+                    </span>
+                  </td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    Resource: splash.mp4
+                  </td>
+                  <td
+                    class="px-md py-xs border-r border-outline-variant text-on-surface-variant italic"
+                  >
+                    Present
+                  </td>
+                  <td class="px-md py-xs text-on-surface-variant italic">Present</td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    Codec
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant">H.264 / AVC</td>
+                  <td class="px-md py-xs diff-changed">H.265 / HEVC</td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    Resolution
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant">1920x1080</td>
+                  <td class="px-md py-xs">1920x1080</td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    Bitrate
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant">4500 kbps</td>
+                  <td class="px-md py-xs diff-changed">2800 kbps (Optimized)</td>
+                </tr>
+                <tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+                  <td class="px-md py-xs border-r border-outline-variant bg-surface-container-low">
+                    Asset MD5
+                  </td>
+                  <td class="px-md py-xs border-r border-outline-variant">E99A18C428CB...</td>
+                  <td class="px-md py-xs diff-changed">A23F78D119E2...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+      <!-- Inspector Panel -->
+      <aside
+        class="w-sidebar_width h-full bg-surface-container-low border-l border-outline-variant flex flex-col"
+      >
+        <div
+          class="h-toolbar_height flex items-center px-md border-b border-outline-variant justify-between bg-surface-container-high"
+        >
+          <span class="font-ui-medium text-ui-medium">Inspector</span>
+          <span
+            class="material-symbols-outlined text-on-surface-variant"
+            data-icon="dock_to_right"
+            >dock_to_right</span
+          >
+        </div>
+        <div class="flex-1 overflow-y-auto p-md space-y-md">
+          <!-- Signature Status -->
+          <div class="bg-surface rounded p-md border border-outline-variant">
+            <div class="flex items-center gap-sm mb-sm">
+              <span
+                class="material-symbols-outlined text-primary"
+                data-icon="verified_user"
+                data-weight="fill"
+                >verified_user</span
+              >
+              <h4 class="font-ui-medium text-ui-medium">Signature Status</h4>
+            </div>
+            <div class="space-y-sm">
+              <div class="p-sm bg-primary-container/20 border border-primary-container rounded">
+                <div class="text-primary font-bold text-[10px] uppercase">Right File Status</div>
+                <div class="text-ui-sm mt-xs">Valid Digital Signature</div>
+                <div class="text-[10px] text-on-surface-variant">
+                  Signer: OpenDiff LLC (Global CA)
+                </div>
+                <div class="text-[10px] text-on-surface-variant">
+                  Timestamp: 2023-11-15 09:42:11
+                </div>
+              </div>
+              <div class="p-sm bg-surface-container rounded border border-outline-variant">
+                <div class="text-outline font-bold text-[10px] uppercase">Left File Status</div>
+                <div class="text-ui-sm mt-xs">Valid Digital Signature</div>
+                <div class="text-[10px] text-on-surface-variant">
+                  Signer: OpenDiff LLC (Global CA)
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Field Specific Notes -->
+          <div>
+            <h4 class="font-ui-medium text-ui-medium mb-sm flex items-center gap-sm">
+              <span
+                class="material-symbols-outlined"
+                data-icon="sticky_note_2"
+                >sticky_note_2</span
+              >
+              Analysis Notes
+            </h4>
+            <div class="space-y-sm text-ui-sm">
+              <div class="border-l-2 border-primary pl-md py-xs">
+                <div class="font-bold">H.265 Upgrade</div>
+                <p class="text-on-surface-variant text-[11px]">
+                  Media asset 'splash.mp4' has been recoded to HEVC. Size reduced by 42% without
+                  visual degradation.
+                </p>
+              </div>
+              <div class="border-l-2 border-outline-variant pl-md py-xs">
+                <div class="font-bold">Minor Version Bump</div>
+                <p class="text-on-surface-variant text-[11px]">
+                  Project manifest indicates this is a release candidate for branch 'main-v1.5'.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Media Preview Simulation -->
+          <div class="space-y-sm">
+            <div class="aspect-video w-full relative bg-black rounded overflow-hidden">
+              <img
+                class="w-full h-full object-cover opacity-60"
+                data-alt="A dark high-tech software splash screen showing abstract blue data waves and a stylized corporate logo for OpenDiff Professional. The lighting is cinematic and low-key, emphasizing precision and modern software engineering aesthetic. 4K resolution style."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBt3_zJo7O0zzyRfZTFefCBhr2WfsZrTDE7n6L1JVpUHA1HkAhbrc6kL9-lkTCOUH1Dw07GJylLU3uU6oolFQZVtewbaR6z2giGPSmD__SyieF-CMV_OY61eM5iigamph4guFG4cCkX0EZnoXVSlyxnbSfXo4WYR15XAvfMz0LeyyZPh1KpqgW-jxtgPSu3aZQgEVV8L36mIFzBQprc7N_aC1Dxo7D7lSMKNY2k8jQKvaUslctf-Da9hs4wIk3OG18EfUQRSo-JWt0"
+              />
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span
+                  class="material-symbols-outlined text-on-primary text-4xl"
+                  data-icon="play_circle"
+                  >play_circle</span
+                >
+              </div>
+              <div class="absolute bottom-2 left-2 px-sm bg-black/50 text-white text-[9px]">
+                Resource: splash.mp4
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Bilingual Toggle -->
+        <div class="p-md border-t border-outline-variant bg-surface">
+          <div class="flex items-center justify-between">
+            <span class="text-ui-sm text-on-surface-variant">Bilingual View</span>
+            <div
+              class="w-8 h-4 bg-primary rounded-full relative cursor-pointer"
+              onclick="
+                this.classList.toggle('bg-primary')
+                this.classList.toggle('bg-outline')
+              "
+            >
+              <div
+                class="absolute right-1 top-0.5 w-3 h-3 bg-white rounded-full transition-all duration-150"
+              ></div>
+            </div>
+          </div>
+          <div class="mt-sm flex gap-xs">
+            <button
+              class="flex-1 py-xs text-[10px] border border-primary bg-primary-container text-primary font-bold rounded"
+            >
+              EN
+            </button>
+            <button
+              class="flex-1 py-xs text-[10px] border border-outline-variant text-on-surface-variant rounded"
+            >
+              ZH
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <!-- Footer / Status Bar -->
+    <footer
+      class="h-6 w-full fixed bottom-0 flex justify-between items-center px-md z-50 bg-inverse-surface dark:bg-surface-container-highest border-t border-outline dark:border-outline-variant text-inverse-on-surface dark:text-on-surface font-code-sm text-code-sm"
+    >
+      <div class="flex items-center gap-xl h-full">
+        <div class="flex items-center gap-sm">
+          <span
+            class="material-symbols-outlined text-[14px]"
+            data-icon="check_circle"
+            >check_circle</span
+          >
+          <span>Ready</span>
+        </div>
+        <div class="h-3 w-[1px] bg-outline"></div>
+        <div class="flex items-center gap-sm">
+          <span
+            class="material-symbols-outlined text-[14px]"
+            data-icon="storage"
+            >storage</span
+          >
+          <span>L: 12.4 MB | R: 13.1 MB</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-xl h-full">
+        <span
+          class="cursor-pointer hover:text-primary-fixed dark:hover:text-primary transition-colors"
+          >UTF-8</span
+        >
+        <div class="h-3 w-[1px] bg-outline"></div>
+        <span
+          class="cursor-pointer hover:text-primary-fixed dark:hover:text-primary transition-colors"
+          >Line 1, Col 1</span
+        >
+        <div class="h-3 w-[1px] bg-outline"></div>
+        <span
+          class="cursor-pointer hover:text-primary-fixed dark:hover:text-primary transition-colors"
+          >LF</span
+        >
+        <div class="h-3 w-[1px] bg-outline"></div>
+        <span class="text-primary-fixed-dim font-bold">EN/中文</span>
+        <div class="flex items-center gap-sm ml-md">
+          <span
+            class="material-symbols-outlined text-[14px] text-primary-fixed-dim"
+            data-icon="sync"
+            >sync</span
+          >
+          <span
+            class="material-symbols-outlined text-[14px]"
+            data-icon="notifications"
+            >notifications</span
+          >
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Simple micro-interaction for table rows
+      document.querySelectorAll('tbody tr').forEach((row) => {
+        row.addEventListener('click', () => {
+          document.querySelectorAll('tbody tr').forEach((r) => r.classList.remove('bg-primary/10'))
+          if (!row.classList.contains('bg-surface-container-low')) {
+            row.classList.add('bg-primary/10')
+          }
+        })
+      })
+    </script>
+  </body>
+</html>

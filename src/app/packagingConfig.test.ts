@@ -71,6 +71,25 @@ interface PackageManifest {
   scripts: Record<string, string>
 }
 
+function readIcnsChunks(icon: Buffer): string[] {
+  const chunks: string[] = []
+  let offset = 8
+
+  while (offset + 8 <= icon.length) {
+    const type = icon.subarray(offset, offset + 4).toString('ascii')
+    const length = icon.readUInt32BE(offset + 4)
+
+    if (length < 8) {
+      break
+    }
+
+    chunks.push(type)
+    offset += length
+  }
+
+  return chunks
+}
+
 describe('packagingConfig', () => {
   it('defines complete Windows MSI metadata', () => {
     const config = JSON.parse(
@@ -117,9 +136,12 @@ describe('packagingConfig', () => {
     expect(existsSync(iconPath)).toBe(true)
 
     const icon = readFileSync(iconPath)
+    const iconLength = icon.readUInt32BE(4)
+    const iconChunks = readIcnsChunks(icon)
 
     expect(icon.subarray(0, 4).toString('ascii')).toBe('icns')
-    expect(icon.subarray(8, 12).toString('ascii')).toBe('icp5')
+    expect(iconLength).toBe(icon.length)
+    expect(iconChunks).toEqual(expect.arrayContaining(['ic10', 'ic09', 'ic08']))
   })
 
   it('exposes a macOS bundle script for macOS release runners', () => {

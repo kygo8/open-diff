@@ -1,0 +1,627 @@
+<!doctype html>
+
+<html
+  class="light"
+  lang="en"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      content="width=device-width, initial-scale=1.0"
+      name="viewport"
+    />
+    <title>OpenDiff | Table Compare</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Load Tailwind Config -->
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'tertiary-fixed': '#ffdcc6',
+              'tertiary-container': '#b75b00',
+              'secondary-container': '#dce2f3',
+              'on-error-container': '#93000a',
+              'surface-variant': '#e1e2e4',
+              'surface-container': '#edeef0',
+              'surface-container-lowest': '#ffffff',
+              'surface-container-high': '#e7e8ea',
+              'on-primary-fixed-variant': '#004395',
+              'tertiary-fixed-dim': '#ffb786',
+              'on-surface-variant': '#424754',
+              'inverse-primary': '#adc6ff',
+              'on-tertiary-fixed': '#311400',
+              'on-secondary': '#ffffff',
+              'primary-fixed': '#d8e2ff',
+              'error-container': '#ffdad6',
+              'surface-dim': '#d9dadc',
+              'on-tertiary': '#ffffff',
+              'primary-fixed-dim': '#adc6ff',
+              'on-surface': '#191c1e',
+              surface: '#f8f9fb',
+              'surface-container-low': '#f3f4f6',
+              'on-primary-fixed': '#001a42',
+              'secondary-fixed-dim': '#c0c7d6',
+              'surface-bright': '#f8f9fb',
+              error: '#ba1a1a',
+              'on-primary-container': '#fefcff',
+              'inverse-on-surface': '#f0f1f3',
+              'on-primary': '#ffffff',
+              'on-error': '#ffffff',
+              'secondary-fixed': '#dce2f3',
+              'on-secondary-fixed': '#151c27',
+              secondary: '#585f6c',
+              primary: '#0058be',
+              'on-background': '#191c1e',
+              'outline-variant': '#c2c6d6',
+              background: '#f8f9fb',
+              'on-secondary-container': '#5e6572',
+              'primary-container': '#2170e4',
+              tertiary: '#924700',
+              'surface-container-highest': '#e1e2e4',
+              'inverse-surface': '#2e3132',
+              'on-tertiary-container': '#fffbff',
+              'surface-tint': '#005ac2',
+              'on-secondary-fixed-variant': '#404754',
+              outline: '#727785',
+              'on-tertiary-fixed-variant': '#723600',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              xs: '0.125rem',
+              toolbar_height: '32px',
+              lg: '0.75rem',
+              xl: '1rem',
+              sm: '0.25rem',
+              sidebar_width: '240px',
+              tab_height: '28px',
+              md: '0.5rem',
+            },
+            fontFamily: {
+              'code-sm': ['JetBrains Mono'],
+              'ui-base': ['Inter'],
+              'header-section': ['Inter'],
+              'code-base': ['JetBrains Mono'],
+              'ui-sm': ['Inter'],
+              'ui-medium': ['Inter'],
+              'label-caps': ['Inter'],
+            },
+            fontSize: {
+              'code-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'ui-base': ['13px', { lineHeight: '18px', fontWeight: '400' }],
+              'header-section': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+              'code-base': ['12px', { lineHeight: '20px', fontWeight: '400' }],
+              'ui-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'ui-medium': ['13px', { lineHeight: '18px', fontWeight: '600' }],
+              'label-caps': [
+                '10px',
+                { lineHeight: '12px', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 20;
+        font-size: 16px;
+      }
+      .diff-added {
+        background-color: rgba(76, 175, 80, 0.15);
+        border-left: 3px solid #4caf50;
+      }
+      .diff-removed {
+        background-color: rgba(244, 67, 54, 0.15);
+        border-left: 3px solid #f44336;
+      }
+      .diff-changed {
+        background-color: rgba(255, 235, 59, 0.25);
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c2c6d6;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #727785;
+      }
+      tr:hover {
+        background-color: rgba(0, 88, 190, 0.05);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-surface text-on-surface font-ui-base text-ui-base h-screen overflow-hidden flex flex-col"
+  >
+    <!-- TopAppBar -->
+    <header
+      class="h-toolbar_height w-full bg-surface dark:bg-inverse-surface flex items-center px-md w-full justify-between border-b border-outline-variant dark:border-outline transition-colors duration-150 z-50"
+    >
+      <div class="flex items-center gap-xl">
+        <span
+          class="font-header-section text-header-section text-primary dark:text-primary-fixed-dim select-none"
+          >OpenDiff</span
+        >
+        <nav class="flex gap-md h-full items-center">
+          <a
+            class="font-ui-medium text-ui-medium text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high px-sm py-xs transition-colors"
+            href="#"
+            >File</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high px-sm py-xs transition-colors"
+            href="#"
+            >Edit</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium text-primary dark:text-primary-fixed-dim border-b-2 border-primary px-sm py-xs transition-colors"
+            href="#"
+            >Search</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high px-sm py-xs transition-colors"
+            href="#"
+            >View</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high px-sm py-xs transition-colors"
+            href="#"
+            >Session</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high px-sm py-xs transition-colors"
+            href="#"
+            >Actions</a
+          >
+        </nav>
+      </div>
+      <div class="flex items-center gap-md">
+        <button
+          class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-xs rounded"
+        >
+          settings
+        </button>
+        <button
+          class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-xs rounded"
+        >
+          help
+        </button>
+      </div>
+    </header>
+    <div class="flex-1 flex overflow-hidden">
+      <!-- SideNavBar -->
+      <aside
+        class="w-sidebar_width h-full bg-surface-container-low dark:bg-surface-container flex flex-col h-full border-r border-outline-variant dark:border-outline transition-all duration-100 flex-shrink-0"
+      >
+        <div class="p-md border-b border-outline-variant">
+          <div class="flex items-center gap-sm mb-xs">
+            <div class="w-4 h-4 bg-primary rounded-sm flex items-center justify-center">
+              <span
+                class="material-symbols-outlined text-[10px] text-white"
+                style="font-variation-settings: 'FILL' 1"
+                >folder</span
+              >
+            </div>
+            <span class="font-header-section text-header-section text-on-surface">Workspace</span>
+          </div>
+          <p class="font-ui-sm text-ui-sm text-on-surface-variant">Active Project: Q2-Audit</p>
+        </div>
+        <nav class="flex-1 overflow-y-auto custom-scrollbar py-sm">
+          <div class="space-y-xs px-sm">
+            <div
+              class="flex items-center gap-md px-md py-xs bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-sm cursor-pointer"
+            >
+              <span class="material-symbols-outlined">folder_open</span>
+              <span class="font-ui-sm text-ui-sm">Workspace</span>
+            </div>
+            <!-- Other items -->
+            <div
+              class="flex items-center gap-md px-md py-xs text-on-surface-variant hover:bg-surface-container-highest cursor-pointer"
+            >
+              <span class="material-symbols-outlined">rule</span>
+              <span class="font-ui-sm text-ui-sm">Changes</span>
+              <span
+                class="ml-auto bg-primary-container text-on-primary-container px-1 rounded text-[9px]"
+                >4</span
+              >
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-xs text-on-surface-variant hover:bg-surface-container-highest cursor-pointer"
+            >
+              <span class="material-symbols-outlined">history</span>
+              <span class="font-ui-sm text-ui-sm">History</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-xs text-on-surface-variant hover:bg-surface-container-highest cursor-pointer"
+            >
+              <span class="material-symbols-outlined">account_tree</span>
+              <span class="font-ui-sm text-ui-sm">Branches</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-xs text-on-surface-variant hover:bg-surface-container-highest cursor-pointer"
+            >
+              <span class="material-symbols-outlined">archive</span>
+              <span class="font-ui-sm text-ui-sm">Stash</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-xs text-on-surface-variant hover:bg-surface-container-highest cursor-pointer"
+            >
+              <span class="material-symbols-outlined">difference</span>
+              <span class="font-ui-sm text-ui-sm">Diffs</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-xs text-on-surface-variant hover:bg-surface-container-highest cursor-pointer"
+            >
+              <span class="material-symbols-outlined">warning</span>
+              <span class="font-ui-sm text-ui-sm">Conflicts</span>
+            </div>
+            <div
+              class="flex items-center gap-md px-md py-xs text-on-surface-variant hover:bg-surface-container-highest cursor-pointer"
+            >
+              <span class="material-symbols-outlined">terminal</span>
+              <span class="font-ui-sm text-ui-sm">Terminal</span>
+            </div>
+          </div>
+        </nav>
+      </aside>
+      <!-- Main Content Area -->
+      <main class="flex-1 flex flex-col bg-surface-container-lowest overflow-hidden">
+        <!-- Table Header / Toolbar -->
+        <div
+          class="h-8 border-b border-outline-variant flex items-center justify-between px-md bg-surface-container"
+        >
+          <div class="flex items-center gap-xl h-full">
+            <div class="flex items-center gap-sm">
+              <span class="material-symbols-outlined text-primary">table_rows</span>
+              <span class="font-ui-medium text-ui-medium"
+                >customers_Q1.csv vs customers_Q2.csv</span
+              >
+            </div>
+            <div class="h-4 w-px bg-outline-variant"></div>
+            <div class="flex items-center gap-md">
+              <span class="text-on-surface-variant font-ui-sm text-ui-sm">Key Column:</span>
+              <div
+                class="flex items-center gap-xs px-2 py-0.5 bg-primary-container text-on-primary-container rounded-sm font-ui-sm text-ui-sm"
+              >
+                customer_id
+                <span class="material-symbols-outlined text-[12px]">keyboard_arrow_down</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-md">
+              <span class="text-on-surface-variant font-ui-sm text-ui-sm">Tolerance:</span>
+              <span class="font-ui-sm text-ui-sm font-bold text-primary">0.5%</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-md">
+            <button
+              class="flex items-center gap-xs px-2 py-1 hover:bg-surface-container-high transition-colors text-on-surface-variant"
+            >
+              <span class="material-symbols-outlined">filter_alt</span>
+              <span class="font-ui-sm text-ui-sm">Filters</span>
+            </button>
+            <button class="flex items-center gap-xs px-2 py-1 bg-primary text-white rounded-sm">
+              <span class="material-symbols-outlined">sync</span>
+              <span class="font-ui-sm text-ui-sm">Run Comparison</span>
+            </button>
+          </div>
+        </div>
+        <!-- Column Mapping Settings Bar -->
+        <div
+          class="px-md py-1.5 border-b border-outline-variant bg-surface flex items-center gap-lg"
+        >
+          <span class="font-label-caps text-label-caps text-outline uppercase"
+            >Column Mapping:</span
+          >
+          <div class="flex items-center gap-md">
+            <div
+              class="flex items-center gap-xs px-2 py-1 border border-outline-variant rounded bg-surface-container-low"
+            >
+              <span class="text-ui-sm font-ui-sm">updated_at</span>
+              <span class="material-symbols-outlined text-error text-[14px]">visibility_off</span>
+              <span class="text-[10px] text-on-surface-variant font-ui-sm">Ignored</span>
+            </div>
+            <div class="flex items-center gap-xs px-2 py-1 border border-outline-variant rounded">
+              <span class="text-ui-sm font-ui-sm">rev_share</span>
+              <span class="material-symbols-outlined text-primary text-[14px]">percent</span>
+              <span class="text-[10px] text-on-surface-variant font-ui-sm">Numeric (0.5%)</span>
+            </div>
+            <div class="flex items-center gap-xs px-2 py-1 border border-outline-variant rounded">
+              <span class="text-ui-sm font-ui-sm">email_addr</span>
+              <span class="material-symbols-outlined text-primary text-[14px]">link</span>
+              <span class="text-[10px] text-on-surface-variant font-ui-sm">String Match</span>
+            </div>
+          </div>
+        </div>
+        <!-- Split Pane View -->
+        <div class="flex-1 flex overflow-hidden">
+          <!-- Grid Area -->
+          <div class="flex-1 overflow-auto custom-scrollbar">
+            <table class="w-full border-collapse font-code-sm text-code-sm">
+              <thead class="sticky top-0 bg-surface-container z-10">
+                <tr>
+                  <th
+                    class="w-10 border-r border-b border-outline-variant p-1 text-outline font-normal"
+                  >
+                    #
+                  </th>
+                  <th
+                    class="border-r border-b border-outline-variant p-2 text-left bg-primary-container/10"
+                  >
+                    customer_id [PK]
+                  </th>
+                  <th class="border-r border-b border-outline-variant p-2 text-left">first_name</th>
+                  <th class="border-r border-b border-outline-variant p-2 text-left">last_name</th>
+                  <th class="border-r border-b border-outline-variant p-2 text-left">email_addr</th>
+                  <th class="border-r border-b border-outline-variant p-2 text-right">rev_share</th>
+                  <th
+                    class="border-r border-b border-outline-variant p-2 text-left text-outline italic"
+                  >
+                    updated_at (Ignored)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Row: Unchanged -->
+                <tr class="h-8">
+                  <td
+                    class="border-r border-outline-variant bg-surface-container-low text-center text-[10px]"
+                  >
+                    1
+                  </td>
+                  <td class="border-r border-outline-variant p-2">UID-10042</td>
+                  <td class="border-r border-outline-variant p-2">Michael</td>
+                  <td class="border-r border-outline-variant p-2">Chen</td>
+                  <td class="border-r border-outline-variant p-2">m.chen@corp.com</td>
+                  <td class="border-r border-outline-variant p-2 text-right">12.50%</td>
+                  <td class="border-r border-outline-variant p-2 text-outline">2023-12-01</td>
+                </tr>
+                <!-- Row: Changed (Yellow) -->
+                <tr
+                  class="h-8 cursor-pointer bg-yellow-50/50"
+                  onclick="
+                    updateInspector(
+                      'Email Address Change',
+                      'UID-10051',
+                      'm.p@old.com',
+                      'marcus.p@new.org',
+                      'email_addr',
+                    )
+                  "
+                >
+                  <td class="border-r border-outline-variant bg-yellow-100 text-center text-[10px]">
+                    2
+                  </td>
+                  <td class="border-r border-outline-variant p-2">UID-10051</td>
+                  <td class="border-r border-outline-variant p-2">Marcus</td>
+                  <td class="border-r border-outline-variant p-2">Perez</td>
+                  <td class="border-r border-outline-variant p-2 diff-changed">marcus.p@new.org</td>
+                  <td class="border-r border-outline-variant p-2 text-right">08.20%</td>
+                  <td class="border-r border-outline-variant p-2 text-outline">2024-01-15</td>
+                </tr>
+                <!-- Row: Deleted (Red) -->
+                <tr class="h-8 diff-removed opacity-70">
+                  <td class="border-r border-outline-variant bg-red-100 text-center text-[10px]">
+                    -
+                  </td>
+                  <td class="border-r border-outline-variant p-2 line-through">UID-10068</td>
+                  <td class="border-r border-outline-variant p-2 line-through">Sarah</td>
+                  <td class="border-r border-outline-variant p-2 line-through">Jenkins</td>
+                  <td class="border-r border-outline-variant p-2 line-through">
+                    s.jenkins@mail.com
+                  </td>
+                  <td class="border-r border-outline-variant p-2 text-right line-through">
+                    15.00%
+                  </td>
+                  <td class="border-r border-outline-variant p-2 text-outline">2023-11-20</td>
+                </tr>
+                <!-- Row: Tolerance Test (Unchanged because within 0.5%) -->
+                <tr class="h-8">
+                  <td
+                    class="border-r border-outline-variant bg-surface-container-low text-center text-[10px]"
+                  >
+                    4
+                  </td>
+                  <td class="border-r border-outline-variant p-2">UID-10072</td>
+                  <td class="border-r border-outline-variant p-2">Linda</td>
+                  <td class="border-r border-outline-variant p-2">Wong</td>
+                  <td class="border-r border-outline-variant p-2">l.wong@global.net</td>
+                  <td class="border-r border-outline-variant p-2 text-right text-primary font-bold">
+                    11.02% <span class="text-[9px] text-outline font-normal">(was 11.00%)</span>
+                  </td>
+                  <td class="border-r border-outline-variant p-2 text-outline">2024-02-10</td>
+                </tr>
+                <!-- Row: Inserted (Green) -->
+                <tr class="h-8 diff-added">
+                  <td class="border-r border-outline-variant bg-green-100 text-center text-[10px]">
+                    +
+                  </td>
+                  <td class="border-r border-outline-variant p-2 font-bold">UID-10099</td>
+                  <td class="border-r border-outline-variant p-2">Derek</td>
+                  <td class="border-r border-outline-variant p-2">Smith</td>
+                  <td class="border-r border-outline-variant p-2">d.smith@newhire.com</td>
+                  <td class="border-r border-outline-variant p-2 text-right">10.00%</td>
+                  <td class="border-r border-outline-variant p-2 text-outline">2024-03-01</td>
+                </tr>
+                <!-- Filler rows -->
+                <tr
+                  class="h-8"
+                  v-for="i in 10"
+                >
+                  <td
+                    class="border-r border-outline-variant bg-surface-container-low text-center text-[10px]"
+                  >
+                    5
+                  </td>
+                  <td class="border-r border-outline-variant p-2">UID-10102</td>
+                  <td class="border-r border-outline-variant p-2">Anna</td>
+                  <td class="border-r border-outline-variant p-2">Gomez</td>
+                  <td class="border-r border-outline-variant p-2">a.gomez@corp.com</td>
+                  <td class="border-r border-outline-variant p-2 text-right">05.00%</td>
+                  <td class="border-r border-outline-variant p-2 text-outline">2023-09-12</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Right Inspector Panel -->
+          <aside class="w-[300px] bg-surface border-l border-outline-variant flex flex-col">
+            <div
+              class="p-md border-b border-outline-variant bg-surface-container-high flex items-center justify-between"
+            >
+              <span class="font-ui-medium text-ui-medium text-on-surface">Diff Inspector</span>
+              <button class="material-symbols-outlined text-outline">close</button>
+            </div>
+            <div
+              class="p-md space-y-lg"
+              id="inspector-content"
+            >
+              <div>
+                <span class="font-label-caps text-label-caps text-outline block mb-md uppercase"
+                  >Selected Context</span
+                >
+                <div
+                  class="flex items-center gap-md p-md bg-secondary-container rounded border border-outline-variant"
+                >
+                  <span class="material-symbols-outlined text-primary">person</span>
+                  <div>
+                    <p
+                      class="font-ui-medium text-ui-medium"
+                      id="ins-title"
+                    >
+                      Email Address Change
+                    </p>
+                    <p
+                      class="font-code-sm text-code-sm text-on-surface-variant"
+                      id="ins-key"
+                    >
+                      UID-10051
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <span class="font-label-caps text-label-caps text-outline block mb-md uppercase"
+                  >Property Details</span
+                >
+                <div class="space-y-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-on-surface-variant text-ui-sm">Property:</span>
+                    <span
+                      class="font-code-sm text-code-sm bg-surface-variant px-1 rounded"
+                      id="ins-prop"
+                      >email_addr</span
+                    >
+                  </div>
+                  <div class="flex flex-col gap-xs mt-lg">
+                    <span class="text-[10px] text-error font-bold uppercase">Old Value</span>
+                    <div
+                      class="p-2 bg-error-container/20 border border-error/20 font-code-sm text-code-sm text-on-surface break-all"
+                      id="ins-old"
+                    >
+                      m.p@old.com
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-xs mt-md">
+                    <span class="text-[10px] text-primary font-bold uppercase">New Value</span>
+                    <div
+                      class="p-2 bg-primary-container/20 border border-primary/20 font-code-sm text-code-sm text-on-surface break-all"
+                      id="ins-new"
+                    >
+                      marcus.p@new.org
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-xl">
+                <span class="font-label-caps text-label-caps text-outline block mb-md uppercase"
+                  >History</span
+                >
+                <div class="flex items-center gap-md opacity-60">
+                  <div class="w-1.5 h-1.5 bg-outline rounded-full"></div>
+                  <span class="text-ui-sm font-ui-sm">Last modified by admin (2h ago)</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+    <!-- Footer / Status Bar -->
+    <footer
+      class="h-6 w-full bg-inverse-surface dark:bg-surface-container-highest flex justify-between items-center px-md w-full z-50 fixed bottom-0 border-t border-outline dark:border-outline-variant"
+    >
+      <div class="flex items-center gap-xl h-full">
+        <span class="font-code-sm text-code-sm text-inverse-on-surface dark:text-on-surface"
+          >UTF-8 | Line 2, Col 45 | LF | EN/中文</span
+        >
+        <div class="flex items-center gap-md">
+          <span class="material-symbols-outlined text-[12px] text-green-400">check_circle</span>
+          <span class="font-code-sm text-code-sm text-inverse-on-surface"
+            >Comparison Complete: 3 Conflicts Resolved</span
+          >
+        </div>
+      </div>
+      <div class="flex items-center gap-lg">
+        <span
+          class="font-label-caps text-label-caps text-surface-variant hover:text-primary-fixed cursor-pointer transition-colors uppercase"
+          >Status</span
+        >
+        <span
+          class="font-label-caps text-label-caps text-surface-variant hover:text-primary-fixed cursor-pointer transition-colors uppercase"
+          >Logs</span
+        >
+        <span
+          class="font-label-caps text-label-caps text-primary-fixed-dim font-bold cursor-pointer uppercase"
+          >Terminal</span
+        >
+      </div>
+    </footer>
+    <script>
+      function updateInspector(title, key, oldVal, newVal, prop) {
+        document.getElementById('ins-title').innerText = title
+        document.getElementById('ins-key').innerText = key
+        document.getElementById('ins-old').innerText = oldVal
+        document.getElementById('ins-new').innerText = newVal
+        document.getElementById('ins-prop').innerText = prop
+      }
+
+      // Simulating some interactive highlights
+      document.querySelectorAll('tbody tr').forEach((row) => {
+        row.addEventListener('click', () => {
+          document
+            .querySelectorAll('tbody tr')
+            .forEach((r) => r.classList.remove('ring-1', 'ring-primary', 'z-10', 'relative'))
+          row.classList.add('ring-1', 'ring-primary', 'z-10', 'relative')
+        })
+      })
+    </script>
+  </body>
+</html>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { saveTextFile } from '@/api/diff'
+import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 
 type MergePaneId = 'left' | 'base' | 'right' | 'output'
 type MergeSource = 'left' | 'base' | 'right'
@@ -135,131 +137,164 @@ function lineClass(line: string, paneId: MergePaneId): string {
 </script>
 
 <template>
-  <section class="text-merge-view">
-    <div class="merge-toolbar">
-      <div>
-        <strong>{{ $t('ui.textMerge') }}</strong>
-        <span>{{ $t('ui.threeWayMergeWorkspace') }}</span>
-      </div>
-      <span
-        class="status-chip"
-        data-testid="merge-conflict-status"
-      >
-        {{ conflictStatus }}
-      </span>
-      <span class="status-chip">{{ $t('ui.outputHasConflictMarkers') }}</span>
-      <input
-        v-model="outputPath"
-        class="output-path-input"
-        data-testid="merge-output-path"
-        type="text"
-        :aria-label="$t('ui.mergeOutputPath')"
-      />
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="save-merge-output"
-        :disabled="saving"
-        @click="saveOutput"
-      >
-        {{ $t('ui.saveOutput') }}
-      </button>
-      <span
-        class="status-chip"
-        data-testid="merge-save-status"
-      >
-        {{ saveStatus }}
-      </span>
-    </div>
-
-    <div class="merge-grid">
-      <section
-        v-for="pane in panes"
-        :key="pane.id"
-        class="merge-pane"
-        :data-testid="`merge-pane-${pane.id}`"
-      >
-        <header class="pane-header">
-          <div>
-            <h2>{{ pane.title }}</h2>
-            <span>{{ pane.subtitle }}</span>
-          </div>
-          <small>{{ pane.lines.length }} lines</small>
-        </header>
-        <textarea
-          v-if="pane.id === 'output'"
-          v-model="outputText"
-          class="output-editor"
-          data-testid="merge-output-editor"
-          spellcheck="false"
+  <WorkbenchShell
+    :title="$t('ui.textMerge')"
+    eyebrow="Merge"
+    :subtitle="conflictStatus"
+    inspector-label="Text merge inspector"
+  >
+    <section class="text-merge-view">
+      <div class="merge-toolbar">
+        <div>
+          <strong>{{ $t('ui.textMerge') }}</strong>
+          <span>{{ $t('ui.threeWayMergeWorkspace') }}</span>
+        </div>
+        <span
+          class="status-chip"
+          data-testid="merge-conflict-status"
+        >
+          {{ conflictStatus }}
+        </span>
+        <span class="status-chip">{{ $t('ui.outputHasConflictMarkers') }}</span>
+        <input
+          v-model="outputPath"
+          class="output-path-input"
+          data-testid="merge-output-path"
+          type="text"
+          :aria-label="$t('ui.mergeOutputPath')"
         />
-        <ol
-          v-else
-          class="merge-lines"
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="save-merge-output"
+          :disabled="saving"
+          @click="saveOutput"
+        >
+          {{ $t('ui.saveOutput') }}
+        </button>
+        <span
+          class="status-chip"
+          data-testid="merge-save-status"
+        >
+          {{ saveStatus }}
+        </span>
+      </div>
+
+      <div class="merge-grid">
+        <section
+          v-for="pane in panes"
+          :key="pane.id"
+          class="merge-pane"
+          :data-testid="`merge-pane-${pane.id}`"
+        >
+          <header class="pane-header">
+            <div>
+              <h2>{{ pane.title }}</h2>
+              <span>{{ pane.subtitle }}</span>
+            </div>
+            <small>{{ pane.lines.length }} lines</small>
+          </header>
+          <textarea
+            v-if="pane.id === 'output'"
+            v-model="outputText"
+            class="output-editor"
+            data-testid="merge-output-editor"
+            spellcheck="false"
+          />
+          <ol
+            v-else
+            class="merge-lines"
+          >
+            <li
+              v-for="(line, index) in pane.lines"
+              :key="`${pane.id}-${String(index)}`"
+              :class="lineClass(line, pane.id)"
+            >
+              <span class="line-number">{{ index + 1 }}</span>
+              <code>{{ line }}</code>
+            </li>
+          </ol>
+        </section>
+      </div>
+
+      <section
+        class="conflict-panel"
+        :aria-label="$t('ui.mergeConflicts')"
+      >
+        <header>
+          <h2>{{ $t('ui.conflicts') }}</h2>
+          <span>{{ conflictStatus }}</span>
+        </header>
+        <ul
+          class="conflict-list"
+          data-testid="merge-conflict-list"
         >
           <li
-            v-for="(line, index) in pane.lines"
-            :key="`${pane.id}-${String(index)}`"
-            :class="lineClass(line, pane.id)"
+            v-for="conflict in unresolvedConflicts"
+            :key="conflict.line"
           >
-            <span class="line-number">{{ index + 1 }}</span>
-            <code>{{ line }}</code>
+            <strong>Line {{ conflict.line }}: {{ conflict.title }}</strong>
+            <div class="conflict-source">
+              <span>Left: {{ conflict.left }}</span>
+              <button
+                type="button"
+                data-testid="accept-left-conflict"
+                @click="acceptConflict('left')"
+              >
+                {{ $t('ui.acceptLeft') }}
+              </button>
+            </div>
+            <div class="conflict-source">
+              <span>Base: {{ conflict.base }}</span>
+              <button
+                type="button"
+                data-testid="accept-base-conflict"
+                @click="acceptConflict('base')"
+              >
+                {{ $t('ui.acceptBase') }}
+              </button>
+            </div>
+            <div class="conflict-source">
+              <span>Right: {{ conflict.right }}</span>
+              <button
+                type="button"
+                data-testid="accept-right-conflict"
+                @click="acceptConflict('right')"
+              >
+                {{ $t('ui.acceptRight') }}
+              </button>
+            </div>
           </li>
-        </ol>
+        </ul>
       </section>
-    </div>
-
-    <section
-      class="conflict-panel"
-      :aria-label="$t('ui.mergeConflicts')"
-    >
-      <header>
-        <h2>{{ $t('ui.conflicts') }}</h2>
-        <span>{{ conflictStatus }}</span>
-      </header>
-      <ul
-        class="conflict-list"
-        data-testid="merge-conflict-list"
-      >
-        <li
-          v-for="conflict in unresolvedConflicts"
-          :key="conflict.line"
-        >
-          <strong>Line {{ conflict.line }}: {{ conflict.title }}</strong>
-          <div class="conflict-source">
-            <span>Left: {{ conflict.left }}</span>
-            <button
-              type="button"
-              data-testid="accept-left-conflict"
-              @click="acceptConflict('left')"
-            >
-              {{ $t('ui.acceptLeft') }}
-            </button>
-          </div>
-          <div class="conflict-source">
-            <span>Base: {{ conflict.base }}</span>
-            <button
-              type="button"
-              data-testid="accept-base-conflict"
-              @click="acceptConflict('base')"
-            >
-              {{ $t('ui.acceptBase') }}
-            </button>
-          </div>
-          <div class="conflict-source">
-            <span>Right: {{ conflict.right }}</span>
-            <button
-              type="button"
-              data-testid="accept-right-conflict"
-              @click="acceptConflict('right')"
-            >
-              {{ $t('ui.acceptRight') }}
-            </button>
-          </div>
-        </li>
-      </ul>
     </section>
-  </section>
+
+    <template #inspector>
+      <WorkbenchInspector>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.mergeConflicts') }}</h2>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.conflicts') }}</dt>
+              <dd data-tone="conflict">{{ conflictStatus }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.selection') }}</dt>
+              <dd>{{ currentConflict?.title ?? '--' }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.outputFolder') }}</dt>
+              <dd>{{ outputPath }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.status') }}</dt>
+              <dd>{{ saveStatus }}</dd>
+            </div>
+          </dl>
+        </section>
+      </WorkbenchInspector>
+    </template>
+  </WorkbenchShell>
 </template>
 <style scoped>
 .text-merge-view {

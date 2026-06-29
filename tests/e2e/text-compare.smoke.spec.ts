@@ -67,14 +67,23 @@ test('opens the home page and runs a text comparison', async ({ page }) => {
 
   await page.goto('/')
 
-  await expect(page.getByRole('heading', { name: 'Choose a comparison workspace' })).toBeVisible()
+  await expect(
+    page.locator('.workbench-titlebar').getByRole('heading', { name: 'New Session' }),
+  ).toBeVisible()
 
-  await page.getByRole('button', { name: 'Text' }).click()
-  await expect(page.getByText('No comparison yet')).toBeVisible()
+  await page
+    .locator('[data-session-type="text-compare"]')
+    .getByRole('button', { name: 'Open' })
+    .click()
+  await expect(page.locator('.workbench-subtitle')).toHaveText(
+    '2 equal, 1 modified, 1 added, 0 deleted',
+  )
 
   await page.getByTestId('run-diff').click()
 
-  await expect(page.getByText('2 equal, 1 modified, 1 added, 0 deleted')).toBeVisible()
+  await expect(page.locator('.workbench-subtitle')).toHaveText(
+    '2 equal, 1 modified, 1 added, 0 deleted',
+  )
   await expect(page.getByTestId('text-diff-scroll-container')).toContainText('line 2')
   await expect(page.getByTestId('text-details')).toContainText('Left 2: line two')
 })

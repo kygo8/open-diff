@@ -1,0 +1,630 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      content="width=device-width, initial-scale=1.0"
+      name="viewport"
+    />
+    <title>Global Settings - OpenDiff</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com"
+      rel="preconnect"
+    />
+    <link
+      crossorigin=""
+      href="https://fonts.gstatic.com"
+      rel="preconnect"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-container-low': '#f3f4f6',
+              'tertiary-fixed-dim': '#ffb786',
+              outline: '#727785',
+              'on-surface': '#191c1e',
+              'on-tertiary-container': '#fffbff',
+              error: '#ba1a1a',
+              'primary-container': '#2170e4',
+              'primary-fixed-dim': '#adc6ff',
+              'on-primary-fixed-variant': '#004395',
+              'surface-bright': '#f8f9fb',
+              'inverse-on-surface': '#f0f1f3',
+              'surface-variant': '#e1e2e4',
+              surface: '#f8f9fb',
+              secondary: '#585f6c',
+              'on-primary-container': '#fefcff',
+              'on-secondary-fixed': '#151c27',
+              'tertiary-container': '#b75b00',
+              'secondary-container': '#dce2f3',
+              'inverse-surface': '#2e3132',
+              'on-secondary-fixed-variant': '#404754',
+              'on-error-container': '#93000a',
+              'inverse-primary': '#adc6ff',
+              'on-tertiary': '#ffffff',
+              primary: '#0058be',
+              'on-error': '#ffffff',
+              background: '#f8f9fb',
+              'outline-variant': '#c2c6d6',
+              'on-tertiary-fixed-variant': '#723600',
+              'on-background': '#191c1e',
+              'surface-dim': '#d9dadc',
+              'secondary-fixed-dim': '#c0c7d6',
+              'tertiary-fixed': '#ffdcc6',
+              'error-container': '#ffdad6',
+              'surface-container-highest': '#e1e2e4',
+              'on-surface-variant': '#424754',
+              'primary-fixed': '#d8e2ff',
+              'on-secondary-container': '#5e6572',
+              'surface-container-lowest': '#ffffff',
+              'secondary-fixed': '#dce2f3',
+              'on-tertiary-fixed': '#311400',
+              'on-secondary': '#ffffff',
+              'on-primary': '#ffffff',
+              'on-primary-fixed': '#001a42',
+              tertiary: '#924700',
+              'surface-tint': '#005ac2',
+              'surface-container-high': '#e7e8ea',
+              'surface-container': '#edeef0',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              lg: '0.75rem',
+              sidebar_width: '240px',
+              xs: '0.125rem',
+              md: '0.5rem',
+              toolbar_height: '32px',
+              xl: '1rem',
+              tab_height: '28px',
+              sm: '0.25rem',
+            },
+            fontFamily: {
+              'code-sm': ['JetBrains Mono'],
+              'label-caps': ['Inter'],
+              'code-base': ['JetBrains Mono'],
+              'ui-sm': ['Inter'],
+              'header-section': ['Inter'],
+              'ui-medium': ['Inter'],
+              'ui-base': ['Inter'],
+            },
+            fontSize: {
+              'code-sm': [
+                '11px',
+                {
+                  lineHeight: '16px',
+                  fontWeight: '400',
+                },
+              ],
+              'label-caps': [
+                '10px',
+                {
+                  lineHeight: '12px',
+                  letterSpacing: '0.05em',
+                  fontWeight: '700',
+                },
+              ],
+              'code-base': [
+                '12px',
+                {
+                  lineHeight: '20px',
+                  fontWeight: '400',
+                },
+              ],
+              'ui-sm': [
+                '11px',
+                {
+                  lineHeight: '16px',
+                  fontWeight: '400',
+                },
+              ],
+              'header-section': [
+                '14px',
+                {
+                  lineHeight: '20px',
+                  fontWeight: '600',
+                },
+              ],
+              'ui-medium': [
+                '13px',
+                {
+                  lineHeight: '18px',
+                  fontWeight: '600',
+                },
+              ],
+              'ui-base': [
+                '13px',
+                {
+                  lineHeight: '18px',
+                  fontWeight: '400',
+                },
+              ],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f3f4f6;
+        color: #191c1e;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .pane-border {
+        border: 1px solid #e1e2e4;
+      }
+      .active-pane-top {
+        border-top: 2px solid #0058be;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f3f4f6;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c2c6d6;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #727785;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-surface-container-low dark:bg-surface-container-low flex flex-col h-screen text-on-surface"
+  >
+    <!-- TopNavBar -->
+    <nav
+      class="bg-surface-container-low dark:bg-surface-container-low flex items-center w-full px-md space-x-xl docked full-width top-0 h-toolbar_height border-b border-outline-variant dark:border-outline flat no shadows transition-colors duration-150"
+    >
+      <div
+        class="font-header-section text-header-section text-primary dark:text-primary-fixed-dim flex items-center shrink-0"
+      >
+        <span class="material-symbols-outlined mr-sm text-[18px]">difference</span> OpenDiff
+      </div>
+      <div
+        class="flex-1 flex space-x-md overflow-x-auto custom-scrollbar no-scrollbar items-center"
+      >
+        <a
+          class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant px-sm py-xs rounded font-ui-base text-ui-base whitespace-nowrap"
+          href="#"
+          >File</a
+        >
+        <a
+          class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant px-sm py-xs rounded font-ui-base text-ui-base whitespace-nowrap"
+          href="#"
+          >Edit</a
+        >
+        <a
+          class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant px-sm py-xs rounded font-ui-base text-ui-base whitespace-nowrap"
+          href="#"
+          >Search</a
+        >
+        <a
+          class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant px-sm py-xs rounded font-ui-base text-ui-base whitespace-nowrap"
+          href="#"
+          >View</a
+        >
+        <a
+          class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant px-sm py-xs rounded font-ui-base text-ui-base whitespace-nowrap"
+          href="#"
+          >Session</a
+        >
+        <a
+          class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant px-sm py-xs rounded font-ui-base text-ui-base whitespace-nowrap"
+          href="#"
+          >Actions</a
+        >
+      </div>
+      <div class="flex items-center space-x-sm shrink-0">
+        <button
+          class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant p-xs rounded"
+          title="language"
+        >
+          <span class="material-symbols-outlined text-[16px]">language</span>
+        </button>
+        <button
+          class="text-primary dark:text-primary-fixed-dim hover:bg-surface-variant dark:hover:bg-surface-variant p-xs rounded"
+          title="settings"
+        >
+          <span class="material-symbols-outlined text-[16px]">settings</span>
+        </button>
+        <button
+          class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant p-xs rounded"
+          title="help"
+        >
+          <span class="material-symbols-outlined text-[16px]">help</span>
+        </button>
+      </div>
+    </nav>
+    <div class="flex flex-1 overflow-hidden">
+      <!-- SideNavBar -->
+      <aside
+        class="bg-surface-container-low dark:bg-surface-container-low flex flex-col h-full py-md overflow-y-auto custom-scrollbar docked left-0 w-sidebar_width h-full border-r border-outline-variant dark:border-outline flat no shadows transition-all duration-100 ease-in-out shrink-0 hidden md:flex"
+      >
+        <div class="px-md mb-md">
+          <h2 class="font-header-section text-header-section text-on-surface dark:text-on-surface">
+            Workspace
+          </h2>
+          <div class="font-ui-sm text-ui-sm text-on-surface-variant mt-xs">Active Session</div>
+        </div>
+        <nav class="flex-1 space-y-xs px-sm">
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">home</span> Home
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">difference</span> Text Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">call_merge</span> Three-Way
+            Merge
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">folder_open</span> Folder
+            Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">sync</span> Folder Sync
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">account_tree</span> Folder
+            Merge
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">table_chart</span> Table
+            Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">heart_check</span> Hex Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">image</span> Picture Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]"
+              >settings_input_component</span
+            >
+            Registry Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">info</span> Metadata
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">cloud_queue</span> Remotes
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">terminal</span> Scripts
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded bg-primary-container text-on-primary-container dark:bg-primary dark:text-on-primary font-ui-medium font-ui-sm text-ui-sm"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-[16px]"
+              data-weight="fill"
+              style="font-variation-settings: 'FILL' 1"
+              >settings</span
+            >
+            Settings
+          </a>
+        </nav>
+      </aside>
+      <!-- Main Content Area -->
+      <main class="flex-1 flex flex-col min-w-0 bg-surface">
+        <!-- Header -->
+        <header
+          class="px-xl py-md border-b border-outline-variant flex justify-between items-end bg-surface-container-lowest active-pane-top"
+        >
+          <div>
+            <h1 class="font-header-section text-header-section text-on-surface text-lg">
+              Global Settings
+            </h1>
+            <p class="font-ui-sm text-ui-sm text-on-surface-variant mt-xs">
+              Configure application-wide rules, policies, and comparison behaviors.
+            </p>
+          </div>
+          <div class="flex items-center space-x-md">
+            <span
+              class="font-code-sm text-code-sm text-secondary bg-surface-container px-sm py-xs rounded"
+              >Rules active: 25</span
+            >
+            <div
+              class="flex items-center border border-outline-variant rounded overflow-hidden h-[24px]"
+            >
+              <button
+                class="px-sm font-ui-sm text-ui-sm bg-surface-variant text-on-surface border-r border-outline-variant"
+              >
+                EN
+              </button>
+              <button
+                class="px-sm font-ui-sm text-ui-sm bg-surface-container-lowest text-on-surface-variant hover:bg-surface-variant"
+              >
+                中
+              </button>
+            </div>
+          </div>
+        </header>
+        <div class="flex-1 flex overflow-hidden">
+          <!-- Settings Tree Nav (Inner Pane) -->
+          <div
+            class="w-[200px] border-r border-outline-variant bg-surface-container-lowest overflow-y-auto custom-scrollbar flex-shrink-0"
+          >
+            <div class="py-md">
+              <div
+                class="px-md py-xs font-ui-sm text-ui-sm text-on-surface hover:bg-surface-variant cursor-pointer flex items-center"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-xs text-on-surface-variant"
+                  >chevron_right</span
+                >
+                General
+              </div>
+              <div
+                class="px-md py-xs font-ui-sm text-ui-sm text-on-surface hover:bg-surface-variant cursor-pointer flex items-center"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-xs text-on-surface-variant"
+                  >chevron_right</span
+                >
+                Colors &amp; Fonts
+              </div>
+              <div
+                class="px-md py-xs font-ui-sm text-ui-sm text-on-surface hover:bg-surface-variant cursor-pointer flex items-center"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-xs text-on-surface-variant"
+                  >expand_more</span
+                >
+                File Formats
+              </div>
+              <div
+                class="pl-xl pr-md py-xs font-ui-sm text-ui-sm bg-primary/10 text-primary border-l-[3px] border-primary cursor-pointer flex items-center"
+              >
+                Comparison Rules
+              </div>
+              <div
+                class="px-md py-xs font-ui-sm text-ui-sm text-on-surface hover:bg-surface-variant cursor-pointer flex items-center"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-xs text-on-surface-variant"
+                  >chevron_right</span
+                >
+                Folder Views
+              </div>
+              <div
+                class="px-md py-xs font-ui-sm text-ui-sm text-on-surface hover:bg-surface-variant cursor-pointer flex items-center"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-xs text-on-surface-variant"
+                  >chevron_right</span
+                >
+                Ignored Files
+              </div>
+            </div>
+          </div>
+          <!-- Settings Canvas -->
+          <div class="flex-1 p-xl overflow-y-auto custom-scrollbar bg-surface">
+            <div class="max-w-3xl space-y-xl">
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded p-md"
+              >
+                <h3
+                  class="font-header-section text-header-section border-b border-outline-variant pb-xs mb-md flex items-center"
+                >
+                  <span class="material-symbols-outlined text-[16px] mr-xs">rule</span> Alignment
+                  Overrides
+                </h3>
+                <div class="space-y-md">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="font-ui-medium text-ui-medium">Never align differences</div>
+                      <div class="font-ui-sm text-ui-sm text-on-surface-variant">
+                        Forces line-by-line comparison without smart alignment
+                      </div>
+                    </div>
+                    <input
+                      class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4"
+                      type="checkbox"
+                    />
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="font-ui-medium text-ui-medium">Skew tolerance</div>
+                      <div class="font-ui-sm text-ui-sm text-on-surface-variant">
+                        Maximum line distance to search for matching blocks
+                      </div>
+                    </div>
+                    <input
+                      class="w-24 h-[24px] text-right font-code-sm text-code-sm border-outline-variant rounded px-xs py-0 focus:border-primary focus:ring-0"
+                      type="number"
+                      value="2000"
+                    />
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded p-md"
+              >
+                <h3
+                  class="font-header-section text-header-section border-b border-outline-variant pb-xs mb-md flex items-center"
+                >
+                  <span class="material-symbols-outlined text-[16px] mr-xs">filter_alt</span>
+                  Content Filters
+                </h3>
+                <table class="w-full text-left font-ui-sm text-ui-sm border-collapse">
+                  <thead>
+                    <tr class="border-b border-outline-variant bg-surface-container">
+                      <th class="py-xs px-sm font-medium">Active</th>
+                      <th class="py-xs px-sm font-medium">Element Type</th>
+                      <th class="py-xs px-sm font-medium">Regex Pattern</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-outline-variant hover:bg-surface-variant/50">
+                      <td class="py-xs px-sm">
+                        <input
+                          checked=""
+                          class="rounded border-outline-variant text-primary focus:ring-primary"
+                          type="checkbox"
+                        />
+                      </td>
+                      <td class="py-xs px-sm">Line Comments</td>
+                      <td class="py-xs px-sm font-code-sm text-code-sm text-secondary">
+                        ^\s*//.*$
+                      </td>
+                    </tr>
+                    <tr class="border-b border-outline-variant hover:bg-surface-variant/50">
+                      <td class="py-xs px-sm">
+                        <input
+                          checked=""
+                          class="rounded border-outline-variant text-primary focus:ring-primary"
+                          type="checkbox"
+                        />
+                      </td>
+                      <td class="py-xs px-sm">Block Comments</td>
+                      <td class="py-xs px-sm font-code-sm text-code-sm text-secondary">
+                        /\*[\s\S]*?\*/
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-surface-variant/50">
+                      <td class="py-xs px-sm">
+                        <input
+                          class="rounded border-outline-variant text-primary focus:ring-primary"
+                          type="checkbox"
+                        />
+                      </td>
+                      <td class="py-xs px-sm">String Literals</td>
+                      <td class="py-xs px-sm font-code-sm text-code-sm text-secondary">".*?"</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="mt-md flex justify-end">
+                  <button
+                    class="h-[24px] px-md bg-surface-variant hover:bg-surface-container-highest border border-outline-variant rounded font-ui-sm text-ui-sm text-on-surface flex items-center"
+                  >
+                    <span class="material-symbols-outlined text-[14px] mr-xs">add</span> Add Filter
+                  </button>
+                </div>
+              </section>
+            </div>
+          </div>
+          <!-- Right Inspector Pane -->
+          <div
+            class="w-[220px] border-l border-outline-variant bg-surface-container-lowest p-md flex flex-col shrink-0"
+          >
+            <h3
+              class="font-label-caps text-label-caps text-on-surface-variant mb-md uppercase tracking-wider"
+            >
+              Configuration Tasks
+            </h3>
+            <div class="space-y-sm">
+              <button
+                class="w-full h-[32px] px-sm bg-surface hover:bg-surface-variant border border-outline-variant rounded font-ui-sm text-ui-sm text-on-surface flex items-center justify-start"
+              >
+                <span class="material-symbols-outlined text-[16px] mr-sm">upload</span> Import
+                Config
+              </button>
+              <button
+                class="w-full h-[32px] px-sm bg-surface hover:bg-surface-variant border border-outline-variant rounded font-ui-sm text-ui-sm text-on-surface flex items-center justify-start"
+              >
+                <span class="material-symbols-outlined text-[16px] mr-sm">download</span> Export
+                Config
+              </button>
+            </div>
+            <div class="mt-auto pt-md border-t border-outline-variant">
+              <button
+                class="w-full h-[32px] px-sm bg-error/10 hover:bg-error/20 border border-error/30 rounded font-ui-sm text-ui-sm text-error flex items-center justify-center"
+              >
+                <span class="material-symbols-outlined text-[16px] mr-sm">restart_alt</span> Reset
+                to Defaults
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!-- Footer -->
+    <footer
+      class="fixed bottom-0 w-full flex justify-between items-center px-xl z-50 docked full-width bottom-0 h-6 border-t border-outline dark:border-outline-variant flat no shadows bg-secondary dark:bg-inverse-surface"
+    >
+      <div class="font-code-sm text-code-sm text-on-secondary dark:text-inverse-on-surface">
+        Ln 12, Col 45 | UTF-8 | Matches: 85% | Ready
+      </div>
+      <div class="flex space-x-md">
+        <a
+          class="font-code-sm text-code-sm text-on-secondary dark:text-inverse-on-surface opacity-80 hover:opacity-100"
+          href="#"
+          >English</a
+        >
+        <a
+          class="font-code-sm text-code-sm text-on-secondary dark:text-inverse-on-surface opacity-80 hover:opacity-100"
+          href="#"
+          >中文</a
+        >
+      </div>
+    </footer>
+  </body>
+</html>

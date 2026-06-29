@@ -1,0 +1,813 @@
+<!doctype html>
+
+<html
+  class="light"
+  lang="en"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      content="width=device-width, initial-scale=1.0"
+      name="viewport"
+    />
+    <title>OpenDiff | Remote &amp; Snapshots</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-tertiary': '#ffffff',
+              'on-primary': '#ffffff',
+              surface: '#f8f9fb',
+              'on-secondary-fixed': '#151c27',
+              'surface-dim': '#d9dadc',
+              'surface-variant': '#e1e2e4',
+              'secondary-fixed-dim': '#c0c7d6',
+              'on-secondary': '#ffffff',
+              'inverse-on-surface': '#f0f1f3',
+              'on-primary-fixed-variant': '#004395',
+              error: '#ba1a1a',
+              'surface-container-low': '#f3f4f6',
+              'tertiary-container': '#b75b00',
+              'surface-tint': '#005ac2',
+              'secondary-container': '#dce2f3',
+              'surface-bright': '#f8f9fb',
+              outline: '#727785',
+              'tertiary-fixed-dim': '#ffb786',
+              'on-primary-container': '#fefcff',
+              'on-error': '#ffffff',
+              'surface-container-lowest': '#ffffff',
+              'on-primary-fixed': '#001a42',
+              'on-error-container': '#93000a',
+              'tertiary-fixed': '#ffdcc6',
+              'on-surface-variant': '#424754',
+              secondary: '#585f6c',
+              'primary-fixed-dim': '#adc6ff',
+              'surface-container-high': '#e7e8ea',
+              'inverse-surface': '#2e3132',
+              primary: '#0058be',
+              'error-container': '#ffdad6',
+              'on-background': '#191c1e',
+              'on-tertiary-fixed-variant': '#723600',
+              'on-tertiary-container': '#fffbff',
+              'primary-fixed': '#d8e2ff',
+              'outline-variant': '#c2c6d6',
+              'on-surface': '#191c1e',
+              'on-tertiary-fixed': '#311400',
+              tertiary: '#924700',
+              'surface-container-highest': '#e1e2e4',
+              'on-secondary-container': '#5e6572',
+              'surface-container': '#edeef0',
+              'secondary-fixed': '#dce2f3',
+              background: '#f8f9fb',
+              'inverse-primary': '#adc6ff',
+              'primary-container': '#2170e4',
+              'on-secondary-fixed-variant': '#404754',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              xs: '0.125rem',
+              sm: '0.25rem',
+              toolbar_height: '32px',
+              md: '0.5rem',
+              xl: '1rem',
+              sidebar_width: '240px',
+              lg: '0.75rem',
+              tab_height: '28px',
+            },
+            fontFamily: {
+              'ui-sm': ['Inter'],
+              'code-base': ['JetBrains Mono'],
+              'ui-medium': ['Inter'],
+              'header-section': ['Inter'],
+              'code-sm': ['JetBrains Mono'],
+              'ui-base': ['Inter'],
+              'label-caps': ['Inter'],
+            },
+            fontSize: {
+              'ui-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'code-base': ['12px', { lineHeight: '20px', fontWeight: '400' }],
+              'ui-medium': ['13px', { lineHeight: '18px', fontWeight: '600' }],
+              'header-section': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+              'code-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'ui-base': ['13px', { lineHeight: '18px', fontWeight: '400' }],
+              'label-caps': [
+                '10px',
+                { lineHeight: '12px', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 20;
+        font-size: 16px;
+        vertical-align: middle;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c2c6d6;
+      }
+      .pane-border {
+        border: 1px solid #e1e2e4;
+      }
+      .diff-gutter {
+        width: 32px;
+        background: #f3f4f6;
+        border-right: 1px solid #e1e2e4;
+      }
+    </style>
+  </head>
+  <body class="bg-surface text-on-surface overflow-hidden flex flex-col h-screen">
+    <!-- TopAppBar -->
+    <header
+      class="h-toolbar_height w-full bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flex items-center px-md justify-between z-50"
+    >
+      <div class="flex items-center gap-xl">
+        <span
+          class="font-header-section text-header-section text-primary dark:text-primary-fixed-dim tracking-tight"
+          >OpenDiff</span
+        >
+        <nav class="flex items-center gap-md h-full">
+          <a
+            class="font-ui-medium text-ui-medium px-sm transition-colors duration-150 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant"
+            href="#"
+            >File</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium px-sm transition-colors duration-150 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant"
+            href="#"
+            >Edit</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium px-sm transition-colors duration-150 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant"
+            href="#"
+            >Search</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium px-sm transition-colors duration-150 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant"
+            href="#"
+            >View</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium px-sm transition-colors duration-150 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant"
+            href="#"
+            >Session</a
+          >
+          <a
+            class="font-ui-medium text-ui-medium px-sm transition-colors duration-150 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-variant"
+            href="#"
+            >Actions</a
+          >
+        </nav>
+      </div>
+      <div class="flex items-center gap-md">
+        <button
+          class="flex items-center gap-xs px-sm py-xs bg-surface-container-high rounded-xs border border-outline-variant hover:bg-surface-container-highest transition-colors"
+        >
+          <span class="font-ui-sm text-ui-sm">EN/中文</span>
+          <span
+            class="material-symbols-outlined"
+            data-icon="translate"
+            >translate</span
+          >
+        </button>
+        <div class="flex items-center gap-sm">
+          <span
+            class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+            data-icon="settings"
+            >settings</span
+          >
+          <span
+            class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+            data-icon="help"
+            >help</span
+          >
+        </div>
+      </div>
+    </header>
+    <div class="flex flex-1 overflow-hidden">
+      <!-- SideNavBar (Remotes Context) -->
+      <aside
+        class="w-sidebar_width h-full bg-surface-container-low dark:bg-surface-container border-r border-outline-variant dark:border-outline flex flex-col"
+      >
+        <div class="p-md border-b border-outline-variant flex items-center justify-between">
+          <div>
+            <h2 class="font-header-section text-header-section text-primary">Workspace</h2>
+            <p class="font-ui-sm text-ui-sm opacity-70">Active Project</p>
+          </div>
+          <span
+            class="material-symbols-outlined text-primary"
+            data-icon="folder_open"
+            >folder_open</span
+          >
+        </div>
+        <nav class="flex-1 overflow-y-auto py-sm custom-scrollbar">
+          <div class="px-sm mb-xs">
+            <div
+              class="flex items-center gap-sm px-md py-xs rounded transition-all duration-100 text-on-surface-variant hover:bg-surface-container-highest"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="account_tree"
+                >account_tree</span
+              >
+              <span class="font-ui-sm text-ui-sm">Branches</span>
+            </div>
+          </div>
+          <div class="px-sm mb-xs">
+            <div
+              class="flex items-center gap-sm px-md py-xs rounded transition-all duration-100 bg-secondary-container text-on-secondary-container"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="cloud"
+                >cloud</span
+              >
+              <span class="font-ui-sm text-ui-sm">Remotes</span>
+            </div>
+          </div>
+          <div class="px-sm mb-xs">
+            <div
+              class="flex items-center gap-sm px-md py-xs rounded transition-all duration-100 text-on-surface-variant hover:bg-surface-container-highest"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="archive"
+                >archive</span
+              >
+              <span class="font-ui-sm text-ui-sm">Stash</span>
+            </div>
+          </div>
+          <div class="px-sm mb-xs border-t border-outline-variant/30 mt-sm pt-sm">
+            <div
+              class="flex items-center gap-sm px-md py-xs rounded transition-all duration-100 text-on-surface-variant hover:bg-surface-container-highest"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="history"
+                >history</span
+              >
+              <span class="font-ui-sm text-ui-sm">History</span>
+            </div>
+          </div>
+          <!-- Other items implied by JSON -->
+          <div class="px-sm mb-xs">
+            <div
+              class="flex items-center gap-sm px-md py-xs rounded transition-all duration-100 text-on-surface-variant hover:bg-surface-container-highest"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="label"
+                >label</span
+              >
+              <span class="font-ui-sm text-ui-sm">Tags</span>
+            </div>
+          </div>
+          <div class="px-sm mb-xs">
+            <div
+              class="flex items-center gap-sm px-md py-xs rounded transition-all duration-100 text-on-surface-variant hover:bg-surface-container-highest"
+            >
+              <span
+                class="material-symbols-outlined"
+                data-icon="difference"
+                >difference</span
+              >
+              <span class="font-ui-sm text-ui-sm">Diffs</span>
+            </div>
+          </div>
+        </nav>
+      </aside>
+      <!-- Main Content Area -->
+      <main class="flex-1 flex flex-col bg-surface-container-lowest overflow-hidden">
+        <!-- Action Toolbar -->
+        <div
+          class="h-toolbar_height bg-surface border-b border-outline-variant flex items-center px-md gap-md justify-between"
+        >
+          <div class="flex items-center gap-sm">
+            <button
+              class="flex items-center gap-xs px-sm h-[24px] bg-primary text-on-primary font-ui-sm text-ui-sm rounded hover:bg-primary-container transition-colors"
+            >
+              <span
+                class="material-symbols-outlined text-[14px]"
+                data-icon="add"
+                >add</span
+              >
+              New Profile
+            </button>
+            <div class="h-4 w-px bg-outline-variant"></div>
+            <button
+              class="flex items-center gap-xs px-sm h-[24px] text-on-surface-variant font-ui-sm text-ui-sm hover:bg-surface-container-high transition-colors"
+            >
+              <span
+                class="material-symbols-outlined text-[14px]"
+                data-icon="sync"
+                >sync</span
+              >
+              Test Connection
+            </button>
+            <button
+              class="flex items-center gap-xs px-sm h-[24px] text-on-surface-variant font-ui-sm text-ui-sm hover:bg-surface-container-high transition-colors"
+            >
+              <span
+                class="material-symbols-outlined text-[14px]"
+                data-icon="unarchive"
+                >unarchive</span
+              >
+              Mount Archive
+            </button>
+            <button
+              class="flex items-center gap-xs px-sm h-[24px] text-on-surface-variant font-ui-sm text-ui-sm hover:bg-surface-container-high transition-colors"
+            >
+              <span
+                class="material-symbols-outlined text-[14px]"
+                data-icon="camera"
+                >camera</span
+              >
+              Create Snapshot
+            </button>
+          </div>
+          <div class="flex items-center gap-sm">
+            <button
+              class="flex items-center gap-xs px-sm h-[24px] text-on-surface-variant font-ui-sm text-ui-sm hover:bg-surface-container-high transition-colors"
+            >
+              <span
+                class="material-symbols-outlined text-[14px]"
+                data-icon="refresh"
+                >refresh</span
+              >
+              Refresh Cache
+            </button>
+            <div
+              class="flex items-center bg-surface-container-low border border-outline-variant rounded px-xs"
+            >
+              <span
+                class="material-symbols-outlined text-outline"
+                data-icon="search"
+                >search</span
+              >
+              <input
+                class="bg-transparent border-none focus:ring-0 font-ui-sm text-ui-sm py-0 h-[22px] w-32"
+                placeholder="Search resources..."
+                type="text"
+              />
+            </div>
+          </div>
+        </div>
+        <!-- Dashboard Panes -->
+        <div class="flex-1 overflow-y-auto p-md space-y-lg custom-scrollbar">
+          <!-- Remote Profiles Section -->
+          <section>
+            <div class="flex items-center gap-sm mb-sm">
+              <span
+                class="material-symbols-outlined text-primary"
+                data-icon="language"
+                >language</span
+              >
+              <h3
+                class="font-ui-medium text-ui-medium uppercase tracking-wider text-on-surface-variant"
+              >
+                Remote Profiles
+              </h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+              <!-- Card 1: SFTP -->
+              <div
+                class="bg-white border border-outline-variant p-md hover:border-primary transition-all cursor-pointer group shadow-sm"
+              >
+                <div class="flex justify-between items-start mb-md">
+                  <div class="p-xs bg-primary-fixed rounded">
+                    <span
+                      class="material-symbols-outlined text-primary"
+                      data-icon="terminal"
+                      >terminal</span
+                    >
+                  </div>
+                  <span class="flex items-center gap-xs font-ui-sm text-ui-sm text-tertiary">
+                    <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+                    Connected
+                  </span>
+                </div>
+                <h4 class="font-ui-medium text-ui-medium mb-xs">SFTP (prod-us-east)</h4>
+                <p class="font-ui-sm text-ui-sm text-outline mb-md">sftp://10.2.4.5:22</p>
+                <div class="flex items-center justify-between text-outline">
+                  <span class="font-ui-sm text-ui-sm">Latency: 42ms</span>
+                  <span
+                    class="material-symbols-outlined group-hover:text-primary"
+                    data-icon="arrow_forward"
+                    >arrow_forward</span
+                  >
+                </div>
+              </div>
+              <!-- Card 2: S3 -->
+              <div class="bg-white border border-primary border-2 p-md shadow-sm">
+                <div class="flex justify-between items-start mb-md">
+                  <div class="p-xs bg-primary-fixed rounded">
+                    <span
+                      class="material-symbols-outlined text-primary"
+                      data-icon="storage"
+                      >storage</span
+                    >
+                  </div>
+                  <span class="flex items-center gap-xs font-ui-sm text-ui-sm text-primary">
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    Active
+                  </span>
+                </div>
+                <h4 class="font-ui-medium text-ui-medium mb-xs">S3 (release-bucket)</h4>
+                <p class="font-ui-sm text-ui-sm text-outline mb-md">bucket: opendiff-artifacts</p>
+                <div class="flex items-center justify-between text-outline">
+                  <span class="font-ui-sm text-ui-sm">Files: 1.2M</span>
+                  <span
+                    class="material-symbols-outlined text-primary"
+                    data-icon="check_circle"
+                    >check_circle</span
+                  >
+                </div>
+              </div>
+              <!-- Card 3: WebDAV -->
+              <div
+                class="bg-white border border-outline-variant p-md hover:border-primary transition-all cursor-pointer group shadow-sm opacity-60"
+              >
+                <div class="flex justify-between items-start mb-md">
+                  <div class="p-xs bg-surface-container-high rounded">
+                    <span
+                      class="material-symbols-outlined text-outline"
+                      data-icon="cloud_off"
+                      >cloud_off</span
+                    >
+                  </div>
+                  <span class="flex items-center gap-xs font-ui-sm text-ui-sm text-outline">
+                    Offline
+                  </span>
+                </div>
+                <h4 class="font-ui-medium text-ui-medium mb-xs">WebDAV (docs-share)</h4>
+                <p class="font-ui-sm text-ui-sm text-outline mb-md">https://dav.internal.net</p>
+                <div class="flex items-center justify-between text-outline">
+                  <span class="font-ui-sm text-ui-sm">Retry in 12s</span>
+                  <span
+                    class="material-symbols-outlined"
+                    data-icon="rebase_edit"
+                    >rebase_edit</span
+                  >
+                </div>
+              </div>
+              <!-- Card 4: OneDrive -->
+              <div
+                class="bg-white border border-outline-variant p-md hover:border-primary transition-all cursor-pointer group shadow-sm"
+              >
+                <div class="flex justify-between items-start mb-md">
+                  <div class="p-xs bg-primary-fixed rounded">
+                    <span
+                      class="material-symbols-outlined text-primary"
+                      data-icon="cloud_sync"
+                      >cloud_sync</span
+                    >
+                  </div>
+                  <span class="flex items-center gap-xs font-ui-sm text-ui-sm text-tertiary">
+                    <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                    Syncing
+                  </span>
+                </div>
+                <h4 class="font-ui-medium text-ui-medium mb-xs">OneDrive (assets)</h4>
+                <p class="font-ui-sm text-ui-sm text-outline mb-md">ms-graph://design-assets</p>
+                <div class="flex items-center justify-between text-outline">
+                  <span class="font-ui-sm text-ui-sm">Queue: 43 items</span>
+                  <span
+                    class="material-symbols-outlined"
+                    data-icon="more_horiz"
+                    >more_horiz</span
+                  >
+                </div>
+              </div>
+            </div>
+          </section>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
+            <!-- Archive Mounts Section -->
+            <section>
+              <div class="flex items-center gap-sm mb-sm">
+                <span
+                  class="material-symbols-outlined text-primary"
+                  data-icon="folder_zip"
+                  >folder_zip</span
+                >
+                <h3
+                  class="font-ui-medium text-ui-medium uppercase tracking-wider text-on-surface-variant"
+                >
+                  Archive Mounts
+                </h3>
+              </div>
+              <div class="bg-white border border-outline-variant shadow-sm">
+                <table class="w-full text-left border-collapse">
+                  <thead class="bg-surface-container-low border-b border-outline-variant">
+                    <tr>
+                      <th class="px-md py-xs font-ui-sm text-ui-sm text-outline">Resource</th>
+                      <th class="px-md py-xs font-ui-sm text-ui-sm text-outline">Mount Point</th>
+                      <th class="px-md py-xs font-ui-sm text-ui-sm text-outline text-right">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-outline-variant/30">
+                    <tr class="hover:bg-surface-container-low cursor-pointer transition-colors">
+                      <td class="px-md py-sm">
+                        <div class="flex items-center gap-sm">
+                          <span
+                            class="material-symbols-outlined text-outline"
+                            data-icon="description"
+                            >description</span
+                          >
+                          <div>
+                            <div class="font-ui-base text-ui-base">logs-2024-Q3.zip</div>
+                            <div class="font-code-sm text-code-sm opacity-60">342.1 MB</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-md py-sm font-code-sm text-code-sm text-primary">
+                        /mnt/archives/logs_q3
+                      </td>
+                      <td class="px-md py-sm text-right">
+                        <span
+                          class="px-sm py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-ui-sm text-ui-sm"
+                          >Mounted</span
+                        >
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-surface-container-low cursor-pointer transition-colors">
+                      <td class="px-md py-sm">
+                        <div class="flex items-center gap-sm">
+                          <span
+                            class="material-symbols-outlined text-outline"
+                            data-icon="inventory_2"
+                            >inventory_2</span
+                          >
+                          <div>
+                            <div class="font-ui-base text-ui-base">legacy-src.tar.gz</div>
+                            <div class="font-code-sm text-code-sm opacity-60">1.4 GB</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-md py-sm font-code-sm text-code-sm text-primary">
+                        /mnt/archives/legacy
+                      </td>
+                      <td class="px-md py-sm text-right">
+                        <span
+                          class="px-sm py-0.5 rounded-full bg-surface-container-high text-outline font-ui-sm text-ui-sm"
+                          >Indexing</span
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+            <!-- Folder Snapshots Section -->
+            <section>
+              <div class="flex items-center gap-sm mb-sm">
+                <span
+                  class="material-symbols-outlined text-primary"
+                  data-icon="photo_camera"
+                  >photo_camera</span
+                >
+                <h3
+                  class="font-ui-medium text-ui-medium uppercase tracking-wider text-on-surface-variant"
+                >
+                  Folder Snapshots
+                </h3>
+              </div>
+              <div class="space-y-sm">
+                <!-- Snapshot Item -->
+                <div
+                  class="bg-white border border-outline-variant p-sm flex items-center justify-between hover:bg-surface-container-low cursor-pointer transition-colors"
+                >
+                  <div class="flex items-center gap-md">
+                    <div
+                      class="w-10 h-10 bg-surface-container-high flex items-center justify-center rounded"
+                    >
+                      <span
+                        class="material-symbols-outlined text-outline"
+                        data-icon="history_toggle_off"
+                        >history_toggle_off</span
+                      >
+                    </div>
+                    <div>
+                      <div class="font-ui-medium text-ui-medium">release-2026-06-28</div>
+                      <div class="font-ui-sm text-ui-sm text-outline">
+                        Path: /var/www/prod/current
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-ui-sm text-ui-sm font-bold">2.4 GB</div>
+                    <div class="font-code-sm text-code-sm opacity-60">SHA-256: 4a2d8e...</div>
+                  </div>
+                </div>
+                <!-- Snapshot Item -->
+                <div
+                  class="bg-white border border-primary/40 border-l-4 p-sm flex items-center justify-between hover:bg-surface-container-low cursor-pointer transition-colors bg-primary/5"
+                >
+                  <div class="flex items-center gap-md">
+                    <div
+                      class="w-10 h-10 bg-primary-container/20 flex items-center justify-center rounded"
+                    >
+                      <span
+                        class="material-symbols-outlined text-primary"
+                        data-icon="bookmarks"
+                        >bookmarks</span
+                      >
+                    </div>
+                    <div>
+                      <div class="font-ui-medium text-ui-medium">production-baseline</div>
+                      <div class="font-ui-sm text-ui-sm text-outline">Path: /data/db_exports</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-ui-sm text-ui-sm font-bold">18.9 GB</div>
+                    <div class="font-code-sm text-code-sm opacity-60">Created: 2h ago</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+      <!-- Inspector Panel (Right) -->
+      <aside
+        class="w-sidebar_width h-full bg-surface-container-low border-l border-outline-variant flex flex-col"
+      >
+        <div
+          class="h-toolbar_height border-b border-outline-variant flex items-center px-md justify-between bg-surface"
+        >
+          <span class="font-label-caps text-label-caps text-outline uppercase">Inspector</span>
+          <span
+            class="material-symbols-outlined text-outline cursor-pointer"
+            data-icon="close"
+            >close</span
+          >
+        </div>
+        <div class="p-md space-y-xl overflow-y-auto custom-scrollbar">
+          <div>
+            <h5 class="font-ui-medium text-ui-medium text-primary mb-md">Selected: S3 Profile</h5>
+            <div
+              class="aspect-video bg-surface-container-high rounded mb-md flex items-center justify-center overflow-hidden"
+            >
+              <div
+                class="w-full h-full bg-cover bg-center"
+                data-alt="A clean, technical digital illustration showing a 3D cloud storage icon with data nodes connecting to it. The style is minimalist and enterprise-focused, using a professional palette of primary blue and neutral grays. Soft, indirect lighting highlights the precision and reliability of the cloud architecture."
+                style="
+                  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDv_6aBGr01bdwXBoASgOd8Lq82-LBPcXHyM4dca5r1dcVOYv2b1Eeo-9oLQZKLtIF4LlOn_bXdHmeb0skmwAZydJ2_SrKMBC3FihEM3SDmoROXy_WfFThFLyLlYwb1iQKCH19bsBsc7EmD8-dJTnJT_iW_2WmkVzNpBslPKvWEEdI9c4URMGLM9kkg51lrN50ngXlc25ZiaNzC7z4d9Qq6rWVSOUPm42WVDFEgl8-mY9xXJAAbGbsnHNrI9jKT-S1zN1AbmAqmndE');
+                "
+              ></div>
+            </div>
+            <div class="space-y-sm">
+              <div class="flex justify-between border-b border-outline-variant/30 pb-xs">
+                <span class="font-ui-sm text-ui-sm text-outline">Type</span>
+                <span class="font-ui-sm text-ui-sm font-bold">AWS S3</span>
+              </div>
+              <div class="flex justify-between border-b border-outline-variant/30 pb-xs">
+                <span class="font-ui-sm text-ui-sm text-outline">Region</span>
+                <span class="font-ui-sm text-ui-sm font-bold">us-east-1</span>
+              </div>
+              <div class="flex justify-between border-b border-outline-variant/30 pb-xs">
+                <span class="font-ui-sm text-ui-sm text-outline">Access</span>
+                <span class="font-ui-sm text-ui-sm font-bold">IAM Role</span>
+              </div>
+              <div class="flex justify-between border-b border-outline-variant/30 pb-xs">
+                <span class="font-ui-sm text-ui-sm text-outline">Status</span>
+                <span class="font-ui-sm text-ui-sm text-tertiary">Active</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h5 class="font-ui-medium text-ui-medium text-on-surface-variant mb-sm">
+              Recent Activity
+            </h5>
+            <div class="space-y-sm">
+              <div class="flex gap-sm">
+                <span
+                  class="material-symbols-outlined text-[14px] text-tertiary mt-1"
+                  data-icon="sync"
+                  >sync</span
+                >
+                <div>
+                  <p class="font-ui-sm text-ui-sm">Cache invalidated</p>
+                  <p class="font-code-sm text-code-sm opacity-50">14:22:10 Today</p>
+                </div>
+              </div>
+              <div class="flex gap-sm">
+                <span
+                  class="material-symbols-outlined text-[14px] text-primary mt-1"
+                  data-icon="check_circle"
+                  >check_circle</span
+                >
+                <div>
+                  <p class="font-ui-sm text-ui-sm">Connection test passed</p>
+                  <p class="font-code-sm text-code-sm opacity-50">09:15:33 Today</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pt-md border-t border-outline-variant">
+            <button
+              class="w-full py-sm bg-primary text-on-primary font-ui-medium text-ui-medium rounded hover:bg-primary-container transition-all"
+            >
+              Edit Configuration
+            </button>
+            <button
+              class="w-full mt-sm py-sm border border-error text-error font-ui-medium text-ui-medium rounded hover:bg-error-container/10 transition-all"
+            >
+              Delete Profile
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <!-- Footer / Status Bar -->
+    <footer
+      class="h-6 w-full fixed bottom-0 bg-inverse-surface dark:bg-surface-container-highest flex justify-between items-center px-md z-50 text-inverse-on-surface dark:text-on-surface"
+    >
+      <div class="flex items-center gap-xl h-full">
+        <span class="font-label-caps text-label-caps">UTF-8 | Line 1, Col 1 | LF | EN/中文</span>
+        <div class="flex items-center gap-md font-code-sm text-code-sm">
+          <span class="hover:text-primary-fixed cursor-pointer transition-colors">Status</span>
+          <span class="hover:text-primary-fixed cursor-pointer transition-colors">Logs</span>
+          <span class="text-primary-fixed-dim font-bold cursor-pointer">Terminal</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-sm font-code-sm text-code-sm">
+        <span class="flex items-center gap-xs">
+          <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+          Connected to Remotes (3)
+        </span>
+      </div>
+    </footer>
+    <script>
+      // Simple micro-interaction for the connection testing effect
+      document.querySelectorAll('button').forEach((btn) => {
+        if (btn.innerText.includes('Test Connection')) {
+          btn.addEventListener('click', () => {
+            const originalContent = btn.innerHTML
+            btn.innerHTML =
+              '<span class="material-symbols-outlined text-[14px] animate-spin" data-icon="sync">sync</span> Testing...'
+            btn.disabled = true
+            setTimeout(() => {
+              btn.innerHTML =
+                '<span class="material-symbols-outlined text-[14px] text-green-500" data-icon="check_circle">check_circle</span> Success'
+              setTimeout(() => {
+                btn.innerHTML = originalContent
+                btn.disabled = false
+              }, 2000)
+            }, 1500)
+          })
+        }
+      })
+
+      // Toggle search bar focus effect
+      const searchInput = document.querySelector('input[type="text"]')
+      searchInput.addEventListener('focus', () => {
+        searchInput.parentElement.classList.add('border-primary')
+        searchInput.parentElement.classList.add('ring-1')
+        searchInput.parentElement.classList.add('ring-primary')
+      })
+      searchInput.addEventListener('blur', () => {
+        searchInput.parentElement.classList.remove('border-primary')
+        searchInput.parentElement.classList.remove('ring-1')
+        searchInput.parentElement.classList.remove('ring-primary')
+      })
+    </script>
+  </body>
+</html>

@@ -3,8 +3,6 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter, RouterView } from 'vue-router'
 import {
   ArrowDown,
-  ArrowLeft,
-  ArrowRight,
   ArrowUp,
   Binary,
   Braces,
@@ -23,22 +21,17 @@ import {
   Home,
   Image,
   Languages,
-  ListTree,
   Moon,
-  PanelRight,
-  Play,
   Rows3,
-  Save,
   Search,
   Settings,
   Sun,
   SunMoon,
   Table2,
-  TerminalSquare,
   type LucideIcon,
 } from '@lucide/vue'
 import { commandRegistry, filterCommands } from '@/app/commandRegistry'
-import { createCommandExecutor, getCommandsForPlacement } from '@/app/commandSystem'
+import { createCommandExecutor } from '@/app/commandSystem'
 import { sessionCatalog } from '@/app/sessionCatalog'
 import { useI18n } from '@/i18n'
 import { useSettingsStore } from '@/stores/settings'
@@ -46,7 +39,6 @@ import { useStatusBarStore } from '@/stores/statusBar'
 import { useTabsStore } from '@/stores/tabs'
 import type { CommandId } from '@/app/commandRegistry'
 import type { SessionCatalogEntry } from '@/app/sessionCatalog'
-import type { AppTab } from '@/stores/tabs'
 import type { SessionType } from '@/types/session'
 
 interface NavigationItem {
@@ -67,10 +59,8 @@ const statusBar = useStatusBarStore()
 const tabs = useTabsStore()
 const commandPaletteOpen = ref(false)
 const commandQuery = ref('')
-const inspectorVisible = ref(true)
 const languageMenuOpen = ref(false)
 const visibleCommands = computed(() => filterCommands(commandRegistry, commandQuery.value))
-const toolbarCommands = computed(() => getCommandsForPlacement(commandRegistry, 'toolbar'))
 const availableLocales = i18n.availableLocales
 const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
   navigate: (nextRoute) => {
@@ -95,25 +85,11 @@ const navigationItems = computed<NavigationItem[]>(() =>
       group: sourceSessionTypes.has(entry.type) ? 'sources' : 'compare',
     })),
 )
-const activeNavigationItem = computed(() =>
-  route.path === '/'
-    ? null
-    : (navigationItems.value.find((item) => item.route === route.path) ?? null),
-)
-const pathPair = computed(() => routePathPair(route.path))
 const statusSegments = computed(() => statusBar.segments)
-const workspaceTitle = computed(() => activeNavigationItem.value?.title ?? t('ui.home'))
-const routeSummary = computed(() => activeNavigationItem.value?.type ?? 'workspace')
-const routeChangeCount = computed(() => activeNavigationItem.value?.count ?? '142')
 
 function navigate(nextRoute: string, title: string): void {
   tabs.openTab({ route: nextRoute, title, dirty: false })
   void router.push(nextRoute)
-}
-
-function activateTab(tab: AppTab): void {
-  tabs.activeTabId = tab.id
-  void router.push(tab.route)
 }
 
 function openCommandPalette(): void {
@@ -159,22 +135,6 @@ function openNavigationItem(item: NavigationItem): void {
   navigate(item.route, item.title)
 }
 
-function compareNow(): void {
-  const current = activeNavigationItem.value
-
-  if (current) {
-    navigate(current.route, current.title)
-
-    return
-  }
-
-  navigate('/', t('ui.home'))
-}
-
-function toggleInspector(): void {
-  inspectorVisible.value = !inspectorVisible.value
-}
-
 function toggleLanguageMenu(): void {
   languageMenuOpen.value = !languageMenuOpen.value
 }
@@ -185,30 +145,6 @@ function selectLocale(locale: string): void {
   }
 
   languageMenuOpen.value = false
-}
-
-function routePathPair(path: string): { left: string; right: string } {
-  const pairs: Record<string, { left: string; right: string }> = {
-    '/': { left: 'workspace://release-audit', right: 'workspace://team-shared' },
-    '/compare/text': { left: 'C:/Projects/app/main.ts', right: 'C:/Projects/app/main.remote.ts' },
-    '/compare/clipboard': { left: 'clipboard://previous', right: 'clipboard://current' },
-    '/edit/text': { left: 'C:/Projects/app/notes.md', right: 'editor://draft' },
-    '/merge/text': { left: '~/git/repo/auth.base.ts', right: '~/git/repo/auth.output.ts' },
-    '/compare/folder': { left: 'D:/workspace/left', right: 'D:/workspace/right' },
-    '/merge/folder': { left: 'D:/merge/base', right: 'D:/merge/output' },
-    '/sync/folder': { left: 'C:/Projects/frontend-v2/src', right: '\\\\server\\deployments\\src' },
-    '/compare/table': { left: 'customers_Q1.csv', right: 'customers_Q2.csv' },
-    '/compare/hex': { left: 'firmware.bin', right: 'firmware-patched.bin' },
-    '/compare/picture': { left: 'hero-light.png', right: 'hero-dark.png' },
-    '/compare/registry': { left: 'HKCU/Software/OpenDiff', right: 'user-before.reg' },
-    '/compare/media': { left: 'trailer-master.mp4', right: 'trailer-export.mp4' },
-    '/compare/version': { left: 'OpenDiff.exe', right: 'OpenDiff-preview.exe' },
-    '/settings': { left: 'User settings', right: 'Admin policy' },
-    '/settings/file-formats': { left: 'Format rules', right: 'Team presets' },
-    '/settings/remote-profiles': { left: 'SFTP://prod-us-east', right: 'snapshot://release' },
-  }
-
-  return pairs[path] ?? pairs['/']
 }
 
 function sessionIcon(type: SessionType): LucideIcon {
@@ -259,10 +195,7 @@ const sourceSessionTypes = new Set<SessionType>([
 </script>
 
 <template>
-  <div
-    class="app-shell"
-    :class="{ 'inspector-collapsed': !inspectorVisible }"
-  >
+  <div class="app-shell">
     <header class="menu-bar">
       <button
         class="brand"
@@ -359,70 +292,6 @@ const sourceSessionTypes = new Set<SessionType>([
       </div>
     </header>
 
-    <section class="command-bar">
-      <button
-        v-for="command in toolbarCommands"
-        :key="command.id"
-        class="tool-button"
-        type="button"
-        :data-testid="`toolbar-command-${command.id}`"
-        @click="executeCommand(command.id)"
-      >
-        <component
-          :is="commandIcon(command.id)"
-          :size="15"
-        />
-        <span>{{ t(command.titleKey) }}</span>
-      </button>
-      <span class="toolbar-separator" />
-      <button
-        class="tool-button"
-        type="button"
-        @click="executeCommand('diff.previous')"
-      >
-        <ArrowUp :size="15" />
-        <span>{{ t('ui.previousDifference') }}</span>
-      </button>
-      <button
-        class="tool-button"
-        type="button"
-        @click="executeCommand('diff.next')"
-      >
-        <ArrowDown :size="15" />
-        <span>{{ t('ui.nextDifference') }}</span>
-      </button>
-      <span class="toolbar-separator" />
-      <button
-        class="tool-button"
-        type="button"
-      >
-        <ArrowRight :size="15" />
-        <span>{{ t('ui.copyRight') }}</span>
-      </button>
-      <button
-        class="tool-button"
-        type="button"
-      >
-        <ArrowLeft :size="15" />
-        <span>{{ t('ui.copyLeft') }}</span>
-      </button>
-      <button
-        class="tool-button"
-        type="button"
-      >
-        <Save :size="15" />
-        <span>{{ t('ui.save') }}</span>
-      </button>
-      <button
-        class="tool-button"
-        type="button"
-        @click="toggleInspector"
-      >
-        <PanelRight :size="15" />
-        <span>{{ t('ui.detail') }}</span>
-      </button>
-    </section>
-
     <main class="desktop">
       <aside class="sidebar">
         <div class="sidebar-head">
@@ -513,119 +382,10 @@ const sourceSessionTypes = new Set<SessionType>([
       </aside>
 
       <section class="workspace">
-        <div class="pathbar">
-          <div class="pathbox">
-            <ListTree :size="14" />
-            <span>{{ pathPair.left }}</span>
-          </div>
-          <button
-            class="swap-button"
-            type="button"
-            :aria-label="t('ui.swapPaths')"
-          >
-            ⇄
-          </button>
-          <div class="pathbox">
-            <ListTree :size="14" />
-            <span>{{ pathPair.right }}</span>
-          </div>
-          <button
-            class="compare-button"
-            type="button"
-            @click="compareNow"
-          >
-            <Play :size="14" />
-            <span>{{ t('ui.compare') }}</span>
-          </button>
-        </div>
-
-        <div class="tab-strip">
-          <button
-            v-for="tab in tabs.tabs"
-            :key="tab.id"
-            class="tab"
-            type="button"
-            :class="{ active: tab.id === tabs.activeTabId }"
-            @click="activateTab(tab)"
-          >
-            <span>{{ tab.title }}</span
-            ><b v-if="tab.dirty">*</b>
-          </button>
-        </div>
-
-        <div class="page-head">
-          <div>
-            <h1>{{ workspaceTitle }}</h1>
-            <span>{{ routeSummary }}</span>
-          </div>
-          <div class="chips">
-            <span>{{ t('ui.differencesOnly') }}</span>
-            <span>{{ t('ui.showAll') }}</span>
-            <span>{{ t('ui.ignoreRules') }}</span>
-            <span>{{ t('ui.export') }}</span>
-          </div>
-        </div>
-
         <section class="content">
           <RouterView />
         </section>
       </section>
-
-      <aside
-        v-if="inspectorVisible"
-        class="inspector"
-      >
-        <div class="inspector-head">{{ t('ui.detail') }}</div>
-        <section class="inspector-panel">
-          <h2>{{ t('ui.selection') }}</h2>
-          <dl>
-            <div>
-              <dt>{{ t('ui.session') }}</dt>
-              <dd>{{ workspaceTitle }}</dd>
-            </div>
-            <div>
-              <dt>{{ t('ui.left') }}</dt>
-              <dd>{{ pathPair.left }}</dd>
-            </div>
-            <div>
-              <dt>{{ t('ui.right') }}</dt>
-              <dd>{{ pathPair.right }}</dd>
-            </div>
-            <div>
-              <dt>{{ t('ui.encoding') }}</dt>
-              <dd>{{ t('ui.utf8') }}</dd>
-            </div>
-          </dl>
-        </section>
-        <section class="inspector-panel">
-          <h2>{{ t('ui.change') }}</h2>
-          <dl>
-            <div>
-              <dt>{{ t('ui.add') }}</dt>
-              <dd class="positive">8</dd>
-            </div>
-            <div>
-              <dt>{{ t('ui.delete') }}</dt>
-              <dd class="negative">4</dd>
-            </div>
-            <div>
-              <dt>{{ t('ui.modified') }}</dt>
-              <dd class="warning">2</dd>
-            </div>
-            <div>
-              <dt>{{ t('ui.differencesOnly') }}</dt>
-              <dd>{{ routeChangeCount }}</dd>
-            </div>
-          </dl>
-        </section>
-        <section class="inspector-panel">
-          <h2>{{ t('ui.jobs') }}</h2>
-          <div class="job-row">
-            <TerminalSquare :size="15" />
-            <span>{{ t('ui.noRunningJobs') }}</span>
-          </div>
-        </section>
-      </aside>
     </main>
 
     <footer
@@ -681,25 +441,21 @@ const sourceSessionTypes = new Set<SessionType>([
 <style scoped>
 .app-shell {
   display: grid;
-  grid-template-rows: 32px 32px minmax(0, 1fr) 24px;
+  grid-template-rows: 32px minmax(0, 1fr) 24px;
   height: 100vh;
   overflow: hidden;
   background: var(--app-bg);
   color: var(--app-text);
 }
 
-.menu-bar,
-.command-bar {
+.menu-bar {
   display: flex;
   align-items: center;
+  gap: 22px;
   min-width: 0;
+  padding: 0 10px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-low);
-}
-
-.menu-bar {
-  gap: 22px;
-  padding: 0 10px;
 }
 
 .brand {
@@ -724,11 +480,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button,
 .chrome-button,
-.tool-button,
-.swap-button,
-.compare-button,
-.nav-item,
-.tab {
+.nav-item {
   font: inherit;
 }
 
@@ -811,45 +563,10 @@ const sourceSessionTypes = new Set<SessionType>([
   white-space: nowrap;
 }
 
-.command-bar {
-  gap: 6px;
-  padding: 0 10px;
-  background: var(--app-bg);
-}
-
-.tool-button,
-.compare-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 9px;
-  border: 1px solid var(--app-border);
-  border-radius: 4px;
-  background: var(--app-surface-container);
-  color: var(--app-text);
-  cursor: pointer;
-}
-
-.tool-button:hover {
-  background: var(--app-surface-high);
-}
-
-.toolbar-separator {
-  width: 1px;
-  height: 18px;
-  background: var(--app-border);
-}
-
 .desktop {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr) 300px;
-  min-height: 0;
-}
-
-.inspector-collapsed .desktop {
   grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 0;
 }
 
 .sidebar {
@@ -959,223 +676,16 @@ const sourceSessionTypes = new Set<SessionType>([
   background: rgb(255 255 255 / 0.2);
 }
 
-.workspace {
-  display: grid;
-  grid-template-rows: 36px 28px 34px minmax(0, 1fr);
+.workspace,
+.content {
   min-width: 0;
   min-height: 0;
-  background: var(--app-bg);
-}
-
-.pathbar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 10px;
-  border-bottom: 1px solid var(--app-border);
-}
-
-.pathbox {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-  height: 26px;
-  padding: 0 8px;
-  border: 1px solid var(--app-border);
-  border-radius: 4px;
-  background: var(--app-surface-low);
-  color: var(--app-text);
-}
-
-.pathbox span {
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.swap-button {
-  height: 26px;
-  border: 1px solid var(--app-border);
-  border-radius: 4px;
-  background: var(--app-surface-container);
-  color: var(--app-text);
-  cursor: pointer;
-}
-
-.compare-button {
-  border-color: var(--app-primary);
-  background: var(--app-primary);
-  color: #ffffff;
-}
-
-.tab-strip {
-  display: flex;
-  min-width: 0;
-  overflow-x: auto;
-  border-bottom: 1px solid var(--app-border);
-  background: var(--app-surface-container);
-}
-
-.tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  min-width: 122px;
-  max-width: 220px;
-  height: 28px;
-  padding: 0 10px;
-  border: 0;
-  border-right: 1px solid var(--app-border);
-  background: transparent;
-  color: var(--app-text-muted);
-  cursor: pointer;
-}
-
-.tab span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tab.active {
-  background: var(--app-canvas);
-  color: var(--app-text);
-  font-weight: 600;
-  box-shadow: inset 0 2px 0 var(--app-primary);
-}
-
-.page-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
-  padding: 0 10px;
-  border-bottom: 1px solid rgb(194 198 214 / 0.7);
-  background: var(--app-surface-low);
-}
-
-.page-head h1 {
-  margin: 0;
-  overflow: hidden;
-  color: var(--app-text);
-  font-size: 14px;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.page-head span {
-  color: var(--app-text-muted);
-  font-size: 11px;
-}
-
-.chips {
-  display: flex;
-  gap: 5px;
-}
-
-.chips span {
-  display: inline-flex;
-  align-items: center;
-  height: 21px;
-  padding: 0 7px;
-  border: 1px solid var(--app-border);
-  border-radius: 999px;
-  background: var(--app-canvas);
-  color: var(--app-text-muted);
-  font-size: 11px;
 }
 
 .content {
-  min-height: 0;
-  overflow: hidden;
+  height: 100%;
   background: var(--app-canvas);
-}
-
-.inspector {
-  display: grid;
-  grid-template-rows: 32px min-content min-content min-content;
-  min-height: 0;
-  overflow: auto;
-  border-left: 1px solid var(--app-border);
-  background: var(--app-bg);
-}
-
-.inspector-head {
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  border-bottom: 1px solid var(--app-border);
-  color: var(--app-text-muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.inspector-panel {
-  margin: 10px 10px 0;
-  border: 1px solid var(--app-border);
-  border-radius: 4px;
-  background: var(--app-canvas);
-}
-
-.inspector-panel h2 {
-  height: 28px;
-  margin: 0;
-  padding: 5px 8px;
-  border-bottom: 1px solid var(--app-border);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.inspector-panel dl {
-  margin: 0;
-}
-
-.inspector-panel dl div {
-  display: grid;
-  grid-template-columns: 92px minmax(0, 1fr);
-  gap: 8px;
-  padding: 6px 8px;
-  border-bottom: 1px solid rgb(194 198 214 / 0.45);
-}
-
-.inspector-panel dl div:last-child {
-  border-bottom: 0;
-}
-
-.inspector-panel dt {
-  color: var(--app-text-muted);
-}
-
-.inspector-panel dd {
-  min-width: 0;
-  margin: 0;
-  overflow-wrap: anywhere;
-  font-weight: 600;
-}
-
-.positive {
-  color: var(--diff-added-fg);
-}
-
-.negative {
-  color: var(--diff-deleted-fg);
-}
-
-.warning {
-  color: var(--diff-modified-fg);
-}
-
-.job-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  color: var(--app-text-muted);
 }
 
 .status-bar {
@@ -1281,10 +791,6 @@ const sourceSessionTypes = new Set<SessionType>([
 @media (width <= 1180px) {
   .desktop {
     grid-template-columns: 220px minmax(0, 1fr);
-  }
-
-  .inspector {
-    display: none;
   }
 }
 </style>

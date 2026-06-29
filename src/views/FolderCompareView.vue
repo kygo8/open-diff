@@ -18,6 +18,9 @@ import type {
   FolderCompareSideEntry,
 } from '@/types/diff'
 import { computed, ref } from 'vue'
+import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 
 type FolderSide = 'left' | 'right'
 type FolderStatus = 'Same' | 'Different' | 'Left only' | 'Right only'
@@ -857,653 +860,714 @@ function handleTreeScroll(event: Event): void {
 </script>
 
 <template>
-  <section class="folder-compare-view">
-    <header class="folder-toolbar">
-      <div class="path-pair">
-        <label>
-          <span>{{ $t('ui.leftFolder') }}</span>
-          <input
-            v-model="leftRoot"
-            data-testid="folder-left-root"
-          />
-        </label>
-        <label>
-          <span>{{ $t('ui.rightFolder') }}</span>
-          <input
-            v-model="rightRoot"
-            data-testid="folder-right-root"
-          />
-        </label>
-      </div>
-      <div class="folder-actions">
-        <NButton
-          size="small"
-          type="primary"
-          data-testid="run-folder-compare"
-          :disabled="folderCompareLoading || !leftRoot || !rightRoot"
-          :loading="folderCompareLoading"
-          @click="runFolderCompare"
-          >{{ $t('ui.compare') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          >{{ $t('ui.refresh') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="preview-sync-plan"
-          @click="previewSyncPlan"
-          >{{ $t('ui.previewSync') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="open-selected-file"
-          :disabled="!selectedFilePath"
-          @click="openSelectedFile"
-          >{{ $t('ui.open') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="open-with-selected-file"
-          :disabled="!selectedFilePath"
-          @click="openSelectedFileWithTextEdit"
-          >{{ $t('ui.openWith') }}</NButton
-        >
-        <NButton
-          v-for="application in enabledExternalApplications"
-          :key="application.id"
-          size="small"
-          secondary
-          :data-testid="`open-with-custom-${application.id}`"
-          :disabled="!selectedFilePath"
-          @click="openSelectedFileWithExternalApplication(application)"
-        >
-          {{ application.name }}
-        </NButton>
-        <NButton
-          size="small"
-          secondary
-          data-testid="open-associated-file"
-          :disabled="!selectedFilePath"
-          @click="openSelectedFileWithAssociatedApplication"
-          >{{ $t('ui.associatedApp') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="quick-compare-selected-file"
-          :disabled="!selectedFilePath"
-          @click="quickCompareSelectedFile"
-          >{{ $t('ui.quickCompare') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="compare-to-selected-file"
-          :disabled="!selectedFilePath"
-          @click="compareSelectedFileToCounterpart"
-          >{{ $t('ui.compareTo') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="copy-selected-to-left"
-          :disabled="!selectedFilePath"
-          @click="copySelectedTo('Left')"
-          >{{ $t('ui.copyLeft') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="copy-selected-to-right"
-          :disabled="!selectedFilePath"
-          @click="copySelectedTo('Right')"
-          >{{ $t('ui.copyRight') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="move-selected-file"
-          :disabled="!selectedFilePath"
-          @click="moveSelectedFile"
-          >{{ $t('ui.move') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="delete-selected-file"
-          :disabled="!selectedFilePath"
-          @click="deleteSelectedFile"
-          >{{ $t('ui.delete') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="rename-selected-file"
-          :disabled="!selectedFilePath"
-          @click="renameSelectedFile"
-          >{{ $t('ui.rename') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="exclude-selected-row"
-          :disabled="!selectedRowId"
-          @click="excludeSelectedRow"
-          >{{ $t('ui.exclude') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="refresh-selected-row"
-          :disabled="!selectedRowId"
-          @click="refreshSelectedRow"
-          >{{ $t('ui.refreshSelection') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="previous-folder-difference"
-          :disabled="differenceRows.length === 0"
-          @click="navigateFolderDifference('previous')"
-          >{{ $t('ui.previousDifference') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="next-folder-difference"
-          :disabled="differenceRows.length === 0"
-          @click="navigateFolderDifference('next')"
-          >{{ $t('ui.nextDifference') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="expand-all-folders"
-          @click="expandAllFolders"
-          >{{ $t('ui.openAll') }}</NButton
-        >
-        <NButton
-          size="small"
-          secondary
-          data-testid="collapse-all-folders"
-          @click="collapseAllFolders"
-          >{{ $t('ui.closeAll') }}</NButton
-        >
-      </div>
-    </header>
-
-    <section
-      class="folder-root-summary"
-      data-testid="folder-root-summary"
-    >
-      <span>{{ leftRoot }}</span>
-      <span>{{ rightRoot }}</span>
-    </section>
-
-    <section
-      v-if="folderCompareError"
-      class="folder-action-status"
-      data-testid="folder-compare-error"
-    >
-      {{ folderCompareError }}
-    </section>
-
-    <section class="column-config">
-      <label
-        v-for="column in configurableColumns"
-        :key="column.id"
-      >
-        <input
-          :data-testid="`toggle-column-${column.id}`"
-          type="checkbox"
-          :checked="isColumnVisible(column.id)"
-          @change="toggleColumn(column.id, ($event.target as HTMLInputElement).checked)"
-        />
-        <span>{{ column.label }}</span>
-      </label>
-    </section>
-
-    <section class="display-filters">
-      <label
-        v-for="option in displayStatusOptions"
-        :key="option.testId"
-      >
-        <input
-          :data-testid="`toggle-status-${option.testId}`"
-          type="checkbox"
-          :checked="areStatusesVisible(option.statuses)"
-          @change="toggleStatuses(option.statuses, ($event.target as HTMLInputElement).checked)"
-        />
-        <span>{{ option.label }}</span>
-      </label>
-      <label>
-        <input
-          v-model="showSuppressedFilters"
-          data-testid="toggle-suppressed-filters"
-          type="checkbox"
-        />
-        <span>{{ $t('ui.suppressed') }}</span>
-      </label>
-    </section>
-
-    <section class="folder-summary">
-      <div>
-        <strong>{{ summary.total }}</strong>
-        <span>{{ $t('ui.items') }}</span>
-      </div>
-      <div>
-        <strong>{{ summary.different }}</strong>
-        <span>{{ $t('ui.different') }}</span>
-      </div>
-      <div>
-        <strong>{{ summary.orphans }}</strong>
-        <span>{{ $t('ui.orphans') }}</span>
-      </div>
-    </section>
-
-    <section
-      v-if="syncPreviewItems.length > 0"
-      class="sync-preview-panel"
-      data-testid="sync-preview-panel"
-    >
-      <header class="sync-preview-header">
-        <div>
-          <strong>{{ $t('ui.syncPreview') }}</strong>
-          <span>{{ syncPreviewItems.length }} operations</span>
+  <WorkbenchShell
+    :title="$t('ui.folderCompare')"
+    eyebrow="Folder"
+    :subtitle="`${leftRoot} -> ${rightRoot}`"
+    inspector-label="Folder compare inspector"
+  >
+    <section class="folder-compare-view">
+      <header class="folder-toolbar">
+        <div class="path-pair">
+          <label>
+            <span>{{ $t('ui.leftFolder') }}</span>
+            <input
+              v-model="leftRoot"
+              data-testid="folder-left-root"
+            />
+          </label>
+          <label>
+            <span>{{ $t('ui.rightFolder') }}</span>
+            <input
+              v-model="rightRoot"
+              data-testid="folder-right-root"
+            />
+          </label>
         </div>
-        <NButton
-          size="small"
-          secondary
-          data-testid="close-sync-preview"
-          @click="closeSyncPreview"
-          >{{ $t('ui.close') }}</NButton
-        >
-        <NButton
-          size="small"
-          type="primary"
-          data-testid="run-sync-preview"
-          @click="runSyncPreview"
-          >{{ $t('ui.runSync') }}</NButton
-        >
+        <div class="folder-actions">
+          <NButton
+            size="small"
+            type="primary"
+            data-testid="run-folder-compare"
+            :disabled="folderCompareLoading || !leftRoot || !rightRoot"
+            :loading="folderCompareLoading"
+            @click="runFolderCompare"
+            >{{ $t('ui.compare') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            >{{ $t('ui.refresh') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="preview-sync-plan"
+            @click="previewSyncPlan"
+            >{{ $t('ui.previewSync') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="open-selected-file"
+            :disabled="!selectedFilePath"
+            @click="openSelectedFile"
+            >{{ $t('ui.open') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="open-with-selected-file"
+            :disabled="!selectedFilePath"
+            @click="openSelectedFileWithTextEdit"
+            >{{ $t('ui.openWith') }}</NButton
+          >
+          <NButton
+            v-for="application in enabledExternalApplications"
+            :key="application.id"
+            size="small"
+            secondary
+            :data-testid="`open-with-custom-${application.id}`"
+            :disabled="!selectedFilePath"
+            @click="openSelectedFileWithExternalApplication(application)"
+          >
+            {{ application.name }}
+          </NButton>
+          <NButton
+            size="small"
+            secondary
+            data-testid="open-associated-file"
+            :disabled="!selectedFilePath"
+            @click="openSelectedFileWithAssociatedApplication"
+            >{{ $t('ui.associatedApp') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="quick-compare-selected-file"
+            :disabled="!selectedFilePath"
+            @click="quickCompareSelectedFile"
+            >{{ $t('ui.quickCompare') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="compare-to-selected-file"
+            :disabled="!selectedFilePath"
+            @click="compareSelectedFileToCounterpart"
+            >{{ $t('ui.compareTo') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="copy-selected-to-left"
+            :disabled="!selectedFilePath"
+            @click="copySelectedTo('Left')"
+            >{{ $t('ui.copyLeft') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="copy-selected-to-right"
+            :disabled="!selectedFilePath"
+            @click="copySelectedTo('Right')"
+            >{{ $t('ui.copyRight') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="move-selected-file"
+            :disabled="!selectedFilePath"
+            @click="moveSelectedFile"
+            >{{ $t('ui.move') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="delete-selected-file"
+            :disabled="!selectedFilePath"
+            @click="deleteSelectedFile"
+            >{{ $t('ui.delete') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="rename-selected-file"
+            :disabled="!selectedFilePath"
+            @click="renameSelectedFile"
+            >{{ $t('ui.rename') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="exclude-selected-row"
+            :disabled="!selectedRowId"
+            @click="excludeSelectedRow"
+            >{{ $t('ui.exclude') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="refresh-selected-row"
+            :disabled="!selectedRowId"
+            @click="refreshSelectedRow"
+            >{{ $t('ui.refreshSelection') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="previous-folder-difference"
+            :disabled="differenceRows.length === 0"
+            @click="navigateFolderDifference('previous')"
+            >{{ $t('ui.previousDifference') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="next-folder-difference"
+            :disabled="differenceRows.length === 0"
+            @click="navigateFolderDifference('next')"
+            >{{ $t('ui.nextDifference') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="expand-all-folders"
+            @click="expandAllFolders"
+            >{{ $t('ui.openAll') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="collapse-all-folders"
+            @click="collapseAllFolders"
+            >{{ $t('ui.closeAll') }}</NButton
+          >
+        </div>
       </header>
+
       <section
-        v-if="pendingSyncSafetyItems.length > 0"
-        class="sync-safety-confirmation"
-        data-testid="sync-safety-confirmation"
+        class="folder-root-summary"
+        data-testid="folder-root-summary"
       >
+        <span>{{ leftRoot }}</span>
+        <span>{{ rightRoot }}</span>
+      </section>
+
+      <section
+        v-if="folderCompareError"
+        class="folder-action-status"
+        data-testid="folder-compare-error"
+      >
+        {{ folderCompareError }}
+      </section>
+
+      <section class="column-config">
+        <label
+          v-for="column in configurableColumns"
+          :key="column.id"
+        >
+          <input
+            :data-testid="`toggle-column-${column.id}`"
+            type="checkbox"
+            :checked="isColumnVisible(column.id)"
+            @change="toggleColumn(column.id, ($event.target as HTMLInputElement).checked)"
+          />
+          <span>{{ column.label }}</span>
+        </label>
+      </section>
+
+      <section class="display-filters">
+        <label
+          v-for="option in displayStatusOptions"
+          :key="option.testId"
+        >
+          <input
+            :data-testid="`toggle-status-${option.testId}`"
+            type="checkbox"
+            :checked="areStatusesVisible(option.statuses)"
+            @change="toggleStatuses(option.statuses, ($event.target as HTMLInputElement).checked)"
+          />
+          <span>{{ option.label }}</span>
+        </label>
+        <label>
+          <input
+            v-model="showSuppressedFilters"
+            data-testid="toggle-suppressed-filters"
+            type="checkbox"
+          />
+          <span>{{ $t('ui.suppressed') }}</span>
+        </label>
+      </section>
+
+      <section class="folder-summary">
         <div>
-          <strong>{{ $t('ui.confirmRiskySyncActions') }}</strong>
-          <span>{{ pendingSyncSafetyItems.length }} overwrite/delete operations need review.</span>
+          <strong>{{ summary.total }}</strong>
+          <span>{{ $t('ui.items') }}</span>
         </div>
-        <ul>
-          <li
-            v-for="item in pendingSyncSafetyItems"
+        <div>
+          <strong>{{ summary.different }}</strong>
+          <span>{{ $t('ui.different') }}</span>
+        </div>
+        <div>
+          <strong>{{ summary.orphans }}</strong>
+          <span>{{ $t('ui.orphans') }}</span>
+        </div>
+      </section>
+
+      <section
+        v-if="syncPreviewItems.length > 0"
+        class="sync-preview-panel"
+        data-testid="sync-preview-panel"
+      >
+        <header class="sync-preview-header">
+          <div>
+            <strong>{{ $t('ui.syncPreview') }}</strong>
+            <span>{{ syncPreviewItems.length }} operations</span>
+          </div>
+          <NButton
+            size="small"
+            secondary
+            data-testid="close-sync-preview"
+            @click="closeSyncPreview"
+            >{{ $t('ui.close') }}</NButton
+          >
+          <NButton
+            size="small"
+            type="primary"
+            data-testid="run-sync-preview"
+            @click="runSyncPreview"
+            >{{ $t('ui.runSync') }}</NButton
+          >
+        </header>
+        <section
+          v-if="pendingSyncSafetyItems.length > 0"
+          class="sync-safety-confirmation"
+          data-testid="sync-safety-confirmation"
+        >
+          <div>
+            <strong>{{ $t('ui.confirmRiskySyncActions') }}</strong>
+            <span
+              >{{ pendingSyncSafetyItems.length }} overwrite/delete operations need review.</span
+            >
+          </div>
+          <ul>
+            <li
+              v-for="item in pendingSyncSafetyItems"
+              :key="item.id"
+            >
+              <strong>{{ item.action }}</strong>
+              <span>{{ item.targetPath ?? item.detail }}</span>
+            </li>
+          </ul>
+          <NButton
+            size="small"
+            type="primary"
+            data-testid="confirm-sync-safety"
+            @click="confirmSyncSafety"
+            >{{ $t('ui.confirmSync') }}</NButton
+          >
+        </section>
+        <div class="sync-preview-table">
+          <div class="sync-preview-row sync-preview-row-head">
+            <span>{{ $t('ui.action') }}</span>
+            <span>{{ $t('ui.source') }}</span>
+            <span>{{ $t('ui.target') }}</span>
+            <span>{{ $t('ui.detail') }}</span>
+            <span>{{ $t('ui.change') }}</span>
+          </div>
+          <div
+            v-for="item in syncPreviewItems"
             :key="item.id"
+            class="sync-preview-row"
+            :class="`sync-preview-${item.action.toLowerCase()}`"
+            :data-preview-id="item.id"
+            data-testid="sync-preview-row"
           >
             <strong>{{ item.action }}</strong>
-            <span>{{ item.targetPath ?? item.detail }}</span>
-          </li>
-        </ul>
-        <NButton
-          size="small"
-          type="primary"
-          data-testid="confirm-sync-safety"
-          @click="confirmSyncSafety"
-          >{{ $t('ui.confirmSync') }}</NButton
-        >
-      </section>
-      <div class="sync-preview-table">
-        <div class="sync-preview-row sync-preview-row-head">
-          <span>{{ $t('ui.action') }}</span>
-          <span>{{ $t('ui.source') }}</span>
-          <span>{{ $t('ui.target') }}</span>
-          <span>{{ $t('ui.detail') }}</span>
-          <span>{{ $t('ui.change') }}</span>
-        </div>
-        <div
-          v-for="item in syncPreviewItems"
-          :key="item.id"
-          class="sync-preview-row"
-          :class="`sync-preview-${item.action.toLowerCase()}`"
-          :data-preview-id="item.id"
-          data-testid="sync-preview-row"
-        >
-          <strong>{{ item.action }}</strong>
-          <span>{{ item.sourcePath ?? '--' }}</span>
-          <span>{{ item.targetPath ?? '--' }}</span>
-          <span>{{ item.detail }}</span>
-          <span class="sync-preview-change-actions">
-            <NButton
-              size="tiny"
-              secondary
-              :data-testid="`sync-preview-leave-${item.id}`"
-              @click="markSyncPreviewItemAsLeave(item.id)"
-              >{{ $t('ui.leave') }}</NButton
-            >
-            <NButton
-              size="tiny"
-              secondary
-              :disabled="!item.originalSourcePath || !item.originalTargetPath"
-              :data-testid="`sync-preview-reverse-${item.id}`"
-              @click="reverseSyncPreviewItem(item.id)"
-              >{{ $t('ui.reverse') }}</NButton
-            >
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <section
-      v-if="renamePanelOpen"
-      class="folder-operation-panel"
-      data-testid="folder-rename-panel"
-    >
-      <input
-        v-model="renameTargetName"
-        data-testid="rename-target-name"
-      />
-      <NButton
-        size="small"
-        type="primary"
-        data-testid="confirm-rename-file"
-        @click="confirmRenameFile"
-        >{{ $t('ui.rename') }}</NButton
-      >
-    </section>
-
-    <section
-      v-if="pendingDangerousOperation"
-      class="folder-copy-confirmation"
-      data-testid="folder-dangerous-confirmation"
-    >
-      <strong>{{ pendingDangerousOperation.title }}</strong>
-      <span>{{ pendingDangerousOperation.message }}</span>
-      <span>{{ pendingDangerousOperation.paths.join(', ') }}</span>
-      <NButton
-        size="small"
-        type="primary"
-        data-testid="confirm-dangerous-file-operation"
-        @click="confirmDangerousFileOperation"
-      >
-        {{ pendingDangerousOperation.confirmLabel }}
-      </NButton>
-    </section>
-
-    <section class="folder-operation-panel">
-      <label class="metadata-option">
-        <input
-          data-testid="toggle-selected-readonly"
-          type="checkbox"
-          :checked="selectedReadonly"
-          :disabled="!selectedFilePath"
-          @change="toggleSelectedReadonly(($event.target as HTMLInputElement).checked)"
-        />
-        <span>{{ $t('ui.readonly') }}</span>
-      </label>
-      <NButton
-        size="small"
-        secondary
-        data-testid="touch-selected-file"
-        :disabled="!selectedFilePath"
-        @click="touchSelectedFile"
-        >{{ $t('ui.touch') }}</NButton
-      >
-    </section>
-
-    <section
-      v-if="pendingCopyConfirmation"
-      class="folder-copy-confirmation"
-      data-testid="folder-copy-confirmation"
-    >
-      <strong>{{ pendingCopyConfirmation.title }}</strong>
-      <span>{{ pendingCopyConfirmation.message }}</span>
-      <span>{{ pendingCopyConfirmation.paths.join(', ') }}</span>
-      <NButton
-        size="small"
-        type="primary"
-        data-testid="confirm-folder-copy"
-        @click="confirmFolderCopy"
-      >
-        {{ pendingCopyConfirmation.confirmLabel }}
-      </NButton>
-    </section>
-
-    <section class="manual-alignment-tools">
-      <select
-        v-model="alignWithTargetId"
-        data-testid="align-with-target"
-      >
-        <option value="">{{ $t('ui.selectTarget') }}</option>
-        <option
-          v-for="candidate in alignWithCandidates"
-          :key="candidate.id"
-          :value="candidate.id"
-        >
-          {{ displayName(candidate) }}
-        </option>
-      </select>
-      <NButton
-        size="small"
-        secondary
-        data-testid="align-with-selected-file"
-        :disabled="!selectedRowId || !alignWithTargetId"
-        @click="alignSelectedFileWithTarget"
-        >{{ $t('ui.alignWith') }}</NButton
-      >
-      <NButton
-        size="small"
-        secondary
-        data-testid="break-selected-alignment"
-        :disabled="!selectedRowId"
-        @click="breakSelectedAlignment"
-        >{{ $t('ui.breakAlignment') }}</NButton
-      >
-    </section>
-
-    <section
-      v-if="lastOpenAction"
-      class="folder-action-status"
-      data-testid="folder-open-action-status"
-    >
-      {{ lastOpenAction.label }} -> {{ lastOpenAction.path }}
-    </section>
-    <section
-      v-if="lastCompareAction"
-      class="folder-action-status"
-      data-testid="folder-compare-action-status"
-    >
-      {{ lastCompareAction }}
-    </section>
-    <section
-      v-if="lastAlignmentAction"
-      class="folder-action-status"
-      data-testid="folder-alignment-action-status"
-    >
-      {{ lastAlignmentAction }}
-    </section>
-    <section
-      v-if="lastCopyAction"
-      class="folder-action-status"
-      data-testid="folder-copy-action-status"
-    >
-      {{ lastCopyAction }}
-    </section>
-    <section
-      v-if="lastFileOperationAction"
-      class="folder-action-status"
-      data-testid="folder-file-operation-status"
-    >
-      {{ lastFileOperationAction }}
-    </section>
-    <section
-      v-if="lastMetadataAction"
-      class="folder-action-status"
-      data-testid="folder-metadata-operation-status"
-    >
-      {{ lastMetadataAction }}
-    </section>
-    <section
-      v-if="lastSelectionAction"
-      class="folder-action-status"
-      data-testid="folder-selection-operation-status"
-    >
-      {{ lastSelectionAction }}
-    </section>
-    <section
-      v-if="lastDifferenceNavigation"
-      class="folder-action-status"
-      data-testid="folder-difference-navigation-status"
-    >
-      {{ lastDifferenceNavigation }}
-    </section>
-    <section
-      v-if="lastSyncAction"
-      class="folder-action-status"
-      data-testid="folder-sync-action-status"
-    >
-      {{ lastSyncAction }}
-    </section>
-
-    <section
-      class="folder-tree-table"
-      data-testid="folder-tree-table"
-      @scroll="handleTreeScroll"
-    >
-      <div
-        class="tree-head"
-        :style="{ gridTemplateColumns }"
-      >
-        <span>{{ $t('ui.name') }}</span>
-        <span
-          v-if="isColumnVisible('size')"
-          data-column="left-size"
-          >{{ $t('ui.size') }}</span
-        >
-        <span
-          v-if="isColumnVisible('modified')"
-          data-column="left-modified"
-          >{{ $t('ui.modified') }}</span
-        >
-        <span
-          v-if="isColumnVisible('type')"
-          data-column="left-type"
-          >{{ $t('ui.type') }}</span
-        >
-        <span>{{ $t('ui.status') }}</span>
-        <span>{{ $t('ui.name') }}</span>
-        <span
-          v-if="isColumnVisible('size')"
-          data-column="right-size"
-          >{{ $t('ui.size') }}</span
-        >
-        <span
-          v-if="isColumnVisible('modified')"
-          data-column="right-modified"
-          >{{ $t('ui.modified') }}</span
-        >
-        <span
-          v-if="isColumnVisible('type')"
-          data-column="right-type"
-          >{{ $t('ui.type') }}</span
-        >
-      </div>
-      <div
-        class="tree-body"
-        data-testid="folder-virtual-spacer"
-        :style="{ height: virtualSpacerHeight }"
-      >
-        <div
-          class="tree-window"
-          :style="{ transform: virtualOffset }"
-        >
-          <div
-            v-for="row in virtualRows"
-            :key="row.id"
-            class="tree-row"
-            :class="[
-              `status-${row.status.toLowerCase().replaceAll(' ', '-')}`,
-              row.kind,
-              { selected: selectedRowId === row.id, suppressed: isSuppressed(row) },
-            ]"
-            :style="{ gridTemplateColumns }"
-            :data-row-id="row.id"
-            data-testid="folder-row"
-            @click="selectRow(row)"
-          >
-            <span
-              class="name-cell left-name"
-              :style="{ paddingLeft: rowIndent(row) }"
-            >
-              <button
-                v-if="row.kind === 'directory'"
-                type="button"
-                class="folder-toggle"
-                :data-testid="`toggle-folder-${row.id}`"
-                :aria-expanded="isExpanded(row)"
-                @click.stop="toggleFolder(row)"
+            <span>{{ item.sourcePath ?? '--' }}</span>
+            <span>{{ item.targetPath ?? '--' }}</span>
+            <span>{{ item.detail }}</span>
+            <span class="sync-preview-change-actions">
+              <NButton
+                size="tiny"
+                secondary
+                :data-testid="`sync-preview-leave-${item.id}`"
+                @click="markSyncPreviewItemAsLeave(item.id)"
+                >{{ $t('ui.leave') }}</NButton
               >
-                {{ isExpanded(row) ? '▾' : '▸' }}
-              </button>
-              {{ sideValue(row, 'left', 'name') }}
-              <small
-                v-if="isSuppressed(row)"
-                :data-testid="`suppressed-marker-${row.id}`"
-                >{{ $t('ui.suppressed') }}</small
+              <NButton
+                size="tiny"
+                secondary
+                :disabled="!item.originalSourcePath || !item.originalTargetPath"
+                :data-testid="`sync-preview-reverse-${item.id}`"
+                @click="reverseSyncPreviewItem(item.id)"
+                >{{ $t('ui.reverse') }}</NButton
               >
-            </span>
-            <span
-              v-if="isColumnVisible('size')"
-              data-column="left-size"
-            >
-              {{ sideValue(row, 'left', 'size') }}
-            </span>
-            <span
-              v-if="isColumnVisible('modified')"
-              data-column="left-modified"
-            >
-              {{ sideValue(row, 'left', 'modified') }}
-            </span>
-            <span
-              v-if="isColumnVisible('type')"
-              data-column="left-type"
-            >
-              {{ typeLabel(row) }}
-            </span>
-            <strong>{{ row.status }}</strong>
-            <span
-              class="name-cell"
-              :style="{ paddingLeft: rowIndent(row) }"
-            >
-              {{ sideValue(row, 'right', 'name') }}
-            </span>
-            <span
-              v-if="isColumnVisible('size')"
-              data-column="right-size"
-            >
-              {{ sideValue(row, 'right', 'size') }}
-            </span>
-            <span
-              v-if="isColumnVisible('modified')"
-              data-column="right-modified"
-            >
-              {{ sideValue(row, 'right', 'modified') }}
-            </span>
-            <span
-              v-if="isColumnVisible('type')"
-              data-column="right-type"
-            >
-              {{ typeLabel(row) }}
             </span>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section
+        v-if="renamePanelOpen"
+        class="folder-operation-panel"
+        data-testid="folder-rename-panel"
+      >
+        <input
+          v-model="renameTargetName"
+          data-testid="rename-target-name"
+        />
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="confirm-rename-file"
+          @click="confirmRenameFile"
+          >{{ $t('ui.rename') }}</NButton
+        >
+      </section>
+
+      <section
+        v-if="pendingDangerousOperation"
+        class="folder-copy-confirmation"
+        data-testid="folder-dangerous-confirmation"
+      >
+        <strong>{{ pendingDangerousOperation.title }}</strong>
+        <span>{{ pendingDangerousOperation.message }}</span>
+        <span>{{ pendingDangerousOperation.paths.join(', ') }}</span>
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="confirm-dangerous-file-operation"
+          @click="confirmDangerousFileOperation"
+        >
+          {{ pendingDangerousOperation.confirmLabel }}
+        </NButton>
+      </section>
+
+      <section class="folder-operation-panel">
+        <label class="metadata-option">
+          <input
+            data-testid="toggle-selected-readonly"
+            type="checkbox"
+            :checked="selectedReadonly"
+            :disabled="!selectedFilePath"
+            @change="toggleSelectedReadonly(($event.target as HTMLInputElement).checked)"
+          />
+          <span>{{ $t('ui.readonly') }}</span>
+        </label>
+        <NButton
+          size="small"
+          secondary
+          data-testid="touch-selected-file"
+          :disabled="!selectedFilePath"
+          @click="touchSelectedFile"
+          >{{ $t('ui.touch') }}</NButton
+        >
+      </section>
+
+      <section
+        v-if="pendingCopyConfirmation"
+        class="folder-copy-confirmation"
+        data-testid="folder-copy-confirmation"
+      >
+        <strong>{{ pendingCopyConfirmation.title }}</strong>
+        <span>{{ pendingCopyConfirmation.message }}</span>
+        <span>{{ pendingCopyConfirmation.paths.join(', ') }}</span>
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="confirm-folder-copy"
+          @click="confirmFolderCopy"
+        >
+          {{ pendingCopyConfirmation.confirmLabel }}
+        </NButton>
+      </section>
+
+      <section class="manual-alignment-tools">
+        <select
+          v-model="alignWithTargetId"
+          data-testid="align-with-target"
+        >
+          <option value="">{{ $t('ui.selectTarget') }}</option>
+          <option
+            v-for="candidate in alignWithCandidates"
+            :key="candidate.id"
+            :value="candidate.id"
+          >
+            {{ displayName(candidate) }}
+          </option>
+        </select>
+        <NButton
+          size="small"
+          secondary
+          data-testid="align-with-selected-file"
+          :disabled="!selectedRowId || !alignWithTargetId"
+          @click="alignSelectedFileWithTarget"
+          >{{ $t('ui.alignWith') }}</NButton
+        >
+        <NButton
+          size="small"
+          secondary
+          data-testid="break-selected-alignment"
+          :disabled="!selectedRowId"
+          @click="breakSelectedAlignment"
+          >{{ $t('ui.breakAlignment') }}</NButton
+        >
+      </section>
+
+      <section
+        v-if="lastOpenAction"
+        class="folder-action-status"
+        data-testid="folder-open-action-status"
+      >
+        {{ lastOpenAction.label }} -> {{ lastOpenAction.path }}
+      </section>
+      <section
+        v-if="lastCompareAction"
+        class="folder-action-status"
+        data-testid="folder-compare-action-status"
+      >
+        {{ lastCompareAction }}
+      </section>
+      <section
+        v-if="lastAlignmentAction"
+        class="folder-action-status"
+        data-testid="folder-alignment-action-status"
+      >
+        {{ lastAlignmentAction }}
+      </section>
+      <section
+        v-if="lastCopyAction"
+        class="folder-action-status"
+        data-testid="folder-copy-action-status"
+      >
+        {{ lastCopyAction }}
+      </section>
+      <section
+        v-if="lastFileOperationAction"
+        class="folder-action-status"
+        data-testid="folder-file-operation-status"
+      >
+        {{ lastFileOperationAction }}
+      </section>
+      <section
+        v-if="lastMetadataAction"
+        class="folder-action-status"
+        data-testid="folder-metadata-operation-status"
+      >
+        {{ lastMetadataAction }}
+      </section>
+      <section
+        v-if="lastSelectionAction"
+        class="folder-action-status"
+        data-testid="folder-selection-operation-status"
+      >
+        {{ lastSelectionAction }}
+      </section>
+      <section
+        v-if="lastDifferenceNavigation"
+        class="folder-action-status"
+        data-testid="folder-difference-navigation-status"
+      >
+        {{ lastDifferenceNavigation }}
+      </section>
+      <section
+        v-if="lastSyncAction"
+        class="folder-action-status"
+        data-testid="folder-sync-action-status"
+      >
+        {{ lastSyncAction }}
+      </section>
+
+      <section
+        class="folder-tree-table"
+        data-testid="folder-tree-table"
+        @scroll="handleTreeScroll"
+      >
+        <div
+          class="tree-head"
+          :style="{ gridTemplateColumns }"
+        >
+          <span>{{ $t('ui.name') }}</span>
+          <span
+            v-if="isColumnVisible('size')"
+            data-column="left-size"
+            >{{ $t('ui.size') }}</span
+          >
+          <span
+            v-if="isColumnVisible('modified')"
+            data-column="left-modified"
+            >{{ $t('ui.modified') }}</span
+          >
+          <span
+            v-if="isColumnVisible('type')"
+            data-column="left-type"
+            >{{ $t('ui.type') }}</span
+          >
+          <span>{{ $t('ui.status') }}</span>
+          <span>{{ $t('ui.name') }}</span>
+          <span
+            v-if="isColumnVisible('size')"
+            data-column="right-size"
+            >{{ $t('ui.size') }}</span
+          >
+          <span
+            v-if="isColumnVisible('modified')"
+            data-column="right-modified"
+            >{{ $t('ui.modified') }}</span
+          >
+          <span
+            v-if="isColumnVisible('type')"
+            data-column="right-type"
+            >{{ $t('ui.type') }}</span
+          >
+        </div>
+        <div
+          class="tree-body"
+          data-testid="folder-virtual-spacer"
+          :style="{ height: virtualSpacerHeight }"
+        >
+          <div
+            class="tree-window"
+            :style="{ transform: virtualOffset }"
+          >
+            <div
+              v-for="row in virtualRows"
+              :key="row.id"
+              class="tree-row"
+              :class="[
+                `status-${row.status.toLowerCase().replaceAll(' ', '-')}`,
+                row.kind,
+                { selected: selectedRowId === row.id, suppressed: isSuppressed(row) },
+              ]"
+              :style="{ gridTemplateColumns }"
+              :data-row-id="row.id"
+              data-testid="folder-row"
+              @click="selectRow(row)"
+            >
+              <span
+                class="name-cell left-name"
+                :style="{ paddingLeft: rowIndent(row) }"
+              >
+                <button
+                  v-if="row.kind === 'directory'"
+                  type="button"
+                  class="folder-toggle"
+                  :data-testid="`toggle-folder-${row.id}`"
+                  :aria-expanded="isExpanded(row)"
+                  @click.stop="toggleFolder(row)"
+                >
+                  {{ isExpanded(row) ? '▾' : '▸' }}
+                </button>
+                {{ sideValue(row, 'left', 'name') }}
+                <small
+                  v-if="isSuppressed(row)"
+                  :data-testid="`suppressed-marker-${row.id}`"
+                  >{{ $t('ui.suppressed') }}</small
+                >
+              </span>
+              <span
+                v-if="isColumnVisible('size')"
+                data-column="left-size"
+              >
+                {{ sideValue(row, 'left', 'size') }}
+              </span>
+              <span
+                v-if="isColumnVisible('modified')"
+                data-column="left-modified"
+              >
+                {{ sideValue(row, 'left', 'modified') }}
+              </span>
+              <span
+                v-if="isColumnVisible('type')"
+                data-column="left-type"
+              >
+                {{ typeLabel(row) }}
+              </span>
+              <strong>{{ row.status }}</strong>
+              <span
+                class="name-cell"
+                :style="{ paddingLeft: rowIndent(row) }"
+              >
+                {{ sideValue(row, 'right', 'name') }}
+              </span>
+              <span
+                v-if="isColumnVisible('size')"
+                data-column="right-size"
+              >
+                {{ sideValue(row, 'right', 'size') }}
+              </span>
+              <span
+                v-if="isColumnVisible('modified')"
+                data-column="right-modified"
+              >
+                {{ sideValue(row, 'right', 'modified') }}
+              </span>
+              <span
+                v-if="isColumnVisible('type')"
+                data-column="right-type"
+              >
+                {{ typeLabel(row) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
     </section>
-  </section>
+
+    <template #inspector>
+      <WorkbenchInspector>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.selection') }}</h2>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.name') }}</dt>
+              <dd>{{ selectedRow ? displayName(selectedRow) : '--' }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.status') }}</dt>
+              <dd :data-tone="selectedRow?.status === 'Different' ? 'modified' : 'default'">
+                {{ selectedRow?.status ?? '--' }}
+              </dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.left') }}</dt>
+              <dd>{{ selectedRow?.leftPath ?? leftRoot }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.right') }}</dt>
+              <dd>{{ selectedRow?.rightPath ?? rightRoot }}</dd>
+            </div>
+          </dl>
+        </section>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.change') }}</h2>
+          <StatusSummaryGrid
+            :items="[
+              { label: $t('ui.items'), value: summary.total },
+              { label: $t('ui.different'), value: summary.different, tone: 'modified' },
+              { label: $t('ui.orphans'), value: summary.orphans, tone: 'deleted' },
+              { label: $t('ui.suppressed'), value: excludedRowIds.size },
+            ]"
+          />
+        </section>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.jobs') }}</h2>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.compare') }}</dt>
+              <dd>{{ folderCompareLoading ? 'Running' : 'Idle' }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.syncPreview') }}</dt>
+              <dd>{{ syncPreviewItems.length }} operations</dd>
+            </div>
+          </dl>
+        </section>
+      </WorkbenchInspector>
+    </template>
+  </WorkbenchShell>
 </template>
 <style scoped>
 .folder-compare-view {

@@ -58,6 +58,8 @@ html[data-theme='dark'] {
   --diff-deleted-fg: #ff8a80;
   --diff-modified-bg: rgb(245 158 11 / 0.16);
   --diff-modified-fg: #f5c56b;
+  --diff-conflict-bg: rgb(147 51 234 / 0.18);
+  --diff-conflict-fg: #d8b4fe;
   --diff-gutter-bg: #202631;
 }
 
@@ -126,4 +128,322 @@ select {
 
 ::-webkit-scrollbar-track {
   background: var(--app-surface-low);
+}
+
+.workbench-shell {
+  display: grid;
+  grid-template-rows: 34px auto minmax(0, 1fr);
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--app-bg);
+}
+
+.workbench-titlebar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  min-width: 0;
+  height: 34px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface-low);
+}
+
+.workbench-titlecopy {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.workbench-titlecopy h1 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--app-text);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workbench-eyebrow,
+.workbench-subtitle {
+  overflow: hidden;
+  color: var(--app-text-muted);
+  font-size: 11px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workbench-eyebrow {
+  color: var(--app-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.workbench-title-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.workbench-toolbar-stack {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.workbench-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.workbench-main {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--app-canvas);
+}
+
+.workbench-inspector {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  border-left: 1px solid var(--app-border);
+  background: var(--app-bg);
+}
+
+.workbench-toolbar,
+.path-pair-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 32px;
+  padding: 3px 8px;
+  overflow: auto hidden;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface);
+}
+
+.workbench-toolbar button,
+.workbench-toolbar select,
+.workbench-toolbar input,
+.path-pair-bar button,
+.path-pair-bar input {
+  height: 24px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-canvas);
+  color: var(--app-text);
+  font-size: 12px;
+}
+
+.workbench-toolbar button,
+.path-pair-bar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 8px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.workbench-toolbar button:disabled,
+.path-pair-bar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.workbench-toolbar .primary,
+.path-pair-run {
+  border-color: var(--app-primary);
+  background: var(--app-primary);
+  color: #ffffff;
+}
+
+.path-pair-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr) auto;
+}
+
+.path-pair-field {
+  display: grid;
+  grid-template-columns: auto 14px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.path-pair-field span {
+  color: var(--app-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.path-pair-field input {
+  width: 100%;
+  min-width: 0;
+  padding: 0 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.path-pair-swap {
+  width: 28px;
+  padding: 0;
+}
+
+.workbench-inspector-stack {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+}
+
+.workbench-inspector-section {
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-canvas);
+}
+
+.workbench-inspector-section h2 {
+  height: 28px;
+  margin: 0;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--app-border);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.workbench-inspector-section dl {
+  margin: 0;
+}
+
+.workbench-inspector-section dl div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 8px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--app-border-soft);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.workbench-inspector-section dl div:last-child {
+  border-bottom: 0;
+}
+
+.workbench-inspector-section dt {
+  color: var(--app-text-muted);
+}
+
+.workbench-inspector-section dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--app-text);
+  font-weight: 700;
+}
+
+.workbench-inspector-section dd[data-tone='added'],
+.status-summary-grid article[data-tone='added'] strong {
+  color: var(--diff-added-fg);
+}
+
+.workbench-inspector-section dd[data-tone='deleted'],
+.status-summary-grid article[data-tone='deleted'] strong {
+  color: var(--diff-deleted-fg);
+}
+
+.workbench-inspector-section dd[data-tone='modified'],
+.status-summary-grid article[data-tone='modified'] strong {
+  color: var(--diff-modified-fg);
+}
+
+.workbench-inspector-section dd[data-tone='conflict'],
+.status-summary-grid article[data-tone='conflict'] strong {
+  color: var(--diff-conflict-fg);
+}
+
+.status-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 6px;
+}
+
+.status-summary-grid article {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-canvas);
+}
+
+.status-summary-grid strong {
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-summary-grid span {
+  overflow: hidden;
+  color: var(--app-text-muted);
+  font-size: 11px;
+  line-height: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.split-pane-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface-muted);
+  box-shadow: inset 0 0 0 transparent;
+}
+
+.split-pane-header.active {
+  box-shadow: inset 0 2px 0 var(--app-primary);
+}
+
+.split-pane-header strong,
+.split-pane-header span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.split-pane-header strong {
+  font-size: 12px;
+}
+
+.split-pane-header span {
+  color: var(--app-text-muted);
+  font-size: 11px;
+}
+
+@media (width <= 1180px) {
+  .workbench-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workbench-inspector {
+    display: none;
+  }
 }

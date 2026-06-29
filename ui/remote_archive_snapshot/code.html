@@ -1,0 +1,732 @@
+<!doctype html>
+
+<html
+  class="h-full"
+  lang="en"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      content="width=device-width, initial-scale=1.0"
+      name="viewport"
+    />
+    <title>Remotes &amp; Archives - OpenDiff</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-container-low': '#f3f4f6',
+              'tertiary-fixed-dim': '#ffb786',
+              outline: '#727785',
+              'on-surface': '#191c1e',
+              'on-tertiary-container': '#fffbff',
+              error: '#ba1a1a',
+              'primary-container': '#2170e4',
+              'primary-fixed-dim': '#adc6ff',
+              'on-primary-fixed-variant': '#004395',
+              'surface-bright': '#f8f9fb',
+              'inverse-on-surface': '#f0f1f3',
+              'surface-variant': '#e1e2e4',
+              surface: '#f8f9fb',
+              secondary: '#585f6c',
+              'on-primary-container': '#fefcff',
+              'on-secondary-fixed': '#151c27',
+              'tertiary-container': '#b75b00',
+              'secondary-container': '#dce2f3',
+              'inverse-surface': '#2e3132',
+              'on-secondary-fixed-variant': '#404754',
+              'on-error-container': '#93000a',
+              'inverse-primary': '#adc6ff',
+              'on-tertiary': '#ffffff',
+              primary: '#0058be',
+              'on-error': '#ffffff',
+              background: '#f8f9fb',
+              'outline-variant': '#c2c6d6',
+              'on-tertiary-fixed-variant': '#723600',
+              'on-background': '#191c1e',
+              'surface-dim': '#d9dadc',
+              'secondary-fixed-dim': '#c0c7d6',
+              'tertiary-fixed': '#ffdcc6',
+              'error-container': '#ffdad6',
+              'surface-container-highest': '#e1e2e4',
+              'on-surface-variant': '#424754',
+              'primary-fixed': '#d8e2ff',
+              'on-secondary-container': '#5e6572',
+              'surface-container-lowest': '#ffffff',
+              'secondary-fixed': '#dce2f3',
+              'on-tertiary-fixed': '#311400',
+              'on-secondary': '#ffffff',
+              'on-primary': '#ffffff',
+              'on-primary-fixed': '#001a42',
+              tertiary: '#924700',
+              'surface-tint': '#005ac2',
+              'surface-container-high': '#e7e8ea',
+              'surface-container': '#edeef0',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              lg: '0.75rem',
+              sidebar_width: '240px',
+              xs: '0.125rem',
+              md: '0.5rem',
+              toolbar_height: '32px',
+              xl: '1rem',
+              tab_height: '28px',
+              sm: '0.25rem',
+            },
+            fontFamily: {
+              'code-sm': ['JetBrains Mono'],
+              'label-caps': ['Inter'],
+              'code-base': ['JetBrains Mono'],
+              'ui-sm': ['Inter'],
+              'header-section': ['Inter'],
+              'ui-medium': ['Inter'],
+              'ui-base': ['Inter'],
+            },
+            fontSize: {
+              'code-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'label-caps': [
+                '10px',
+                { lineHeight: '12px', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+              'code-base': ['12px', { lineHeight: '20px', fontWeight: '400' }],
+              'ui-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'header-section': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+              'ui-medium': ['13px', { lineHeight: '18px', fontWeight: '600' }],
+              'ui-base': ['13px', { lineHeight: '18px', fontWeight: '400' }],
+            },
+          },
+        },
+      }
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;family=Inter:wght@400;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f9fb;
+        color: #191c1e;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 20;
+        font-size: 16px;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: 'FILL' 1;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #c2c6d6;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #727785;
+      }
+    </style>
+  </head>
+  <body class="h-full flex flex-col overflow-hidden bg-background text-on-background">
+    <!-- TopNavBar -->
+    <nav
+      class="flex items-center w-full px-md space-x-xl bg-surface-container-low border-b border-outline-variant h-toolbar_height flex-shrink-0"
+    >
+      <div class="font-header-section text-header-section text-primary mr-lg">OpenDiff</div>
+      <div class="flex space-x-md text-on-surface-variant font-ui-base text-ui-base">
+        <a
+          class="hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+          href="#"
+          >File</a
+        >
+        <a
+          class="hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+          href="#"
+          >Edit</a
+        >
+        <a
+          class="hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+          href="#"
+          >Search</a
+        >
+        <a
+          class="hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+          href="#"
+          >View</a
+        >
+        <a
+          class="hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+          href="#"
+          >Session</a
+        >
+        <a
+          class="hover:bg-surface-variant transition-colors duration-150 px-sm py-xs rounded"
+          href="#"
+          >Actions</a
+        >
+      </div>
+      <div class="flex-grow"></div>
+      <div class="flex space-x-sm text-on-surface-variant">
+        <button
+          class="hover:bg-surface-variant transition-colors duration-150 p-xs rounded flex items-center justify-center h-6 w-6"
+          title="language"
+        >
+          <span
+            class="material-symbols-outlined"
+            data-icon="language"
+            >language</span
+          >
+        </button>
+        <button
+          class="hover:bg-surface-variant transition-colors duration-150 p-xs rounded flex items-center justify-center h-6 w-6"
+          title="settings"
+        >
+          <span
+            class="material-symbols-outlined"
+            data-icon="settings"
+            >settings</span
+          >
+        </button>
+        <button
+          class="hover:bg-surface-variant transition-colors duration-150 p-xs rounded flex items-center justify-center h-6 w-6"
+          title="help"
+        >
+          <span
+            class="material-symbols-outlined"
+            data-icon="help"
+            >help</span
+          >
+        </button>
+      </div>
+    </nav>
+    <div class="flex flex-1 overflow-hidden">
+      <!-- SideNavBar -->
+      <aside
+        class="flex flex-col h-full py-md overflow-y-auto bg-surface-container-low border-r border-outline-variant w-sidebar_width flex-shrink-0 transition-all duration-100 ease-in-out"
+      >
+        <div class="px-md mb-md">
+          <h2 class="font-header-section text-header-section text-on-surface">Workspace</h2>
+          <div class="font-ui-sm text-ui-sm text-on-surface-variant">Active Session</div>
+        </div>
+        <nav class="flex-1 space-y-xs px-xs">
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="home"
+              >home</span
+            >Home
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="difference"
+              >difference</span
+            >Text Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="call_merge"
+              >call_merge</span
+            >Three-Way Merge
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="folder_open"
+              >folder_open</span
+            >Folder Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="sync"
+              >sync</span
+            >Folder Sync
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="account_tree"
+              >account_tree</span
+            >Folder Merge
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="table_chart"
+              >table_chart</span
+            >Table Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="binary_checker"
+              >heart_check</span
+            >Hex Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="image"
+              >image</span
+            >Picture Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="settings_input_component"
+              >settings_input_component</span
+            >Registry Compare
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="info"
+              >info</span
+            >Metadata
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded bg-primary-container text-on-primary-container font-ui-medium transition-all duration-100 ease-in-out group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-primary-container fill"
+              data-icon="cloud_queue"
+              >cloud_queue</span
+            >Remotes
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="terminal"
+              >terminal</span
+            >Scripts
+          </a>
+          <a
+            class="flex items-center px-sm py-xs rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-100 ease-in-out font-ui-sm text-ui-sm group"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-on-surface-variant group-hover:text-on-surface"
+              data-icon="settings"
+              >settings</span
+            >Settings
+          </a>
+        </nav>
+      </aside>
+      <!-- Main Content Area -->
+      <main class="flex-1 flex flex-col min-w-0 bg-surface">
+        <!-- Content Header -->
+        <header
+          class="flex items-center justify-between px-xl py-md border-b border-outline-variant bg-surface"
+        >
+          <div>
+            <h1 class="font-header-section text-header-section text-on-surface">
+              Remotes &amp; Archives
+            </h1>
+            <p class="font-ui-sm text-ui-sm text-on-surface-variant mt-xs">
+              Manage connected external sources and system snapshots.
+            </p>
+          </div>
+          <div class="flex items-center space-x-lg">
+            <div class="flex space-x-md text-on-surface-variant font-ui-sm text-ui-sm">
+              <span class="flex items-center"
+                ><span class="w-2 h-2 rounded-full bg-primary-container mr-sm"></span>Active:
+                3</span
+              >
+              <span class="flex items-center"
+                ><span class="w-2 h-2 rounded-full bg-secondary mr-sm"></span>Snapshots: 12</span
+              >
+            </div>
+            <button
+              class="h-8 px-md bg-primary text-on-primary font-ui-medium text-ui-medium rounded flex items-center shadow-sm hover:bg-on-primary-fixed-variant transition-colors"
+            >
+              <span
+                class="material-symbols-outlined mr-xs"
+                data-icon="add"
+                >add</span
+              >
+              New Connection
+            </button>
+          </div>
+        </header>
+        <!-- Main Split View -->
+        <div class="flex-1 flex overflow-hidden">
+          <!-- Data List Pane -->
+          <div
+            class="flex-1 flex flex-col min-w-0 border-r border-outline-variant bg-surface-container-lowest"
+          >
+            <!-- Pane Toolbar -->
+            <div
+              class="h-toolbar_height flex items-center px-md border-b border-outline-variant bg-surface-container-low flex-shrink-0"
+            >
+              <div class="flex space-x-sm">
+                <button
+                  class="w-6 h-6 flex items-center justify-center rounded hover:bg-surface-variant text-on-surface-variant transition-colors"
+                  title="Refresh"
+                >
+                  <span
+                    class="material-symbols-outlined"
+                    data-icon="refresh"
+                    >refresh</span
+                  >
+                </button>
+                <button
+                  class="w-6 h-6 flex items-center justify-center rounded hover:bg-surface-variant text-on-surface-variant transition-colors"
+                  title="Filter"
+                >
+                  <span
+                    class="material-symbols-outlined"
+                    data-icon="filter_list"
+                    >filter_list</span
+                  >
+                </button>
+              </div>
+              <div class="flex-grow"></div>
+              <div class="relative">
+                <span
+                  class="material-symbols-outlined absolute left-2 top-1.5 text-on-surface-variant text-[14px]"
+                  data-icon="search"
+                  >search</span
+                >
+                <input
+                  class="h-6 pl-6 pr-2 py-0 border border-outline-variant rounded bg-surface-container-lowest text-on-surface font-ui-sm text-ui-sm focus:border-primary focus:ring-0 w-48 placeholder-on-surface-variant"
+                  placeholder="Filter sources..."
+                  type="text"
+                />
+              </div>
+            </div>
+            <!-- List Content -->
+            <div class="flex-1 overflow-y-auto">
+              <table class="w-full text-left border-collapse">
+                <thead
+                  class="sticky top-0 bg-surface-container-low z-10 border-b border-outline-variant shadow-[0_1px_0_rgba(229,231,235,1)]"
+                >
+                  <tr>
+                    <th class="px-md py-sm font-ui-medium text-ui-medium text-on-surface w-8"></th>
+                    <th class="px-md py-sm font-ui-medium text-ui-medium text-on-surface">Name</th>
+                    <th class="px-md py-sm font-ui-medium text-ui-medium text-on-surface">Type</th>
+                    <th
+                      class="px-md py-sm font-ui-medium text-ui-medium text-on-surface text-right"
+                    >
+                      Size/Status
+                    </th>
+                    <th
+                      class="px-md py-sm font-ui-medium text-ui-medium text-on-surface text-right"
+                    >
+                      Last Modified
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="font-ui-sm text-ui-sm text-on-surface divide-y divide-surface-variant"
+                >
+                  <!-- Remote FTP Group -->
+                  <tr
+                    class="bg-surface-bright group hover:bg-surface-variant cursor-pointer transition-colors"
+                  >
+                    <td class="px-md py-sm text-center">
+                      <span
+                        class="material-symbols-outlined text-primary-container text-[14px]"
+                        data-icon="public"
+                        >public</span
+                      >
+                    </td>
+                    <td class="px-md py-sm font-ui-medium">Production Backup Server</td>
+                    <td class="px-md py-sm text-on-surface-variant">SFTP</td>
+                    <td class="px-md py-sm text-right">
+                      <span
+                        class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#E8F5E9] text-[#2E7D32]"
+                        >Connected</span
+                      >
+                    </td>
+                    <td class="px-md py-sm text-right text-on-surface-variant font-code-sm">
+                      2023-10-27 14:32
+                    </td>
+                  </tr>
+                  <tr
+                    class="group hover:bg-surface-variant cursor-pointer transition-colors border-l-2 border-transparent"
+                  >
+                    <td class="px-md py-sm text-center pl-xl">
+                      <span
+                        class="material-symbols-outlined text-on-surface-variant text-[14px]"
+                        data-icon="folder"
+                        >folder</span
+                      >
+                    </td>
+                    <td class="px-md py-sm">/var/www/html/backup_20231026.tar.gz</td>
+                    <td class="px-md py-sm text-on-surface-variant">GZIP Archive</td>
+                    <td class="px-md py-sm text-right font-code-sm">4.2 GB</td>
+                    <td class="px-md py-sm text-right text-on-surface-variant font-code-sm">
+                      2023-10-26 03:00
+                    </td>
+                  </tr>
+                  <!-- Archive Group -->
+                  <tr
+                    class="bg-surface-bright group hover:bg-surface-variant cursor-pointer transition-colors"
+                  >
+                    <td class="px-md py-sm text-center">
+                      <span
+                        class="material-symbols-outlined text-tertiary-container text-[14px]"
+                        data-icon="folder_zip"
+                        >folder_zip</span
+                      >
+                    </td>
+                    <td class="px-md py-sm font-ui-medium">Legacy_Assets_Q2.zip</td>
+                    <td class="px-md py-sm text-on-surface-variant">Local ZIP</td>
+                    <td class="px-md py-sm text-right font-code-sm">850 MB</td>
+                    <td class="px-md py-sm text-right text-on-surface-variant font-code-sm">
+                      2023-07-15 09:12
+                    </td>
+                  </tr>
+                  <!-- Snapshot Group -->
+                  <tr
+                    class="bg-primary-fixed group cursor-pointer border-l-2 border-primary-container relative"
+                  >
+                    <td class="px-md py-sm text-center">
+                      <span
+                        class="material-symbols-outlined text-primary-container text-[14px]"
+                        data-icon="camera"
+                        >camera</span
+                      >
+                    </td>
+                    <td class="px-md py-sm font-ui-medium text-primary-fixed-variant">
+                      System State: Pre-Deployment
+                    </td>
+                    <td class="px-md py-sm text-on-surface-variant">VSS Snapshot</td>
+                    <td class="px-md py-sm text-right font-code-sm">--</td>
+                    <td class="px-md py-sm text-right text-on-surface-variant font-code-sm">
+                      Today 10:45
+                    </td>
+                  </tr>
+                  <tr class="group hover:bg-surface-variant cursor-pointer transition-colors">
+                    <td class="px-md py-sm text-center">
+                      <span
+                        class="material-symbols-outlined text-on-surface-variant text-[14px]"
+                        data-icon="cloud_off"
+                        >cloud_off</span
+                      >
+                    </td>
+                    <td
+                      class="px-md py-sm font-ui-medium text-on-surface-variant line-through opacity-70"
+                    >
+                      Staging Server (Deprecated)
+                    </td>
+                    <td class="px-md py-sm text-on-surface-variant opacity-70">FTP</td>
+                    <td class="px-md py-sm text-right">
+                      <span
+                        class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#FFEBEE] text-[#C62828]"
+                        >Offline</span
+                      >
+                    </td>
+                    <td
+                      class="px-md py-sm text-right text-on-surface-variant font-code-sm opacity-70"
+                    >
+                      2023-01-05 11:20
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Inspector Pane (Right) -->
+          <div class="w-80 bg-surface-container-lowest flex flex-col flex-shrink-0">
+            <div class="h-tab_height flex bg-surface-container-low border-b border-outline-variant">
+              <div
+                class="px-md py-1 bg-surface-container-lowest border-t-2 border-primary text-primary font-ui-sm text-ui-sm flex items-center cursor-default"
+              >
+                Settings
+              </div>
+              <div
+                class="px-md py-1 text-on-surface-variant hover:bg-surface-variant cursor-pointer font-ui-sm text-ui-sm flex items-center transition-colors"
+              >
+                History
+              </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-md space-y-lg font-ui-sm text-ui-sm">
+              <!-- Inspector Header -->
+              <div>
+                <div class="flex items-center space-x-sm mb-xs">
+                  <span
+                    class="material-symbols-outlined text-primary-container text-[16px]"
+                    data-icon="camera"
+                    >camera</span
+                  >
+                  <h3 class="font-ui-medium text-ui-medium text-on-surface break-all">
+                    System State: Pre-Deployment
+                  </h3>
+                </div>
+                <div class="text-on-surface-variant font-code-sm">
+                  Type: Volume Shadow Copy (VSS)
+                </div>
+                <div class="text-on-surface-variant font-code-sm">
+                  ID: {8A2B9C1F-3D4E-5F6A-7B8C-9D0E1F2A3B4C}
+                </div>
+              </div>
+              <div class="h-px bg-surface-variant"></div>
+              <!-- Settings Form (Read-only view for snapshot) -->
+              <div class="space-y-md">
+                <div>
+                  <label class="block text-on-surface-variant mb-xs font-ui-medium"
+                    >Source Path</label
+                  >
+                  <div
+                    class="px-sm py-xs border border-outline-variant bg-surface-container-low rounded font-code-sm text-on-surface break-all select-all"
+                  >
+                    C:\ProgramData\OpenDiff\Snapshots\
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-on-surface-variant mb-xs font-ui-medium"
+                    >Created By</label
+                  >
+                  <div
+                    class="px-sm py-xs border border-outline-variant bg-surface-container-low rounded font-code-sm text-on-surface"
+                  >
+                    NT AUTHORITY\SYSTEM
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-on-surface-variant mb-xs font-ui-medium"
+                    >Mount Point</label
+                  >
+                  <div class="flex space-x-sm">
+                    <input
+                      class="flex-1 px-sm py-xs border border-outline-variant rounded font-code-sm text-on-surface bg-surface-container-lowest focus:border-primary focus:ring-0 h-7"
+                      readonly=""
+                      type="text"
+                      value="\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1"
+                    />
+                    <button
+                      class="px-sm h-7 border border-outline-variant rounded hover:bg-surface-variant transition-colors flex items-center justify-center text-on-surface-variant"
+                      title="Copy Path"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[14px]"
+                        data-icon="content_copy"
+                        >content_copy</span
+                      >
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="h-px bg-surface-variant"></div>
+              <!-- Action Buttons -->
+              <div class="space-y-sm pt-sm">
+                <button
+                  class="w-full h-8 bg-surface-container-high hover:bg-surface-variant border border-outline-variant rounded text-on-surface font-ui-medium text-ui-medium transition-colors flex items-center justify-center"
+                >
+                  <span
+                    class="material-symbols-outlined mr-xs text-[14px]"
+                    data-icon="compare_arrows"
+                    >compare_arrows</span
+                  >
+                  Compare with Current
+                </button>
+                <button
+                  class="w-full h-8 bg-surface-container-high hover:bg-surface-variant border border-outline-variant rounded text-on-surface font-ui-medium text-ui-medium transition-colors flex items-center justify-center"
+                >
+                  <span
+                    class="material-symbols-outlined mr-xs text-[14px]"
+                    data-icon="restore"
+                    >restore</span
+                  >
+                  Restore Selected Files
+                </button>
+                <button
+                  class="w-full h-8 border border-error text-error hover:bg-[#FFEBEE] rounded font-ui-medium text-ui-medium transition-colors flex items-center justify-center mt-lg"
+                >
+                  <span
+                    class="material-symbols-outlined mr-xs text-[14px]"
+                    data-icon="delete"
+                    >delete</span
+                  >
+                  Delete Snapshot
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!-- Footer -->
+    <footer
+      class="fixed bottom-0 w-full flex justify-between items-center px-xl z-50 bg-secondary border-t border-outline h-6"
+    >
+      <div
+        class="font-code-sm text-code-sm text-on-secondary opacity-80 hover:opacity-100 transition-opacity"
+      >
+        Ln 12, Col 45 | UTF-8 | Matches: 85% | Ready
+      </div>
+      <div
+        class="flex space-x-md font-code-sm text-code-sm text-on-secondary opacity-80 hover:opacity-100 transition-opacity"
+      >
+        <a href="#">English</a>
+        <span class="text-outline-variant">|</span>
+        <a href="#">中文</a>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,817 @@
+<!doctype html>
+
+<html
+  class="h-full antialiased dark"
+  lang="en"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      content="width=device-width, initial-scale=1.0"
+      name="viewport"
+    />
+    <title>OpenDiff - Media &amp; Version Info</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-container-low': '#f3f4f6',
+              'tertiary-fixed-dim': '#ffb786',
+              outline: '#727785',
+              'on-surface': '#191c1e',
+              'on-tertiary-container': '#fffbff',
+              error: '#ba1a1a',
+              'primary-container': '#2170e4',
+              'primary-fixed-dim': '#adc6ff',
+              'on-primary-fixed-variant': '#004395',
+              'surface-bright': '#f8f9fb',
+              'inverse-on-surface': '#f0f1f3',
+              'surface-variant': '#e1e2e4',
+              surface: '#f8f9fb',
+              secondary: '#585f6c',
+              'on-primary-container': '#fefcff',
+              'on-secondary-fixed': '#151c27',
+              'tertiary-container': '#b75b00',
+              'secondary-container': '#dce2f3',
+              'inverse-surface': '#2e3132',
+              'on-secondary-fixed-variant': '#404754',
+              'on-error-container': '#93000a',
+              'inverse-primary': '#adc6ff',
+              'on-tertiary': '#ffffff',
+              primary: '#0058be',
+              'on-error': '#ffffff',
+              background: '#f8f9fb',
+              'outline-variant': '#c2c6d6',
+              'on-tertiary-fixed-variant': '#723600',
+              'on-background': '#191c1e',
+              'surface-dim': '#d9dadc',
+              'secondary-fixed-dim': '#c0c7d6',
+              'tertiary-fixed': '#ffdcc6',
+              'error-container': '#ffdad6',
+              'surface-container-highest': '#e1e2e4',
+              'on-surface-variant': '#424754',
+              'primary-fixed': '#d8e2ff',
+              'on-secondary-container': '#5e6572',
+              'surface-container-lowest': '#ffffff',
+              'secondary-fixed': '#dce2f3',
+              'on-tertiary-fixed': '#311400',
+              'on-secondary': '#ffffff',
+              'on-primary': '#ffffff',
+              'on-primary-fixed': '#001a42',
+              tertiary: '#924700',
+              'surface-tint': '#005ac2',
+              'surface-container-high': '#e7e8ea',
+              'surface-container': '#edeef0',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              lg: '0.75rem',
+              sidebar_width: '240px',
+              xs: '0.125rem',
+              md: '0.5rem',
+              toolbar_height: '32px',
+              xl: '1rem',
+              tab_height: '28px',
+              sm: '0.25rem',
+            },
+            fontFamily: {
+              'code-sm': ['JetBrains Mono'],
+              'label-caps': ['Inter'],
+              'code-base': ['JetBrains Mono'],
+              'ui-sm': ['Inter'],
+              'header-section': ['Inter'],
+              'ui-medium': ['Inter'],
+              'ui-base': ['Inter'],
+            },
+            fontSize: {
+              'code-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'label-caps': [
+                '10px',
+                { lineHeight: '12px', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+              'code-base': ['12px', { lineHeight: '20px', fontWeight: '400' }],
+              'ui-sm': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+              'header-section': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+              'ui-medium': ['13px', { lineHeight: '18px', fontWeight: '600' }],
+              'ui-base': ['13px', { lineHeight: '18px', fontWeight: '400' }],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      .split-pane {
+        display: flex;
+        width: 100%;
+        height: 100%;
+      }
+      .gutter {
+        width: 4px;
+        background-color: transparent;
+        cursor: col-resize;
+        transition: background-color 0.2s;
+        position: relative;
+        z-index: 10;
+      }
+      .gutter:hover,
+      .gutter:active {
+        background-color: #0058be;
+      }
+      .pane-border {
+        border: 1px solid #c2c6d6;
+      }
+      .dark .pane-border {
+        border-color: #727785;
+      }
+      .row-hover:hover {
+        background-color: #e1e2e4;
+      }
+      .dark .row-hover:hover {
+        background-color: #424754;
+      }
+
+      /* Custom scrollbar for high density */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: #c2c6d6;
+        border-radius: 4px;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background-color: #727785;
+      }
+    </style>
+  </head>
+  <body
+    class="h-full w-full bg-background dark:bg-on-surface text-on-surface dark:text-inverse-on-surface font-ui-base overflow-hidden flex flex-col"
+  >
+    <!-- TopNavBar -->
+    <header
+      class="flex items-center w-full px-md space-x-xl bg-surface-container-low dark:bg-surface-container-low font-ui-base text-ui-base docked full-width top-0 h-toolbar_height border-b border-outline-variant dark:border-outline z-20 shrink-0"
+    >
+      <div
+        class="font-header-section text-header-section text-primary dark:text-primary-fixed-dim shrink-0 flex items-center pr-md border-r border-outline-variant dark:border-outline"
+      >
+        <span
+          class="material-symbols-outlined mr-sm text-[16px]"
+          style="font-variation-settings: 'FILL' 1"
+          >difference</span
+        >
+        OpenDiff
+      </div>
+      <nav class="flex-1 flex space-x-sm h-full items-center">
+        <a
+          class="px-sm py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors duration-150 rounded"
+          href="#"
+          >File</a
+        >
+        <a
+          class="px-sm py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors duration-150 rounded"
+          href="#"
+          >Edit</a
+        >
+        <a
+          class="px-sm py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors duration-150 rounded"
+          href="#"
+          >Search</a
+        >
+        <a
+          class="px-sm py-xs text-primary dark:text-primary-fixed-dim font-ui-medium hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors duration-150 rounded bg-primary-fixed/20"
+          href="#"
+          >View</a
+        >
+        <a
+          class="px-sm py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors duration-150 rounded"
+          href="#"
+          >Session</a
+        >
+        <a
+          class="px-sm py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors duration-150 rounded"
+          href="#"
+          >Actions</a
+        >
+      </nav>
+      <div class="flex items-center space-x-xs shrink-0">
+        <button
+          class="p-[2px] rounded hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors text-on-surface-variant dark:text-on-surface-variant"
+          title="Language"
+        >
+          <span class="material-symbols-outlined text-[16px]">language</span>
+        </button>
+        <button
+          class="p-[2px] rounded hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors text-on-surface-variant dark:text-on-surface-variant"
+          title="Settings"
+        >
+          <span class="material-symbols-outlined text-[16px]">settings</span>
+        </button>
+        <button
+          class="p-[2px] rounded hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors text-on-surface-variant dark:text-on-surface-variant"
+          title="Help"
+        >
+          <span class="material-symbols-outlined text-[16px]">help</span>
+        </button>
+      </div>
+    </header>
+    <div class="flex flex-1 overflow-hidden relative">
+      <!-- SideNavBar -->
+      <aside
+        class="flex flex-col h-full py-md overflow-y-auto bg-surface-container-low dark:bg-surface-container-low text-primary dark:text-primary-fixed-dim font-ui-sm text-ui-sm docked left-0 w-sidebar_width border-r border-outline-variant dark:border-outline shrink-0 z-10 hidden md:flex"
+      >
+        <div class="px-md pb-md mb-xs border-b border-outline-variant dark:border-outline">
+          <div
+            class="font-header-section text-header-section text-on-surface dark:text-on-surface flex items-center"
+          >
+            Workspace
+          </div>
+          <div class="text-on-surface-variant dark:text-on-surface-variant opacity-80 mt-[2px]">
+            Active Session
+          </div>
+        </div>
+        <nav class="flex-1 overflow-y-auto pt-sm flex flex-col gap-[2px]">
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">home</span>
+            Home
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">difference</span>
+            Text Compare
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">call_merge</span>
+            Three-Way Merge
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">folder_open</span>
+            Folder Compare
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">sync</span>
+            Folder Sync
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">account_tree</span>
+            Folder Merge
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">table_chart</span>
+            Table Compare
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">heart_check</span>
+            Hex Compare
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">image</span>
+            Picture Compare
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]"
+              >settings_input_component</span
+            >
+            Registry Compare
+          </a>
+          <a
+            class="flex items-center px-md py-xs bg-primary-container text-on-primary-container dark:bg-primary dark:text-on-primary font-ui-medium hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span
+              class="material-symbols-outlined mr-sm text-[16px]"
+              style="font-variation-settings: 'FILL' 1"
+              >info</span
+            >
+            Metadata
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">cloud_queue</span>
+            Remotes
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">terminal</span>
+            Scripts
+          </a>
+          <a
+            class="flex items-center px-md py-xs text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-all duration-100 ease-in-out mx-sm rounded"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-sm text-[16px]">settings</span>
+            Settings
+          </a>
+        </nav>
+      </aside>
+      <!-- Main Content Area (Split Pane Layout) -->
+      <main
+        class="flex-1 flex flex-col h-full overflow-hidden bg-background dark:bg-inverse-surface relative"
+      >
+        <!-- Page Header Toolbar -->
+        <div
+          class="h-toolbar_height shrink-0 flex items-center px-md border-b pane-border bg-surface-container dark:bg-surface-container-high justify-between"
+        >
+          <div class="flex items-center space-x-sm">
+            <h1
+              class="font-header-section text-header-section text-on-surface dark:text-on-tertiary-container m-0"
+            >
+              Media &amp; Version Info
+            </h1>
+            <span
+              class="text-on-surface-variant dark:text-surface-variant px-sm py-[2px] rounded bg-surface-variant dark:bg-surface-container-highest font-code-sm text-code-sm"
+              >v4.0.1</span
+            >
+          </div>
+          <div class="flex items-center space-x-md">
+            <div
+              class="text-ui-sm text-on-surface-variant dark:text-surface-variant border-r pane-border pr-md"
+            >
+              Versions found:
+              <span class="font-ui-medium text-primary dark:text-primary-fixed-dim">4</span>
+            </div>
+            <div
+              class="flex bg-surface-variant dark:bg-inverse-surface rounded overflow-hidden pane-border"
+            >
+              <button
+                class="px-sm py-[2px] bg-primary dark:bg-primary-container text-on-primary font-ui-sm text-ui-sm"
+              >
+                EN
+              </button>
+              <button
+                class="px-sm py-[2px] hover:bg-surface-container dark:hover:bg-surface text-on-surface-variant dark:text-surface-variant font-ui-sm text-ui-sm transition-colors"
+              >
+                中文
+              </button>
+            </div>
+            <div class="flex space-x-[2px]">
+              <button
+                class="h-6 w-6 flex items-center justify-center hover:bg-surface-variant dark:hover:bg-surface-container-highest rounded text-on-surface-variant dark:text-surface-variant"
+                title="Refresh Metadata"
+              >
+                <span class="material-symbols-outlined text-[16px]">refresh</span>
+              </button>
+              <button
+                class="h-6 w-6 flex items-center justify-center hover:bg-surface-variant dark:hover:bg-surface-container-highest rounded text-on-surface-variant dark:text-surface-variant"
+                title="Export Info"
+              >
+                <span class="material-symbols-outlined text-[16px]">download</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Content Splitter Workspace -->
+        <div class="split-pane flex-1 overflow-hidden p-md pb-8">
+          <!-- pb-8 to clear footer -->
+          <!-- Left Pane: File Versions Table (Main Content) -->
+          <div
+            class="flex-1 flex flex-col bg-surface-container-lowest dark:bg-[#1e1e1e] pane-border rounded overflow-hidden mr-1"
+          >
+            <!-- Pane Header/Tabs -->
+            <div
+              class="h-tab_height bg-surface-container-low dark:bg-[#252526] flex items-end border-b pane-border pl-sm pt-[2px]"
+            >
+              <div
+                class="px-md py-xs bg-surface-container-lowest dark:bg-[#1e1e1e] border-t-2 border-t-primary border-x pane-border border-b-0 rounded-t-[4px] font-ui-medium text-ui-sm text-on-surface dark:text-on-tertiary-container relative top-[1px] flex items-center"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-xs">library_music</span>
+                audio_master_v2.wav
+              </div>
+              <div
+                class="px-md py-xs bg-surface-container-low dark:bg-[#2d2d2d] border-t border-t-transparent border-x border-x-transparent hover:bg-surface-variant dark:hover:bg-[#333333] cursor-pointer rounded-t-[4px] font-ui-sm text-ui-sm text-on-surface-variant dark:text-surface-variant flex items-center ml-[2px]"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-xs text-outline">image</span>
+                cover_art_draft.psd
+              </div>
+            </div>
+            <!-- Table Toolbar -->
+            <div
+              class="h-8 flex items-center px-sm border-b pane-border bg-surface-bright dark:bg-[#1e1e1e]"
+            >
+              <div class="relative flex-1 max-w-[200px]">
+                <span
+                  class="material-symbols-outlined absolute left-sm top-1/2 transform -translate-y-1/2 text-[14px] text-outline"
+                  >search</span
+                >
+                <input
+                  class="w-full h-6 pl-6 pr-sm bg-surface dark:bg-[#252526] border border-outline-variant dark:border-[#3c3c3c] rounded text-ui-sm text-on-surface dark:text-inverse-on-surface focus:outline-none focus:border-primary dark:focus:border-primary-fixed-dim py-0"
+                  placeholder="Filter metadata..."
+                  type="text"
+                />
+              </div>
+              <div class="flex-1"></div>
+              <button
+                class="h-6 px-sm flex items-center hover:bg-surface-variant dark:hover:bg-[#2a2d2e] rounded text-on-surface-variant dark:text-surface-variant font-ui-sm text-ui-sm mr-xs"
+              >
+                <span class="material-symbols-outlined text-[14px] mr-xs">filter_list</span> Filter
+              </button>
+            </div>
+            <!-- Dense Data Table Container -->
+            <div class="flex-1 overflow-auto bg-surface-container-lowest dark:bg-[#1e1e1e]">
+              <table class="w-full text-left border-collapse whitespace-nowrap table-fixed">
+                <colgroup>
+                  <col class="w-8" />
+                  <!-- Icon -->
+                  <col class="w-1/4" />
+                  <!-- Property -->
+                  <col class="w-[30%]" />
+                  <!-- Base (v1) -->
+                  <col class="w-[30%]" />
+                  <!-- Current (v2) -->
+                  <col class="w-[15%]" />
+                  <!-- Status -->
+                </colgroup>
+                <thead
+                  class="sticky top-0 bg-surface dark:bg-[#252526] shadow-sm z-10 border-b pane-border font-label-caps text-label-caps text-on-surface-variant dark:text-surface-variant uppercase"
+                >
+                  <tr>
+                    <th class="py-sm px-xs text-center"></th>
+                    <th class="py-sm px-sm font-semibold border-r pane-border">Property Name</th>
+                    <th class="py-sm px-sm font-semibold border-r pane-border">Local (v1)</th>
+                    <th class="py-sm px-sm font-semibold border-r pane-border">Remote (v2)</th>
+                    <th class="py-sm px-sm font-semibold">Diff Status</th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="font-code-base text-code-base text-on-surface dark:text-inverse-on-surface divide-y divide-outline-variant dark:divide-[#333333]"
+                >
+                  <!-- ID3 Category Header -->
+                  <tr class="bg-surface-variant dark:bg-[#2a2d2e]">
+                    <td
+                      class="py-[2px] px-sm font-ui-medium text-ui-sm"
+                      colspan="5"
+                    >
+                      <span class="material-symbols-outlined text-[14px] align-middle mr-xs"
+                        >arrow_drop_down</span
+                      >
+                      ID3v2.4 Tags
+                    </td>
+                  </tr>
+                  <tr class="row-hover">
+                    <td class="py-[2px] px-xs text-center text-outline">
+                      <span class="material-symbols-outlined text-[14px]">tag</span>
+                    </td>
+                    <td
+                      class="py-[2px] px-sm border-r pane-border text-on-surface-variant dark:text-[#cccccc]"
+                    >
+                      TIT2 (Title)
+                    </td>
+                    <td class="py-[2px] px-sm border-r pane-border">Epic Journey Mix</td>
+                    <td class="py-[2px] px-sm border-r pane-border">Epic Journey Mix (Remaster)</td>
+                    <td class="py-[2px] px-sm text-primary dark:text-primary-fixed-dim">
+                      <span class="bg-primary/10 dark:bg-primary/20 px-[4px] rounded"
+                        >Modified</span
+                      >
+                    </td>
+                  </tr>
+                  <tr class="row-hover">
+                    <td class="py-[2px] px-xs text-center text-outline">
+                      <span class="material-symbols-outlined text-[14px]">person</span>
+                    </td>
+                    <td
+                      class="py-[2px] px-sm border-r pane-border text-on-surface-variant dark:text-[#cccccc]"
+                    >
+                      TPE1 (Artist)
+                    </td>
+                    <td class="py-[2px] px-sm border-r pane-border">Unknown Artist</td>
+                    <td class="py-[2px] px-sm border-r pane-border">Soundscape Audio</td>
+                    <td class="py-[2px] px-sm text-primary dark:text-primary-fixed-dim">
+                      <span class="bg-primary/10 dark:bg-primary/20 px-[4px] rounded"
+                        >Modified</span
+                      >
+                    </td>
+                  </tr>
+                  <tr class="row-hover">
+                    <td class="py-[2px] px-xs text-center text-outline">
+                      <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                    </td>
+                    <td
+                      class="py-[2px] px-sm border-r pane-border text-on-surface-variant dark:text-[#cccccc]"
+                    >
+                      TYER (Year)
+                    </td>
+                    <td class="py-[2px] px-sm border-r pane-border">2023</td>
+                    <td class="py-[2px] px-sm border-r pane-border">2023</td>
+                    <td class="py-[2px] px-sm text-outline dark:text-[#888888]">Identical</td>
+                  </tr>
+                  <tr class="row-hover bg-error-container/30 dark:bg-error/10">
+                    <td class="py-[2px] px-xs text-center text-error">
+                      <span class="material-symbols-outlined text-[14px]">remove</span>
+                    </td>
+                    <td
+                      class="py-[2px] px-sm border-r pane-border text-on-surface-variant dark:text-[#cccccc]"
+                    >
+                      COMM (Comment)
+                    </td>
+                    <td class="py-[2px] px-sm border-r pane-border">Draft render</td>
+                    <td class="py-[2px] px-sm border-r pane-border text-outline italic">
+                      -- missing --
+                    </td>
+                    <td class="py-[2px] px-sm text-error">
+                      <span class="bg-error/10 px-[4px] rounded">Deleted</span>
+                    </td>
+                  </tr>
+                  <!-- Technical Metadata Category -->
+                  <tr class="bg-surface-variant dark:bg-[#2a2d2e]">
+                    <td
+                      class="py-[2px] px-sm font-ui-medium text-ui-sm"
+                      colspan="5"
+                    >
+                      <span class="material-symbols-outlined text-[14px] align-middle mr-xs"
+                        >arrow_drop_down</span
+                      >
+                      File Attributes &amp; Encoding
+                    </td>
+                  </tr>
+                  <tr class="row-hover">
+                    <td class="py-[2px] px-xs text-center text-outline">
+                      <span class="material-symbols-outlined text-[14px]">description</span>
+                    </td>
+                    <td
+                      class="py-[2px] px-sm border-r pane-border text-on-surface-variant dark:text-[#cccccc]"
+                    >
+                      File Size
+                    </td>
+                    <td class="py-[2px] px-sm border-r pane-border">42.5 MB</td>
+                    <td class="py-[2px] px-sm border-r pane-border">44.1 MB</td>
+                    <td class="py-[2px] px-sm text-primary dark:text-primary-fixed-dim">
+                      Modified
+                    </td>
+                  </tr>
+                  <tr class="row-hover">
+                    <td class="py-[2px] px-xs text-center text-outline">
+                      <span class="material-symbols-outlined text-[14px]">equalizer</span>
+                    </td>
+                    <td
+                      class="py-[2px] px-sm border-r pane-border text-on-surface-variant dark:text-[#cccccc]"
+                    >
+                      Sample Rate
+                    </td>
+                    <td
+                      class="py-[2px] px-sm border-r pane-border bg-tertiary-container/20 dark:bg-tertiary/20"
+                    >
+                      44100 Hz
+                    </td>
+                    <td
+                      class="py-[2px] px-sm border-r pane-border bg-tertiary-container/20 dark:bg-tertiary/20"
+                    >
+                      48000 Hz
+                    </td>
+                    <td class="py-[2px] px-sm text-tertiary-container dark:text-tertiary-fixed-dim">
+                      <span class="bg-tertiary-container/10 dark:bg-tertiary/20 px-[4px] rounded"
+                        >Conflict</span
+                      >
+                    </td>
+                  </tr>
+                  <tr class="row-hover bg-primary-fixed/30 dark:bg-primary-container/20">
+                    <td class="py-[2px] px-xs text-center text-primary-fixed-dim">
+                      <span class="material-symbols-outlined text-[14px]">add</span>
+                    </td>
+                    <td
+                      class="py-[2px] px-sm border-r pane-border text-on-surface-variant dark:text-[#cccccc]"
+                    >
+                      Bit Depth
+                    </td>
+                    <td class="py-[2px] px-sm border-r pane-border text-outline italic">
+                      -- missing --
+                    </td>
+                    <td class="py-[2px] px-sm border-r pane-border">24-bit integer</td>
+                    <td class="py-[2px] px-sm text-primary dark:text-primary-fixed-dim">
+                      <span class="bg-primary/10 dark:bg-primary/20 px-[4px] rounded">Added</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Resizer -->
+          <div
+            class="gutter"
+            id="h-splitter"
+          ></div>
+          <!-- Right Pane: Inspector (Metadata extraction settings) -->
+          <div
+            class="w-sidebar_width flex flex-col bg-surface dark:bg-[#252526] pane-border rounded overflow-hidden ml-1 shrink-0"
+          >
+            <div
+              class="h-toolbar_height flex items-center px-sm border-b pane-border bg-surface-container-high dark:bg-[#2d2d2d] font-header-section text-ui-sm text-on-surface dark:text-on-tertiary-container uppercase tracking-wider"
+            >
+              Inspector Settings
+            </div>
+            <div class="flex-1 overflow-y-auto p-md space-y-md font-ui-sm text-ui-sm">
+              <!-- Section: Extraction Options -->
+              <div class="border pane-border rounded bg-surface-container-lowest dark:bg-[#1e1e1e]">
+                <div
+                  class="px-sm py-xs border-b pane-border font-ui-medium bg-surface-variant dark:bg-[#2a2d2e] text-on-surface-variant dark:text-surface-variant"
+                >
+                  Extraction Profile
+                </div>
+                <div class="p-sm space-y-xs">
+                  <label class="flex items-center space-x-xs cursor-pointer">
+                    <input
+                      checked=""
+                      class="form-radio text-primary dark:text-primary-fixed-dim border-outline bg-transparent h-3 w-3"
+                      name="profile"
+                      type="radio"
+                    />
+                    <span class="text-on-surface dark:text-inverse-on-surface"
+                      >Standard Audio (ID3/RIFF)</span
+                    >
+                  </label>
+                  <label class="flex items-center space-x-xs cursor-pointer">
+                    <input
+                      class="form-radio text-primary dark:text-primary-fixed-dim border-outline bg-transparent h-3 w-3"
+                      name="profile"
+                      type="radio"
+                    />
+                    <span class="text-on-surface dark:text-inverse-on-surface"
+                      >Deep Analysis (Hex scan)</span
+                    >
+                  </label>
+                  <label class="flex items-center space-x-xs cursor-pointer">
+                    <input
+                      class="form-radio text-primary dark:text-primary-fixed-dim border-outline bg-transparent h-3 w-3"
+                      name="profile"
+                      type="radio"
+                    />
+                    <span class="text-on-surface dark:text-inverse-on-surface"
+                      >Visual EXIF / XMP</span
+                    >
+                  </label>
+                </div>
+              </div>
+              <!-- Section: Filters -->
+              <div class="border pane-border rounded bg-surface-container-lowest dark:bg-[#1e1e1e]">
+                <div
+                  class="px-sm py-xs border-b pane-border font-ui-medium bg-surface-variant dark:bg-[#2a2d2e] text-on-surface-variant dark:text-surface-variant"
+                >
+                  Field Filters
+                </div>
+                <div class="p-sm space-y-[4px]">
+                  <label class="flex items-center space-x-xs cursor-pointer">
+                    <input
+                      checked=""
+                      class="form-checkbox text-primary dark:text-primary-fixed-dim border-outline rounded-[2px] bg-transparent h-3 w-3"
+                      type="checkbox"
+                    />
+                    <span class="text-on-surface dark:text-inverse-on-surface"
+                      >Show Identical Fields</span
+                    >
+                  </label>
+                  <label class="flex items-center space-x-xs cursor-pointer">
+                    <input
+                      checked=""
+                      class="form-checkbox text-primary dark:text-primary-fixed-dim border-outline rounded-[2px] bg-transparent h-3 w-3"
+                      type="checkbox"
+                    />
+                    <span class="text-on-surface dark:text-inverse-on-surface"
+                      >Highlight Conflicts</span
+                    >
+                  </label>
+                  <label class="flex items-center space-x-xs cursor-pointer">
+                    <input
+                      class="form-checkbox text-primary dark:text-primary-fixed-dim border-outline rounded-[2px] bg-transparent h-3 w-3"
+                      type="checkbox"
+                    />
+                    <span class="text-on-surface dark:text-inverse-on-surface"
+                      >Ignore Case Differences</span
+                    >
+                  </label>
+                  <label
+                    class="flex items-center space-x-xs cursor-pointer mt-xs pt-xs border-t pane-border"
+                  >
+                    <input
+                      class="form-checkbox text-primary dark:text-primary-fixed-dim border-outline rounded-[2px] bg-transparent h-3 w-3"
+                      type="checkbox"
+                    />
+                    <span class="text-on-surface dark:text-inverse-on-surface opacity-80"
+                      >Auto-resolve timestamps</span
+                    >
+                  </label>
+                </div>
+              </div>
+              <div class="flex justify-end pt-sm border-t pane-border">
+                <button
+                  class="px-md py-xs bg-primary dark:bg-primary-container hover:bg-on-primary-fixed-variant transition-colors text-on-primary rounded font-ui-medium text-ui-sm w-full text-center"
+                >
+                  Apply Settings
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!-- Footer -->
+    <footer
+      class="fixed bottom-0 w-full flex justify-between items-center px-xl z-50 bg-secondary dark:bg-inverse-surface text-on-secondary dark:text-inverse-on-surface font-code-sm text-code-sm docked full-width bottom-0 h-6 border-t border-outline dark:border-outline-variant"
+    >
+      <div class="flex items-center h-full">
+        <span>Ln 12, Col 45 | UTF-8 | Matches: 85% | Ready</span>
+      </div>
+      <div class="flex items-center space-x-md h-full">
+        <a
+          class="text-primary-fixed dark:text-primary-fixed-dim hover:opacity-100 transition-opacity"
+          href="#"
+          >English</a
+        >
+        <a
+          class="text-on-secondary dark:text-inverse-on-surface opacity-80 hover:opacity-100 transition-opacity"
+          href="#"
+          >中文</a
+        >
+      </div>
+    </footer>
+    <!-- Minimal JS for resizer simulation -->
+    <script>
+      const resizer = document.getElementById('h-splitter')
+      const leftSide = resizer.previousElementSibling
+
+      let isResizing = false
+
+      resizer.addEventListener('mousedown', (e) => {
+        isResizing = true
+        document.body.style.cursor = 'col-resize'
+        // Prevent text selection during drag
+        e.preventDefault()
+      })
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return
+
+        // Calculate new width relative to container
+        const container = leftSide.parentElement
+        const containerRect = container.getBoundingClientRect()
+        // Leave room for the right sidebar (approx 240px min)
+        let newWidth = e.clientX - containerRect.left
+
+        if (newWidth < 300) newWidth = 300
+        if (newWidth > containerRect.width - 200) newWidth = containerRect.width - 200
+
+        leftSide.style.flex = `0 0 ${newWidth}px`
+      })
+
+      document.addEventListener('mouseup', () => {
+        if (isResizing) {
+          isResizing = false
+          document.body.style.cursor = 'default'
+        }
+      })
+    </script>
+  </body>
+</html>

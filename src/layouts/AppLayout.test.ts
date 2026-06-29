@@ -31,10 +31,25 @@ describe('AppLayout command palette', () => {
     expect(push).toHaveBeenCalledWith('/compare/text')
   })
 
-  it('opens folder compare from the toolbar', async () => {
+  it('renders only global chrome outside routed workbench content', () => {
     const wrapper = mountAppLayout()
 
-    await wrapper.find('[data-testid="toolbar-command-open.folderCompare"]').trigger('click')
+    expect(wrapper.find('.menu-bar').exists()).toBe(true)
+    expect(wrapper.find('.sidebar').exists()).toBe(true)
+    expect(wrapper.find('.status-bar').exists()).toBe(true)
+    expect(wrapper.find('.command-bar').exists()).toBe(false)
+    expect(wrapper.find('.pathbar').exists()).toBe(false)
+    expect(wrapper.find('.page-head').exists()).toBe(false)
+    expect(wrapper.find('.inspector').exists()).toBe(false)
+  })
+
+  it('opens folder compare from the side navigation', async () => {
+    const wrapper = mountAppLayout()
+
+    await wrapper
+      .findAll('.nav-item')
+      .find((item) => item.text().includes('Folder Compare'))
+      ?.trigger('click')
 
     expect(push).toHaveBeenCalledWith('/compare/folder')
   })

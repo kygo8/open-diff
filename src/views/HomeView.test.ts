@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import HomeView from './HomeView.vue'
 import { readClipboardTextSource } from '@/app/clipboardSource'
-import { sessionCatalog } from '@/app/sessionCatalog'
+import { createAppI18n, installI18n } from '@/i18n'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
 
 const push = vi.fn()
@@ -20,6 +20,31 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
 }))
 
+const nButtonStub = {
+  props: ['disabled'],
+  emits: ['click'],
+  template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+}
+
+function mountHomeView(): ReturnType<typeof mount<typeof HomeView>> {
+  const i18n = createAppI18n('en-US')
+
+  return mount(HomeView, {
+    global: {
+      plugins: [
+        {
+          install(app) {
+            installI18n(app, i18n)
+          },
+        },
+      ],
+      stubs: {
+        NButton: nButtonStub,
+      },
+    },
+  })
+}
+
 describe('HomeView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -27,66 +52,38 @@ describe('HomeView', () => {
     vi.mocked(readClipboardTextSource).mockClear()
   })
 
-  it('renders every session type entry grouped by priority', () => {
-    const wrapper = mount(HomeView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            template: '<button :disabled="disabled"><slot /></button>',
-          },
-        },
-      },
-    })
+  it('renders the four design quick-start session cards', () => {
+    const wrapper = mountHomeView()
 
-    expect(wrapper.findAll('[data-testid="session-entry"]')).toHaveLength(sessionCatalog.length)
-    expect(wrapper.findAll('[data-testid="session-priority"]')).toHaveLength(4)
+    const cards = wrapper.findAll('[data-testid="home-new-session-card"]')
 
-    for (const entry of sessionCatalog) {
-      expect(wrapper.text()).toContain(entry.title)
-    }
+    expect(cards).toHaveLength(4)
+    expect(cards.map((card) => card.attributes('data-session-type'))).toEqual([
+      'text-compare',
+      'folder-compare',
+      'text-merge',
+      'folder-sync',
+    ])
   })
 
-  it('opens implemented compare entries and disables planned entries', async () => {
-    const wrapper = mount(HomeView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+  it('renders new session cards, recent sessions table and workspace inspector first', () => {
+    const wrapper = mountHomeView()
 
-    const textCompare = wrapper.find('[data-session-type="text-compare"] button')
-    const folderCompare = wrapper.find('[data-session-type="folder-compare"] button')
-    const folderSync = wrapper.find('[data-session-type="folder-sync"] button')
-    const textMerge = wrapper.find('[data-session-type="text-merge"] button')
-    const folderMerge = wrapper.find('[data-session-type="folder-merge"] button')
-    const tableCompare = wrapper.find('[data-session-type="table-compare"] button')
-    const hexCompare = wrapper.find('[data-session-type="hex-compare"] button')
-    const pictureCompare = wrapper.find('[data-session-type="picture-compare"] button')
-    const registryCompare = wrapper.find('[data-session-type="registry-compare"] button')
-    const mediaCompare = wrapper.find('[data-session-type="media-compare"] button')
-    const versionCompare = wrapper.find('[data-session-type="version-compare"] button')
-    const textEdit = wrapper.find('[data-session-type="text-edit"] button')
-    const clipboardCompare = wrapper.find('[data-session-type="clipboard-compare"] button')
+    expect(wrapper.find('[data-testid="home-new-session"]').exists()).toBe(true)
+    expect(wrapper.findAll('[data-testid="home-new-session-card"]')).toHaveLength(4)
+    expect(wrapper.find('[data-testid="home-recent-sessions"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="home-workspace-inspector"]').exists()).toBe(true)
+    expect(wrapper.find('.drop-zone').exists()).toBe(false)
+    expect(wrapper.find('.priority-groups').exists()).toBe(false)
+  })
 
-    expect(textCompare.attributes('disabled')).toBeUndefined()
-    expect(folderCompare.attributes('disabled')).toBeUndefined()
-    expect(folderSync.attributes('disabled')).toBeUndefined()
-    expect(textMerge.attributes('disabled')).toBeUndefined()
-    expect(folderMerge.attributes('disabled')).toBeUndefined()
-    expect(tableCompare.attributes('disabled')).toBeUndefined()
-    expect(hexCompare.attributes('disabled')).toBeUndefined()
-    expect(pictureCompare.attributes('disabled')).toBeUndefined()
-    expect(registryCompare.attributes('disabled')).toBeUndefined()
-    expect(mediaCompare.attributes('disabled')).toBeUndefined()
-    expect(versionCompare.attributes('disabled')).toBeUndefined()
-    expect(textEdit.attributes('disabled')).toBeUndefined()
-    expect(clipboardCompare.attributes('disabled')).toBeUndefined()
+  it('opens quick-start session cards', async () => {
+    const wrapper = mountHomeView()
+
+    const textCompare = wrapper.find('[data-session-type="text-compare"]')
+    const folderCompare = wrapper.find('[data-session-type="folder-compare"]')
+    const folderSync = wrapper.find('[data-session-type="folder-sync"]')
+    const textMerge = wrapper.find('[data-session-type="text-merge"]')
 
     await textCompare.trigger('click')
 
@@ -103,96 +100,28 @@ describe('HomeView', () => {
     await textMerge.trigger('click')
 
     expect(push).toHaveBeenCalledWith('/merge/text')
-
-    await folderMerge.trigger('click')
-
-    expect(push).toHaveBeenCalledWith('/merge/folder')
-
-    await tableCompare.trigger('click')
-
-    expect(push).toHaveBeenCalledWith('/compare/table')
-
-    await hexCompare.trigger('click')
-
-    expect(push).toHaveBeenCalledWith('/compare/hex')
-
-    await pictureCompare.trigger('click')
-
-    expect(push).toHaveBeenCalledWith('/compare/picture')
-
-    await registryCompare.trigger('click')
-
-    expect(push).toHaveBeenCalledWith('/compare/registry')
-
-    await mediaCompare.trigger('click')
-
-    expect(push).toHaveBeenCalledWith('/compare/media')
-
-    await versionCompare.trigger('click')
-
-    expect(push).toHaveBeenCalledWith('/compare/version')
-
-    await textEdit.trigger('click')
-
-    expect(push).toHaveBeenCalledWith('/edit/text')
-
-    await clipboardCompare.trigger('click')
-
-    expect(push).toHaveBeenCalledWith('/compare/clipboard')
   })
 
-  it('shows saved sessions grouped by folder', () => {
-    const wrapper = mount(HomeView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            template: '<button :disabled="disabled"><slot /></button>',
-          },
-        },
-      },
-    })
+  it('shows saved sessions in a dense recent sessions table', () => {
+    const wrapper = mountHomeView()
 
-    expect(wrapper.find('[data-testid="saved-sessions"]').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Saved Sessions')
-    expect(wrapper.text()).toContain('Work')
+    expect(wrapper.find('[data-testid="home-recent-sessions"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="home-recent-sessions-table"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('Compare sample text')
+    expect(wrapper.text()).toContain('Review release folder')
   })
 
-  it('filters saved sessions by search keyword and session type', async () => {
-    const wrapper = mount(HomeView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            template: '<button :disabled="disabled"><slot /></button>',
-          },
-        },
-      },
-    })
+  it('filters recent sessions by search keyword', async () => {
+    const wrapper = mountHomeView()
 
     await wrapper.find('[data-testid="session-search"]').setValue('release')
 
     expect(wrapper.text()).toContain('Review release folder')
     expect(wrapper.text()).not.toContain('Compare sample text')
-
-    await wrapper.find('[data-testid="type-filter-text-compare"]').setValue(true)
-
-    expect(wrapper.text()).not.toContain('Review release folder')
   })
 
   it('applies saved session management actions from the tree', async () => {
-    const wrapper = mount(HomeView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountHomeView()
 
     await wrapper.find('[data-testid="rename-session-sample-text"]').trigger('click')
     expect(wrapper.text()).toContain('Compare sample text Renamed')
@@ -201,7 +130,10 @@ describe('HomeView', () => {
     expect(wrapper.text()).toContain('Compare sample text Renamed Copy')
 
     await wrapper.find('[data-testid="move-session-sample-text"]').trigger('click')
-    expect(wrapper.text()).toContain('Archive')
+    expect(
+      useSavedSessionsStore().sessions.find((session) => session.id === 'sample-text')?.metadata
+        .folder,
+    ).toBe('Archive')
 
     await wrapper.find('[data-testid="delete-session-sample-text"]').trigger('click')
     expect(wrapper.find('[data-testid="delete-session-sample-text"]').exists()).toBe(false)
@@ -209,16 +141,7 @@ describe('HomeView', () => {
   })
 
   it('disables overwrite actions for locked sessions', () => {
-    const wrapper = mount(HomeView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            template: '<button :disabled="disabled"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountHomeView()
 
     expect(
       wrapper.find('[data-testid="rename-session-sample-folder"]').attributes('disabled'),
@@ -235,17 +158,7 @@ describe('HomeView', () => {
   })
 
   it('prompts to save when closing a dirty session', async () => {
-    const wrapper = mount(HomeView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountHomeView()
 
     await wrapper.find('[data-testid="change-rules-session-sample-text"]').trigger('click')
     await wrapper.find('[data-testid="delete-session-sample-text"]').trigger('click')
@@ -271,17 +184,7 @@ describe('HomeView', () => {
       },
     ])
 
-    const wrapper = mount(HomeView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountHomeView()
 
     expect(wrapper.find('[data-testid="recovery-entry"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('Recovered text')
@@ -294,17 +197,7 @@ describe('HomeView', () => {
   })
 
   it('opens text compare from clipboard text', async () => {
-    const wrapper = mount(HomeView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountHomeView()
 
     await wrapper.find('[data-testid="open-clipboard-text"]').trigger('click')
 

@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue'
 import { compareHexFiles } from '@/api/diff'
 import type { HexCompareResponse, HexViewCell } from '@/types/diff'
+import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 
 interface HexRow {
   offset: string
@@ -140,154 +143,194 @@ async function runHexCompare(): Promise<void> {
 </script>
 
 <template>
-  <section class="hex-compare-view">
-    <header class="hex-header">
-      <div>
-        <p class="eyebrow">{{ $t('ui.hexCompare') }}</p>
-        <h1>{{ $t('ui.hexCompare') }}</h1>
-      </div>
-      <div class="hex-summary">
-        <strong>{{ loadedBytesLabel }}</strong>
-        <span>{{ $t('ui.bytesLoaded') }}</span>
-      </div>
-    </header>
+  <WorkbenchShell
+    :title="$t('ui.hexCompare')"
+    eyebrow="Hex"
+    :subtitle="loadedBytesLabel"
+    inspector-label="Hex compare inspector"
+  >
+    <section class="hex-compare-view">
+      <header class="hex-header">
+        <div>
+          <p class="eyebrow">{{ $t('ui.hexCompare') }}</p>
+          <h1>{{ $t('ui.hexCompare') }}</h1>
+        </div>
+        <div class="hex-summary">
+          <strong>{{ loadedBytesLabel }}</strong>
+          <span>{{ $t('ui.bytesLoaded') }}</span>
+        </div>
+      </header>
 
-    <section class="hex-wrap-controls">
-      <label>
-        <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
-        <input
-          v-model="leftPath"
-          type="text"
-          data-testid="hex-left-path"
-        />
-      </label>
-      <label>
-        <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
-        <input
-          v-model="rightPath"
-          type="text"
-          data-testid="hex-right-path"
-        />
-      </label>
-      <label>
-        <span>{{ $t('ui.viewportWidth') }}</span>
-        <input
-          v-model.number="viewportWidth"
-          type="range"
-          min="320"
-          max="760"
-          step="40"
-          data-testid="hex-width-control"
-        />
-      </label>
-      <label class="hex-toggle">
-        <input
-          v-model="diffOnly"
-          type="checkbox"
-          data-testid="hex-diff-only-toggle"
-        />
-        <span>{{ $t('ui.differencesOnly') }}</span>
-      </label>
-      <strong data-testid="hex-bytes-per-row">{{ bytesPerRow }} bytes / row</strong>
-      <strong data-testid="hex-diff-ranges">{{ diffRangeCount }} ranges</strong>
-      <button
-        type="button"
-        data-testid="run-hex-compare"
-        :disabled="loading"
-        @click="runHexCompare"
+      <section class="hex-wrap-controls">
+        <label>
+          <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
+          <input
+            v-model="leftPath"
+            type="text"
+            data-testid="hex-left-path"
+          />
+        </label>
+        <label>
+          <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
+          <input
+            v-model="rightPath"
+            type="text"
+            data-testid="hex-right-path"
+          />
+        </label>
+        <label>
+          <span>{{ $t('ui.viewportWidth') }}</span>
+          <input
+            v-model.number="viewportWidth"
+            type="range"
+            min="320"
+            max="760"
+            step="40"
+            data-testid="hex-width-control"
+          />
+        </label>
+        <label class="hex-toggle">
+          <input
+            v-model="diffOnly"
+            type="checkbox"
+            data-testid="hex-diff-only-toggle"
+          />
+          <span>{{ $t('ui.differencesOnly') }}</span>
+        </label>
+        <strong data-testid="hex-bytes-per-row">{{ bytesPerRow }} bytes / row</strong>
+        <strong data-testid="hex-diff-ranges">{{ diffRangeCount }} ranges</strong>
+        <button
+          type="button"
+          data-testid="run-hex-compare"
+          :disabled="loading"
+          @click="runHexCompare"
+        >
+          {{ $t('ui.runDiff') }}
+        </button>
+      </section>
+
+      <p
+        v-if="error"
+        class="hex-error"
+        data-testid="hex-compare-error"
       >
-        {{ $t('ui.runDiff') }}
-      </button>
-    </section>
+        {{ error }}
+      </p>
 
-    <p
-      v-if="error"
-      class="hex-error"
-      data-testid="hex-compare-error"
-    >
-      {{ error }}
-    </p>
-
-    <section class="hex-pane-grid">
-      <section class="hex-side">
-        <h2>{{ $t('ui.left') }} · {{ leftHex.path }}</h2>
-        <div
-          ref="leftViewport"
-          class="hex-viewport"
-          data-testid="left-hex-viewport"
-          @scroll="syncHexScroll('left', $event)"
-        >
+      <section class="hex-pane-grid">
+        <section class="hex-side">
+          <h2>{{ $t('ui.left') }} · {{ leftHex.path }}</h2>
           <div
-            v-for="pair in visiblePairedHexRows"
-            :key="`left-${pair.key}`"
-            class="hex-row"
-            data-testid="hex-row"
+            ref="leftViewport"
+            class="hex-viewport"
+            data-testid="left-hex-viewport"
+            @scroll="syncHexScroll('left', $event)"
           >
-            <span
-              class="hex-offset"
-              data-testid="hex-offset-pane"
-            >
-              {{ pair.left?.offset ?? pair.right?.offset }}
-            </span>
-            <span
-              class="hex-bytes"
-              data-testid="hex-byte-pane"
+            <div
+              v-for="pair in visiblePairedHexRows"
+              :key="`left-${pair.key}`"
+              class="hex-row"
+              data-testid="hex-row"
             >
               <span
-                v-for="cell in pair.left?.cells ?? []"
-                :key="cell.offset"
-                class="hex-byte"
-                :class="{ 'hex-byte-different': cell.different }"
-                :data-testid="
-                  cell.different ? `left-hex-byte-diff-${formatOffset(cell.offset)}` : undefined
-                "
+                class="hex-offset"
+                data-testid="hex-offset-pane"
               >
-                {{ cell.hex }}
+                {{ pair.left?.offset ?? pair.right?.offset }}
               </span>
-            </span>
-            <span
-              class="hex-ascii"
-              data-testid="hex-ascii-pane"
-            >
-              {{ pair.left?.ascii ?? '' }}
-            </span>
-          </div>
-        </div>
-      </section>
-
-      <section class="hex-side">
-        <h2>{{ $t('ui.right') }} · {{ rightHex.path }}</h2>
-        <div
-          ref="rightViewport"
-          class="hex-viewport"
-          data-testid="right-hex-viewport"
-          @scroll="syncHexScroll('right', $event)"
-        >
-          <div
-            v-for="pair in visiblePairedHexRows"
-            :key="`right-${pair.key}`"
-            class="hex-row"
-          >
-            <span class="hex-offset">{{ pair.right?.offset ?? pair.left?.offset }}</span>
-            <span class="hex-bytes">
               <span
-                v-for="cell in pair.right?.cells ?? []"
-                :key="cell.offset"
-                class="hex-byte"
-                :class="{ 'hex-byte-different': cell.different }"
-                :data-testid="
-                  cell.different ? `right-hex-byte-diff-${formatOffset(cell.offset)}` : undefined
-                "
+                class="hex-bytes"
+                data-testid="hex-byte-pane"
               >
-                {{ cell.hex }}
+                <span
+                  v-for="cell in pair.left?.cells ?? []"
+                  :key="cell.offset"
+                  class="hex-byte"
+                  :class="{ 'hex-byte-different': cell.different }"
+                  :data-testid="
+                    cell.different ? `left-hex-byte-diff-${formatOffset(cell.offset)}` : undefined
+                  "
+                >
+                  {{ cell.hex }}
+                </span>
               </span>
-            </span>
-            <span class="hex-ascii">{{ pair.right?.ascii ?? '' }}</span>
+              <span
+                class="hex-ascii"
+                data-testid="hex-ascii-pane"
+              >
+                {{ pair.left?.ascii ?? '' }}
+              </span>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section class="hex-side">
+          <h2>{{ $t('ui.right') }} · {{ rightHex.path }}</h2>
+          <div
+            ref="rightViewport"
+            class="hex-viewport"
+            data-testid="right-hex-viewport"
+            @scroll="syncHexScroll('right', $event)"
+          >
+            <div
+              v-for="pair in visiblePairedHexRows"
+              :key="`right-${pair.key}`"
+              class="hex-row"
+            >
+              <span class="hex-offset">{{ pair.right?.offset ?? pair.left?.offset }}</span>
+              <span class="hex-bytes">
+                <span
+                  v-for="cell in pair.right?.cells ?? []"
+                  :key="cell.offset"
+                  class="hex-byte"
+                  :class="{ 'hex-byte-different': cell.different }"
+                  :data-testid="
+                    cell.different ? `right-hex-byte-diff-${formatOffset(cell.offset)}` : undefined
+                  "
+                >
+                  {{ cell.hex }}
+                </span>
+              </span>
+              <span class="hex-ascii">{{ pair.right?.ascii ?? '' }}</span>
+            </div>
+          </div>
+        </section>
       </section>
     </section>
-  </section>
+
+    <template #inspector>
+      <WorkbenchInspector>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.hexDetails') }}</h2>
+          <StatusSummaryGrid
+            :items="[
+              { label: $t('ui.bytesLoaded'), value: loadedBytesLabel },
+              { label: $t('ui.differencesOnly'), value: diffRangeCount, tone: 'modified' },
+              { label: $t('ui.viewportWidth'), value: viewportWidth },
+              { label: 'Row', value: `${bytesPerRow} bytes` },
+            ]"
+          />
+        </section>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.formatDetails') }}</h2>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.left') }}</dt>
+              <dd>{{ leftHex.path }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.right') }}</dt>
+              <dd>{{ rightHex.path }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.differencesOnly') }}</dt>
+              <dd>{{ diffOnly ? 'On' : 'Off' }}</dd>
+            </div>
+          </dl>
+        </section>
+      </WorkbenchInspector>
+    </template>
+  </WorkbenchShell>
 </template>
 <style scoped>
 .hex-compare-view {

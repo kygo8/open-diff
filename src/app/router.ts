@@ -16,6 +16,7 @@ import VersionCompareView from '@/views/VersionCompareView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import FileFormatView from '@/views/FileFormatView.vue'
 import RemoteProfileView from '@/views/RemoteProfileView.vue'
+import ReportsScriptView from '@/views/reports/ReportsScriptView.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -37,5 +38,6 @@ export const router = createRouter({
     { path: '/settings', name: 'settings', component: SettingsView },
     { path: '/settings/file-formats', name: 'file-formats', component: FileFormatView },
     { path: '/settings/remote-profiles', name: 'remote-profiles', component: RemoteProfileView },
+    { path: '/reports/scripts', name: 'reports-scripts', component: ReportsScriptView },
   ],
 })

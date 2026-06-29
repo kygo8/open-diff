@@ -1,0 +1,2048 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>OpenDiff Stitch Prototype</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --surface: #f8f9fb;
+        --surface-low: #f3f4f6;
+        --surface-container: #edeef0;
+        --surface-high: #e7e8ea;
+        --surface-highest: #e1e2e4;
+        --canvas: #ffffff;
+        --text: #191c1e;
+        --muted: #424754;
+        --faint: #727785;
+        --outline: #c2c6d6;
+        --primary: #0058be;
+        --primary-strong: #2170e4;
+        --primary-soft: #d8e2ff;
+        --added: #dcfce7;
+        --added-text: #166534;
+        --deleted: #fee2e2;
+        --deleted-text: #991b1b;
+        --modified: #fef3c7;
+        --modified-text: #854d0e;
+        --conflict: #f3e8ff;
+        --conflict-text: #6b21a8;
+        --status: #2e3132;
+        --status-text: #f0f1f3;
+        --ui: Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        --mono: 'JetBrains Mono', 'Cascadia Mono', Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        overflow: hidden;
+        color: var(--text);
+        background: var(--surface);
+        font-family: var(--ui);
+        font-size: 13px;
+        line-height: 18px;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .material {
+        display: inline-grid;
+        width: 18px;
+        height: 18px;
+        place-items: center;
+        color: currentColor;
+        font-size: 15px;
+        line-height: 1;
+      }
+
+      .app {
+        display: grid;
+        grid-template-rows: 32px 32px minmax(0, 1fr) 24px;
+        width: 100vw;
+        height: 100vh;
+        background: var(--surface);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        min-width: 0;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--outline);
+        background: var(--surface-low);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 92px;
+        color: var(--primary);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .menus {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .menu {
+        position: relative;
+      }
+
+      .menu > button {
+        height: 26px;
+        padding: 0 6px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: #202632;
+      }
+
+      .menu > button:hover,
+      .menu.open > button {
+        background: var(--surface-highest);
+      }
+
+      .menu-panel {
+        position: absolute;
+        z-index: 60;
+        top: 29px;
+        left: 0;
+        display: none;
+        width: 258px;
+        padding: 6px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--canvas);
+        box-shadow: 0 8px 22px rgba(25, 28, 30, 0.18);
+      }
+
+      .menu.open .menu-panel {
+        display: block;
+      }
+
+      .menu-command {
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr) auto;
+        align-items: center;
+        width: 100%;
+        min-height: 27px;
+        padding: 3px 7px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--text);
+        text-align: left;
+      }
+
+      .menu-command:hover {
+        background: var(--primary-soft);
+        color: #001a42;
+      }
+
+      .menu-command kbd {
+        color: var(--faint);
+        font-family: var(--ui);
+        font-size: 11px;
+      }
+
+      .menu-sep {
+        height: 1px;
+        margin: 5px 4px;
+        background: var(--outline);
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+      }
+
+      .icon-button,
+      .lang-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 24px;
+        min-width: 24px;
+        padding: 0 7px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--muted);
+      }
+
+      .icon-button:hover,
+      .lang-button:hover {
+        background: var(--surface-highest);
+      }
+
+      .lang-button.active {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--outline);
+        background: var(--surface);
+      }
+
+      .tool {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 26px;
+        padding: 0 9px;
+        border: 1px solid rgba(194, 198, 214, 0.85);
+        border-radius: 4px;
+        background: var(--surface-container);
+        color: var(--text);
+      }
+
+      .tool:hover {
+        background: var(--surface-high);
+      }
+
+      .tool.primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .divider {
+        width: 1px;
+        height: 18px;
+        background: var(--outline);
+      }
+
+      .main {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr) 300px;
+        min-height: 0;
+      }
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        border-right: 1px solid var(--outline);
+        background: var(--surface-low);
+      }
+
+      .sidebar-head {
+        padding: 13px 10px 8px;
+      }
+
+      .sidebar-head h2 {
+        margin: 0;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .sidebar-head p {
+        margin: 2px 0 0;
+        color: var(--muted);
+      }
+
+      .search {
+        padding: 0 10px 8px;
+      }
+
+      .search input {
+        width: 100%;
+        height: 27px;
+        padding: 0 8px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--canvas);
+        color: var(--text);
+      }
+
+      .nav {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        padding: 0 6px 8px;
+      }
+
+      .nav-section {
+        margin: 10px 6px 5px;
+        color: var(--faint);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .nav-item {
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 6px;
+        min-height: 30px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        color: var(--muted);
+        text-decoration: none;
+      }
+
+      .nav-item:hover {
+        background: var(--surface-highest);
+      }
+
+      .nav-item.active {
+        background: var(--primary-strong);
+        color: #fff;
+      }
+
+      .nav-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .badge {
+        min-width: 22px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: rgba(66, 71, 84, 0.12);
+        font-size: 11px;
+        text-align: center;
+      }
+
+      .active .badge {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-rows: 36px 34px minmax(0, 1fr);
+        min-width: 0;
+        min-height: 0;
+        background: var(--surface);
+      }
+
+      .pathbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        padding: 5px 10px;
+        border-bottom: 1px solid var(--outline);
+        background: var(--surface);
+      }
+
+      .pathbox {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+        height: 26px;
+        padding: 0 8px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--surface-low);
+      }
+
+      .pathbox span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .swap {
+        height: 26px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--surface-container);
+      }
+
+      .page-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        padding: 0 10px;
+        border-bottom: 1px solid rgba(194, 198, 214, 0.7);
+        background: var(--surface-low);
+      }
+
+      .page-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .page-title h1 {
+        margin: 0;
+        overflow: hidden;
+        font-size: 14px;
+        font-weight: 600;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .chips {
+        display: flex;
+        gap: 5px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        height: 21px;
+        padding: 0 7px;
+        border: 1px solid var(--outline);
+        border-radius: 999px;
+        background: var(--canvas);
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .canvas {
+        min-height: 0;
+        overflow: hidden;
+        background: var(--canvas);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 20px 1fr;
+        height: 100%;
+        min-height: 0;
+      }
+
+      .pane {
+        display: grid;
+        grid-template-rows: 30px minmax(0, 1fr);
+        min-width: 0;
+        min-height: 0;
+        border-right: 1px solid rgba(194, 198, 214, 0.65);
+        background: var(--canvas);
+      }
+
+      .pane.active-pane {
+        border-top: 2px solid var(--primary);
+      }
+
+      .pane-head {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--outline);
+        background: var(--surface-low);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .pane-head .muted {
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 400;
+      }
+
+      .gutter {
+        position: relative;
+        border-right: 1px solid rgba(194, 198, 214, 0.55);
+        background: var(--surface);
+      }
+
+      .marker {
+        position: absolute;
+        left: 5px;
+        width: 9px;
+        border-radius: 2px;
+      }
+
+      .marker.mod {
+        background: #facc15;
+      }
+
+      .marker.add {
+        background: #22c55e;
+      }
+
+      .marker.del {
+        background: #ef4444;
+      }
+
+      .code,
+      .hex {
+        overflow: auto;
+        font-family: var(--mono);
+        font-size: 12px;
+        line-height: 20px;
+      }
+
+      .line {
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr);
+        min-height: 20px;
+      }
+
+      .ln {
+        padding-right: 8px;
+        border-right: 1px solid rgba(194, 198, 214, 0.42);
+        color: #7a8190;
+        text-align: right;
+        user-select: none;
+      }
+
+      .src {
+        padding: 0 10px;
+        overflow: hidden;
+        white-space: pre;
+      }
+
+      .mod .src,
+      tr.mod td {
+        background: rgba(250, 204, 21, 0.18);
+      }
+
+      .add .src,
+      tr.add td {
+        background: rgba(34, 197, 94, 0.13);
+      }
+
+      .del .src,
+      tr.del td {
+        background: rgba(239, 68, 68, 0.12);
+      }
+
+      .conf .src,
+      tr.conf td {
+        background: rgba(168, 85, 247, 0.13);
+      }
+
+      .word {
+        color: var(--modified-text);
+        font-weight: 600;
+      }
+
+      .table-panel {
+        display: grid;
+        grid-template-rows: 30px minmax(0, 1fr);
+        height: 100%;
+        min-height: 0;
+      }
+
+      .table-wrap {
+        overflow: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+
+      th {
+        position: sticky;
+        z-index: 1;
+        top: 0;
+        height: 28px;
+        padding: 0 8px;
+        border-right: 1px solid rgba(194, 198, 214, 0.8);
+        border-bottom: 1px solid var(--outline);
+        background: var(--surface-low);
+        color: var(--muted);
+        font-weight: 600;
+        text-align: left;
+      }
+
+      td {
+        height: 28px;
+        padding: 0 8px;
+        border-right: 1px solid rgba(194, 198, 214, 0.45);
+        border-bottom: 1px solid rgba(194, 198, 214, 0.45);
+        white-space: nowrap;
+      }
+
+      .dashboard {
+        height: 100%;
+        overflow: auto;
+        padding: 16px 20px;
+        background: var(--surface);
+      }
+
+      .section-title {
+        margin: 10px 0 12px;
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(190px, 1fr));
+        gap: 10px;
+      }
+
+      .card {
+        min-height: 106px;
+        padding: 14px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--canvas);
+      }
+
+      .card h3 {
+        margin: 10px 0 4px;
+        font-size: 14px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .card-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 24px;
+        border-bottom: 1px solid rgba(194, 198, 214, 0.45);
+        color: var(--muted);
+      }
+
+      .card-row:last-child {
+        border-bottom: 0;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        padding: 14px;
+        border-top: 1px solid var(--outline);
+        background: var(--surface);
+      }
+
+      .stat {
+        text-align: center;
+      }
+
+      .stat b {
+        display: block;
+        color: var(--primary);
+        font-size: 20px;
+        line-height: 24px;
+      }
+
+      .image-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 0.8fr;
+        gap: 10px;
+        height: 100%;
+        padding: 10px;
+        background: var(--surface);
+      }
+
+      .mock-image {
+        display: grid;
+        height: calc(100% - 30px);
+        min-height: 260px;
+        place-items: center;
+        background:
+          linear-gradient(45deg, #edf0f4 25%, transparent 25%) 0 0 / 18px 18px,
+          linear-gradient(45deg, transparent 75%, #edf0f4 75%) 0 0 / 18px 18px,
+          linear-gradient(45deg, transparent 75%, #edf0f4 75%) 9px 9px / 18px 18px,
+          linear-gradient(45deg, #edf0f4 25%, #fff 25%) 9px 9px / 18px 18px;
+      }
+
+      .picture {
+        position: relative;
+        width: 78%;
+        aspect-ratio: 16/10;
+        border: 1px solid var(--outline);
+        background:
+          linear-gradient(
+            160deg,
+            transparent 48%,
+            rgba(255, 255, 255, 0.86) 49% 51%,
+            transparent 52%
+          ),
+          linear-gradient(135deg, #3b82f6, #60a5fa 40%, #facc15 41%, #166534);
+      }
+
+      .picture::after {
+        position: absolute;
+        right: 18%;
+        bottom: 18%;
+        width: 25%;
+        aspect-ratio: 1;
+        border: 5px solid rgba(239, 68, 68, 0.75);
+        border-radius: 999px;
+        content: '';
+      }
+
+      .diff-mask {
+        background:
+          radial-gradient(circle at 62% 66%, rgba(239, 68, 68, 0.85) 0 9%, transparent 9.4%),
+          radial-gradient(circle at 28% 34%, rgba(250, 204, 21, 0.8) 0 5%, transparent 5.4%),
+          #1f2937;
+      }
+
+      .hex-row {
+        display: grid;
+        grid-template-columns: 80px repeat(16, 28px) 1fr;
+        min-width: 680px;
+        padding: 1px 10px;
+      }
+
+      .byte.diff {
+        color: var(--deleted-text);
+        font-weight: 700;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        height: 100%;
+        min-height: 0;
+      }
+
+      .sync-layout {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        height: 100%;
+        min-height: 0;
+      }
+
+      .console {
+        display: grid;
+        grid-template-rows: 30px minmax(0, 1fr);
+        min-height: 0;
+        background: #111827;
+        color: #d1d5db;
+      }
+
+      .console-body {
+        overflow: auto;
+        padding: 10px;
+        font-family: var(--mono);
+        font-size: 12px;
+        line-height: 20px;
+      }
+
+      .matrix {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        height: 100%;
+        min-height: 0;
+        background: var(--canvas);
+      }
+
+      .tree-panel {
+        display: grid;
+        grid-template-rows: 30px minmax(0, 1fr);
+        min-height: 0;
+        border-right: 1px solid var(--outline);
+        background: var(--surface);
+      }
+
+      .tree {
+        overflow: auto;
+        padding: 8px 6px;
+        font-family: var(--mono);
+        font-size: 11px;
+        line-height: 22px;
+      }
+
+      .tree-row {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 4px;
+        min-height: 22px;
+        padding: 0 6px;
+        border-radius: 3px;
+      }
+
+      .tree-row.active {
+        background: var(--primary-soft);
+        color: #001a42;
+      }
+
+      .tree-row span:nth-child(2) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        height: 18px;
+        padding: 0 6px;
+        border: 1px solid rgba(114, 119, 133, 0.35);
+        border-radius: 999px;
+        background: var(--surface-low);
+        color: var(--muted);
+        font-size: 10px;
+        font-family: var(--ui);
+      }
+
+      .status-pill.add {
+        background: var(--added);
+        color: var(--added-text);
+      }
+
+      .status-pill.del {
+        background: var(--deleted);
+        color: var(--deleted-text);
+      }
+
+      .status-pill.mod {
+        background: var(--modified);
+        color: var(--modified-text);
+      }
+
+      .status-pill.conf {
+        background: var(--conflict);
+        color: var(--conflict-text);
+      }
+
+      .timeline {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(170px, 1fr));
+        gap: 10px;
+        min-width: 920px;
+      }
+
+      .snapshot-card {
+        display: grid;
+        gap: 8px;
+        min-height: 140px;
+        padding: 12px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--canvas);
+      }
+
+      .snapshot-card.active {
+        border-color: var(--primary);
+        box-shadow: inset 0 2px 0 var(--primary);
+      }
+
+      .snapshot-card h3 {
+        margin: 0;
+        font-size: 13px;
+      }
+
+      .snapshot-card code {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 11px;
+      }
+
+      .rule-grid {
+        display: grid;
+        grid-template-columns: minmax(240px, 0.72fr) minmax(0, 1fr);
+        gap: 10px;
+        height: 100%;
+        min-height: 0;
+        padding: 10px;
+        background: var(--surface);
+      }
+
+      .settings-list {
+        overflow: auto;
+        border: 1px solid var(--outline);
+        background: var(--canvas);
+      }
+
+      .settings-item {
+        display: grid;
+        grid-template-columns: 24px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 6px 10px;
+        border-bottom: 1px solid rgba(194, 198, 214, 0.55);
+      }
+
+      .settings-item.active {
+        background: var(--primary-soft);
+      }
+
+      .settings-item b,
+      .settings-item span:nth-child(2) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .ok {
+        color: #4ade80;
+      }
+
+      .warn {
+        color: #facc15;
+      }
+
+      .err {
+        color: #f87171;
+      }
+
+      .inspector {
+        display: grid;
+        grid-template-rows: 32px minmax(0, 1fr);
+        min-height: 0;
+        border-left: 1px solid var(--outline);
+        background: var(--surface);
+      }
+
+      .inspector-head {
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--outline);
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .inspector-body {
+        overflow: auto;
+        padding: 10px;
+      }
+
+      .panel {
+        margin-bottom: 10px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--canvas);
+      }
+
+      .panel-title {
+        height: 28px;
+        padding: 5px 8px;
+        border-bottom: 1px solid var(--outline);
+        font-weight: 600;
+      }
+
+      .kv {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr);
+        gap: 8px;
+        padding: 6px 8px;
+        border-bottom: 1px solid rgba(194, 198, 214, 0.45);
+      }
+
+      .kv:last-child {
+        border-bottom: 0;
+      }
+
+      .kv span:first-child {
+        color: var(--muted);
+      }
+
+      .statusbar {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
+        gap: 18px;
+        padding: 0 12px;
+        background: var(--status);
+        color: var(--status-text);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .modal-layer {
+        position: fixed;
+        z-index: 100;
+        inset: 0;
+        display: none;
+        place-items: center;
+        background: rgba(25, 28, 30, 0.28);
+      }
+
+      .modal-layer.show {
+        display: grid;
+      }
+
+      .dialog {
+        width: min(680px, calc(100vw - 40px));
+        border: 1px solid var(--outline);
+        border-radius: 6px;
+        background: var(--canvas);
+        box-shadow: 0 10px 28px rgba(25, 28, 30, 0.2);
+      }
+
+      .dialog-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 36px;
+        padding: 0 12px;
+        border-bottom: 1px solid var(--outline);
+        font-weight: 600;
+      }
+
+      .dialog-body {
+        padding: 14px;
+      }
+
+      .form {
+        display: grid;
+        grid-template-columns: 140px minmax(0, 1fr);
+        gap: 10px;
+        align-items: center;
+      }
+
+      .form input,
+      .form select,
+      .form textarea {
+        min-height: 30px;
+        padding: 5px 8px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--surface);
+      }
+
+      .dialog-actions {
+        display: flex;
+        justify-content: end;
+        gap: 8px;
+        padding: 10px 12px;
+        border-top: 1px solid var(--outline);
+        background: var(--surface-low);
+      }
+
+      .btn {
+        height: 28px;
+        min-width: 82px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--surface-container);
+      }
+
+      .btn.primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .toast {
+        position: fixed;
+        right: 16px;
+        bottom: 38px;
+        display: none;
+        width: 320px;
+        padding: 10px 12px;
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        background: var(--canvas);
+        box-shadow: 0 8px 20px rgba(25, 28, 30, 0.18);
+      }
+
+      .toast.show {
+        display: block;
+      }
+
+      .toast b {
+        display: block;
+        color: var(--primary);
+      }
+
+      @media (max-width: 1180px) {
+        .main {
+          grid-template-columns: 220px minmax(0, 1fr);
+        }
+
+        .inspector {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header
+        class="topbar"
+        id="topbar"
+      ></header>
+      <section
+        class="toolbar"
+        id="toolbar"
+      ></section>
+      <main class="main">
+        <aside class="sidebar">
+          <div class="sidebar-head">
+            <h2 data-i18n="workspace">Workspace</h2>
+            <p data-i18n="activeSession">Active Session</p>
+          </div>
+          <div class="search"><input id="search" /></div>
+          <nav
+            class="nav"
+            id="nav"
+          ></nav>
+        </aside>
+        <section class="workspace">
+          <div class="pathbar">
+            <div class="pathbox"><span class="material">▣</span><span id="leftPath"></span></div>
+            <button
+              class="swap"
+              data-command="swap"
+            >
+              ↔
+            </button>
+            <div class="pathbox"><span class="material">▣</span><span id="rightPath"></span></div>
+            <button
+              class="tool primary"
+              data-command="compareNow"
+            >
+              <span class="material">▶</span><span data-i18n="compare">Compare</span>
+            </button>
+          </div>
+          <div class="page-head">
+            <div class="page-title">
+              <span
+                class="material"
+                id="pageIcon"
+              ></span>
+              <h1 id="pageTitle"></h1>
+              <span
+                class="subtitle"
+                id="pageSubtitle"
+              ></span>
+            </div>
+            <div
+              class="chips"
+              id="chips"
+            ></div>
+          </div>
+          <div
+            class="canvas"
+            id="canvas"
+          ></div>
+        </section>
+        <aside class="inspector">
+          <div
+            class="inspector-head"
+            data-i18n="inspector"
+          >
+            Inspector
+          </div>
+          <div
+            class="inspector-body"
+            id="inspector"
+          ></div>
+        </aside>
+      </main>
+      <footer class="statusbar">
+        <span id="statusMain">Ln 12, Col 45 | UTF-8 | Ready</span>
+        <span>Matches: 85%</span>
+        <span
+          ><button
+            class="lang-button"
+            data-lang="en"
+          >
+            English</button
+          ><button
+            class="lang-button"
+            data-lang="zh"
+          >
+            中文
+          </button></span
+        >
+      </footer>
+    </div>
+    <div
+      class="modal-layer"
+      id="modalLayer"
+    >
+      <div class="dialog">
+        <div class="dialog-head">
+          <span id="dialogTitle"></span
+          ><button
+            class="icon-button"
+            data-command="closeDialog"
+          >
+            ×
+          </button>
+        </div>
+        <div
+          class="dialog-body"
+          id="dialogBody"
+        ></div>
+        <div class="dialog-actions">
+          <button
+            class="btn"
+            data-command="closeDialog"
+            data-i18n="cancel"
+          >
+            Cancel</button
+          ><button
+            class="btn primary"
+            data-command="confirmDialog"
+            data-i18n="confirm"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="toast"
+      id="toast"
+    ></div>
+
+    <script>
+      const dict = {
+        en: {
+          workspace: 'Workspace',
+          activeSession: 'Active Session',
+          inspector: 'Inspector',
+          compare: 'Compare',
+          cancel: 'Cancel',
+          confirm: 'Confirm',
+          search: 'Filter sessions...',
+          ready: 'Ready',
+          simulated: 'Simulated',
+          File: 'File',
+          Edit: 'Edit',
+          Search: 'Search',
+          View: 'View',
+          Session: 'Session',
+          Actions: 'Actions',
+          Tools: 'Tools',
+          Open: 'Open',
+          Save: 'Save',
+          Report: 'Report',
+          Preferences: 'Preferences',
+          CopyRight: 'Copy Right',
+          CopyLeft: 'Copy Left',
+          NextDiff: 'Next Diff',
+          PrevDiff: 'Prev Diff',
+          SyncPreview: 'Sync Preview',
+          ExecuteSync: 'Execute Sync',
+          home: 'Home',
+          text: 'Text Compare',
+          merge: 'Three-Way Merge',
+          folder: 'Folder Compare',
+          sync: 'Folder Sync',
+          folderMerge: 'Folder Merge',
+          table: 'Table Compare',
+          hex: 'Hex Compare',
+          picture: 'Picture Compare',
+          registry: 'Registry Compare',
+          media: 'Metadata',
+          remote: 'Remotes',
+          reports: 'Scripts',
+          settings: 'Settings',
+        },
+        zh: {
+          workspace: '工作区',
+          activeSession: '当前会话',
+          inspector: '检查器',
+          compare: '比较',
+          cancel: '取消',
+          confirm: '确认',
+          search: '筛选会话...',
+          ready: '就绪',
+          simulated: '模拟完成',
+          File: '文件',
+          Edit: '编辑',
+          Search: '搜索',
+          View: '视图',
+          Session: '会话',
+          Actions: '操作',
+          Tools: '工具',
+          Open: '打开',
+          Save: '保存',
+          Report: '报告',
+          Preferences: '首选项',
+          CopyRight: '复制到右侧',
+          CopyLeft: '复制到左侧',
+          NextDiff: '下一个差异',
+          PrevDiff: '上一个差异',
+          SyncPreview: '同步预览',
+          ExecuteSync: '执行同步',
+          home: '首页',
+          text: '文本比较',
+          merge: '三方文本合并',
+          folder: '文件夹比较',
+          sync: '文件夹同步',
+          folderMerge: '文件夹合并',
+          table: '表格比较',
+          hex: '十六进制比较',
+          picture: '图片比较',
+          registry: '注册表比较',
+          media: '元数据',
+          remote: '远程资源',
+          reports: '脚本报告',
+          settings: '设置',
+        },
+      }
+
+      const state = {
+        lang: localStorage.getItem('stitch-demo-lang') || 'zh',
+        route: location.hash.slice(1) || 'home',
+      }
+      const pages = [
+        [
+          'home',
+          '⌂',
+          'Workspace overview',
+          'workspace://release-audit',
+          'workspace://team-shared',
+          '142',
+        ],
+        [
+          'text',
+          '▤',
+          'Line and character level comparison',
+          'C:/Projects/app/main.js',
+          'C:/Projects/app/main.remote.js',
+          '14',
+        ],
+        [
+          'merge',
+          '↱',
+          'Resolve conflicts with a common base',
+          '~/git/repo/auth.base.js',
+          '~/git/repo/auth.output.js',
+          '3',
+        ],
+        [
+          'folder',
+          '▣',
+          'Compare directory trees and metadata',
+          '/var/www/staging',
+          '/var/www/production',
+          '42',
+        ],
+        [
+          'sync',
+          '↔',
+          'Preview and execute folder synchronization',
+          'C:/Projects/frontend-v2/src',
+          '\\\\server/deployments/frontend-v2/src',
+          '61',
+        ],
+        [
+          'folderMerge',
+          '⌘',
+          'Three-way directory merge plan',
+          'D:/merge/base',
+          'D:/merge/output',
+          '8',
+        ],
+        [
+          'table',
+          '▦',
+          'Keyed table comparison with tolerance',
+          'customers_Q1.csv',
+          'customers_Q2.csv',
+          '17',
+        ],
+        [
+          'hex',
+          '16',
+          'Binary byte-level comparison',
+          'firmware.bin',
+          'firmware-patched.bin',
+          '128',
+        ],
+        [
+          'picture',
+          '◧',
+          'Pixel difference and image metadata',
+          'hero-light.png',
+          'hero-dark.png',
+          '4.8%',
+        ],
+        [
+          'registry',
+          '☷',
+          'Windows registry and .reg comparison',
+          'HKCU/Software/OpenDiff',
+          'user-before.reg',
+          '11',
+        ],
+        [
+          'media',
+          'ⓘ',
+          'EXE version fields and media tags',
+          'OpenDiff.exe',
+          'OpenDiff-preview.exe',
+          '6',
+        ],
+        [
+          'remote',
+          '☁',
+          'Profiles, archives, and snapshots',
+          'SFTP://prod-us-east',
+          'snapshot://release-2026-06-29',
+          '5',
+        ],
+        [
+          'reports',
+          '▹',
+          'Scripts, CLI, and report generation',
+          'nightly-diff-report.bcs',
+          'reports/index.html',
+          'OK',
+        ],
+        [
+          'settings',
+          '⚙',
+          'Formats, filters, shortcuts, and policy',
+          'User settings',
+          'Admin policy',
+          '34',
+        ],
+      ]
+
+      const commands = [
+        ['Open', 'Ctrl+O', 'File'],
+        ['Save', 'Ctrl+S', 'File'],
+        ['Report', 'Ctrl+R', 'File'],
+        ['Preferences', '', 'File'],
+        ['CopyRight', 'Alt+→', 'Actions'],
+        ['CopyLeft', 'Alt+←', 'Actions'],
+        ['NextDiff', 'F7', 'Search'],
+        ['PrevDiff', 'Shift+F7', 'Search'],
+        ['SyncPreview', '', 'Tools'],
+        ['ExecuteSync', '', 'Tools'],
+      ]
+
+      const codeLeft = [
+        ['1', '/**'],
+        ['2', ' * Initialize application'],
+        ['3', ' */'],
+        ['4', 'function init() {'],
+        ['5', '  console.log("Starting...");'],
+        ['6', '  loadConfig();'],
+        ['7', ''],
+        ['8', "  const status = 'pending';", 'mod'],
+        ['9', '  return status;'],
+        ['10', '}'],
+      ]
+      const codeRight = [
+        ['1', '/**'],
+        ['2', ' * Initialize application'],
+        ['3', ' */'],
+        ['4', 'function init() {'],
+        ['5', '  console.log("Starting...");'],
+        ['6', '  loadConfig();'],
+        ['7', ''],
+        ['8', "  const status = 'ready';", 'mod'],
+        ['9', '  return status;'],
+        ['10', '}'],
+      ]
+      const folderRows = [
+        ['▾ components', 'Folder', 'Modified', '44 KB', '48 KB', 'mod'],
+        ['  Button.tsx', 'TSX', 'Added', '12 KB', '', 'add'],
+        ['  Header.tsx', 'TSX', 'Modified', '8 KB', '8 KB', 'mod'],
+        ['  OldSidebar.tsx', 'TSX', 'Deleted', '4 KB', '', 'del'],
+        ['▾ assets', 'Folder', 'Right Only', '', '95 KB', 'add'],
+        ['package.json', 'JSON', 'Modified', '4 KB', '4 KB', 'mod'],
+      ]
+      const syncRows = [
+        ['Copy →', 'components/Button.tsx', '12 KB', 'New on source', 'add'],
+        ['Update →', 'components/Header.tsx', '8 KB', 'Newer source', 'mod'],
+        ['Delete ←', 'components/OldSidebar.tsx', '4 KB', 'Orphan target', 'del'],
+        ['Conflict', 'config/prod.json', '2 KB', 'Changed both sides', 'conf'],
+      ]
+      const tableRows = [
+        ['1001', 'Northwind', 'Active', '$28,410', '$28,410', ''],
+        ['1002', 'Contoso', 'Active', '$17,920', '$19,240', 'mod'],
+        ['1004', 'Adventure', 'Active', '$11,225', '', 'del'],
+        ['1005', 'Litware', 'Active', '', '$6,870', 'add'],
+      ]
+      const hexRows = [
+        [
+          '000001A0',
+          [
+            '89',
+            '50',
+            '4E',
+            '47',
+            '0D',
+            '0A',
+            '1A',
+            '0A',
+            '00',
+            '00',
+            '00',
+            '0D',
+            '49',
+            '48',
+            '44',
+            '52',
+          ],
+          '.PNG........IHDR',
+          '',
+        ],
+        [
+          '000001B0',
+          [
+            '00',
+            '00',
+            '04',
+            '00',
+            '00',
+            '00',
+            '02',
+            '80',
+            '08',
+            '06',
+            '00',
+            '00',
+            '00',
+            'A9',
+            'FF',
+            '32',
+          ],
+          '...............2',
+          'mod',
+        ],
+        [
+          '000001C0',
+          [
+            '0B',
+            '7A',
+            '00',
+            '00',
+            '20',
+            '00',
+            '49',
+            '44',
+            '41',
+            '54',
+            '78',
+            'DA',
+            'ED',
+            '9D',
+            '79',
+            '74',
+          ],
+          '.z.. .IDATx...yt',
+          '',
+        ],
+      ]
+
+      function t(key) {
+        return dict[state.lang][key] || key
+      }
+      function currentPage() {
+        return pages.find((p) => p[0] === state.route) || pages[0]
+      }
+      function esc(value) {
+        return String(value)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+      }
+      function buildTopbar() {
+        const menus = ['File', 'Edit', 'Search', 'View', 'Session', 'Actions', 'Tools']
+        document.getElementById('topbar').innerHTML = `
+          <div class="brand"><span class="material">▤</span><span>OpenDiff</span></div>
+          <nav class="menus">${menus
+            .map(
+              (m) =>
+                `<div class="menu" data-menu="${m}"><button data-menu-trigger="${m}">${t(m)}</button><div class="menu-panel">${commands
+                  .filter(
+                    (c) =>
+                      c[2] === m ||
+                      (m === 'Edit' && ['CopyRight', 'CopyLeft'].includes(c[0])) ||
+                      (m === 'View' && ['NextDiff', 'PrevDiff'].includes(c[0])) ||
+                      (m === 'Session' && c[0] === 'Save'),
+                  )
+                  .map(
+                    (c, i) =>
+                      `${i === 3 ? '<div class="menu-sep"></div>' : ''}<button class="menu-command" data-command="${c[0]}"><span class="material">${icon(c[0])}</span><span>${t(c[0])}</span><kbd>${c[1]}</kbd></button>`,
+                  )
+                  .join('')}</div></div>`,
+            )
+            .join('')}</nav>
+          <div class="top-actions">
+            <button class="icon-button" data-lang="en">◎</button>
+            <button class="icon-button" data-command="Preferences">⚙</button>
+            <button class="icon-button" data-command="Help">?</button>
+          </div>`
+      }
+      function buildToolbar() {
+        const tools = [
+          'Open',
+          'Save',
+          '|',
+          'PrevDiff',
+          'NextDiff',
+          '|',
+          'CopyRight',
+          'CopyLeft',
+          'SyncPreview',
+          'Report',
+        ]
+        document.getElementById('toolbar').innerHTML = tools
+          .map((c) =>
+            c === '|'
+              ? '<span class="divider"></span>'
+              : `<button class="tool" data-command="${c}"><span class="material">${icon(c)}</span><span>${t(c)}</span></button>`,
+          )
+          .join('')
+      }
+      function icon(key) {
+        return (
+          {
+            Open: '▣',
+            Save: '▤',
+            Report: '▥',
+            Preferences: '⚙',
+            CopyRight: '→',
+            CopyLeft: '←',
+            NextDiff: '↓',
+            PrevDiff: '↑',
+            SyncPreview: '↔',
+            ExecuteSync: '▶',
+            Help: '?',
+          }[key] || '•'
+        )
+      }
+      function buildNav() {
+        const groups = [
+          [
+            'Compare',
+            [
+              'home',
+              'text',
+              'merge',
+              'folder',
+              'sync',
+              'folderMerge',
+              'table',
+              'hex',
+              'picture',
+              'registry',
+            ],
+          ],
+          ['Sources', ['media', 'remote', 'reports', 'settings']],
+        ]
+        document.getElementById('nav').innerHTML = groups
+          .map(
+            ([g, ids]) =>
+              `<div class="nav-section">${g}</div>${ids
+                .map((id) => {
+                  const p = pages.find((x) => x[0] === id)
+                  return `<a class="nav-item ${state.route === id ? 'active' : ''}" href="#${id}"><span class="material">${p[1]}</span><span class="nav-name">${t(id)}</span><span class="badge">${p[5]}</span></a>`
+                })
+                .join('')}`,
+          )
+          .join('')
+      }
+      function codePane(title, rows) {
+        return `<div class="pane"><div class="pane-head"><span class="material">▤</span>${title}<span class="muted">UTF-8</span></div><div class="code">${rows.map(([n, c, cls = '']) => `<div class="line ${cls}"><span class="ln">${n}</span><span class="src">${esc(c).replace('pending', '<span class="word">pending</span>').replace('ready', '<span class="word">ready</span>')}</span></div>`).join('')}</div></div>`
+      }
+      function renderText() {
+        return `<div class="split">${codePane('main.js (Local)', codeLeft)}<div class="gutter"><i class="marker mod" style="top:82px;height:20px"></i><i class="marker add" style="top:192px;height:18px"></i><i class="marker del" style="top:300px;height:18px"></i></div>${codePane('main.js (Remote)', codeRight)}</div>`
+      }
+      function renderTable(title, headers, rows) {
+        return `<div class="table-panel"><div class="pane-head">${title}<span class="muted">${rows.length} rows</span></div><div class="table-wrap"><table><thead><tr>${headers.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div></div>`
+      }
+      function renderFolder() {
+        return renderTable(
+          t('folder'),
+          ['Name', 'Type', 'Status', 'Left', 'Right'],
+          folderRows.map(
+            (r) =>
+              `<tr class="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`,
+          ),
+        )
+      }
+      function renderSync() {
+        return `<div class="sync-layout"><div class="flow">${renderTable(
+          t('sync'),
+          ['Action', 'Path', 'Size', 'Reason'],
+          syncRows.map(
+            (r) =>
+              `<tr class="${r[4]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`,
+          ),
+        )}<div class="console"><div class="pane-head" style="background:#111827;color:#f9fafb">Execution Log</div><div class="console-body"><div><span class="ok">[OK]</span> scanned source: 1,284 entries</div><div><span class="ok">[OK]</span> scanned target: 1,241 entries</div><div><span class="warn">[WARN]</span> 5 files to delete</div><div><span class="err">[HOLD]</span> waiting for confirmation</div></div></div></div><div class="stats-row"><div class="stat"><b>42</b>Files to Copy</div><div class="stat"><b style="color:#dc2626">5</b>Files to Delete</div><div class="stat"><b style="color:#111827">12</b>Overwrite</div><div class="stat"><b style="color:#9ca3af">840</b>Unchanged</div></div></div>`
+      }
+      function renderMerge() {
+        const base = [
+          ['1', "const endpoint = '/api/v1'"],
+          ['2', 'const retry = 2'],
+          ['3', 'const timeout = 5000'],
+        ]
+        const left = [
+          ['1', "const endpoint = '/api/v1'"],
+          ['2', 'const retry = 2'],
+          ['3', 'const timeout = 8000', 'mod'],
+        ]
+        const right = [
+          ['1', "const endpoint = '/api/v2'", 'conf'],
+          ['2', 'const retry = 4', 'mod'],
+          ['3', 'const timeout = 5000'],
+        ]
+        return `<div class="split" style="grid-template-columns:1fr 1fr 1fr">${codePane('Base', base)}${codePane('Left / Ours', left)}${codePane('Right / Theirs', right)}</div>`
+      }
+      function renderFolderMerge() {
+        const rows = [
+          ['Auto merge', 'src/app/App.vue', 'Changed in theirs', 'Accept theirs', 'mod'],
+          ['Manual review', 'src/domain/session.ts', 'Changed both sides', 'Conflict', 'conf'],
+          ['Keep ours', 'docs/legacy.md', 'Deleted in theirs', 'Protect local', 'del'],
+          ['Add theirs', 'scripts/release.ps1', 'New in theirs', 'Import', 'add'],
+          ['Rename', 'src/assets/logo.svg', 'Moved in ours', 'Map paths', 'mod'],
+        ]
+        return `<div class="flow"><div class="matrix"><div class="tree-panel"><div class="pane-head">Merge Sources</div><div class="tree"><div class="tree-row active"><span>①</span><span>Base snapshot</span><span class="status-pill">base</span></div><div class="tree-row"><span>②</span><span>Left branch / ours</span><span class="status-pill mod">14</span></div><div class="tree-row"><span>③</span><span>Right branch / theirs</span><span class="status-pill add">18</span></div><div class="tree-row"><span>⇢</span><span>Output folder</span><span class="status-pill conf">3</span></div></div></div>${renderTable(
+          t('folderMerge'),
+          ['Decision', 'Path', 'Change', 'Result', 'State'],
+          rows.map(
+            (r) =>
+              `<tr class="${r[4]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`,
+          ),
+        )}</div><div class="console"><div class="pane-head" style="background:#111827;color:#f9fafb">Merge Plan</div><div class="console-body"><div><span class="ok">[plan]</span> 52 entries evaluated against base</div><div><span class="warn">[manual]</span> src/domain/session.ts requires review</div><div><span class="warn">[manual]</span> src/assets/logo.svg path mapping changed</div><div><span class="ok">[output]</span> D:/merge/output is ready for dry-run</div></div></div></div>`
+      }
+      function renderHex() {
+        return `<div class="pane"><div class="pane-head">${t('hex')}<span class="muted">A9 FF</span></div><div class="hex">${hexRows.map(([off, bytes, ascii, cls]) => `<div class="hex-row ${cls}"><span>${off}</span>${bytes.map((b, i) => `<span class="byte ${cls && i > 12 ? 'diff' : ''}">${b}</span>`).join('')}<span>${ascii}</span></div>`).join('')}</div></div>`
+      }
+      function renderPicture() {
+        return `<div class="image-grid">${['Left Image', 'Right Image', 'Difference Mask'].map((h, i) => `<div class="pane"><div class="pane-head">${h}</div><div class="mock-image"><div class="picture ${i === 2 ? 'diff-mask' : ''}" style="${i === 1 ? 'filter:saturate(.82) brightness(.92)' : ''}"></div></div></div>`).join('')}</div>`
+      }
+      function renderHome() {
+        const cards = ['text', 'folder', 'merge', 'sync'].map((id) => {
+          const p = pages.find((x) => x[0] === id)
+          return `<a class="card" href="#${id}" style="color:inherit;text-decoration:none"><span class="material">${p[1]}</span><h3>${t(id)}</h3><p>${p[2]}</p></a>`
+        })
+        return `<div class="dashboard"><div class="section-title">New Session</div><div class="cards">${cards.join('')}</div><div class="section-title">Recent Sessions</div>${renderTable(
+          '',
+          ['Name', 'Type', 'Left Path', 'Right Path', 'Last Opened'],
+          [
+            [
+              'config_update.json',
+              'Text',
+              'C:/Projects/app/config.js',
+              'C:/Projects/app/config_v2.js',
+              '2 mins ago',
+            ],
+            ['Release v1.2', 'Folder', '/var/www/staging', '/var/www/production', 'Yesterday'],
+            [
+              'Merge feature/auth',
+              '3-Way',
+              '~/git/repo/auth.js',
+              '~/git/repo/auth.remote.js',
+              'Oct 12',
+            ],
+          ].map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`),
+        )}</div>`
+      }
+      function renderGeneric(kind) {
+        if (kind === 'table')
+          return renderTable(
+            t('table'),
+            ['ID', 'Name', 'Status', 'Q1', 'Q2', 'State'],
+            tableRows.map(
+              (r) =>
+                `<tr class="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5] || 'same'}</td></tr>`,
+            ),
+          )
+        return renderTable(
+          t(kind),
+          ['Field', 'Left', 'Right', 'Status'],
+          [
+            ['ProductName', 'OpenDiff', 'OpenDiff Preview', 'mod'],
+            ['FileVersion', '1.0.1', '1.0.2', 'mod'],
+            ['Signature', 'Unsigned', 'Unsigned', ''],
+            ['Channel', 'stable', 'preview', 'mod'],
+          ].map(
+            (r) =>
+              `<tr class="${r[3]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3] || 'same'}</td></tr>`,
+          ),
+        )
+      }
+      function renderRegistry() {
+        const tree = [
+          ['▾', 'HKEY_CURRENT_USER', 'same'],
+          ['▾', 'Software', 'same'],
+          ['▾', 'OpenDiff', 'mod'],
+          [' ', 'CompareRules', 'mod'],
+          [' ', 'RecentSessions', 'add'],
+          [' ', 'LegacyShellMenu', 'del'],
+          ['▸', 'Policies', 'same'],
+          ['▸', 'Classes', 'same'],
+        ]
+        const rows = [
+          ['DisplayName', 'OpenDiff', 'OpenDiff Preview', 'mod'],
+          ['InstallDir', 'C:\\Program Files\\OpenDiff', 'C:\\Program Files\\OpenDiff', ''],
+          ['ShellEnabled', '1', '0', 'mod'],
+          ['Recent.08', '', 'D:\\workspace\\release', 'add'],
+          ['LegacyVerb', 'Compare with Open Diff', '', 'del'],
+        ]
+        return `<div class="matrix"><div class="tree-panel"><div class="pane-head">Registry Hive<span class="muted">HKCU</span></div><div class="tree">${tree
+          .map(
+            ([iconText, name, status], i) =>
+              `<div class="tree-row ${i === 2 ? 'active' : ''}"><span>${iconText}</span><span>${name}</span><span class="status-pill ${status}">${status}</span></div>`,
+          )
+          .join('')}</div></div>${renderTable(
+          'OpenDiff Key Values',
+          ['Value', 'Left Data', 'Right Data', 'Status'],
+          rows.map(
+            (r) =>
+              `<tr class="${r[3]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3] || 'same'}</td></tr>`,
+          ),
+        )}</div>`
+      }
+      function renderMedia() {
+        const rows = [
+          ['ProductName', 'OpenDiff', 'OpenDiff', ''],
+          ['FileDescription', 'OpenDiff Desktop', 'OpenDiff Preview Desktop', 'mod'],
+          ['FileVersion', '1.0.1.0', '1.0.2.0', 'mod'],
+          ['CompanyName', 'OpenDiff Project', 'OpenDiff Project', ''],
+          ['DigitalSignature', 'Unsigned', 'Unsigned', ''],
+          ['Audio Codec', 'AAC LC', 'AAC LC', ''],
+          ['Duration', '00:03:42.918', '00:03:42.918', ''],
+          ['Bitrate', '256 kbps', '320 kbps', 'mod'],
+        ]
+        return `<div class="flow">${renderTable(
+          t('media'),
+          ['Metadata Field', 'Left Asset', 'Right Asset', 'Status'],
+          rows.map(
+            (r) =>
+              `<tr class="${r[3]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3] || 'same'}</td></tr>`,
+          ),
+        )}<div class="dashboard" style="padding:10px"><div class="card"><span class="material">ⓘ</span><h3>Version Block</h3><div class="card-row"><span>Architecture</span><b>x64</b></div><div class="card-row"><span>Subsystem</span><b>Windows GUI</b></div><div class="card-row"><span>Timestamp</span><b>2026-06-29 12:48</b></div><div class="card-row"><span>Risk</span><span class="status-pill mod">review</span></div></div><div class="card" style="margin-top:10px"><span class="material">▦</span><h3>Media Streams</h3><div class="card-row"><span>Video</span><b>H.264 · 1080p</b></div><div class="card-row"><span>Audio</span><b>AAC · Stereo</b></div><div class="card-row"><span>Chapters</span><b>12 / 12</b></div></div></div></div>`
+      }
+      function renderRemote() {
+        const profiles = [
+          ['SFTP', 'prod-us-east', 'Online', 'mod'],
+          ['WebDAV', 'docs-share', 'Cached', ''],
+          ['S3', 'release-bucket', 'Online', 'add'],
+          ['Archive', 'release-2026-06-29.zip', 'Mounted', ''],
+        ]
+        const snapshots = [
+          ['12:00', 'baseline', '8,412 files', 'sha256:92ad', ''],
+          ['13:30', 'pre-release', '8,430 files', 'sha256:c1e4', 'mod'],
+          ['15:00', 'hotfix', '8,431 files', 'sha256:e822', 'add'],
+          ['17:30', 'rollback point', '8,420 files', 'sha256:aa09', 'del'],
+          ['20:00', 'current', '8,436 files', 'sha256:f771', 'mod'],
+        ]
+        return `<div class="dashboard"><div class="cards">${profiles
+          .map(
+            (p) =>
+              `<div class="card"><span class="material">☁</span><h3>${p[0]} · ${p[1]}</h3><div class="card-row"><span>State</span><span class="status-pill ${p[3]}">${p[2]}</span></div><div class="card-row"><span>Auth</span><b>Keychain</b></div><div class="card-row"><span>Latency</span><b>42 ms</b></div></div>`,
+          )
+          .join(
+            '',
+          )}</div><div class="section-title">Snapshot Timeline</div><div class="timeline">${snapshots
+          .map(
+            (s, i) =>
+              `<div class="snapshot-card ${i === 4 ? 'active' : ''}"><span class="status-pill ${s[4]}">${s[0]}</span><h3>${s[1]}</h3><code>${s[2]}</code><code>${s[3]}</code><button class="tool" data-command="compareNow">Compare</button></div>`,
+          )
+          .join('')}</div></div>`
+      }
+      function renderReports() {
+        const rows = [
+          ['nightly-diff-report.bcs', 'Scheduled', 'HTML + JSON', 'Passed', ''],
+          ['release-folder-audit.bcs', 'Manual', 'PDF', 'Warning', 'mod'],
+          ['cli-smoke-test.ps1', 'Pre-commit', 'Console', 'Passed', ''],
+          ['artifact-hash-check.js', 'CI', 'JUnit XML', 'Failed', 'del'],
+        ]
+        return `<div class="flow">${renderTable(
+          t('reports'),
+          ['Script', 'Trigger', 'Output', 'Last Run', 'State'],
+          rows.map(
+            (r) =>
+              `<tr class="${r[4]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4] || 'same'}</td></tr>`,
+          ),
+        )}<div class="console"><div class="pane-head" style="background:#111827;color:#f9fafb">CLI Preview<span class="muted">opendiff.exe</span></div><div class="console-body"><div><span class="ok">$</span> opendiff compare ./src ./dist --report html</div><div><span class="ok">[scan]</span> 2,804 files indexed in 1.7s</div><div><span class="warn">[diff]</span> 18 modified, 4 right-only, 2 left-only</div><div><span class="ok">[report]</span> reports/release-folder-audit.html</div><div><span class="err">[policy]</span> artifact-hash-check.js failed: checksum mismatch</div></div></div></div>`
+      }
+      function renderSettings() {
+        const items = [
+          ['▤', 'Text Formats', 'Whitespace, line endings, syntax rules', 'active'],
+          ['▣', 'Folder Filters', 'Ignore paths, masks, generated files', ''],
+          ['↔', 'Sync Policy', 'Delete confirmation and dry-run rules', ''],
+          ['⌘', 'Merge Rules', 'Conflict markers and resolver defaults', ''],
+          ['⌨', 'Keyboard Shortcuts', 'Enterprise shortcut profile', ''],
+          ['☷', 'Admin Policy', 'Locked settings and audit trail', ''],
+        ]
+        const rules = [
+          ['Rule', 'Current Value', 'Policy', 'Status'],
+          ['Ignore whitespace', 'Trim trailing', 'User configurable', ''],
+          ['Line endings', 'Normalize LF/CRLF', 'Locked by team', 'mod'],
+          ['Binary detection', 'First 8 KB scan', 'Default', ''],
+          ['Report watermark', 'Enabled', 'Required', 'add'],
+          ['External tool launch', 'Prompt every time', 'Restricted', 'conf'],
+        ]
+        return `<div class="rule-grid"><div class="settings-list">${items
+          .map(
+            (item) =>
+              `<div class="settings-item ${item[3]}"><span class="material">${item[0]}</span><span><b>${item[1]}</b><br /><small>${item[2]}</small></span><span class="status-pill ${item[3] ? 'mod' : ''}">${item[3] ? 'editing' : 'ready'}</span></div>`,
+          )
+          .join('')}</div>${renderTable(
+          t('settings'),
+          rules[0],
+          rules
+            .slice(1)
+            .map(
+              (r) =>
+                `<tr class="${r[3]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3] || 'same'}</td></tr>`,
+            ),
+        )}</div>`
+      }
+      function renderCanvas() {
+        const id = currentPage()[0]
+        const map = {
+          home: renderHome,
+          text: renderText,
+          folder: renderFolder,
+          sync: renderSync,
+          merge: renderMerge,
+          folderMerge: renderFolderMerge,
+          table: () => renderGeneric('table'),
+          hex: renderHex,
+          picture: renderPicture,
+          registry: renderRegistry,
+          media: renderMedia,
+          remote: renderRemote,
+          reports: renderReports,
+          settings: renderSettings,
+        }
+        document.getElementById('canvas').innerHTML = (map[id] || renderHome)()
+      }
+      function renderInspector() {
+        const p = currentPage()
+        document.getElementById('inspector').innerHTML =
+          `<div class="panel"><div class="panel-title">Selection Details</div><div class="kv"><span>Page</span><b>${t(p[0])}</b></div><div class="kv"><span>Left</span><b>${p[3]}</b></div><div class="kv"><span>Right</span><b>${p[4]}</b></div><div class="kv"><span>Encoding</span><b>UTF-8</b></div></div><div class="panel"><div class="panel-title">Changes Summary</div><div class="kv"><span>Additions</span><b style="color:#16a34a">8</b></div><div class="kv"><span>Deletions</span><b style="color:#dc2626">4</b></div><div class="kv"><span>Modifications</span><b style="color:#ca8a04">2</b></div></div>`
+      }
+      function renderRoute() {
+        const p = currentPage()
+        document.getElementById('leftPath').textContent = p[3]
+        document.getElementById('rightPath').textContent = p[4]
+        document.getElementById('pageIcon').textContent = p[1]
+        document.getElementById('pageTitle').textContent = t(p[0])
+        document.getElementById('pageSubtitle').textContent = p[2]
+        document.getElementById('chips').innerHTML = ['Differences', 'Same', 'Rules', 'Report']
+          .map((x) => `<span class="chip">${x}</span>`)
+          .join('')
+        document.getElementById('statusMain').textContent =
+          `Ln 12, Col 45 | UTF-8 | ${t('ready')} | ${t(p[0])}`
+        buildNav()
+        renderCanvas()
+        renderInspector()
+      }
+      function translate() {
+        document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en'
+        document
+          .querySelectorAll('[data-i18n]')
+          .forEach((el) => (el.textContent = t(el.dataset.i18n)))
+        document.getElementById('search').placeholder = t('search')
+        document
+          .querySelectorAll('[data-lang]')
+          .forEach((b) => b.classList.toggle('active', b.dataset.lang === state.lang))
+      }
+      function showDialog(key) {
+        document.getElementById('dialogTitle').textContent = t(key)
+        document.getElementById('dialogBody').innerHTML =
+          `<div class="form"><label>${t('Open')}</label><input value="${currentPage()[3]}" /><label>${t('Report')}</label><select><option>HTML</option><option>Text</option><option>XML</option></select><label>Mode</label><input value="${t('simulated')}" /></div>`
+        document.getElementById('modalLayer').classList.add('show')
+      }
+      function toast(title) {
+        const el = document.getElementById('toast')
+        el.innerHTML = `<b>${title}</b><span>${t('simulated')}</span>`
+        el.classList.add('show')
+        setTimeout(() => el.classList.remove('show'), 1800)
+      }
+      function run(command) {
+        if (command === 'closeDialog')
+          return document.getElementById('modalLayer').classList.remove('show')
+        if (command === 'confirmDialog') {
+          document.getElementById('modalLayer').classList.remove('show')
+          toast(t('simulated'))
+          return
+        }
+        if (command === 'swap') {
+          const p = currentPage()
+          ;[p[3], p[4]] = [p[4], p[3]]
+          renderRoute()
+          toast('Swap')
+          return
+        }
+        if (['Open', 'Report', 'Preferences'].includes(command)) showDialog(command)
+        else toast(t(command))
+      }
+      function boot() {
+        buildTopbar()
+        buildToolbar()
+        translate()
+        renderRoute()
+      }
+      window.addEventListener('hashchange', () => {
+        state.route = location.hash.slice(1) || 'home'
+        renderRoute()
+      })
+      document.addEventListener('click', (event) => {
+        const lang = event.target.closest('[data-lang]')?.dataset.lang
+        if (lang) {
+          state.lang = lang
+          localStorage.setItem('stitch-demo-lang', lang)
+          boot()
+          return
+        }
+        const trigger = event.target.closest('[data-menu-trigger]')
+        if (trigger) {
+          document
+            .querySelectorAll('.menu')
+            .forEach((m) =>
+              m.classList.toggle(
+                'open',
+                m.dataset.menu === trigger.dataset.menuTrigger && !m.classList.contains('open'),
+              ),
+            )
+          return
+        }
+        const command = event.target.closest('[data-command]')?.dataset.command
+        if (command) {
+          document.querySelectorAll('.menu').forEach((m) => m.classList.remove('open'))
+          run(command)
+          return
+        }
+        if (!event.target.closest('.menu'))
+          document.querySelectorAll('.menu').forEach((m) => m.classList.remove('open'))
+      })
+      boot()
+    </script>
+  </body>
+</html>

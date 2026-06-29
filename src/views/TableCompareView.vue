@@ -6,6 +6,9 @@ import type {
   TableCompareColumnMapping,
   TableCompareResponse,
 } from '@/types/diff'
+import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 
 interface TableColumnModel {
   name: string
@@ -353,233 +356,277 @@ function goToNextTableDifference(): void {
 </script>
 
 <template>
-  <section class="table-compare-view">
-    <header class="table-compare-header">
-      <div>
-        <p class="eyebrow">{{ $t('ui.tableCompare') }}</p>
-        <h1>{{ $t('ui.tableCompare') }}</h1>
-      </div>
-      <div class="table-summary">
-        <strong>{{ columnMappings.length }}</strong>
-        <span>{{ $t('ui.columnMappings') }}</span>
-      </div>
-    </header>
-
-    <section class="column-map-controls">
-      <label>
-        <span>{{ $t('ui.leftColumn') }}</span>
-        <select
-          v-model="manualLeftColumn"
-          data-testid="manual-left-column"
-        >
-          <option
-            v-for="column in leftColumns"
-            :key="column.name"
-            :value="column.name"
-          >
-            {{ column.name }}
-          </option>
-        </select>
-      </label>
-      <label>
-        <span>{{ $t('ui.rightColumn') }}</span>
-        <select
-          v-model="manualRightColumn"
-          data-testid="manual-right-column"
-        >
-          <option
-            v-for="column in rightColumns"
-            :key="column.name"
-            :value="column.name"
-          >
-            {{ column.name }}
-          </option>
-        </select>
-      </label>
-      <NButton
-        size="small"
-        type="primary"
-        data-testid="add-column-mapping"
-        @click="addManualMapping"
-        >{{ $t('ui.addMapping') }}</NButton
-      >
-    </section>
-
-    <section class="column-source-grid">
-      <section>
-        <h2>{{ $t('ui.leftColumns') }}</h2>
-        <ul>
-          <li
-            v-for="column in leftColumns"
-            :key="column.name"
-          >
-            {{ column.name }}
-          </li>
-        </ul>
-      </section>
-      <section>
-        <h2>{{ $t('ui.rightColumns') }}</h2>
-        <ul>
-          <li
-            v-for="column in rightColumns"
-            :key="column.name"
-          >
-            {{ column.name }}
-          </li>
-        </ul>
-      </section>
-    </section>
-
-    <section class="table-grid-panel">
-      <header>
-        <strong>{{ $t('ui.dataGrid') }}</strong>
-        <span>{{ visibleRowCount }} rows x {{ visibleColumns }} columns</span>
+  <WorkbenchShell
+    :title="$t('ui.tableCompare')"
+    eyebrow="Table"
+    :subtitle="`${visibleRowCount} rows x ${visibleColumns} columns`"
+    inspector-label="Table compare inspector"
+  >
+    <section class="table-compare-view">
+      <header class="table-compare-header">
+        <div>
+          <p class="eyebrow">{{ $t('ui.tableCompare') }}</p>
+          <h1>{{ $t('ui.tableCompare') }}</h1>
+        </div>
+        <div class="table-summary">
+          <strong>{{ columnMappings.length }}</strong>
+          <span>{{ $t('ui.columnMappings') }}</span>
+        </div>
       </header>
-      <div class="table-navigation-bar">
+
+      <section class="column-map-controls">
         <label>
-          <span>{{ $t('ui.find') }}</span>
-          <input
-            v-model="tableSearchQuery"
-            type="search"
-            data-testid="table-search-input"
-          />
+          <span>{{ $t('ui.leftColumn') }}</span>
+          <select
+            v-model="manualLeftColumn"
+            data-testid="manual-left-column"
+          >
+            <option
+              v-for="column in leftColumns"
+              :key="column.name"
+              :value="column.name"
+            >
+              {{ column.name }}
+            </option>
+          </select>
         </label>
-        <span data-testid="table-search-summary">{{ tableSearchSummary }}</span>
-        <button
-          type="button"
-          data-testid="run-table-compare"
-          :disabled="loading"
-          @click="runTableCompare"
+        <label>
+          <span>{{ $t('ui.rightColumn') }}</span>
+          <select
+            v-model="manualRightColumn"
+            data-testid="manual-right-column"
+          >
+            <option
+              v-for="column in rightColumns"
+              :key="column.name"
+              :value="column.name"
+            >
+              {{ column.name }}
+            </option>
+          </select>
+        </label>
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="add-column-mapping"
+          @click="addManualMapping"
+          >{{ $t('ui.addMapping') }}</NButton
         >
-          {{ $t('ui.runDiff') }}
-        </button>
-        <button
-          type="button"
-          data-testid="next-table-difference"
-          @click="goToNextTableDifference"
+      </section>
+
+      <section class="column-source-grid">
+        <section>
+          <h2>{{ $t('ui.leftColumns') }}</h2>
+          <ul>
+            <li
+              v-for="column in leftColumns"
+              :key="column.name"
+            >
+              {{ column.name }}
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2>{{ $t('ui.rightColumns') }}</h2>
+          <ul>
+            <li
+              v-for="column in rightColumns"
+              :key="column.name"
+            >
+              {{ column.name }}
+            </li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="table-grid-panel">
+        <header>
+          <strong>{{ $t('ui.dataGrid') }}</strong>
+          <span>{{ visibleRowCount }} rows x {{ visibleColumns }} columns</span>
+        </header>
+        <div class="table-navigation-bar">
+          <label>
+            <span>{{ $t('ui.find') }}</span>
+            <input
+              v-model="tableSearchQuery"
+              type="search"
+              data-testid="table-search-input"
+            />
+          </label>
+          <span data-testid="table-search-summary">{{ tableSearchSummary }}</span>
+          <button
+            type="button"
+            data-testid="run-table-compare"
+            :disabled="loading"
+            @click="runTableCompare"
+          >
+            {{ $t('ui.runDiff') }}
+          </button>
+          <button
+            type="button"
+            data-testid="next-table-difference"
+            @click="goToNextTableDifference"
+          >
+            {{ $t('ui.nextDifference') }}
+          </button>
+          <span data-testid="table-difference-summary">{{ tableDifferenceSummary }}</span>
+          <strong data-testid="active-table-cell">{{ activeTableCell?.text ?? '--' }}</strong>
+        </div>
+        <p
+          v-if="error"
+          class="table-error"
+          data-testid="table-compare-error"
         >
-          {{ $t('ui.nextDifference') }}
-        </button>
-        <span data-testid="table-difference-summary">{{ tableDifferenceSummary }}</span>
-        <strong data-testid="active-table-cell">{{ activeTableCell?.text ?? '--' }}</strong>
-      </div>
-      <p
-        v-if="error"
-        class="table-error"
-        data-testid="table-compare-error"
+          {{ error }}
+        </p>
+        <div class="table-column-rules">
+          <label
+            v-for="rule in columnRules"
+            :key="rule.key"
+            class="table-column-rule"
+            :data-testid="`column-rule-${rule.key}`"
+          >
+            <input
+              v-model="ignoredColumnKeys"
+              type="checkbox"
+              :value="rule.key"
+              :data-testid="`ignore-column-${rule.key}`"
+            />
+            <span>{{ rule.label }}</span>
+            <strong>{{ rule.status }}</strong>
+            <small>{{ rule.importance }}</small>
+          </label>
+        </div>
+        <div class="table-grid-panes">
+          <section class="table-grid-pane">
+            <strong>{{ $t('ui.left') }}</strong>
+            <div
+              ref="leftGridViewport"
+              class="table-grid-viewport"
+              data-testid="left-table-grid-viewport"
+              @scroll="syncGridScroll('left', $event)"
+            >
+              <div
+                class="table-virtual-grid"
+                data-testid="table-virtual-grid"
+                :style="virtualGridStyle"
+              >
+                <div
+                  v-for="row in virtualGridRows"
+                  :key="row.key"
+                  class="table-grid-row"
+                  data-testid="table-grid-row"
+                >
+                  <span
+                    v-for="cell in row.cells"
+                    :key="cell.key"
+                    class="table-grid-cell"
+                    :data-column-key="cell.columnKey"
+                    data-testid="table-grid-cell"
+                  >
+                    <span :data-testid="cell.testId">{{ cell.text }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="table-grid-pane">
+            <strong>{{ $t('ui.right') }}</strong>
+            <div
+              ref="rightGridViewport"
+              class="table-grid-viewport"
+              data-testid="right-table-grid-viewport"
+              @scroll="syncGridScroll('right', $event)"
+            >
+              <div
+                class="table-virtual-grid"
+                :style="virtualGridStyle"
+              >
+                <div
+                  v-for="row in virtualGridRows"
+                  :key="row.key"
+                  class="table-grid-row"
+                >
+                  <span
+                    v-for="cell in row.cells"
+                    :key="cell.key"
+                    class="table-grid-cell"
+                    :data-column-key="cell.columnKey"
+                  >
+                    {{ cell.rightText ?? cell.text }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section
+        class="column-mapping-list"
+        data-testid="column-mapping-list"
       >
-        {{ error }}
-      </p>
-      <div class="table-column-rules">
-        <label
-          v-for="rule in columnRules"
-          :key="rule.key"
-          class="table-column-rule"
-          :data-testid="`column-rule-${rule.key}`"
-        >
-          <input
-            v-model="ignoredColumnKeys"
-            type="checkbox"
-            :value="rule.key"
-            :data-testid="`ignore-column-${rule.key}`"
-          />
-          <span>{{ rule.label }}</span>
-          <strong>{{ rule.status }}</strong>
-          <small>{{ rule.importance }}</small>
-        </label>
-      </div>
-      <div class="table-grid-panes">
-        <section class="table-grid-pane">
-          <strong>{{ $t('ui.left') }}</strong>
-          <div
-            ref="leftGridViewport"
-            class="table-grid-viewport"
-            data-testid="left-table-grid-viewport"
-            @scroll="syncGridScroll('left', $event)"
-          >
-            <div
-              class="table-virtual-grid"
-              data-testid="table-virtual-grid"
-              :style="virtualGridStyle"
-            >
-              <div
-                v-for="row in virtualGridRows"
-                :key="row.key"
-                class="table-grid-row"
-                data-testid="table-grid-row"
-              >
-                <span
-                  v-for="cell in row.cells"
-                  :key="cell.key"
-                  class="table-grid-cell"
-                  :data-column-key="cell.columnKey"
-                  data-testid="table-grid-cell"
-                >
-                  <span :data-testid="cell.testId">{{ cell.text }}</span>
-                </span>
-              </div>
-            </div>
+        <header>
+          <strong>{{ $t('ui.columnMapping') }}</strong>
+          <span>{{ $t('ui.manualMappingsOverrideAutomaticNameMatches') }}</span>
+        </header>
+        <div class="column-map-table">
+          <div class="column-map-row column-map-head">
+            <span>{{ $t('ui.left') }}</span>
+            <span>{{ $t('ui.right') }}</span>
+            <span>{{ $t('ui.source') }}</span>
           </div>
-        </section>
-        <section class="table-grid-pane">
-          <strong>{{ $t('ui.right') }}</strong>
           <div
-            ref="rightGridViewport"
-            class="table-grid-viewport"
-            data-testid="right-table-grid-viewport"
-            @scroll="syncGridScroll('right', $event)"
+            v-for="mapping in columnMappings"
+            :key="`${mapping.leftColumn ?? '--'}-${mapping.rightColumn ?? '--'}-${mapping.source}`"
+            class="column-map-row"
           >
-            <div
-              class="table-virtual-grid"
-              :style="virtualGridStyle"
-            >
-              <div
-                v-for="row in virtualGridRows"
-                :key="row.key"
-                class="table-grid-row"
-              >
-                <span
-                  v-for="cell in row.cells"
-                  :key="cell.key"
-                  class="table-grid-cell"
-                  :data-column-key="cell.columnKey"
-                >
-                  {{ cell.rightText ?? cell.text }}
-                </span>
-              </div>
-            </div>
+            <span>{{ mapping.leftColumn ?? '--' }}</span>
+            <span>{{ mapping.rightColumn ?? '--' }}</span>
+            <strong>{{ mapping.source }}</strong>
+            <small>{{ mapping.leftColumn ?? '--' }} -> {{ mapping.rightColumn ?? '--' }}</small>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </section>
 
-    <section
-      class="column-mapping-list"
-      data-testid="column-mapping-list"
-    >
-      <header>
-        <strong>{{ $t('ui.columnMapping') }}</strong>
-        <span>{{ $t('ui.manualMappingsOverrideAutomaticNameMatches') }}</span>
-      </header>
-      <div class="column-map-table">
-        <div class="column-map-row column-map-head">
-          <span>{{ $t('ui.left') }}</span>
-          <span>{{ $t('ui.right') }}</span>
-          <span>{{ $t('ui.source') }}</span>
-        </div>
-        <div
-          v-for="mapping in columnMappings"
-          :key="`${mapping.leftColumn ?? '--'}-${mapping.rightColumn ?? '--'}-${mapping.source}`"
-          class="column-map-row"
-        >
-          <span>{{ mapping.leftColumn ?? '--' }}</span>
-          <span>{{ mapping.rightColumn ?? '--' }}</span>
-          <strong>{{ mapping.source }}</strong>
-          <small>{{ mapping.leftColumn ?? '--' }} -> {{ mapping.rightColumn ?? '--' }}</small>
-        </div>
-      </div>
-    </section>
-  </section>
+    <template #inspector>
+      <WorkbenchInspector>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.columnMapping') }}</h2>
+          <StatusSummaryGrid
+            :items="[
+              { label: $t('ui.columnMappings'), value: columnMappings.length },
+              { label: $t('ui.leftColumns'), value: leftColumns.length },
+              { label: $t('ui.rightColumns'), value: rightColumns.length },
+              {
+                label: $t('ui.differencesOnly'),
+                value: tableDifferenceCells.length,
+                tone: 'modified',
+              },
+            ]"
+          />
+        </section>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.selection') }}</h2>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.find') }}</dt>
+              <dd>{{ tableSearchSummary }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.nextDifference') }}</dt>
+              <dd>{{ tableDifferenceSummary }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.field') }}</dt>
+              <dd>{{ activeTableCell?.text ?? '--' }}</dd>
+            </div>
+          </dl>
+        </section>
+      </WorkbenchInspector>
+    </template>
+  </WorkbenchShell>
 </template>
 <style scoped>
 .table-compare-view {

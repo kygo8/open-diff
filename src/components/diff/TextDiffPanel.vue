@@ -418,8 +418,8 @@ const splitBySyntaxTokens = (
     :class="{ 'diff-panel-word-wrap': wordWrap }"
   >
     <div class="diff-header">
-      <span>{{ $t('ui.left') }}</span>
-      <span>{{ $t('ui.right') }}</span>
+      <span data-testid="text-diff-left-pane">{{ $t('ui.left') }}</span>
+      <span data-testid="text-diff-right-pane">{{ $t('ui.right') }}</span>
       <div class="diff-tools">
         <div
           class="diff-filter"
@@ -574,7 +574,7 @@ const splitBySyntaxTokens = (
     <div
       class="diff-minimap"
       :aria-label="$t('ui.differenceMap')"
-      data-testid="text-diff-minimap"
+      data-testid="text-diff-center-map"
     >
       <button
         v-for="marker in diffMarkers"
@@ -597,7 +597,7 @@ const splitBySyntaxTokens = (
   min-height: 0;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 4px;
   background: var(--app-surface);
 }
 

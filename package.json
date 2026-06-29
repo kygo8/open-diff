@@ -21,6 +21,7 @@
     "lint:fix": "eslint . --fix",
     "stylelint": "stylelint \"src/**/*.{css,vue}\" --max-warnings=0",
     "stylelint:fix": "stylelint \"src/**/*.{css,vue}\" --fix",
+    "ui:screens": "node scripts/capture-ui-screenshots.mjs",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "rust:fmt": "cargo fmt --all --manifest-path src-tauri/Cargo.toml",

@@ -4,6 +4,10 @@ import { diffText } from '@/api/diff'
 import { useStatusBarStore } from '@/stores/statusBar'
 import type { TextDiffAlgorithm, TextDiffResponse } from '@/types/diff'
 import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
+import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import WorkbenchToolbar from '@/components/workbench/WorkbenchToolbar.vue'
+import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 
 type DiffLine = TextDiffResponse['lines'][number]
 
@@ -26,12 +30,58 @@ const builtInSyntaxGrammar = {
 
 const left = ref('line one\nline two\nline four')
 const right = ref('line one\nline 2\nline three\nline four')
+const leftPathLabel = 'C:/Projects/app/main.ts'
+const rightPathLabel = 'C:/Projects/app/main.remote.ts'
+const initialDiffResult: TextDiffResponse = {
+  lines: [
+    {
+      leftNumber: 1,
+      rightNumber: 1,
+      leftText: 'line one',
+      rightText: 'line one',
+      kind: 'equal',
+      inlineSegments: { left: [], right: [] },
+    },
+    {
+      leftNumber: 2,
+      rightNumber: 2,
+      leftText: 'line two',
+      rightText: 'line 2',
+      kind: 'modified',
+      inlineSegments: {
+        left: [{ text: 'line two', changed: true }],
+        right: [{ text: 'line 2', changed: true }],
+      },
+    },
+    {
+      leftNumber: null,
+      rightNumber: 3,
+      leftText: '',
+      rightText: 'line three',
+      kind: 'added',
+      inlineSegments: {
+        left: [],
+        right: [{ text: 'line three', changed: true }],
+      },
+    },
+    {
+      leftNumber: 3,
+      rightNumber: 4,
+      leftText: 'line four',
+      rightText: 'line four',
+      kind: 'equal',
+      inlineSegments: { left: [], right: [] },
+    },
+  ],
+  stats: { added: 1, deleted: 0, modified: 1, equal: 2 },
+}
 const statusBar = useStatusBarStore()
 const algorithm = ref<TextDiffAlgorithm>('myers')
-const result = ref<TextDiffResponse | null>(null)
+const result = ref<TextDiffResponse | null>(initialDiffResult)
 const loading = ref(false)
 const error = ref('')
 const dirty = ref(false)
+const showSourceEditors = ref(false)
 const leftUndoStack = ref<string[]>([])
 const leftRedoStack = ref<string[]>([])
 const rightUndoStack = ref<string[]>([])
@@ -461,12 +511,22 @@ function closeHtmlPreviewWhenUnavailable(): void {
     showHtmlPreview.value = false
   }
 }
+
+function toggleSourceEditors(): void {
+  showSourceEditors.value = !showSourceEditors.value
+}
 </script>
 
 <template>
-  <section class="text-compare-view">
-    <div class="compare-toolbar">
-      <strong>{{ $t('ui.textCompare') }}</strong>
+  <WorkbenchShell
+    class="text-compare-view"
+    :title="$t('ui.textCompare')"
+    eyebrow="Text"
+    :subtitle="statsLabel"
+    inspector-label="Text compare inspector"
+    data-testid="text-workbench"
+  >
+    <template #title-actions>
       <span class="stats">{{ statsLabel }}</span>
       <span
         class="status-chip"
@@ -483,251 +543,311 @@ function closeHtmlPreviewWhenUnavailable(): void {
         data-testid="active-diff-status"
         >{{ activeDiffStatus }}</span
       >
-      <div class="spacer" />
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="undo-left"
-        :disabled="leftUndoStack.length === 0"
-        @click="undoLeft"
-      >
-        {{ $t('ui.undo') }}
-      </button>
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="redo-left"
-        :disabled="leftRedoStack.length === 0"
-        @click="redoLeft"
-      >
-        {{ $t('ui.redo') }}
-      </button>
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="copy-left-to-right"
-        :disabled="!result"
-        @click="copyCurrentDiff('leftToRight')"
-      >
-        {{ $t('ui.leftToRight') }}
-      </button>
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="copy-right-to-left"
-        :disabled="!result"
-        @click="copyCurrentDiff('rightToLeft')"
-      >
-        {{ $t('ui.rightToLeft') }}
-      </button>
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="ignore-current-diff"
-        :disabled="activeDiffRows.length === 0"
-        @click="ignoreCurrentDiff"
-      >
-        {{ $t('ui.ignore') }}
-      </button>
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="toggle-html-preview"
-        :disabled="!canPreviewHtml"
-        @click="toggleHtmlPreview"
-      >
-        {{ $t('ui.preview') }}
-      </button>
-      <select
-        v-model.number="selectedBookmark"
-        class="algorithm-select"
-        data-testid="bookmark-slot"
-      >
-        <option
-          v-for="slot in bookmarkSlots"
-          :key="slot"
-          :value="slot"
+    </template>
+
+    <template #toolbar>
+      <WorkbenchToolbar class="compare-toolbar">
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="toggle-source-editors"
+          @click="toggleSourceEditors"
         >
-          {{ slot }}
-        </option>
-      </select>
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="set-bookmark"
-        :disabled="activeDiffRows.length === 0"
-        @click="setBookmark"
-      >
-        {{ $t('ui.set') }}
-      </button>
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="jump-bookmark"
-        :disabled="!bookmarks[selectedBookmark]"
-        @click="jumpToBookmark"
-      >
-        {{ $t('ui.jump') }}
-      </button>
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="clear-bookmark"
-        :disabled="!bookmarks[selectedBookmark]"
-        @click="clearBookmark"
-      >
-        {{ $t('ui.clear') }}
-      </button>
-      <span
-        class="status-chip"
-        data-testid="bookmark-status"
-        >{{ bookmarkStatus }}</span
-      >
-      <select
-        v-model="algorithm"
-        class="algorithm-select"
-        data-testid="algorithm-select"
-      >
-        <option value="myers">{{ $t('ui.myers') }}</option>
-        <option value="patience">{{ $t('ui.patience') }}</option>
-        <option value="histogram">{{ $t('ui.histogram') }}</option>
-      </select>
-      <NButton
-        size="small"
-        type="primary"
-        :loading="loading"
-        data-testid="run-diff"
-        @click="runDiff"
-        >{{ $t('ui.runDiff') }}</NButton
-      >
-    </div>
-
-    <div class="input-row">
-      <NInput
-        :value="left"
-        type="textarea"
-        :placeholder="$t('ui.leftContent')"
-        @update:value="updateLeft"
-      />
-      <NInput
-        :value="right"
-        type="textarea"
-        :placeholder="$t('ui.rightContent')"
-        @update:value="updateRight"
-      />
-    </div>
-
-    <div class="find-toolbar">
-      <input
-        class="find-input"
-        data-testid="find-query"
-        type="search"
-        :placeholder="$t('ui.find')"
-        :value="findQuery"
-        @input="updateFindQuery"
-      />
-      <input
-        class="find-input"
-        data-testid="replace-query"
-        type="text"
-        :placeholder="$t('ui.replace')"
-        :value="replaceQuery"
-        @input="updateReplaceQuery"
-      />
-      <label class="find-option">
+          {{ showSourceEditors ? 'Hide Sources' : 'Edit Sources' }}
+        </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="undo-left"
+          :disabled="leftUndoStack.length === 0"
+          @click="undoLeft"
+        >
+          {{ $t('ui.undo') }}
+        </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="redo-left"
+          :disabled="leftRedoStack.length === 0"
+          @click="redoLeft"
+        >
+          {{ $t('ui.redo') }}
+        </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="copy-left-to-right"
+          :disabled="!result"
+          @click="copyCurrentDiff('leftToRight')"
+        >
+          {{ $t('ui.leftToRight') }}
+        </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="copy-right-to-left"
+          :disabled="!result"
+          @click="copyCurrentDiff('rightToLeft')"
+        >
+          {{ $t('ui.rightToLeft') }}
+        </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="ignore-current-diff"
+          :disabled="activeDiffRows.length === 0"
+          @click="ignoreCurrentDiff"
+        >
+          {{ $t('ui.ignore') }}
+        </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="toggle-html-preview"
+          :disabled="!canPreviewHtml"
+          @click="toggleHtmlPreview"
+        >
+          {{ $t('ui.preview') }}
+        </button>
+        <select
+          v-model.number="selectedBookmark"
+          class="algorithm-select"
+          data-testid="bookmark-slot"
+        >
+          <option
+            v-for="slot in bookmarkSlots"
+            :key="slot"
+            :value="slot"
+          >
+            {{ slot }}
+          </option>
+        </select>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="set-bookmark"
+          :disabled="activeDiffRows.length === 0"
+          @click="setBookmark"
+        >
+          {{ $t('ui.set') }}
+        </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="jump-bookmark"
+          :disabled="!bookmarks[selectedBookmark]"
+          @click="jumpToBookmark"
+        >
+          {{ $t('ui.jump') }}
+        </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="clear-bookmark"
+          :disabled="!bookmarks[selectedBookmark]"
+          @click="clearBookmark"
+        >
+          {{ $t('ui.clear') }}
+        </button>
+        <span
+          class="status-chip"
+          data-testid="bookmark-status"
+          >{{ bookmarkStatus }}</span
+        >
+        <select
+          v-model="algorithm"
+          class="algorithm-select"
+          data-testid="algorithm-select"
+        >
+          <option value="myers">{{ $t('ui.myers') }}</option>
+          <option value="patience">{{ $t('ui.patience') }}</option>
+          <option value="histogram">{{ $t('ui.histogram') }}</option>
+        </select>
+        <NButton
+          size="small"
+          type="primary"
+          :loading="loading"
+          data-testid="run-diff"
+          @click="runDiff"
+          >{{ $t('ui.runDiff') }}</NButton
+        >
+      </WorkbenchToolbar>
+      <WorkbenchToolbar class="find-toolbar">
         <input
-          v-model="findRegex"
-          data-testid="find-regex"
-          type="checkbox"
-        />{{ $t('ui.regex') }}</label
-      >
-      <label class="find-option">
+          class="find-input"
+          data-testid="find-query"
+          type="search"
+          :placeholder="$t('ui.find')"
+          :value="findQuery"
+          @input="updateFindQuery"
+        />
         <input
-          v-model="findCaseSensitive"
-          data-testid="find-case-sensitive"
-          type="checkbox"
-        />{{ $t('ui.case') }}</label
-      >
-      <label class="find-option">
-        <input
-          v-model="findWholeWord"
-          data-testid="find-whole-word"
-          type="checkbox"
-        />{{ $t('ui.word') }}</label
-      >
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="find-previous"
-        :disabled="findMatches.length === 0"
-        @click="findPrevious"
-      >
-        {{ $t('ui.previous') }}
-      </button>
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="find-next"
-        :disabled="findMatches.length === 0"
-        @click="findNext"
-      >
-        {{ $t('ui.next') }}
-      </button>
-      <span
-        class="status-chip"
-        data-testid="find-status"
-        >{{ findStatus }}</span
-      >
-      <button
-        type="button"
-        class="toolbar-button"
-        data-testid="replace-all"
-        :disabled="findMatches.length === 0"
-        @click="replaceAll"
-      >
-        {{ $t('ui.replaceAll') }}
-      </button>
-    </div>
+          class="find-input"
+          data-testid="replace-query"
+          type="text"
+          :placeholder="$t('ui.replace')"
+          :value="replaceQuery"
+          @input="updateReplaceQuery"
+        />
+        <label class="find-option">
+          <input
+            v-model="findRegex"
+            data-testid="find-regex"
+            type="checkbox"
+          />{{ $t('ui.regex') }}</label
+        >
+        <label class="find-option">
+          <input
+            v-model="findCaseSensitive"
+            data-testid="find-case-sensitive"
+            type="checkbox"
+          />{{ $t('ui.case') }}</label
+        >
+        <label class="find-option">
+          <input
+            v-model="findWholeWord"
+            data-testid="find-whole-word"
+            type="checkbox"
+          />{{ $t('ui.word') }}</label
+        >
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="find-previous"
+          :disabled="findMatches.length === 0"
+          @click="findPrevious"
+        >
+          {{ $t('ui.previous') }}
+        </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="find-next"
+          :disabled="findMatches.length === 0"
+          @click="findNext"
+        >
+          {{ $t('ui.next') }}
+        </button>
+        <span
+          class="status-chip"
+          data-testid="find-status"
+          >{{ findStatus }}</span
+        >
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="replace-all"
+          :disabled="findMatches.length === 0"
+          @click="replaceAll"
+        >
+          {{ $t('ui.replaceAll') }}
+        </button>
+      </WorkbenchToolbar>
+    </template>
 
-    <NAlert
-      v-if="error"
-      type="error"
-      :bordered="false"
-      >{{ error }}</NAlert
-    >
-
-    <TextDiffPanel
-      v-if="result"
-      :lines="result.lines"
-      :grammar="builtInSyntaxGrammar"
-    />
-    <div
-      v-else
-      class="empty"
-    >
-      {{ $t('ui.runTheSampleComparisonToRenderTheCustomDiffView') }}
-    </div>
-
-    <section
-      v-if="result"
-      class="details-panel"
-      :aria-label="$t('ui.textAndHexDetails')"
-    >
+    <section class="text-workbench-main">
       <div
-        class="details-cell"
-        data-testid="text-details"
+        v-show="showSourceEditors"
+        class="input-row"
       >
-        <strong>{{ $t('ui.textDetails') }}</strong>
-        <span>{{ textDetails }}</span>
+        <section class="text-source-pane">
+          <header class="split-pane-header active">
+            <strong>{{ $t('ui.left') }}</strong>
+            <span>{{ leftPathLabel }}</span>
+          </header>
+          <NInput
+            :value="left"
+            type="textarea"
+            :placeholder="$t('ui.leftContent')"
+            @update:value="updateLeft"
+          />
+        </section>
+        <section class="text-source-pane">
+          <header class="split-pane-header">
+            <strong>{{ $t('ui.right') }}</strong>
+            <span>{{ rightPathLabel }}</span>
+          </header>
+          <NInput
+            :value="right"
+            type="textarea"
+            :placeholder="$t('ui.rightContent')"
+            @update:value="updateRight"
+          />
+        </section>
       </div>
-      <div
-        class="details-cell"
-        data-testid="hex-details"
+
+      <NAlert
+        v-if="error"
+        type="error"
+        :bordered="false"
+        >{{ error }}</NAlert
       >
-        <strong>{{ $t('ui.hexDetails') }}</strong>
-        <span>{{ hexDetails }}</span>
+
+      <TextDiffPanel
+        v-if="result"
+        :lines="result.lines"
+        :grammar="builtInSyntaxGrammar"
+      />
+      <div
+        v-else
+        class="empty"
+      >
+        {{ $t('ui.runTheSampleComparisonToRenderTheCustomDiffView') }}
       </div>
     </section>
+
+    <template #inspector>
+      <WorkbenchInspector>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.change') }}</h2>
+          <StatusSummaryGrid
+            :items="[
+              { label: $t('ui.add'), value: result?.stats.added ?? 0, tone: 'added' },
+              { label: $t('ui.delete'), value: result?.stats.deleted ?? 0, tone: 'deleted' },
+              { label: $t('ui.modified'), value: result?.stats.modified ?? 0, tone: 'modified' },
+              { label: $t('ui.differencesOnly'), value: activeDiffRows.length },
+            ]"
+          />
+        </section>
+        <section
+          class="workbench-inspector-section"
+          :aria-label="$t('ui.textAndHexDetails')"
+        >
+          <h2>{{ $t('ui.selection') }}</h2>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.encoding') }}</dt>
+              <dd>{{ statusBarEncoding }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.defaultView') }}</dt>
+              <dd>{{ filterStatus }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.history') }}</dt>
+              <dd data-testid="bookmark-status">{{ bookmarkStatus }}</dd>
+            </div>
+          </dl>
+        </section>
+        <section
+          v-if="result"
+          class="workbench-inspector-section"
+          :aria-label="$t('ui.textAndHexDetails')"
+        >
+          <h2>{{ $t('ui.detail') }}</h2>
+          <dl>
+            <div data-testid="text-details">
+              <dt>{{ $t('ui.textDetails') }}</dt>
+              <dd>{{ textDetails }}</dd>
+            </div>
+            <div data-testid="hex-details">
+              <dt>{{ $t('ui.hexDetails') }}</dt>
+              <dd>{{ hexDetails }}</dd>
+            </div>
+          </dl>
+        </section>
+      </WorkbenchInspector>
+    </template>
 
     <section
       v-if="showHtmlPreview"
@@ -748,22 +868,11 @@ function closeHtmlPreviewWhenUnavailable(): void {
         :srcdoc="right"
       />
     </section>
-  </section>
+  </WorkbenchShell>
 </template>
 <style scoped>
-.text-compare-view {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-  padding: 10px;
-}
-
 .compare-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 34px;
+  gap: 6px;
 }
 
 .stats {
@@ -776,26 +885,22 @@ function closeHtmlPreviewWhenUnavailable(): void {
   font-size: 12px;
 }
 
-.spacer {
-  flex: 1;
-}
-
 .algorithm-select {
-  height: 28px;
+  height: 24px;
   padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
   color: var(--app-text);
   font-size: 12px;
 }
 
 .toolbar-button {
-  height: 28px;
+  height: 24px;
   padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
   color: var(--app-text);
   font-size: 12px;
   cursor: pointer;
@@ -807,18 +912,16 @@ function closeHtmlPreviewWhenUnavailable(): void {
 }
 
 .find-toolbar {
-  display: flex;
-  align-items: center;
   gap: 8px;
 }
 
 .find-input {
   width: 220px;
-  height: 28px;
+  height: 24px;
   padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
   color: var(--app-text);
   font-size: 12px;
 }
@@ -831,43 +934,46 @@ function closeHtmlPreviewWhenUnavailable(): void {
   font-size: 12px;
 }
 
+.text-workbench-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 0;
+  padding: 8px;
+  overflow: hidden;
+}
+
 .input-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  min-height: 120px;
+  flex: 0 0 128px;
+  gap: 8px;
+  min-height: 0;
+}
+
+.text-source-pane {
+  display: grid;
+  grid-template-rows: 28px minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  background: var(--app-canvas);
+}
+
+.text-source-pane :deep(.n-input) {
+  height: 100%;
+  border-radius: 0;
 }
 
 .empty {
   display: grid;
-  flex: 1;
+  min-height: 0;
   border: 1px dashed var(--app-border);
-  border-radius: 8px;
+  border-radius: 4px;
   color: var(--app-text-muted);
   place-items: center;
-}
-
-.details-panel {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.details-cell {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-  padding: 8px;
-  border: 1px solid var(--app-border);
-  border-radius: 6px;
-  background: var(--app-surface);
-  font-size: 12px;
-}
-
-.details-cell span {
-  overflow-wrap: anywhere;
-  color: var(--app-text-muted);
-  font-family: var(--app-font-mono);
 }
 
 .html-preview-panel {

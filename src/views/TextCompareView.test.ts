@@ -80,6 +80,32 @@ describe('TextCompareView', () => {
     )
   })
 
+  it('renders the dual diff workspace without requiring a manual sample run', async () => {
+    vi.mocked(diffText).mockResolvedValueOnce({
+      lines: [
+        {
+          leftNumber: 1,
+          rightNumber: 1,
+          leftText: 'line one',
+          rightText: 'line one',
+          kind: 'equal',
+          inlineSegments: { left: [], right: [] },
+        },
+      ],
+      stats: { added: 0, deleted: 0, modified: 0, equal: 1 },
+    })
+
+    const wrapper = mountTextCompareView()
+
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="text-workbench"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="text-diff-panel-stub"]').exists()).toBe(true)
+    expect(wrapper.find('.empty').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('Run the sample comparison')
+  })
+
   it('shows detected line endings for the current text inputs', async () => {
     const wrapper = mountTextCompareView()
 
@@ -98,8 +124,8 @@ describe('TextCompareView', () => {
 
     expect(statusBar.report).toEqual(
       expect.objectContaining({
-        comparisonStatus: 'Editing',
-        differenceCount: null,
+        comparisonStatus: 'Compared',
+        differenceCount: 2,
         encoding: 'UTF-8 | Left: LF | Right: LF',
         filterStatus: 'All rows',
         source: 'text-compare',

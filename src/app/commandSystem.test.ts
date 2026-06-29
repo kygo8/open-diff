@@ -10,15 +10,33 @@ describe('commandSystem', () => {
   it('derives toolbar and command palette commands from the shared registry', () => {
     expect(
       getCommandsForPlacement(commandRegistry, 'toolbar').map((command) => command.id),
-    ).toEqual(['open.textCompare', 'open.folderCompare'])
+    ).toEqual([
+      'open.textCompare',
+      'open.folderCompare',
+      'open.textPatch',
+      'session.save',
+      'edit.copyLeft',
+      'edit.copyRight',
+      'view.showAll',
+      'view.showDifferences',
+    ])
     expect(getCommandsForPlacement(commandRegistry, 'command-palette')).toEqual(commandRegistry)
     expect(getCommandsForPlacement(commandRegistry, 'menu').map((command) => command.id)).toEqual([
       'open.textCompare',
       'open.folderCompare',
+      'open.textPatch',
       'open.settings',
       'theme.toggle',
+      'session.save',
+      'session.saveAs',
+      'session.export',
+      'edit.copyLeft',
+      'edit.copyRight',
       'diff.previous',
       'diff.next',
+      'view.showAll',
+      'view.showDifferences',
+      'workspace.save',
     ])
   })
 
@@ -46,14 +64,15 @@ describe('commandSystem', () => {
     expect(context.navigate).not.toHaveBeenCalled()
   })
 
-  it('does not execute disabled commands', () => {
+  it('dispatches view action commands through the shared executor', () => {
     const context = createExecutionContext()
     const executeCommand = createCommandExecutor(commandRegistry, context)
 
-    expect(executeCommand('diff.next')).toBe(false)
+    expect(executeCommand('diff.next')).toBe(true)
 
     expect(context.navigate).not.toHaveBeenCalled()
     expect(context.toggleTheme).not.toHaveBeenCalled()
+    expect(context.dispatchViewAction).toHaveBeenCalledWith('next-difference')
   })
 })
 
@@ -68,5 +87,6 @@ function createExecutionContext(): CommandExecutionContext {
         'ui.textCompare': 'Text Compare',
       })[key] ?? key,
     toggleTheme: vi.fn(),
+    dispatchViewAction: vi.fn(),
   }
 }

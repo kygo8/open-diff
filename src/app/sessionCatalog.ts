@@ -89,7 +89,8 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     title: 'Text Patch',
     summary: 'Unified patch review',
     priority: 'P2',
-    implemented: false,
+    implemented: true,
+    route: '/patch/text',
   },
   {
     type: 'clipboard-compare',

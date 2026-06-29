@@ -112,4 +112,23 @@ describe('useSettingsStore', () => {
     expect(store.shortcutOverrides).toEqual({})
     expect(localStorage.getItem('open-diff-shortcut-overrides')).toBe('{}')
   })
+
+  it('stores an auto-save session limit with safe bounds', () => {
+    const store = useSettingsStore()
+
+    expect(store.autoSaveLimit).toBe(10)
+
+    store.setAutoSaveLimit(25)
+
+    expect(store.autoSaveLimit).toBe(25)
+    expect(localStorage.getItem('open-diff-auto-save-limit')).toBe('25')
+
+    store.setAutoSaveLimit(99)
+
+    expect(store.autoSaveLimit).toBe(50)
+
+    store.setAutoSaveLimit(-1)
+
+    expect(store.autoSaveLimit).toBe(0)
+  })
 })

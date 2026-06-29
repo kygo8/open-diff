@@ -1,7 +1,9 @@
 import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import MediaCompareView from './MediaCompareView.vue'
 import { compareMediaFiles } from '@/api/diff'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 vi.mock('@/api/diff', () => ({
   compareMediaFiles: vi.fn().mockResolvedValue({
@@ -52,6 +54,7 @@ vi.mock('@/api/diff', () => ({
 
 describe('MediaCompareView', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.mocked(compareMediaFiles).mockClear()
   })
 
@@ -72,6 +75,29 @@ describe('MediaCompareView', () => {
     expect(wrapper.find('[data-testid="media-summary-modified"]').text()).toContain('1')
     expect(wrapper.find('[data-testid="media-field-Title"]').text()).toContain('Left Song')
     expect(wrapper.find('[data-testid="media-field-Title"]').text()).toContain('Right Song')
+  })
+
+  it('runs automatically from dropped media launch paths', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'launch-media',
+      source: 'drop',
+      sessionType: 'media-compare',
+      title: 'left.mp3 vs right.mp3',
+      route: '/compare/media',
+      autoRun: true,
+      locations: {
+        left: { uri: 'C:/drop/left.mp3', kind: 'file', readOnly: false },
+        right: { uri: 'C:/drop/right.mp3', kind: 'file', readOnly: false },
+      },
+    })
+
+    mount(MediaCompareView)
+    await Promise.resolve()
+
+    expect(compareMediaFiles).toHaveBeenCalledWith({
+      leftPath: 'C:/drop/left.mp3',
+      rightPath: 'C:/drop/right.mp3',
+    })
   })
 
   it('renders media metadata summary and field difference counts', () => {

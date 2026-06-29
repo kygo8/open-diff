@@ -42,6 +42,20 @@ describe('selectSessionForDrop', () => {
     })
   })
 
+  it('selects text patch for patch and diff files', () => {
+    expect(selectSessionForDrop(pair('change.diff', 'change.diff'))).toMatchObject({
+      sessionType: 'text-patch',
+      route: '/patch/text',
+      enabled: true,
+    })
+
+    expect(selectSessionForDrop(pair('feature.patch', 'feature.patch'))).toMatchObject({
+      sessionType: 'text-patch',
+      route: '/patch/text',
+      enabled: true,
+    })
+  })
+
   it('selects picture compare for image extensions', () => {
     expect(selectSessionForDrop(pair('before.png', 'after.jpeg'))).toMatchObject({
       sessionType: 'picture-compare',

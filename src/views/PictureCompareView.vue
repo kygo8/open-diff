@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { comparePictureFiles } from '@/api/diff'
 import type { PictureCompareResponse, PictureMetadataRow } from '@/types/diff'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 const zoom = ref(100)
 const panX = ref(0)
@@ -53,6 +54,7 @@ const defaultMetadataRows: PictureMetadataRow[] = [
 ] as const
 const leftPath = ref('C:/images/left.png')
 const rightPath = ref('C:/images/right.png')
+const sessionLaunch = useSessionLaunchStore()
 const leftPictureName = ref('left.png')
 const rightPictureName = ref('right.png')
 const loading = ref(false)
@@ -68,6 +70,21 @@ const pictureStatistics = ref<PictureCompareResponse['statistics']>({
     width: 210,
     height: 166,
   },
+})
+
+onMounted(() => {
+  const launch = sessionLaunch.consumeLaunch('/compare/picture')
+
+  if (!launch) {
+    return
+  }
+
+  leftPath.value = launch.locations.left?.uri ?? leftPath.value
+  rightPath.value = launch.locations.right?.uri ?? rightPath.value
+
+  if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
+    void runPictureCompare()
+  }
 })
 
 const sharedTransformParts = computed(() => [

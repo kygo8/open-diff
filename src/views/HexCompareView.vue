@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { compareHexFiles } from '@/api/diff'
 import type { HexCompareResponse, HexViewCell } from '@/types/diff'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 interface HexRow {
   offset: string
@@ -34,6 +35,7 @@ const viewportWidth = ref(640)
 const diffOnly = ref(false)
 const loading = ref(false)
 const error = ref('')
+const sessionLaunch = useSessionLaunchStore()
 const bytesPerRow = computed(() => (viewportWidth.value < 480 ? 8 : 16))
 
 const leftHex = computed<HexSideRows>(() =>
@@ -57,6 +59,21 @@ const visiblePairedHexRows = computed(() => {
 const loadedBytesLabel = computed(
   () => `${String(leftTotalLen.value)} / ${String(rightTotalLen.value)}`,
 )
+
+onMounted(() => {
+  const launch = sessionLaunch.consumeLaunch('/compare/hex')
+
+  if (!launch) {
+    return
+  }
+
+  leftPath.value = launch.locations.left?.uri ?? leftPath.value
+  rightPath.value = launch.locations.right?.uri ?? rightPath.value
+
+  if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
+    void runHexCompare()
+  }
+})
 
 function defaultCells(source: number[]): HexViewCell[] {
   return source.map((byte, offset) => ({

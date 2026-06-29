@@ -8,13 +8,18 @@ import {
   type AppCommand,
   type CommandShortcut,
 } from '@/app/commandRegistry'
+import { parseSessionPackage } from '@/app/sessionFile'
+import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { useSettingsStore } from '@/stores/settings'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 
 const settings = useSettingsStore()
+const savedSessions = useSavedSessionsStore()
 const router = useRouter()
 const sharedSessionPathDraft = ref('')
+const sharedSessionJsonDraft = ref('')
+const sharedSessionImportError = ref('')
 const shortcutSearch = ref('')
 const shortcutDrafts = ref<Record<string, string>>(
   Object.fromEntries(
@@ -48,6 +53,22 @@ function openRemoteProfiles(): void {
 function addSharedSessionPath(): void {
   if (settings.addSharedSessionPath(sharedSessionPathDraft.value)) {
     sharedSessionPathDraft.value = ''
+  }
+}
+
+function loadSharedSessionJson(): void {
+  sharedSessionImportError.value = ''
+
+  try {
+    const parsed = parseSessionPackage(sharedSessionJsonDraft.value)
+
+    for (const session of parsed.sessions) {
+      savedSessions.loadSharedSession(session)
+    }
+
+    sharedSessionJsonDraft.value = ''
+  } catch (error) {
+    sharedSessionImportError.value = error instanceof Error ? error.message : String(error)
   }
 }
 
@@ -244,6 +265,27 @@ function parseShortcutText(value: string): string[] {
               >
             </li>
           </ul>
+          <div class="shared-session-import">
+            <NInput
+              v-model:value="sharedSessionJsonDraft"
+              type="textarea"
+              data-testid="shared-session-json-input"
+              :placeholder="$t('ui.importJson')"
+            />
+            <NButton
+              size="small"
+              data-testid="load-shared-session-json"
+              @click="loadSharedSessionJson"
+              >{{ $t('ui.import') }}</NButton
+            >
+          </div>
+          <p
+            v-if="sharedSessionImportError"
+            class="shared-session-error"
+            data-testid="shared-session-import-error"
+          >
+            {{ sharedSessionImportError }}
+          </p>
         </div>
       </NCard>
     </section>
@@ -364,6 +406,19 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
+}
+
+.shared-session-import {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+}
+
+.shared-session-error {
+  margin: 0;
+  color: var(--diff-deleted-fg);
+  font-size: 12px;
 }
 
 .shared-session-list {

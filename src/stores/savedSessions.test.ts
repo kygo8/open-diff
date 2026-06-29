@@ -4,6 +4,7 @@ import { useSavedSessionsStore } from './savedSessions'
 
 describe('useSavedSessionsStore', () => {
   beforeEach(() => {
+    localStorage.clear()
     setActivePinia(createPinia())
   })
 
@@ -131,5 +132,67 @@ describe('useSavedSessionsStore', () => {
     expect(store.updateSessionRules(editable.id, { comparison: { whitespace: 'ignore' } })).toBe(
       true,
     )
+  })
+
+  it('persists named sessions and reloads them in a new store instance', () => {
+    const store = useSavedSessionsStore()
+
+    expect(store.renameSession('sample-text', 'Persisted text review')).toBe(true)
+
+    setActivePinia(createPinia())
+
+    const reloaded = useSavedSessionsStore()
+
+    expect(reloaded.sessions.find((session) => session.id === 'sample-text')?.name).toBe(
+      'Persisted text review',
+    )
+  })
+
+  it('saves a new session and supports save as without overwriting the original', () => {
+    const store = useSavedSessionsStore()
+    const baseSession = store.sessions.find((session) => session.id === 'sample-text')
+
+    if (!baseSession) {
+      throw new Error('Expected sample-text session.')
+    }
+
+    const saved = store.saveSession({
+      ...baseSession,
+      id: 'new-session',
+      name: 'Saved from view',
+      metadata: { ...baseSession.metadata, dirty: true },
+    })
+
+    expect(saved.metadata.dirty).toBe(false)
+    expect(store.sessions.some((session) => session.id === 'new-session')).toBe(true)
+
+    const copy = store.saveSessionAs('new-session', 'Saved as copy')
+
+    expect(copy.id).not.toBe('new-session')
+    expect(copy.name).toBe('Saved as copy')
+    expect(store.sessions.find((session) => session.id === 'new-session')?.name).toBe(
+      'Saved from view',
+    )
+  })
+
+  it('keeps auto-saved sessions within the configured limit and clears recovery entries', () => {
+    const store = useSavedSessionsStore()
+    const baseSession = store.sessions.find((session) => session.id === 'sample-text')
+
+    if (!baseSession) {
+      throw new Error('Expected sample-text session.')
+    }
+
+    store.autoSaveSession({ ...baseSession, id: 'auto-1', name: 'Auto 1' }, 2)
+    store.autoSaveSession({ ...baseSession, id: 'auto-2', name: 'Auto 2' }, 2)
+    store.autoSaveSession({ ...baseSession, id: 'auto-3', name: 'Auto 3' }, 2)
+
+    expect(store.autoSavedSessions.map((session) => session.id)).toEqual(['auto-3', 'auto-2'])
+    expect(store.recoveryCandidates.map((session) => session.id)).toEqual(['auto-3', 'auto-2'])
+
+    store.clearAutoSavedSessions()
+
+    expect(store.autoSavedSessions).toEqual([])
+    expect(store.recoveryCandidates).toEqual([])
   })
 })

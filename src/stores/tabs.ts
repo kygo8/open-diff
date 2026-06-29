@@ -57,6 +57,18 @@ export const useTabsStore = defineStore('tabs', () => {
     }
   }
 
+  function setTabDirty(id: string, dirty: boolean): boolean {
+    const tab = tabs.value.find((item) => item.id === id)
+
+    if (!tab) {
+      return false
+    }
+
+    tab.dirty = dirty
+
+    return true
+  }
+
   function workspaceSnapshot(): WorkspaceTabsSnapshot {
     return {
       tabs: tabs.value.map((tab) => ({ ...tab })),
@@ -83,6 +95,7 @@ export const useTabsStore = defineStore('tabs', () => {
     activeTab,
     openTab,
     closeTab,
+    setTabDirty,
     workspaceSnapshot,
     restoreWorkspaceTabs,
   }

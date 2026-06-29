@@ -1,7 +1,9 @@
 import { mount, type VueWrapper } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TableCompareView from './TableCompareView.vue'
-import { compareTableCsv } from '@/api/diff'
+import { compareTableCsv, readTextFile } from '@/api/diff'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import type { TableCompareRequest } from '@/types/diff'
 
 vi.mock('@/api/diff', () => ({
@@ -41,6 +43,15 @@ vi.mock('@/api/diff', () => ({
       changedCellCount: 1,
     },
   }),
+  readTextFile: vi.fn().mockImplementation((path: string) =>
+    Promise.resolve({
+      path,
+      text: path.includes('left') ? 'SKU,Quantity\nA-1,12' : 'sku,Quantity\nA-1,14',
+      encoding: 'UTF-8',
+      lineEnding: 'LF',
+      fileStamp: { size: 20, modifiedAtMs: 1 },
+    }),
+  ),
 }))
 
 function mountTableCompareView(): VueWrapper {
@@ -59,7 +70,9 @@ function mountTableCompareView(): VueWrapper {
 
 describe('TableCompareView', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.mocked(compareTableCsv).mockClear()
+    vi.mocked(readTextFile).mockClear()
   })
 
   it('runs a CSV comparison and renders returned table cells', async () => {
@@ -81,6 +94,32 @@ describe('TableCompareView', () => {
     )
     expect(wrapper.find('[data-testid="table-grid-cell-quantity"]').text()).toContain('12')
     expect(wrapper.find('[data-testid="active-table-cell"]').text()).toContain('12 -> 14')
+  })
+
+  it('reads dropped CSV launch paths and runs the table comparison', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'launch-table',
+      source: 'drop',
+      sessionType: 'table-compare',
+      title: 'left.csv vs right.csv',
+      route: '/compare/table',
+      autoRun: true,
+      locations: {
+        left: { uri: 'C:/drop/left.csv', kind: 'file', readOnly: false },
+        right: { uri: 'C:/drop/right.csv', kind: 'file', readOnly: false },
+      },
+    })
+
+    mountTableCompareView()
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(readTextFile).toHaveBeenCalledWith('C:/drop/left.csv')
+    expect(readTextFile).toHaveBeenCalledWith('C:/drop/right.csv')
+    expect(compareTableCsv).toHaveBeenCalledWith({
+      left: 'SKU,Quantity\nA-1,12',
+      right: 'sku,Quantity\nA-1,14',
+    })
   })
 
   it('allows manual column mapping and renders the applied mapping list', async () => {

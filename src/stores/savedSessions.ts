@@ -1,12 +1,20 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { sampleSavedSessions } from '@/app/savedSessions'
+import {
+  loadAutoSavedSessions,
+  loadNamedSessions,
+  saveAutoSavedSessions,
+  saveNamedSessions,
+} from '@/app/sessionPersistence'
 import type { SessionDocument, SessionRules } from '@/types/session'
 
 export const useSavedSessionsStore = defineStore('savedSessions', () => {
-  const sessions = ref<SessionDocument[]>(cloneSessions(sampleSavedSessions))
+  const sessions = ref<SessionDocument[]>(loadNamedSessions())
   const pendingSavePrompt = ref<SessionDocument>()
-  const recoveryCandidates = ref<SessionDocument[]>([])
+  const autoSavedSessions = ref<SessionDocument[]>(loadAutoSavedSessions())
+  const recoveryCandidates = ref<SessionDocument[]>(
+    autoSavedSessions.value.filter((session) => session.metadata.autoSaved),
+  )
 
   function renameSession(id: string, name: string): boolean {
     const session = findSession(id)
@@ -16,6 +24,8 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     }
 
     session.name = name
+    touchSession(session)
+    persistSessions()
 
     return true
   }
@@ -33,6 +43,7 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     copy.name = `${session.name} Copy`
     copy.metadata = { ...copy.metadata, dirty: false, locked: false }
     sessions.value.push(copy)
+    persistSessions()
 
     return copy
   }
@@ -49,6 +60,7 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
       dirty: false,
     }
     copy.locations = markLocationsWritable(copy.locations)
+    persistSessions()
 
     return copy
   }
@@ -61,6 +73,8 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     }
 
     session.metadata.folder = folder
+    touchSession(session)
+    persistSessions()
 
     return true
   }
@@ -73,6 +87,7 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     }
 
     sessions.value = sessions.value.filter((session) => session.id !== id)
+    persistSessions()
 
     return true
   }
@@ -101,6 +116,8 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     }
 
     sessions.value[index] = cloneSession(nextSession)
+    touchSession(sessions.value[index])
+    persistSessions()
 
     return true
   }
@@ -113,6 +130,8 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     }
 
     session.metadata.locked = locked
+    touchSession(session)
+    persistSessions()
 
     return true
   }
@@ -131,6 +150,8 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
       comparison: rules.comparison ?? session.rules.comparison,
     }
     session.metadata.dirty = true
+    touchSession(session)
+    persistSessions()
 
     return true
   }
@@ -143,10 +164,13 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     }
 
     session.metadata.dirty = false
+    touchSession(session)
 
     if (pendingSavePrompt.value?.id === id) {
       pendingSavePrompt.value = undefined
     }
+
+    persistSessions()
 
     return true
   }
@@ -163,6 +187,7 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
 
     sessions.value = [...sessions.value, ...cloneSessions(restored)]
     recoveryCandidates.value = []
+    persistSessions()
   }
 
   function loadSharedSession(session: SessionDocument): void {
@@ -177,6 +202,83 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     shared.locations = markLocationsReadOnly(shared.locations)
 
     sessions.value.push(shared)
+    persistSessions()
+  }
+
+  function saveSession(session: SessionDocument): SessionDocument {
+    const snapshot = cloneSession(session)
+    const existingIndex = sessions.value.findIndex((item) => item.id === snapshot.id)
+
+    snapshot.metadata = {
+      ...snapshot.metadata,
+      dirty: false,
+      updatedAt: new Date().toISOString(),
+      createdAt: snapshot.metadata.createdAt ?? new Date().toISOString(),
+    }
+
+    if (existingIndex >= 0) {
+      if (sessions.value[existingIndex]?.metadata.locked) {
+        throw new Error(`Session ${snapshot.id} is locked.`)
+      }
+
+      sessions.value[existingIndex] = snapshot
+    } else {
+      sessions.value.push(snapshot)
+    }
+
+    persistSessions()
+
+    return cloneSession(snapshot)
+  }
+
+  function saveSessionAs(id: string, name: string): SessionDocument {
+    const session = findSession(id)
+
+    if (!session) {
+      throw new Error(`Session ${id} was not found.`)
+    }
+
+    const now = new Date().toISOString()
+    const copy = cloneSession(session)
+
+    copy.id = crypto.randomUUID()
+    copy.name = name
+    copy.metadata = {
+      ...copy.metadata,
+      locked: false,
+      shared: false,
+      dirty: false,
+      createdAt: now,
+      updatedAt: now,
+    }
+    copy.locations = markLocationsWritable(copy.locations)
+    sessions.value.push(copy)
+    persistSessions()
+
+    return cloneSession(copy)
+  }
+
+  function autoSaveSession(session: SessionDocument, limit: number): void {
+    const snapshot = cloneSession(session)
+
+    snapshot.metadata = {
+      ...snapshot.metadata,
+      autoSaved: true,
+      dirty: false,
+      updatedAt: new Date().toISOString(),
+    }
+    autoSavedSessions.value = [
+      snapshot,
+      ...autoSavedSessions.value.filter((item) => item.id !== snapshot.id),
+    ].slice(0, Math.max(0, limit))
+    saveAutoSavedSessions(autoSavedSessions.value)
+    detectRecoverySessions(autoSavedSessions.value)
+  }
+
+  function clearAutoSavedSessions(): void {
+    autoSavedSessions.value = []
+    recoveryCandidates.value = []
+    saveAutoSavedSessions([])
   }
 
   function snapshot(): SessionDocument[] {
@@ -193,6 +295,10 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
 
   function nextEditableCopyIndex(): number {
     return sessions.value.filter((session) => session.id.includes('-editable-')).length + 1
+  }
+
+  function persistSessions(): void {
+    saveNamedSessions(sessions.value)
   }
 
   return {
@@ -212,6 +318,11 @@ export const useSavedSessionsStore = defineStore('savedSessions', () => {
     detectRecoverySessions,
     restoreRecoverySessions,
     loadSharedSession,
+    saveSession,
+    saveSessionAs,
+    autoSavedSessions,
+    autoSaveSession,
+    clearAutoSavedSessions,
     snapshot,
   }
 })
@@ -260,4 +371,8 @@ function markLocationsWritable(
     center: locations.center ? { ...locations.center, readOnly: false } : undefined,
     output: locations.output ? { ...locations.output, readOnly: false } : undefined,
   }
+}
+
+function touchSession(session: SessionDocument): void {
+  session.metadata.updatedAt = new Date().toISOString()
 }

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
-import { diffText } from '@/api/diff'
+import { computed, onMounted, ref, watchEffect } from 'vue'
+import { diffText, readTextFile } from '@/api/diff'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import type { TextDiffAlgorithm, TextDiffResponse } from '@/types/diff'
 import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
@@ -30,8 +31,8 @@ const builtInSyntaxGrammar = {
 
 const left = ref('line one\nline two\nline four')
 const right = ref('line one\nline 2\nline three\nline four')
-const leftPathLabel = 'C:/Projects/app/main.ts'
-const rightPathLabel = 'C:/Projects/app/main.remote.ts'
+const leftPathLabel = ref('C:/Projects/app/main.ts')
+const rightPathLabel = ref('C:/Projects/app/main.remote.ts')
 const initialDiffResult: TextDiffResponse = {
   lines: [
     {
@@ -76,6 +77,7 @@ const initialDiffResult: TextDiffResponse = {
   stats: { added: 1, deleted: 0, modified: 1, equal: 2 },
 }
 const statusBar = useStatusBarStore()
+const sessionLaunch = useSessionLaunchStore()
 const algorithm = ref<TextDiffAlgorithm>('myers')
 const result = ref<TextDiffResponse | null>(initialDiffResult)
 const loading = ref(false)
@@ -205,6 +207,23 @@ watchEffect(() => {
   })
 })
 
+onMounted(() => {
+  const launch = sessionLaunch.consumeLaunch('/compare/text')
+
+  if (!launch) {
+    return
+  }
+
+  leftPathLabel.value =
+    launch.locations.left?.displayName ?? launch.locations.left?.uri ?? leftPathLabel.value
+  rightPathLabel.value =
+    launch.locations.right?.displayName ?? launch.locations.right?.uri ?? rightPathLabel.value
+
+  if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
+    void loadLaunchTextFiles(launch.locations.left.uri, launch.locations.right.uri)
+  }
+})
+
 function detectLineEnding(value: string): string {
   if (value.includes('\r\n')) {
     return 'CRLF'
@@ -225,6 +244,36 @@ async function runDiff(): Promise<void> {
   loading.value = true
   error.value = ''
   try {
+    result.value = await diffText({
+      left: left.value,
+      right: right.value,
+      algorithm: algorithm.value,
+    })
+    ignoredDiffKeys.value = new Set()
+    bookmarks.value = {}
+    currentDiffIndex.value = 0
+    dirty.value = false
+  } catch (event) {
+    error.value = String(event)
+  } finally {
+    loading.value = false
+  }
+}
+
+async function loadLaunchTextFiles(leftPath: string, rightPath: string): Promise<void> {
+  loading.value = true
+  error.value = ''
+
+  try {
+    const [leftFile, rightFile] = await Promise.all([
+      readTextFile(leftPath),
+      readTextFile(rightPath),
+    ])
+
+    left.value = leftFile.text
+    right.value = rightFile.text
+    leftPathLabel.value = leftFile.path
+    rightPathLabel.value = rightFile.path
     result.value = await diffText({
       left: left.value,
       right: right.value,
@@ -753,7 +802,7 @@ function toggleSourceEditors(): void {
         <section class="text-source-pane">
           <header class="split-pane-header active">
             <strong>{{ $t('ui.left') }}</strong>
-            <span>{{ leftPathLabel }}</span>
+            <span data-testid="left-path-label">{{ leftPathLabel }}</span>
           </header>
           <NInput
             :value="left"
@@ -765,7 +814,7 @@ function toggleSourceEditors(): void {
         <section class="text-source-pane">
           <header class="split-pane-header">
             <strong>{{ $t('ui.right') }}</strong>
-            <span>{{ rightPathLabel }}</span>
+            <span data-testid="right-path-label">{{ rightPathLabel }}</span>
           </header>
           <NInput
             :value="right"

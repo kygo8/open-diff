@@ -1,7 +1,9 @@
 import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import PictureCompareView from './PictureCompareView.vue'
 import { comparePictureFiles } from '@/api/diff'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 vi.mock('@/api/diff', () => ({
   comparePictureFiles: vi.fn().mockResolvedValue({
@@ -49,6 +51,7 @@ vi.mock('@/api/diff', () => ({
 
 describe('PictureCompareView', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.mocked(comparePictureFiles).mockClear()
   })
 
@@ -69,6 +72,29 @@ describe('PictureCompareView', () => {
     expect(wrapper.find('[data-testid="picture-different-pixels"]').text()).toContain('1')
     expect(wrapper.find('[data-testid="picture-difference-ratio"]').text()).toContain('50.00%')
     expect(wrapper.find('[data-testid="picture-bounding-rect"]').text()).toContain('1, 0, 1 x 1')
+  })
+
+  it('runs automatically from dropped picture launch paths', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'launch-picture',
+      source: 'drop',
+      sessionType: 'picture-compare',
+      title: 'left.png vs right.png',
+      route: '/compare/picture',
+      autoRun: true,
+      locations: {
+        left: { uri: 'C:/drop/left.png', kind: 'file', readOnly: false },
+        right: { uri: 'C:/drop/right.png', kind: 'file', readOnly: false },
+      },
+    })
+
+    mount(PictureCompareView)
+    await Promise.resolve()
+
+    expect(comparePictureFiles).toHaveBeenCalledWith({
+      leftPath: 'C:/drop/left.png',
+      rightPath: 'C:/drop/right.png',
+    })
   })
 
   it('renders left and right image panes with synced pan controls', async () => {

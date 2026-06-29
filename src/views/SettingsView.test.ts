@@ -3,6 +3,9 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import SettingsView from './SettingsView.vue'
 import { useSettingsStore } from '@/stores/settings'
+import { useSavedSessionsStore } from '@/stores/savedSessions'
+import { serializeSessionPackage } from '@/app/sessionFile'
+import { sampleSavedSessions } from '@/app/savedSessions'
 
 const push = vi.fn()
 
@@ -40,6 +43,24 @@ describe('SettingsView', () => {
     await wrapper.find('[data-testid="add-shared-session-path"]').trigger('click')
 
     expect(wrapper.text()).toContain('C:/team/shared.json')
+  })
+
+  it('imports shared session JSON as read-only saved sessions', async () => {
+    const wrapper = mountSettingsView()
+    const savedSessions = useSavedSessionsStore()
+    const sample = sampleSavedSessions[0]
+
+    await wrapper
+      .find('[data-testid="shared-session-json-input"]')
+      .setValue(serializeSessionPackage([sample]))
+    await wrapper.find('[data-testid="load-shared-session-json"]').trigger('click')
+
+    const imported = savedSessions.sessions.find(
+      (session) => session.name === sample.name && session.metadata.shared,
+    )
+
+    expect(imported?.metadata.locked).toBe(true)
+    expect(imported?.locations.left?.readOnly).toBe(true)
   })
 
   it('changes the locale from settings', async () => {

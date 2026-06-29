@@ -1,6 +1,6 @@
 export type DropSourceKind = 'file' | 'directory' | 'unknown'
 
-export type DropClassificationKind = 'files' | 'folders' | 'mixed' | 'invalid'
+export type DropClassificationKind = 'files' | 'folders' | 'mixed' | 'patch' | 'invalid'
 
 export interface DropInput {
   path: string
@@ -26,6 +26,14 @@ export interface InvalidDropClassification {
 export type DropClassification = ValidDropClassification | InvalidDropClassification
 
 export function classifyDropInputs(inputs: DropInput[]): DropClassification {
+  if (inputs.length === 1) {
+    const [only] = inputs.map(toClassifiedDropItem)
+
+    if (only && isPatchPath(only.path)) {
+      return { kind: 'patch', left: only, right: only }
+    }
+  }
+
   if (inputs.length !== 2) {
     return { kind: 'invalid', reason: 'Drop exactly two files or folders.' }
   }
@@ -64,4 +72,10 @@ function toClassifiedDropItem(input: DropInput): ClassifiedDropItem | undefined 
     displayName: pathDisplayName(input.path),
     sourceKind: input.kind,
   }
+}
+
+function isPatchPath(path: string): boolean {
+  const lower = path.toLowerCase()
+
+  return lower.endsWith('.diff') || lower.endsWith('.patch')
 }

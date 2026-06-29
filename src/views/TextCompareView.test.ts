@@ -1,9 +1,10 @@
-import { mount, type VueWrapper } from '@vue/test-utils'
+import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextCompareView from './TextCompareView.vue'
-import { diffText } from '@/api/diff'
+import { diffText, readTextFile } from '@/api/diff'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useStatusBarStore } from '@/stores/statusBar'
 import type { TextDiffRequest } from '@/types/diff'
 
@@ -12,6 +13,15 @@ vi.mock('@/api/diff', () => ({
     lines: [],
     stats: { added: 0, deleted: 0, modified: 0, equal: 0 },
   }),
+  readTextFile: vi.fn().mockImplementation((path: string) =>
+    Promise.resolve({
+      path,
+      text: path.includes('left') ? 'left from file' : 'right from file',
+      encoding: 'UTF-8',
+      lineEnding: 'LF',
+      fileStamp: { size: 12, modifiedAtMs: 1 },
+    }),
+  ),
 }))
 
 const NInputStub = defineComponent({
@@ -65,6 +75,7 @@ describe('TextCompareView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.mocked(diffText).mockClear()
+    vi.mocked(readTextFile).mockClear()
   })
 
   it('passes the selected algorithm when running a diff', async () => {
@@ -458,5 +469,35 @@ describe('TextCompareView', () => {
     expect(
       wrapper.find('[data-testid="text-diff-panel-stub"]').attributes('data-grammar-items'),
     ).toBe('2')
+  })
+
+  it('loads dropped text file paths from a launch payload and runs the diff', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'launch-text',
+      source: 'drop',
+      sessionType: 'text-compare',
+      title: 'left.txt vs right.txt',
+      route: '/compare/text',
+      autoRun: true,
+      locations: {
+        left: { uri: 'C:/work/left.txt', kind: 'file', readOnly: false },
+        right: { uri: 'C:/work/right.txt', kind: 'file', readOnly: false },
+      },
+    })
+
+    const wrapper = mountTextCompareView()
+
+    await flushPromises()
+
+    expect(readTextFile).toHaveBeenCalledWith('C:/work/left.txt')
+    expect(readTextFile).toHaveBeenCalledWith('C:/work/right.txt')
+    expect(diffText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        left: 'left from file',
+        right: 'right from file',
+      }),
+    )
+    expect(wrapper.find('[data-testid="left-path-label"]').text()).toContain('left.txt')
+    expect(wrapper.find('[data-testid="right-path-label"]').text()).toContain('right.txt')
   })
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { compareMediaFiles } from '@/api/diff'
 import type {
   MediaCompareResponse,
@@ -9,6 +9,7 @@ import type {
 } from '@/types/diff'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 const mediaStatuses: MediaFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
 const defaultLeftMedia: MediaSideSummary = {
@@ -65,12 +66,28 @@ const defaultMediaFields: MediaFieldRow[] = [
 ]
 const leftPath = ref('C:/music/left-track.flac')
 const rightPath = ref('C:/music/right-track.flac')
+const sessionLaunch = useSessionLaunchStore()
 const leftMedia = ref<MediaSideSummary>(defaultLeftMedia)
 const rightMedia = ref<MediaSideSummary>(defaultRightMedia)
 const mediaFields = ref<MediaFieldRow[]>(defaultMediaFields)
 const mediaSummaryOverride = ref<Record<MediaFieldStatus, number> | null>(null)
 const loading = ref(false)
 const error = ref('')
+
+onMounted(() => {
+  const launch = sessionLaunch.consumeLaunch('/compare/media')
+
+  if (!launch) {
+    return
+  }
+
+  leftPath.value = launch.locations.left?.uri ?? leftPath.value
+  rightPath.value = launch.locations.right?.uri ?? rightPath.value
+
+  if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
+    void runMediaCompare()
+  }
+})
 
 const mediaSummary = computed<Record<MediaFieldStatus, number>>(() => {
   if (mediaSummaryOverride.value) {

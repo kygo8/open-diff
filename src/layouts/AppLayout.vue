@@ -31,13 +31,14 @@ import {
   type LucideIcon,
 } from '@lucide/vue'
 import { commandRegistry, filterCommands } from '@/app/commandRegistry'
-import { createCommandExecutor } from '@/app/commandSystem'
+import { createCommandExecutor, getCommandsForPlacement } from '@/app/commandSystem'
 import { sessionCatalog } from '@/app/sessionCatalog'
 import { useI18n } from '@/i18n'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { useTabsStore } from '@/stores/tabs'
 import type { CommandId } from '@/app/commandRegistry'
+import type { ViewActionName } from '@/app/commandSystem'
 import type { SessionCatalogEntry } from '@/app/sessionCatalog'
 import type { SessionType } from '@/types/session'
 
@@ -60,7 +61,12 @@ const tabs = useTabsStore()
 const commandPaletteOpen = ref(false)
 const commandQuery = ref('')
 const languageMenuOpen = ref(false)
+const activeMenu = ref<string>()
+const lastViewAction = ref<ViewActionName>()
+const pendingCloseTab = ref<{ id: string; title: string }>()
 const visibleCommands = computed(() => filterCommands(commandRegistry, commandQuery.value))
+const toolbarCommands = computed(() => getCommandsForPlacement(commandRegistry, 'toolbar'))
+const menuCommands = computed(() => getCommandsForPlacement(commandRegistry, 'menu'))
 const availableLocales = i18n.availableLocales
 const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
   navigate: (nextRoute) => {
@@ -71,6 +77,12 @@ const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
   },
   t,
   toggleTheme: settings.toggleTheme,
+  dispatchViewAction: (name) => {
+    lastViewAction.value = name
+    if (name === 'save' && tabs.activeTab.id !== 'home') {
+      tabs.setTabDirty(tabs.activeTab.id, true)
+    }
+  },
 })
 
 const navigationItems = computed<NavigationItem[]>(() =>
@@ -105,6 +117,7 @@ function executeCommand(commandId: CommandId): void {
   executeRegisteredCommand(commandId)
   closeCommandPalette()
   languageMenuOpen.value = false
+  activeMenu.value = undefined
 }
 
 function commandIcon(commandId: CommandId): LucideIcon {
@@ -133,6 +146,29 @@ function commandIcon(commandId: CommandId): LucideIcon {
 
 function openNavigationItem(item: NavigationItem): void {
   navigate(item.route, item.title)
+}
+
+function openMenu(menu: string): void {
+  activeMenu.value = activeMenu.value === menu ? undefined : menu
+}
+
+function requestCloseTab(tab: { id: string; title: string; dirty: boolean }): void {
+  if (tab.dirty) {
+    pendingCloseTab.value = { id: tab.id, title: tab.title }
+
+    return
+  }
+
+  tabs.closeTab(tab.id)
+}
+
+function confirmCloseDirtyTab(): void {
+  if (!pendingCloseTab.value) {
+    return
+  }
+
+  tabs.closeTab(pendingCloseTab.value.id)
+  pendingCloseTab.value = undefined
 }
 
 function toggleLanguageMenu(): void {
@@ -209,13 +245,55 @@ const sourceSessionTypes = new Set<SessionType>([
         class="menus"
         :aria-label="t('ui.applicationMenus')"
       >
-        <button type="button">{{ t('ui.file') }}</button>
-        <button type="button">{{ t('ui.edit') }}</button>
-        <button type="button">{{ t('ui.search') }}</button>
-        <button type="button">{{ t('ui.view') }}</button>
-        <button type="button">{{ t('ui.session') }}</button>
-        <button type="button">{{ t('ui.actions') }}</button>
-        <button type="button">{{ t('ui.tools') }}</button>
+        <button
+          type="button"
+          data-testid="menu-file"
+          @click="openMenu('file')"
+        >
+          {{ t('ui.file') }}
+        </button>
+        <button
+          type="button"
+          data-testid="menu-edit"
+          @click="openMenu('edit')"
+        >
+          {{ t('ui.edit') }}
+        </button>
+        <button
+          type="button"
+          data-testid="menu-search"
+          @click="openMenu('search')"
+        >
+          {{ t('ui.search') }}
+        </button>
+        <button
+          type="button"
+          data-testid="menu-view"
+          @click="openMenu('view')"
+        >
+          {{ t('ui.view') }}
+        </button>
+        <button
+          type="button"
+          data-testid="menu-session"
+          @click="openMenu('session')"
+        >
+          {{ t('ui.session') }}
+        </button>
+        <button
+          type="button"
+          data-testid="menu-actions"
+          @click="openMenu('actions')"
+        >
+          {{ t('ui.actions') }}
+        </button>
+        <button
+          type="button"
+          data-testid="menu-tools"
+          @click="openMenu('tools')"
+        >
+          {{ t('ui.tools') }}
+        </button>
       </nav>
       <div class="top-actions">
         <button
@@ -291,6 +369,23 @@ const sourceSessionTypes = new Set<SessionType>([
         </button>
       </div>
     </header>
+
+    <section
+      v-if="activeMenu"
+      class="menu-panel"
+      data-testid="menu-panel"
+    >
+      <button
+        v-for="command in menuCommands"
+        :key="command.id"
+        type="button"
+        :disabled="!command.enabled"
+        :data-testid="`menu-command-${command.id}`"
+        @click="executeCommand(command.id)"
+      >
+        {{ t(command.titleKey) }}
+      </button>
+    </section>
 
     <main class="desktop">
       <aside class="sidebar">
@@ -382,6 +477,74 @@ const sourceSessionTypes = new Set<SessionType>([
       </aside>
 
       <section class="workspace">
+        <section
+          class="tab-strip"
+          data-testid="tab-strip"
+        >
+          <div
+            v-for="tab in tabs.tabs"
+            :key="tab.id"
+            class="tab-chip"
+            :class="{ active: tabs.activeTabId === tab.id, dirty: tab.dirty }"
+          >
+            <button
+              type="button"
+              @click="navigate(tab.route, tab.title)"
+            >
+              {{ tab.title }}
+            </button>
+            <button
+              v-if="tab.id !== 'home'"
+              type="button"
+              :data-testid="`close-tab-${tab.id}`"
+              @click.stop="requestCloseTab(tab)"
+            >
+              ×
+            </button>
+          </div>
+        </section>
+        <section
+          v-if="pendingCloseTab"
+          class="dirty-tab-prompt"
+          data-testid="close-dirty-tab-prompt"
+        >
+          <span>{{ pendingCloseTab.title }}</span>
+          <button
+            type="button"
+            data-testid="confirm-close-dirty-tab"
+            @click="confirmCloseDirtyTab"
+          >
+            {{ t('ui.close') }}
+          </button>
+        </section>
+        <section
+          class="global-toolbar"
+          data-testid="global-toolbar"
+        >
+          <button
+            v-for="command in toolbarCommands"
+            :key="command.id"
+            type="button"
+            :disabled="!command.enabled"
+            :data-testid="`toolbar-command-${command.id}`"
+            @click="executeCommand(command.id)"
+          >
+            {{ t(command.titleKey) }}
+          </button>
+          <button
+            type="button"
+            data-testid="view-show-differences"
+            @click="executeCommand('view.showDifferences')"
+          >
+            {{ t('ui.differencesOnly') }}
+          </button>
+          <span
+            v-if="lastViewAction"
+            data-testid="last-view-action"
+          >
+            {{ lastViewAction }}
+          </span>
+        </section>
         <section class="content">
           <RouterView />
         </section>
@@ -456,6 +619,43 @@ const sourceSessionTypes = new Set<SessionType>([
   padding: 0 10px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-low);
+}
+
+.menu-panel {
+  position: fixed;
+  top: 32px;
+  left: 126px;
+  z-index: 60;
+  display: grid;
+  width: 210px;
+  max-height: calc(100vh - 72px);
+  padding: 6px;
+  overflow: auto;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-canvas);
+  box-shadow: 0 8px 22px rgb(25 28 30 / 0.18);
+}
+
+.menu-panel button {
+  min-height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--app-text);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-panel button:hover {
+  background: var(--app-primary-soft);
+}
+
+.menu-panel button:disabled {
+  color: var(--app-text-muted);
+  cursor: not-allowed;
 }
 
 .brand {
@@ -681,6 +881,113 @@ const sourceSessionTypes = new Set<SessionType>([
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+}
+
+.workspace {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+}
+
+.tab-strip {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  min-height: 30px;
+  padding: 4px 8px 0;
+  overflow: auto hidden;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface-low);
+}
+
+.tab-chip {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid var(--app-border);
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: var(--app-canvas);
+}
+
+.tab-chip.active {
+  border-color: var(--app-primary);
+}
+
+.tab-chip.dirty {
+  font-weight: 700;
+}
+
+.tab-chip button {
+  min-width: 0;
+  height: 25px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--app-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tab-chip button:first-child {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dirty-tab-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-primary-soft);
+  color: var(--app-text);
+  font-size: 12px;
+}
+
+.dirty-tab-prompt button {
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-canvas);
+  color: var(--app-text);
+  cursor: pointer;
+}
+
+.global-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface-low);
+}
+
+.global-toolbar button {
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-canvas);
+  color: var(--app-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.global-toolbar button:hover {
+  color: var(--app-text);
+}
+
+.global-toolbar span {
+  margin-left: auto;
+  color: var(--app-text-muted);
+  font-size: 12px;
 }
 
 .content {

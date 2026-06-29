@@ -62,6 +62,55 @@ describe('AppLayout command palette', () => {
     expect(push).toHaveBeenCalledWith('/settings')
   })
 
+  it('executes menu and toolbar commands through the shared command system', async () => {
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-file"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="menu-panel"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="menu-command-open.textPatch"]').trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/patch/text')
+
+    await wrapper.find('[data-testid="toolbar-command-session.save"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="last-view-action"]').text()).toContain('save')
+
+    await wrapper.find('[data-testid="toolbar-command-edit.copyRight"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="last-view-action"]').text()).toContain('copy-right')
+
+    await wrapper.find('[data-testid="view-show-differences"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="last-view-action"]').text()).toContain('show-differences')
+  })
+
+  it('prompts before closing a dirty tab and closes after confirmation', async () => {
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="open-command-palette"]').trigger('click')
+    await wrapper.find('[data-testid="command-search"]').setValue('text')
+    await wrapper.find('[data-command-id="open.textCompare"]').trigger('click')
+
+    const closeButton = wrapper
+      .findAll('button')
+      .find((button) => button.attributes('data-testid')?.startsWith('close-tab-'))
+
+    if (!closeButton) {
+      throw new Error('Expected close tab button.')
+    }
+
+    await wrapper.find('[data-testid="toolbar-command-session.save"]').trigger('click')
+    await closeButton.trigger('click')
+
+    expect(wrapper.find('[data-testid="close-dirty-tab-prompt"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="confirm-close-dirty-tab"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="close-dirty-tab-prompt"]').exists()).toBe(false)
+  })
+
   it('executes theme toggle command', async () => {
     const wrapper = mountAppLayout()
     const settings = useSettingsStore()

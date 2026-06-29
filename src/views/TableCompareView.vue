@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { compareTableCsv } from '@/api/diff'
+import { computed, onMounted, ref } from 'vue'
+import { compareTableCsv, readTextFile } from '@/api/diff'
 import type {
   TableCompareChangedCell,
   TableCompareColumnMapping,
@@ -9,6 +9,7 @@ import type {
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 interface TableColumnModel {
   name: string
@@ -66,6 +67,7 @@ const defaultVirtualGridColumns: VirtualGridColumn[] = [
 const visibleRows = 8
 const leftCsv = ref(defaultLeftCsv)
 const rightCsv = ref(defaultRightCsv)
+const sessionLaunch = useSessionLaunchStore()
 const leftColumns = ref<TableColumnModel[]>(defaultLeftColumns)
 const rightColumns = ref<TableColumnModel[]>(defaultRightColumns)
 const virtualGridColumns = ref<VirtualGridColumn[]>(defaultVirtualGridColumns)
@@ -84,6 +86,18 @@ const tableDifferenceCells = ref<TableCellLocation[]>([
   { key: 'row-2-quantity', text: 'R2C3' },
   { key: 'row-5-price', text: 'R5C4' },
 ])
+
+onMounted(() => {
+  const launch = sessionLaunch.consumeLaunch('/compare/table')
+
+  if (!launch) {
+    return
+  }
+
+  if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
+    void loadLaunchTables(launch.locations.left.uri, launch.locations.right.uri)
+  }
+})
 
 const visibleGridColumns = computed<VirtualGridColumn[]>(() =>
   virtualGridColumns.value.filter((column) => !ignoredColumnKeys.value.includes(column.key)),
@@ -320,6 +334,25 @@ async function runTableCompare(): Promise<void> {
   } catch (event) {
     error.value = String(event)
   } finally {
+    loading.value = false
+  }
+}
+
+async function loadLaunchTables(leftPath: string, rightPath: string): Promise<void> {
+  loading.value = true
+  error.value = ''
+
+  try {
+    const [leftFile, rightFile] = await Promise.all([
+      readTextFile(leftPath),
+      readTextFile(rightPath),
+    ])
+
+    leftCsv.value = leftFile.text
+    rightCsv.value = rightFile.text
+    await runTableCompare()
+  } catch (event) {
+    error.value = String(event)
     loading.value = false
   }
 }

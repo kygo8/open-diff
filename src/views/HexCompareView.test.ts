@@ -1,7 +1,9 @@
 import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import HexCompareView from './HexCompareView.vue'
 import { compareHexFiles } from '@/api/diff'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 vi.mock('@/api/diff', () => ({
   compareHexFiles: vi.fn().mockResolvedValue({
@@ -36,6 +38,7 @@ vi.mock('@/api/diff', () => ({
 
 describe('HexCompareView', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.mocked(compareHexFiles).mockClear()
   })
 
@@ -57,6 +60,31 @@ describe('HexCompareView', () => {
     expect(wrapper.text()).toContain('C:/bin/right.bin')
     expect(wrapper.find('[data-testid="left-hex-byte-diff-00000001"]').text()).toBe('42')
     expect(wrapper.find('[data-testid="right-hex-byte-diff-00000001"]').text()).toBe('58')
+  })
+
+  it('runs automatically from dropped hex file launch paths', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'launch-hex',
+      source: 'drop',
+      sessionType: 'hex-compare',
+      title: 'left.bin vs right.bin',
+      route: '/compare/hex',
+      autoRun: true,
+      locations: {
+        left: { uri: 'C:/drop/left.bin', kind: 'file', readOnly: false },
+        right: { uri: 'C:/drop/right.bin', kind: 'file', readOnly: false },
+      },
+    })
+
+    mount(HexCompareView)
+    await Promise.resolve()
+
+    expect(compareHexFiles).toHaveBeenCalledWith(
+      expect.objectContaining({
+        leftPath: 'C:/drop/left.bin',
+        rightPath: 'C:/drop/right.bin',
+      }),
+    )
   })
 
   it('renders offset, hex and ascii panes with stable rows', () => {

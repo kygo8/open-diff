@@ -7,17 +7,22 @@ import { classifyDropInputs } from '@/app/dropInput'
 import { filterSavedSessions } from '@/app/savedSessions'
 import { selectSessionForDrop } from '@/app/sessionAutoSelect'
 import { sessionCatalog } from '@/app/sessionCatalog'
+import { createSessionFromLaunch, createUntitledSession } from '@/app/sessionFactory'
+import WorkspaceManager from '@/components/session/WorkspaceManager.vue'
 import DenseDataTable from '@/components/workbench/DenseDataTable.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import { useI18n } from '@/i18n'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
-import type { DropClassification, DropInput } from '@/app/dropInput'
+import { useWorkspacesStore } from '@/stores/workspaces'
+import type { ClassifiedDropItem, DropClassification, DropInput } from '@/app/dropInput'
 import type { SessionSelection } from '@/app/sessionAutoSelect'
 import type { SessionCatalogEntry } from '@/app/sessionCatalog'
 import type { SessionDocument, SessionType } from '@/types/session'
+import type { SessionLaunchLocation, SessionLaunchPayload } from '@/types/sessionLaunch'
 
 type QuickStartType = 'text-compare' | 'folder-compare' | 'text-merge' | 'folder-sync'
 
@@ -43,6 +48,8 @@ const router = useRouter()
 const { t } = useI18n()
 const tabs = useTabsStore()
 const savedSessions = useSavedSessionsStore()
+const sessionLaunch = useSessionLaunchStore()
+const workspaces = useWorkspacesStore()
 const dropResult = ref<DropClassification>({
   kind: 'invalid',
   reason: t('ui.dropExactlyTwoFilesOrFolders'),
@@ -51,6 +58,8 @@ const selectedDropSession = ref<SessionSelection>()
 const isDragging = ref(false)
 const sessionSearch = ref('')
 const clipboardStatus = ref(t('ui.clipboardTextSourceNotLoaded'))
+const saveDialogOpen = ref(false)
+const sessionNameDraft = ref('')
 const filteredSavedSessions = computed(() =>
   filterSavedSessions(savedSessions.sessions, {
     query: sessionSearch.value,
@@ -84,6 +93,15 @@ function openSession(entry: SessionCatalogEntry): void {
     return
   }
 
+  sessionLaunch.setPendingLaunch({
+    id: crypto.randomUUID(),
+    source: 'home',
+    sessionType: entry.type,
+    title: `Untitled ${entry.title}`,
+    route: entry.route,
+    locations: {},
+    autoRun: false,
+  })
   tabs.openTab({ title: entry.title, route: entry.route, dirty: false })
   void router.push(entry.route)
 }
@@ -95,6 +113,21 @@ function openSavedSession(session: SessionDocument): void {
     return
   }
 
+  sessionLaunch.setPendingLaunch({
+    id: crypto.randomUUID(),
+    source: 'saved-session',
+    sessionType: session.sessionType,
+    title: session.name,
+    route: entry.route,
+    locations: {
+      left: sessionLocationToLaunchLocation(session.locations.left, 'file'),
+      right: sessionLocationToLaunchLocation(session.locations.right, 'file'),
+      center: sessionLocationToLaunchLocation(session.locations.center, 'file'),
+      output: sessionLocationToLaunchLocation(session.locations.output, 'file'),
+    },
+    autoRun: true,
+    session,
+  })
   tabs.openTab({ title: session.name, route: entry.route, dirty: session.metadata.dirty })
   void router.push(entry.route)
 }
@@ -111,7 +144,11 @@ function handleDragLeave(): void {
 function handleDrop(event: DragEvent): void {
   event.preventDefault()
   isDragging.value = false
-  dropResult.value = classifyDropInputs(inputsFromDataTransfer(event.dataTransfer))
+  setDropInputs(inputsFromDataTransfer(event.dataTransfer))
+}
+
+function setDropInputs(inputs: DropInput[]): void {
+  dropResult.value = classifyDropInputs(inputs)
   selectedDropSession.value =
     dropResult.value.kind === 'invalid' ? undefined : selectSessionForDrop(dropResult.value)
 }
@@ -140,6 +177,7 @@ function openSelectedDropSession(): void {
     return
   }
 
+  sessionLaunch.setPendingLaunch(createLaunchFromDrop(selectedDropSession.value))
   tabs.openTab({
     title: selectedDropSession.value.title,
     route: selectedDropSession.value.route,
@@ -148,11 +186,49 @@ function openSelectedDropSession(): void {
   void router.push(selectedDropSession.value.route)
 }
 
+function createLaunchFromDrop(selection: SessionSelection): SessionLaunchPayload {
+  if (dropResult.value.kind === 'invalid' || !selection.route) {
+    throw new Error('Cannot create a launch payload from an invalid drop.')
+  }
+
+  return {
+    id: crypto.randomUUID(),
+    source: 'drop',
+    sessionType: selection.sessionType,
+    title: `${dropResult.value.left.displayName} vs ${dropResult.value.right.displayName}`,
+    route: selection.route,
+    locations: {
+      left: dropItemToLaunchLocation(dropResult.value.left),
+      right:
+        dropResult.value.kind === 'patch'
+          ? undefined
+          : dropItemToLaunchLocation(dropResult.value.right),
+    },
+    autoRun: true,
+  }
+}
+
 async function openClipboardText(): Promise<void> {
   try {
     const source = await readClipboardTextSource()
 
     clipboardStatus.value = `${source.title} ready`
+    sessionLaunch.setPendingLaunch({
+      id: crypto.randomUUID(),
+      source: 'command',
+      sessionType: 'text-compare',
+      title: source.title,
+      route: '/compare/text',
+      locations: {
+        left: {
+          uri: source.text,
+          displayName: source.title,
+          kind: 'virtual',
+          readOnly: true,
+        },
+      },
+      autoRun: false,
+    })
     tabs.openTab({ title: source.title, route: '/compare/text', dirty: false })
     void router.push('/compare/text')
   } catch (error) {
@@ -160,6 +236,42 @@ async function openClipboardText(): Promise<void> {
       typeof error === 'object' && error !== null && 'message' in error
         ? String(error.message)
         : String(error)
+  }
+}
+
+function simulateTextDrop(): void {
+  setDropInputs([
+    { path: 'C:/work/left.txt', kind: 'file' },
+    { path: 'C:/work/right.txt', kind: 'file' },
+  ])
+}
+
+function simulatePatchDrop(): void {
+  setDropInputs([{ path: 'C:/work/change.patch', kind: 'file' }])
+}
+
+function dropItemToLaunchLocation(item: ClassifiedDropItem): SessionLaunchLocation {
+  return {
+    uri: item.path,
+    displayName: item.displayName,
+    kind: item.sourceKind,
+    readOnly: false,
+  }
+}
+
+function sessionLocationToLaunchLocation(
+  location: SessionDocument['locations']['left'],
+  kind: SessionLaunchLocation['kind'],
+): SessionLaunchLocation | undefined {
+  if (!location) {
+    return undefined
+  }
+
+  return {
+    uri: location.uri,
+    displayName: location.displayName,
+    kind,
+    readOnly: location.readOnly,
   }
 }
 
@@ -200,6 +312,51 @@ function saveAndClosePendingSession(): void {
   savedSessions.requestDeleteSession(pending.id)
 }
 
+function openSaveCurrentSessionDialog(): void {
+  saveDialogOpen.value = true
+  sessionNameDraft.value = sessionLaunch.pendingLaunch?.title ?? tabs.activeTab.title
+}
+
+function confirmSaveCurrentSession(): void {
+  const name = sessionNameDraft.value.trim()
+
+  if (!name) {
+    return
+  }
+
+  const session = createCurrentSessionDocument(name)
+
+  savedSessions.saveSession(session)
+  saveDialogOpen.value = false
+  sessionNameDraft.value = ''
+}
+
+function createCurrentSessionDocument(name: string): SessionDocument {
+  const pending = sessionLaunch.pendingLaunch
+
+  if (pending) {
+    return {
+      ...createSessionFromLaunch({ ...pending, title: name }),
+      name,
+    }
+  }
+
+  const activeRoute = tabs.activeTab.route
+  const entry =
+    sessionCatalog.find((item) => item.route === activeRoute) ??
+    sessionCatalog.find((item) => item.type === 'text-compare')
+
+  if (!entry) {
+    return createUntitledSession('text-compare')
+  }
+
+  const session = createUntitledSession(entry.type)
+
+  session.name = name
+
+  return session
+}
+
 function restoreWorkspaceFromRecovery(): void {
   const first = savedSessions.recoveryCandidates.at(0)
 
@@ -217,6 +374,17 @@ function restoreWorkspaceFromRecovery(): void {
 
   tabs.openTab({ title: first.name, route: entry.route, dirty: first.metadata.dirty })
   void router.push(entry.route)
+}
+
+function restoreWorkspace(id: string): void {
+  const workspace = workspaces.workspaces.find((item) => item.id === id)
+
+  if (!workspace) {
+    return
+  }
+
+  tabs.restoreWorkspaceTabs(workspace.tabs)
+  void router.push(tabs.activeTab.route)
 }
 
 function sessionTypeLabel(type: SessionType): string {
@@ -295,13 +463,42 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
       >
         <header>
           <h2>{{ $t('ui.recentSessions') }}</h2>
-          <input
-            v-model="sessionSearch"
-            data-testid="session-search"
-            type="search"
-            :placeholder="$t('ui.filterSessions')"
-          />
+          <div class="recent-session-actions">
+            <button
+              type="button"
+              data-testid="save-current-session-as"
+              @click="openSaveCurrentSessionDialog"
+            >
+              {{ $t('ui.save') }}
+            </button>
+            <input
+              v-model="sessionSearch"
+              data-testid="session-search"
+              type="search"
+              :placeholder="$t('ui.filterSessions')"
+            />
+          </div>
         </header>
+
+        <section
+          v-if="saveDialogOpen"
+          class="session-save-panel"
+          data-testid="session-save-panel"
+        >
+          <input
+            v-model="sessionNameDraft"
+            data-testid="session-name-input"
+            type="text"
+            :placeholder="$t('ui.name')"
+          />
+          <button
+            type="button"
+            data-testid="confirm-session-save"
+            @click="confirmSaveCurrentSession"
+          >
+            {{ $t('ui.save') }}
+          </button>
+        </section>
 
         <div
           v-if="savedSessions.recoveryCandidates.length > 0"
@@ -452,11 +649,24 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
               </span>
               <button
                 type="button"
+                data-testid="open-suggested-view"
                 :disabled="!selectedDropSession?.enabled"
                 @click="openSelectedDropSession"
               >
                 {{ $t('ui.openSuggestedView') }}
               </button>
+              <button
+                type="button"
+                hidden
+                data-testid="simulate-text-drop"
+                @click="simulateTextDrop"
+              />
+              <button
+                type="button"
+                hidden
+                data-testid="simulate-patch-drop"
+                @click="simulatePatchDrop"
+              />
             </div>
             <div class="clipboard-source">
               <strong>{{ $t('ui.clipboardText') }}</strong>
@@ -493,6 +703,10 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
               { label: $t('ui.savedSessions'), value: filteredSavedSessions.length },
               { label: $t('ui.restoreRecent'), value: savedSessions.recoveryCandidates.length },
             ]"
+          />
+          <WorkspaceManager
+            :snapshot="tabs.workspaceSnapshot()"
+            @restore="restoreWorkspace"
           />
         </section>
       </WorkbenchInspector>
@@ -602,7 +816,26 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
   gap: 12px;
 }
 
-.recent-session-panel input[type='search'] {
+.recent-session-actions {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+}
+
+.recent-session-actions button,
+.session-save-panel button {
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-canvas);
+  color: var(--app-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.recent-session-panel input[type='search'],
+.session-save-panel input {
   width: 100%;
   height: 30px;
   padding: 0 10px;
@@ -611,6 +844,12 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
   background: var(--app-canvas);
   color: var(--app-text);
   font-size: 12px;
+}
+
+.session-save-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
 }
 
 .dense-data-table table {

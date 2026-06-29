@@ -5,6 +5,7 @@ import HomeView from './HomeView.vue'
 import { readClipboardTextSource } from '@/app/clipboardSource'
 import { createAppI18n, installI18n } from '@/i18n'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 const push = vi.fn()
 
@@ -47,6 +48,7 @@ function mountHomeView(): ReturnType<typeof mount<typeof HomeView>> {
 
 describe('HomeView', () => {
   beforeEach(() => {
+    localStorage.clear()
     setActivePinia(createPinia())
     push.mockClear()
     vi.mocked(readClipboardTextSource).mockClear()
@@ -79,6 +81,7 @@ describe('HomeView', () => {
 
   it('opens quick-start session cards', async () => {
     const wrapper = mountHomeView()
+    const launchStore = useSessionLaunchStore()
 
     const textCompare = wrapper.find('[data-session-type="text-compare"]')
     const folderCompare = wrapper.find('[data-session-type="folder-compare"]')
@@ -88,6 +91,12 @@ describe('HomeView', () => {
     await textCompare.trigger('click')
 
     expect(push).toHaveBeenCalledWith('/compare/text')
+    expect(launchStore.pendingLaunch).toMatchObject({
+      source: 'home',
+      sessionType: 'text-compare',
+      route: '/compare/text',
+      autoRun: false,
+    })
 
     await folderCompare.trigger('click')
 
@@ -100,6 +109,45 @@ describe('HomeView', () => {
     await textMerge.trigger('click')
 
     expect(push).toHaveBeenCalledWith('/merge/text')
+  })
+
+  it('opens the suggested view with dropped file paths as a launch payload', async () => {
+    const wrapper = mountHomeView()
+    const launchStore = useSessionLaunchStore()
+
+    await wrapper.find('[data-testid="simulate-text-drop"]').trigger('click')
+    await wrapper.find('[data-testid="open-suggested-view"]').trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/compare/text')
+    expect(launchStore.pendingLaunch).toMatchObject({
+      source: 'drop',
+      sessionType: 'text-compare',
+      route: '/compare/text',
+      autoRun: true,
+      locations: {
+        left: { uri: 'C:/work/left.txt', kind: 'file' },
+        right: { uri: 'C:/work/right.txt', kind: 'file' },
+      },
+    })
+  })
+
+  it('opens a single patch drop in Text Patch with the patch path', async () => {
+    const wrapper = mountHomeView()
+    const launchStore = useSessionLaunchStore()
+
+    await wrapper.find('[data-testid="simulate-patch-drop"]').trigger('click')
+    await wrapper.find('[data-testid="open-suggested-view"]').trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/patch/text')
+    expect(launchStore.pendingLaunch).toMatchObject({
+      source: 'drop',
+      sessionType: 'text-patch',
+      route: '/patch/text',
+      autoRun: true,
+      locations: {
+        left: { uri: 'C:/work/change.patch', kind: 'file' },
+      },
+    })
   })
 
   it('shows saved sessions in a dense recent sessions table', () => {
@@ -204,5 +252,47 @@ describe('HomeView', () => {
     expect(readClipboardTextSource).toHaveBeenCalled()
     expect(push).toHaveBeenCalledWith('/compare/text')
     expect(wrapper.text()).toContain('Clipboard Text ready')
+  })
+
+  it('saves the current session as a named persistent entry', async () => {
+    const wrapper = mountHomeView()
+
+    await wrapper.find('[data-testid="save-current-session-as"]').trigger('click')
+    await wrapper.find('[data-testid="session-name-input"]').setValue('Persisted from home')
+    await wrapper.find('[data-testid="confirm-session-save"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="home-recent-sessions"]').text()).toContain(
+      'Persisted from home',
+    )
+
+    setActivePinia(createPinia())
+
+    const remounted = mountHomeView()
+
+    expect(remounted.find('[data-testid="home-recent-sessions"]').text()).toContain(
+      'Persisted from home',
+    )
+  })
+
+  it('saves and restores a named workspace from the home inspector', async () => {
+    const wrapper = mountHomeView()
+
+    await wrapper.find('[data-session-type="text-compare"]').trigger('click')
+    await wrapper.find('[data-testid="workspace-name-input"]').setValue('Text review workspace')
+    await wrapper.find('[data-testid="save-workspace"]').trigger('click')
+
+    expect(wrapper.text()).toContain('Text review workspace')
+
+    const restoreButton = wrapper
+      .findAll('button')
+      .find((button) => button.attributes('data-testid')?.startsWith('restore-workspace-'))
+
+    if (!restoreButton) {
+      throw new Error('Expected restore workspace button.')
+    }
+
+    await restoreButton.trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/compare/text')
   })
 })

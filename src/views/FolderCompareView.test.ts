@@ -1,7 +1,9 @@
-import { mount, type VueWrapper } from '@vue/test-utils'
+import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderCompareView from './FolderCompareView.vue'
 import { compareFolderPaths } from '@/api/diff'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 vi.mock('@/api/diff', () => ({
   compareFolderPaths: vi.fn().mockResolvedValue({
@@ -54,6 +56,7 @@ function mountFolderCompareView(): VueWrapper {
 
 describe('FolderCompareView', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.mocked(compareFolderPaths).mockClear()
   })
 
@@ -73,6 +76,36 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).toContain('D:/fixture-right')
     expect(wrapper.text()).toContain('main.ts')
     expect(wrapper.text()).toContain('Different')
+  })
+
+  it('loads dropped folder paths from a launch payload and runs the compare', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'launch-folder',
+      source: 'drop',
+      sessionType: 'folder-compare',
+      title: 'left vs right',
+      route: '/compare/folder',
+      autoRun: true,
+      locations: {
+        left: { uri: 'D:/left-folder', kind: 'directory', readOnly: false },
+        right: { uri: 'D:/right-folder', kind: 'directory', readOnly: false },
+      },
+    })
+
+    const wrapper = mountFolderCompareView()
+
+    await flushPromises()
+
+    expect(compareFolderPaths).toHaveBeenCalledWith({
+      leftRoot: 'D:/left-folder',
+      rightRoot: 'D:/right-folder',
+    })
+    expect(wrapper.find('[data-testid="folder-left-root"]').element).toMatchObject({
+      value: 'D:/fixture-left',
+    })
+    expect(wrapper.find('[data-testid="folder-right-root"]').element).toMatchObject({
+      value: 'D:/fixture-right',
+    })
   })
 
   it('renders left and right folder tree tables with core columns', () => {

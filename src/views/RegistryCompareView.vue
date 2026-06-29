@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { compareRegistryExports } from '@/api/diff'
+import { computed, onMounted, ref } from 'vue'
+import { compareRegistryExports, readTextFile } from '@/api/diff'
 import type {
   RegistryCompareResponse,
   RegistryDiffStatus,
@@ -10,6 +10,7 @@ import type {
 } from '@/types/diff'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 interface FlatRegistryKeyNode extends RegistryKeyNode {
   depth: number
@@ -104,6 +105,7 @@ const defaultRightExport = `Windows Registry Editor Version 5.00
 `
 const leftExport = ref(defaultLeftExport)
 const rightExport = ref(defaultRightExport)
+const sessionLaunch = useSessionLaunchStore()
 const leftName = ref('left.reg')
 const rightName = ref('right.reg')
 const registryTree = ref<RegistryKeyNode[]>(defaultRegistryTree)
@@ -112,6 +114,26 @@ const registrySummaryOverride = ref<Record<RegistryDiffStatus, number> | null>(
 )
 const loading = ref(false)
 const error = ref('')
+
+onMounted(() => {
+  const launch = sessionLaunch.consumeLaunch('/compare/registry')
+
+  if (!launch) {
+    return
+  }
+
+  if (launch.locations.left?.displayName) {
+    leftName.value = launch.locations.left.displayName
+  }
+
+  if (launch.locations.right?.displayName) {
+    rightName.value = launch.locations.right.displayName
+  }
+
+  if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
+    void loadLaunchRegistryExports(launch.locations.left.uri, launch.locations.right.uri)
+  }
+})
 const flatRegistryKeys = computed<FlatRegistryKeyNode[]>(() =>
   flattenRegistryKeys(registryTree.value),
 )
@@ -187,6 +209,31 @@ async function runRegistryCompare(): Promise<void> {
   } finally {
     loading.value = false
   }
+}
+
+async function loadLaunchRegistryExports(leftPath: string, rightPath: string): Promise<void> {
+  loading.value = true
+  error.value = ''
+
+  try {
+    const [leftFile, rightFile] = await Promise.all([
+      readTextFile(leftPath),
+      readTextFile(rightPath),
+    ])
+
+    leftExport.value = leftFile.text
+    rightExport.value = rightFile.text
+    leftName.value = fileNameFromPath(leftFile.path)
+    rightName.value = fileNameFromPath(rightFile.path)
+    await runRegistryCompare()
+  } catch (event) {
+    error.value = String(event)
+    loading.value = false
+  }
+}
+
+function fileNameFromPath(path: string): string {
+  return path.replaceAll('\\', '/').split('/').filter(Boolean).at(-1) ?? path
 }
 </script>
 

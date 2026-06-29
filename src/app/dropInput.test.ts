@@ -47,4 +47,12 @@ describe('classifyDropInputs', () => {
       reason: 'Drop exactly two files or folders.',
     })
   })
+
+  it('accepts a single patch file as a patch drop', () => {
+    expect(classifyDropInputs([{ path: 'C:/work/change.patch', kind: 'file' }])).toMatchObject({
+      kind: 'patch',
+      left: { displayName: 'change.patch' },
+      right: { displayName: 'change.patch' },
+    })
+  })
 })

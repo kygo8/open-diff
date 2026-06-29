@@ -14,6 +14,7 @@ export type ThemeMode = 'light' | 'dark'
 const sharedSessionPathsStorageKey = 'open-diff-shared-session-paths'
 const localeStorageKey = 'open-diff-locale'
 const shortcutOverridesStorageKey = 'open-diff-shortcut-overrides'
+const autoSaveLimitStorageKey = 'open-diff-auto-save-limit'
 const shortcutScopes = new Set<ShortcutScope>(['global', 'text-compare'])
 const commandIds = new Set<string>(commandRegistry.map((command) => command.id))
 
@@ -26,6 +27,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const locale = ref<SupportedLocale>(loadLocale())
   const sharedSessionPaths = ref<string[]>(loadSharedSessionPaths())
   const shortcutOverrides = ref<ShortcutOverrides>(loadShortcutOverrides())
+  const autoSaveLimit = ref(loadAutoSaveLimit())
 
   watch(
     theme,
@@ -59,6 +61,14 @@ export const useSettingsStore = defineStore('settings', () => {
       localStorage.setItem(shortcutOverridesStorageKey, JSON.stringify(value))
     },
     { deep: true, immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    autoSaveLimit,
+    (value) => {
+      localStorage.setItem(autoSaveLimitStorageKey, String(value))
+    },
+    { immediate: true, flush: 'sync' },
   )
 
   function toggleTheme(): void {
@@ -138,11 +148,16 @@ export const useSettingsStore = defineStore('settings', () => {
     return shortcutOverrides.value[command.id] ?? command.defaultShortcut
   }
 
+  function setAutoSaveLimit(value: number): void {
+    autoSaveLimit.value = Math.max(0, Math.min(50, Math.floor(value)))
+  }
+
   return {
     theme,
     locale,
     sharedSessionPaths,
     shortcutOverrides,
+    autoSaveLimit,
     toggleTheme,
     setLocale,
     addSharedSessionPath,
@@ -150,6 +165,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setShortcutOverride,
     resetShortcutOverride,
     getEffectiveShortcut,
+    setAutoSaveLimit,
   }
 })
 
@@ -197,6 +213,22 @@ function loadShortcutOverrides(): ShortcutOverrides {
   } catch {
     return {}
   }
+}
+
+function loadAutoSaveLimit(): number {
+  const rawValue = localStorage.getItem(autoSaveLimitStorageKey)
+
+  if (rawValue === null) {
+    return 10
+  }
+
+  const stored = Number(rawValue)
+
+  if (!Number.isFinite(stored)) {
+    return 10
+  }
+
+  return Math.max(0, Math.min(50, Math.floor(stored)))
 }
 
 function isCommandId(value: string): value is CommandId {

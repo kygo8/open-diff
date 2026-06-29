@@ -13,7 +13,6 @@ const textExtensions = new Set([
   'cfg',
   'css',
   'csv',
-  'diff',
   'html',
   'ini',
   'js',
@@ -21,7 +20,6 @@ const textExtensions = new Set([
   'jsx',
   'log',
   'md',
-  'patch',
   'rs',
   'toml',
   'ts',
@@ -33,6 +31,7 @@ const textExtensions = new Set([
   'yml',
 ])
 
+const patchExtensions = new Set(['diff', 'patch'])
 const imageExtensions = new Set(['bmp', 'gif', 'jpeg', 'jpg', 'png', 'tif', 'tiff', 'webp'])
 
 export function selectSessionForDrop(drop: ValidDropClassification): SessionSelection {
@@ -45,6 +44,13 @@ export function selectSessionForDrop(drop: ValidDropClassification): SessionSele
   }
 
   const extensions = [extensionOf(drop.left.path), extensionOf(drop.right.path)]
+
+  if (
+    drop.kind === 'patch' ||
+    extensions.every((extension) => extension && patchExtensions.has(extension))
+  ) {
+    return selectionFor('text-patch')
+  }
 
   if (extensions.every((extension) => extension && textExtensions.has(extension))) {
     return selectionFor('text-compare')

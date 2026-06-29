@@ -11,10 +11,19 @@ describe('commandRegistry', () => {
     expect(commandRegistry.map((command) => command.id)).toEqual([
       'open.textCompare',
       'open.folderCompare',
+      'open.textPatch',
       'open.settings',
       'theme.toggle',
+      'session.save',
+      'session.saveAs',
+      'session.export',
+      'edit.copyLeft',
+      'edit.copyRight',
       'diff.previous',
       'diff.next',
+      'view.showAll',
+      'view.showDifferences',
+      'workspace.save',
     ])
   })
 

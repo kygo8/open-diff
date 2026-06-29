@@ -55,4 +55,10 @@ describe('router', () => {
 
     expect(route?.name).toBe('reports-scripts')
   })
+
+  it('registers the text patch route', () => {
+    const route = router.getRoutes().find((item) => item.path === '/patch/text')
+
+    expect(route?.name).toBe('text-patch')
+  })
 })

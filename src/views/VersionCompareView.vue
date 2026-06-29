@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { compareVersionFiles } from '@/api/diff'
 import type {
   VersionCompareResponse,
@@ -7,6 +7,7 @@ import type {
   VersionFieldStatus,
   VersionSideSummary,
 } from '@/types/diff'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 const versionStatuses: VersionFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
 const defaultLeftVersion: VersionSideSummary = {
@@ -67,12 +68,28 @@ const defaultVersionFields: VersionFieldRow[] = [
 ]
 const leftPath = ref('C:/apps/left-app.exe')
 const rightPath = ref('C:/apps/right-app.exe')
+const sessionLaunch = useSessionLaunchStore()
 const leftVersion = ref<VersionSideSummary>(defaultLeftVersion)
 const rightVersion = ref<VersionSideSummary>(defaultRightVersion)
 const versionFields = ref<VersionFieldRow[]>(defaultVersionFields)
 const versionSummaryOverride = ref<Record<VersionFieldStatus, number> | null>(null)
 const loading = ref(false)
 const error = ref('')
+
+onMounted(() => {
+  const launch = sessionLaunch.consumeLaunch('/compare/version')
+
+  if (!launch) {
+    return
+  }
+
+  leftPath.value = launch.locations.left?.uri ?? leftPath.value
+  rightPath.value = launch.locations.right?.uri ?? rightPath.value
+
+  if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
+    void runVersionCompare()
+  }
+})
 
 const versionSummary = computed<Record<VersionFieldStatus, number>>(() => {
   if (versionSummaryOverride.value) {

@@ -1,10 +1,13 @@
-import type { AppCommand, CommandId, CommandPlacement } from './commandRegistry'
+import type { AppCommand, CommandAction, CommandId, CommandPlacement } from './commandRegistry'
+
+export type ViewActionName = Extract<CommandAction, { type: 'view-action' }>['name']
 
 export interface CommandExecutionContext {
   navigate: (route: string) => void
   openTab: (tab: { route: string; title: string; dirty: boolean }) => void
   t: (key: string) => string
   toggleTheme: () => void
+  dispatchViewAction: (name: ViewActionName) => void
 }
 
 export function getCommandsForPlacement(
@@ -42,6 +45,8 @@ export function createCommandExecutor(
       return true
     }
 
-    return false
+    context.dispatchViewAction(command.action.name)
+
+    return true
   }
 }

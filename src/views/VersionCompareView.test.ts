@@ -1,7 +1,9 @@
 import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import VersionCompareView from './VersionCompareView.vue'
 import { compareVersionFiles } from '@/api/diff'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 vi.mock('@/api/diff', () => ({
   compareVersionFiles: vi.fn().mockResolvedValue({
@@ -46,6 +48,7 @@ vi.mock('@/api/diff', () => ({
 
 describe('VersionCompareView', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.mocked(compareVersionFiles).mockClear()
   })
 
@@ -65,6 +68,29 @@ describe('VersionCompareView', () => {
     expect(wrapper.text()).toContain('fixture-right.exe')
     expect(wrapper.find('[data-testid="version-summary-modified"]').text()).toContain('1')
     expect(wrapper.find('[data-testid="version-field-FileVersion"]').text()).toContain('1.1.0.0')
+  })
+
+  it('runs automatically from dropped version launch paths', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'launch-version',
+      source: 'drop',
+      sessionType: 'version-compare',
+      title: 'left.exe vs right.exe',
+      route: '/compare/version',
+      autoRun: true,
+      locations: {
+        left: { uri: 'C:/drop/left.exe', kind: 'file', readOnly: false },
+        right: { uri: 'C:/drop/right.exe', kind: 'file', readOnly: false },
+      },
+    })
+
+    mount(VersionCompareView)
+    await Promise.resolve()
+
+    expect(compareVersionFiles).toHaveBeenCalledWith({
+      leftPath: 'C:/drop/left.exe',
+      rightPath: 'C:/drop/right.exe',
+    })
   })
 
   it('renders executable identity and version difference counts', () => {

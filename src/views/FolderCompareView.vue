@@ -17,10 +17,11 @@ import type {
   FolderCompareRow as FolderCompareResponseRow,
   FolderCompareSideEntry,
 } from '@/types/diff'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
+import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 type FolderSide = 'left' | 'right'
 type FolderStatus = 'Same' | 'Different' | 'Left only' | 'Right only'
@@ -170,6 +171,7 @@ const rows = ref<FolderTreeRow[]>([
 const expandedDirectoryIds = ref<Set<string>>(new Set(['src']))
 const leftRoot = ref('D:/workspace/left')
 const rightRoot = ref('D:/workspace/right')
+const sessionLaunch = useSessionLaunchStore()
 const folderCompareLoading = ref(false)
 const folderCompareError = ref<string>()
 const visibleStatuses = ref<Set<FolderStatus>>(
@@ -200,6 +202,21 @@ const lastDifferenceNavigation = ref<string>()
 const syncPreviewItems = ref<SyncPreviewItem[]>([])
 const pendingSyncSafetyItems = ref<SyncPreviewItem[]>([])
 const lastSyncAction = ref<string>()
+
+onMounted(() => {
+  const launch = sessionLaunch.consumeLaunch('/compare/folder')
+
+  if (!launch) {
+    return
+  }
+
+  leftRoot.value = launch.locations.left?.uri ?? leftRoot.value
+  rightRoot.value = launch.locations.right?.uri ?? rightRoot.value
+
+  if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
+    void runFolderCompare()
+  }
+})
 
 const summary = computed(() => ({
   total: rows.value.length,

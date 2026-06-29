@@ -97,12 +97,15 @@ describe('packagingConfig', () => {
     const config = JSON.parse(
       readFileSync(resolve(process.cwd(), 'src-tauri/tauri.macos.conf.json'), 'utf8'),
     ) as Pick<TauriConfig, 'bundle'>
+    const baseConfig = JSON.parse(
+      readFileSync(resolve(process.cwd(), 'src-tauri/tauri.conf.json'), 'utf8'),
+    ) as TauriConfig & { version: string }
 
     expect(config.bundle.targets).toEqual(['app', 'dmg'])
     expect(config.bundle.category).toBe('DeveloperTool')
     expect(config.bundle.icon).toContain('icons/icon.icns')
     expect(config.bundle.macOS?.bundleName).toBe('Open Diff')
-    expect(config.bundle.macOS?.bundleVersion).toBe('1.0.0')
+    expect(config.bundle.macOS?.bundleVersion).toBe(baseConfig.version)
     expect(config.bundle.macOS?.minimumSystemVersion).toBe('11.0')
     expect(config.bundle.macOS?.hardenedRuntime).toBe(true)
     expect(config.bundle.macOS?.exceptionDomain).toBe('github.com')

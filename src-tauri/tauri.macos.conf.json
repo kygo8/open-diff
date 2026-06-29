@@ -5,7 +5,7 @@
     "icon": ["icons/icon.icns"],
     "macOS": {
       "bundleName": "Open Diff",
-      "bundleVersion": "1.0.0",
+      "bundleVersion": "1.0.1",
       "minimumSystemVersion": "11.0",
       "hardenedRuntime": true,
       "exceptionDomain": "github.com",

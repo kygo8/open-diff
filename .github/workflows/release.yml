@@ -83,5 +83,5 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
           tauriScript: corepack pnpm tauri
           args: ${{ matrix.args }}
-          releaseAssetNamePattern: '[name]_[version]_[platform]_[arch][setup][ext]'
+          assetNamePattern: '[name]_[version]_[platform]_[arch][setup][ext]'
           retryAttempts: 2

@@ -20,6 +20,7 @@ use std::path::Path;
 use table_core::{
     ColumnMappingSource, RowAlignmentOptions, TableCellValue, TableDiffStatus, TableParseError,
 };
+#[cfg(any(windows, test))]
 use version_core::{
     NativeVersionInfoReader, VersionDiffStatistics, VersionDocument, VersionFieldStatus,
     VersionFileType, VersionReadError, VersionTargetOs,
@@ -1856,6 +1857,7 @@ fn increment_registry_summary(summary: &mut RegistryCompareSummary, status: &str
     }
 }
 
+#[cfg(any(windows, test))]
 fn compare_version_files_from_reader(
     reader: &impl NativeVersionInfoReader,
     left_path: &str,
@@ -1885,6 +1887,7 @@ fn compare_version_files_from_reader(
     })
 }
 
+#[cfg(any(windows, test))]
 fn version_read_error(path: &str, error: VersionReadError) -> AppErrorPayload {
     AppErrorPayload::new(
         AppErrorCode::FileReadFailed,
@@ -1895,6 +1898,7 @@ fn version_read_error(path: &str, error: VersionReadError) -> AppErrorPayload {
     .with_suggestion_key("error.version.readFailed.suggestion")
 }
 
+#[cfg(any(windows, test))]
 fn version_side_summary(document: &VersionDocument) -> VersionSideSummary {
     let fixed_info = document.fixed_info.as_ref();
 
@@ -1915,6 +1919,7 @@ fn version_side_summary(document: &VersionDocument) -> VersionSideSummary {
     }
 }
 
+#[cfg(any(windows, test))]
 fn version_compare_summary(statistics: VersionDiffStatistics) -> VersionCompareSummary {
     VersionCompareSummary {
         added: statistics.added,
@@ -1924,6 +1929,7 @@ fn version_compare_summary(statistics: VersionDiffStatistics) -> VersionCompareS
     }
 }
 
+#[cfg(any(windows, test))]
 fn version_field_group(field: &str) -> String {
     match field {
         "FileVersion" | "ProductVersion" => "Fixed Info",
@@ -1932,6 +1938,7 @@ fn version_field_group(field: &str) -> String {
     .to_owned()
 }
 
+#[cfg(any(windows, test))]
 fn version_field_status_label(status: VersionFieldStatus) -> String {
     match status {
         VersionFieldStatus::Added => "added",
@@ -1942,6 +1949,7 @@ fn version_field_status_label(status: VersionFieldStatus) -> String {
     .to_owned()
 }
 
+#[cfg(any(windows, test))]
 fn version_file_type_label(file_type: &VersionFileType) -> String {
     match file_type {
         VersionFileType::Application => "Application",
@@ -1953,6 +1961,7 @@ fn version_file_type_label(file_type: &VersionFileType) -> String {
     .to_owned()
 }
 
+#[cfg(any(windows, test))]
 fn version_target_os_label(target_os: &VersionTargetOs) -> String {
     match target_os {
         VersionTargetOs::Windows16 => "Windows 16-bit",

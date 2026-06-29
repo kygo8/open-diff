@@ -40,8 +40,10 @@ const emit = defineEmits<{
       class="node-row session-row"
     >
       <span class="node-icon">□</span>
-      <span>{{ node.name }}</span>
-      <small>{{ node.session.sessionType }}</small>
+      <span class="node-copy">
+        <span>{{ node.name }}</span>
+        <small>{{ node.session.sessionType }}</small>
+      </span>
       <div class="node-actions">
         <button
           type="button"
@@ -98,12 +100,12 @@ const emit = defineEmits<{
 
 .node-row {
   display: grid;
-  grid-template-columns: 18px minmax(0, 1fr) auto auto;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
   align-items: center;
   gap: 6px;
   min-height: 28px;
   padding: 4px 6px;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 13px;
 }
 
@@ -124,9 +126,25 @@ const emit = defineEmits<{
   font-size: 11px;
 }
 
-.node-row small {
+.node-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.node-copy span {
+  overflow: hidden;
+  color: var(--app-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node-copy small {
+  overflow: hidden;
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .node-actions {

@@ -10,14 +10,28 @@ const naiveTheme = computed(() => (settings.theme === 'dark' ? darkTheme : light
 
 const themeOverrides: GlobalThemeOverrides = {
   common: {
-    borderRadius: '6px',
+    borderColor: '#c2c6d6',
+    borderRadius: '4px',
     borderRadiusSmall: '4px',
     fontFamily:
-      'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    fontFamilyMono: '"JetBrains Mono", "Cascadia Code", Consolas, monospace',
-    primaryColor: '#2563eb',
-    primaryColorHover: '#1d4ed8',
-    primaryColorPressed: '#1e40af',
+      'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
+    fontFamilyMono: '"JetBrains Mono", "Cascadia Mono", Consolas, monospace',
+    fontSize: '13px',
+    primaryColor: '#0058be',
+    primaryColorHover: '#2170e4',
+    primaryColorPressed: '#004395',
+    textColorBase: '#191c1e',
+  },
+  Button: {
+    heightSmall: '26px',
+    paddingSmall: '0 9px',
+  },
+  Card: {
+    borderRadius: '4px',
+  },
+  Input: {
+    borderRadius: '4px',
+    heightSmall: '28px',
   },
 }
 </script>

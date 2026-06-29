@@ -364,8 +364,9 @@ function restoreWorkspaceFromRecovery(): void {
 <style scoped>
 .home-view {
   height: 100%;
-  padding: 28px;
+  padding: 16px 20px;
   overflow: auto;
+  background: var(--app-bg);
 }
 
 .home-header {
@@ -379,7 +380,7 @@ function restoreWorkspaceFromRecovery(): void {
 
 .eyebrow {
   margin: 0 0 8px;
-  color: #2563eb;
+  color: var(--app-primary);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0;
@@ -388,7 +389,7 @@ function restoreWorkspaceFromRecovery(): void {
 
 h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1.2;
 }
 
@@ -397,8 +398,8 @@ h1 {
   min-width: 108px;
   padding: 10px 12px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
   text-align: right;
 }
 
@@ -432,15 +433,15 @@ h1 {
   margin-top: 18px;
   padding: 16px;
   border: 1px dashed var(--app-border);
-  border-radius: 8px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
   place-items: center;
   text-align: center;
 }
 
 .drop-zone.dragging {
-  border-color: #2563eb;
-  background: rgb(37 99 235 / 0.08);
+  border-color: var(--app-primary);
+  background: rgb(0 88 190 / 0.08);
 }
 
 .drop-zone div {
@@ -455,8 +456,8 @@ h1 {
   margin-top: 10px;
   padding: 12px 14px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
   place-items: center;
 }
 
@@ -504,8 +505,8 @@ h1 {
   width: 34px;
   height: 22px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
   color: var(--app-text);
   font-weight: 700;
 }
@@ -524,8 +525,8 @@ h1 {
   min-height: 86px;
   padding: 14px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
 }
 
 .session-entry.disabled {
@@ -553,8 +554,8 @@ h1 {
   align-self: start;
   padding: 14px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
 }
 
 .saved-sessions-header {
@@ -586,9 +587,9 @@ h1 {
   gap: 8px;
   margin-bottom: 12px;
   padding: 10px;
-  border: 1px solid #2563eb;
-  border-radius: 6px;
-  background: rgb(37 99 235 / 0.08);
+  border: 1px solid var(--app-primary);
+  border-radius: 4px;
+  background: rgb(0 88 190 / 0.08);
   color: var(--app-text);
   font-size: 12px;
 }
@@ -598,8 +599,8 @@ h1 {
   height: 26px;
   padding: 0 10px;
   border: 1px solid var(--app-border);
-  border-radius: 5px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
   color: var(--app-text);
   cursor: pointer;
 }
@@ -609,7 +610,7 @@ h1 {
   height: 30px;
   padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--app-bg);
   color: var(--app-text);
   font-size: 13px;
@@ -636,7 +637,7 @@ h1 {
   margin-top: 12px;
   padding: 10px;
   border: 1px solid var(--diff-modified-fg);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--diff-modified-bg);
   color: var(--app-text);
   font-size: 12px;
@@ -647,8 +648,8 @@ h1 {
   height: 26px;
   padding: 0 10px;
   border: 1px solid var(--app-border);
-  border-radius: 5px;
-  background: var(--app-surface);
+  border-radius: 4px;
+  background: var(--app-canvas);
   color: var(--app-text);
   cursor: pointer;
 }

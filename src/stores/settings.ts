@@ -21,7 +21,7 @@ type ShortcutOverrides = Partial<Record<CommandId, CommandShortcut>>
 
 export const useSettingsStore = defineStore('settings', () => {
   const theme = ref<ThemeMode>(
-    (localStorage.getItem('open-diff-theme') as ThemeMode | null) ?? 'dark',
+    (localStorage.getItem('open-diff-theme') as ThemeMode | null) ?? 'light',
   )
   const locale = ref<SupportedLocale>(loadLocale())
   const sharedSessionPaths = ref<string[]>(loadSharedSessionPaths())

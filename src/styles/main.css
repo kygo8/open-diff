@@ -1,29 +1,57 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
-  --app-bg: #f4f6f8;
-  --app-surface: #ffffff;
-  --app-surface-muted: #eef1f5;
-  --app-border: #d8dee8;
-  --app-text: #18202f;
-  --app-text-muted: #657085;
-  --diff-added-bg: #eaf7ef;
-  --diff-added-fg: #137333;
-  --diff-deleted-bg: #fdecec;
-  --diff-deleted-fg: #b42318;
-  --diff-modified-bg: #fff7df;
-  --diff-modified-fg: #8a5a00;
-  --diff-gutter-bg: #edf1f6;
-  --font-mono: 'JetBrains Mono', 'Cascadia Code', consolas, monospace;
+  --app-bg: #f8f9fb;
+  --app-canvas: #ffffff;
+  --app-surface: #f8f9fb;
+  --app-surface-low: #f3f4f6;
+  --app-surface-muted: #edeef0;
+  --app-surface-container: #edeef0;
+  --app-surface-high: #e7e8ea;
+  --app-surface-highest: #e1e2e4;
+  --app-border: #c2c6d6;
+  --app-border-soft: rgb(194 198 214 / 0.55);
+  --app-text: #191c1e;
+  --app-text-muted: #424754;
+  --app-text-faint: #727785;
+  --app-primary: #0058be;
+  --app-primary-strong: #2170e4;
+  --app-primary-soft: #d8e2ff;
+  --app-status: #2e3132;
+  --app-status-text: #f0f1f3;
+  --diff-added-bg: #dcfce7;
+  --diff-added-fg: #166534;
+  --diff-deleted-bg: #fee2e2;
+  --diff-deleted-fg: #991b1b;
+  --diff-modified-bg: #fef3c7;
+  --diff-modified-fg: #854d0e;
+  --diff-conflict-bg: #f3e8ff;
+  --diff-conflict-fg: #6b21a8;
+  --diff-gutter-bg: #edf0f4;
+  --font-mono: 'JetBrains Mono', 'Cascadia Mono', consolas, monospace;
 }
 
 html[data-theme='dark'] {
-  --app-bg: #14171f;
-  --app-surface: #1d222d;
-  --app-surface-muted: #252b37;
-  --app-border: #343b49;
-  --app-text: #e7ebf3;
-  --app-text-muted: #9aa4b5;
+  color-scheme: dark;
+
+  --app-bg: #15181d;
+  --app-canvas: #1d2128;
+  --app-surface: #191d23;
+  --app-surface-low: #20252c;
+  --app-surface-muted: #252b33;
+  --app-surface-container: #252b33;
+  --app-surface-high: #2c333d;
+  --app-surface-highest: #343c48;
+  --app-border: #47505f;
+  --app-border-soft: rgb(71 80 95 / 0.6);
+  --app-text: #eef1f4;
+  --app-text-muted: #b9c0ca;
+  --app-text-faint: #8e98a7;
+  --app-primary: #7aa7ff;
+  --app-primary-strong: #2f74d0;
+  --app-primary-soft: #163967;
+  --app-status: #101317;
+  --app-status-text: #f0f1f3;
   --diff-added-bg: rgb(39 174 96 / 0.14);
   --diff-added-fg: #67d391;
   --diff-deleted-bg: rgb(231 76 60 / 0.14);
@@ -46,6 +74,7 @@ body,
 }
 
 body {
+  overflow: hidden;
   background: var(--app-bg);
   color: var(--app-text);
   font-family:
@@ -55,7 +84,11 @@ body {
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
+    'PingFang SC',
+    'Microsoft YaHei',
     sans-serif;
+  font-size: 13px;
+  line-height: 18px;
 }
 
 button,
@@ -63,4 +96,34 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+button {
+  letter-spacing: 0;
+}
+
+input,
+textarea,
+select {
+  border-color: var(--app-border);
+}
+
+::selection {
+  background: var(--app-primary-soft);
+  color: var(--app-text);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid var(--app-bg);
+  border-radius: 999px;
+  background: #aeb5c2;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--app-surface-low);
 }

@@ -10,6 +10,7 @@ const push = vi.fn()
 
 vi.mock('vue-router', () => ({
   RouterView: { template: '<div />' },
+  useRoute: () => ({ path: '/' }),
   useRouter: () => ({ push }),
 }))
 
@@ -50,13 +51,29 @@ describe('AppLayout command palette', () => {
     const wrapper = mountAppLayout()
     const settings = useSettingsStore()
 
-    expect(settings.theme).toBe('dark')
+    expect(settings.theme).toBe('light')
 
     await wrapper.find('[data-testid="open-command-palette"]').trigger('click')
     await wrapper.find('[data-testid="command-search"]').setValue('theme')
     await wrapper.find('[data-command-id="theme.toggle"]').trigger('click')
 
-    expect(settings.theme).toBe('light')
+    expect(settings.theme).toBe('dark')
+  })
+
+  it('opens a language menu and applies the selected locale', async () => {
+    const wrapper = mountAppLayout()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="language-menu-trigger"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="language-menu"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="language-menu"]').text()).not.toContain('zh-CN')
+
+    await wrapper.find('[data-testid="language-option-zh-CN"]').trigger('click')
+
+    expect(settings.locale).toBe('zh-CN')
+    expect(wrapper.find('[data-testid="language-menu"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('文件')
   })
 
   it('renders status bar segments from the shared status protocol', async () => {

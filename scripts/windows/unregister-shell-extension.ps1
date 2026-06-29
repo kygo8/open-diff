@@ -15,4 +15,4 @@ foreach ($key in $keys) {
   }
 }
 
-Write-Host 'Removed Open Diff context menu entries for files and folders.'
+Write-Host 'Removed OpenDiff context menu entries for files and folders.'

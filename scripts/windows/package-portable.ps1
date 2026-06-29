@@ -8,8 +8,8 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 $releaseRoot = Join-Path $repoRoot "src-tauri\target\$Configuration"
 $portableRoot = Join-Path $repoRoot "src-tauri\target\$Configuration\bundle\portable"
-$stagingRoot = Join-Path $portableRoot "Open Diff"
-$archivePath = Join-Path $portableRoot "Open Diff_${Version}_x64_portable.zip"
+$stagingRoot = Join-Path $portableRoot "OpenDiff"
+$archivePath = Join-Path $portableRoot "OpenDiff_${Version}_x64_portable.zip"
 
 corepack pnpm tauri:build
 

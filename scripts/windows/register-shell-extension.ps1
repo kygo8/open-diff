@@ -2,7 +2,7 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$AppPath,
 
-  [string]$ProductName = 'Open Diff',
+  [string]$ProductName = 'OpenDiff',
 
   [string]$VerbKey = 'OpenDiff'
 )

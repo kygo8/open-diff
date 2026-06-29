@@ -77,7 +77,7 @@ describe('packagingConfig', () => {
       readFileSync(resolve(process.cwd(), 'src-tauri/tauri.conf.json'), 'utf8'),
     ) as TauriConfig
 
-    expect(config.productName).toBe('Open Diff')
+    expect(config.productName).toBe('OpenDiff')
     expect(config.identifier).toBe('io.github.kygo8.open-diff')
     expect(config.bundle.targets).toEqual(['msi'])
     expect(config.bundle.icon).toContain('icons/icon.ico')
@@ -104,7 +104,7 @@ describe('packagingConfig', () => {
     expect(config.bundle.targets).toEqual(['app', 'dmg'])
     expect(config.bundle.category).toBe('DeveloperTool')
     expect(config.bundle.icon).toContain('icons/icon.icns')
-    expect(config.bundle.macOS?.bundleName).toBe('Open Diff')
+    expect(config.bundle.macOS?.bundleName).toBe('OpenDiff')
     expect(config.bundle.macOS?.bundleVersion).toBe(baseConfig.version)
     expect(config.bundle.macOS?.minimumSystemVersion).toBe('11.0')
     expect(config.bundle.macOS?.hardenedRuntime).toBe(true)

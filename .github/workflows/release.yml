@@ -42,8 +42,8 @@ jobs:
 
           process.stdout.write(JSON.stringify({
             tag_name: tag,
-            name: `Open Diff ${tag}`,
-            body: 'See the assets below to download and install Open Diff for your platform.',
+            name: `OpenDiff ${tag}`,
+            body: 'See the assets below to download and install OpenDiff for your platform.',
             draft: false,
             prerelease,
             generate_release_notes: true,
@@ -161,9 +161,9 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           tagName: ${{ github.ref_name }}
-          releaseName: Open Diff ${{ github.ref_name }}
+          releaseName: OpenDiff ${{ github.ref_name }}
           releaseBody: |
-            See the assets below to download and install Open Diff for your platform.
+            See the assets below to download and install OpenDiff for your platform.
           generateReleaseNotes: true
           releaseDraft: false
           prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}

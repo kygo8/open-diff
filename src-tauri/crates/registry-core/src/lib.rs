@@ -631,7 +631,7 @@ mod tests {
                     RegistryHive::LocalMachine,
                     "Software/OpenDiff",
                     "InstallPath",
-                    RegistryValueData::String("C:/Program Files/Open Diff".to_owned()),
+                    RegistryValueData::String("C:/Program Files/OpenDiff".to_owned()),
                 )
                 .with_modified_at_ms(1_700_000_000_000),
             );
@@ -651,7 +651,7 @@ mod tests {
         assert_eq!(value.name, "InstallPath");
         assert_eq!(
             value.data,
-            RegistryValueData::String("C:/Program Files/Open Diff".to_owned())
+            RegistryValueData::String("C:/Program Files/OpenDiff".to_owned())
         );
         assert_eq!(value.modified_at_ms, Some(1_700_000_000_000));
     }
@@ -710,7 +710,7 @@ mod tests {
 
 [HKEY_LOCAL_MACHINE\Software\OpenDiff]
 @="Default Label"
-"InstallPath"="C:\\Program Files\\Open Diff"
+"InstallPath"="C:\\Program Files\\OpenDiff"
 "Enabled"=dword:00000001
 "Payload"=hex:01,02,0a
 
@@ -730,7 +730,7 @@ mod tests {
                 )
                 .unwrap()
                 .data,
-            RegistryValueData::String("C:\\Program Files\\Open Diff".to_owned())
+            RegistryValueData::String("C:\\Program Files\\OpenDiff".to_owned())
         );
         assert_eq!(
             document

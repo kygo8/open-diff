@@ -4,13 +4,13 @@ import { createWindowsPortablePackagePlan } from './portablePackage'
 describe('portablePackage', () => {
   it('creates a stable Windows portable package plan', () => {
     const plan = createWindowsPortablePackagePlan({
-      productName: 'Open Diff',
+      productName: 'OpenDiff',
       version: '1.0.0',
       releaseDir: 'src-tauri/target/release',
       outputDir: 'src-tauri/target/release/bundle/portable',
     })
 
-    expect(plan.archiveName).toBe('Open Diff_1.0.0_x64_portable.zip')
+    expect(plan.archiveName).toBe('OpenDiff_1.0.0_x64_portable.zip')
     expect(plan.files).toEqual([
       {
         source: 'src-tauri/target/release/open-diff-app.exe',

@@ -60,7 +60,7 @@ license.workspace = true
 default-run = "open-diff-app"
 
 [lib]
-name = "open_diff_app"
+name = "open_diff_app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [[bin]]

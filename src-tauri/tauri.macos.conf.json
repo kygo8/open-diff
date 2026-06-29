@@ -4,7 +4,7 @@
     "category": "DeveloperTool",
     "icon": ["icons/icon.icns"],
     "macOS": {
-      "bundleName": "Open Diff",
+      "bundleName": "OpenDiff",
       "bundleVersion": "1.0.1",
       "minimumSystemVersion": "11.0",
       "hardenedRuntime": true,

@@ -30,7 +30,7 @@ describe('windows shell extension scripts', () => {
     expect(script).toContain('open-diff-app.exe')
     expect(script).toContain('open-diff-cli.exe')
     expect(script).toContain('Compress-Archive')
-    expect(script).toContain('Open Diff_')
+    expect(script).toContain('OpenDiff_')
     expect(script).toContain('_x64_portable.zip')
   })
 })

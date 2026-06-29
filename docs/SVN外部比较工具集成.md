@@ -11,7 +11,7 @@ Subversion 的 `diff-cmd` 会接收 GNU diff 风格参数。`open-diff-cli svn-d
 使用以下命令生成 Subversion 配置片段和 Windows wrapper 脚本模板：
 
 ```powershell
-open-diff-cli svn-diff-config "C:/Program Files/Open Diff/open-diff-cli.exe" "C:/Tools/open-diff-svn-diff.cmd"
+open-diff-cli svn-diff-config "C:/Program Files/OpenDiff/open-diff-cli.exe" "C:/Tools/open-diff-svn-diff.cmd"
 ```
 
 输出内容包含：
@@ -37,7 +37,7 @@ diff-extensions = -u
 
 ```bat
 @echo off
-"C:/Program Files/Open Diff/open-diff-cli.exe" svn-diff %*
+"C:/Program Files/OpenDiff/open-diff-cli.exe" svn-diff %*
 ```
 
 ## 一次性运行

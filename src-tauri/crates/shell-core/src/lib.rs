@@ -298,15 +298,15 @@ mod tests {
     #[test]
     fn builds_windows_context_menu_registration_script_for_files_and_directories() {
         let config = WindowsShellExtensionConfig::new(
-            "Open Diff",
-            "C:/Program Files/Open Diff/open-diff-app.exe",
+            "OpenDiff",
+            "C:/Program Files/OpenDiff/open-diff-app.exe",
         );
 
         let script = WindowsShellExtensionScriptBuilder::new(config).registration_script();
 
         assert!(script.contains("HKCU:\\Software\\Classes\\*\\shell\\OpenDiff"));
         assert!(script.contains("HKCU:\\Software\\Classes\\Directory\\shell\\OpenDiff"));
-        assert!(script.contains("Compare with Open Diff"));
+        assert!(script.contains("Compare with OpenDiff"));
         assert!(script.contains("open-diff-app.exe"));
         assert!(script.contains("--shell-compare"));
         assert!(script.contains("%1"));
@@ -315,8 +315,8 @@ mod tests {
     #[test]
     fn builds_windows_context_menu_uninstall_script_for_registered_keys() {
         let config = WindowsShellExtensionConfig::new(
-            "Open Diff",
-            "C:/Program Files/Open Diff/open-diff-app.exe",
+            "OpenDiff",
+            "C:/Program Files/OpenDiff/open-diff-app.exe",
         );
 
         let script = WindowsShellExtensionScriptBuilder::new(config).uninstall_script();

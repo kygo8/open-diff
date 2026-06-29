@@ -818,20 +818,20 @@ mod tests {
         let invocation = parse_cli_args([
             "open-diff-cli",
             "git-difftool-config",
-            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            "C:/Program Files/OpenDiff/open-diff-cli.exe",
         ])
         .expect("git difftool config should parse");
 
         assert_eq!(
             invocation.command,
             CliCommand::GitDifftoolConfig {
-                executable_path: "C:/Program Files/Open Diff/open-diff-cli.exe".to_owned(),
+                executable_path: "C:/Program Files/OpenDiff/open-diff-cli.exe".to_owned(),
                 scope: GitConfigScope::Global,
             }
         );
 
         let config = build_git_difftool_config(
-            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            "C:/Program Files/OpenDiff/open-diff-cli.exe",
             GitConfigScope::Global,
         )
         .expect("config should build");
@@ -842,7 +842,7 @@ mod tests {
             config.commands,
             vec![
                 "git config --global diff.tool open-diff".to_owned(),
-                "git config --global difftool.open-diff.cmd '\"C:/Program Files/Open Diff/open-diff-cli.exe\" compare \"$LOCAL\" \"$REMOTE\"'".to_owned(),
+                "git config --global difftool.open-diff.cmd '\"C:/Program Files/OpenDiff/open-diff-cli.exe\" compare \"$LOCAL\" \"$REMOTE\"'".to_owned(),
                 "git config --global difftool.open-diff.prompt false".to_owned(),
                 "git config --global difftool.open-diff.trustExitCode true".to_owned(),
             ]
@@ -869,20 +869,20 @@ mod tests {
         let invocation = parse_cli_args([
             "open-diff-cli",
             "git-mergetool-config",
-            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            "C:/Program Files/OpenDiff/open-diff-cli.exe",
         ])
         .expect("git mergetool config should parse");
 
         assert_eq!(
             invocation.command,
             CliCommand::GitMergetoolConfig {
-                executable_path: "C:/Program Files/Open Diff/open-diff-cli.exe".to_owned(),
+                executable_path: "C:/Program Files/OpenDiff/open-diff-cli.exe".to_owned(),
                 scope: GitConfigScope::Global,
             }
         );
 
         let config = build_git_mergetool_config(
-            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            "C:/Program Files/OpenDiff/open-diff-cli.exe",
             GitConfigScope::Global,
         )
         .expect("config should build");
@@ -893,7 +893,7 @@ mod tests {
             config.commands,
             vec![
                 "git config --global merge.tool open-diff".to_owned(),
-                "git config --global mergetool.open-diff.cmd '\"C:/Program Files/Open Diff/open-diff-cli.exe\" merge-text \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"'".to_owned(),
+                "git config --global mergetool.open-diff.cmd '\"C:/Program Files/OpenDiff/open-diff-cli.exe\" merge-text \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"'".to_owned(),
                 "git config --global mergetool.open-diff.prompt false".to_owned(),
                 "git config --global mergetool.open-diff.trustExitCode true".to_owned(),
                 "git config --global mergetool.open-diff.keepBackup false".to_owned(),
@@ -940,7 +940,7 @@ mod tests {
         );
 
         let config = build_svn_diff_config(
-            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            "C:/Program Files/OpenDiff/open-diff-cli.exe",
             "C:/Tools/open-diff-svn-diff.cmd",
         )
         .expect("svn config should build");
@@ -952,7 +952,7 @@ mod tests {
         );
         assert_eq!(
             config.wrapper_script,
-            "@echo off\r\n\"C:/Program Files/Open Diff/open-diff-cli.exe\" svn-diff %*\r\n"
+            "@echo off\r\n\"C:/Program Files/OpenDiff/open-diff-cli.exe\" svn-diff %*\r\n"
         );
         assert_eq!(
             config.example_command,
@@ -962,14 +962,14 @@ mod tests {
         let config_invocation = parse_cli_args([
             "open-diff-cli",
             "svn-diff-config",
-            "C:/Program Files/Open Diff/open-diff-cli.exe",
+            "C:/Program Files/OpenDiff/open-diff-cli.exe",
             "C:/Tools/open-diff-svn-diff.cmd",
         ])
         .expect("svn diff config should parse");
         assert_eq!(
             config_invocation.command,
             CliCommand::SvnDiffConfig {
-                executable_path: "C:/Program Files/Open Diff/open-diff-cli.exe".to_owned(),
+                executable_path: "C:/Program Files/OpenDiff/open-diff-cli.exe".to_owned(),
                 wrapper_path: "C:/Tools/open-diff-svn-diff.cmd".to_owned(),
             }
         );

@@ -155,8 +155,8 @@ describe('packagingConfig', () => {
     expect(config.bundle.linux?.deb?.recommends).toEqual(['xdg-utils'])
     expect(config.bundle.linux?.deb?.provides).toEqual(['open-diff'])
     expect(config.bundle.linux?.deb?.files).toEqual({
-      'README.md': '/usr/share/doc/open-diff/README.md',
-      LICENSE: '/usr/share/doc/open-diff/LICENSE',
+      '/usr/share/doc/open-diff/README.md': 'README.md',
+      '/usr/share/doc/open-diff/LICENSE': 'LICENSE',
     })
 
     const iconPath = resolve(process.cwd(), 'src-tauri/icons/icon.png')
@@ -190,8 +190,8 @@ describe('packagingConfig', () => {
     expect(config.bundle.linux?.rpm?.recommends).toEqual(['xdg-utils'])
     expect(config.bundle.linux?.rpm?.provides).toEqual(['open-diff'])
     expect(config.bundle.linux?.rpm?.files).toEqual({
-      'README.md': '/usr/share/doc/open-diff/README.md',
-      LICENSE: '/usr/share/doc/open-diff/LICENSE',
+      '/usr/share/doc/open-diff/README.md': 'README.md',
+      '/usr/share/doc/open-diff/LICENSE': 'LICENSE',
     })
   })
 

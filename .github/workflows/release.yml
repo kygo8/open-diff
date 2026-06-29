@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   create-release:
-    name: Create draft release
+    name: Create release
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.release.outputs.release_id }}
@@ -44,7 +44,7 @@ jobs:
             tag_name: tag,
             name: `Open Diff ${tag}`,
             body: 'See the assets below to download and install Open Diff for your platform.',
-            draft: true,
+            draft: false,
             prerelease,
             generate_release_notes: true,
           }))
@@ -75,7 +75,8 @@ jobs:
           const fs = require('fs')
           const tag = process.env.TAG_NAME
           const releases = JSON.parse(fs.readFileSync('releases.json', 'utf8'))
-          const release = releases.find((item) => item.tag_name === tag)
+          const release = releases.find((item) => item.tag_name === tag && !item.draft)
+            ?? releases.find((item) => item.tag_name === tag)
 
           if (!release) {
             console.error(`No existing release found for ${tag}`)
@@ -164,7 +165,7 @@ jobs:
           releaseBody: |
             See the assets below to download and install Open Diff for your platform.
           generateReleaseNotes: true
-          releaseDraft: true
+          releaseDraft: false
           prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
           tauriScript: corepack pnpm tauri
           args: ${{ matrix.args }}

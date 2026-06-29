@@ -18,8 +18,8 @@
         "section": "devel",
         "priority": "optional",
         "files": {
-          "README.md": "/usr/share/doc/open-diff/README.md",
-          "LICENSE": "/usr/share/doc/open-diff/LICENSE"
+          "/usr/share/doc/open-diff/README.md": "README.md",
+          "/usr/share/doc/open-diff/LICENSE": "LICENSE"
         }
       },
       "rpm": {
@@ -29,8 +29,8 @@
         "release": "1",
         "epoch": 0,
         "files": {
-          "README.md": "/usr/share/doc/open-diff/README.md",
-          "LICENSE": "/usr/share/doc/open-diff/LICENSE"
+          "/usr/share/doc/open-diff/README.md": "README.md",
+          "/usr/share/doc/open-diff/LICENSE": "LICENSE"
         }
       }
     }

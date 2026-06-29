@@ -1,135 +1,43 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-
-type MergeRole = 'Base' | 'Left' | 'Right'
-type MergeEntryKind = 'File' | 'Directory' | 'Missing'
-type MergeActionKind =
-  | 'Keep output'
-  | 'Copy left to output'
-  | 'Copy right to output'
-  | 'Delete output'
-  | 'Mark conflict'
-
-interface MergeSide {
-  role: MergeRole
-  kind: MergeEntryKind
-  size?: string
-  modified?: string
-}
-
-interface MergePlanRow {
-  id: string
-  path: string
-  base: MergeSide
-  left: MergeSide
-  right: MergeSide
-  action: MergeActionKind
-  detail: string
-  conflict?: MergeConflict
-}
-
-interface MergeConflict {
-  path: string
-  reason: string
-  baseContext: string
-  leftContext: string
-  rightContext: string
-}
+import { buildFolderMergePlan as requestFolderMergePlan } from '@/api/folderMerge'
+import type {
+  FolderMergeConflict,
+  FolderMergePlanResponse,
+  FolderMergePlanRow,
+  FolderMergeSide,
+} from '@/types/folderMerge'
 
 const leftPath = ref('D:/workspace/merge/left')
 const basePath = ref('D:/workspace/merge/base')
 const rightPath = ref('D:/workspace/merge/right')
 const outputPath = ref('D:/workspace/merge/output')
-const planRows = ref<MergePlanRow[]>([])
+const plan = ref<FolderMergePlanResponse>()
 const router = useRouter()
 const lastOpenedConflictPath = ref('')
 
+const planRows = computed<FolderMergePlanRow[]>(() => plan.value?.rows ?? [])
 const hasPlan = computed(() => planRows.value.length > 0)
 const conflicts = computed(() =>
   planRows.value.flatMap((row) => (row.conflict ? [row.conflict] : [])),
 )
-const automaticActions = computed(
-  () => planRows.value.filter((row) => row.action !== 'Mark conflict').length,
-)
 const summary = computed(() => ({
-  actions: planRows.value.length,
-  automatic: automaticActions.value,
-  conflicts: conflicts.value.length,
+  actions: plan.value?.summary.actions ?? 0,
+  automatic: plan.value?.summary.automatic ?? 0,
+  conflicts: plan.value?.summary.conflicts ?? 0,
 }))
 
-function buildFolderMergePlan(): void {
-  planRows.value = [
-    {
-      id: 'same-txt',
-      path: 'same.txt',
-      base: createSide('Base', 'File', '1.2 KB', '2026-06-20 09:00'),
-      left: createSide('Left', 'File', '1.2 KB', '2026-06-20 09:00'),
-      right: createSide('Right', 'File', '1.2 KB', '2026-06-20 09:00'),
-      action: 'Keep output',
-      detail: 'All sides match; output keeps the current file.',
-    },
-    {
-      id: 'left-add',
-      path: 'left-add.txt',
-      base: createSide('Base', 'Missing'),
-      left: createSide('Left', 'File', '2.4 KB', '2026-06-25 10:12'),
-      right: createSide('Right', 'Missing'),
-      action: 'Copy left to output',
-      detail: 'Left added a new file and right has no competing change.',
-    },
-    {
-      id: 'right-add',
-      path: 'right-add.txt',
-      base: createSide('Base', 'Missing'),
-      left: createSide('Left', 'Missing'),
-      right: createSide('Right', 'File', '3.0 KB', '2026-06-25 10:15'),
-      action: 'Copy right to output',
-      detail: 'Right added a new file and left has no competing change.',
-    },
-    {
-      id: 'stale-cache',
-      path: 'cache/stale.tmp',
-      base: createSide('Base', 'File', '800 B', '2026-06-18 08:30'),
-      left: createSide('Left', 'Missing'),
-      right: createSide('Right', 'Missing'),
-      action: 'Delete output',
-      detail: 'Both sides deleted the base file.',
-    },
-    {
-      id: 'config',
-      path: 'config',
-      base: createSide('Base', 'Directory', '--', '2026-06-18 08:30'),
-      left: createSide('Left', 'File', '4.1 KB', '2026-06-26 11:20'),
-      right: createSide('Right', 'Directory', '--', '2026-06-26 11:25'),
-      action: 'Mark conflict',
-      detail: 'Left and right changed the same path differently.',
-      conflict: {
-        path: 'config',
-        reason: 'Left and right changed the same path differently',
-        baseContext: 'Base: Directory',
-        leftContext: 'Left: File',
-        rightContext: 'Right: Directory',
-      },
-    },
-  ]
+async function buildFolderMergePlan(): Promise<void> {
+  plan.value = await requestFolderMergePlan({
+    leftRoot: leftPath.value,
+    baseRoot: basePath.value,
+    rightRoot: rightPath.value,
+    outputRoot: outputPath.value,
+  })
 }
 
-function createSide(
-  role: MergeRole,
-  kind: MergeEntryKind,
-  size?: string,
-  modified?: string,
-): MergeSide {
-  return {
-    role,
-    kind,
-    size,
-    modified,
-  }
-}
-
-function sideLabel(side: MergeSide): string {
+function sideLabel(side: FolderMergeSide): string {
   if (side.kind === 'Missing') {
     return 'Missing'
   }
@@ -137,7 +45,7 @@ function sideLabel(side: MergeSide): string {
   return `${side.kind} | ${side.size ?? '--'} | ${side.modified ?? '--'}`
 }
 
-function openConflictInTextMerge(conflict: MergeConflict): void {
+function openConflictInTextMerge(conflict: FolderMergeConflict): void {
   lastOpenedConflictPath.value = conflict.path
   void router.push('/merge/text')
 }

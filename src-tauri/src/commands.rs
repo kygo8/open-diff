@@ -339,6 +339,57 @@ pub struct FolderSyncPreviewSummary {
     pub conflict: usize,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergePlanResponse {
+    pub left_root: String,
+    pub base_root: String,
+    pub right_root: String,
+    pub output_root: String,
+    pub rows: Vec<FolderMergePlanRow>,
+    pub summary: FolderMergePlanSummary,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergePlanRow {
+    pub id: String,
+    pub path: String,
+    pub base: FolderMergeSideEntry,
+    pub left: FolderMergeSideEntry,
+    pub right: FolderMergeSideEntry,
+    pub action: String,
+    pub detail: String,
+    pub conflict: Option<FolderMergeConflictDetail>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergeSideEntry {
+    pub role: String,
+    pub kind: String,
+    pub size: Option<String>,
+    pub modified: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergeConflictDetail {
+    pub path: String,
+    pub reason: String,
+    pub base_context: String,
+    pub left_context: String,
+    pub right_context: String,
+}
+
+#[derive(Debug, Clone, Default, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergePlanSummary {
+    pub actions: usize,
+    pub automatic: usize,
+    pub conflicts: usize,
+}
+
 #[tauri::command]
 pub fn diff_text(
     left: String,
@@ -546,6 +597,56 @@ pub fn preview_folder_sync(
         strategy,
         rows,
         summary,
+    })
+}
+
+#[tauri::command]
+pub fn build_folder_merge_plan(
+    left_root: String,
+    base_root: String,
+    right_root: String,
+    output_root: String,
+) -> Result<FolderMergePlanResponse, AppErrorPayload> {
+    let cancellation_token = job_core::CancellationToken::default();
+    let base_tree = folder_core::scan_local_folder(&base_root, &cancellation_token)
+        .map_err(|error| folder_scan_error(&base_root, error))?;
+    let left_tree = folder_core::scan_local_folder(&left_root, &cancellation_token)
+        .map_err(|error| folder_scan_error(&left_root, error))?;
+    let right_tree = folder_core::scan_local_folder(&right_root, &cancellation_token)
+        .map_err(|error| folder_scan_error(&right_root, error))?;
+    let document =
+        folder_merge_core::FolderMergeDocument::from_inputs(folder_merge_core::FolderMergeInput {
+            base: folder_merge_side(
+                folder_merge_core::FolderMergeRole::Base,
+                &base_root,
+                &base_tree,
+            ),
+            left: folder_merge_side(
+                folder_merge_core::FolderMergeRole::Left,
+                &left_root,
+                &left_tree,
+            ),
+            right: folder_merge_side(
+                folder_merge_core::FolderMergeRole::Right,
+                &right_root,
+                &right_tree,
+            ),
+            output_root: output_root.clone(),
+        });
+    let rows = folder_merge_rows(&document);
+    let conflicts = rows.iter().filter(|row| row.conflict.is_some()).count();
+
+    Ok(FolderMergePlanResponse {
+        left_root,
+        base_root,
+        right_root,
+        output_root,
+        summary: FolderMergePlanSummary {
+            actions: rows.len(),
+            automatic: rows.len().saturating_sub(conflicts),
+            conflicts,
+        },
+        rows,
     })
 }
 
@@ -1062,6 +1163,207 @@ fn increment_folder_sync_summary(summary: &mut FolderSyncPreviewSummary, action:
         "Leave" => summary.leave += 1,
         "Conflict" => summary.conflict += 1,
         _ => {}
+    }
+}
+
+fn folder_merge_side(
+    role: folder_merge_core::FolderMergeRole,
+    root_path: &str,
+    tree: &FolderScanNode,
+) -> folder_merge_core::FolderMergeSide {
+    let mut side = folder_merge_core::FolderMergeSide::new(role, root_path);
+
+    collect_folder_merge_entries(tree, &mut side.entries);
+
+    side
+}
+
+fn collect_folder_merge_entries(
+    node: &FolderScanNode,
+    entries: &mut Vec<folder_merge_core::FolderMergeEntry>,
+) {
+    for child in &node.children {
+        entries.push(folder_merge_core::FolderMergeEntry {
+            relative_path: child.relative_path.clone(),
+            kind: folder_merge_entry_kind(&child.kind),
+        });
+        collect_folder_merge_entries(child, entries);
+    }
+}
+
+fn folder_merge_entry_kind(kind: &FolderNodeKind) -> folder_merge_core::FolderMergeEntryKind {
+    match kind {
+        FolderNodeKind::File => folder_merge_core::FolderMergeEntryKind::File,
+        FolderNodeKind::Directory => folder_merge_core::FolderMergeEntryKind::Directory,
+    }
+}
+
+fn folder_merge_rows(document: &folder_merge_core::FolderMergeDocument) -> Vec<FolderMergePlanRow> {
+    let side_index = folder_merge_side_index(document);
+    let plan = folder_merge_core::build_folder_merge_plan(document);
+
+    plan.actions
+        .iter()
+        .map(|action| folder_merge_row(action, &side_index))
+        .collect()
+}
+
+fn folder_merge_side_index(
+    document: &folder_merge_core::FolderMergeDocument,
+) -> BTreeMap<String, FolderMergeIndexedSides> {
+    let mut index = BTreeMap::<String, FolderMergeIndexedSides>::new();
+
+    index_folder_merge_side(
+        &document.base,
+        |sides, entry| sides.base = Some(entry),
+        &mut index,
+    );
+    index_folder_merge_side(
+        &document.left,
+        |sides, entry| sides.left = Some(entry),
+        &mut index,
+    );
+    index_folder_merge_side(
+        &document.right,
+        |sides, entry| sides.right = Some(entry),
+        &mut index,
+    );
+
+    index
+}
+
+#[derive(Debug, Clone, Default)]
+struct FolderMergeIndexedSides {
+    base: Option<folder_merge_core::FolderMergeEntry>,
+    left: Option<folder_merge_core::FolderMergeEntry>,
+    right: Option<folder_merge_core::FolderMergeEntry>,
+}
+
+fn index_folder_merge_side(
+    side: &folder_merge_core::FolderMergeSide,
+    apply: impl Fn(&mut FolderMergeIndexedSides, folder_merge_core::FolderMergeEntry),
+    index: &mut BTreeMap<String, FolderMergeIndexedSides>,
+) {
+    for entry in &side.entries {
+        let sides = index.entry(entry.relative_path.clone()).or_default();
+
+        apply(sides, entry.clone());
+    }
+}
+
+fn folder_merge_row(
+    action: &folder_merge_core::FolderMergeAction,
+    side_index: &BTreeMap<String, FolderMergeIndexedSides>,
+) -> FolderMergePlanRow {
+    let sides = side_index
+        .get(&action.relative_path)
+        .cloned()
+        .unwrap_or_default();
+    let path = action.relative_path.clone();
+
+    FolderMergePlanRow {
+        id: row_id_from_relative_path(&path),
+        path: path.clone(),
+        base: folder_merge_side_entry("Base", sides.base.as_ref()),
+        left: folder_merge_side_entry("Left", sides.left.as_ref()),
+        right: folder_merge_side_entry("Right", sides.right.as_ref()),
+        action: folder_merge_action_label(&action.kind),
+        detail: folder_merge_action_detail(action),
+        conflict: action
+            .conflict_detail
+            .as_ref()
+            .map(|conflict| folder_merge_conflict_detail(&path, conflict)),
+    }
+}
+
+fn folder_merge_side_entry(
+    role: &str,
+    entry: Option<&folder_merge_core::FolderMergeEntry>,
+) -> FolderMergeSideEntry {
+    FolderMergeSideEntry {
+        role: role.to_owned(),
+        kind: entry
+            .map(|entry| folder_merge_entry_kind_label(&entry.kind))
+            .unwrap_or_else(|| "Missing".to_owned()),
+        size: None,
+        modified: None,
+    }
+}
+
+fn folder_merge_entry_kind_label(kind: &folder_merge_core::FolderMergeEntryKind) -> String {
+    match kind {
+        folder_merge_core::FolderMergeEntryKind::File => "File",
+        folder_merge_core::FolderMergeEntryKind::Directory => "Directory",
+    }
+    .to_owned()
+}
+
+fn folder_merge_action_label(kind: &folder_merge_core::FolderMergeActionKind) -> String {
+    match kind {
+        folder_merge_core::FolderMergeActionKind::KeepOutput => "Keep output",
+        folder_merge_core::FolderMergeActionKind::CopyLeftToOutput => "Copy left to output",
+        folder_merge_core::FolderMergeActionKind::CopyRightToOutput => "Copy right to output",
+        folder_merge_core::FolderMergeActionKind::DeleteOutput => "Delete output",
+        folder_merge_core::FolderMergeActionKind::MarkConflict => "Mark conflict",
+    }
+    .to_owned()
+}
+
+fn folder_merge_action_detail(action: &folder_merge_core::FolderMergeAction) -> String {
+    match action.kind {
+        folder_merge_core::FolderMergeActionKind::KeepOutput => {
+            "All sides match; output keeps the current item."
+        }
+        folder_merge_core::FolderMergeActionKind::CopyLeftToOutput => {
+            "Left added or retained an item that should be copied to output."
+        }
+        folder_merge_core::FolderMergeActionKind::CopyRightToOutput => {
+            "Right added or retained an item that should be copied to output."
+        }
+        folder_merge_core::FolderMergeActionKind::DeleteOutput => {
+            "The output item should be deleted for this path."
+        }
+        folder_merge_core::FolderMergeActionKind::MarkConflict => {
+            "Left and right changed the same path differently."
+        }
+    }
+    .to_owned()
+}
+
+fn folder_merge_conflict_detail(
+    path: &str,
+    conflict: &folder_merge_core::FolderMergeConflict,
+) -> FolderMergeConflictDetail {
+    FolderMergeConflictDetail {
+        path: path.to_owned(),
+        reason: folder_merge_conflict_reason_label(&conflict.reason),
+        base_context: folder_merge_conflict_context("Base", conflict.base.as_ref()),
+        left_context: folder_merge_conflict_context("Left", conflict.left.as_ref()),
+        right_context: folder_merge_conflict_context("Right", conflict.right.as_ref()),
+    }
+}
+
+fn folder_merge_conflict_reason_label(
+    reason: &folder_merge_core::FolderMergeConflictReason,
+) -> String {
+    match reason {
+        folder_merge_core::FolderMergeConflictReason::BothSidesChanged => {
+            "Left and right changed the same path differently"
+        }
+        folder_merge_core::FolderMergeConflictReason::IncompatibleEntryKind => {
+            "Entry kinds are incompatible across merge sides"
+        }
+    }
+    .to_owned()
+}
+
+fn folder_merge_conflict_context(
+    role: &str,
+    entry: Option<&folder_merge_core::FolderMergeEntry>,
+) -> String {
+    match entry {
+        Some(entry) => format!("{role}: {}", folder_merge_entry_kind_label(&entry.kind)),
+        None => format!("{role}: Missing"),
     }
 }
 
@@ -1767,6 +2069,69 @@ mod tests {
             .rows
             .iter()
             .any(|row| row.relative_path == "prod/old.dll" && row.action == "Delete"));
+    }
+
+    #[test]
+    fn build_folder_merge_plan_scans_local_roots_and_returns_actions() {
+        let root = unique_temp_dir("folder-merge-command");
+        let base = root.join("base");
+        let left = root.join("left");
+        let right = root.join("right");
+        let output = root.join("output");
+
+        fs::create_dir_all(&base).expect("base directory should be created");
+        fs::create_dir_all(&left).expect("left directory should be created");
+        fs::create_dir_all(&right).expect("right directory should be created");
+        fs::create_dir_all(base.join("config")).expect("base config directory should be created");
+        fs::create_dir_all(right.join("config")).expect("right config directory should be created");
+        fs::create_dir_all(&output).expect("output directory should be created");
+        fs::write(base.join("same.txt"), "same").expect("base same file should be writable");
+        fs::write(left.join("same.txt"), "same").expect("left same file should be writable");
+        fs::write(right.join("same.txt"), "same").expect("right same file should be writable");
+        fs::write(left.join("left-add.txt"), "left").expect("left add file should be writable");
+        fs::write(right.join("right-add.txt"), "right").expect("right add file should be writable");
+        fs::write(base.join("delete.txt"), "base").expect("base delete file should be writable");
+        fs::write(left.join("delete.txt"), "left").expect("left delete file should be writable");
+        fs::write(left.join("config"), "file").expect("left config file should be writable");
+
+        let response = build_folder_merge_plan(
+            left.display().to_string(),
+            base.display().to_string(),
+            right.display().to_string(),
+            output.display().to_string(),
+        )
+        .expect("valid folders should build a merge plan");
+
+        assert_eq!(response.left_root, left.display().to_string());
+        assert_eq!(response.base_root, base.display().to_string());
+        assert_eq!(response.right_root, right.display().to_string());
+        assert_eq!(response.output_root, output.display().to_string());
+        assert_eq!(response.summary.conflicts, 1);
+        assert!(response
+            .rows
+            .iter()
+            .any(|row| row.path == "same.txt" && row.action == "Keep output"));
+        assert!(response
+            .rows
+            .iter()
+            .any(|row| row.path == "left-add.txt" && row.action == "Copy left to output"));
+        assert!(response
+            .rows
+            .iter()
+            .any(|row| row.path == "right-add.txt" && row.action == "Copy right to output"));
+        assert!(response
+            .rows
+            .iter()
+            .any(|row| row.path == "delete.txt" && row.action == "Delete output"));
+        assert!(response.rows.iter().any(|row| {
+            row.path == "config"
+                && row.action == "Mark conflict"
+                && row
+                    .conflict
+                    .as_ref()
+                    .map(|conflict| conflict.left_context.as_str())
+                    == Some("Left: File")
+        }));
     }
 
     #[test]

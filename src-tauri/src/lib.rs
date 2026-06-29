@@ -4,6 +4,7 @@ pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             commands::check_text_file_changed,
+            commands::build_folder_merge_plan,
             commands::compare_folder_paths,
             commands::compare_hex_files,
             commands::compare_media_files,

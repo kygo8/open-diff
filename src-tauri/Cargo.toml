@@ -82,6 +82,7 @@ tokio.workspace = true
 diff-core = { path = "crates/diff-core" }
 file-core = { path = "crates/file-core" }
 folder-core = { path = "crates/folder-core" }
+folder-merge-core = { path = "crates/folder-merge-core" }
 hex-core = { path = "crates/hex-core" }
 image.workspace = true
 image-core = { path = "crates/image-core" }

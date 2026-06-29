@@ -2242,6 +2242,7 @@ dependencies = [
  "diff-core",
  "file-core",
  "folder-core",
+ "folder-merge-core",
  "hex-core",
  "image",
  "image-core",

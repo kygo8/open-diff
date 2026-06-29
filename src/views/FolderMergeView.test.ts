@@ -1,12 +1,23 @@
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { buildFolderMergePlan } from '@/api/folderMerge'
 import FolderMergeView from './FolderMergeView.vue'
+import type {
+  FolderMergeEntryKind,
+  FolderMergePlanResponse,
+  FolderMergeRole,
+  FolderMergeSide,
+} from '@/types/folderMerge'
 import type { VueWrapper } from '@vue/test-utils'
 
 const push = vi.fn()
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
+}))
+
+vi.mock('@/api/folderMerge', () => ({
+  buildFolderMergePlan: vi.fn(),
 }))
 
 function mountFolderMergeView(): VueWrapper {
@@ -26,6 +37,8 @@ function mountFolderMergeView(): VueWrapper {
 describe('FolderMergeView', () => {
   beforeEach(() => {
     push.mockClear()
+    vi.mocked(buildFolderMergePlan).mockReset()
+    vi.mocked(buildFolderMergePlan).mockResolvedValue(createMergePlanResponse())
   })
 
   it('renders left, base, right, and output folder inputs', () => {
@@ -51,10 +64,16 @@ describe('FolderMergeView', () => {
     const summary = wrapper.find('[data-testid="folder-merge-summary"]')
     const plan = wrapper.find('[data-testid="folder-merge-plan"]')
 
-    expect(summary.text()).toContain('5')
+    expect(buildFolderMergePlan).toHaveBeenCalledWith({
+      leftRoot: 'D:/workspace/merge/left',
+      baseRoot: 'D:/workspace/merge/base',
+      rightRoot: 'D:/workspace/merge/right',
+      outputRoot: 'D:/workspace/merge/output',
+    })
+    expect(summary.text()).toContain('4')
     expect(summary.text()).toContain('1')
     expect(plan.exists()).toBe(true)
-    expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(5)
+    expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(4)
     expect(plan.text()).toContain('same.txt')
     expect(plan.text()).toContain('left-add.txt')
     expect(plan.text()).toContain('right-add.txt')
@@ -88,3 +107,74 @@ describe('FolderMergeView', () => {
     expect(push).toHaveBeenCalledWith('/merge/text')
   })
 })
+
+function createMergePlanResponse(): FolderMergePlanResponse {
+  return {
+    leftRoot: 'D:/workspace/merge/left',
+    baseRoot: 'D:/workspace/merge/base',
+    rightRoot: 'D:/workspace/merge/right',
+    outputRoot: 'D:/workspace/merge/output',
+    rows: [
+      {
+        id: 'same-txt',
+        path: 'same.txt',
+        base: createSide('Base', 'File', '4 B'),
+        left: createSide('Left', 'File', '4 B'),
+        right: createSide('Right', 'File', '4 B'),
+        action: 'Keep output',
+        detail: 'All sides match; output keeps the current file.',
+      },
+      {
+        id: 'left-add',
+        path: 'left-add.txt',
+        base: createSide('Base', 'Missing'),
+        left: createSide('Left', 'File', '5 B'),
+        right: createSide('Right', 'Missing'),
+        action: 'Copy left to output',
+        detail: 'Left added a new file and right has no competing change.',
+      },
+      {
+        id: 'right-add',
+        path: 'right-add.txt',
+        base: createSide('Base', 'Missing'),
+        left: createSide('Left', 'Missing'),
+        right: createSide('Right', 'File', '6 B'),
+        action: 'Copy right to output',
+        detail: 'Right added a new file and left has no competing change.',
+      },
+      {
+        id: 'config',
+        path: 'config',
+        base: createSide('Base', 'Directory'),
+        left: createSide('Left', 'File', '7 B'),
+        right: createSide('Right', 'Directory'),
+        action: 'Mark conflict',
+        detail: 'Left and right changed the same path differently.',
+        conflict: {
+          path: 'config',
+          reason: 'Left and right changed the same path differently',
+          baseContext: 'Base: Directory',
+          leftContext: 'Left: File',
+          rightContext: 'Right: Directory',
+        },
+      },
+    ],
+    summary: {
+      actions: 4,
+      automatic: 3,
+      conflicts: 1,
+    },
+  }
+}
+
+function createSide(
+  role: FolderMergeRole,
+  kind: FolderMergeEntryKind,
+  size?: string,
+): FolderMergeSide {
+  return {
+    role,
+    kind,
+    size,
+  }
+}

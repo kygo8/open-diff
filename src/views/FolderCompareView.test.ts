@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount, type VueWrapper } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderCompareView from './FolderCompareView.vue'
 import { compareFolderPaths } from '@/api/diff'
@@ -38,23 +38,27 @@ vi.mock('@/api/diff', () => ({
   }),
 }))
 
+function mountFolderCompareView(): VueWrapper {
+  return mount(FolderCompareView, {
+    global: {
+      stubs: {
+        NButton: {
+          props: ['disabled', 'loading'],
+          emits: ['click'],
+          template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+        },
+      },
+    },
+  })
+}
+
 describe('FolderCompareView', () => {
   beforeEach(() => {
     vi.mocked(compareFolderPaths).mockClear()
   })
 
   it('runs a real folder comparison request and renders returned rows', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled', 'loading'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/fixture-left')
     await wrapper.find('[data-testid="folder-right-root"]').setValue('D:/fixture-right')
@@ -72,16 +76,7 @@ describe('FolderCompareView', () => {
   })
 
   it('renders left and right folder tree tables with core columns', () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            template: '<button :disabled="disabled"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     expect(wrapper.find('[data-testid="folder-tree-table"]').exists()).toBe(true)
     expect(wrapper.findAll('[data-testid="folder-row"]').length).toBeLessThan(40)
@@ -95,17 +90,7 @@ describe('FolderCompareView', () => {
   })
 
   it('expands and collapses directory rows', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     expect(wrapper.text()).toContain('main.ts')
 
@@ -123,17 +108,7 @@ describe('FolderCompareView', () => {
   })
 
   it('virtualizes large folder lists and updates the rendered window on scroll', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     expect(wrapper.find('[data-testid="folder-virtual-spacer"]').exists()).toBe(true)
     expect(wrapper.findAll('[data-testid="folder-row"]').length).toBeLessThan(40)
@@ -149,17 +124,7 @@ describe('FolderCompareView', () => {
   })
 
   it('configures visible folder table columns', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     expect(wrapper.findAll('[data-column="left-size"]').length).toBeGreaterThan(0)
     expect(wrapper.find('[data-column="left-type"]').exists()).toBe(false)
@@ -175,17 +140,7 @@ describe('FolderCompareView', () => {
   })
 
   it('filters rows by comparison status', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     expect(wrapper.text()).toContain('README.md')
     expect(wrapper.text()).toContain('main.ts')
@@ -204,17 +159,7 @@ describe('FolderCompareView', () => {
   })
 
   it('temporarily shows suppressed rows with a marker', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-testid="toggle-status-same"]').setValue(false)
 
@@ -227,17 +172,7 @@ describe('FolderCompareView', () => {
   })
 
   it('selects a file row and records open actions for default, configured, and associated applications', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-row-id="readme"]').trigger('click')
 
@@ -265,17 +200,7 @@ describe('FolderCompareView', () => {
   })
 
   it('starts quick compare and compare-to actions for the selected folder file', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-row-id="src-main"]').trigger('click')
     await wrapper.find('[data-testid="quick-compare-selected-file"]').trigger('click')
@@ -290,17 +215,7 @@ describe('FolderCompareView', () => {
   })
 
   it('manually aligns an orphan with a selected counterpart and breaks the alignment', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-row-id="notes"]').trigger('click')
     await wrapper.find('[data-testid="align-with-target"]').setValue('release-summary')
@@ -315,17 +230,7 @@ describe('FolderCompareView', () => {
   })
 
   it('requires confirmation before copying selected files between left and right sides', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-row-id="src-main"]').trigger('click')
     await wrapper.find('[data-testid="copy-selected-to-right"]').trigger('click')
@@ -340,17 +245,7 @@ describe('FolderCompareView', () => {
   })
 
   it('confirms delete, move, and rename operations for the selected file', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-row-id="notes"]').trigger('click')
     await wrapper.find('[data-testid="rename-selected-file"]').trigger('click')
@@ -373,17 +268,7 @@ describe('FolderCompareView', () => {
   })
 
   it('changes selected file attributes and touch timestamp from the folder toolbar', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-row-id="readme"]').trigger('click')
     await wrapper.find('[data-testid="toggle-selected-readonly"]').setValue(true)
@@ -396,17 +281,7 @@ describe('FolderCompareView', () => {
   })
 
   it('excludes the selected row and refreshes the current selection', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-row-id="readme"]').trigger('click')
     await wrapper.find('[data-testid="exclude-selected-row"]').trigger('click')
@@ -421,17 +296,7 @@ describe('FolderCompareView', () => {
   })
 
   it('navigates to next and previous folder differences', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-testid="next-folder-difference"]').trigger('click')
 
@@ -447,17 +312,7 @@ describe('FolderCompareView', () => {
   })
 
   it('opens a sync preview with copy, overwrite, delete, and error operations', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     expect(wrapper.find('[data-testid="sync-preview-panel"]').exists()).toBe(false)
 
@@ -477,17 +332,7 @@ describe('FolderCompareView', () => {
   })
 
   it('changes a single sync preview item to leave or reverse copy', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-testid="preview-sync-plan"]').trigger('click')
     await wrapper.find('[data-testid="sync-preview-leave-copy-release-notes"]').trigger('click')
@@ -508,17 +353,7 @@ describe('FolderCompareView', () => {
   })
 
   it('requires safety confirmation before running sync with delete or overwrite actions', async () => {
-    const wrapper = mount(FolderCompareView, {
-      global: {
-        stubs: {
-          NButton: {
-            props: ['disabled'],
-            emits: ['click'],
-            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
-          },
-        },
-      },
-    })
+    const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-testid="preview-sync-plan"]').trigger('click')
     await wrapper.find('[data-testid="run-sync-preview"]').trigger('click')

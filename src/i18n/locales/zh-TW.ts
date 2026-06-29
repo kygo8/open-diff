@@ -132,6 +132,7 @@ export const zhTW: LanguagePack = {
     'ui.flipH': '水平翻轉',
     'ui.flipV': '垂直翻轉',
     'ui.folder': '資料夾',
+    'ui.folderCompare': '資料夾比較',
     'ui.folderMerge': '資料夾合併',
     'ui.folderSync': '資料夾同步',
     'ui.formatDefinitions': '格式定義',

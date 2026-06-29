@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { commandRegistry } from '@/app/commandRegistry'
+import { enUS } from './locales/en-US'
 
 const vueFiles = [
   'src/app/App.vue',
@@ -38,6 +40,15 @@ describe('English UI resources', () => {
     const hardcodedText = vueFiles.flatMap(findHardcodedTemplateText)
 
     expect(hardcodedText).toEqual([])
+  })
+
+  it('covers command registry titles and navigation action titles', () => {
+    const commandMessageKeys = commandRegistry.flatMap((command) => [
+      command.titleKey,
+      command.action.type === 'navigate' ? command.action.titleKey : null,
+    ])
+
+    expect(commandMessageKeys.filter((key) => key && !enUS.messages[key])).toEqual([])
   })
 })
 

@@ -139,6 +139,7 @@ export const enUS: LanguagePack = {
     'ui.flipH': 'Flip H',
     'ui.flipV': 'Flip V',
     'ui.folder': 'Folder',
+    'ui.folderCompare': 'Folder Compare',
     'ui.folderMerge': 'Folder Merge',
     'ui.folderSync': 'Folder Sync',
     'ui.formatDefinitions': 'Format definitions',

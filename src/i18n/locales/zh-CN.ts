@@ -131,6 +131,7 @@ export const zhCN: LanguagePack = {
     'ui.flipH': '水平翻转',
     'ui.flipV': '垂直翻转',
     'ui.folder': '文件夹',
+    'ui.folderCompare': '文件夹比较',
     'ui.folderMerge': '文件夹合并',
     'ui.folderSync': '文件夹同步',
     'ui.formatDefinitions': '格式定义',

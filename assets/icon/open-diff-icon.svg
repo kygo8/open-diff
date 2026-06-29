@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Open Diff icon</title>
+  <desc id="desc">A desktop app icon with blue and green code brackets split by a bright diff stripe.</desc>
+  <defs>
+    <linearGradient id="bg" x1="210" y1="128" x2="814" y2="896" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#17212b"/>
+      <stop offset="0.55" stop-color="#0d151c"/>
+      <stop offset="1" stop-color="#101923"/>
+    </linearGradient>
+    <linearGradient id="leftBracket" x1="244" y1="232" x2="424" y2="792" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#62adff"/>
+      <stop offset="0.5" stop-color="#2d7bf0"/>
+      <stop offset="1" stop-color="#1550b8"/>
+    </linearGradient>
+    <linearGradient id="rightBracket" x1="780" y1="232" x2="600" y2="792" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8ff0b2"/>
+      <stop offset="0.52" stop-color="#43c879"/>
+      <stop offset="1" stop-color="#17814e"/>
+    </linearGradient>
+    <linearGradient id="stripe" x1="512" y1="210" x2="512" y2="814" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="0.16" stop-color="#ecf7ff" stop-opacity="0.95"/>
+      <stop offset="0.5" stop-color="#ffffff"/>
+      <stop offset="0.84" stop-color="#dff2ff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="454" y1="410" x2="568" y2="410" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd36a"/>
+      <stop offset="1" stop-color="#ffae28"/>
+    </linearGradient>
+    <linearGradient id="bluePill" x1="392" y1="314" x2="511" y2="314" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#84c6ff"/>
+      <stop offset="1" stop-color="#378cf4"/>
+    </linearGradient>
+    <linearGradient id="greenPill" x1="513" y1="526" x2="632" y2="526" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#93efb3"/>
+      <stop offset="1" stop-color="#44c778"/>
+    </linearGradient>
+    <filter id="softShadow" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="22" stdDeviation="22" flood-color="#000000" flood-opacity="0.35"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+    <filter id="innerGlow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="9" result="blur"/>
+      <feOffset dy="-2" result="offset"/>
+      <feComposite in="offset" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="inner"/>
+      <feColorMatrix in="inner" type="matrix" values="1 1 1 0 0.3  1 1 1 0 0.55  1 1 1 0 0.8  0 0 0 0.35 0"/>
+      <feComposite in2="SourceGraphic" operator="over"/>
+    </filter>
+    <clipPath id="rounded">
+      <rect x="92" y="92" width="840" height="840" rx="188"/>
+    </clipPath>
+  </defs>
+  <g filter="url(#softShadow)">
+    <rect x="92" y="92" width="840" height="840" rx="188" fill="url(#bg)"/>
+    <g clip-path="url(#rounded)">
+      <path d="M92 92h840v96H92z" fill="#24303b" opacity="0.32"/>
+      <path d="M164 848c170-86 398-46 696-178v262H164z" fill="#071017" opacity="0.34"/>
+    </g>
+    <rect x="102" y="102" width="820" height="820" rx="178" fill="none" stroke="#273746" stroke-width="20" opacity="0.65"/>
+    <rect x="112" y="112" width="800" height="800" rx="168" fill="none" stroke="#ffffff" stroke-width="6" opacity="0.08"/>
+  </g>
+  <g filter="url(#innerGlow)">
+    <path d="M411 265 259 417a74 74 0 0 0 0 104l152 152a42 42 0 0 0 72-30V560l-78-78a18 18 0 0 1 0-25l78-78v-84a42 42 0 0 0-72-30Z" fill="url(#leftBracket)"/>
+    <path d="M411 265 259 417a74 74 0 0 0 0 104l152 152a42 42 0 0 0 72-30V560l-78-78a18 18 0 0 1 0-25l78-78v-84a42 42 0 0 0-72-30Z" fill="none" stroke="#9dccff" stroke-width="16" stroke-linejoin="round" opacity="0.55"/>
+    <path d="M613 265 765 417a74 74 0 0 1 0 104L613 673a42 42 0 0 1-72-30V560l78-78a18 18 0 0 0 0-25l-78-78v-84a42 42 0 0 1 72-30Z" fill="url(#rightBracket)"/>
+    <path d="M613 265 765 417a74 74 0 0 1 0 104L613 673a42 42 0 0 1-72-30V560l78-78a18 18 0 0 0 0-25l-78-78v-84a42 42 0 0 1 72-30Z" fill="none" stroke="#b9f6cf" stroke-width="16" stroke-linejoin="round" opacity="0.5"/>
+  </g>
+  <g>
+    <rect x="383" y="304" width="258" height="44" rx="22" fill="#071018" opacity="0.54"/>
+    <rect x="392" y="295" width="119" height="44" rx="22" fill="url(#bluePill)"/>
+    <rect x="513" y="295" width="119" height="44" rx="22" fill="#e1ebf4" opacity="0.68"/>
+    <rect x="383" y="410" width="258" height="44" rx="22" fill="#071018" opacity="0.54"/>
+    <rect x="454" y="401" width="114" height="44" rx="22" fill="url(#amber)"/>
+    <circle cx="601" cy="432" r="24" fill="#263440"/>
+    <rect x="383" y="516" width="258" height="44" rx="22" fill="#071018" opacity="0.54"/>
+    <rect x="392" y="507" width="119" height="44" rx="22" fill="#dce8f2" opacity="0.68"/>
+    <rect x="513" y="507" width="119" height="44" rx="22" fill="url(#greenPill)"/>
+    <rect x="407" y="622" width="210" height="38" rx="19" fill="#e9f5ff" opacity="0.62"/>
+  </g>
+  <g>
+    <rect x="503" y="214" width="18" height="596" rx="9" fill="url(#stripe)"/>
+    <rect x="486" y="238" width="52" height="548" rx="26" fill="#9ed8ff" opacity="0.16"/>
+    <rect x="509" y="230" width="6" height="568" rx="3" fill="#ffffff" opacity="0.88"/>
+  </g>
+</svg>

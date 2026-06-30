@@ -10,6 +10,7 @@ import type {
 } from '@/types/folderMerge'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import { useI18n } from '@/i18n'
 
 const leftPath = ref('D:/workspace/merge/left')
 const basePath = ref('D:/workspace/merge/base')
@@ -17,6 +18,7 @@ const rightPath = ref('D:/workspace/merge/right')
 const outputPath = ref('D:/workspace/merge/output')
 const plan = ref<FolderMergePlanResponse>()
 const router = useRouter()
+const { t } = useI18n()
 const lastOpenedConflictPath = ref('')
 
 const planRows = computed<FolderMergePlanRow[]>(() => plan.value?.rows ?? [])
@@ -41,10 +43,32 @@ async function buildFolderMergePlan(): Promise<void> {
 
 function sideLabel(side: FolderMergeSide): string {
   if (side.kind === 'Missing') {
-    return 'Missing'
+    return t('ui.missing')
   }
 
-  return `${side.kind} | ${side.size ?? '--'} | ${side.modified ?? '--'}`
+  return `${folderMergeEntryKindLabel(side.kind)} | ${side.size ?? '--'} | ${side.modified ?? '--'}`
+}
+
+function folderMergeEntryKindLabel(kind: FolderMergeSide['kind']): string {
+  const keys: Record<FolderMergeSide['kind'], string> = {
+    Directory: 'ui.directory',
+    File: 'ui.file',
+    Missing: 'ui.missing',
+  }
+
+  return t(keys[kind])
+}
+
+function folderMergeActionLabel(action: FolderMergePlanRow['action']): string {
+  const keys: Record<FolderMergePlanRow['action'], string> = {
+    'Copy left to output': 'merge.action.copyLeftToOutput',
+    'Copy right to output': 'merge.action.copyRightToOutput',
+    'Delete output': 'merge.action.deleteOutput',
+    'Keep output': 'merge.action.keepOutput',
+    'Mark conflict': 'merge.action.markConflict',
+  }
+
+  return t(keys[action])
 }
 
 function openConflictInTextMerge(conflict: FolderMergeConflict): void {
@@ -56,9 +80,9 @@ function openConflictInTextMerge(conflict: FolderMergeConflict): void {
 <template>
   <WorkbenchShell
     :title="$t('ui.folderMerge')"
-    eyebrow="Merge"
-    :subtitle="`${summary.actions} ${$t('ui.actions')}`"
-    inspector-label="Folder merge inspector"
+    :eyebrow="$t('ui.merge')"
+    :subtitle="$t('status.actionCount', { count: summary.actions })"
+    :inspector-label="$t('ui.folderMergeInspector')"
   >
     <section class="folder-merge-view">
       <header class="merge-header">
@@ -130,7 +154,12 @@ function openConflictInTextMerge(conflict: FolderMergeConflict): void {
         class="merge-open-status"
         data-testid="folder-merge-open-status"
       >
-        Opening Text Merge for {{ lastOpenedConflictPath }} -> /merge/text
+        {{
+          $t('status.openingTextMergeRouteFor', {
+            path: lastOpenedConflictPath,
+            route: '/merge/text',
+          })
+        }}
       </section>
 
       <section
@@ -162,7 +191,7 @@ function openConflictInTextMerge(conflict: FolderMergeConflict): void {
             <span>{{ sideLabel(row.base) }}</span>
             <span>{{ sideLabel(row.left) }}</span>
             <span>{{ sideLabel(row.right) }}</span>
-            <strong>{{ row.action }}</strong>
+            <strong>{{ folderMergeActionLabel(row.action) }}</strong>
             <span>{{ row.detail }}</span>
           </div>
         </div>
@@ -175,7 +204,14 @@ function openConflictInTextMerge(conflict: FolderMergeConflict): void {
       >
         <header>
           <strong>{{ $t('ui.conflicts') }}</strong>
-          <span>{{ conflicts.length }} item requires review</span>
+          <span>{{
+            $t(
+              conflicts.length === 1
+                ? 'status.itemRequiresReview'
+                : 'status.itemRequiresReviewPlural',
+              { count: conflicts.length },
+            )
+          }}</span>
         </header>
         <ul>
           <li

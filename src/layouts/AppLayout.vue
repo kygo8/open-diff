@@ -37,18 +37,27 @@ import { useI18n } from '@/i18n'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { useTabsStore } from '@/stores/tabs'
-import type { CommandId } from '@/app/commandRegistry'
+import type { AppCommand, CommandId } from '@/app/commandRegistry'
 import type { ViewActionName } from '@/app/commandSystem'
 import type { SessionCatalogEntry } from '@/app/sessionCatalog'
 import type { SessionType } from '@/types/session'
 
+type AppMenuId = 'file' | 'edit' | 'search' | 'view' | 'session' | 'actions' | 'tools'
+
 interface NavigationItem {
   title: string
+  titleKey: string
   route: string
   type: SessionType
   icon: LucideIcon
   count: string
   group: 'compare' | 'sources'
+}
+
+interface AppMenuDefinition {
+  id: AppMenuId
+  titleKey: string
+  commandIds: CommandId[]
 }
 
 const route = useRoute()
@@ -61,13 +70,52 @@ const tabs = useTabsStore()
 const commandPaletteOpen = ref(false)
 const commandQuery = ref('')
 const languageMenuOpen = ref(false)
-const activeMenu = ref<string>()
+const activeMenu = ref<AppMenuId>()
 const lastViewAction = ref<ViewActionName>()
 const pendingCloseTab = ref<{ id: string; title: string }>()
 const visibleCommands = computed(() => filterCommands(commandRegistry, commandQuery.value))
 const toolbarCommands = computed(() => getCommandsForPlacement(commandRegistry, 'toolbar'))
-const menuCommands = computed(() => getCommandsForPlacement(commandRegistry, 'menu'))
 const availableLocales = i18n.availableLocales
+const appMenus: AppMenuDefinition[] = [
+  {
+    id: 'file',
+    titleKey: 'ui.file',
+    commandIds: ['open.textCompare', 'open.folderCompare', 'open.textPatch', 'open.settings'],
+  },
+  {
+    id: 'edit',
+    titleKey: 'ui.edit',
+    commandIds: ['edit.copyLeft', 'edit.copyRight'],
+  },
+  {
+    id: 'search',
+    titleKey: 'ui.search',
+    commandIds: ['diff.previous', 'diff.next'],
+  },
+  {
+    id: 'view',
+    titleKey: 'ui.view',
+    commandIds: ['view.showAll', 'view.showDifferences', 'theme.toggle'],
+  },
+  {
+    id: 'session',
+    titleKey: 'ui.session',
+    commandIds: ['session.save', 'session.saveAs', 'session.export'],
+  },
+  {
+    id: 'actions',
+    titleKey: 'ui.actions',
+    commandIds: ['workspace.save'],
+  },
+  {
+    id: 'tools',
+    titleKey: 'ui.tools',
+    commandIds: ['open.settings', 'theme.toggle'],
+  },
+]
+const menuCommandLookup = computed(
+  () => new Map(commandRegistry.map((command) => [command.id, command])),
+)
 const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
   navigate: (nextRoute) => {
     void router.push(nextRoute)
@@ -90,6 +138,7 @@ const navigationItems = computed<NavigationItem[]>(() =>
     .filter((entry): entry is SessionCatalogEntry & { route: string } => Boolean(entry.route))
     .map((entry) => ({
       title: entry.title,
+      titleKey: entry.titleKey,
       route: entry.route,
       type: entry.type,
       icon: sessionIcon(entry.type),
@@ -98,9 +147,15 @@ const navigationItems = computed<NavigationItem[]>(() =>
     })),
 )
 const statusSegments = computed(() => statusBar.segments)
+const localizedStatusSegments = computed(() => [
+  localizeStatusValue(statusSegments.value[0]),
+  `${t('status.differences')}: ${statusBar.report.differenceCount === null ? '-' : String(statusBar.report.differenceCount)}`,
+  `${t('status.encoding')}: ${statusBar.report.encoding}`,
+  `${t('status.filter')}: ${localizeStatusValue(statusBar.report.filterStatus)}`,
+])
 
-function navigate(nextRoute: string, title: string): void {
-  tabs.openTab({ route: nextRoute, title, dirty: false })
+function navigate(nextRoute: string, title: string, titleKey?: string): void {
+  tabs.openTab({ route: nextRoute, title, titleKey, dirty: false })
   void router.push(nextRoute)
 }
 
@@ -145,11 +200,37 @@ function commandIcon(commandId: CommandId): LucideIcon {
 }
 
 function openNavigationItem(item: NavigationItem): void {
-  navigate(item.route, item.title)
+  navigate(item.route, t(item.titleKey), item.titleKey)
 }
 
-function openMenu(menu: string): void {
+function displayTabTitle(tab: { title: string; titleKey?: string }): string {
+  return tab.titleKey ? t(tab.titleKey) : tab.title
+}
+
+function localizeStatusValue(value: string): string {
+  const keys: Record<string, string> = {
+    'All rows': 'status.allRows',
+    Compared: 'status.compared',
+    Ready: 'app.ready',
+  }
+
+  return keys[value] ? t(keys[value]) : value
+}
+
+function commandsForMenu(menu: AppMenuDefinition): AppCommand[] {
+  return menu.commandIds
+    .map((commandId) => menuCommandLookup.value.get(commandId))
+    .filter((command): command is AppCommand => Boolean(command?.placements.includes('menu')))
+}
+
+function toggleApplicationMenu(menu: AppMenuId): void {
+  languageMenuOpen.value = false
   activeMenu.value = activeMenu.value === menu ? undefined : menu
+}
+
+function closeChromeMenus(): void {
+  activeMenu.value = undefined
+  languageMenuOpen.value = false
 }
 
 function requestCloseTab(tab: { id: string; title: string; dirty: boolean }): void {
@@ -172,6 +253,7 @@ function confirmCloseDirtyTab(): void {
 }
 
 function toggleLanguageMenu(): void {
+  activeMenu.value = undefined
   languageMenuOpen.value = !languageMenuOpen.value
 }
 
@@ -231,12 +313,15 @@ const sourceSessionTypes = new Set<SessionType>([
 </script>
 
 <template>
-  <div class="app-shell">
+  <div
+    class="app-shell"
+    @click="closeChromeMenus"
+  >
     <header class="menu-bar">
       <button
         class="brand"
         type="button"
-        @click="navigate('/', t('ui.home'))"
+        @click="navigate('/', t('ui.home'), 'ui.home')"
       >
         <Rows3 :size="15" />
         <span>{{ t('app.brand') }}</span>
@@ -245,55 +330,40 @@ const sourceSessionTypes = new Set<SessionType>([
         class="menus"
         :aria-label="t('ui.applicationMenus')"
       >
-        <button
-          type="button"
-          data-testid="menu-file"
-          @click="openMenu('file')"
+        <div
+          v-for="menu in appMenus"
+          :key="menu.id"
+          class="menu-group"
+          :data-testid="`menu-${menu.id}-group`"
+          @click.stop
         >
-          {{ t('ui.file') }}
-        </button>
-        <button
-          type="button"
-          data-testid="menu-edit"
-          @click="openMenu('edit')"
-        >
-          {{ t('ui.edit') }}
-        </button>
-        <button
-          type="button"
-          data-testid="menu-search"
-          @click="openMenu('search')"
-        >
-          {{ t('ui.search') }}
-        </button>
-        <button
-          type="button"
-          data-testid="menu-view"
-          @click="openMenu('view')"
-        >
-          {{ t('ui.view') }}
-        </button>
-        <button
-          type="button"
-          data-testid="menu-session"
-          @click="openMenu('session')"
-        >
-          {{ t('ui.session') }}
-        </button>
-        <button
-          type="button"
-          data-testid="menu-actions"
-          @click="openMenu('actions')"
-        >
-          {{ t('ui.actions') }}
-        </button>
-        <button
-          type="button"
-          data-testid="menu-tools"
-          @click="openMenu('tools')"
-        >
-          {{ t('ui.tools') }}
-        </button>
+          <button
+            type="button"
+            :class="{ active: activeMenu === menu.id }"
+            :aria-expanded="activeMenu === menu.id"
+            :data-testid="`menu-${menu.id}`"
+            @click="toggleApplicationMenu(menu.id)"
+          >
+            {{ t(menu.titleKey) }}
+          </button>
+          <section
+            v-if="activeMenu === menu.id"
+            class="menu-panel"
+            data-testid="menu-panel"
+            @click.stop
+          >
+            <button
+              v-for="command in commandsForMenu(menu)"
+              :key="command.id"
+              type="button"
+              :disabled="!command.enabled"
+              :data-testid="`menu-command-${command.id}`"
+              @click="executeCommand(command.id)"
+            >
+              {{ t(command.titleKey) }}
+            </button>
+          </section>
+        </div>
       </nav>
       <div class="top-actions">
         <button
@@ -329,7 +399,7 @@ const sourceSessionTypes = new Set<SessionType>([
             :aria-label="t('ui.language')"
             :title="t('ui.language')"
             data-testid="language-menu-trigger"
-            @click="toggleLanguageMenu"
+            @click.stop="toggleLanguageMenu"
           >
             <Languages :size="15" />
           </button>
@@ -337,6 +407,7 @@ const sourceSessionTypes = new Set<SessionType>([
             v-if="languageMenuOpen"
             class="language-panel"
             data-testid="language-menu"
+            @click.stop
           >
             <button
               v-for="locale in availableLocales"
@@ -370,23 +441,6 @@ const sourceSessionTypes = new Set<SessionType>([
       </div>
     </header>
 
-    <section
-      v-if="activeMenu"
-      class="menu-panel"
-      data-testid="menu-panel"
-    >
-      <button
-        v-for="command in menuCommands"
-        :key="command.id"
-        type="button"
-        :disabled="!command.enabled"
-        :data-testid="`menu-command-${command.id}`"
-        @click="executeCommand(command.id)"
-      >
-        {{ t(command.titleKey) }}
-      </button>
-    </section>
-
     <main class="desktop">
       <aside class="sidebar">
         <div class="sidebar-head">
@@ -406,7 +460,7 @@ const sourceSessionTypes = new Set<SessionType>([
             class="nav-item"
             type="button"
             :class="{ active: route.path === '/' }"
-            @click="navigate('/', t('ui.home'))"
+            @click="navigate('/', t('ui.home'), 'ui.home')"
           >
             <Home :size="15" />
             <span>{{ t('ui.home') }}</span>
@@ -424,7 +478,7 @@ const sourceSessionTypes = new Set<SessionType>([
               :is="item.icon"
               :size="15"
             />
-            <span>{{ item.title }}</span>
+            <span>{{ t(item.titleKey) }}</span>
             <b>{{ item.count }}</b>
           </button>
           <p class="nav-section">{{ t('ui.sources') }}</p>
@@ -440,14 +494,16 @@ const sourceSessionTypes = new Set<SessionType>([
               :is="item.icon"
               :size="15"
             />
-            <span>{{ item.title }}</span>
+            <span>{{ t(item.titleKey) }}</span>
             <b>{{ item.count }}</b>
           </button>
           <button
             class="nav-item"
             type="button"
             :class="{ active: route.path === '/settings/remote-profiles' }"
-            @click="navigate('/settings/remote-profiles', t('ui.remoteProfiles'))"
+            @click="
+              navigate('/settings/remote-profiles', t('ui.remoteProfiles'), 'ui.remoteProfiles')
+            "
           >
             <Cloud :size="15" />
             <span>{{ t('ui.remoteProfiles') }}</span>
@@ -457,7 +513,7 @@ const sourceSessionTypes = new Set<SessionType>([
             class="nav-item"
             type="button"
             :class="{ active: route.path === '/settings/file-formats' }"
-            @click="navigate('/settings/file-formats', t('ui.fileFormats'))"
+            @click="navigate('/settings/file-formats', t('ui.fileFormats'), 'ui.fileFormats')"
           >
             <Braces :size="15" />
             <span>{{ t('ui.fileFormats') }}</span>
@@ -467,7 +523,7 @@ const sourceSessionTypes = new Set<SessionType>([
             class="nav-item"
             type="button"
             :class="{ active: route.path === '/settings' }"
-            @click="navigate('/settings', t('ui.settings'))"
+            @click="navigate('/settings', t('ui.settings'), 'ui.settings')"
           >
             <Settings :size="15" />
             <span>{{ t('ui.settings') }}</span>
@@ -489,15 +545,15 @@ const sourceSessionTypes = new Set<SessionType>([
           >
             <button
               type="button"
-              @click="navigate(tab.route, tab.title)"
+              @click="navigate(tab.route, displayTabTitle(tab), tab.titleKey)"
             >
-              {{ tab.title }}
+              {{ displayTabTitle(tab) }}
             </button>
             <button
               v-if="tab.id !== 'home'"
               type="button"
               :data-testid="`close-tab-${tab.id}`"
-              @click.stop="requestCloseTab(tab)"
+              @click.stop="requestCloseTab({ ...tab, title: displayTabTitle(tab) })"
             >
               ×
             </button>
@@ -555,10 +611,10 @@ const sourceSessionTypes = new Set<SessionType>([
       class="status-bar"
       data-testid="status-bar"
     >
-      <span>{{ statusSegments[0] }}</span>
-      <span>{{ statusSegments[1] }}</span>
-      <span>{{ statusSegments[2] }}</span>
-      <span>{{ statusSegments[3] }}</span>
+      <span>{{ localizedStatusSegments[0] }}</span>
+      <span>{{ localizedStatusSegments[1] }}</span>
+      <span>{{ localizedStatusSegments[2] }}</span>
+      <span>{{ localizedStatusSegments[3] }}</span>
     </footer>
 
     <div
@@ -622,9 +678,9 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .menu-panel {
-  position: fixed;
-  top: 32px;
-  left: 126px;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
   z-index: 60;
   display: grid;
   width: 210px;
@@ -678,6 +734,10 @@ const sourceSessionTypes = new Set<SessionType>([
   gap: 12px;
 }
 
+.menu-group {
+  position: relative;
+}
+
 .menus button,
 .chrome-button,
 .nav-item {
@@ -699,6 +759,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .menus button:hover,
+.menus button.active,
 .chrome-button:hover {
   background: var(--app-surface-highest);
 }

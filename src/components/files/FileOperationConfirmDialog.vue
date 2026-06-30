@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { FileOperationConfirmation } from '@/app/fileOperationConfirmation'
+import { useI18n } from '@/i18n'
 
-defineProps<{
+const props = defineProps<{
   confirmation: FileOperationConfirmation
 }>()
 
@@ -9,6 +10,11 @@ defineEmits<{
   confirm: []
   cancel: []
 }>()
+const { t } = useI18n()
+
+function confirmationTitle(): string {
+  return t(props.confirmation.titleKey, props.confirmation.titleParams)
+}
 </script>
 
 <template>
@@ -16,16 +22,16 @@ defineEmits<{
     class="file-operation-confirm"
     role="dialog"
     aria-modal="true"
-    :aria-label="confirmation.title"
+    :aria-label="confirmationTitle()"
   >
     <header class="confirm-header">
       <div>
-        <p class="risk-label">{{ confirmation.risk }} risk</p>
-        <h2>{{ confirmation.title }}</h2>
+        <p class="risk-label">{{ $t(confirmation.riskKey) }}</p>
+        <h2>{{ confirmationTitle() }}</h2>
       </div>
     </header>
 
-    <p class="confirm-message">{{ confirmation.message }}</p>
+    <p class="confirm-message">{{ $t(confirmation.messageKey) }}</p>
 
     <ul class="path-list">
       <li
@@ -51,7 +57,7 @@ defineEmits<{
         data-testid="confirm-file-operation"
         @click="$emit('confirm')"
       >
-        {{ confirmation.confirmLabel }}
+        {{ $t(confirmation.confirmLabelKey) }}
       </button>
     </footer>
   </section>

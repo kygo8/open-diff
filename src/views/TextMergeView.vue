@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { saveTextFile } from '@/api/diff'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import { useI18n } from '@/i18n'
 
 type MergePaneId = 'left' | 'base' | 'right' | 'output'
 type MergeSource = 'left' | 'base' | 'right'
@@ -32,9 +33,11 @@ const initialOutputLines = [
   '>>>>>>> RIGHT',
   'retry = true',
 ]
+const { t } = useI18n()
 const outputLines = ref([...initialOutputLines])
 const outputPath = ref('D:/workspace/output.txt')
-const saveStatus = ref('Output not saved')
+const saveStatusKey = ref('ui.outputNotSaved')
+const saveStatusParams = ref<Record<string, string | number>>({})
 const saving = ref(false)
 const conflicts = ref<MergeConflict[]>([
   {
@@ -49,26 +52,26 @@ const conflicts = ref<MergeConflict[]>([
 const panes = computed<MergePane[]>(() => [
   {
     id: 'left',
-    title: 'Left',
-    subtitle: 'Feature branch',
+    title: t('ui.left'),
+    subtitle: t('ui.featureBranch'),
     lines: ['export const mode = "fast"', 'timeout = 45', 'retry = true'],
   },
   {
     id: 'base',
-    title: 'Base',
-    subtitle: 'Common ancestor',
+    title: t('ui.base'),
+    subtitle: t('ui.commonAncestor'),
     lines: ['export const mode = "fast"', 'timeout = 30', 'retry = true'],
   },
   {
     id: 'right',
-    title: 'Right',
-    subtitle: 'Main branch',
+    title: t('ui.right'),
+    subtitle: t('ui.mainBranch'),
     lines: ['export const mode = "fast"', 'timeout = 60', 'retry = true'],
   },
   {
     id: 'output',
-    title: 'Output',
-    subtitle: 'Merge result',
+    title: t('ui.output'),
+    subtitle: t('ui.mergeResult'),
     lines: outputLines.value,
   },
 ])
@@ -78,15 +81,21 @@ const outputText = computed({
   get: () => outputLines.value.join('\n'),
   set: (value: string) => {
     outputLines.value = value.split('\n')
-    saveStatus.value = 'Output has unsaved edits'
+    setSaveStatus('status.outputHasUnsavedEdits')
   },
 })
+const saveStatus = computed(() => t(saveStatusKey.value, saveStatusParams.value))
 
 const conflictStatus = computed(() => {
   const count = unresolvedConflicts.value.length
 
-  return `${String(count)} ${count === 1 ? 'conflict' : 'conflicts'}`
+  return t(count === 1 ? 'status.conflictCount' : 'status.conflictCountPlural', { count })
 })
+
+function setSaveStatus(key: string, params: Record<string, string | number> = {}): void {
+  saveStatusKey.value = key
+  saveStatusParams.value = params
+}
 
 function acceptConflict(source: MergeSource): void {
   const conflict = currentConflict.value
@@ -103,21 +112,24 @@ function acceptConflict(source: MergeSource): void {
 
 async function saveOutput(): Promise<void> {
   saving.value = true
-  saveStatus.value = 'Saving output'
+  setSaveStatus('status.savingOutput')
   try {
     const result = await saveTextFile({
       path: outputPath.value,
       text: outputText.value,
     })
 
-    saveStatus.value = `Saved ${String(result.bytesWritten)} bytes${
-      result.backupPath ? `, backup: ${result.backupPath}` : ''
-    }`
+    setSaveStatus(result.backupPath ? 'status.savedBytesWithBackup' : 'status.savedBytes', {
+      backupPath: result.backupPath ?? '',
+      count: result.bytesWritten,
+    })
   } catch (error) {
-    saveStatus.value =
-      typeof error === 'object' && error !== null && 'message' in error
-        ? String(error.message)
-        : String(error)
+    setSaveStatus('status.rawMessage', {
+      message:
+        typeof error === 'object' && error !== null && 'message' in error
+          ? String(error.message)
+          : String(error),
+    })
   } finally {
     saving.value = false
   }
@@ -139,9 +151,9 @@ function lineClass(line: string, paneId: MergePaneId): string {
 <template>
   <WorkbenchShell
     :title="$t('ui.textMerge')"
-    eyebrow="Merge"
+    :eyebrow="$t('ui.merge')"
     :subtitle="conflictStatus"
-    inspector-label="Text merge inspector"
+    :inspector-label="$t('ui.textMergeInspector')"
   >
     <section class="text-merge-view">
       <div class="merge-toolbar">
@@ -192,7 +204,7 @@ function lineClass(line: string, paneId: MergePaneId): string {
               <h2>{{ pane.title }}</h2>
               <span>{{ pane.subtitle }}</span>
             </div>
-            <small>{{ pane.lines.length }} lines</small>
+            <small>{{ $t('status.lines', { count: pane.lines.length }) }}</small>
           </header>
           <textarea
             v-if="pane.id === 'output'"
@@ -233,9 +245,9 @@ function lineClass(line: string, paneId: MergePaneId): string {
             v-for="conflict in unresolvedConflicts"
             :key="conflict.line"
           >
-            <strong>Line {{ conflict.line }}: {{ conflict.title }}</strong>
+            <strong>{{ $t('ui.line') }} {{ conflict.line }}: {{ conflict.title }}</strong>
             <div class="conflict-source">
-              <span>Left: {{ conflict.left }}</span>
+              <span>{{ $t('ui.left') }}: {{ conflict.left }}</span>
               <button
                 type="button"
                 data-testid="accept-left-conflict"
@@ -245,7 +257,7 @@ function lineClass(line: string, paneId: MergePaneId): string {
               </button>
             </div>
             <div class="conflict-source">
-              <span>Base: {{ conflict.base }}</span>
+              <span>{{ $t('ui.base') }}: {{ conflict.base }}</span>
               <button
                 type="button"
                 data-testid="accept-base-conflict"
@@ -255,7 +267,7 @@ function lineClass(line: string, paneId: MergePaneId): string {
               </button>
             </div>
             <div class="conflict-source">
-              <span>Right: {{ conflict.right }}</span>
+              <span>{{ $t('ui.right') }}: {{ conflict.right }}</span>
               <button
                 type="button"
                 data-testid="accept-right-conflict"

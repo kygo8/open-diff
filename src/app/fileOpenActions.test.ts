@@ -11,19 +11,20 @@ describe('fileOpenActions', () => {
     expect(createDefaultOpenAction('D:/workspace/left/README.md')).toEqual({
       kind: 'default',
       path: 'D:/workspace/left/README.md',
-      label: 'Open',
+      labelKey: 'ui.open',
       executable: undefined,
     })
     expect(createOpenWithAction('D:/workspace/left/README.md', 'Code', 'code')).toEqual({
       kind: 'open-with',
       path: 'D:/workspace/left/README.md',
-      label: 'Open With Code',
+      labelKey: 'fileOpen.openWithApplication',
+      labelParams: { applicationName: 'Code' },
       executable: 'code',
     })
     expect(createAssociatedApplicationOpenAction('D:/workspace/left/README.md')).toEqual({
       kind: 'associated',
       path: 'D:/workspace/left/README.md',
-      label: 'Open With Associated Application',
+      labelKey: 'fileOpen.openWithAssociatedApplication',
       executable: undefined,
     })
   })
@@ -61,7 +62,8 @@ describe('fileOpenActions', () => {
     ).toEqual({
       kind: 'open-with',
       path: 'D:/workspace/left/README.md',
-      label: 'Open With Visual Studio Code',
+      labelKey: 'fileOpen.openWithApplication',
+      labelParams: { applicationName: 'Visual Studio Code' },
       executable: 'code',
     })
   })

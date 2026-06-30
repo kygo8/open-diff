@@ -5,6 +5,7 @@ import type { SessionType } from '@/types/session'
 export interface SessionSelection {
   sessionType: SessionType
   title: string
+  titleKey?: string
   enabled: boolean
   route?: string
 }
@@ -73,6 +74,7 @@ function selectionFor(sessionType: SessionType): SessionSelection {
   return {
     sessionType: entry.type,
     title: entry.title,
+    titleKey: entry.titleKey,
     enabled: entry.implemented,
     route: entry.route,
   }

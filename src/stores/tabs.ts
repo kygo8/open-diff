@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { sessionCatalog } from '@/app/sessionCatalog'
 
 export interface AppTab {
   id: string
   title: string
+  titleKey?: string
   route: string
   dirty: boolean
 }
@@ -13,7 +15,16 @@ export interface WorkspaceTabsSnapshot {
   activeTabId: string
 }
 
-const homeTab: AppTab = { id: 'home', title: 'Home', route: '/', dirty: false }
+const homeTab: AppTab = { id: 'home', title: 'Home', titleKey: 'ui.home', route: '/', dirty: false }
+const routeTitleKeys = new Map<string, string>([
+  ['/', 'ui.home'],
+  ['/settings', 'ui.settings'],
+  ['/settings/file-formats', 'ui.fileFormats'],
+  ['/settings/remote-profiles', 'ui.remoteProfiles'],
+  ...sessionCatalog
+    .filter((entry): entry is typeof entry & { route: string } => Boolean(entry.route))
+    .map((entry) => [entry.route, entry.titleKey] as const),
+])
 
 export const useTabsStore = defineStore('tabs', () => {
   const tabs = ref<AppTab[]>([{ ...homeTab }])
@@ -32,7 +43,7 @@ export const useTabsStore = defineStore('tabs', () => {
       return existing
     }
 
-    const next = { ...tab, id: crypto.randomUUID() }
+    const next = normalizeTab({ ...tab, id: crypto.randomUUID() })
 
     tabs.value.push(next)
     activeTabId.value = next.id
@@ -77,7 +88,7 @@ export const useTabsStore = defineStore('tabs', () => {
   }
 
   function restoreWorkspaceTabs(snapshot: WorkspaceTabsSnapshot): void {
-    const restoredTabs = snapshot.tabs.map((tab) => ({ ...tab }))
+    const restoredTabs = snapshot.tabs.map((tab) => normalizeTab({ ...tab }))
 
     if (!restoredTabs.some((tab) => tab.id === 'home')) {
       restoredTabs.unshift({ ...homeTab })
@@ -100,3 +111,10 @@ export const useTabsStore = defineStore('tabs', () => {
     restoreWorkspaceTabs,
   }
 })
+
+function normalizeTab(tab: AppTab): AppTab {
+  return {
+    ...tab,
+    titleKey: tab.titleKey ?? routeTitleKeys.get(tab.route),
+  }
+}

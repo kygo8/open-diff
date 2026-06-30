@@ -9,6 +9,7 @@ import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchToolbar from '@/components/workbench/WorkbenchToolbar.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
+import { useI18n } from '@/i18n'
 
 type DiffLine = TextDiffResponse['lines'][number]
 
@@ -78,6 +79,7 @@ const initialDiffResult: TextDiffResponse = {
 }
 const statusBar = useStatusBarStore()
 const sessionLaunch = useSessionLaunchStore()
+const { t } = useI18n()
 const algorithm = ref<TextDiffAlgorithm>('myers')
 const result = ref<TextDiffResponse | null>(initialDiffResult)
 const loading = ref(false)
@@ -102,18 +104,19 @@ const selectedBookmark = ref(0)
 const bookmarks = ref<Record<number, string>>({})
 
 const statsLabel = computed(() => {
-  if (!result.value) return 'No comparison yet'
+  if (!result.value) return t('status.noComparisonYet')
   const { added, deleted, modified, equal } = result.value.stats
 
-  return `${String(equal)} equal, ${String(modified)} modified, ${String(added)} added, ${String(
-    deleted,
-  )} deleted`
+  return t('status.diffStats', { equal, modified, added, deleted })
 })
 const lineEndingStatus = computed(
-  () => `Left: ${detectLineEnding(left.value)} | Right: ${detectLineEnding(right.value)}`,
+  () =>
+    `${t('ui.left')}: ${detectLineEnding(left.value)} | ${t('ui.right')}: ${detectLineEnding(
+      right.value,
+    )}`,
 )
 const statusBarEncoding = computed(() => `UTF-8 | ${lineEndingStatus.value}`)
-const dirtyStatus = computed(() => (dirty.value ? 'Unsaved edits' : 'No edits'))
+const dirtyStatus = computed(() => (dirty.value ? t('status.unsavedEdits') : t('status.noEdits')))
 const diffRows = computed(() => result.value?.lines.filter((line) => line.kind !== 'equal') ?? [])
 const activeDiffRows = computed(() =>
   diffRows.value.filter((line) => !ignoredDiffKeys.value.has(diffKey(line))),
@@ -122,7 +125,9 @@ const ignoredDiffCount = computed(() =>
   Math.max(0, diffRows.value.length - activeDiffRows.value.length),
 )
 const filterStatus = computed(() =>
-  ignoredDiffCount.value === 0 ? 'All rows' : `${String(ignoredDiffCount.value)} ignored`,
+  ignoredDiffCount.value === 0
+    ? t('status.allRows')
+    : t('status.ignoredCount', { count: ignoredDiffCount.value }),
 )
 const currentActiveDiff = computed<DiffLine | null>(() => {
   if (currentDiffIndex.value < 0 || currentDiffIndex.value >= activeDiffRows.value.length) {
@@ -131,32 +136,38 @@ const currentActiveDiff = computed<DiffLine | null>(() => {
 
   return activeDiffRows.value[currentDiffIndex.value]
 })
-const activeDiffStatus = computed(() => `${String(activeDiffRows.value.length)} active diff`)
+const activeDiffStatus = computed(() =>
+  t('status.activeDiffCount', { count: activeDiffRows.value.length }),
+)
 const bookmarkStatus = computed(() =>
   bookmarks.value[selectedBookmark.value]
-    ? `Bookmark ${String(selectedBookmark.value)} set`
-    : `No bookmark ${String(selectedBookmark.value)}`,
+    ? t('status.bookmarkSet', { index: selectedBookmark.value })
+    : t('status.noBookmark', { index: selectedBookmark.value }),
 )
 const textDetails = computed(() => {
   if (!currentActiveDiff.value) {
-    return 'No active difference'
+    return t('status.noActiveDifference')
   }
 
   const leftNumber = currentActiveDiff.value.leftNumber ?? '-'
   const rightNumber = currentActiveDiff.value.rightNumber ?? '-'
 
-  return `Left ${String(leftNumber)}: ${currentActiveDiff.value.leftText} | Right ${String(rightNumber)}: ${
-    currentActiveDiff.value.rightText
-  }`
+  return t('status.leftRightLineValue', {
+    leftLine: leftNumber,
+    leftText: currentActiveDiff.value.leftText,
+    rightLine: rightNumber,
+    rightText: currentActiveDiff.value.rightText,
+  })
 })
 const hexDetails = computed(() => {
   if (!currentActiveDiff.value) {
-    return 'No bytes'
+    return t('status.noBytes')
   }
 
-  return `Left: ${toHexBytes(currentActiveDiff.value.leftText)} | Right: ${toHexBytes(
-    currentActiveDiff.value.rightText,
-  )}`
+  return t('status.leftRightValue', {
+    left: toHexBytes(currentActiveDiff.value.leftText),
+    right: toHexBytes(currentActiveDiff.value.rightText),
+  })
 })
 const canPreviewHtml = computed(() => looksLikeHtml(left.value) || looksLikeHtml(right.value))
 const findMatches = computed(() => {
@@ -176,7 +187,7 @@ const findMatches = computed(() => {
 })
 const findStatus = computed(() => {
   if (!findQuery.value) {
-    return 'No search'
+    return t('status.noSearch')
   }
 
   if (findMatches.value.length === 0) {
@@ -187,14 +198,14 @@ const findStatus = computed(() => {
 })
 const comparisonStatus = computed(() => {
   if (loading.value) {
-    return 'Comparing'
+    return t('status.comparing')
   }
 
   if (result.value) {
-    return 'Compared'
+    return t('status.compared')
   }
 
-  return 'Editing'
+  return t('status.editing')
 })
 
 watchEffect(() => {
@@ -570,9 +581,9 @@ function toggleSourceEditors(): void {
   <WorkbenchShell
     class="text-compare-view"
     :title="$t('ui.textCompare')"
-    eyebrow="Text"
+    :eyebrow="$t('ui.text')"
     :subtitle="statsLabel"
-    inspector-label="Text compare inspector"
+    :inspector-label="$t('ui.textCompareInspector')"
     data-testid="text-workbench"
   >
     <template #title-actions>
@@ -602,7 +613,7 @@ function toggleSourceEditors(): void {
           data-testid="toggle-source-editors"
           @click="toggleSourceEditors"
         >
-          {{ showSourceEditors ? 'Hide Sources' : 'Edit Sources' }}
+          {{ showSourceEditors ? $t('ui.hideSources') : $t('ui.editSources') }}
         </button>
         <button
           type="button"

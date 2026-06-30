@@ -4,6 +4,7 @@ import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextPatchView from './TextPatchView.vue'
 import { parseTextPatch, readTextFile } from '@/api/diff'
+import { createAppI18n, installI18n } from '@/i18n'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 vi.mock('@/api/diff', () => ({
@@ -53,6 +54,13 @@ const NInputStub = defineComponent({
 function mountTextPatchView(): VueWrapper {
   return mount(TextPatchView, {
     global: {
+      plugins: [
+        {
+          install(app) {
+            installI18n(app, createAppI18n('en-US'))
+          },
+        },
+      ],
       stubs: {
         NAlert: { template: '<div><slot /></div>' },
         NButton: {

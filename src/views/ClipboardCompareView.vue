@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { diffText } from '@/api/diff'
 import { readClipboardTextSource } from '@/app/clipboardSource'
 import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
+import { useI18n } from '@/i18n'
 import type { TextDiffResponse } from '@/types/diff'
 
 interface ClipboardHistoryEntry {
@@ -14,27 +15,28 @@ interface ClipboardHistoryEntry {
 }
 
 const history = ref<ClipboardHistoryEntry[]>([])
+const { t } = useI18n()
 const leftEntryId = ref<number | null>(null)
 const rightEntryId = ref<number | null>(null)
 const nextEntryId = ref(1)
-const captureStatus = ref('No clipboard text captured')
+const captureStatusKey = ref('status.noClipboardTextCaptured')
+const captureStatusParams = ref<Record<string, string | number>>({})
 const error = ref('')
 const loading = ref(false)
 const comparing = ref(false)
 const result = ref<TextDiffResponse | null>(null)
 
-const historyCount = computed(() => `${String(history.value.length)} captured`)
+const captureStatus = computed(() => t(captureStatusKey.value, captureStatusParams.value))
+const historyCount = computed(() => t('status.capturedCount', { count: history.value.length }))
 const canCompare = computed(() => leftEntryId.value !== null && rightEntryId.value !== null)
 const diffStats = computed(() => {
   if (!result.value) {
-    return 'No comparison yet'
+    return t('status.noComparisonYet')
   }
 
   const { equal, modified, added, deleted } = result.value.stats
 
-  return `${String(equal)} equal, ${String(modified)} modified, ${String(added)} added, ${String(
-    deleted,
-  )} deleted`
+  return t('status.diffStats', { equal, modified, added, deleted })
 })
 
 async function captureClipboard(): Promise<void> {
@@ -46,7 +48,7 @@ async function captureClipboard(): Promise<void> {
     const text = source.text
 
     if (history.value[0]?.text === text) {
-      captureStatus.value = 'Clipboard text already captured'
+      setCaptureStatus('status.clipboardTextAlreadyCaptured')
 
       return
     }
@@ -61,7 +63,7 @@ async function captureClipboard(): Promise<void> {
 
     nextEntryId.value += 1
     history.value = [entry, ...history.value].slice(0, 20)
-    captureStatus.value = `${entry.title} captured`
+    setCaptureStatus('status.clipboardEntryCaptured', { title: entry.title })
 
     if (leftEntryId.value === null) {
       leftEntryId.value = entry.id
@@ -127,18 +129,23 @@ function selectEntry(id: number): void {
 
 function selectionLabel(entry: ClipboardHistoryEntry): string {
   if (entry.id === leftEntryId.value) {
-    return 'Left'
+    return t('ui.left')
   }
 
   if (entry.id === rightEntryId.value) {
-    return 'Right'
+    return t('ui.right')
   }
 
-  return 'Select'
+  return t('ui.select')
 }
 
 function countLines(text: string): number {
   return text.length === 0 ? 0 : text.split('\n').length
+}
+
+function setCaptureStatus(key: string, params: Record<string, string | number> = {}): void {
+  captureStatusKey.value = key
+  captureStatusParams.value = params
 }
 </script>
 
@@ -190,7 +197,7 @@ function countLines(text: string): number {
       <aside class="history-pane">
         <header>
           <strong>{{ $t('ui.history') }}</strong>
-          <span>{{ history.length }} entries</span>
+          <span>{{ $t('status.entryCount', { count: history.length }) }}</span>
         </header>
         <div class="history-list">
           <button
@@ -206,7 +213,12 @@ function countLines(text: string): number {
           >
             <strong>{{ entry.title }}</strong>
             <span>{{ selectionLabel(entry) }}</span>
-            <small>{{ entry.lineCount }} lines | {{ entry.characterCount }} chars</small>
+            <small>{{
+              $t('status.lineCharCount', {
+                lines: entry.lineCount,
+                chars: entry.characterCount,
+              })
+            }}</small>
             <code>{{ entry.text }}</code>
           </button>
         </div>

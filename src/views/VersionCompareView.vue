@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { compareVersionFiles } from '@/api/diff'
+import { useI18n } from '@/i18n'
 import type {
   VersionCompareResponse,
   VersionFieldRow,
@@ -10,6 +11,7 @@ import type {
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 const versionStatuses: VersionFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
+const { t } = useI18n()
 const defaultLeftVersion: VersionSideSummary = {
   name: 'left-app.exe',
   fileType: 'Application',
@@ -112,13 +114,13 @@ const versionSummary = computed<Record<VersionFieldStatus, number>>(() => {
 
 function statusLabel(status: VersionFieldStatus): string {
   const labels: Record<VersionFieldStatus, string> = {
-    added: 'Added',
-    removed: 'Removed',
-    modified: 'Modified',
-    unchanged: 'Unchanged',
+    added: 'ui.added',
+    removed: 'ui.removed',
+    modified: 'ui.modified',
+    unchanged: 'ui.unchanged',
   }
 
-  return labels[status]
+  return t(labels[status])
 }
 
 function valueText(value?: string): string {
@@ -158,8 +160,8 @@ async function runVersionCompare(): Promise<void> {
         <h1>{{ $t('ui.versionCompare') }}</h1>
       </div>
       <div class="version-source-pair">
-        <span>Left: {{ leftVersion.name }}</span>
-        <span>Right: {{ rightVersion.name }}</span>
+        <span>{{ $t('status.sideName', { side: $t('ui.left'), name: leftVersion.name }) }}</span>
+        <span>{{ $t('status.sideName', { side: $t('ui.right'), name: rightVersion.name }) }}</span>
       </div>
     </header>
 
@@ -256,7 +258,7 @@ async function runVersionCompare(): Promise<void> {
     <section class="version-report-panel">
       <header>
         <strong>{{ $t('ui.versionFieldReport') }}</strong>
-        <span>{{ versionFields.length }} fields</span>
+        <span>{{ $t('status.fieldCount', { count: versionFields.length }) }}</span>
       </header>
       <div
         class="version-report-table"

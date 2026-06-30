@@ -4,6 +4,7 @@ import { parseTextPatch, readTextFile } from '@/api/diff'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchToolbar from '@/components/workbench/WorkbenchToolbar.vue'
+import { useI18n } from '@/i18n'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useStatusBarStore } from '@/stores/statusBar'
 import type { PatchLineKind, TextPatchResponse } from '@/types/diff'
@@ -17,6 +18,7 @@ const sourceEncoding = ref('UTF-8')
 const sourceLineEnding = ref('LF')
 const statusBar = useStatusBarStore()
 const sessionLaunch = useSessionLaunchStore()
+const { t } = useI18n()
 
 const fileCount = computed(() => result.value?.files.length ?? 0)
 const hunkCount = computed(
@@ -41,21 +43,21 @@ const lineStats = computed(() => {
 })
 const subtitle = computed(() => {
   if (!result.value) {
-    return 'Paste or drop a unified diff'
+    return t('ui.pasteOrDropUnifiedDiff')
   }
 
-  return `${String(fileCount.value)} files, ${String(hunkCount.value)} hunks`
+  return t('status.patchSummary', { files: fileCount.value, hunks: hunkCount.value })
 })
 const comparisonStatus = computed(() => {
   if (loading.value) {
-    return 'Parsing'
+    return t('status.parsing')
   }
 
   if (result.value) {
-    return 'Parsed'
+    return t('status.parsed')
   }
 
-  return 'Ready'
+  return t('app.ready')
 })
 
 watchEffect(() => {
@@ -63,7 +65,7 @@ watchEffect(() => {
     comparisonStatus: comparisonStatus.value,
     differenceCount: lineStats.value.added + lineStats.value.removed,
     encoding: `${sourceEncoding.value} | ${sourceLineEnding.value}`,
-    filterStatus: 'All rows',
+    filterStatus: t('status.allRows'),
     source: 'text-patch',
   })
 })
@@ -144,10 +146,10 @@ function lineNumber(value: number | null): string {
 <template>
   <WorkbenchShell
     class="text-patch-view"
-    title="Text Patch"
-    eyebrow="Patch"
+    :title="$t('ui.textPatch')"
+    :eyebrow="$t('ui.patch')"
     :subtitle="subtitle"
-    inspector-label="Text patch inspector"
+    :inspector-label="$t('ui.textPatchInspector')"
     data-testid="text-patch-workbench"
   >
     <template #title-actions>
@@ -155,7 +157,7 @@ function lineNumber(value: number | null): string {
         class="status-chip"
         data-testid="patch-source-path"
       >
-        {{ sourcePath || 'Unsaved patch text' }}
+        {{ sourcePath || $t('ui.unsavedPatchText') }}
       </span>
       <span class="status-chip">{{ comparisonStatus }}</span>
     </template>
@@ -169,24 +171,24 @@ function lineNumber(value: number | null): string {
           data-testid="parse-text-patch"
           @click="parseCurrentPatch"
         >
-          Parse Patch
+          {{ $t('ui.parsePatch') }}
         </NButton>
-        <span class="status-chip">{{ fileCount }} files</span>
-        <span class="status-chip">{{ hunkCount }} hunks</span>
+        <span class="status-chip">{{ $t('status.fileCount', { count: fileCount }) }}</span>
+        <span class="status-chip">{{ $t('status.hunkCount', { count: hunkCount }) }}</span>
       </WorkbenchToolbar>
     </template>
 
     <section class="patch-workbench-main">
       <section class="patch-input-pane">
         <header>
-          <strong>Patch Input</strong>
+          <strong>{{ $t('ui.patchInput') }}</strong>
           <span>{{ sourceEncoding }} | {{ sourceLineEnding }}</span>
         </header>
         <NInput
           :value="patchInput"
           type="textarea"
           data-testid="text-patch-input"
-          placeholder="Paste unified diff text"
+          :placeholder="$t('ui.pasteOrDropUnifiedDiff')"
           @update:value="patchInput = $event"
         />
       </section>
@@ -253,33 +255,33 @@ function lineNumber(value: number | null): string {
         v-else
         class="empty"
       >
-        Paste a unified diff or open a .patch/.diff file.
+        {{ $t('ui.unifiedDiffEmptyState') }}
       </div>
     </section>
 
     <template #inspector>
       <WorkbenchInspector>
         <section class="workbench-inspector-section">
-          <h2>Patch Summary</h2>
+          <h2>{{ $t('ui.patchSummaryTitle') }}</h2>
           <dl>
             <div>
-              <dt>Files</dt>
+              <dt>{{ $t('ui.files') }}</dt>
               <dd>{{ fileCount }}</dd>
             </div>
             <div>
-              <dt>Hunks</dt>
+              <dt>{{ $t('ui.hunks') }}</dt>
               <dd>{{ hunkCount }}</dd>
             </div>
             <div>
-              <dt>Added</dt>
+              <dt>{{ $t('ui.added') }}</dt>
               <dd data-tone="added">{{ lineStats.added }}</dd>
             </div>
             <div>
-              <dt>Removed</dt>
+              <dt>{{ $t('ui.removed') }}</dt>
               <dd data-tone="deleted">{{ lineStats.removed }}</dd>
             </div>
             <div>
-              <dt>Context</dt>
+              <dt>{{ $t('ui.context') }}</dt>
               <dd>{{ lineStats.context }}</dd>
             </div>
           </dl>

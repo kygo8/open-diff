@@ -35,7 +35,7 @@ export async function readClipboardTextSource(): Promise<ClipboardTextSource> {
 
     return {
       kind: 'clipboard-text',
-      title: 'Clipboard Text',
+      title: 'ui.clipboardText',
       text,
     }
   } catch (error) {

@@ -1,10 +1,15 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+import { useI18n } from '@/i18n'
+
+const props = defineProps<{
   title: string
   eyebrow?: string
   subtitle?: string
   inspectorLabel?: string
 }>()
+const { t } = useI18n()
+const resolvedInspectorLabel = computed(() => props.inspectorLabel ?? t('ui.inspector'))
 </script>
 
 <template>
@@ -38,7 +43,7 @@ defineProps<{
       </main>
       <aside
         class="workbench-inspector"
-        :aria-label="inspectorLabel ?? 'Inspector'"
+        :aria-label="resolvedInspectorLabel"
       >
         <slot name="inspector" />
       </aside>

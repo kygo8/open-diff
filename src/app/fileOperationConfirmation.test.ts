@@ -10,11 +10,13 @@ describe('createFileOperationConfirmation', () => {
       }),
     ).toEqual({
       operation: 'delete',
-      title: 'Delete 1 item?',
       risk: 'high',
-      confirmLabel: 'Delete',
+      riskKey: 'fileOperation.risk.high',
+      titleKey: 'fileOperation.delete.title',
+      titleParams: { count: 1 },
+      confirmLabelKey: 'ui.delete',
       paths: ['C:/work/old.txt'],
-      message: 'This operation can remove files or folders from disk.',
+      messageKey: 'fileOperation.delete.message',
     })
   })
 
@@ -25,9 +27,11 @@ describe('createFileOperationConfirmation', () => {
         paths: ['C:/work/source.txt', 'C:/work/target.txt'],
       }),
     ).toMatchObject({
-      title: 'Overwrite 2 items?',
       risk: 'high',
-      confirmLabel: 'Overwrite',
+      riskKey: 'fileOperation.risk.high',
+      titleKey: 'fileOperation.overwrite.titlePlural',
+      titleParams: { count: 2 },
+      confirmLabelKey: 'ui.overwrite',
     })
   })
 
@@ -38,9 +42,11 @@ describe('createFileOperationConfirmation', () => {
         paths: ['C:/work/source.txt', 'C:/work/target.txt'],
       }),
     ).toMatchObject({
-      title: 'Copy 2 items?',
       risk: 'medium',
-      confirmLabel: 'Copy',
+      riskKey: 'fileOperation.risk.medium',
+      titleKey: 'fileOperation.copy.titlePlural',
+      titleParams: { count: 2 },
+      confirmLabelKey: 'ui.copy',
     })
   })
 })

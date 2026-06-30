@@ -8,10 +8,11 @@ import type {
 import { computed, ref } from 'vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import { useI18n } from '@/i18n'
 
 interface SyncStrategyOption {
   value: FolderSyncStrategy
-  label: string
+  labelKey: string
 }
 
 interface SyncPreviewRow {
@@ -24,26 +25,28 @@ interface SyncPreviewRow {
 }
 
 const strategyOptions: SyncStrategyOption[] = [
-  { value: 'updateRight', label: 'Update Right' },
-  { value: 'updateLeft', label: 'Update Left' },
-  { value: 'updateBoth', label: 'Update Both' },
-  { value: 'mirrorRight', label: 'Mirror to Right' },
-  { value: 'mirrorLeft', label: 'Mirror to Left' },
+  { value: 'updateRight', labelKey: 'sync.strategy.updateRight' },
+  { value: 'updateLeft', labelKey: 'sync.strategy.updateLeft' },
+  { value: 'updateBoth', labelKey: 'sync.strategy.updateBoth' },
+  { value: 'mirrorRight', labelKey: 'sync.strategy.mirrorRight' },
+  { value: 'mirrorLeft', labelKey: 'sync.strategy.mirrorLeft' },
 ]
+const { t } = useI18n()
 const leftPath = ref('D:/workspace/left')
 const rightPath = ref('D:/workspace/right')
 const selectedStrategy = ref<FolderSyncStrategy>('updateBoth')
-const previewName = ref('Update Both')
+const previewName = ref('')
 const previewLoading = ref(false)
 const previewError = ref<string>()
 const previewRows = ref<SyncPreviewRow[]>([])
 const completedOperations = ref(0)
 const syncLogs = ref<string[]>([])
 
-const selectedStrategyLabel = computed(
-  () =>
-    strategyOptions.find((option) => option.value === selectedStrategy.value)?.label ??
-    'Update Both',
+const selectedStrategyLabel = computed(() =>
+  t(
+    strategyOptions.find((option) => option.value === selectedStrategy.value)?.labelKey ??
+      'sync.strategy.updateBoth',
+  ),
 )
 const canRunSync = computed(() => previewRows.value.length > 0)
 
@@ -79,19 +82,30 @@ function runSync(): void {
   completedOperations.value = previewRows.value.length
   syncLogs.value = previewRows.value.map((row) => {
     if (row.action === 'Delete') {
-      return `Deleted ${row.relativePath}`
+      return t('status.deletedPath', { path: row.relativePath })
     }
 
     if (row.action === 'Leave') {
-      return `Left ${row.relativePath} unchanged`
+      return `${t('ui.leave')} -> ${row.relativePath}`
     }
 
     if (row.action === 'Conflict') {
-      return `Conflict ${row.relativePath}`
+      return `${t('ui.conflicts')} -> ${row.relativePath}`
     }
 
-    return `Copied ${row.relativePath}`
+    return t('status.copiedPath', { path: row.relativePath })
   })
+}
+
+function folderSyncActionLabel(action: FolderSyncPreviewAction): string {
+  const keys: Record<FolderSyncPreviewAction, string> = {
+    Conflict: 'ui.conflicts',
+    Copy: 'ui.copy',
+    Delete: 'ui.delete',
+    Leave: 'ui.leave',
+  }
+
+  return t(keys[action])
 }
 
 function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreviewRow {
@@ -109,9 +123,9 @@ function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreview
 <template>
   <WorkbenchShell
     :title="$t('ui.folderSync')"
-    eyebrow="Sync"
+    :eyebrow="$t('ui.sync')"
     :subtitle="selectedStrategyLabel"
-    inspector-label="Folder sync inspector"
+    :inspector-label="$t('ui.folderSyncInspector')"
   >
     <section class="folder-sync-view">
       <header class="folder-sync-header">
@@ -151,7 +165,7 @@ function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreview
               :key="option.value"
               :value="option.value"
             >
-              {{ option.label }}
+              {{ $t(option.labelKey) }}
             </option>
           </select>
         </label>
@@ -205,7 +219,7 @@ function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreview
             :key="row.id"
             class="sync-preview-row"
           >
-            <strong>{{ row.action }}</strong>
+            <strong>{{ folderSyncActionLabel(row.action) }}</strong>
             <span>{{ row.sourcePath ?? '--' }}</span>
             <span>{{ row.targetPath ?? '--' }}</span>
             <span>{{ row.detail }}</span>
@@ -218,7 +232,9 @@ function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreview
         class="sync-run-status"
         data-testid="folder-sync-run-status"
       >
-        <strong>Completed {{ completedOperations }} / {{ previewRows.length }}</strong>
+        <strong>{{
+          $t('status.completedCount', { count: completedOperations, total: previewRows.length })
+        }}</strong>
         <ul>
           <li
             v-for="log in syncLogs"
@@ -249,7 +265,9 @@ function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreview
             </div>
             <div>
               <dt>{{ $t('ui.status') }}</dt>
-              <dd>{{ previewLoading ? 'Running' : previewName }}</dd>
+              <dd>
+                {{ previewLoading ? $t('status.running') : previewName || selectedStrategyLabel }}
+              </dd>
             </div>
           </dl>
         </section>

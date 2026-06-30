@@ -11,6 +11,7 @@ import type {
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
+import { useI18n } from '@/i18n'
 
 interface FlatRegistryKeyNode extends RegistryKeyNode {
   depth: number
@@ -106,6 +107,7 @@ const defaultRightExport = `Windows Registry Editor Version 5.00
 const leftExport = ref(defaultLeftExport)
 const rightExport = ref(defaultRightExport)
 const sessionLaunch = useSessionLaunchStore()
+const { t } = useI18n()
 const leftName = ref('left.reg')
 const rightName = ref('right.reg')
 const registryTree = ref<RegistryKeyNode[]>(defaultRegistryTree)
@@ -168,13 +170,13 @@ function flattenRegistryKeys(nodes: RegistryKeyNode[], depth = 0): FlatRegistryK
 
 function statusLabel(status: RegistryDiffStatus): string {
   const labels: Record<RegistryDiffStatus, string> = {
-    added: 'Added',
-    removed: 'Removed',
-    modified: 'Modified',
-    unchanged: 'Unchanged',
+    added: 'ui.added',
+    removed: 'ui.removed',
+    modified: 'ui.modified',
+    unchanged: 'ui.unchanged',
   }
 
-  return labels[status]
+  return t(labels[status])
 }
 
 function registryValueText(value?: RegistryValueSide): string {
@@ -240,9 +242,9 @@ function fileNameFromPath(path: string): string {
 <template>
   <WorkbenchShell
     :title="$t('ui.registryCompare')"
-    eyebrow="Registry"
+    :eyebrow="$t('ui.registry')"
     :subtitle="`${leftName} -> ${rightName}`"
-    inspector-label="Registry compare inspector"
+    :inspector-label="$t('ui.registryCompareInspector')"
   >
     <section class="registry-compare-view">
       <header class="registry-header">
@@ -307,7 +309,7 @@ function fileNameFromPath(path: string): string {
         <aside class="registry-key-pane">
           <header>
             <strong>{{ $t('ui.keys') }}</strong>
-            <span>{{ flatRegistryKeys.length }} keys</span>
+            <span>{{ $t('status.keyCount', { count: flatRegistryKeys.length }) }}</span>
           </header>
           <div class="registry-key-list">
             <button
@@ -329,7 +331,7 @@ function fileNameFromPath(path: string): string {
         <section class="registry-value-pane">
           <header>
             <strong>{{ $t('ui.values') }}</strong>
-            <span>{{ allRegistryValues.length }} values</span>
+            <span>{{ $t('status.valueCount', { count: allRegistryValues.length }) }}</span>
           </header>
           <div class="registry-value-table">
             <div class="registry-value-row registry-value-head">

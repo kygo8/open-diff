@@ -4,6 +4,7 @@ import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextCompareView from './TextCompareView.vue'
 import { diffText, readTextFile } from '@/api/diff'
+import { createAppI18n, installI18n } from '@/i18n'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useStatusBarStore } from '@/stores/statusBar'
 import type { TextDiffRequest } from '@/types/diff'
@@ -55,6 +56,13 @@ const TextDiffPanelStub = {
 function mountTextCompareView(): VueWrapper {
   return mount(TextCompareView, {
     global: {
+      plugins: [
+        {
+          install(app) {
+            installI18n(app, createAppI18n('en-US'))
+          },
+        },
+      ],
       stubs: {
         NButton: {
           props: ['loading'],

@@ -109,9 +109,9 @@ function parseShortcutText(value: string): string[] {
 <template>
   <WorkbenchShell
     :title="$t('ui.settings')"
-    eyebrow="Policy"
+    :eyebrow="$t('ui.policy')"
     :subtitle="$t('ui.manageMatchingRulesDefaultViewsAndRuleReferences')"
-    inspector-label="Settings inspector"
+    :inspector-label="$t('ui.settingsInspector')"
   >
     <section class="settings-view">
       <NCard

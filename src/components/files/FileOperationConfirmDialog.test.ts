@@ -4,11 +4,13 @@ import FileOperationConfirmDialog from './FileOperationConfirmDialog.vue'
 
 const confirmation = {
   operation: 'delete' as const,
-  title: 'Delete 1 item?',
+  titleKey: 'fileOperation.delete.title',
+  titleParams: { count: 1 },
   risk: 'high' as const,
-  confirmLabel: 'Delete',
+  riskKey: 'fileOperation.risk.high',
+  confirmLabelKey: 'ui.delete',
   paths: ['C:/work/old.txt'],
-  message: 'This operation can remove files or folders from disk.',
+  messageKey: 'fileOperation.delete.message',
 }
 
 describe('FileOperationConfirmDialog', () => {
@@ -18,7 +20,7 @@ describe('FileOperationConfirmDialog', () => {
     })
 
     expect(wrapper.text()).toContain('Delete 1 item?')
-    expect(wrapper.text()).toContain('high')
+    expect(wrapper.text()).toContain('High risk')
     expect(wrapper.text()).toContain('C:/work/old.txt')
     expect(wrapper.text()).toContain('This operation can remove files or folders from disk.')
   })

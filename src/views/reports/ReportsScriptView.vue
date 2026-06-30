@@ -8,11 +8,16 @@ const jobs = [
   {
     name: 'release-folder-diff.md',
     type: 'Markdown',
-    state: 'Completed',
+    stateKey: 'ui.completed',
     target: 'reports/release',
   },
-  { name: 'regression-summary.json', type: 'JSON', state: 'Queued', target: 'artifacts/nightly' },
-  { name: 'media-tags.csv', type: 'CSV', state: 'Draft', target: 'exports/media' },
+  {
+    name: 'regression-summary.json',
+    type: 'JSON',
+    stateKey: 'ui.queued',
+    target: 'artifacts/nightly',
+  },
+  { name: 'media-tags.csv', type: 'CSV', stateKey: 'ui.draft', target: 'exports/media' },
 ]
 
 const scriptLines = [
@@ -24,10 +29,10 @@ const scriptLines = [
 
 <template>
   <WorkbenchShell
-    title="Reports / Scripts"
-    eyebrow="Automation"
-    subtitle="CLI, reports, and repeatable comparison jobs"
-    inspector-label="Reports inspector"
+    :title="$t('ui.reportsScripts')"
+    :eyebrow="$t('ui.automation')"
+    :subtitle="$t('ui.cliReportsAndRepeatableComparisonJobs')"
+    :inspector-label="$t('ui.reportsInspector')"
   >
     <template #toolbar>
       <WorkbenchToolbar>
@@ -45,15 +50,15 @@ const scriptLines = [
     <section class="reports-script-view">
       <section class="report-panel">
         <header class="split-pane-header active">
-          <strong>Jobs</strong>
-          <span>{{ jobs.length }} definitions</span>
+          <strong>{{ $t('ui.jobs') }}</strong>
+          <span>{{ $t('status.definitions', { count: jobs.length }) }}</span>
         </header>
         <div class="report-table">
           <div class="report-row report-head">
-            <span>Name</span>
-            <span>Type</span>
-            <span>State</span>
-            <span>Target</span>
+            <span>{{ $t('ui.name') }}</span>
+            <span>{{ $t('ui.type') }}</span>
+            <span>{{ $t('ui.state') }}</span>
+            <span>{{ $t('ui.target') }}</span>
           </div>
           <div
             v-for="job in jobs"
@@ -62,7 +67,7 @@ const scriptLines = [
           >
             <strong>{{ job.name }}</strong>
             <span>{{ job.type }}</span>
-            <span>{{ job.state }}</span>
+            <span>{{ $t(job.stateKey) }}</span>
             <code>{{ job.target }}</code>
           </div>
         </div>
@@ -70,8 +75,8 @@ const scriptLines = [
 
       <section class="script-panel">
         <header class="split-pane-header">
-          <strong>Script / CLI</strong>
-          <span>PowerShell ready</span>
+          <strong>{{ $t('ui.scriptCli') }}</strong>
+          <span>{{ $t('status.powerShellReady') }}</span>
         </header>
         <pre><code>{{ scriptLines.join('\n') }}</code></pre>
       </section>
@@ -84,20 +89,20 @@ const scriptLines = [
           <StatusSummaryGrid
             :items="[
               { label: $t('ui.completed'), value: 1, tone: 'added' },
-              { label: 'Queued', value: 1, tone: 'modified' },
-              { label: 'Draft', value: 1 },
+              { label: $t('ui.queued'), value: 1, tone: 'modified' },
+              { label: $t('ui.draft'), value: 1 },
             ]"
           />
         </section>
         <section class="workbench-inspector-section">
-          <h2>CLI</h2>
+          <h2>{{ $t('ui.cli') }}</h2>
           <dl>
             <div>
-              <dt>Shell</dt>
-              <dd>PowerShell 7.6.1</dd>
+              <dt>{{ $t('ui.shell') }}</dt>
+              <dd>{{ $t('ui.powerShell') }} 7.6.1</dd>
             </div>
             <div>
-              <dt>Output</dt>
+              <dt>{{ $t('ui.output') }}</dt>
               <dd>reports/release-folder-diff.md</dd>
             </div>
           </dl>

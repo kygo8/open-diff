@@ -10,8 +10,10 @@ import type {
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
+import { useI18n } from '@/i18n'
 
 const mediaStatuses: MediaFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
+const { t } = useI18n()
 const defaultLeftMedia: MediaSideSummary = {
   name: 'left-track.flac',
   container: 'FLAC',
@@ -110,13 +112,13 @@ const mediaSummary = computed<Record<MediaFieldStatus, number>>(() => {
 
 function statusLabel(status: MediaFieldStatus): string {
   const labels: Record<MediaFieldStatus, string> = {
-    added: 'Added',
-    removed: 'Removed',
-    modified: 'Modified',
-    unchanged: 'Unchanged',
+    added: 'ui.added',
+    removed: 'ui.removed',
+    modified: 'ui.modified',
+    unchanged: 'ui.unchanged',
   }
 
-  return labels[status]
+  return t(labels[status])
 }
 
 function valueText(value?: string): string {
@@ -151,9 +153,9 @@ async function runMediaCompare(): Promise<void> {
 <template>
   <WorkbenchShell
     :title="$t('ui.mediaCompare')"
-    eyebrow="Media"
+    :eyebrow="$t('ui.media')"
     :subtitle="`${leftMedia.name} -> ${rightMedia.name}`"
-    inspector-label="Media compare inspector"
+    :inspector-label="$t('ui.mediaCompareInspector')"
   >
     <section class="media-compare-view">
       <header class="media-header">
@@ -162,8 +164,8 @@ async function runMediaCompare(): Promise<void> {
           <h1>{{ $t('ui.mediaCompare') }}</h1>
         </div>
         <div class="media-source-pair">
-          <span>Left: {{ leftMedia.name }}</span>
-          <span>Right: {{ rightMedia.name }}</span>
+          <span>{{ $t('ui.left') }}: {{ leftMedia.name }}</span>
+          <span>{{ $t('ui.right') }}: {{ rightMedia.name }}</span>
         </div>
       </header>
 
@@ -276,7 +278,7 @@ async function runMediaCompare(): Promise<void> {
       <section class="media-report-panel">
         <header>
           <strong>{{ $t('ui.tagFieldReport') }}</strong>
-          <span>{{ mediaFields.length }} fields</span>
+          <span>{{ $t('status.fieldCount', { count: mediaFields.length }) }}</span>
         </header>
         <div
           class="media-report-table"

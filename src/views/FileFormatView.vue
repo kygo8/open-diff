@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useI18n } from '@/i18n'
 
 type FileFormatViewMode = 'text' | 'table' | 'hex' | 'picture'
 
@@ -98,11 +99,13 @@ const builtInFormats: FileFormatDefinition[] = [
 ]
 
 const formats = ref<FileFormatDefinition[]>(builtInFormats.map((format) => cloneFormat(format)))
+const { t } = useI18n()
 const selectedFormatId = ref(formats.value[0]?.id ?? '')
 const draft = ref<FileFormatDraft>(toDraft(formats.value[0] ?? emptyFormat()))
 const exportJson = ref('')
 const importJson = ref('')
-const importStatus = ref('No import loaded')
+const importStatusKey = ref('status.noImportLoaded')
+const importStatusParams = ref<Record<string, string | number>>({})
 
 const selectedFormat = computed(() =>
   formats.value.find((format) => format.id === selectedFormatId.value),
@@ -114,22 +117,33 @@ const sortedFormats = computed(() =>
   ),
 )
 
-const selectedFormatSummary = computed(
-  () =>
-    `${draft.value.name || 'Untitled'} - Priority ${String(draft.value.priority)} - ${viewLabel(draft.value.defaultView)}`,
+const selectedFormatSummary = computed(() =>
+  t('status.formatSummary', {
+    name: draft.value.name || t('ui.untitled'),
+    priority: draft.value.priority,
+    view: viewLabel(draft.value.defaultView),
+  }),
 )
 
 const ruleSummary = computed(() => {
   const rules = [
-    draft.value.grammar ? `Grammar: ${draft.value.grammar}` : 'Grammar: none',
-    draft.value.ignore.trim() ? `Ignore: ${draft.value.ignore.trim()}` : 'Ignore: none',
+    draft.value.grammar
+      ? t('status.grammarRuleValue', { value: draft.value.grammar })
+      : t('status.grammarRuleNone'),
+    draft.value.ignore.trim()
+      ? t('status.ignoreRuleValue', { value: draft.value.ignore.trim() })
+      : t('status.ignoreRuleNone'),
     draft.value.conversion.trim()
-      ? `Conversion: ${draft.value.conversion.trim()}`
-      : 'Conversion: none',
+      ? t('status.conversionRuleValue', { value: draft.value.conversion.trim() })
+      : t('status.conversionRuleNone'),
   ]
 
   return rules.join(' | ')
 })
+const importStatus = computed(() => t(importStatusKey.value, importStatusParams.value))
+const formatSourceDescription = computed(() =>
+  selectedFormat.value ? t('ui.selectedDefinitionEditable') : t('ui.createNewFormatDefinition'),
+)
 
 function selectFormat(formatId: string): void {
   const format = formats.value.find((item) => item.id === formatId)
@@ -182,7 +196,7 @@ function importFormats(): void {
     const importedFormats = parsed.map((format) => normalizeFormat(format))
 
     if (importedFormats.length === 0) {
-      importStatus.value = 'Import file contained no formats'
+      setImportStatus('status.importContainedNoFormats')
 
       return
     }
@@ -202,12 +216,14 @@ function importFormats(): void {
     formats.value = nextFormats
     selectedFormatId.value = importedFormats[0].id
     draft.value = toDraft(importedFormats[0])
-    const importedCount = importedFormats.length
-    const pluralSuffix = importedCount === 1 ? '' : 's'
-
-    importStatus.value = `Imported ${String(importedCount)} format${pluralSuffix}`
+    setImportStatus(
+      importedFormats.length === 1
+        ? 'status.importedFormatCount'
+        : 'status.importedFormatCountPlural',
+      { count: importedFormats.length },
+    )
   } catch {
-    importStatus.value = 'Import failed: invalid JSON'
+    setImportStatus('status.importFailedInvalidJson')
   }
 }
 
@@ -227,7 +243,7 @@ function toDraft(format: FileFormatDefinition): FileFormatDraft {
 }
 
 function fromDraft(source: FileFormatDraft): FileFormatDefinition {
-  const name = valueOrFallback(source.name, 'Untitled Format')
+  const name = valueOrFallback(source.name, t('ui.untitledFormat'))
 
   return {
     id: source.id || slugify(name),
@@ -248,7 +264,7 @@ function fromDraft(source: FileFormatDraft): FileFormatDefinition {
 }
 
 function normalizeFormat(format: ImportedFileFormat): FileFormatDefinition {
-  const name = valueOrFallback(format.name, 'Imported Format')
+  const name = valueOrFallback(format.name, t('ui.importedFormat'))
   const matcher = format.matcher ?? {}
   const rules = format.rules ?? {}
   const priority =
@@ -326,13 +342,18 @@ function isViewMode(value: unknown): value is FileFormatViewMode {
 
 function viewLabel(value: FileFormatViewMode): string {
   const labels: Record<FileFormatViewMode, string> = {
-    text: 'Text',
-    table: 'Table',
-    hex: 'Hex',
-    picture: 'Picture',
+    text: 'ui.text',
+    table: 'ui.table',
+    hex: 'ui.hex',
+    picture: 'ui.picture',
   }
 
-  return labels[value]
+  return t(labels[value])
+}
+
+function setImportStatus(key: string, params: Record<string, string | number> = {}): void {
+  importStatusKey.value = key
+  importStatusParams.value = params
 }
 </script>
 
@@ -376,7 +397,7 @@ function viewLabel(value: FileFormatViewMode): string {
           >
             <span>{{ format.name }}</span>
             <small
-              >{{ viewLabel(format.defaultView) }} ·
+              >{{ viewLabel(format.defaultView) }} -
               {{ format.matcher.extensions.join(', ') }}</small
             >
           </button>
@@ -492,13 +513,7 @@ function viewLabel(value: FileFormatViewMode): string {
         >
           {{ ruleSummary }}
         </p>
-        <p class="format-source">
-          {{
-            selectedFormat
-              ? 'Selected definition is editable in this session.'
-              : 'Create a new format definition.'
-          }}
-        </p>
+        <p class="format-source">{{ formatSourceDescription }}</p>
       </section>
     </section>
 

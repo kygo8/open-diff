@@ -97,12 +97,12 @@ function openSession(entry: SessionCatalogEntry): void {
     id: crypto.randomUUID(),
     source: 'home',
     sessionType: entry.type,
-    title: `Untitled ${entry.title}`,
+    title: `${t('ui.untitled')} ${t(entry.titleKey)}`,
     route: entry.route,
     locations: {},
     autoRun: false,
   })
-  tabs.openTab({ title: entry.title, route: entry.route, dirty: false })
+  tabs.openTab({ title: entry.title, titleKey: entry.titleKey, route: entry.route, dirty: false })
   void router.push(entry.route)
 }
 
@@ -180,6 +180,7 @@ function openSelectedDropSession(): void {
   sessionLaunch.setPendingLaunch(createLaunchFromDrop(selectedDropSession.value))
   tabs.openTab({
     title: selectedDropSession.value.title,
+    titleKey: selectedDropSession.value.titleKey,
     route: selectedDropSession.value.route,
     dirty: false,
   })
@@ -211,25 +212,26 @@ function createLaunchFromDrop(selection: SessionSelection): SessionLaunchPayload
 async function openClipboardText(): Promise<void> {
   try {
     const source = await readClipboardTextSource()
+    const title = t(source.title)
 
-    clipboardStatus.value = `${source.title} ready`
+    clipboardStatus.value = t('status.sourceReady', { source: title })
     sessionLaunch.setPendingLaunch({
       id: crypto.randomUUID(),
       source: 'command',
       sessionType: 'text-compare',
-      title: source.title,
+      title,
       route: '/compare/text',
       locations: {
         left: {
           uri: source.text,
-          displayName: source.title,
+          displayName: title,
           kind: 'virtual',
           readOnly: true,
         },
       },
       autoRun: false,
     })
-    tabs.openTab({ title: source.title, route: '/compare/text', dirty: false })
+    tabs.openTab({ title, titleKey: source.title, route: '/compare/text', dirty: false })
     void router.push('/compare/text')
   } catch (error) {
     clipboardStatus.value =
@@ -450,8 +452,8 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
                 :size="17"
               />
             </span>
-            <h3>{{ entry.type === 'text-merge' ? '3-Way Merge' : entry.title }}</h3>
-            <p>{{ entry.summary }}</p>
+            <h3>{{ $t(entry.titleKey) }}</h3>
+            <p>{{ $t(entry.summaryKey) }}</p>
             <button type="button">{{ $t('ui.open') }}</button>
           </article>
         </div>
@@ -644,8 +646,13 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
               <strong>{{ $t('ui.dropTwoFilesOrFolders') }}</strong>
               <span v-if="dropResult.kind === 'invalid'">{{ dropResult.reason }}</span>
               <span v-else>
-                {{ dropResult.kind }} detected: {{ dropResult.left.displayName }} and
-                {{ dropResult.right.displayName }}
+                {{
+                  $t('status.dropDetected', {
+                    kind: dropResult.kind,
+                    left: dropResult.left.displayName,
+                    right: dropResult.right.displayName,
+                  })
+                }}
               </span>
               <button
                 type="button"

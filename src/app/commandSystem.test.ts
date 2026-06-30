@@ -49,6 +49,7 @@ describe('commandSystem', () => {
     expect(context.openTab).toHaveBeenCalledWith({
       route: '/compare/text',
       title: 'Text Compare',
+      titleKey: 'ui.textCompare',
       dirty: false,
     })
     expect(context.navigate).toHaveBeenCalledWith('/compare/text')

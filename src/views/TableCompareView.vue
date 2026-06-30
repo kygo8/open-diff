@@ -10,6 +10,7 @@ import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
+import { useI18n } from '@/i18n'
 
 interface TableColumnModel {
   name: string
@@ -68,6 +69,7 @@ const visibleRows = 8
 const leftCsv = ref(defaultLeftCsv)
 const rightCsv = ref(defaultRightCsv)
 const sessionLaunch = useSessionLaunchStore()
+const { t } = useI18n()
 const leftColumns = ref<TableColumnModel[]>(defaultLeftColumns)
 const rightColumns = ref<TableColumnModel[]>(defaultRightColumns)
 const virtualGridColumns = ref<VirtualGridColumn[]>(defaultVirtualGridColumns)
@@ -125,8 +127,8 @@ const columnRules = computed(() =>
     return {
       ...column,
       ignored,
-      importance: ignored ? 'Unimportant' : 'Important',
-      status: ignored ? 'Ignored' : 'Compared',
+      importance: ignored ? t('ui.unimportant') : t('ui.important'),
+      status: ignored ? t('ui.ignored') : t('status.compared'),
     }
   }),
 )
@@ -153,7 +155,7 @@ const activeTableCell = computed<TableCellLocation | undefined>(
 const tableSearchSummary = computed(() => {
   const count = tableSearchMatches.value.length
 
-  return `${String(count)} ${count === 1 ? 'match' : 'matches'}`
+  return t(count === 1 ? 'status.matchCount' : 'status.matchCountPlural', { count })
 })
 const tableDifferenceSummary = computed(() => {
   if (tableDifferenceCells.value.length === 0) {
@@ -299,6 +301,17 @@ function normalizeMapping(mapping: TableCompareColumnMapping): ColumnMappingMode
   }
 }
 
+function tableMappingSourceKey(source: ColumnMappingModel['source']): string {
+  const keys: Record<ColumnMappingModel['source'], string> = {
+    Automatic: 'ui.automatic',
+    'Left Only': 'ui.leftOnly',
+    Manual: 'ui.manual',
+    'Right Only': 'ui.rightOnly',
+  }
+
+  return keys[source]
+}
+
 function addManualMapping(): void {
   const leftColumn = manualLeftColumn.value
   const rightColumn = manualRightColumn.value
@@ -391,9 +404,9 @@ function goToNextTableDifference(): void {
 <template>
   <WorkbenchShell
     :title="$t('ui.tableCompare')"
-    eyebrow="Table"
-    :subtitle="`${visibleRowCount} rows x ${visibleColumns} columns`"
-    inspector-label="Table compare inspector"
+    :eyebrow="$t('ui.table')"
+    :subtitle="$t('status.rowColumnCount', { rows: visibleRowCount, columns: visibleColumns })"
+    :inspector-label="$t('ui.tableCompareInspector')"
   >
     <section class="table-compare-view">
       <header class="table-compare-header">
@@ -475,7 +488,9 @@ function goToNextTableDifference(): void {
       <section class="table-grid-panel">
         <header>
           <strong>{{ $t('ui.dataGrid') }}</strong>
-          <span>{{ visibleRowCount }} rows x {{ visibleColumns }} columns</span>
+          <span>{{
+            $t('status.rowColumnCount', { rows: visibleRowCount, columns: visibleColumns })
+          }}</span>
         </header>
         <div class="table-navigation-bar">
           <label>
@@ -616,7 +631,7 @@ function goToNextTableDifference(): void {
           >
             <span>{{ mapping.leftColumn ?? '--' }}</span>
             <span>{{ mapping.rightColumn ?? '--' }}</span>
-            <strong>{{ mapping.source }}</strong>
+            <strong>{{ $t(tableMappingSourceKey(mapping.source)) }}</strong>
             <small>{{ mapping.leftColumn ?? '--' }} -> {{ mapping.rightColumn ?? '--' }}</small>
           </div>
         </div>

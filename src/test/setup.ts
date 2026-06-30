@@ -1,15 +1,15 @@
 import { config } from '@vue/test-utils'
-import { enUS } from '@/i18n/locales/en-US'
+import { createAppI18n } from '@/i18n'
+import { i18nKey } from '@/i18n/core'
+
+const i18n = createAppI18n('en-US')
+
+config.global.provide = {
+  ...config.global.provide,
+  [i18nKey as symbol]: i18n,
+}
 
 config.global.mocks = {
   ...config.global.mocks,
-  $t: (key: string, params: Record<string, string | number> = {}) => {
-    const message = enUS.messages[key] ?? key
-
-    return message.replace(/\{(\w+)\}/g, (placeholder, paramKey: string) =>
-      Object.prototype.hasOwnProperty.call(params, paramKey)
-        ? String(params[paramKey])
-        : placeholder,
-    )
-  },
+  $t: i18n.t,
 }

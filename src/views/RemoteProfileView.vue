@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import { useI18n } from '@/i18n'
 
 type RemoteProtocol =
   | 'ftp'
@@ -76,9 +77,11 @@ const builtInProfiles: RemoteProfile[] = [
 ]
 
 const profiles = ref<RemoteProfile[]>(builtInProfiles.map((profile) => cloneProfile(profile)))
+const { t } = useI18n()
 const selectedProfileId = ref(profiles.value[0]?.id ?? '')
 const draft = ref<RemoteProfileDraft>(toDraft(profiles.value[0] ?? emptyProfile()))
-const testStatus = ref('No connection test run')
+const testStatusKey = ref('status.noConnectionTestRun')
+const testStatusParams = ref<Record<string, string | number>>({})
 
 const sortedProfiles = computed(() =>
   [...profiles.value].sort((left, right) => left.name.localeCompare(right.name)),
@@ -95,6 +98,7 @@ const profileSummary = computed(() => {
 const credentialSummary = computed(
   () => `${credentialKindLabel(draft.value.credentialKind)}: ${draft.value.credentialKey || '--'}`,
 )
+const testStatus = computed(() => t(testStatusKey.value, testStatusParams.value))
 
 function selectProfile(profileId: string): void {
   const profile = profiles.value.find((item) => item.id === profileId)
@@ -105,13 +109,13 @@ function selectProfile(profileId: string): void {
 
   selectedProfileId.value = profile.id
   draft.value = toDraft(profile)
-  testStatus.value = 'No connection test run'
+  setTestStatus('status.noConnectionTestRun')
 }
 
 function createNewProfile(): void {
   selectedProfileId.value = ''
   draft.value = toDraft(emptyProfile())
-  testStatus.value = 'No connection test run'
+  setTestStatus('status.noConnectionTestRun')
 }
 
 function saveProfile(): void {
@@ -150,9 +154,18 @@ function deleteProfile(): void {
 function testProfileConnection(): void {
   const host = draft.value.host.trim()
 
-  testStatus.value = host
-    ? `Connection check queued for ${host}`
-    : 'Connection check requires a host'
+  if (host) {
+    setTestStatus('status.connectionCheckQueuedFor', { host })
+
+    return
+  }
+
+  setTestStatus('status.connectionCheckRequiresHost')
+}
+
+function setTestStatus(key: string, params: Record<string, string | number> = {}): void {
+  testStatusKey.value = key
+  testStatusParams.value = params
 }
 
 function toDraft(profile: RemoteProfile): RemoteProfileDraft {
@@ -228,36 +241,36 @@ function slugify(value: string): string {
 
 function protocolLabel(protocol: RemoteProtocol): string {
   const labels: Record<RemoteProtocol, string> = {
-    ftp: 'FTP',
-    ftps: 'FTPS',
-    sftp: 'SFTP',
-    'web-dav': 'WebDAV',
-    s3: 'S3',
-    dropbox: 'Dropbox',
-    'one-drive': 'OneDrive',
-    subversion: 'Subversion',
+    dropbox: 'ui.dropbox',
+    ftp: 'ui.ftp',
+    ftps: 'ui.ftps',
+    'one-drive': 'ui.onedrive',
+    s3: 'ui.s3',
+    sftp: 'ui.sftp',
+    subversion: 'ui.subversion',
+    'web-dav': 'ui.webDav',
   }
 
-  return labels[protocol]
+  return t(labels[protocol])
 }
 
 function credentialKindLabel(kind: CredentialReferenceKind): string {
   const labels: Record<CredentialReferenceKind, string> = {
-    'system-keychain': 'System keychain',
-    environment: 'Environment variable',
-    'profile-store': 'Profile store',
+    environment: 'ui.environmentVariable',
+    'profile-store': 'ui.profileStore',
+    'system-keychain': 'ui.systemKeychain',
   }
 
-  return labels[kind]
+  return t(labels[kind])
 }
 </script>
 
 <template>
   <WorkbenchShell
     :title="$t('ui.remoteProfiles')"
-    eyebrow="Remote"
+    :eyebrow="$t('ui.remote')"
     :subtitle="profileSummary"
-    inspector-label="Remote profile inspector"
+    :inspector-label="$t('ui.remoteProfileInspector')"
   >
     <section class="remote-profile-view">
       <header class="profile-header">

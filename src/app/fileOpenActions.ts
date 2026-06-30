@@ -3,7 +3,8 @@ export type FileOpenActionKind = 'default' | 'open-with' | 'associated'
 export interface FileOpenAction {
   kind: FileOpenActionKind
   path: string
-  label: string
+  labelKey: string
+  labelParams?: Record<string, string>
   executable?: string
 }
 
@@ -18,7 +19,7 @@ export function createDefaultOpenAction(path: string): FileOpenAction {
   return {
     kind: 'default',
     path,
-    label: 'Open',
+    labelKey: 'ui.open',
     executable: undefined,
   }
 }
@@ -31,7 +32,8 @@ export function createOpenWithAction(
   return {
     kind: 'open-with',
     path,
-    label: `Open With ${applicationName}`,
+    labelKey: 'fileOpen.openWithApplication',
+    labelParams: { applicationName },
     executable,
   }
 }
@@ -46,7 +48,7 @@ export function createAssociatedApplicationOpenAction(path: string): FileOpenAct
   return {
     kind: 'associated',
     path,
-    label: 'Open With Associated Application',
+    labelKey: 'fileOpen.openWithAssociatedApplication',
     executable: undefined,
   }
 }

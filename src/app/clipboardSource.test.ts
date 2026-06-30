@@ -21,7 +21,7 @@ describe('readClipboardTextSource', () => {
 
     await expect(readClipboardTextSource()).resolves.toEqual({
       kind: 'clipboard-text',
-      title: 'Clipboard Text',
+      title: 'ui.clipboardText',
       text: 'clipboard text',
     })
   })

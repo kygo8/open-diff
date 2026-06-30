@@ -8,31 +8,33 @@ export interface FileOperationConfirmationRequest {
 
 export interface FileOperationConfirmation {
   operation: FileOperation
-  title: string
+  titleKey: string
+  titleParams: Record<string, string | number>
   risk: FileOperationRisk
-  confirmLabel: string
+  riskKey: string
+  confirmLabelKey: string
   paths: string[]
-  message: string
+  messageKey: string
 }
 
 const operationCopy: Record<
   FileOperation,
-  { label: string; risk: FileOperationRisk; message: string }
+  { labelKey: string; risk: FileOperationRisk; messageKey: string }
 > = {
   delete: {
-    label: 'Delete',
+    labelKey: 'ui.delete',
     risk: 'high',
-    message: 'This operation can remove files or folders from disk.',
+    messageKey: 'fileOperation.delete.message',
   },
   overwrite: {
-    label: 'Overwrite',
+    labelKey: 'ui.overwrite',
     risk: 'high',
-    message: 'This operation can replace existing file contents.',
+    messageKey: 'fileOperation.overwrite.message',
   },
   copy: {
-    label: 'Copy',
+    labelKey: 'ui.copy',
     risk: 'medium',
-    message: 'This operation can create or replace files at the target path.',
+    messageKey: 'fileOperation.copy.message',
   },
 }
 
@@ -40,13 +42,19 @@ export function createFileOperationConfirmation(
   request: FileOperationConfirmationRequest,
 ): FileOperationConfirmation {
   const copy = operationCopy[request.operation]
+  const count = request.paths.length
 
   return {
     operation: request.operation,
-    title: `${copy.label} ${String(request.paths.length)} item${request.paths.length === 1 ? '' : 's'}?`,
+    titleKey:
+      count === 1
+        ? `fileOperation.${request.operation}.title`
+        : `fileOperation.${request.operation}.titlePlural`,
+    titleParams: { count },
     risk: copy.risk,
-    confirmLabel: copy.label,
+    riskKey: `fileOperation.risk.${copy.risk}`,
+    confirmLabelKey: copy.labelKey,
     paths: [...request.paths],
-    message: copy.message,
+    messageKey: copy.messageKey,
   }
 }

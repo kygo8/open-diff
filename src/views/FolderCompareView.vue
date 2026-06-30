@@ -21,6 +21,7 @@ import { computed, onMounted, ref } from 'vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
+import { useI18n } from '@/i18n'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 type FolderSide = 'left' | 'right'
@@ -51,13 +52,13 @@ interface SyncPreviewItem {
   targetPath?: string
   originalSourcePath?: string
   originalTargetPath?: string
-  detail: string
+  detailKey: string
 }
 
-const configurableColumns: { id: FolderColumnId; label: string }[] = [
-  { id: 'size', label: 'Size' },
-  { id: 'modified', label: 'Modified' },
-  { id: 'type', label: 'Type' },
+const configurableColumns: { id: FolderColumnId; labelKey: string }[] = [
+  { id: 'size', labelKey: 'ui.size' },
+  { id: 'modified', labelKey: 'ui.modified' },
+  { id: 'type', labelKey: 'ui.type' },
 ]
 const externalApplicationConfigs = ref<ExternalApplicationConfig[]>([
   {
@@ -73,10 +74,10 @@ const externalApplicationConfigs = ref<ExternalApplicationConfig[]>([
     enabled: true,
   },
 ])
-const displayStatusOptions: { statuses: FolderStatus[]; label: string; testId: string }[] = [
-  { statuses: ['Same'], label: 'Same', testId: 'same' },
-  { statuses: ['Different'], label: 'Different', testId: 'different' },
-  { statuses: ['Left only', 'Right only'], label: 'Orphans', testId: 'orphans' },
+const displayStatusOptions: { statuses: FolderStatus[]; labelKey: string; testId: string }[] = [
+  { statuses: ['Same'], labelKey: 'ui.same', testId: 'same' },
+  { statuses: ['Different'], labelKey: 'ui.different', testId: 'different' },
+  { statuses: ['Left only', 'Right only'], labelKey: 'ui.orphans', testId: 'orphans' },
 ]
 const alignWithTargetId = ref('')
 const manualAlignments = ref<Record<string, string>>({})
@@ -172,6 +173,7 @@ const expandedDirectoryIds = ref<Set<string>>(new Set(['src']))
 const leftRoot = ref('D:/workspace/left')
 const rightRoot = ref('D:/workspace/right')
 const sessionLaunch = useSessionLaunchStore()
+const { t } = useI18n()
 const folderCompareLoading = ref(false)
 const folderCompareError = ref<string>()
 const visibleStatuses = ref<Set<FolderStatus>>(
@@ -330,7 +332,30 @@ function sideValue(
 }
 
 function typeLabel(row: FolderTreeRow): string {
-  return row.kind === 'directory' ? 'Directory' : 'File'
+  return row.kind === 'directory' ? t('ui.directory') : t('ui.file')
+}
+
+function folderStatusLabel(status: FolderStatus): string {
+  const keys: Record<FolderStatus, string> = {
+    Different: 'ui.different',
+    'Left only': 'ui.leftOnly',
+    'Right only': 'ui.rightOnly',
+    Same: 'ui.same',
+  }
+
+  return t(keys[status])
+}
+
+function syncPreviewActionLabel(action: SyncPreviewAction): string {
+  const keys: Record<SyncPreviewAction, string> = {
+    Copy: 'ui.copy',
+    Delete: 'ui.delete',
+    Error: 'ui.error',
+    Leave: 'ui.leave',
+    Overwrite: 'ui.overwrite',
+  }
+
+  return t(keys[action])
 }
 
 function isColumnVisible(columnId: FolderColumnId): boolean {
@@ -568,7 +593,7 @@ function quickCompareSelectedFile(): void {
     return
   }
 
-  lastCompareAction.value = `Quick Compare -> ${selectedFilePath.value}`
+  lastCompareAction.value = `${t('ui.quickCompare')} -> ${selectedFilePath.value}`
 }
 
 function compareSelectedFileToCounterpart(): void {
@@ -585,7 +610,7 @@ function compareSelectedFileToCounterpart(): void {
     return
   }
 
-  lastCompareAction.value = `Compare To -> ${sourcePath} => ${targetPath}`
+  lastCompareAction.value = `${t('ui.compareTo')} -> ${sourcePath} => ${targetPath}`
 }
 
 function copySelectedTo(direction: 'Left' | 'Right'): void {
@@ -623,6 +648,14 @@ function displayName(row: FolderTreeRow): string {
   return row.leftName ?? row.rightName ?? row.id
 }
 
+function fileOpenActionLabel(action: FileOpenAction): string {
+  return t(action.labelKey, action.labelParams)
+}
+
+function fileOperationTitle(confirmation: FileOperationConfirmation): string {
+  return t(confirmation.titleKey, confirmation.titleParams)
+}
+
 function alignSelectedFileWithTarget(): void {
   const row = selectedRow.value
   const target = rows.value.find((candidate) => candidate.id === alignWithTargetId.value)
@@ -635,7 +668,10 @@ function alignSelectedFileWithTarget(): void {
     ...manualAlignments.value,
     [row.id]: target.id,
   }
-  lastAlignmentAction.value = `${displayName(row)} aligned with ${displayName(target)}`
+  lastAlignmentAction.value = t('status.alignedWith', {
+    source: displayName(row),
+    target: displayName(target),
+  })
 }
 
 function breakSelectedAlignment(): void {
@@ -648,7 +684,7 @@ function breakSelectedAlignment(): void {
   manualAlignments.value = Object.fromEntries(
     Object.entries(manualAlignments.value).filter(([rowId]) => rowId !== row.id),
   )
-  lastAlignmentAction.value = `Alignment cleared for ${displayName(row)}`
+  lastAlignmentAction.value = t('status.alignmentCleared', { name: displayName(row) })
 }
 
 function confirmFolderCopy(): void {
@@ -659,7 +695,10 @@ function confirmFolderCopy(): void {
     return
   }
 
-  lastCopyAction.value = `Copied to ${direction} -> ${confirmation.paths[0]} | Status refreshed`
+  lastCopyAction.value = t('status.copiedToSide', {
+    side: direction === 'Left' ? t('ui.left') : t('ui.right'),
+    path: confirmation.paths[0],
+  })
   pendingCopyConfirmation.value = undefined
   pendingCopyDirection.value = undefined
 }
@@ -669,7 +708,7 @@ function confirmRenameFile(): void {
     return
   }
 
-  lastFileOperationAction.value = `Renamed -> ${renameTargetName.value}`
+  lastFileOperationAction.value = t('status.renamedPath', { path: renameTargetName.value })
   renamePanelOpen.value = false
 }
 
@@ -680,7 +719,7 @@ function moveSelectedFile(): void {
     return
   }
 
-  lastFileOperationAction.value = `Move -> ${archivePath(path)}`
+  lastFileOperationAction.value = `${t('ui.move')} -> ${archivePath(path)}`
 }
 
 function deleteSelectedFile(): void {
@@ -690,7 +729,7 @@ function deleteSelectedFile(): void {
     return
   }
 
-  pendingDangerousOperationLabel.value = `Deleted -> ${path}`
+  pendingDangerousOperationLabel.value = t('status.deletedArrowPath', { path })
   pendingDangerousOperation.value = createFileOperationConfirmation({
     operation: 'delete',
     paths: [path],
@@ -713,7 +752,9 @@ function toggleSelectedReadonly(selected: boolean): void {
   }
 
   selectedReadonly.value = selected
-  lastMetadataAction.value = `Attributes changed -> ${selected ? 'readonly' : 'writable'}`
+  lastMetadataAction.value = t('status.attributesChanged', {
+    state: selected ? 'readonly' : 'writable',
+  })
 }
 
 function touchSelectedFile(): void {
@@ -721,7 +762,7 @@ function touchSelectedFile(): void {
     return
   }
 
-  lastMetadataAction.value = `Touched -> ${selectedFilePath.value}`
+  lastMetadataAction.value = t('status.touchedPath', { path: selectedFilePath.value })
 }
 
 function excludeSelectedRow(): void {
@@ -733,7 +774,7 @@ function excludeSelectedRow(): void {
 
   excludedRowIds.value = new Set([...excludedRowIds.value, row.id])
   selectedRowId.value = undefined
-  lastSelectionAction.value = `Excluded -> ${displayName(row)}`
+  lastSelectionAction.value = t('status.excludedPath', { path: displayName(row) })
 }
 
 function refreshSelectedRow(): void {
@@ -743,7 +784,7 @@ function refreshSelectedRow(): void {
     return
   }
 
-  lastSelectionAction.value = `Refreshed -> ${displayName(row)}`
+  lastSelectionAction.value = t('status.refreshedPath', { path: displayName(row) })
 }
 
 function previewSyncPlan(): void {
@@ -755,7 +796,7 @@ function previewSyncPlan(): void {
       targetPath: 'D:/workspace/right/release-notes.md',
       originalSourcePath: 'D:/workspace/left/release-notes.md',
       originalTargetPath: 'D:/workspace/right/release-notes.md',
-      detail: 'Left-only item will be copied to the right side.',
+      detailKey: 'sync.detail.leftOnlyCopiedToRight',
     },
     {
       id: 'overwrite-main',
@@ -764,19 +805,19 @@ function previewSyncPlan(): void {
       targetPath: 'D:/workspace/right/src/main.ts',
       originalSourcePath: 'D:/workspace/left/src/main.ts',
       originalTargetPath: 'D:/workspace/right/src/main.ts',
-      detail: 'Different file will overwrite the target side.',
+      detailKey: 'sync.detail.differentFileOverwriteTarget',
     },
     {
       id: 'delete-legacy',
       action: 'Delete',
       targetPath: 'D:/workspace/right/archive/legacy.tmp',
-      detail: 'Right-only item will be removed.',
+      detailKey: 'sync.detail.rightOnlyRemoved',
     },
     {
       id: 'permission-error',
       action: 'Error',
       targetPath: 'D:/workspace/right/protected/settings.json',
-      detail: 'Permission denied',
+      detailKey: 'sync.detail.permissionDenied',
     },
   ]
 }
@@ -789,7 +830,7 @@ function markSyncPreviewItemAsLeave(itemId: string): void {
           action: 'Leave',
           sourcePath: undefined,
           targetPath: item.targetPath ?? item.originalTargetPath,
-          detail: 'No operation will be performed.',
+          detailKey: 'sync.detail.noOperation',
         }
       : item,
   )
@@ -809,7 +850,7 @@ function reverseSyncPreviewItem(itemId: string): void {
       action: 'Copy',
       sourcePath,
       targetPath,
-      detail: 'Direction reversed by user.',
+      detailKey: 'sync.detail.directionReversed',
     }
   })
 }
@@ -825,11 +866,15 @@ function runSyncPreview(): void {
     return
   }
 
-  lastSyncAction.value = `Sync ready -> ${String(syncPreviewItems.value.length)} operations ready`
+  lastSyncAction.value = t('status.syncReady', {
+    summary: t('status.operationsReady', { count: syncPreviewItems.value.length }),
+  })
 }
 
 function confirmSyncSafety(): void {
-  lastSyncAction.value = `Sync confirmed -> ${String(syncPreviewItems.value.length)} operations ready`
+  lastSyncAction.value = t('status.syncConfirmed', {
+    summary: t('status.operationsReady', { count: syncPreviewItems.value.length }),
+  })
   pendingSyncSafetyItems.value = []
 }
 
@@ -841,7 +886,7 @@ function closeSyncPreview(): void {
 function navigateFolderDifference(direction: 'next' | 'previous'): void {
   if (differenceRows.value.length === 0) {
     currentDifferenceIndex.value = -1
-    lastDifferenceNavigation.value = 'No folder differences'
+    lastDifferenceNavigation.value = t('status.noFolderDifferences')
 
     return
   }
@@ -856,9 +901,11 @@ function navigateFolderDifference(direction: 'next' | 'previous'): void {
   const row = differenceRows.value[currentDifferenceIndex.value]
 
   selectedRowId.value = row.id
-  lastDifferenceNavigation.value = `Difference ${String(currentDifferenceIndex.value + 1)} / ${String(
-    differenceRows.value.length,
-  )} -> ${displayName(row)}`
+  lastDifferenceNavigation.value = t('status.folderDifferencePosition', {
+    index: currentDifferenceIndex.value + 1,
+    total: differenceRows.value.length,
+    name: displayName(row),
+  })
 }
 
 function archivePath(path: string): string {
@@ -879,9 +926,9 @@ function handleTreeScroll(event: Event): void {
 <template>
   <WorkbenchShell
     :title="$t('ui.folderCompare')"
-    eyebrow="Folder"
+    :eyebrow="$t('ui.folder')"
     :subtitle="`${leftRoot} -> ${rightRoot}`"
-    inspector-label="Folder compare inspector"
+    :inspector-label="$t('ui.folderCompareInspector')"
   >
     <section class="folder-compare-view">
       <header class="folder-toolbar">
@@ -1090,7 +1137,7 @@ function handleTreeScroll(event: Event): void {
             :checked="isColumnVisible(column.id)"
             @change="toggleColumn(column.id, ($event.target as HTMLInputElement).checked)"
           />
-          <span>{{ column.label }}</span>
+          <span>{{ $t(column.labelKey) }}</span>
         </label>
       </section>
 
@@ -1105,7 +1152,7 @@ function handleTreeScroll(event: Event): void {
             :checked="areStatusesVisible(option.statuses)"
             @change="toggleStatuses(option.statuses, ($event.target as HTMLInputElement).checked)"
           />
-          <span>{{ option.label }}</span>
+          <span>{{ $t(option.labelKey) }}</span>
         </label>
         <label>
           <input
@@ -1140,7 +1187,7 @@ function handleTreeScroll(event: Event): void {
         <header class="sync-preview-header">
           <div>
             <strong>{{ $t('ui.syncPreview') }}</strong>
-            <span>{{ syncPreviewItems.length }} operations</span>
+            <span>{{ $t('status.operationCount', { count: syncPreviewItems.length }) }}</span>
           </div>
           <NButton
             size="small"
@@ -1164,17 +1211,19 @@ function handleTreeScroll(event: Event): void {
         >
           <div>
             <strong>{{ $t('ui.confirmRiskySyncActions') }}</strong>
-            <span
-              >{{ pendingSyncSafetyItems.length }} overwrite/delete operations need review.</span
-            >
+            <span>{{
+              $t('status.overwriteDeleteOperationsNeedReview', {
+                count: pendingSyncSafetyItems.length,
+              })
+            }}</span>
           </div>
           <ul>
             <li
               v-for="item in pendingSyncSafetyItems"
               :key="item.id"
             >
-              <strong>{{ item.action }}</strong>
-              <span>{{ item.targetPath ?? item.detail }}</span>
+              <strong>{{ syncPreviewActionLabel(item.action) }}</strong>
+              <span>{{ item.targetPath ?? $t(item.detailKey) }}</span>
             </li>
           </ul>
           <NButton
@@ -1201,10 +1250,10 @@ function handleTreeScroll(event: Event): void {
             :data-preview-id="item.id"
             data-testid="sync-preview-row"
           >
-            <strong>{{ item.action }}</strong>
+            <strong>{{ syncPreviewActionLabel(item.action) }}</strong>
             <span>{{ item.sourcePath ?? '--' }}</span>
             <span>{{ item.targetPath ?? '--' }}</span>
-            <span>{{ item.detail }}</span>
+            <span>{{ $t(item.detailKey) }}</span>
             <span class="sync-preview-change-actions">
               <NButton
                 size="tiny"
@@ -1249,8 +1298,8 @@ function handleTreeScroll(event: Event): void {
         class="folder-copy-confirmation"
         data-testid="folder-dangerous-confirmation"
       >
-        <strong>{{ pendingDangerousOperation.title }}</strong>
-        <span>{{ pendingDangerousOperation.message }}</span>
+        <strong>{{ fileOperationTitle(pendingDangerousOperation) }}</strong>
+        <span>{{ $t(pendingDangerousOperation.messageKey) }}</span>
         <span>{{ pendingDangerousOperation.paths.join(', ') }}</span>
         <NButton
           size="small"
@@ -1258,7 +1307,7 @@ function handleTreeScroll(event: Event): void {
           data-testid="confirm-dangerous-file-operation"
           @click="confirmDangerousFileOperation"
         >
-          {{ pendingDangerousOperation.confirmLabel }}
+          {{ $t(pendingDangerousOperation.confirmLabelKey) }}
         </NButton>
       </section>
 
@@ -1288,8 +1337,8 @@ function handleTreeScroll(event: Event): void {
         class="folder-copy-confirmation"
         data-testid="folder-copy-confirmation"
       >
-        <strong>{{ pendingCopyConfirmation.title }}</strong>
-        <span>{{ pendingCopyConfirmation.message }}</span>
+        <strong>{{ fileOperationTitle(pendingCopyConfirmation) }}</strong>
+        <span>{{ $t(pendingCopyConfirmation.messageKey) }}</span>
         <span>{{ pendingCopyConfirmation.paths.join(', ') }}</span>
         <NButton
           size="small"
@@ -1297,7 +1346,7 @@ function handleTreeScroll(event: Event): void {
           data-testid="confirm-folder-copy"
           @click="confirmFolderCopy"
         >
-          {{ pendingCopyConfirmation.confirmLabel }}
+          {{ $t(pendingCopyConfirmation.confirmLabelKey) }}
         </NButton>
       </section>
 
@@ -1338,7 +1387,12 @@ function handleTreeScroll(event: Event): void {
         class="folder-action-status"
         data-testid="folder-open-action-status"
       >
-        {{ lastOpenAction.label }} -> {{ lastOpenAction.path }}
+        {{
+          $t('status.fileOpenAction', {
+            action: fileOpenActionLabel(lastOpenAction),
+            path: lastOpenAction.path,
+          })
+        }}
       </section>
       <section
         v-if="lastCompareAction"
@@ -1502,7 +1556,7 @@ function handleTreeScroll(event: Event): void {
               >
                 {{ typeLabel(row) }}
               </span>
-              <strong>{{ row.status }}</strong>
+              <strong>{{ folderStatusLabel(row.status) }}</strong>
               <span
                 class="name-cell"
                 :style="{ paddingLeft: rowIndent(row) }"
@@ -1545,7 +1599,7 @@ function handleTreeScroll(event: Event): void {
             <div>
               <dt>{{ $t('ui.status') }}</dt>
               <dd :data-tone="selectedRow?.status === 'Different' ? 'modified' : 'default'">
-                {{ selectedRow?.status ?? '--' }}
+                {{ selectedRow ? folderStatusLabel(selectedRow.status) : '--' }}
               </dd>
             </div>
             <div>
@@ -1574,11 +1628,11 @@ function handleTreeScroll(event: Event): void {
           <dl>
             <div>
               <dt>{{ $t('ui.compare') }}</dt>
-              <dd>{{ folderCompareLoading ? 'Running' : 'Idle' }}</dd>
+              <dd>{{ folderCompareLoading ? $t('status.running') : $t('status.idle') }}</dd>
             </div>
             <div>
               <dt>{{ $t('ui.syncPreview') }}</dt>
-              <dd>{{ syncPreviewItems.length }} operations</dd>
+              <dd>{{ $t('status.operationCount', { count: syncPreviewItems.length }) }}</dd>
             </div>
           </dl>
         </section>

@@ -6,6 +6,7 @@ import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
+import { useI18n } from '@/i18n'
 
 const zoom = ref(100)
 const panX = ref(0)
@@ -22,24 +23,25 @@ const pixelPreview = ref<{
   y: number
   color: string
 } | null>(null)
+const { t } = useI18n()
 const defaultMetadataRows: PictureMetadataRow[] = [
   {
     key: 'dimensions',
-    label: 'Dimensions',
+    label: 'ui.dimensions',
     left: '1024 x 768',
     right: '1024 x 760',
     status: 'different',
   },
   {
     key: 'format',
-    label: 'Format',
+    label: 'ui.format',
     left: 'PNG',
     right: 'PNG',
     status: 'equal',
   },
   {
     key: 'color-depth',
-    label: 'Color Depth',
+    label: 'ui.colorDepth',
     left: '24-bit',
     right: '32-bit',
     status: 'different',
@@ -130,6 +132,10 @@ function rotatePicture(delta: number): void {
   rotationDeg.value = (rotationDeg.value + delta + 360) % 360
 }
 
+function metadataLabel(row: PictureMetadataRow): string {
+  return row.label.startsWith('ui.') ? t(row.label) : row.label
+}
+
 function buildPreviewColor(side: 'Left' | 'Right', x: number, y: number): string {
   const red = side === 'Left' ? 28 : 225
   const green = Math.min(255, Math.max(0, 128 + Math.round(x / 4)))
@@ -178,9 +184,9 @@ async function runPictureCompare(): Promise<void> {
 <template>
   <WorkbenchShell
     :title="$t('ui.pictureCompare')"
-    eyebrow="Picture"
+    :eyebrow="$t('ui.picture')"
     :subtitle="pictureDifferenceRatioText"
-    inspector-label="Picture compare inspector"
+    :inspector-label="$t('ui.pictureCompareInspector')"
   >
     <section class="picture-compare-view">
       <header class="picture-header">
@@ -349,7 +355,7 @@ async function runPictureCompare(): Promise<void> {
           class="picture-pixel-preview"
           data-testid="picture-pixel-preview"
         >
-          <span>{{ pixelPreview?.side ?? 'No pixel' }}</span>
+          <span>{{ pixelPreview?.side ?? $t('ui.noPixel') }}</span>
           <strong data-testid="picture-pixel-coordinates">
             {{ pixelPreview ? `${pixelPreview.x}, ${pixelPreview.y}` : '--, --' }}
           </strong>
@@ -451,7 +457,7 @@ async function runPictureCompare(): Promise<void> {
               :data-testid="`picture-metadata-${row.key}`"
               :data-metadata-status="row.status"
             >
-              <div class="metadata-cell metadata-label">{{ row.label }}</div>
+              <div class="metadata-cell metadata-label">{{ metadataLabel(row) }}</div>
               <div class="metadata-cell">{{ row.left }}</div>
               <div class="metadata-cell">{{ row.right }}</div>
               <div class="metadata-cell metadata-status">
@@ -497,7 +503,7 @@ async function runPictureCompare(): Promise<void> {
             </div>
             <div>
               <dt>{{ $t('ui.overlay') }}</dt>
-              <dd>{{ showOverlay ? 'On' : 'Off' }}</dd>
+              <dd>{{ showOverlay ? $t('ui.on') : $t('ui.off') }}</dd>
             </div>
             <div>
               <dt>{{ $t('ui.field') }}</dt>

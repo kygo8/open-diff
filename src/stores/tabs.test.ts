@@ -21,6 +21,7 @@ describe('useTabsStore workspace restore', () => {
     expect(store.tabs).toHaveLength(2)
     expect(store.activeTabId).toBe('text-1')
     expect(store.activeTab.title).toBe('Text Compare')
+    expect(store.activeTab.titleKey).toBe('ui.textCompare')
     expect(store.workspaceSnapshot()).toEqual({
       tabs: store.tabs,
       activeTabId: 'text-1',

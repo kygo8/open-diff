@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { readTextFile, saveTextFile } from '@/api/diff'
+import { useI18n } from '@/i18n'
 import type { FileStamp } from '@/types/diff'
 
 interface LoadedTextDocument {
@@ -12,35 +13,39 @@ interface LoadedTextDocument {
 }
 
 const pathInput = ref('D:/workspace/notes.txt')
+const { t } = useI18n()
 const document = ref<LoadedTextDocument | null>(null)
 const editorText = ref('')
 const savedText = ref('')
 const loading = ref(false)
 const saving = ref(false)
 const error = ref('')
-const saveStatus = ref('No file saved yet')
+const saveStatusKey = ref('status.noFileSavedYet')
+const saveStatusParams = ref<Record<string, string | number>>({})
 const findQuery = ref('')
 const replaceQuery = ref('')
 const currentFindIndex = ref(0)
 
 const fileTitle = computed(() => {
   if (!document.value) {
-    return 'Untitled'
+    return t('ui.untitled')
   }
 
   return fileName(document.value.path)
 })
 const metadataLabel = computed(() => {
   if (!document.value) {
-    return 'No document loaded'
+    return t('status.noDocumentLoaded')
   }
 
-  return `${document.value.encoding} | ${document.value.lineEnding} | ${String(
-    document.value.fileStamp.size,
-  )} bytes`
+  return t('status.documentMetadata', {
+    encoding: document.value.encoding,
+    lineEnding: document.value.lineEnding,
+    bytes: document.value.fileStamp.size,
+  })
 })
 const dirty = computed(() => editorText.value !== savedText.value)
-const dirtyLabel = computed(() => (dirty.value ? 'Unsaved changes' : 'Saved'))
+const dirtyLabel = computed(() => (dirty.value ? t('status.unsavedChanges') : t('status.saved')))
 const lineCount = computed(() =>
   editorText.value.length === 0 ? 0 : editorText.value.split('\n').length,
 )
@@ -66,7 +71,7 @@ const findMatches = computed(() => {
 })
 const findStatus = computed(() => {
   if (!findQuery.value) {
-    return 'No search'
+    return t('status.noSearch')
   }
 
   if (findMatches.value.length === 0) {
@@ -86,7 +91,7 @@ async function openDocument(): Promise<void> {
     document.value = result
     editorText.value = result.text
     savedText.value = result.text
-    saveStatus.value = 'Loaded'
+    setSaveStatus('status.loaded')
     currentFindIndex.value = 0
   } catch (event) {
     error.value = String(event)
@@ -115,9 +120,9 @@ async function saveDocument(): Promise<void> {
       text: editorText.value,
     }
     savedText.value = editorText.value
-    saveStatus.value = `${String(result.bytesWritten)} bytes written${
-      result.backupPath ? ' with backup' : ''
-    }`
+    setSaveStatus(result.backupPath ? 'status.bytesWrittenWithBackup' : 'status.bytesWritten', {
+      count: result.bytesWritten,
+    })
   } catch (event) {
     error.value = String(event)
   } finally {
@@ -196,6 +201,13 @@ function fileName(path: string): string {
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
+
+function setSaveStatus(key: string, params: Record<string, string | number> = {}): void {
+  saveStatusKey.value = key
+  saveStatusParams.value = params
+}
+
+const saveStatus = computed(() => t(saveStatusKey.value, saveStatusParams.value))
 </script>
 
 <template>
@@ -206,8 +218,8 @@ function escapeRegExp(value: string): string {
         <h1 data-testid="text-edit-title">{{ fileTitle }}</h1>
       </div>
       <div class="document-stats">
-        <span>{{ lineCount }} lines</span>
-        <span>{{ characterCount }} chars</span>
+        <span>{{ $t('status.lines', { count: lineCount }) }}</span>
+        <span>{{ $t('status.chars', { count: characterCount }) }}</span>
       </div>
     </header>
 

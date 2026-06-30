@@ -162,9 +162,9 @@ async function runHexCompare(): Promise<void> {
 <template>
   <WorkbenchShell
     :title="$t('ui.hexCompare')"
-    eyebrow="Hex"
+    :eyebrow="$t('ui.hex')"
     :subtitle="loadedBytesLabel"
-    inspector-label="Hex compare inspector"
+    :inspector-label="$t('ui.hexCompareInspector')"
   >
     <section class="hex-compare-view">
       <header class="hex-header">
@@ -214,8 +214,12 @@ async function runHexCompare(): Promise<void> {
           />
           <span>{{ $t('ui.differencesOnly') }}</span>
         </label>
-        <strong data-testid="hex-bytes-per-row">{{ bytesPerRow }} bytes / row</strong>
-        <strong data-testid="hex-diff-ranges">{{ diffRangeCount }} ranges</strong>
+        <strong data-testid="hex-bytes-per-row">{{
+          $t('status.bytesPerRow', { count: bytesPerRow })
+        }}</strong>
+        <strong data-testid="hex-diff-ranges">{{
+          $t('status.ranges', { count: diffRangeCount })
+        }}</strong>
         <button
           type="button"
           data-testid="run-hex-compare"
@@ -324,7 +328,7 @@ async function runHexCompare(): Promise<void> {
               { label: $t('ui.bytesLoaded'), value: loadedBytesLabel },
               { label: $t('ui.differencesOnly'), value: diffRangeCount, tone: 'modified' },
               { label: $t('ui.viewportWidth'), value: viewportWidth },
-              { label: 'Row', value: `${bytesPerRow} bytes` },
+              { label: $t('status.rowLabel'), value: $t('status.bytes', { count: bytesPerRow }) },
             ]"
           />
         </section>
@@ -341,7 +345,7 @@ async function runHexCompare(): Promise<void> {
             </div>
             <div>
               <dt>{{ $t('ui.differencesOnly') }}</dt>
-              <dd>{{ diffOnly ? 'On' : 'Off' }}</dd>
+              <dd>{{ diffOnly ? $t('ui.on') : $t('ui.off') }}</dd>
             </div>
           </dl>
         </section>

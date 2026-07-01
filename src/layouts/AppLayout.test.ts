@@ -7,10 +7,15 @@ import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 
 const push = vi.fn()
+let routePath = '/compare/text'
 
 vi.mock('vue-router', () => ({
   RouterView: { template: '<div />' },
-  useRoute: () => ({ path: '/' }),
+  useRoute: () => ({
+    get path() {
+      return routePath
+    },
+  }),
   useRouter: () => ({ push }),
 }))
 
@@ -18,6 +23,7 @@ describe('AppLayout command palette', () => {
   beforeEach(() => {
     localStorage.clear()
     setActivePinia(createPinia())
+    routePath = '/compare/text'
     push.mockClear()
   })
 

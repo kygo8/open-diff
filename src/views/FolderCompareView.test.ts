@@ -2,10 +2,21 @@ import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderCompareView from './FolderCompareView.vue'
-import { compareFolderPaths } from '@/api/diff'
+import {
+  changeFolderEntryAttributes,
+  compareFolderPaths,
+  copyFolderCompareEntry,
+  deleteFolderEntry,
+  renameFolderEntry,
+  touchFolderEntry,
+} from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 vi.mock('@/api/diff', () => ({
+  changeFolderEntryAttributes: vi.fn().mockResolvedValue({
+    path: 'D:/workspace/left/README.md',
+    metadata: { readonly: true },
+  }),
   compareFolderPaths: vi.fn().mockResolvedValue({
     leftRoot: 'D:/fixture-left',
     rightRoot: 'D:/fixture-right',
@@ -38,6 +49,28 @@ vi.mock('@/api/diff', () => ({
       rightOnly: 0,
     },
   }),
+  copyFolderCompareEntry: vi.fn().mockResolvedValue({
+    direction: 'toRight',
+    sourcePath: 'D:/workspace/left/src/main.ts',
+    targetPath: 'D:/workspace/right/src/main.ts',
+    refreshedStatus: 'same',
+  }),
+  deleteFolderEntry: vi.fn().mockResolvedValue({
+    operation: 'delete',
+    status: 'deleted',
+    sourcePath: 'D:/workspace/left/release-notes.md',
+    targetPath: null,
+  }),
+  renameFolderEntry: vi.fn().mockResolvedValue({
+    operation: 'rename',
+    status: 'renamed',
+    sourcePath: 'D:/workspace/left/release-notes.md',
+    targetPath: 'D:/workspace/left/release-notes-final.md',
+  }),
+  touchFolderEntry: vi.fn().mockResolvedValue({
+    path: 'D:/workspace/left/README.md',
+    metadata: { readonly: false },
+  }),
 }))
 
 function mountFolderCompareView(): VueWrapper {
@@ -57,7 +90,7 @@ function mountFolderCompareView(): VueWrapper {
 describe('FolderCompareView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
-    vi.mocked(compareFolderPaths).mockClear()
+    vi.clearAllMocks()
   })
 
   it('runs a real folder comparison request and renders returned rows', async () => {
@@ -272,20 +305,38 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).toContain('D:/workspace/right/src/main.ts')
 
     await wrapper.find('[data-testid="confirm-folder-copy"]').trigger('click')
+    await flushPromises()
 
+    expect(copyFolderCompareEntry).toHaveBeenCalledWith({
+      leftRoot: 'D:/workspace/left',
+      rightRoot: 'D:/workspace/right',
+      relativePath: 'src/main.ts',
+      direction: 'toRight',
+    })
     expect(wrapper.text()).toContain('Copied to Right -> D:/workspace/right/src/main.ts')
     expect(wrapper.text()).toContain('Status refreshed')
   })
 
-  it('confirms delete, move, and rename operations for the selected file', async () => {
+  it('confirms move and rename operations for the selected file', async () => {
     const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-row-id="notes"]').trigger('click')
     await wrapper.find('[data-testid="rename-selected-file"]').trigger('click')
     await wrapper.find('[data-testid="rename-target-name"]').setValue('release-notes-final.md')
     await wrapper.find('[data-testid="confirm-rename-file"]').trigger('click')
+    await flushPromises()
 
+    expect(renameFolderEntry).toHaveBeenCalledWith({
+      path: 'D:/workspace/left/release-notes.md',
+      newName: 'release-notes-final.md',
+    })
     expect(wrapper.text()).toContain('Renamed -> release-notes-final.md')
+  })
+
+  it('confirms move and delete operations for the selected file', async () => {
+    const wrapper = mountFolderCompareView()
+
+    await wrapper.find('[data-row-id="notes"]').trigger('click')
 
     await wrapper.find('[data-testid="move-selected-file"]').trigger('click')
 
@@ -296,7 +347,11 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).toContain('Delete 1 item?')
 
     await wrapper.find('[data-testid="confirm-dangerous-file-operation"]').trigger('click')
+    await flushPromises()
 
+    expect(deleteFolderEntry).toHaveBeenCalledWith({
+      path: 'D:/workspace/left/release-notes.md',
+    })
     expect(wrapper.text()).toContain('Deleted -> D:/workspace/left/release-notes.md')
   })
 
@@ -305,11 +360,21 @@ describe('FolderCompareView', () => {
 
     await wrapper.find('[data-row-id="readme"]').trigger('click')
     await wrapper.find('[data-testid="toggle-selected-readonly"]').setValue(true)
+    await flushPromises()
 
+    expect(changeFolderEntryAttributes).toHaveBeenCalledWith({
+      path: 'D:/workspace/left/README.md',
+      readonly: true,
+    })
     expect(wrapper.text()).toContain('Attributes changed -> readonly')
 
     await wrapper.find('[data-testid="touch-selected-file"]').trigger('click')
+    await flushPromises()
 
+    const touchRequest = vi.mocked(touchFolderEntry).mock.calls.at(-1)?.[0]
+
+    expect(touchRequest?.path).toBe('D:/workspace/left/README.md')
+    expect(typeof touchRequest?.modifiedAtMs).toBe('number')
     expect(wrapper.text()).toContain('Touched -> D:/workspace/left/README.md')
   })
 

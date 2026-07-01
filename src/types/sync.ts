@@ -38,3 +38,26 @@ export interface FolderSyncPreviewResponse {
   rows: FolderSyncPreviewRow[]
   summary: FolderSyncPreviewSummary
 }
+
+export type FolderSyncExecutionStatus = 'succeeded' | 'failed' | 'cancelled'
+
+export interface FolderSyncExecutionLog {
+  relativePath: string
+  action: 'copyLeftToRight' | 'copyRightToLeft' | 'delete' | 'leave' | 'conflict'
+  sourcePath?: string
+  targetPath?: string
+  status: FolderSyncExecutionStatus
+  error?: string
+}
+
+export interface FolderSyncExecutionResponse {
+  name: string
+  leftRoot: string
+  rightRoot: string
+  strategy: FolderSyncStrategy
+  total: number
+  succeeded: number
+  failed: number
+  cancelled: number
+  logs: FolderSyncExecutionLog[]
+}

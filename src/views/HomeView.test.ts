@@ -54,17 +54,25 @@ describe('HomeView', () => {
     vi.mocked(readClipboardTextSource).mockClear()
   })
 
-  it('renders the four design quick-start session cards', () => {
+  it('renders the full quick-start session catalog', () => {
     const wrapper = mountHomeView()
 
     const cards = wrapper.findAll('[data-testid="home-new-session-card"]')
 
-    expect(cards).toHaveLength(4)
+    expect(cards).toHaveLength(12)
     expect(cards.map((card) => card.attributes('data-session-type'))).toEqual([
-      'text-compare',
       'folder-compare',
-      'text-merge',
+      'folder-merge',
       'folder-sync',
+      'text-compare',
+      'text-merge',
+      'text-edit',
+      'hex-compare',
+      'media-compare',
+      'picture-compare',
+      'registry-compare',
+      'table-compare',
+      'version-compare',
     ])
   })
 
@@ -72,7 +80,7 @@ describe('HomeView', () => {
     const wrapper = mountHomeView()
 
     expect(wrapper.find('[data-testid="home-new-session"]').exists()).toBe(true)
-    expect(wrapper.findAll('[data-testid="home-new-session-card"]')).toHaveLength(4)
+    expect(wrapper.findAll('[data-testid="home-new-session-card"]')).toHaveLength(12)
     expect(wrapper.find('[data-testid="home-recent-sessions"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="home-workspace-inspector"]').exists()).toBe(true)
     expect(wrapper.find('.drop-zone').exists()).toBe(false)
@@ -163,9 +171,10 @@ describe('HomeView', () => {
     const wrapper = mountHomeView()
 
     await wrapper.find('[data-testid="session-search"]').setValue('release')
+    const recentSessions = wrapper.find('[data-testid="home-recent-sessions-table"]')
 
-    expect(wrapper.text()).toContain('Review release folder')
-    expect(wrapper.text()).not.toContain('Compare sample text')
+    expect(recentSessions.text()).toContain('Review release folder')
+    expect(recentSessions.text()).not.toContain('Compare sample text')
   })
 
   it('applies saved session management actions from the tree', async () => {

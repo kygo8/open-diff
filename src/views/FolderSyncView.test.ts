@@ -1,9 +1,34 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderSyncView from './FolderSyncView.vue'
-import { previewFolderSync } from '@/api/sync'
+import { executeFolderSync, previewFolderSync } from '@/api/sync'
 
 vi.mock('@/api/sync', () => ({
+  executeFolderSync: vi.fn().mockResolvedValue({
+    name: 'Mirror to Right',
+    leftRoot: 'D:/deploy/package',
+    rightRoot: 'D:/deploy/prod',
+    strategy: 'mirrorRight',
+    total: 2,
+    succeeded: 2,
+    failed: 0,
+    cancelled: 0,
+    logs: [
+      {
+        relativePath: 'package/app.exe',
+        action: 'copyLeftToRight',
+        sourcePath: 'D:/deploy/package/package/app.exe',
+        targetPath: 'D:/deploy/prod/package/app.exe',
+        status: 'succeeded',
+      },
+      {
+        relativePath: 'prod/old.dll',
+        action: 'delete',
+        targetPath: 'D:/deploy/prod/prod/old.dll',
+        status: 'succeeded',
+      },
+    ],
+  }),
   previewFolderSync: vi.fn().mockResolvedValue({
     name: 'Mirror to Right',
     leftRoot: 'D:/deploy/package',
@@ -38,7 +63,7 @@ vi.mock('@/api/sync', () => ({
 
 describe('FolderSyncView', () => {
   beforeEach(() => {
-    vi.mocked(previewFolderSync).mockClear()
+    vi.clearAllMocks()
   })
 
   it('configures folder paths, strategy, preview, and run status', async () => {
@@ -46,7 +71,7 @@ describe('FolderSyncView', () => {
       global: {
         stubs: {
           NButton: {
-            props: ['disabled'],
+            props: ['disabled', 'loading'],
             emits: ['click'],
             template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
           },
@@ -66,7 +91,7 @@ describe('FolderSyncView', () => {
     await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
     await wrapper.find('[data-testid="folder-sync-strategy"]').setValue('mirrorRight')
     await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
-    await wrapper.vm.$nextTick()
+    await flushPromises()
 
     expect(previewFolderSync).toHaveBeenCalledWith({
       leftRoot: 'D:/deploy/package',
@@ -81,7 +106,13 @@ describe('FolderSyncView', () => {
     expect(wrapper.text()).toContain('Delete')
 
     await wrapper.find('[data-testid="folder-sync-run"]').trigger('click')
+    await flushPromises()
 
+    expect(executeFolderSync).toHaveBeenCalledWith({
+      leftRoot: 'D:/deploy/package',
+      rightRoot: 'D:/deploy/prod',
+      strategy: 'mirrorRight',
+    })
     expect(wrapper.text()).toContain('Completed 2 / 2')
     expect(wrapper.text()).toContain('Copied package/app.exe')
     expect(wrapper.text()).toContain('Deleted prod/old.dll')

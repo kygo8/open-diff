@@ -177,6 +177,68 @@ export interface FolderCompareResponse {
   summary: FolderCompareSummary
 }
 
+export type FolderCopyDirection = 'toLeft' | 'toRight'
+
+export interface FolderCompareCopyRequest {
+  leftRoot: string
+  rightRoot: string
+  relativePath: string
+  direction: FolderCopyDirection
+}
+
+export interface FolderEntryMetadata {
+  kind: 'file' | 'directory'
+  name: string
+  extension?: string
+  size: number
+  readonly: boolean
+  createdAtMs?: number
+  modifiedAtMs?: number
+  accessedAtMs?: number
+}
+
+export interface FolderCompareCopyResponse {
+  direction: FolderCopyDirection
+  sourcePath: string
+  targetPath: string
+  targetMetadata: FolderEntryMetadata
+  refreshedStatus: 'unknown' | 'same' | 'different' | 'leftOnly' | 'rightOnly' | 'error'
+}
+
+export type FolderFileOperationKind = 'move' | 'delete' | 'rename'
+export type FolderFileOperationStatus = 'moved' | 'deleted' | 'renamed'
+
+export interface FolderFileOperationResponse {
+  operation: FolderFileOperationKind
+  status: FolderFileOperationStatus
+  sourcePath: string
+  targetPath: string | null
+}
+
+export interface RenameFolderEntryRequest {
+  path: string
+  newName: string
+}
+
+export interface DeleteFolderEntryRequest {
+  path: string
+}
+
+export interface ChangeFolderEntryAttributesRequest {
+  path: string
+  readonly?: boolean
+}
+
+export interface TouchFolderEntryRequest {
+  path: string
+  modifiedAtMs: number
+}
+
+export interface FolderMetadataUpdateResponse {
+  path: string
+  metadata: FolderEntryMetadata
+}
+
 export interface MediaCompareRequest {
   leftPath: string
   rightPath: string

@@ -1,0 +1,7341 @@
+[
+  {
+    "key": "home",
+    "view": "Home",
+    "title": "Home - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\home.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "Home - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 5,
+        "name": "Text Edit",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70174",
+        "enabled": true,
+        "rect": "1901,946,314,262"
+      },
+      {
+        "depth": 5,
+        "name": "Version Compare",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70172",
+        "enabled": true,
+        "rect": "1901,1454,314,183"
+      },
+      {
+        "depth": 5,
+        "name": "Table Compare",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70170",
+        "enabled": true,
+        "rect": "1587,1454,314,183"
+      },
+      {
+        "depth": 5,
+        "name": "Registry Compare",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70168",
+        "enabled": true,
+        "rect": "1273,1454,314,183"
+      },
+      {
+        "depth": 5,
+        "name": "Picture Compare",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70166",
+        "enabled": true,
+        "rect": "1901,1271,314,183"
+      },
+      {
+        "depth": 5,
+        "name": "Media Compare",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70164",
+        "enabled": true,
+        "rect": "1587,1271,314,183"
+      },
+      {
+        "depth": 5,
+        "name": "Hex Compare",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70162",
+        "enabled": true,
+        "rect": "1273,1271,314,183"
+      },
+      {
+        "depth": 5,
+        "name": "Text Merge",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70160",
+        "enabled": true,
+        "rect": "1587,946,314,262"
+      },
+      {
+        "depth": 5,
+        "name": "Text Compare",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70158",
+        "enabled": true,
+        "rect": "1273,946,314,262"
+      },
+      {
+        "depth": 5,
+        "name": "Folder Sync",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "70156",
+        "enabled": true,
+        "rect": "1901,684,314,262"
+      },
+      {
+        "depth": 5,
+        "name": "Folder Merge",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "135534",
+        "enabled": true,
+        "rect": "1587,684,314,262"
+      },
+      {
+        "depth": 5,
+        "name": "Folder Compare",
+        "class": "THomeTaskBtn",
+        "type": "ControlType.Button",
+        "automationId": "135532",
+        "enabled": true,
+        "rect": "1273,684,314,262"
+      },
+      {
+        "depth": 5,
+        "name": "Edit",
+        "class": "TUiButton",
+        "type": "ControlType.Button",
+        "automationId": "135528",
+        "enabled": true,
+        "rect": "1006,501,191,60"
+      },
+      {
+        "depth": 5,
+        "name": "Open",
+        "class": "TUiButton",
+        "type": "ControlType.Button",
+        "automationId": "135530",
+        "enabled": true,
+        "rect": "795,501,191,60"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "TUiSearchEdit",
+        "type": "ControlType.Edit",
+        "automationId": "659812",
+        "enabled": true,
+        "rect": "436,1647,326,39"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "TUiBitBtn",
+        "type": "ControlType.Button",
+        "automationId": "266762",
+        "enabled": true,
+        "rect": "363,1636,63,61"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "TUiBitBtn",
+        "type": "ControlType.Button",
+        "automationId": "201178",
+        "enabled": true,
+        "rect": "300,1636,63,61"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "TUiTreeView",
+        "type": "ControlType.Tree",
+        "automationId": "266622",
+        "enabled": true,
+        "rect": "290,334,481,1292"
+      },
+      {
+        "depth": 5,
+        "name": "New",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "366,334,57,34"
+      },
+      {
+        "depth": 6,
+        "name": "Folder Compare",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,368,187,34"
+      },
+      {
+        "depth": 6,
+        "name": "Folder Merge",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,402,158,34"
+      },
+      {
+        "depth": 6,
+        "name": "Folder Sync",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,436,137,34"
+      },
+      {
+        "depth": 6,
+        "name": "Text Compare",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,470,164,34"
+      },
+      {
+        "depth": 6,
+        "name": "Text Merge",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,504,135,34"
+      },
+      {
+        "depth": 6,
+        "name": "Hex Compare",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,538,160,34"
+      },
+      {
+        "depth": 6,
+        "name": "Media Compare",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,572,186,34"
+      },
+      {
+        "depth": 6,
+        "name": "Picture Compare",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,606,195,34"
+      },
+      {
+        "depth": 6,
+        "name": "Registry Compare",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,640,208,34"
+      },
+      {
+        "depth": 6,
+        "name": "Table Compare",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,674,177,34"
+      },
+      {
+        "depth": 6,
+        "name": "Version Compare",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,708,201,34"
+      },
+      {
+        "depth": 5,
+        "name": "Auto-saved",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "366,742,136,34"
+      },
+      {
+        "depth": 6,
+        "name": "Today",
+        "class": "",
+        "type": "ControlType.TreeItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "404,776,74,34"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "201202",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "481,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "566,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "Home - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "folder-compare",
+    "view": "Folder Compare",
+    "title": "left <--> right - Folder Compare - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\folder-compare.png",
+    "menus": {
+      "Session": [
+        {
+          "name": "New Session",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "New Tab\tCtrl+T",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "New Window",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Open Session\tCtrl+Shift+O",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Load Workspace",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Save Workspace As...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Save Session\tCtrl+Shift+S",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Save Session As...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Session Settings...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Locked",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Clear Session\tCtrl+Shift+C",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Close Tab\tCtrl+W",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Swap Sides",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Back\tAlt+Left",
+          "type": "ControlType.MenuItem",
+          "enabled": false
+        },
+        {
+          "name": "Forward\tAlt+Right",
+          "type": "ControlType.MenuItem",
+          "enabled": false
+        },
+        {
+          "name": "Browse for Folder",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Up One Level",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Folder Compare Report...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Folder Compare Info\tCtrl+I",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Merge Base Folders",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Sync Base Folders",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Compare Parent Folders",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Exit\tCtrl+Q",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Actions": [
+        {
+          "name": "Open",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Open With",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Quick Compare",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Compare Contents...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Copy to Side...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Move to Side...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Copy to Folder...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Move to Folder...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Delete...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Rename...\tF2",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Attributes...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Touch...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Exclude...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "New Folder...\tIns",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Copy Filename",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Ignored",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Refresh Selection\tShift+F5",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "File Compare Report...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Synchronize",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Explorer",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Edit": [
+        {
+          "name": "Expand All",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Collapse All",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Select All\tCtrl+A",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Select All Files\tCtrl+Shift+A",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Select Newer",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Select Orphans",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Invert Selection",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Refresh\tF5",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Full Refresh\tCtrl+F5",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Search": [
+        {
+          "name": "Next Difference\tCtrl+N",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Previous Difference\tCtrl+P",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Find Filename...\tCtrl+F",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Find Next Filename\tF3",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Find Previous Filename\tShift+F3",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "View": [
+        {
+          "name": "Show All",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Differences",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Same",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show No Orphans",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Differences but No Orphans",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Orphans",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Left Newer",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Right Newer",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Left Newer and Left Orphans",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Right Newer and Right Orphans",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Left Orphans",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Right Orphans",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Always Show Folders",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Compare Files and Folder Structure",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Only Compare Files",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Ignore Folder Structure",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Ignore Unimportant Differences",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Suppress Filters",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Columns",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Legend\tCtrl+Alt+L",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Log",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Toolbar",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Tools": [
+        {
+          "name": "Options...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "File Formats...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Profiles...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Export Settings...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Import Settings...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Restore Factory Defaults...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Save Snapshot...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Edit Text File",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "View Patch...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Help": [
+        {
+          "name": "Contents",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Context Sensitive Help\tF1",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Scooter Software on the Web",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Check for Updates",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Support",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Enter Key...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "About Beyond Compare",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ]
+    },
+    "ui": [
+      {
+        "depth": 0,
+        "name": "left <--> right - Folder Compare - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "332294",
+        "enabled": true,
+        "rect": "290,266,2413,166"
+      },
+      {
+        "depth": 4,
+        "name": "*.*",
+        "class": "TUiComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "2101516",
+        "enabled": true,
+        "rect": "373,373,588,39"
+      },
+      {
+        "depth": 5,
+        "name": "*.*",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "376,376,548,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "Empty"
+      },
+      {
+        "depth": 6,
+        "name": "*.*",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,40,586,31"
+      },
+      {
+        "depth": 6,
+        "name": "*.cpp;*.hpp;*.c;*.h;*.cc",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,71,586,31"
+      },
+      {
+        "depth": 6,
+        "name": "*.pas;*.inc;*.dfm;*.nfm;*.xfm;*.dpr;*.dpk",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,102,586,31"
+      },
+      {
+        "depth": 6,
+        "name": "*.htm;*.html;*.xml;*.jpg;*.gif;*.png",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,133,586,31"
+      },
+      {
+        "depth": 6,
+        "name": "*.java;*.jj;*.jjt",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,164,586,36"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "928,374,32,37"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "All",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Diffs",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,138,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "830,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Structure",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "960,268,152,75"
+      },
+      {
+        "depth": 4,
+        "name": "Minor",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1124,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Rules",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1254,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Copy",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1384,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Expand",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1514,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Collapse",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1632,268,120,75"
+      },
+      {
+        "depth": 4,
+        "name": "Select",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1752,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Files",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1870,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Refresh",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1988,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2118,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Stop",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2236,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Filters",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "961,355,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Peek",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1079,355,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "Empty"
+      },
+      {
+        "depth": 3,
+        "name": "1 file(s) selected, 22 bytes",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "290,1680,444,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "736,1680,260,39"
+      },
+      {
+        "depth": 3,
+        "name": "91.8 GB free on C:\\",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane3",
+        "enabled": true,
+        "rect": "998,1680,443,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane4",
+        "enabled": true,
+        "rect": "1443,1680,76,39"
+      },
+      {
+        "depth": 3,
+        "name": "1 file(s) selected, 23 bytes",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane5",
+        "enabled": true,
+        "rect": "1521,1680,442,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane6",
+        "enabled": true,
+        "rect": "1965,1680,260,39"
+      },
+      {
+        "depth": 3,
+        "name": "91.8 GB free on C:\\",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane7",
+        "enabled": true,
+        "rect": "2227,1680,444,39"
+      },
+      {
+        "depth": 4,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\right",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "201176",
+        "enabled": true,
+        "rect": "1518,442,911,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\right",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1521,445,871,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,911,2"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2396,443,32,37"
+      },
+      {
+        "depth": 4,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\left",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "135696",
+        "enabled": true,
+        "rect": "290,442,1012,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\left",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "293,445,972,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1012,2"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "1269,443,32,37"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1302,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1348,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1394,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1456,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2429,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2475,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2521,433,46,44"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "135692",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "Actions",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,109,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "511,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "578,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "679,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "758,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "843,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "left <--> right - Folder Compare - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "folder-merge",
+    "view": "Folder Merge",
+    "title": "merge-output - Folder Merge - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\folder-merge.png",
+    "menus": {
+      "Session": [
+        {
+          "name": "New Session",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "New Tab\tCtrl+T",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "New Window",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Open Session\tCtrl+Shift+O",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Load Workspace",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Save Workspace As...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Save Session\tCtrl+Shift+S",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Save Session As...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Session Settings...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Locked",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Clear Session\tCtrl+Shift+C",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Close Tab\tCtrl+W",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Swap Sides",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Back\tAlt+Left",
+          "type": "ControlType.MenuItem",
+          "enabled": false
+        },
+        {
+          "name": "Forward\tAlt+Right",
+          "type": "ControlType.MenuItem",
+          "enabled": false
+        },
+        {
+          "name": "Browse for Folder",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Up One Level",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Folder Merge Info\tCtrl+I",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Compare to Output",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Merge Parent Folders",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Exit\tCtrl+Q",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Actions": [
+        {
+          "name": "Compare Contents...",
+          "type": "ControlType.MenuItem",
+          "enabled": false
+        },
+        {
+          "name": "Merge...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Copy to Output...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Exclude",
+          "type": "ControlType.MenuItem",
+          "enabled": false
+        },
+        {
+          "name": "Copy Filename",
+          "type": "ControlType.MenuItem",
+          "enabled": false
+        },
+        {
+          "name": "Ignored",
+          "type": "ControlType.MenuItem",
+          "enabled": false
+        },
+        {
+          "name": "Refresh Selection\tShift+F5",
+          "type": "ControlType.MenuItem",
+          "enabled": false
+        }
+      ],
+      "Edit": [
+        {
+          "name": "Expand All",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Collapse All",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Select All\tCtrl+A",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Select All Files\tCtrl+Shift+A",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Select Newer",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Select Orphans",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Invert Selection",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Refresh\tF5",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Full Refresh\tCtrl+F5",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Search": [
+        {
+          "name": "Next Difference\tCtrl+N",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Previous Difference\tCtrl+P",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Find Filename...\tCtrl+F",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Find Next Filename\tF3",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Find Previous Filename\tShift+F3",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "View": [
+        {
+          "name": "Show All",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Changes",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Conflicts",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Left Changes",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Right Changes",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Mergeable",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Show Unchanged",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Always Show Folders",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Compare Files and Folder Structure",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Only Compare Files",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Ignore Folder Structure",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Ignore Unimportant Differences",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Ignore Same Changes",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Suppress Filters",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Center Pane",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Columns",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Legend\tCtrl+Alt+L",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Log",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Toolbar",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Tools": [
+        {
+          "name": "Options...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "File Formats...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Profiles...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Export Settings...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Import Settings...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Restore Factory Defaults...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Save Snapshot...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Edit Text File",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "View Patch...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Help": [
+        {
+          "name": "Contents",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Context Sensitive Help\tF1",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Scooter Software on the Web",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Check for Updates",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Support",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Enter Key...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "About Beyond Compare",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ]
+    },
+    "ui": [
+      {
+        "depth": 0,
+        "name": "merge-output - Folder Merge - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "463308",
+        "enabled": true,
+        "rect": "290,266,2413,166"
+      },
+      {
+        "depth": 4,
+        "name": "*.*",
+        "class": "TUiComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "397722",
+        "enabled": true,
+        "rect": "373,373,588,39"
+      },
+      {
+        "depth": 5,
+        "name": "*.*",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "376,376,548,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "Empty"
+      },
+      {
+        "depth": 6,
+        "name": "*.*",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,40,586,31"
+      },
+      {
+        "depth": 6,
+        "name": "*.cpp;*.hpp;*.c;*.h;*.cc",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,71,586,31"
+      },
+      {
+        "depth": 6,
+        "name": "*.pas;*.inc;*.dfm;*.nfm;*.xfm;*.dpr;*.dpk",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,102,586,31"
+      },
+      {
+        "depth": 6,
+        "name": "*.htm;*.html;*.xml;*.jpg;*.gif;*.png",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,133,586,31"
+      },
+      {
+        "depth": 6,
+        "name": "*.java;*.jj;*.jjt",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,164,586,36"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "928,374,32,37"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "All",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Diffs",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,138,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "830,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Structure",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "960,268,152,75"
+      },
+      {
+        "depth": 4,
+        "name": "Minor",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1124,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same OK",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1242,268,129,75"
+      },
+      {
+        "depth": 4,
+        "name": "Rules",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1383,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Merge",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1513,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "To Output",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1631,268,143,75"
+      },
+      {
+        "depth": 4,
+        "name": "Expand",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1786,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Collapse",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1904,268,120,75"
+      },
+      {
+        "depth": 4,
+        "name": "Select",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2024,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Files",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2142,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Refresh",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2260,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2390,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Stop",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2508,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Filters",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "961,355,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Peek",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1079,355,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,78,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "370,1680,225,39"
+      },
+      {
+        "depth": 3,
+        "name": "Editing disabled",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "597,1680,260,39"
+      },
+      {
+        "depth": 3,
+        "name": "91.8 GB free on C:\\",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane3",
+        "enabled": true,
+        "rect": "859,1680,225,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane4",
+        "enabled": true,
+        "rect": "1086,1680,76,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane5",
+        "enabled": true,
+        "rect": "1164,1680,224,39"
+      },
+      {
+        "depth": 3,
+        "name": "Editing disabled",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane6",
+        "enabled": true,
+        "rect": "1390,1680,260,39"
+      },
+      {
+        "depth": 3,
+        "name": "91.8 GB free on C:\\",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane7",
+        "enabled": true,
+        "rect": "1652,1680,225,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane8",
+        "enabled": true,
+        "rect": "1879,1680,76,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane9",
+        "enabled": true,
+        "rect": "1957,1680,224,39"
+      },
+      {
+        "depth": 3,
+        "name": "Editing disabled",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane10",
+        "enabled": true,
+        "rect": "2183,1680,260,39"
+      },
+      {
+        "depth": 3,
+        "name": "91.8 GB free on C:\\",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane11",
+        "enabled": true,
+        "rect": "2445,1680,226,39"
+      },
+      {
+        "depth": 4,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-output",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "397748",
+        "enabled": true,
+        "rect": "717,486,1890,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-output",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "720,489,1850,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1890,2"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2574,487,32,37"
+      },
+      {
+        "depth": 4,
+        "name": "Other:",
+        "class": "TUiRadioButton",
+        "type": "ControlType.RadioButton",
+        "automationId": "856482",
+        "enabled": true,
+        "rect": "611,477,106,44"
+      },
+      {
+        "depth": 4,
+        "name": "Right",
+        "class": "TUiRadioButton",
+        "type": "ControlType.RadioButton",
+        "automationId": "3934802",
+        "enabled": true,
+        "rect": "507,477,94,44"
+      },
+      {
+        "depth": 4,
+        "name": "Left",
+        "class": "TUiRadioButton",
+        "type": "ControlType.RadioButton",
+        "automationId": "791038",
+        "enabled": true,
+        "rect": "420,477,76,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2607,477,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2653,477,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-right",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "201260",
+        "enabled": true,
+        "rect": "1896,442,685,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-right",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1899,445,645,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,685,2"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2548,443,32,37"
+      },
+      {
+        "depth": 4,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-center",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "463304",
+        "enabled": true,
+        "rect": "1093,442,649,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-center",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1096,445,609,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,649,2"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "1709,443,32,37"
+      },
+      {
+        "depth": 4,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-left",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "528780",
+        "enabled": true,
+        "rect": "290,442,649,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-left",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "293,445,609,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,649,2"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "906,443,32,37"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "939,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "985,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1031,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1742,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1788,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1834,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2581,433,46,44"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2627,433,46,44"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "397828",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "Actions",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,109,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "511,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "578,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "679,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "758,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "843,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "merge-output - Folder Merge - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "folder-sync",
+    "view": "Folder Sync",
+    "title": "Update: left <--> right - Folder Sync - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\folder-sync.png",
+    "menus": {
+      "Session": [
+        {
+          "name": "New Session",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "New Tab\tCtrl+T",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "New Window",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Open Session\tCtrl+Shift+O",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Load Workspace",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Save Workspace As...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Save Session\tCtrl+Shift+S",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Save Session As...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Session Settings...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Locked",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Clear Session\tCtrl+Shift+C",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Close Tab\tCtrl+W",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Swap Sides",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Folder Sync Info\tCtrl+I",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Sync Now",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Compare Base Folders",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Compare Parent Folders",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Exit\tCtrl+Q",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Actions": [
+        {
+          "name": "Leave Alone",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Copy Right to Left",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Copy Left to Right",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Delete Left",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Delete Right",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Open",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Open With",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Exclude...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Copy Filename",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Refresh Selection\tShift+F5",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Explorer",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Edit": [
+        {
+          "name": "Expand All",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Collapse All",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Select All\tCtrl+A",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Invert Selection",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Refresh\tF5",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Full Refresh\tCtrl+F5",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Search": [
+        {
+          "name": "Next Conflict\tCtrl+N",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Previous Conflict\tCtrl+P",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Find Filename...\tCtrl+F",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Find Next Filename\tF3",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Find Previous Filename\tShift+F3",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "View": [
+        {
+          "name": "Ignore Unimportant Differences",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Suppress Filters",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Columns",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Legend\tCtrl+Alt+L",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Log",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Toolbar",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Tools": [
+        {
+          "name": "Options...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "File Formats...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Profiles...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Export Settings...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Import Settings...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Restore Factory Defaults...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Save Snapshot...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Edit Text File",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "View Patch...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ],
+      "Help": [
+        {
+          "name": "Contents",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Context Sensitive Help\tF1",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "Scooter Software on the Web",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Check for Updates",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Support",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "Enter Key...",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        },
+        {
+          "name": "",
+          "type": "ControlType.Separator",
+          "enabled": false
+        },
+        {
+          "name": "About Beyond Compare",
+          "type": "ControlType.MenuItem",
+          "enabled": true
+        }
+      ]
+    },
+    "ui": [
+      {
+        "depth": 0,
+        "name": "Update: left <--> right - Folder Sync - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "463296",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Minor",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Expand",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "704,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Collapse",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "822,268,120,75"
+      },
+      {
+        "depth": 4,
+        "name": "Select",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "942,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Refresh",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1060,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Stop",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1190,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Peek",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1320,268,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "Empty"
+      },
+      {
+        "depth": 3,
+        "name": "1 file(s) selected, 22 bytes",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "290,1680,535,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "Empty"
+      },
+      {
+        "depth": 3,
+        "name": "91.8 GB free on C:\\",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane3",
+        "enabled": true,
+        "rect": "827,1680,535,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane4",
+        "enabled": true,
+        "rect": "1364,1680,234,39"
+      },
+      {
+        "depth": 3,
+        "name": "1 file(s) selected, 23 bytes",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane5",
+        "enabled": true,
+        "rect": "1600,1680,534,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane6",
+        "enabled": true,
+        "rect": "Empty"
+      },
+      {
+        "depth": 3,
+        "name": "91.8 GB free on C:\\",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane7",
+        "enabled": true,
+        "rect": "2136,1680,535,39"
+      },
+      {
+        "depth": 3,
+        "name": "Sync Now",
+        "class": "TUiBitBtn",
+        "type": "ControlType.Button",
+        "automationId": "463364",
+        "enabled": true,
+        "rect": "2491,563,191,149"
+      },
+      {
+        "depth": 3,
+        "name": "Cancel",
+        "class": "TUiBitBtn",
+        "type": "ControlType.Button",
+        "automationId": "463282",
+        "enabled": false,
+        "rect": "2491,487,191,60"
+      },
+      {
+        "depth": 3,
+        "name": "Accept",
+        "class": "TUiBitBtn",
+        "type": "ControlType.Button",
+        "automationId": "463284",
+        "enabled": false,
+        "rect": "2280,487,191,60"
+      },
+      {
+        "depth": 3,
+        "name": "*.*",
+        "class": "TUiComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "922110",
+        "enabled": true,
+        "rect": "1466,487,669,39"
+      },
+      {
+        "depth": 4,
+        "name": "*.*",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1469,490,629,33"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "Empty"
+      },
+      {
+        "depth": 5,
+        "name": "*.*",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,40,667,31"
+      },
+      {
+        "depth": 5,
+        "name": "*.cpp;*.hpp;*.c;*.h;*.cc",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,71,667,31"
+      },
+      {
+        "depth": 5,
+        "name": "*.pas;*.inc;*.dfm;*.nfm;*.xfm;*.dpr;*.dpk",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,102,667,31"
+      },
+      {
+        "depth": 5,
+        "name": "*.htm;*.html;*.xml;*.jpg;*.gif;*.png",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,133,667,31"
+      },
+      {
+        "depth": 5,
+        "name": "*.java;*.jj;*.jjt",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,164,667,36"
+      },
+      {
+        "depth": 4,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2102,488,32,37"
+      },
+      {
+        "depth": 3,
+        "name": "Update Both",
+        "class": "TUiComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "856576",
+        "enabled": true,
+        "rect": "592,487,653,40"
+      },
+      {
+        "depth": 4,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,40,653,162"
+      },
+      {
+        "depth": 5,
+        "name": "Update Left",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,41,651,32"
+      },
+      {
+        "depth": 5,
+        "name": "Update Right",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,73,651,32"
+      },
+      {
+        "depth": 5,
+        "name": "Update Both",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,105,651,32"
+      },
+      {
+        "depth": 5,
+        "name": "Mirror to Left",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,137,651,32"
+      },
+      {
+        "depth": 5,
+        "name": "Mirror to Right",
+        "class": "",
+        "type": "ControlType.ListItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1,169,651,32"
+      },
+      {
+        "depth": 4,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "1212,488,32,38"
+      },
+      {
+        "depth": 4,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\right",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "397812",
+        "enabled": true,
+        "rect": "1547,367,1054,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\right",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1550,370,1014,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1054,2"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2568,368,32,37"
+      },
+      {
+        "depth": 4,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\left",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "594372",
+        "enabled": true,
+        "rect": "311,367,1053,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\left",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "314,370,1013,33"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1053,2"
+      },
+      {
+        "depth": 5,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "1331,368,32,37"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "463250",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "Actions",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,109,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "511,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "578,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "679,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "758,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "843,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "Update: left <--> right - Folder Sync - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "text-compare",
+    "view": "Text Compare",
+    "title": "text-left.txt <--> text-right.txt - Text Compare - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\text-compare.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "text-left.txt <--> text-right.txt - Text Compare - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "659888",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "All",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Diffs",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "810,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Context",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "940,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Minor",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1058,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Rules",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1188,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Format",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1306,268,127,75"
+      },
+      {
+        "depth": 4,
+        "name": "Copy",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1445,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Next Section",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1575,268,171,75"
+      },
+      {
+        "depth": 4,
+        "name": "Prev Section",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1746,268,167,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1925,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Reload",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2043,268,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,588,39"
+      },
+      {
+        "depth": 3,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "880,1680,783,39"
+      },
+      {
+        "depth": 3,
+        "name": "\tInsert",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "1665,1680,181,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.03 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane3",
+        "enabled": true,
+        "rect": "1848,1680,823,39"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "463340",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "633,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "712,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "797,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "text-left.txt <--> text-right.txt - Text Compare - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "text-merge",
+    "view": "Text Merge",
+    "title": "merge-output.txt - Text Merge - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\text-merge.png",
+    "menus": {
+      "Session": [],
+      "File": [],
+      "Edit": [],
+      "Search": [],
+      "View": [],
+      "Tools": [],
+      "Help": []
+    },
+    "ui": [
+      {
+        "depth": 0,
+        "name": "merge-output.txt - Text Merge - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "594364",
+        "enabled": true,
+        "rect": "290,266,2413,166"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "All",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Diffs",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,138,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "830,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Context",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "960,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Minor",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1078,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same OK",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1196,268,129,75"
+      },
+      {
+        "depth": 4,
+        "name": "Favor Left",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1325,268,137,75"
+      },
+      {
+        "depth": 4,
+        "name": "Favor Right",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1462,268,155,75"
+      },
+      {
+        "depth": 4,
+        "name": "Rules",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1629,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Format",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1747,268,127,75"
+      },
+      {
+        "depth": 4,
+        "name": "Conflict",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1886,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Left",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2004,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Center",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2122,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Right",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2240,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Next Conflict",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,355,173,75"
+      },
+      {
+        "depth": 4,
+        "name": "Prev Conflict",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,355,169,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "646,355,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Reload",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "764,355,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,588,39"
+      },
+      {
+        "depth": 3,
+        "name": "Unchanged",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "880,1680,783,39"
+      },
+      {
+        "depth": 3,
+        "name": "\tInsert",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "1665,1680,181,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.06 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane3",
+        "enabled": true,
+        "rect": "1848,1680,823,39"
+      },
+      {
+        "depth": 5,
+        "name": "1: 1",
+        "class": "TUiStatusBar",
+        "type": "ControlType.StatusBar",
+        "automationId": "StatusBar",
+        "enabled": true,
+        "rect": "395,1643,720,34"
+      },
+      {
+        "depth": 6,
+        "name": "1: 1",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "395,1645,196,32"
+      },
+      {
+        "depth": 6,
+        "name": "Default text",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "593,1645,260,32"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "855,1645,260,32"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-output.txt",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "70236",
+        "enabled": true,
+        "rect": "716,1057,1832,39"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\merge-output.txt",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "719,1060,1792,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1832,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2515,1058,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "Other:",
+        "class": "TUiRadioButton",
+        "type": "ControlType.RadioButton",
+        "automationId": "70234",
+        "enabled": true,
+        "rect": "610,1055,106,44"
+      },
+      {
+        "depth": 5,
+        "name": "Right",
+        "class": "TUiRadioButton",
+        "type": "ControlType.RadioButton",
+        "automationId": "70232",
+        "enabled": true,
+        "rect": "506,1055,94,44"
+      },
+      {
+        "depth": 5,
+        "name": "Left",
+        "class": "TUiRadioButton",
+        "type": "ControlType.RadioButton",
+        "automationId": "70230",
+        "enabled": true,
+        "rect": "420,1055,76,44"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2548,1055,46,44"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2655,1055,46,44"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "594414",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "633,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "712,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "797,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "merge-output.txt - Text Merge - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "table-compare",
+    "view": "Table Compare",
+    "title": "table-left.csv <--> table-right.csv - Table Compare - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\table-compare.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "table-left.csv <--> table-right.csv - Table Compare - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "659900",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "All",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Diffs",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "810,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Minor",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "940,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Rules",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1070,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Format",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1188,268,127,75"
+      },
+      {
+        "depth": 4,
+        "name": "Copy",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1327,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Next Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1457,268,126,75"
+      },
+      {
+        "depth": 4,
+        "name": "Prev Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1583,268,122,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1717,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Reload",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1835,268,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,588,39"
+      },
+      {
+        "depth": 3,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "880,1680,783,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.03 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "1665,1680,1006,39"
+      },
+      {
+        "depth": 6,
+        "name": "A1",
+        "class": "TUiStatusBar",
+        "type": "ControlType.StatusBar",
+        "automationId": "StatusBar",
+        "enabled": true,
+        "rect": "1557,1485,458,34"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\table-right.csv",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "463376",
+        "enabled": true,
+        "rect": "1556,348,985,39"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2541,346,46,44"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2655,346,46,44"
+      },
+      {
+        "depth": 6,
+        "name": "A1",
+        "class": "TUiStatusBar",
+        "type": "ControlType.StatusBar",
+        "automationId": "StatusBar",
+        "enabled": true,
+        "rect": "395,1485,458,34"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\table-left.csv",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "659954",
+        "enabled": true,
+        "rect": "394,348,992,39"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1386,346,46,44"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1500,346,46,44"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "528874",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "633,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "712,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "797,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "table-left.csv <--> table-right.csv - Table Compare - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "hex-compare",
+    "view": "Hex Compare",
+    "title": "bin-left.bin <--> bin-right.bin - Hex Compare - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\hex-compare.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "bin-left.bin <--> bin-right.bin - Hex Compare - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "856496",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "All",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Diffs",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "810,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Rules",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "940,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Format",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1058,268,127,75"
+      },
+      {
+        "depth": 4,
+        "name": "Copy",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1197,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Next Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1327,268,126,75"
+      },
+      {
+        "depth": 4,
+        "name": "Prev Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1453,268,122,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1587,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Reload",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1705,268,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,588,39"
+      },
+      {
+        "depth": 3,
+        "name": "\tInsert",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "880,1680,181,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.02 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "1063,1680,1608,39"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "1557,1645,196,32"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "1755,1645,260,32"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\bin-right.bin",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "659896",
+        "enabled": true,
+        "rect": "1556,348,985,39"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\bin-right.bin",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1559,351,945,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,985,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2508,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2541,346,46,44"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2655,346,46,44"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "395,1645,196,32"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "593,1645,260,32"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\bin-left.bin",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "987680",
+        "enabled": true,
+        "rect": "394,348,992,39"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\bin-left.bin",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "397,351,952,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,992,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "1353,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1386,346,46,44"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1500,346,46,44"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "921974",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "633,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "712,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "797,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "bin-left.bin <--> bin-right.bin - Hex Compare - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "picture-compare",
+    "view": "Picture Compare",
+    "title": "pic-left.png <--> pic-right.png - Picture Compare - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\picture-compare.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "pic-left.png <--> pic-right.png - Picture Compare - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "856538",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Tol",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Range",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Blend",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "810,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Minor",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "940,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Rules",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1070,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Format",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1188,268,127,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1327,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Reload",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1445,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Meta",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1575,268,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,588,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "880,1680,783,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.03 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "1665,1680,1006,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\pic-right.png",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "332360",
+        "enabled": true,
+        "rect": "1496,348,1091,39"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\pic-right.png",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1499,351,1051,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1091,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2554,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2587,346,46,44"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\pic-left.png",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "791032",
+        "enabled": true,
+        "rect": "290,348,1090,39"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\pic-left.png",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "293,351,1050,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1090,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "1347,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1380,346,46,44"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "922014",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "611,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "696,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "pic-left.png <--> pic-right.png - Picture Compare - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "registry-compare",
+    "view": "Registry Compare",
+    "title": "reg-left.reg <--> reg-right.reg - Registry Compare - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\registry-compare.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "reg-left.reg <--> reg-right.reg - Registry Compare - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "856562",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "All",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Diffs",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "810,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Copy",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "940,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Next Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1070,268,126,75"
+      },
+      {
+        "depth": 4,
+        "name": "Prev Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1196,268,122,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1330,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Reload",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1448,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Expand",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1578,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Collapse",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1696,268,120,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,588,39"
+      },
+      {
+        "depth": 3,
+        "name": "Important Difference",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "880,1680,783,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.03 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "1665,1680,1006,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\reg-right.reg",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "922076",
+        "enabled": true,
+        "rect": "1504,348,1037,39"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\reg-right.reg",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1507,351,997,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1037,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2508,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2541,346,46,44"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "2655,346,46,44"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\reg-left.reg",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "1380862",
+        "enabled": true,
+        "rect": "290,348,997,39"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Temp\\bc5-ui-capture\\reg-left.reg",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "293,351,957,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,997,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "1254,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1287,346,46,44"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1401,346,46,44"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1447,346,46,44"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "1249792",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "633,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "712,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "797,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "reg-left.reg <--> reg-right.reg - Registry Compare - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "version-compare",
+    "view": "Version Compare",
+    "title": "BCompare.exe <--> BComp.exe - Version Compare - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\version-compare.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "BCompare.exe <--> BComp.exe - Version Compare - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "791000",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "All",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Diffs",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "810,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Minor",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "940,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Rules",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1070,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Next Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1200,268,126,75"
+      },
+      {
+        "depth": 4,
+        "name": "Prev Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1326,268,122,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1460,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Reload",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1578,268,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,588,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "880,1680,783,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.05 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "1665,1680,1006,39"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Programs\\Beyond Compare 5\\BComp.exe",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "987598",
+        "enabled": true,
+        "rect": "1504,348,1084,39"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Programs\\Beyond Compare 5\\BComp.exe",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1507,351,1044,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1084,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2555,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2588,346,46,44"
+      },
+      {
+        "depth": 5,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Programs\\Beyond Compare 5\\BCompare.exe",
+        "class": "TUiSpecComboBox",
+        "type": "ControlType.ComboBox",
+        "automationId": "987514",
+        "enabled": true,
+        "rect": "290,348,1091,39"
+      },
+      {
+        "depth": 6,
+        "name": "C:\\Users\\q1\\AppData\\Local\\Programs\\Beyond Compare 5\\BCompare.exe",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "293,351,1051,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1091,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "1348,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1381,346,46,44"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "921972",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "633,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "712,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "797,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "BCompare.exe <--> BComp.exe - Version Compare - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "media-compare",
+    "view": "Media Compare",
+    "title": "New Media Compare - Media Compare - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\media-compare.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "New Media Compare - Media Compare - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "1053132",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "All",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Diffs",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "692,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Same",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "810,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Minor",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "940,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Rules",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1070,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Next Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1200,268,126,75"
+      },
+      {
+        "depth": 4,
+        "name": "Prev Diff",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1326,268,122,75"
+      },
+      {
+        "depth": 4,
+        "name": "Swap",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1460,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Reload",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1578,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Play2",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1696,268,118,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,588,39"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "880,1680,783,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.02 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "1665,1680,1006,39"
+      },
+      {
+        "depth": 6,
+        "name": "大幅度后滚",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "LargeDecrement",
+        "enabled": false,
+        "rect": "Empty"
+      },
+      {
+        "depth": 6,
+        "name": "缩略",
+        "class": "",
+        "type": "ControlType.Thumb",
+        "automationId": "Thumb",
+        "enabled": false,
+        "rect": "1581,1517,23,52"
+      },
+      {
+        "depth": 6,
+        "name": "大幅度前滚",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "LargeIncrement",
+        "enabled": false,
+        "rect": "1604,1522,1085,39"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "1507,351,1044,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1084,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "2555,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "2588,346,46,44"
+      },
+      {
+        "depth": 6,
+        "name": "大幅度后滚",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "LargeDecrement",
+        "enabled": false,
+        "rect": "Empty"
+      },
+      {
+        "depth": 6,
+        "name": "缩略",
+        "class": "",
+        "type": "ControlType.Thumb",
+        "automationId": "Thumb",
+        "enabled": false,
+        "rect": "367,1517,23,52"
+      },
+      {
+        "depth": 6,
+        "name": "大幅度前滚",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "LargeIncrement",
+        "enabled": false,
+        "rect": "390,1522,1092,39"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "Edit",
+        "type": "ControlType.Edit",
+        "automationId": "1001",
+        "enabled": true,
+        "rect": "293,351,1051,33"
+      },
+      {
+        "depth": 6,
+        "name": "",
+        "class": "ComboLBox",
+        "type": "ControlType.List",
+        "automationId": "ListBox",
+        "enabled": true,
+        "rect": "0,39,1091,2"
+      },
+      {
+        "depth": 6,
+        "name": "下拉按钮",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "DropDown",
+        "enabled": true,
+        "rect": "1348,349,32,37"
+      },
+      {
+        "depth": 5,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1381,346,46,44"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "528968",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "633,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "712,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "797,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "New Media Compare - Media Compare - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "text-edit",
+    "view": "Text Edit",
+    "title": "text-left.txt - Text Edit - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\text-edit.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "text-left.txt - Text Edit - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "856620",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Undo",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "574,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Redo",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "692,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Cut",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "810,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Copy",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "928,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Paste",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1046,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Delete",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": false,
+        "rect": "1164,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Syntax",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1294,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Font",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "1412,268,138,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "Empty"
+      },
+      {
+        "depth": 3,
+        "name": "Important Left Orphan",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "Empty"
+      },
+      {
+        "depth": 3,
+        "name": "\tInsert",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "290,1680,183,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.02 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane3",
+        "enabled": true,
+        "rect": "475,1680,2196,39"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "856624",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "633,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "712,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "797,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "text-left.txt - Text Edit - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  },
+  {
+    "key": "text-patch",
+    "view": "Text Patch",
+    "title": "patch.diff - Text Patch - Beyond Compare",
+    "screenshot": "D:\\workspace\\other\\open-diff\\docs\\assets\\beyond-compare-5-capture\\text-patch.png",
+    "menus": {},
+    "ui": [
+      {
+        "depth": 0,
+        "name": "patch.diff - Text Patch - Beyond Compare",
+        "class": "TViewForm",
+        "type": "ControlType.Window",
+        "automationId": "",
+        "enabled": true,
+        "rect": "277,161,2439,1571"
+      },
+      {
+        "depth": 3,
+        "name": "MainBar",
+        "class": "TUiToolbar",
+        "type": "ControlType.ToolBar",
+        "automationId": "1249736",
+        "enabled": true,
+        "rect": "290,266,2413,79"
+      },
+      {
+        "depth": 4,
+        "name": "Home",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,268,118,75"
+      },
+      {
+        "depth": 4,
+        "name": "Next Section",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "574,268,171,75"
+      },
+      {
+        "depth": 4,
+        "name": "Prev Section",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "",
+        "enabled": true,
+        "rect": "745,268,167,75"
+      },
+      {
+        "depth": 3,
+        "name": "",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane0",
+        "enabled": true,
+        "rect": "290,1680,588,39"
+      },
+      {
+        "depth": 3,
+        "name": "Important Difference",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane1",
+        "enabled": true,
+        "rect": "880,1680,783,39"
+      },
+      {
+        "depth": 3,
+        "name": "\tInsert",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane2",
+        "enabled": true,
+        "rect": "1665,1680,181,39"
+      },
+      {
+        "depth": 3,
+        "name": "Load time: 0.03 seconds",
+        "class": "",
+        "type": "ControlType.Edit",
+        "automationId": "StatusBar.Pane3",
+        "enabled": true,
+        "rect": "1848,1680,823,39"
+      },
+      {
+        "depth": 2,
+        "name": "",
+        "class": "TUiMainMenu",
+        "type": "ControlType.MenuBar",
+        "automationId": "1249712",
+        "enabled": true,
+        "rect": "290,219,2413,47"
+      },
+      {
+        "depth": 3,
+        "name": "Session",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "292,221,110,43"
+      },
+      {
+        "depth": 3,
+        "name": "File",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "402,221,63,43"
+      },
+      {
+        "depth": 3,
+        "name": "Edit",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "465,221,67,43"
+      },
+      {
+        "depth": 3,
+        "name": "Search",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "532,221,101,43"
+      },
+      {
+        "depth": 3,
+        "name": "View",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "633,221,79,43"
+      },
+      {
+        "depth": 3,
+        "name": "Tools",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "712,221,85,43"
+      },
+      {
+        "depth": 3,
+        "name": "Help",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "",
+        "enabled": true,
+        "rect": "797,221,78,43"
+      },
+      {
+        "depth": 1,
+        "name": "patch.diff - Text Patch - Beyond Compare",
+        "class": "",
+        "type": "ControlType.TitleBar",
+        "automationId": "TitleBar",
+        "enabled": true,
+        "rect": "290,174,2413,45"
+      },
+      {
+        "depth": 2,
+        "name": "系统菜单栏",
+        "class": "",
+        "type": "ControlType.MenuBar",
+        "automationId": "SystemMenuBar",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 3,
+        "name": "系统",
+        "class": "",
+        "type": "ControlType.MenuItem",
+        "automationId": "Item 1",
+        "enabled": true,
+        "rect": "290,174,44,44"
+      },
+      {
+        "depth": 2,
+        "name": "最小化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Minimize",
+        "enabled": true,
+        "rect": "2424,162,94,57"
+      },
+      {
+        "depth": 2,
+        "name": "最大化",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Maximize",
+        "enabled": true,
+        "rect": "2518,162,92,57"
+      },
+      {
+        "depth": 2,
+        "name": "关闭",
+        "class": "",
+        "type": "ControlType.Button",
+        "automationId": "Close",
+        "enabled": true,
+        "rect": "2610,162,94,57"
+      }
+    ]
+  }
+]

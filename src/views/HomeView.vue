@@ -1,7 +1,21 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Code2, FolderOpen, FolderSync, GitMerge, type LucideIcon } from '@lucide/vue'
+import {
+  Binary,
+  Columns3,
+  Code2,
+  Database,
+  FileCog,
+  FileText,
+  FolderGit2,
+  FolderOpen,
+  FolderSync,
+  GitMerge,
+  Image,
+  Table2,
+  type LucideIcon,
+} from '@lucide/vue'
 import { readClipboardTextSource } from '@/app/clipboardSource'
 import { classifyDropInputs } from '@/app/dropInput'
 import { filterSavedSessions } from '@/app/savedSessions'
@@ -24,24 +38,57 @@ import type { SessionCatalogEntry } from '@/app/sessionCatalog'
 import type { SessionDocument, SessionType } from '@/types/session'
 import type { SessionLaunchLocation, SessionLaunchPayload } from '@/types/sessionLaunch'
 
-type QuickStartType = 'text-compare' | 'folder-compare' | 'text-merge' | 'folder-sync'
+type QuickStartType =
+  | 'folder-compare'
+  | 'folder-merge'
+  | 'folder-sync'
+  | 'text-compare'
+  | 'text-merge'
+  | 'text-edit'
+  | 'hex-compare'
+  | 'media-compare'
+  | 'picture-compare'
+  | 'registry-compare'
+  | 'table-compare'
+  | 'version-compare'
 
 interface QuickStartEntry extends SessionCatalogEntry {
   icon: LucideIcon
 }
 
 const quickStartTypes: QuickStartType[] = [
-  'text-compare',
   'folder-compare',
-  'text-merge',
+  'folder-merge',
   'folder-sync',
+  'text-compare',
+  'text-merge',
+  'text-edit',
+  'hex-compare',
+  'media-compare',
+  'picture-compare',
+  'registry-compare',
+  'table-compare',
+  'version-compare',
 ]
 
 const quickStartIcons: Record<QuickStartType, LucideIcon> = {
   'folder-compare': FolderOpen,
+  'folder-merge': FolderGit2,
   'folder-sync': FolderSync,
+  'hex-compare': Binary,
+  'media-compare': Columns3,
+  'picture-compare': Image,
+  'registry-compare': Database,
+  'table-compare': Table2,
   'text-compare': Code2,
+  'text-edit': FileText,
   'text-merge': GitMerge,
+  'version-compare': FileCog,
+}
+const selectedSessionPreview = {
+  name: 'data',
+  leftPath: String.raw`D:\workspace\pay-v3\data`,
+  rightPath: String.raw`D:\workspace\other\data`,
 }
 
 const router = useRouter()
@@ -428,189 +475,282 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
       <span class="home-title-count">{{ sessionCatalog.length }} {{ $t('ui.sessionTypes') }}</span>
     </template>
 
-    <section class="home-workspace">
-      <section
-        class="new-session-panel"
-        data-testid="home-new-session"
+    <section class="home-workspace bc-home-workspace">
+      <aside
+        class="bc-session-tree"
+        :aria-label="$t('ui.sessions')"
       >
-        <h2>{{ $t('ui.newSession') }}</h2>
-        <div class="new-session-grid">
-          <article
-            v-for="entry in quickStartEntries"
-            :key="entry.type"
-            class="new-session-card"
-            data-testid="home-new-session-card"
-            :data-session-type="entry.type"
-            tabindex="0"
-            @click="openSession(entry)"
-            @keydown.enter="openSession(entry)"
-            @keydown.space.prevent="openSession(entry)"
-          >
-            <span class="session-card-icon">
-              <component
-                :is="entry.icon"
-                :size="17"
-              />
-            </span>
-            <h3>{{ $t(entry.titleKey) }}</h3>
-            <p>{{ $t(entry.summaryKey) }}</p>
-            <button type="button">{{ $t('ui.open') }}</button>
-          </article>
-        </div>
-      </section>
-
-      <section
-        class="recent-session-panel"
-        data-testid="home-recent-sessions"
-      >
-        <header>
-          <h2>{{ $t('ui.recentSessions') }}</h2>
-          <div class="recent-session-actions">
-            <button
-              type="button"
-              data-testid="save-current-session-as"
-              @click="openSaveCurrentSessionDialog"
-            >
-              {{ $t('ui.save') }}
-            </button>
-            <input
-              v-model="sessionSearch"
-              data-testid="session-search"
-              type="search"
-              :placeholder="$t('ui.filterSessions')"
-            />
-          </div>
-        </header>
-
-        <section
-          v-if="saveDialogOpen"
-          class="session-save-panel"
-          data-testid="session-save-panel"
-        >
-          <input
-            v-model="sessionNameDraft"
-            data-testid="session-name-input"
-            type="text"
-            :placeholder="$t('ui.name')"
-          />
+        <header>{{ $t('ui.sessions') }}</header>
+        <section class="bc-tree-list">
           <button
             type="button"
-            data-testid="confirm-session-save"
-            @click="confirmSaveCurrentSession"
+            class="bc-tree-row expanded"
           >
-            {{ $t('ui.save') }}
+            <span>▾</span>
+            <FolderOpen :size="17" />
+            <strong>{{ $t('ui.new') }}</strong>
+          </button>
+          <button
+            v-for="entry in quickStartEntries"
+            :key="`tree-${entry.type}`"
+            type="button"
+            class="bc-tree-row child"
+            @click="openSession(entry)"
+          >
+            <span></span>
+            <component
+              :is="entry.icon"
+              :size="17"
+            />
+            <strong>{{ $t(entry.titleKey) }}</strong>
+          </button>
+          <button
+            type="button"
+            class="bc-tree-row expanded"
+          >
+            <span>▾</span>
+            <FolderOpen :size="17" />
+            <strong>{{ $t('ui.autoSaved') }}</strong>
+          </button>
+          <button
+            type="button"
+            class="bc-tree-row child"
+          >
+            <span>▾</span>
+            <FolderOpen :size="17" />
+            <strong>{{ $t('ui.today') }}</strong>
+          </button>
+          <button
+            v-for="session in savedSessions.sessions.slice(0, 4)"
+            :key="`tree-saved-${session.id}`"
+            type="button"
+            class="bc-tree-row saved"
+            @dblclick="openSavedSession(session)"
+          >
+            <span></span>
+            <FolderOpen :size="16" />
+            <strong>{{ session.name }}</strong>
           </button>
         </section>
+        <footer class="bc-tree-footer">
+          <button type="button">+</button>
+          <button type="button">−</button>
+          <input
+            v-model="sessionSearch"
+            data-testid="session-search"
+            type="search"
+            :placeholder="$t('ui.filterSessions')"
+          />
+        </footer>
+      </aside>
 
-        <div
-          v-if="savedSessions.recoveryCandidates.length > 0"
-          class="recovery-entry"
-          data-testid="recovery-entry"
+      <main class="bc-home-main">
+        <section class="bc-selected-session">
+          <div class="bc-selected-title">
+            <FolderOpen :size="27" />
+            <div>
+              <strong>{{ selectedSessionPreview.name }}</strong>
+              <span>{{ selectedSessionPreview.leftPath }}</span>
+              <span>{{ selectedSessionPreview.rightPath }}</span>
+            </div>
+          </div>
+          <div class="bc-selected-actions">
+            <button
+              type="button"
+              @click="openSession(quickStartEntries[0])"
+            >
+              {{ $t('ui.open') }}
+            </button>
+            <button type="button">{{ $t('ui.edit') }}</button>
+          </div>
+        </section>
+
+        <section
+          class="new-session-panel"
+          data-testid="home-new-session"
         >
-          <span>{{
-            $t('ui.recoverSession', { name: savedSessions.recoveryCandidates[0]?.name ?? '' })
-          }}</span>
-          <button
-            type="button"
-            data-testid="restore-recovery"
-            @click="restoreWorkspaceFromRecovery"
-          >
-            {{ $t('ui.restoreRecent') }}
-          </button>
-        </div>
+          <div class="bc-home-instructions">
+            <strong>{{ $t('ui.dragFoldersOrFilesOntoSessionIcon') }}</strong>
+            <span>{{ $t('ui.orClickSessionIconToBegin') }}</span>
+          </div>
+          <div class="new-session-grid">
+            <article
+              v-for="entry in quickStartEntries"
+              :key="entry.type"
+              class="new-session-card"
+              data-testid="home-new-session-card"
+              :data-session-type="entry.type"
+              tabindex="0"
+              @click="openSession(entry)"
+              @keydown.enter="openSession(entry)"
+              @keydown.space.prevent="openSession(entry)"
+            >
+              <span class="session-card-icon">
+                <component
+                  :is="entry.icon"
+                  :size="54"
+                />
+              </span>
+              <h3>{{ $t(entry.titleKey) }}</h3>
+            </article>
+          </div>
+        </section>
 
-        <DenseDataTable>
-          <table data-testid="home-recent-sessions-table">
-            <thead>
-              <tr>
-                <th class="icon-col"></th>
-                <th>{{ $t('ui.name') }}</th>
-                <th>{{ $t('ui.type') }}</th>
-                <th>{{ $t('ui.leftPath') }}</th>
-                <th>{{ $t('ui.rightPath') }}</th>
-                <th>{{ $t('ui.lastOpened') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(session, index) in filteredSavedSessions"
-                :key="session.id"
-                @dblclick="openSavedSession(session)"
+        <section class="bc-home-secondary">
+          <section
+            class="recent-session-panel"
+            data-testid="home-recent-sessions"
+          >
+            <header>
+              <h2>{{ $t('ui.recentSessions') }}</h2>
+              <div class="recent-session-actions">
+                <button
+                  type="button"
+                  data-testid="save-current-session-as"
+                  @click="openSaveCurrentSessionDialog"
+                >
+                  {{ $t('ui.save') }}
+                </button>
+                <input
+                  v-model="sessionSearch"
+                  data-testid="session-search"
+                  type="search"
+                  :placeholder="$t('ui.filterSessions')"
+                />
+              </div>
+            </header>
+
+            <section
+              v-if="saveDialogOpen"
+              class="session-save-panel"
+              data-testid="session-save-panel"
+            >
+              <input
+                v-model="sessionNameDraft"
+                data-testid="session-name-input"
+                type="text"
+                :placeholder="$t('ui.name')"
+              />
+              <button
+                type="button"
+                data-testid="confirm-session-save"
+                @click="confirmSaveCurrentSession"
               >
-                <td class="icon-col">
-                  <span class="recent-session-icon">{{
-                    sessionTypeLabel(session.sessionType)[0]
-                  }}</span>
-                </td>
-                <td>
-                  <strong>{{ session.name }}</strong>
-                  <span class="row-actions">
-                    <button
-                      type="button"
-                      :data-testid="`rename-session-${session.id}`"
-                      :disabled="session.metadata.locked"
-                      @click="renameSavedSession(session.id)"
-                    >
-                      {{ $t('ui.rename') }}
-                    </button>
-                    <button
-                      type="button"
-                      :data-testid="`copy-session-${session.id}`"
-                      @click="copySavedSession(session.id)"
-                    >
-                      {{ $t('ui.copy') }}
-                    </button>
-                    <button
-                      type="button"
-                      :data-testid="`move-session-${session.id}`"
-                      :disabled="session.metadata.locked"
-                      @click="moveSavedSession(session.id)"
-                    >
-                      {{ $t('ui.move') }}
-                    </button>
-                    <button
-                      type="button"
-                      :data-testid="`change-rules-session-${session.id}`"
-                      :disabled="session.metadata.locked"
-                      @click="changeSavedSessionRules(session.id)"
-                    >
-                      {{ $t('ui.rules') }}
-                    </button>
-                    <button
-                      type="button"
-                      :data-testid="`delete-session-${session.id}`"
-                      :disabled="session.metadata.locked"
-                      @click="deleteSavedSession(session.id)"
-                    >
-                      {{ $t('ui.delete') }}
-                    </button>
-                  </span>
-                </td>
-                <td>{{ sessionTypeLabel(session.sessionType) }}</td>
-                <td class="path-cell">{{ sessionPath(session, 'left') }}</td>
-                <td class="path-cell">{{ sessionPath(session, 'right') }}</td>
-                <td>{{ lastOpenedLabel(session, index) }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </DenseDataTable>
+                {{ $t('ui.save') }}
+              </button>
+            </section>
 
-        <div
-          v-if="savedSessions.pendingSavePrompt"
-          class="save-prompt"
-          data-testid="save-prompt"
-        >
-          <span>{{
-            $t('ui.saveChangesBeforeClosing', { name: savedSessions.pendingSavePrompt.name })
-          }}</span>
-          <button
-            type="button"
-            @click="saveAndClosePendingSession"
-          >
-            {{ $t('ui.save') }}
-          </button>
-        </div>
-      </section>
+            <div
+              v-if="savedSessions.recoveryCandidates.length > 0"
+              class="recovery-entry"
+              data-testid="recovery-entry"
+            >
+              <span>{{
+                $t('ui.recoverSession', { name: savedSessions.recoveryCandidates[0]?.name ?? '' })
+              }}</span>
+              <button
+                type="button"
+                data-testid="restore-recovery"
+                @click="restoreWorkspaceFromRecovery"
+              >
+                {{ $t('ui.restoreRecent') }}
+              </button>
+            </div>
+
+            <DenseDataTable>
+              <table data-testid="home-recent-sessions-table">
+                <thead>
+                  <tr>
+                    <th class="icon-col"></th>
+                    <th>{{ $t('ui.name') }}</th>
+                    <th>{{ $t('ui.type') }}</th>
+                    <th>{{ $t('ui.leftPath') }}</th>
+                    <th>{{ $t('ui.rightPath') }}</th>
+                    <th>{{ $t('ui.lastOpened') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(session, index) in filteredSavedSessions"
+                    :key="session.id"
+                    @dblclick="openSavedSession(session)"
+                  >
+                    <td class="icon-col">
+                      <span class="recent-session-icon">{{
+                        sessionTypeLabel(session.sessionType)[0]
+                      }}</span>
+                    </td>
+                    <td>
+                      <strong>{{ session.name }}</strong>
+                      <span class="row-actions">
+                        <button
+                          type="button"
+                          :data-testid="`rename-session-${session.id}`"
+                          :disabled="session.metadata.locked"
+                          @click="renameSavedSession(session.id)"
+                        >
+                          {{ $t('ui.rename') }}
+                        </button>
+                        <button
+                          type="button"
+                          :data-testid="`copy-session-${session.id}`"
+                          @click="copySavedSession(session.id)"
+                        >
+                          {{ $t('ui.copy') }}
+                        </button>
+                        <button
+                          type="button"
+                          :data-testid="`move-session-${session.id}`"
+                          :disabled="session.metadata.locked"
+                          @click="moveSavedSession(session.id)"
+                        >
+                          {{ $t('ui.move') }}
+                        </button>
+                        <button
+                          type="button"
+                          :data-testid="`change-rules-session-${session.id}`"
+                          :disabled="session.metadata.locked"
+                          @click="changeSavedSessionRules(session.id)"
+                        >
+                          {{ $t('ui.rules') }}
+                        </button>
+                        <button
+                          type="button"
+                          :data-testid="`delete-session-${session.id}`"
+                          :disabled="session.metadata.locked"
+                          @click="deleteSavedSession(session.id)"
+                        >
+                          {{ $t('ui.delete') }}
+                        </button>
+                      </span>
+                    </td>
+                    <td>{{ sessionTypeLabel(session.sessionType) }}</td>
+                    <td class="path-cell">{{ sessionPath(session, 'left') }}</td>
+                    <td class="path-cell">{{ sessionPath(session, 'right') }}</td>
+                    <td>{{ lastOpenedLabel(session, index) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </DenseDataTable>
+
+            <div
+              v-if="savedSessions.pendingSavePrompt"
+              class="save-prompt"
+              data-testid="save-prompt"
+            >
+              <span>{{
+                $t('ui.saveChangesBeforeClosing', { name: savedSessions.pendingSavePrompt.name })
+              }}</span>
+              <button
+                type="button"
+                @click="saveAndClosePendingSession"
+              >
+                {{ $t('ui.save') }}
+              </button>
+            </div>
+          </section>
+        </section>
+      </main>
     </section>
 
     <template #inspector>
@@ -728,13 +868,169 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
 }
 
 .home-workspace {
-  display: grid;
-  align-content: start;
-  gap: 24px;
   height: 100%;
   min-height: 0;
-  padding: 20px;
+  overflow: hidden;
+}
+
+.bc-home-workspace {
+  display: grid;
+  grid-template-columns: 392px minmax(0, 1fr);
+  background: #ffffff;
+}
+
+.bc-session-tree {
+  display: grid;
+  grid-template-rows: 52px minmax(0, 1fr) 56px;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid #b9bec7;
+  background: #e3e9f2;
+}
+
+.bc-session-tree header {
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  border-bottom: 1px solid #c6ccd5;
+  background: #eef1f5;
+  color: #111827;
+  font-size: 23px;
+  line-height: 1;
+}
+
+.bc-tree-list {
+  min-height: 0;
+  padding: 4px 10px;
   overflow: auto;
+}
+
+.bc-tree-row {
+  display: grid;
+  grid-template-columns: 18px 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 27px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: #111827;
+  font-size: 20px;
+  line-height: 24px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bc-tree-row.child {
+  padding-left: 34px;
+  font-size: 19px;
+}
+
+.bc-tree-row.saved {
+  padding-left: 64px;
+  font-size: 18px;
+}
+
+.bc-tree-row:hover,
+.bc-tree-row:focus-visible {
+  outline: 0;
+  background: #c7dcf6;
+}
+
+.bc-tree-row strong {
+  overflow: hidden;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bc-tree-footer {
+  display: grid;
+  grid-template-columns: 48px 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  padding: 8px 8px 10px;
+  border-top: 1px solid #c6ccd5;
+  background: #eef1f5;
+}
+
+.bc-tree-footer button {
+  height: 38px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #2f343a;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.bc-tree-footer input {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #c6ccd5;
+  border-radius: 3px;
+  background: #ffffff;
+  color: #111827;
+}
+
+.bc-home-main {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: #ffffff;
+}
+
+.bc-selected-session {
+  display: grid;
+  gap: 18px;
+  padding: 14px 20px 10px;
+}
+
+.bc-selected-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  color: #111827;
+  font-size: 25px;
+}
+
+.bc-selected-title div {
+  display: grid;
+  gap: 12px;
+}
+
+.bc-selected-title strong {
+  font-size: 27px;
+  font-weight: 500;
+}
+
+.bc-selected-title span {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.bc-selected-actions {
+  display: flex;
+  gap: 18px;
+}
+
+.bc-selected-actions button {
+  width: 154px;
+  height: 47px;
+  border: 1px solid #c7cdd6;
+  border-radius: 3px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.bc-selected-actions button:first-child {
+  border-color: #4aa3ff;
 }
 
 .new-session-panel,
@@ -753,67 +1049,69 @@ function lastOpenedLabel(session: SessionDocument, index: number): string {
 
 .new-session-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  gap: 34px 76px;
+  width: min(780px, calc(100% - 64px));
+  margin: 0 auto;
+}
+
+.bc-home-instructions {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  margin: 0 0 34px;
+  color: #111827;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.bc-home-instructions strong {
+  font-size: 24px;
+  font-weight: 400;
 }
 
 .new-session-card {
-  position: relative;
   display: grid;
-  align-content: start;
+  justify-items: center;
   gap: 6px;
-  min-height: 126px;
-  padding: 16px;
-  border: 1px solid var(--app-border);
-  border-radius: 4px;
-  background: var(--app-canvas);
+  min-height: 104px;
+  padding: 4px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: #111827;
   cursor: pointer;
 }
 
 .new-session-card:hover,
 .new-session-card:focus {
-  border-color: var(--app-primary);
   outline: 0;
+  background: #eaf4ff;
 }
 
 .session-card-icon {
   display: inline-grid;
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
-  background: var(--app-surface-low);
-  color: var(--app-primary);
+  width: 74px;
+  height: 62px;
+  color: #4b5563;
   place-items: center;
 }
 
 .new-session-card h3 {
-  margin: 8px 0 0;
-  font-size: 13px;
-  line-height: 18px;
-}
-
-.new-session-card p {
-  display: -webkit-box;
   margin: 0;
-  overflow: hidden;
-  color: var(--app-text-muted);
-  font-size: 12px;
-  line-height: 16px;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.15;
+  text-align: center;
 }
 
-.new-session-card button {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  height: 24px;
-  padding: 0 10px;
-  border: 1px solid var(--app-primary);
-  border-radius: 4px;
-  background: var(--app-primary);
-  color: #ffffff;
-  cursor: pointer;
+.bc-home-secondary {
+  position: fixed;
+  top: auto;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 .recent-session-panel header {

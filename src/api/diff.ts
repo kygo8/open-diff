@@ -1,8 +1,14 @@
 import { invoke } from '@tauri-apps/api/core'
 import type {
+  ChangeFolderEntryAttributesRequest,
+  DeleteFolderEntryRequest,
   FileStamp,
+  FolderCompareCopyRequest,
+  FolderCompareCopyResponse,
   FolderCompareRequest,
   FolderCompareResponse,
+  FolderFileOperationResponse,
+  FolderMetadataUpdateResponse,
   HexCompareRequest,
   HexCompareResponse,
   MediaCompareRequest,
@@ -11,6 +17,7 @@ import type {
   PictureCompareResponse,
   RegistryCompareRequest,
   RegistryCompareResponse,
+  RenameFolderEntryRequest,
   TextPatchResponse,
   VersionCompareRequest,
   VersionCompareResponse,
@@ -18,6 +25,7 @@ import type {
   SaveTextFileRequest,
   SaveTextFileResponse,
   TableCompareRequest,
+  TouchFolderEntryRequest,
   TableCompareResponse,
   TextDiffRequest,
   TextDiffResponse,
@@ -68,6 +76,52 @@ export function compareFolderPaths(request: FolderCompareRequest): Promise<Folde
   return invoke<FolderCompareResponse>('compare_folder_paths', {
     leftRoot: request.leftRoot,
     rightRoot: request.rightRoot,
+  })
+}
+
+export function copyFolderCompareEntry(
+  request: FolderCompareCopyRequest,
+): Promise<FolderCompareCopyResponse> {
+  return invoke<FolderCompareCopyResponse>('copy_folder_compare_entry', {
+    leftRoot: request.leftRoot,
+    rightRoot: request.rightRoot,
+    relativePath: request.relativePath,
+    direction: request.direction,
+  })
+}
+
+export function renameFolderEntry(
+  request: RenameFolderEntryRequest,
+): Promise<FolderFileOperationResponse> {
+  return invoke<FolderFileOperationResponse>('rename_folder_entry', {
+    path: request.path,
+    newName: request.newName,
+  })
+}
+
+export function deleteFolderEntry(
+  request: DeleteFolderEntryRequest,
+): Promise<FolderFileOperationResponse> {
+  return invoke<FolderFileOperationResponse>('delete_folder_entry', {
+    path: request.path,
+  })
+}
+
+export function changeFolderEntryAttributes(
+  request: ChangeFolderEntryAttributesRequest,
+): Promise<FolderMetadataUpdateResponse> {
+  return invoke<FolderMetadataUpdateResponse>('change_folder_entry_attributes', {
+    path: request.path,
+    readonly: request.readonly,
+  })
+}
+
+export function touchFolderEntry(
+  request: TouchFolderEntryRequest,
+): Promise<FolderMetadataUpdateResponse> {
+  return invoke<FolderMetadataUpdateResponse>('touch_folder_entry', {
+    path: request.path,
+    modifiedAtMs: request.modifiedAtMs,
   })
 }
 

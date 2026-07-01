@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { buildFolderMergePlan as requestFolderMergePlan } from '@/api/folderMerge'
+import {
+  buildFolderMergePlan as requestFolderMergePlan,
+  executeFolderMergePlan,
+} from '@/api/folderMerge'
 import type {
   FolderMergeConflict,
+  FolderMergeExecutionResponse,
   FolderMergePlanResponse,
   FolderMergePlanRow,
   FolderMergeSide,
@@ -17,6 +21,9 @@ const basePath = ref('D:/workspace/merge/base')
 const rightPath = ref('D:/workspace/merge/right')
 const outputPath = ref('D:/workspace/merge/output')
 const plan = ref<FolderMergePlanResponse>()
+const execution = ref<FolderMergeExecutionResponse>()
+const mergeExecuting = ref(false)
+const mergeExecutionError = ref<string>()
 const router = useRouter()
 const { t } = useI18n()
 const lastOpenedConflictPath = ref('')
@@ -31,6 +38,7 @@ const summary = computed(() => ({
   automatic: plan.value?.summary.automatic ?? 0,
   conflicts: plan.value?.summary.conflicts ?? 0,
 }))
+const executionSummary = computed(() => execution.value?.summary)
 
 async function buildFolderMergePlan(): Promise<void> {
   plan.value = await requestFolderMergePlan({
@@ -39,6 +47,26 @@ async function buildFolderMergePlan(): Promise<void> {
     rightRoot: rightPath.value,
     outputRoot: outputPath.value,
   })
+  execution.value = undefined
+  mergeExecutionError.value = undefined
+}
+
+async function runFolderMerge(): Promise<void> {
+  mergeExecuting.value = true
+  mergeExecutionError.value = undefined
+
+  try {
+    execution.value = await executeFolderMergePlan({
+      leftRoot: leftPath.value,
+      baseRoot: basePath.value,
+      rightRoot: rightPath.value,
+      outputRoot: outputPath.value,
+    })
+  } catch (error) {
+    mergeExecutionError.value = error instanceof Error ? error.message : String(error)
+  } finally {
+    mergeExecuting.value = false
+  }
 }
 
 function sideLabel(side: FolderMergeSide): string {
@@ -146,6 +174,15 @@ function openConflictInTextMerge(conflict: FolderMergeConflict): void {
             @click="buildFolderMergePlan"
             >{{ $t('ui.buildPlan') }}</NButton
           >
+          <NButton
+            size="small"
+            secondary
+            data-testid="folder-merge-execute-plan"
+            :disabled="!hasPlan || mergeExecuting"
+            :loading="mergeExecuting"
+            @click="runFolderMerge"
+            >{{ $t('ui.merge') }} -> {{ $t('ui.output') }}</NButton
+          >
         </div>
       </section>
 
@@ -160,6 +197,32 @@ function openConflictInTextMerge(conflict: FolderMergeConflict): void {
             route: '/merge/text',
           })
         }}
+      </section>
+
+      <section
+        v-if="mergeExecutionError"
+        class="merge-open-status"
+        data-testid="folder-merge-execution-error"
+      >
+        {{ mergeExecutionError }}
+      </section>
+
+      <section
+        v-if="executionSummary"
+        class="merge-open-status"
+        data-testid="folder-merge-execution-status"
+      >
+        <strong>{{
+          $t('status.completedCount', {
+            count:
+              executionSummary.executed + executionSummary.skipped + executionSummary.conflicts,
+            total: executionSummary.total,
+          })
+        }}</strong>
+        <span>
+          {{ $t('ui.actions') }}: {{ executionSummary.executed }} / {{ $t('ui.conflicts') }}:
+          {{ executionSummary.conflicts }} / {{ $t('ui.errors') }}: {{ executionSummary.failed }}
+        </span>
       </section>
 
       <section

@@ -11,7 +11,14 @@ import {
   createFileOperationConfirmation,
   type FileOperationConfirmation,
 } from '@/app/fileOperationConfirmation'
-import { compareFolderPaths } from '@/api/diff'
+import {
+  changeFolderEntryAttributes,
+  compareFolderPaths,
+  copyFolderCompareEntry,
+  deleteFolderEntry,
+  renameFolderEntry,
+  touchFolderEntry,
+} from '@/api/diff'
 import type {
   FolderCompareResponse,
   FolderCompareRow as FolderCompareResponseRow,
@@ -31,6 +38,7 @@ type SyncPreviewAction = 'Copy' | 'Overwrite' | 'Delete' | 'Error' | 'Leave'
 
 interface FolderTreeRow {
   id: string
+  relativePath: string
   parentId?: string
   depth: number
   leftName?: string
@@ -89,6 +97,7 @@ const generatedRows: FolderTreeRow[] = Array.from({ length: 180 }, (_, index): F
 
   return {
     id: `generated-${padded}`,
+    relativePath: `generated-${padded}.log`,
     depth: 0,
     leftName: `generated-${padded}.log`,
     rightName: `generated-${padded}.log`,
@@ -106,6 +115,7 @@ const generatedRows: FolderTreeRow[] = Array.from({ length: 180 }, (_, index): F
 const rows = ref<FolderTreeRow[]>([
   {
     id: 'src',
+    relativePath: 'src',
     depth: 0,
     leftName: 'src',
     rightName: 'src',
@@ -120,6 +130,7 @@ const rows = ref<FolderTreeRow[]>([
   },
   {
     id: 'src-main',
+    relativePath: 'src/main.ts',
     parentId: 'src',
     depth: 1,
     leftName: 'main.ts',
@@ -135,6 +146,7 @@ const rows = ref<FolderTreeRow[]>([
   },
   {
     id: 'readme',
+    relativePath: 'README.md',
     depth: 0,
     leftName: 'README.md',
     rightName: 'README.md',
@@ -149,6 +161,7 @@ const rows = ref<FolderTreeRow[]>([
   },
   {
     id: 'notes',
+    relativePath: 'release-notes.md',
     depth: 0,
     leftName: 'release-notes.md',
     leftSize: '3.5 KB',
@@ -159,6 +172,7 @@ const rows = ref<FolderTreeRow[]>([
   },
   {
     id: 'release-summary',
+    relativePath: 'release-summary.md',
     depth: 0,
     rightName: 'release-summary.md',
     rightSize: '3.8 KB',
@@ -466,6 +480,7 @@ function applyFolderCompareResponse(response: FolderCompareResponse): void {
 function folderCompareResponseRowToTreeRow(row: FolderCompareResponseRow): FolderTreeRow {
   return {
     id: rowIdFromRelativePath(row.relativePath),
+    relativePath: row.relativePath,
     parentId: parentIdFromRelativePath(row.relativePath),
     depth: row.depth,
     leftName: row.left?.name,
@@ -620,9 +635,13 @@ function copySelectedTo(direction: 'Left' | 'Right'): void {
     return
   }
 
-  const targetPath = direction === 'Left' ? row.leftPath : row.rightPath
+  const sourcePath = direction === 'Left' ? row.rightPath : row.leftPath
+  const targetPath =
+    direction === 'Left'
+      ? (row.leftPath ?? folderSidePath(leftRoot.value, row.relativePath))
+      : (row.rightPath ?? folderSidePath(rightRoot.value, row.relativePath))
 
-  if (!targetPath) {
+  if (!sourcePath) {
     return
   }
 
@@ -646,6 +665,17 @@ function renameSelectedFile(): void {
 
 function displayName(row: FolderTreeRow): string {
   return row.leftName ?? row.rightName ?? row.id
+}
+
+function folderSidePath(root: string, relativePath: string): string {
+  const normalizedRoot = root.replaceAll('\\', '/').replace(/\/$/u, '')
+  const normalizedRelativePath = relativePath.replaceAll('\\', '/').replace(/^\//u, '')
+
+  if (!normalizedRelativePath) {
+    return normalizedRoot
+  }
+
+  return `${normalizedRoot}/${normalizedRelativePath}`
 }
 
 function fileOpenActionLabel(action: FileOpenAction): string {
@@ -687,29 +717,41 @@ function breakSelectedAlignment(): void {
   lastAlignmentAction.value = t('status.alignmentCleared', { name: displayName(row) })
 }
 
-function confirmFolderCopy(): void {
+async function confirmFolderCopy(): Promise<void> {
   const confirmation = pendingCopyConfirmation.value
   const direction = pendingCopyDirection.value
+  const row = selectedRow.value
 
-  if (!confirmation || !direction) {
+  if (!confirmation || !direction || !row) {
     return
   }
 
+  await copyFolderCompareEntry({
+    leftRoot: leftRoot.value,
+    rightRoot: rightRoot.value,
+    relativePath: row.relativePath,
+    direction: direction === 'Left' ? 'toLeft' : 'toRight',
+  })
   lastCopyAction.value = t('status.copiedToSide', {
     side: direction === 'Left' ? t('ui.left') : t('ui.right'),
     path: confirmation.paths[0],
   })
   pendingCopyConfirmation.value = undefined
   pendingCopyDirection.value = undefined
+  await runFolderCompare()
 }
 
-function confirmRenameFile(): void {
-  if (!renameTargetName.value) {
+async function confirmRenameFile(): Promise<void> {
+  const path = selectedFilePath.value
+
+  if (!path || !renameTargetName.value) {
     return
   }
 
+  await renameFolderEntry({ path, newName: renameTargetName.value })
   lastFileOperationAction.value = t('status.renamedPath', { path: renameTargetName.value })
   renamePanelOpen.value = false
+  await runFolderCompare()
 }
 
 function moveSelectedFile(): void {
@@ -736,33 +778,43 @@ function deleteSelectedFile(): void {
   })
 }
 
-function confirmDangerousFileOperation(): void {
+async function confirmDangerousFileOperation(): Promise<void> {
   if (!pendingDangerousOperation.value) {
     return
   }
 
+  await Promise.all(
+    pendingDangerousOperation.value.paths.map((path) => deleteFolderEntry({ path })),
+  )
   lastFileOperationAction.value = pendingDangerousOperationLabel.value
   pendingDangerousOperation.value = undefined
   pendingDangerousOperationLabel.value = ''
+  await runFolderCompare()
 }
 
-function toggleSelectedReadonly(selected: boolean): void {
-  if (!selectedFilePath.value) {
+async function toggleSelectedReadonly(selected: boolean): Promise<void> {
+  const path = selectedFilePath.value
+
+  if (!path) {
     return
   }
 
+  await changeFolderEntryAttributes({ path, readonly: selected })
   selectedReadonly.value = selected
   lastMetadataAction.value = t('status.attributesChanged', {
     state: selected ? 'readonly' : 'writable',
   })
 }
 
-function touchSelectedFile(): void {
-  if (!selectedFilePath.value) {
+async function touchSelectedFile(): Promise<void> {
+  const path = selectedFilePath.value
+
+  if (!path) {
     return
   }
 
-  lastMetadataAction.value = t('status.touchedPath', { path: selectedFilePath.value })
+  await touchFolderEntry({ path, modifiedAtMs: Date.now() })
+  lastMetadataAction.value = t('status.touchedPath', { path })
 }
 
 function excludeSelectedRow(): void {

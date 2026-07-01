@@ -208,9 +208,30 @@ function setSaveStatus(key: string, params: Record<string, string | number> = {}
 }
 
 const saveStatus = computed(() => t(saveStatusKey.value, saveStatusParams.value))
+const textEditToolbarCommands = [
+  { glyph: 'H', labelKey: 'ui.home' },
+  { glyph: 'U', labelKey: 'ui.undo' },
+  { glyph: 'R', labelKey: 'ui.redo' },
+  { glyph: 'X', labelKey: 'ui.cut' },
+  { glyph: 'C', labelKey: 'ui.copy' },
+  { glyph: 'P', labelKey: 'ui.paste' },
+  { glyph: 'D', labelKey: 'ui.delete' },
+  { glyph: 'S', labelKey: 'ui.syntax' },
+]
 </script>
 
 <template>
+  <section class="bc-session-toolbar">
+    <button
+      v-for="command in textEditToolbarCommands"
+      :key="command.labelKey"
+      class="bc-toolbar-command"
+      type="button"
+    >
+      <span class="bc-toolbar-glyph">{{ command.glyph }}</span
+      ><span>{{ $t(command.labelKey) }}</span>
+    </button>
+  </section>
   <section class="text-edit-view">
     <header class="text-edit-header">
       <div>

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  changeFolderEntryAttributes,
   compareFolderPaths,
   compareHexFiles,
   compareMediaFiles,
@@ -7,7 +8,11 @@ import {
   compareRegistryExports,
   compareTableCsv,
   compareVersionFiles,
+  copyFolderCompareEntry,
+  deleteFolderEntry,
+  renameFolderEntry,
   saveTextFile,
+  touchFolderEntry,
 } from './diff'
 import { invoke } from '@tauri-apps/api/core'
 
@@ -121,6 +126,79 @@ describe('diff api', () => {
       rightRoot: 'D:/right',
     })
     expect(result.rows[0]?.relativePath).toBe('src/main.ts')
+  })
+
+  it('runs folder compare file operations through the Tauri command contracts', async () => {
+    vi.mocked(invoke)
+      .mockResolvedValueOnce({
+        direction: 'toRight',
+        sourcePath: 'D:/left/src/main.ts',
+        targetPath: 'D:/right/src/main.ts',
+        targetMetadata: {
+          kind: 'file',
+          name: 'main.ts',
+          extension: 'ts',
+          size: 12,
+          readonly: false,
+          createdAtMs: 1,
+          modifiedAtMs: 2,
+          accessedAtMs: 3,
+        },
+        refreshedStatus: 'same',
+      })
+      .mockResolvedValueOnce({
+        operation: 'rename',
+        status: 'renamed',
+        sourcePath: 'D:/right/src/main.ts',
+        targetPath: 'D:/right/src/app.ts',
+      })
+      .mockResolvedValueOnce({
+        operation: 'delete',
+        status: 'deleted',
+        sourcePath: 'D:/right/src/app.ts',
+        targetPath: null,
+      })
+      .mockResolvedValueOnce({
+        path: 'D:/right/README.md',
+        metadata: { kind: 'file', name: 'README.md', size: 4, readonly: true },
+      })
+      .mockResolvedValueOnce({
+        path: 'D:/right/README.md',
+        metadata: { kind: 'file', name: 'README.md', size: 4, readonly: true },
+      })
+
+    await copyFolderCompareEntry({
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      relativePath: 'src/main.ts',
+      direction: 'toRight',
+    })
+    await renameFolderEntry({ path: 'D:/right/src/main.ts', newName: 'app.ts' })
+    await deleteFolderEntry({ path: 'D:/right/src/app.ts' })
+    await changeFolderEntryAttributes({ path: 'D:/right/README.md', readonly: true })
+    await touchFolderEntry({ path: 'D:/right/README.md', modifiedAtMs: 1782864000000 })
+
+    expect(invoke).toHaveBeenNthCalledWith(1, 'copy_folder_compare_entry', {
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      relativePath: 'src/main.ts',
+      direction: 'toRight',
+    })
+    expect(invoke).toHaveBeenNthCalledWith(2, 'rename_folder_entry', {
+      path: 'D:/right/src/main.ts',
+      newName: 'app.ts',
+    })
+    expect(invoke).toHaveBeenNthCalledWith(3, 'delete_folder_entry', {
+      path: 'D:/right/src/app.ts',
+    })
+    expect(invoke).toHaveBeenNthCalledWith(4, 'change_folder_entry_attributes', {
+      path: 'D:/right/README.md',
+      readonly: true,
+    })
+    expect(invoke).toHaveBeenNthCalledWith(5, 'touch_folder_entry', {
+      path: 'D:/right/README.md',
+      modifiedAtMs: 1782864000000,
+    })
   })
 
   it('compares media files through the Tauri command contract', async () => {

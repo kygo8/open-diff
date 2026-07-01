@@ -732,6 +732,19 @@ function toggleSourceEditors(): void {
           >{{ $t('ui.runDiff') }}</NButton
         >
       </WorkbenchToolbar>
+      <section class="bc-path-row">
+        <input
+          type="text"
+          :value="leftPathLabel"
+          readonly
+        />
+        <button type="button">&lt;&gt;</button>
+        <input
+          type="text"
+          :value="rightPathLabel"
+          readonly
+        />
+      </section>
       <WorkbenchToolbar class="find-toolbar">
         <input
           class="find-input"

@@ -1,9 +1,10 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { buildFolderMergePlan } from '@/api/folderMerge'
+import { buildFolderMergePlan, executeFolderMergePlan } from '@/api/folderMerge'
 import FolderMergeView from './FolderMergeView.vue'
 import type {
   FolderMergeEntryKind,
+  FolderMergeExecutionResponse,
   FolderMergePlanResponse,
   FolderMergeRole,
   FolderMergeSide,
@@ -18,6 +19,7 @@ vi.mock('vue-router', () => ({
 
 vi.mock('@/api/folderMerge', () => ({
   buildFolderMergePlan: vi.fn(),
+  executeFolderMergePlan: vi.fn(),
 }))
 
 function mountFolderMergeView(): VueWrapper {
@@ -25,7 +27,7 @@ function mountFolderMergeView(): VueWrapper {
     global: {
       stubs: {
         NButton: {
-          props: ['disabled'],
+          props: ['disabled', 'loading'],
           emits: ['click'],
           template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
         },
@@ -38,7 +40,9 @@ describe('FolderMergeView', () => {
   beforeEach(() => {
     push.mockClear()
     vi.mocked(buildFolderMergePlan).mockReset()
+    vi.mocked(executeFolderMergePlan).mockReset()
     vi.mocked(buildFolderMergePlan).mockResolvedValue(createMergePlanResponse())
+    vi.mocked(executeFolderMergePlan).mockResolvedValue(createMergeExecutionResponse())
   })
 
   it('renders left, base, right, and output folder inputs', () => {
@@ -60,6 +64,7 @@ describe('FolderMergeView', () => {
     expect(wrapper.find('[data-testid="folder-merge-plan"]').exists()).toBe(false)
 
     await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
 
     const summary = wrapper.find('[data-testid="folder-merge-summary"]')
     const plan = wrapper.find('[data-testid="folder-merge-plan"]')
@@ -81,10 +86,30 @@ describe('FolderMergeView', () => {
     expect(plan.text()).toContain('Mark conflict')
   })
 
+  it('executes the folder merge plan into the output folder', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-testid="folder-merge-execute-plan"]').trigger('click')
+    await flushPromises()
+
+    expect(executeFolderMergePlan).toHaveBeenCalledWith({
+      leftRoot: 'D:/workspace/merge/left',
+      baseRoot: 'D:/workspace/merge/base',
+      rightRoot: 'D:/workspace/merge/right',
+      outputRoot: 'D:/workspace/merge/output',
+    })
+    expect(wrapper.find('[data-testid="folder-merge-execution-status"]').text()).toContain(
+      'Completed 4 / 4',
+    )
+  })
+
   it('shows conflict details with three-way context', async () => {
     const wrapper = mountFolderMergeView()
 
     await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
 
     const conflicts = wrapper.find('[data-testid="folder-merge-conflict-list"]')
 
@@ -100,6 +125,7 @@ describe('FolderMergeView', () => {
     const wrapper = mountFolderMergeView()
 
     await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
     await wrapper.find('[data-testid="open-folder-conflict-config"]').trigger('click')
 
     expect(wrapper.text()).toContain('Opening Text Merge for config')
@@ -163,6 +189,48 @@ function createMergePlanResponse(): FolderMergePlanResponse {
       actions: 4,
       automatic: 3,
       conflicts: 1,
+    },
+  }
+}
+
+function createMergeExecutionResponse(): FolderMergeExecutionResponse {
+  return {
+    leftRoot: 'D:/workspace/merge/left',
+    baseRoot: 'D:/workspace/merge/base',
+    rightRoot: 'D:/workspace/merge/right',
+    outputRoot: 'D:/workspace/merge/output',
+    rows: [
+      {
+        path: 'same.txt',
+        action: 'Keep output',
+        status: 'executed',
+        detail: 'Copied unchanged item to output.',
+      },
+      {
+        path: 'left-add.txt',
+        action: 'Copy left to output',
+        status: 'executed',
+        detail: 'Copied from left to output.',
+      },
+      {
+        path: 'right-add.txt',
+        action: 'Copy right to output',
+        status: 'executed',
+        detail: 'Copied from right to output.',
+      },
+      {
+        path: 'config',
+        action: 'Mark conflict',
+        status: 'conflict',
+        detail: 'Skipped conflicting item.',
+      },
+    ],
+    summary: {
+      total: 4,
+      executed: 3,
+      skipped: 0,
+      conflicts: 1,
+      failed: 0,
     },
   }
 }

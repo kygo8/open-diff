@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { previewFolderSync } from './sync'
+import { executeFolderSync, previewFolderSync } from './sync'
 import { invoke } from '@tauri-apps/api/core'
 
 vi.mock('@tauri-apps/api/core', () => ({
@@ -61,5 +61,41 @@ describe('sync api', () => {
       strategy: 'mirrorRight',
     })
     expect(result.rows[0]?.relativePath).toBe('package/app.exe')
+  })
+
+  it('executes folder sync through the Tauri command contract', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      name: 'Mirror to Right',
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      strategy: 'mirrorRight',
+      total: 2,
+      succeeded: 2,
+      failed: 0,
+      cancelled: 0,
+      logs: [
+        {
+          relativePath: 'package/app.exe',
+          action: 'copyLeftToRight',
+          sourcePath: 'D:/left/package/app.exe',
+          targetPath: 'D:/right/package/app.exe',
+          status: 'succeeded',
+          error: null,
+        },
+      ],
+    })
+
+    const result = await executeFolderSync({
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      strategy: 'mirrorRight',
+    })
+
+    expect(invoke).toHaveBeenCalledWith('execute_folder_sync', {
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      strategy: 'mirrorRight',
+    })
+    expect(result.succeeded).toBe(2)
   })
 })

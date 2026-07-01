@@ -54,3 +54,29 @@ export interface FolderMergePlanResponse {
   rows: FolderMergePlanRow[]
   summary: FolderMergePlanSummary
 }
+
+export type FolderMergeExecutionStatus = 'executed' | 'skipped' | 'conflict' | 'failed'
+
+export interface FolderMergeExecutionRow {
+  path: string
+  action: FolderMergeActionKind
+  status: FolderMergeExecutionStatus
+  detail: string
+}
+
+export interface FolderMergeExecutionSummary {
+  total: number
+  executed: number
+  skipped: number
+  conflicts: number
+  failed: number
+}
+
+export interface FolderMergeExecutionResponse {
+  leftRoot: string
+  baseRoot: string
+  rightRoot: string
+  outputRoot: string
+  rows: FolderMergeExecutionRow[]
+  summary: FolderMergeExecutionSummary
+}

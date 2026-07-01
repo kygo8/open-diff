@@ -42,7 +42,7 @@ import type { ViewActionName } from '@/app/commandSystem'
 import type { SessionCatalogEntry } from '@/app/sessionCatalog'
 import type { SessionType } from '@/types/session'
 
-type AppMenuId = 'file' | 'edit' | 'search' | 'view' | 'session' | 'actions' | 'tools'
+type AppMenuId = 'session' | 'file' | 'actions' | 'edit' | 'search' | 'view' | 'tools' | 'help'
 
 interface NavigationItem {
   title: string
@@ -78,9 +78,19 @@ const toolbarCommands = computed(() => getCommandsForPlacement(commandRegistry, 
 const availableLocales = i18n.availableLocales
 const appMenus: AppMenuDefinition[] = [
   {
+    id: 'session',
+    titleKey: 'ui.session',
+    commandIds: ['open.textCompare', 'open.folderCompare', 'session.save', 'session.saveAs'],
+  },
+  {
     id: 'file',
     titleKey: 'ui.file',
     commandIds: ['open.textCompare', 'open.folderCompare', 'open.textPatch', 'open.settings'],
+  },
+  {
+    id: 'actions',
+    titleKey: 'ui.actions',
+    commandIds: ['edit.copyLeft', 'edit.copyRight', 'workspace.save'],
   },
   {
     id: 'edit',
@@ -98,21 +108,32 @@ const appMenus: AppMenuDefinition[] = [
     commandIds: ['view.showAll', 'view.showDifferences', 'theme.toggle'],
   },
   {
-    id: 'session',
-    titleKey: 'ui.session',
-    commandIds: ['session.save', 'session.saveAs', 'session.export'],
-  },
-  {
-    id: 'actions',
-    titleKey: 'ui.actions',
-    commandIds: ['workspace.save'],
-  },
-  {
     id: 'tools',
     titleKey: 'ui.tools',
-    commandIds: ['open.settings', 'theme.toggle'],
+    commandIds: ['open.settings', 'session.export', 'theme.toggle'],
+  },
+  {
+    id: 'help',
+    titleKey: 'ui.help',
+    commandIds: ['open.settings'],
   },
 ]
+const visibleAppMenus = computed(() => {
+  const homeMenus: AppMenuId[] = ['session', 'view', 'tools', 'help']
+  const folderMenus: AppMenuId[] = ['session', 'actions', 'edit', 'search', 'view', 'tools', 'help']
+  const fileMenus: AppMenuId[] = ['session', 'file', 'edit', 'search', 'view', 'tools', 'help']
+  let wantedMenus = fileMenus
+
+  if (route.path === '/') {
+    wantedMenus = homeMenus
+  } else if (route.path.includes('/folder')) {
+    wantedMenus = folderMenus
+  }
+
+  const menuById = new Map(appMenus.map((menu) => [menu.id, menu]))
+
+  return wantedMenus.map((menuId) => menuById.get(menuId)).filter((menu) => menu !== undefined)
+})
 const menuCommandLookup = computed(
   () => new Map(commandRegistry.map((command) => [command.id, command])),
 )
@@ -153,6 +174,16 @@ const localizedStatusSegments = computed(() => [
   `${t('status.encoding')}: ${statusBar.report.encoding}`,
   `${t('status.filter')}: ${localizeStatusValue(statusBar.report.filterStatus)}`,
 ])
+const windowTitle = computed(() => {
+  if (route.path === '/') {
+    return 'Home - Beyond Compare'
+  }
+
+  const entry = sessionCatalog.find((item) => item.route === route.path)
+  const title = entry ? t(entry.titleKey) : t('app.brand')
+
+  return `${title} - Beyond Compare`
+})
 
 function navigate(nextRoute: string, title: string, titleKey?: string): void {
   tabs.openTab({ route: nextRoute, title, titleKey, dirty: false })
@@ -324,14 +355,14 @@ const sourceSessionTypes = new Set<SessionType>([
         @click="navigate('/', t('ui.home'), 'ui.home')"
       >
         <Rows3 :size="15" />
-        <span>{{ t('app.brand') }}</span>
+        <span>{{ windowTitle }}</span>
       </button>
       <nav
         class="menus"
         :aria-label="t('ui.applicationMenus')"
       >
         <div
-          v-for="menu in appMenus"
+          v-for="menu in visibleAppMenus"
           :key="menu.id"
           class="menu-group"
           :data-testid="`menu-${menu.id}-group`"
@@ -660,21 +691,23 @@ const sourceSessionTypes = new Set<SessionType>([
 <style scoped>
 .app-shell {
   display: grid;
-  grid-template-rows: 32px minmax(0, 1fr) 24px;
+  grid-template-rows: 78px minmax(0, 1fr) 24px;
   height: 100vh;
   overflow: hidden;
-  background: var(--app-bg);
+  background: #ffffff;
   color: var(--app-text);
 }
 
 .menu-bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 40px 38px;
   align-items: center;
-  gap: 22px;
+  gap: 0;
   min-width: 0;
-  padding: 0 10px;
-  border-bottom: 1px solid var(--app-border);
-  background: var(--app-surface-low);
+  padding: 0;
+  border-bottom: 1px solid #c7cbd1;
+  background: #ffffff;
 }
 
 .menu-panel {
@@ -716,22 +749,31 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .brand {
   display: inline-flex;
+  grid-column: 1;
+  grid-row: 1;
   align-items: center;
   gap: 7px;
-  min-width: 104px;
-  padding: 0;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
   border: 0;
-  background: transparent;
-  color: var(--app-primary);
-  font-size: 14px;
-  font-weight: 700;
+  background: #eef2f8;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 400;
   cursor: pointer;
 }
 
 .menus {
   display: flex;
+  grid-column: 1 / -1;
+  grid-row: 2;
   align-items: center;
   gap: 12px;
+  height: 38px;
+  padding: 0 10px;
+  border-top: 1px solid #e7e9ed;
+  background: #ffffff;
 }
 
 .menu-group {
@@ -746,28 +788,32 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button,
 .chrome-button {
-  height: 24px;
+  height: 32px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 0;
   background: transparent;
-  color: var(--app-text);
+  color: #000000;
   cursor: pointer;
 }
 
 .menus button {
-  padding: 0 6px;
+  padding: 0 2px;
+  font-size: 20px;
 }
 
 .menus button:hover,
 .menus button.active,
 .chrome-button:hover {
-  background: var(--app-surface-highest);
+  background: #eef4ff;
 }
 
 .top-actions {
   display: flex;
+  grid-column: 2;
+  grid-row: 1;
   gap: 6px;
   margin-left: auto;
+  padding: 4px 10px 0 0;
 }
 
 .language-menu {
@@ -826,12 +872,12 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .desktop {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   min-height: 0;
 }
 
 .sidebar {
-  display: grid;
+  display: none;
   grid-template-rows: auto auto minmax(0, 1fr);
   min-height: 0;
   border-right: 1px solid var(--app-border);
@@ -945,19 +991,24 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .workspace {
-  display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
 }
 
 .tab-strip {
+  position: relative;
+  z-index: -1;
   display: flex;
   gap: 4px;
+  width: 1px;
   min-width: 0;
-  min-height: 30px;
-  padding: 4px 8px 0;
+  height: 0;
+  min-height: 0;
+  padding: 0;
   overflow: auto hidden;
-  border-bottom: 1px solid var(--app-border);
-  background: var(--app-surface-low);
+  border: 0;
+  background: transparent;
+  opacity: 0;
 }
 
 .tab-chip {
@@ -1020,14 +1071,20 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .global-toolbar {
+  position: relative;
+  z-index: -1;
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 1px;
   min-width: 0;
-  min-height: 34px;
-  padding: 5px 8px;
-  border-bottom: 1px solid var(--app-border);
-  background: var(--app-surface-low);
+  height: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  opacity: 0;
 }
 
 .global-toolbar button {
@@ -1052,8 +1109,9 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .content {
+  flex: 1 1 auto;
   height: 100%;
-  background: var(--app-canvas);
+  background: #ffffff;
 }
 
 .status-bar {
@@ -1062,11 +1120,12 @@ const sourceSessionTypes = new Set<SessionType>([
   align-items: center;
   gap: 18px;
   min-width: 0;
-  padding: 0 12px;
-  background: var(--app-status);
-  color: var(--app-status-text);
-  font-family: var(--font-mono);
-  font-size: 12px;
+  padding: 0 10px;
+  border-top: 1px solid #c9cdd3;
+  background: #f4f4f4;
+  color: #111827;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 18px;
 }
 
 .status-bar span {
@@ -1158,7 +1217,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 @media (width <= 1180px) {
   .desktop {
-    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

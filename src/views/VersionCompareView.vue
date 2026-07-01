@@ -11,6 +11,18 @@ import type {
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 const versionStatuses: VersionFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
+const versionToolbarCommands = [
+  { glyph: 'H', labelKey: 'ui.home' },
+  { glyph: '*', labelKey: 'ui.all' },
+  { glyph: '!=', labelKey: 'ui.diffs' },
+  { glyph: '=', labelKey: 'ui.same' },
+  { glyph: '~', labelKey: 'ui.minor' },
+  { glyph: 'R', labelKey: 'ui.rules' },
+  { glyph: 'N', labelKey: 'ui.nextDifference' },
+  { glyph: 'P', labelKey: 'ui.previousDifference' },
+  { glyph: '<>', labelKey: 'ui.swap' },
+  { glyph: 'R', labelKey: 'ui.reload' },
+]
 const { t } = useI18n()
 const defaultLeftVersion: VersionSideSummary = {
   name: 'left-app.exe',
@@ -153,6 +165,17 @@ async function runVersionCompare(): Promise<void> {
 </script>
 
 <template>
+  <section class="bc-session-toolbar">
+    <button
+      v-for="command in versionToolbarCommands"
+      :key="`${command.glyph}-${command.labelKey}`"
+      class="bc-toolbar-command"
+      type="button"
+    >
+      <span class="bc-toolbar-glyph">{{ command.glyph }}</span
+      ><span>{{ $t(command.labelKey) }}</span>
+    </button>
+  </section>
   <section class="version-compare-view">
     <header class="version-header">
       <div>

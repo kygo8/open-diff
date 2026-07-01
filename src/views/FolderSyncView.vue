@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { previewFolderSync } from '@/api/sync'
+import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import type {
+  FolderSyncExecutionLog,
   FolderSyncPreviewAction,
   FolderSyncPreviewRow,
   FolderSyncStrategy,
@@ -38,6 +39,8 @@ const selectedStrategy = ref<FolderSyncStrategy>('updateBoth')
 const previewName = ref('')
 const previewLoading = ref(false)
 const previewError = ref<string>()
+const syncRunning = ref(false)
+const syncRunError = ref<string>()
 const previewRows = ref<SyncPreviewRow[]>([])
 const completedOperations = ref(0)
 const syncLogs = ref<string[]>([])
@@ -48,7 +51,7 @@ const selectedStrategyLabel = computed(() =>
       'sync.strategy.updateBoth',
   ),
 )
-const canRunSync = computed(() => previewRows.value.length > 0)
+const canRunSync = computed(() => previewRows.value.length > 0 && !syncRunning.value)
 
 async function previewSync(): Promise<void> {
   previewLoading.value = true
@@ -67,6 +70,7 @@ async function previewSync(): Promise<void> {
     rightPath.value = response.rightRoot
     completedOperations.value = 0
     syncLogs.value = []
+    syncRunError.value = undefined
   } catch (error) {
     previewError.value = error instanceof Error ? error.message : String(error)
   } finally {
@@ -74,27 +78,28 @@ async function previewSync(): Promise<void> {
   }
 }
 
-function runSync(): void {
+async function runSync(): Promise<void> {
   if (!canRunSync.value) {
     return
   }
 
-  completedOperations.value = previewRows.value.length
-  syncLogs.value = previewRows.value.map((row) => {
-    if (row.action === 'Delete') {
-      return t('status.deletedPath', { path: row.relativePath })
-    }
+  syncRunning.value = true
+  syncRunError.value = undefined
 
-    if (row.action === 'Leave') {
-      return `${t('ui.leave')} -> ${row.relativePath}`
-    }
+  try {
+    const response = await executeFolderSync({
+      leftRoot: leftPath.value,
+      rightRoot: rightPath.value,
+      strategy: selectedStrategy.value,
+    })
 
-    if (row.action === 'Conflict') {
-      return `${t('ui.conflicts')} -> ${row.relativePath}`
-    }
-
-    return t('status.copiedPath', { path: row.relativePath })
-  })
+    completedOperations.value = response.succeeded + response.failed + response.cancelled
+    syncLogs.value = response.logs.map(folderSyncExecutionLogLabel)
+  } catch (error) {
+    syncRunError.value = error instanceof Error ? error.message : String(error)
+  } finally {
+    syncRunning.value = false
+  }
 }
 
 function folderSyncActionLabel(action: FolderSyncPreviewAction): string {
@@ -117,6 +122,26 @@ function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreview
     targetPath: row.targetPath,
     detail: row.detail,
   }
+}
+
+function folderSyncExecutionLogLabel(log: FolderSyncExecutionLog): string {
+  if (log.status === 'failed') {
+    return `${log.relativePath} -> ${log.error ?? log.status}`
+  }
+
+  if (log.action === 'delete') {
+    return t('status.deletedPath', { path: log.relativePath })
+  }
+
+  if (log.action === 'leave') {
+    return `${t('ui.leave')} -> ${log.relativePath}`
+  }
+
+  if (log.action === 'conflict') {
+    return `${t('ui.conflicts')} -> ${log.relativePath}`
+  }
+
+  return t('status.copiedPath', { path: log.relativePath })
 }
 </script>
 
@@ -184,6 +209,7 @@ function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreview
             type="primary"
             data-testid="folder-sync-run"
             :disabled="!canRunSync"
+            :loading="syncRunning"
             @click="runSync"
             >{{ $t('ui.runSync') }}</NButton
           >
@@ -196,6 +222,14 @@ function syncPreviewResponseRowToViewRow(row: FolderSyncPreviewRow): SyncPreview
         data-testid="folder-sync-preview-error"
       >
         {{ previewError }}
+      </section>
+
+      <section
+        v-if="syncRunError"
+        class="sync-run-status"
+        data-testid="folder-sync-run-error"
+      >
+        {{ syncRunError }}
       </section>
 
       <section

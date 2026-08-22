@@ -43,11 +43,11 @@
     "tauri:portable:windows": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/windows/package-portable.ps1"
   },
   "dependencies": {
-    "@lucide/vue": "1.31.0",
+    "@lucide/vue": "1.33.0",
     "@tauri-apps/api": "2.11.1",
     "@vueuse/core": "14.4.0",
     "katex": "0.18.4",
-    "naive-ui": "2.44.1",
+    "naive-ui": "2.45.0",
     "pinia": "4.0.3",
     "vue": "3.5.41",
     "vue-router": "5.2.0"
@@ -65,20 +65,20 @@
     "eslint-plugin-vue": "10.10.0",
     "globals": "17.11.0",
     "husky": "9.1.7",
-    "jsdom": "29.1.1",
+    "jsdom": "30.0.1",
     "lint-staged": "17.3.0",
     "postcss-html": "2.0.0",
     "prettier": "3.9.6",
-    "stylelint": "17.14.0",
+    "stylelint": "17.14.1",
     "stylelint-config-recommended-vue": "2.0.0",
     "stylelint-config-standard": "40.0.0",
     "stylelint-order": "8.1.1",
-    "typescript": "5.9.3",
+    "typescript": "7.0.2",
     "typescript-eslint": "8.67.0",
     "vite": "8.2.1",
-    "vitest": "4.1.9",
+    "vitest": "4.1.11",
     "vue-eslint-parser": "10.4.1",
-    "vue-tsc": "3.3.9"
+    "vue-tsc": "3.3.10"
   },
   "lint-staged": {
     "*.{ts,vue,js,mjs,cjs,json,md,css}": [

@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import type { DiffLine, InlineDiffSegment } from '@/types/diff'
+import { useSettingsStore } from '@/stores/settings'
 
 const textDiffRowHeightPx = 24
 const textDiffRowHeight = `${String(textDiffRowHeightPx)}px`
@@ -70,7 +71,8 @@ const viewportHeight = ref(defaultViewportHeight)
 const displayMode = ref<DiffDisplayMode>('all')
 const differenceContextRows = ref(defaultDifferenceContextRows)
 const showWhitespace = ref(false)
-const wordWrap = ref(false)
+const settings = useSettingsStore()
+const wordWrap = ref(settings.wrapTextDefault)
 
 const displayRows = computed((): VisibleDiffRow[] => {
   if (displayMode.value === 'all') {

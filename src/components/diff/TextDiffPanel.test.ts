@@ -1,10 +1,16 @@
 import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { nextTick } from 'vue'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import TextDiffPanel from './TextDiffPanel.vue'
 import type { DiffLine } from '@/types/diff'
 
 describe('TextDiffPanel', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    setActivePinia(createPinia())
+  })
+
   it('renders line numbers and diff text', () => {
     const lines: DiffLine[] = [
       {
@@ -435,5 +441,25 @@ describe('TextDiffPanel', () => {
 
     expect(wrapper.find('.diff-row-unimportant').exists()).toBe(true)
     expect(wrapper.find('[data-testid="text-diff-unimportant-row"]').exists()).toBe(true)
+  })
+
+  it('starts with wrap enabled when wrap-text default is on', () => {
+    localStorage.setItem('open-diff-wrap-text-default', '1')
+    setActivePinia(createPinia())
+
+    const lines: DiffLine[] = [
+      {
+        leftNumber: 1,
+        rightNumber: 1,
+        leftText: 'hello world',
+        rightText: 'hello world',
+        kind: 'equal',
+        inlineSegments: { left: [], right: [] },
+      },
+    ]
+
+    const wrapper = mount(TextDiffPanel, { props: { lines } })
+
+    expect(wrapper.find('.diff-panel-word-wrap').exists()).toBe(true)
   })
 })

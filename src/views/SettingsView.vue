@@ -19,7 +19,7 @@ import {
 } from '@/api/integration'
 import { usePolicyStore } from '@/stores/policy'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
-import { useSettingsStore } from '@/stores/settings'
+import { type DiffHighlightColors, useSettingsStore } from '@/stores/settings'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { useI18n } from '@/i18n'
@@ -40,15 +40,32 @@ const integrationStatus = ref('')
 const integrationError = ref('')
 const integrationWriting = ref(false)
 const shortcutSearch = ref('')
-const optionsSection = ref<'appearance' | 'formats' | 'shortcuts' | 'integration' | 'sessions'>(
-  'appearance',
-)
+const optionsSection = ref<
+  'appearance' | 'colors' | 'tweaks' | 'formats' | 'shortcuts' | 'integration' | 'sessions'
+>('appearance')
 const optionsSections = [
   { id: 'appearance' as const, labelKey: 'ui.appearance' },
+  { id: 'colors' as const, labelKey: 'ui.colors' },
+  { id: 'tweaks' as const, labelKey: 'ui.tweaks' },
   { id: 'formats' as const, labelKey: 'ui.fileFormats' },
   { id: 'shortcuts' as const, labelKey: 'ui.shortcuts' },
   { id: 'integration' as const, labelKey: 'ui.integration' },
   { id: 'sessions' as const, labelKey: 'ui.sessions' },
+]
+const fontFamilySelectOptions: SelectOption[] = [
+  { label: 'System UI', value: 'system' },
+  { label: 'Segoe UI', value: 'segoe' },
+  { label: 'Inter', value: 'inter' },
+  { label: 'Noto Sans', value: 'noto' },
+  { label: 'Monospace', value: 'mono' },
+]
+const diffColorFields: { key: keyof DiffHighlightColors; labelKey: string }[] = [
+  { key: 'addedBg', labelKey: 'ui.addedBackground' },
+  { key: 'addedFg', labelKey: 'ui.addedForeground' },
+  { key: 'deletedBg', labelKey: 'ui.deletedBackground' },
+  { key: 'deletedFg', labelKey: 'ui.deletedForeground' },
+  { key: 'modifiedBg', labelKey: 'ui.modifiedBackground' },
+  { key: 'modifiedFg', labelKey: 'ui.modifiedForeground' },
 ]
 const shortcutDrafts = ref<Record<string, string>>(
   Object.fromEntries(
@@ -149,6 +166,64 @@ function loadSharedSessionJson(): void {
 
 function updateLocale(value: string): void {
   settings.setLocale(value)
+}
+
+function updateFontFamily(value: string): void {
+  settings.setFontFamily(value)
+}
+
+function onFontSizeInput(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setFontSize(Number(target.value))
+}
+
+function onDiffColorInput(key: keyof DiffHighlightColors, event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setDiffColor(key, target.value)
+}
+
+function colorInputValue(value: string): string {
+  if (/^#[0-9a-fA-F]{6}$/.test(value)) {
+    return value
+  }
+
+  if (/^#[0-9a-fA-F]{3}$/.test(value)) {
+    const [, a, b, c] = value
+
+    return `#${a}${a}${b}${b}${c}${c}`
+  }
+
+  return '#000000'
+}
+
+function onConfirmBeforeDeleteChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setConfirmBeforeDelete(target.checked)
+}
+
+function onWrapTextDefaultChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setWrapTextDefault(target.checked)
 }
 
 async function registerShellExtension(): Promise<void> {
@@ -324,6 +399,99 @@ function parseShortcutText(value: string): string[] {
             :value="settings.autoSaveLimit"
             @input="onAutoSaveLimitInput"
           />
+        </label>
+        <NSpace align="center">
+          <span>{{ $t('ui.fontFamily') }}</span>
+          <NSelect
+            :value="settings.fontFamily"
+            class="font-family-select"
+            data-testid="font-family-select"
+            :options="fontFamilySelectOptions"
+            @update:value="updateFontFamily"
+          />
+        </NSpace>
+        <label class="font-size-row">
+          <span>{{ $t('ui.fontSize') }}</span>
+          <input
+            class="font-size-input"
+            data-testid="font-size-input"
+            type="number"
+            min="12"
+            max="24"
+            :value="settings.fontSize"
+            @input="onFontSizeInput"
+          />
+        </label>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'colors'"
+        :title="$t('ui.diffHighlightColors')"
+        size="small"
+        data-testid="options-colors-card"
+      >
+        <div class="diff-color-grid">
+          <label
+            v-for="field in diffColorFields"
+            :key="field.key"
+            class="diff-color-row"
+          >
+            <span>{{ $t(field.labelKey) }}</span>
+            <input
+              class="diff-color-picker"
+              type="color"
+              :data-testid="`diff-color-${field.key}`"
+              :value="colorInputValue(settings.diffColors[field.key])"
+              @input="onDiffColorInput(field.key, $event)"
+            />
+            <input
+              class="diff-color-text"
+              type="text"
+              :data-testid="`diff-color-text-${field.key}`"
+              :value="settings.diffColors[field.key]"
+              @change="onDiffColorInput(field.key, $event)"
+            />
+          </label>
+        </div>
+        <div
+          class="diff-color-preview"
+          data-testid="diff-color-preview"
+        >
+          <span class="preview-swatch added">{{ $t('ui.added') }}</span>
+          <span class="preview-swatch deleted">{{ $t('ui.removed') }}</span>
+          <span class="preview-swatch modified">{{ $t('ui.modified') }}</span>
+        </div>
+        <NButton
+          size="small"
+          data-testid="reset-diff-colors"
+          @click="settings.resetDiffColors()"
+          >{{ $t('ui.resetColors') }}</NButton
+        >
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'tweaks'"
+        :title="$t('ui.tweaks')"
+        size="small"
+        data-testid="options-tweaks-card"
+      >
+        <label class="tweak-row">
+          <input
+            data-testid="confirm-before-delete"
+            type="checkbox"
+            :checked="settings.confirmBeforeDelete"
+            @change="onConfirmBeforeDeleteChange"
+          />
+          <span>{{ $t('ui.confirmBeforeDelete') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="wrap-text-default"
+            type="checkbox"
+            :checked="settings.wrapTextDefault"
+            @change="onWrapTextDefaultChange"
+          />
+          <span>{{ $t('ui.wrapTextDefault') }}</span>
         </label>
       </NCard>
 
@@ -629,6 +797,14 @@ function parseShortcutText(value: string): string[] {
               <dd>{{ settings.locale }}</dd>
             </div>
             <div>
+              <dt>{{ $t('ui.fontFamily') }}</dt>
+              <dd>{{ settings.fontFamily }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.fontSize') }}</dt>
+              <dd>{{ settings.fontSize }}</dd>
+            </div>
+            <div>
               <dt>{{ $t('ui.searchCommands') }}</dt>
               <dd>{{ filteredShortcutCommands.length }}</dd>
             </div>
@@ -674,8 +850,88 @@ function parseShortcutText(value: string): string[] {
   background: rgb(37 99 235 / 0.12);
 }
 
-.auto-save-limit-input {
+.auto-save-limit-input,
+.font-size-input {
   width: 120px;
+}
+
+.font-family-select {
+  width: 180px;
+}
+
+.auto-save-limit-row,
+.font-size-row,
+.tweak-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.diff-color-grid {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.diff-color-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) 44px minmax(120px, 0.8fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.diff-color-picker {
+  width: 44px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.diff-color-text {
+  min-width: 0;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.diff-color-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.preview-swatch {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.preview-swatch.added {
+  background: var(--diff-added-bg);
+  color: var(--diff-added-fg);
+}
+
+.preview-swatch.deleted {
+  background: var(--diff-deleted-bg);
+  color: var(--diff-deleted-fg);
+}
+
+.preview-swatch.modified {
+  background: var(--diff-modified-bg);
+  color: var(--diff-modified-fg);
 }
 
 h1 {

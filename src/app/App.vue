@@ -3,7 +3,7 @@ import { computed, onMounted } from 'vue'
 import { darkTheme, lightTheme, type GlobalThemeOverrides } from 'naive-ui'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { usePolicyStore } from '@/stores/policy'
-import { useSettingsStore } from '@/stores/settings'
+import { fontFamilyOptions, useSettingsStore } from '@/stores/settings'
 
 const settings = useSettingsStore()
 const policy = usePolicyStore()
@@ -14,15 +14,14 @@ onMounted(() => {
   void policy.load()
 })
 
-const themeOverrides: GlobalThemeOverrides = {
+const themeOverrides = computed<GlobalThemeOverrides>(() => ({
   common: {
     borderColor: '#c2c6d6',
     borderRadius: '4px',
     borderRadiusSmall: '4px',
-    fontFamily:
-      'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
+    fontFamily: fontFamilyOptions[settings.fontFamily],
     fontFamilyMono: '"JetBrains Mono", "Cascadia Mono", Consolas, monospace',
-    fontSize: '13px',
+    fontSize: `${String(Math.max(12, Math.min(16, settings.fontSize - 5)))}px`,
     primaryColor: '#0058be',
     primaryColorHover: '#2170e4',
     primaryColorPressed: '#004395',
@@ -39,7 +38,7 @@ const themeOverrides: GlobalThemeOverrides = {
     borderRadius: '4px',
     heightSmall: '28px',
   },
-}
+}))
 </script>
 
 <template>

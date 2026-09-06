@@ -44,6 +44,7 @@ import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import { useI18n } from '@/i18n'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
+import { useSettingsStore } from '@/stores/settings'
 import { useTabsStore } from '@/stores/tabs'
 import type { FolderSyncOverrideAction } from '@/types/sync'
 
@@ -118,6 +119,7 @@ const folderCriteria = ref<FolderCompareCriteria>({
 const sessionLaunch = useSessionLaunchStore()
 const lastCompare = useLastCompareStore()
 const tabs = useTabsStore()
+const settings = useSettingsStore()
 const router = useRouter()
 const syncRunning = ref(false)
 const reportStatus = ref('')
@@ -933,6 +935,10 @@ function deleteSelectedFile(): void {
     operation: 'delete',
     paths: [path],
   })
+
+  if (!settings.confirmBeforeDelete) {
+    void confirmDangerousFileOperation()
+  }
 }
 
 async function confirmDangerousFileOperation(): Promise<void> {

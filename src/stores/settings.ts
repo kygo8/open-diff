@@ -10,11 +10,54 @@ import {
 import { fallbackLocale, isSupportedLocale, type SupportedLocale } from '@/i18n/core'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
+export type FontFamilyId = 'system' | 'segoe' | 'inter' | 'noto' | 'mono'
+
+export interface DiffHighlightColors {
+  addedBg: string
+  addedFg: string
+  deletedBg: string
+  deletedFg: string
+  modifiedBg: string
+  modifiedFg: string
+}
+
+export const fontFamilyOptions: Record<FontFamilyId, string> = {
+  system: 'ui-sans-serif, system-ui, sans-serif',
+  segoe: "'Segoe UI', 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif",
+  inter:
+    'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
+  noto: "'Noto Sans', 'Noto Sans SC', 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif",
+  mono: "var(--font-mono), 'JetBrains Mono', 'Cascadia Mono', Consolas, monospace",
+}
+
+export const defaultDiffHighlightColors: DiffHighlightColors = {
+  addedBg: '#f4fff4',
+  addedFg: '#005f18',
+  deletedBg: '#ffe3e3',
+  deletedFg: '#e00000',
+  modifiedBg: '#ffe3e3',
+  modifiedFg: '#e00000',
+}
+
+export const defaultDarkDiffHighlightColors: DiffHighlightColors = {
+  addedBg: '#1f3d2e',
+  addedFg: '#67d391',
+  deletedBg: '#3d2220',
+  deletedFg: '#ff8a80',
+  modifiedBg: '#3d3420',
+  modifiedFg: '#f5c56b',
+}
 
 const sharedSessionPathsStorageKey = 'open-diff-shared-session-paths'
 const localeStorageKey = 'open-diff-locale'
 const shortcutOverridesStorageKey = 'open-diff-shortcut-overrides'
 const autoSaveLimitStorageKey = 'open-diff-auto-save-limit'
+const fontFamilyStorageKey = 'open-diff-font-family'
+const fontSizeStorageKey = 'open-diff-font-size'
+const diffColorsStorageKey = 'open-diff-diff-colors'
+const confirmBeforeDeleteStorageKey = 'open-diff-confirm-before-delete'
+const wrapTextDefaultStorageKey = 'open-diff-wrap-text-default'
+const fontFamilyIds = new Set<FontFamilyId>(['system', 'segoe', 'inter', 'noto', 'mono'])
 const shortcutScopes = new Set<ShortcutScope>(['global', 'text-compare'])
 const commandIds = new Set<string>(commandRegistry.map((command) => command.id))
 
@@ -34,6 +77,11 @@ export const useSettingsStore = defineStore('settings', () => {
   const sharedSessionPaths = ref<string[]>(loadSharedSessionPaths())
   const shortcutOverrides = ref<ShortcutOverrides>(loadShortcutOverrides())
   const autoSaveLimit = ref(loadAutoSaveLimit())
+  const fontFamily = ref<FontFamilyId>(loadFontFamily())
+  const fontSize = ref(loadFontSize())
+  const diffColors = ref<DiffHighlightColors>(loadDiffColors())
+  const confirmBeforeDelete = ref(loadConfirmBeforeDelete())
+  const wrapTextDefault = ref(loadWrapTextDefault())
 
   bindSystemThemeListener((prefersDark) => {
     systemPrefersDark.value = prefersDark
@@ -77,6 +125,49 @@ export const useSettingsStore = defineStore('settings', () => {
     autoSaveLimit,
     (value) => {
       localStorage.setItem(autoSaveLimitStorageKey, String(value))
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    fontFamily,
+    (value) => {
+      localStorage.setItem(fontFamilyStorageKey, value)
+      document.documentElement.style.setProperty('--app-font-family', fontFamilyOptions[value])
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    fontSize,
+    (value) => {
+      localStorage.setItem(fontSizeStorageKey, String(value))
+      document.documentElement.style.setProperty('--app-font-size', `${String(value)}px`)
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    diffColors,
+    (value) => {
+      localStorage.setItem(diffColorsStorageKey, JSON.stringify(value))
+      applyDiffColors(value)
+    },
+    { deep: true, immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    confirmBeforeDelete,
+    (value) => {
+      localStorage.setItem(confirmBeforeDeleteStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    wrapTextDefault,
+    (value) => {
+      localStorage.setItem(wrapTextDefaultStorageKey, value ? '1' : '0')
     },
     { immediate: true, flush: 'sync' },
   )
@@ -166,6 +257,51 @@ export const useSettingsStore = defineStore('settings', () => {
     autoSaveLimit.value = Math.max(0, Math.min(50, Math.floor(value)))
   }
 
+  function setFontFamily(value: string): boolean {
+    if (!isFontFamilyId(value)) {
+      return false
+    }
+
+    fontFamily.value = value
+
+    return true
+  }
+
+  function setFontSize(value: number): void {
+    fontSize.value = Math.max(12, Math.min(24, Math.floor(value)))
+  }
+
+  function setDiffColor(key: keyof DiffHighlightColors, value: string): boolean {
+    const normalized = value.trim()
+
+    if (!isCssColor(normalized)) {
+      return false
+    }
+
+    diffColors.value = {
+      ...diffColors.value,
+      [key]: normalized,
+    }
+
+    return true
+  }
+
+  function resetDiffColors(): void {
+    diffColors.value = {
+      ...(resolvedTheme.value === 'dark'
+        ? defaultDarkDiffHighlightColors
+        : defaultDiffHighlightColors),
+    }
+  }
+
+  function setConfirmBeforeDelete(value: boolean): void {
+    confirmBeforeDelete.value = value
+  }
+
+  function setWrapTextDefault(value: boolean): void {
+    wrapTextDefault.value = value
+  }
+
   return {
     theme,
     resolvedTheme,
@@ -173,6 +309,11 @@ export const useSettingsStore = defineStore('settings', () => {
     sharedSessionPaths,
     shortcutOverrides,
     autoSaveLimit,
+    fontFamily,
+    fontSize,
+    diffColors,
+    confirmBeforeDelete,
+    wrapTextDefault,
     toggleTheme,
     setTheme,
     setLocale,
@@ -182,6 +323,12 @@ export const useSettingsStore = defineStore('settings', () => {
     resetShortcutOverride,
     getEffectiveShortcut,
     setAutoSaveLimit,
+    setFontFamily,
+    setFontSize,
+    setDiffColor,
+    resetDiffColors,
+    setConfirmBeforeDelete,
+    setWrapTextDefault,
   }
 })
 
@@ -278,6 +425,103 @@ function loadAutoSaveLimit(): number {
   }
 
   return Math.max(0, Math.min(50, Math.floor(stored)))
+}
+
+function loadFontFamily(): FontFamilyId {
+  const stored = localStorage.getItem(fontFamilyStorageKey)
+
+  if (stored && isFontFamilyId(stored)) {
+    return stored
+  }
+
+  return 'segoe'
+}
+
+function loadFontSize(): number {
+  const rawValue = localStorage.getItem(fontSizeStorageKey)
+
+  if (rawValue === null) {
+    return 18
+  }
+
+  const stored = Number(rawValue)
+
+  if (!Number.isFinite(stored)) {
+    return 18
+  }
+
+  return Math.max(12, Math.min(24, Math.floor(stored)))
+}
+
+function loadDiffColors(): DiffHighlightColors {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(diffColorsStorageKey) ?? 'null') as unknown
+
+    if (!isPlainRecord(parsed)) {
+      return { ...defaultDiffHighlightColors }
+    }
+
+    const next: DiffHighlightColors = { ...defaultDiffHighlightColors }
+
+    for (const key of Object.keys(defaultDiffHighlightColors) as (keyof DiffHighlightColors)[]) {
+      const value = parsed[key]
+
+      if (typeof value === 'string' && isCssColor(value)) {
+        next[key] = value.trim()
+      }
+    }
+
+    return next
+  } catch {
+    return { ...defaultDiffHighlightColors }
+  }
+}
+
+function loadConfirmBeforeDelete(): boolean {
+  const stored = localStorage.getItem(confirmBeforeDeleteStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored !== '0'
+}
+
+function loadWrapTextDefault(): boolean {
+  const stored = localStorage.getItem(wrapTextDefaultStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function applyDiffColors(colors: DiffHighlightColors): void {
+  const root = document.documentElement.style
+
+  root.setProperty('--diff-added-bg', colors.addedBg)
+  root.setProperty('--diff-added-fg', colors.addedFg)
+  root.setProperty('--diff-deleted-bg', colors.deletedBg)
+  root.setProperty('--diff-deleted-fg', colors.deletedFg)
+  root.setProperty('--diff-modified-bg', colors.modifiedBg)
+  root.setProperty('--diff-modified-fg', colors.modifiedFg)
+}
+
+function isFontFamilyId(value: string): value is FontFamilyId {
+  return fontFamilyIds.has(value as FontFamilyId)
+}
+
+function isCssColor(value: string): boolean {
+  if (value.length === 0 || value.length > 64) {
+    return false
+  }
+
+  return (
+    /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(value) ||
+    /^rgba?\(\s*\d{1,3}\s+\d{1,3}\s+\d{1,3}\s*(?:\/\s*[\d.]+%?\s*)?\)$/.test(value) ||
+    /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(?:,\s*[\d.]+\s*)?\)$/.test(value)
+  )
 }
 
 function isCommandId(value: string): value is CommandId {

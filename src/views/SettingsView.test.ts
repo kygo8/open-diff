@@ -191,6 +191,52 @@ describe('SettingsView', () => {
     expect(settings.shortcutOverrides['theme.toggle']).toBeUndefined()
     expect(wrapper.find('[data-testid="shortcut-current-theme.toggle"]').text()).toBe('Ctrl+Alt+L')
   })
+
+  it('updates font family and size from appearance options', async () => {
+    const wrapper = mountSettingsView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="font-family-select"]').setValue('mono')
+    await wrapper.find('[data-testid="font-size-input"]').setValue('16')
+
+    expect(settings.fontFamily).toBe('mono')
+    expect(settings.fontSize).toBe(16)
+    expect(document.documentElement.style.getPropertyValue('--app-font-size')).toBe('16px')
+  })
+
+  it('edits and resets persisted diff highlight colors', async () => {
+    const wrapper = mountSettingsView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-colors"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-colors-card"]').isVisible()).toBe(true)
+
+    await wrapper.find('[data-testid="diff-color-text-addedBg"]').setValue('#abcdef')
+    await wrapper.find('[data-testid="diff-color-text-addedBg"]').trigger('change')
+
+    expect(settings.diffColors.addedBg).toBe('#abcdef')
+    expect(document.documentElement.style.getPropertyValue('--diff-added-bg')).toBe('#abcdef')
+
+    await wrapper.find('[data-testid="reset-diff-colors"]').trigger('click')
+    expect(settings.diffColors.addedBg).toBe('#f4fff4')
+  })
+
+  it('persists tweaks for confirm-before-delete and wrap-text default', async () => {
+    const wrapper = mountSettingsView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-tweaks-card"]').isVisible()).toBe(true)
+
+    const confirm = wrapper.find('[data-testid="confirm-before-delete"]')
+    const wrap = wrapper.find('[data-testid="wrap-text-default"]')
+
+    await confirm.setValue(false)
+    await wrap.setValue(true)
+
+    expect(settings.confirmBeforeDelete).toBe(false)
+    expect(settings.wrapTextDefault).toBe(true)
+  })
 })
 
 function mountSettingsView(): VueWrapper {
@@ -217,7 +263,7 @@ function mountSettingsView(): VueWrapper {
           props: ['value', 'options'],
           emits: ['update:value'],
           template:
-            '<select :value="value" data-testid="locale-select" @change="$emit(\'update:value\', $event.target.value)"><option v-for="option in options" :key="option.value" :value="option.value">{{ option.label }}</option></select>',
+            '<select :value="value" @change="$emit(\'update:value\', $event.target.value)"><option v-for="option in options" :key="option.value" :value="option.value">{{ option.label }}</option></select>',
         },
         NSpace: {
           template: '<div><slot /></div>',

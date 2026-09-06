@@ -29,6 +29,9 @@
   --diff-conflict-fg: #8a158a;
   --diff-gutter-bg: #efefef;
   --font-mono: 'JetBrains Mono', 'Cascadia Mono', consolas, monospace;
+  --app-font-family:
+    'Segoe UI', 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif;
+  --app-font-size: 18px;
 }
 
 html[data-theme='dark'] {
@@ -79,9 +82,9 @@ body {
   overflow: hidden;
   background: var(--app-bg);
   color: var(--app-text);
-  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif;
-  font-size: 18px;
-  line-height: 22px;
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size);
+  line-height: 1.22;
 }
 
 button,

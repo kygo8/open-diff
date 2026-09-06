@@ -9,4 +9,4 @@ license.workspace = true
 flate2 = "1.1.2"
 serde.workspace = true
 tar = "0.4.44"
-zip = { version = "2.4.2", default-features = false, features = ["deflate"] }
+zip = { version = "8.6.0", default-features = false, features = ["deflate"] }

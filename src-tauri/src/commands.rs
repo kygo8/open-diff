@@ -908,11 +908,27 @@ pub fn copy_folder_compare_entry(
             source_path,
             target_path,
         ),
-        (_, crate::sources::CompareSource::Archive(_))
-        | (_, crate::sources::CompareSource::Snapshot(_)) => Err(AppErrorPayload::new(
+        (
+            crate::sources::CompareSource::Local(_) | crate::sources::CompareSource::Archive(_),
+            crate::sources::CompareSource::Archive(_),
+        ) => {
+            let archive_root = match direction {
+                folder_core::CopyDirection::ToLeft => left_root.as_str(),
+                folder_core::CopyDirection::ToRight => right_root.as_str(),
+            };
+            inject_entry_into_archive(
+                source,
+                archive_root,
+                &relative_path,
+                direction,
+                source_path,
+                target_path,
+            )
+        }
+        (_, crate::sources::CompareSource::Snapshot(_)) => Err(AppErrorPayload::new(
             AppErrorCode::Unknown,
             "error.app.unknown.title",
-            format!("cannot copy into archive or snapshot side: {target_path}"),
+            format!("cannot copy into snapshot side: {target_path}"),
         )
         .with_param("path", &target_path)),
         (crate::sources::CompareSource::Snapshot(_), _) => Err(AppErrorPayload::new(
@@ -982,6 +998,105 @@ fn extract_archive_entry_to_folder(
         .map(|value| value.to_string_lossy().into_owned())
         .unwrap_or_else(|| relative_path.to_owned());
     let extension = destination
+        .extension()
+        .map(|value| value.to_string_lossy().into_owned());
+
+    Ok(folder_core::CopySideResult {
+        direction,
+        source_path,
+        target_path,
+        target_metadata: vfs_core::VfsMetadata {
+            kind: vfs_core::VfsEntryKind::File,
+            name,
+            extension,
+            size: written.len() as u64,
+            readonly: false,
+            created_at_ms: None,
+            modified_at_ms: None,
+            accessed_at_ms: None,
+        },
+        refreshed_status,
+    })
+}
+
+fn inject_entry_into_archive(
+    source: &crate::sources::CompareSource,
+    archive_path: &str,
+    relative_path: &str,
+    direction: folder_core::CopyDirection,
+    source_path: String,
+    target_path: String,
+) -> Result<folder_core::CopySideResult, AppErrorPayload> {
+    let bytes = crate::sources::read_compare_file(source, relative_path).map_err(|error| {
+        AppErrorPayload::new(AppErrorCode::Unknown, "error.app.unknown.title", error)
+            .with_param("path", &source_path)
+    })?;
+
+    let document = archive_core::ArchiveReader::open_path(archive_path).map_err(|error| {
+        AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.app.unknown.title",
+            error.to_string(),
+        )
+        .with_param("path", archive_path)
+    })?;
+    let format = archive_core::ArchiveFormat::detect(&document.name).map_err(|error| {
+        AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.app.unknown.title",
+            error.to_string(),
+        )
+        .with_param("path", archive_path)
+    })?;
+    if !format.supports_write() {
+        return Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.app.unknown.title",
+            format!("cannot copy into {format:?} archive side: {archive_path}"),
+        )
+        .with_param("path", archive_path));
+    }
+
+    let mut editor = archive_core::ArchiveVfs::from_document(document).into_editor();
+    editor
+        .replace_file(relative_path, bytes.clone())
+        .map_err(|error| {
+            AppErrorPayload::new(
+                AppErrorCode::FileWriteFailed,
+                "error.app.unknown.title",
+                error.to_string(),
+            )
+            .with_param("path", &target_path)
+        })?;
+    editor.write_to_path(archive_path).map_err(|error| {
+        AppErrorPayload::new(
+            AppErrorCode::FileWriteFailed,
+            "error.app.unknown.title",
+            error.to_string(),
+        )
+        .with_param("path", archive_path)
+    })?;
+
+    let written = archive_core::ArchiveReader::open_path(archive_path)
+        .and_then(|document| archive_core::ArchiveVfs::from_document(document).read(relative_path))
+        .map_err(|error| {
+            AppErrorPayload::new(
+                AppErrorCode::Unknown,
+                "error.app.unknown.title",
+                error.to_string(),
+            )
+            .with_param("path", &target_path)
+        })?;
+    let refreshed_status = if written == bytes {
+        folder_core::FolderCompareStatus::Same
+    } else {
+        folder_core::FolderCompareStatus::Different
+    };
+    let name = Path::new(relative_path)
+        .file_name()
+        .map(|value| value.to_string_lossy().into_owned())
+        .unwrap_or_else(|| relative_path.to_owned());
+    let extension = Path::new(relative_path)
         .extension()
         .map(|value| value.to_string_lossy().into_owned());
 
@@ -1826,6 +1941,26 @@ pub fn delete_remote_profile(id: String) -> Result<Vec<RemoteProfileView>, AppEr
     list_remote_profiles()
 }
 
+fn remote_credential_for_profile(
+    store: &remote_core::RemoteProfileStore,
+    profile: &remote_core::RemoteProfile,
+) -> Result<remote_core::RemoteCredential, AppErrorPayload> {
+    if let Some(credential) = store
+        .load_secret(&profile.id)
+        .map_err(profile_store_error)?
+    {
+        return Ok(credential);
+    }
+    if profile.protocol == remote_core::RemoteProtocol::Subversion {
+        return Ok(remote_core::RemoteCredential::username_password("", ""));
+    }
+    Err(AppErrorPayload::new(
+        AppErrorCode::Unknown,
+        "error.app.unknown.title",
+        "no stored username/password for this profile".to_owned(),
+    ))
+}
+
 #[tauri::command]
 pub fn test_remote_profile(id: String) -> Result<String, AppErrorPayload> {
     let store = remote_core::RemoteProfileStore::new(crate::sources::default_config_dir());
@@ -1846,16 +1981,7 @@ pub fn test_remote_profile(id: String) -> Result<String, AppErrorPayload> {
             remote_core::unimplemented_protocol_message(profile.protocol),
         ));
     }
-    let credential = store
-        .load_secret(&profile.id)
-        .map_err(profile_store_error)?
-        .ok_or_else(|| {
-            AppErrorPayload::new(
-                AppErrorCode::Unknown,
-                "error.app.unknown.title",
-                "no stored username/password for this profile".to_owned(),
-            )
-        })?;
+    let credential = remote_credential_for_profile(&store, &profile)?;
     remote_core::test_network_connection(&profile, &credential).map_err(|error| {
         AppErrorPayload::new(
             AppErrorCode::Unknown,
@@ -1881,16 +2007,7 @@ pub fn list_remote_path(
                 format!("remote profile not found: {profile_id}"),
             )
         })?;
-    let credential = store
-        .load_secret(&profile.id)
-        .map_err(profile_store_error)?
-        .ok_or_else(|| {
-            AppErrorPayload::new(
-                AppErrorCode::Unknown,
-                "error.app.unknown.title",
-                "no stored username/password for this profile".to_owned(),
-            )
-        })?;
+    let credential = remote_credential_for_profile(&store, &profile)?;
     let provider = remote_core::open_network_provider(&profile, &credential).map_err(|error| {
         AppErrorPayload::new(
             AppErrorCode::Unknown,
@@ -5871,14 +5988,63 @@ mod tests {
             "from-archive"
         );
 
-        let rejected = copy_folder_compare_entry(
+        fs::write(folder.join("solo.txt"), b"from-folder").unwrap();
+        let injected = copy_folder_compare_entry(
             folder.display().to_string(),
             archive.display().to_string(),
             "solo.txt".to_owned(),
             folder_core::CopyDirection::ToRight,
         )
-        .expect_err("copy into an archive side should stay rejected");
-        assert!(rejected.debug_message.contains("cannot copy into archive"));
+        .expect("copy into a zip archive should rewrite the archive");
+        assert_eq!(
+            injected.refreshed_status,
+            folder_core::FolderCompareStatus::Same
+        );
+        let updated = archive_core::ArchiveReader::open_path(&archive).unwrap();
+        assert_eq!(
+            archive_core::ArchiveVfs::from_document(updated)
+                .read("solo.txt")
+                .unwrap(),
+            b"from-folder"
+        );
+    }
+
+    #[test]
+    fn copy_folder_compare_entry_writes_into_seven_zip_archive() {
+        let root = unique_temp_dir("seven-zip-inject-copy-command");
+        fs::create_dir_all(&root).expect("fixture directory should be created");
+        let archive_doc = archive_core::ArchiveDocument::new("bundle.7z")
+            .with_file("/nested/readme.txt", b"old".to_vec());
+        let archive = root.join("bundle.7z");
+        let folder = root.join("out");
+        fs::create_dir_all(&folder).expect("output folder should be created");
+        fs::write(
+            &archive,
+            archive_core::write_seven_zip_bytes(&archive_doc).unwrap(),
+        )
+        .unwrap();
+        fs::create_dir_all(folder.join("nested")).unwrap();
+        fs::write(folder.join("nested").join("readme.txt"), b"fresh-7z").unwrap();
+
+        let copy = copy_folder_compare_entry(
+            folder.display().to_string(),
+            archive.display().to_string(),
+            "nested/readme.txt".to_owned(),
+            folder_core::CopyDirection::ToRight,
+        )
+        .expect("copy into a 7z archive should rewrite the archive");
+
+        assert_eq!(
+            copy.refreshed_status,
+            folder_core::FolderCompareStatus::Same
+        );
+        let updated = archive_core::ArchiveReader::open_path(&archive).unwrap();
+        assert_eq!(
+            archive_core::ArchiveVfs::from_document(updated)
+                .read("nested/readme.txt")
+                .unwrap(),
+            b"fresh-7z"
+        );
     }
 
     #[test]

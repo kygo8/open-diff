@@ -29,6 +29,7 @@ describe('remote api', () => {
     expect(isImplementedRemoteProtocol('ftps')).toBe(true)
     expect(isImplementedRemoteProtocol('web-dav')).toBe(true)
     expect(isImplementedRemoteProtocol('s3')).toBe(true)
+    expect(isImplementedRemoteProtocol('subversion')).toBe(true)
     expect(isImplementedRemoteProtocol('dropbox')).toBe(false)
     expect(formatRemoteUri('sftp', 'prod-sftp', '/var/app')).toBe(
       'sftp://profile/prod-sftp/var/app',

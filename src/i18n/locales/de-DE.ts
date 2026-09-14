@@ -714,7 +714,7 @@ export const deDE: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'Archivvergleich',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path and webdav://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': 'Auf Datei anwenden',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -732,9 +732,9 @@ export const deDE: LanguagePack = {
     'ui.openInTextCompare': 'In Textvergleich öffnen',
     'ui.password': 'Passwort',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV und S3 können verbinden, listen und übertragen. Dropbox, OneDrive und SVN bleiben unimplementiert (OAuth-Cloud-Laufwerke bleiben geplant).',
+      'SFTP, FTP, FTPS, WebDAV, S3 und SVN können verbinden, listen und übertragen. Dropbox und OneDrive bleiben unimplementiert (OAuth-Cloud-Laufwerke bleiben geplant).',
     'ui.remoteUriHint':
-      'Lokaler Pfad oder sftp://profile/id/path bzw. webdav://profile/id/path nach dem Speichern eines Profils',
+      'Lokaler Pfad oder sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path bzw. svn://profile/id/path nach dem Speichern eines Profils',
     'ui.reportKind': 'Report kind',
     'ui.rightSheet': 'Right sheet',
     'ui.runScript': 'Skript ausführen',
@@ -822,7 +822,7 @@ export const deDE: LanguagePack = {
     'status.remoteConnected': 'Verbunden: {detail}',
     'status.remoteFailed': 'Verbindung fehlgeschlagen: {detail}',
     'status.remoteUnavailable':
-      'Dieses Protokoll ist nicht implementiert; nur SFTP, FTP, FTPS, WebDAV und S3 sind aktiv',
+      'Dieses Protokoll ist nicht implementiert; nur SFTP, FTP, FTPS, WebDAV, S3 und SVN sind aktiv',
     'status.svnConfigWritten': 'SVN-Wrapper und Snippet geschrieben',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

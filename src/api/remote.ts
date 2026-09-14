@@ -40,7 +40,8 @@ export function isImplementedRemoteProtocol(protocol: RemoteProtocol): boolean {
     protocol === 'ftp' ||
     protocol === 'ftps' ||
     protocol === 'web-dav' ||
-    protocol === 's3'
+    protocol === 's3' ||
+    protocol === 'subversion'
   )
 }
 

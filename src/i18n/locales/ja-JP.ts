@@ -696,7 +696,7 @@ export const jaJP: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'アーカイブ比較',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path and webdav://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': 'ファイルに適用',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -713,9 +713,9 @@ export const jaJP: LanguagePack = {
     'ui.openInTextCompare': 'テキスト比較で開く',
     'ui.password': 'パスワード',
     'ui.remoteNotImplemented':
-      'SFTP、FTP、FTPS、WebDAV、S3 は接続・一覧・転送できます。Dropbox、OneDrive、SVN は未実装のままです（OAuth クラウドドライブは Planned）。',
+      'SFTP、FTP、FTPS、WebDAV、S3、SVN は接続・一覧・転送できます。Dropbox と OneDrive は未実装のままです（OAuth クラウドドライブは Planned）。',
     'ui.remoteUriHint':
-      'ローカルパス、またはプロファイル保存後の sftp://profile/id/path や webdav://profile/id/path を使います',
+      'ローカルパス、またはプロファイル保存後の sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path、svn://profile/id/path を使います',
     'ui.reportKind': 'Report kind',
     'ui.rightSheet': 'Right sheet',
     'ui.runScript': 'スクリプトを実行',
@@ -802,7 +802,7 @@ export const jaJP: LanguagePack = {
     'status.remoteConnected': '接続済み: {detail}',
     'status.remoteFailed': '接続に失敗しました: {detail}',
     'status.remoteUnavailable':
-      'このプロトコルは未実装です。現在は SFTP、FTP、FTPS、WebDAV、S3 のみ有効です',
+      'このプロトコルは未実装です。現在は SFTP、FTP、FTPS、WebDAV、S3、SVN のみ有効です',
     'status.svnConfigWritten': 'SVN ラッパーとスニペットを書き込みました',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

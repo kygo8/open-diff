@@ -1,6 +1,7 @@
 mod network;
 mod persist;
 mod s3;
+mod svn;
 mod uri;
 mod webdav;
 
@@ -10,6 +11,7 @@ pub use network::{
 };
 pub use persist::{default_profile, ProfileStoreError, RemoteProfileStore};
 pub use s3::S3NetworkProvider;
+pub use svn::SvnNetworkProvider;
 pub use uri::{format_remote_uri, is_remote_uri, parse_remote_uri, RemoteUri};
 pub use webdav::WebDavNetworkProvider;
 

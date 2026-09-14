@@ -266,6 +266,36 @@ function onWrapTextDefaultChange(event: Event): void {
   settings.setWrapTextDefault(target.checked)
 }
 
+function onConfirmBeforeSyncOverwriteChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setConfirmBeforeSyncOverwrite(target.checked)
+}
+
+function onAutoScrollToFirstDifferenceChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setAutoScrollToFirstDifference(target.checked)
+}
+
+function onCollapseIdenticalFoldersDefaultChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setCollapseIdenticalFoldersDefault(target.checked)
+}
+
 function onShowSessionToolbarsChange(event: Event): void {
   const target = event.target
 
@@ -895,6 +925,33 @@ function parseShortcutText(value: string): string[] {
             @change="onWrapTextDefaultChange"
           />
           <span>{{ $t('ui.wrapTextDefault') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="confirm-before-sync-overwrite"
+            type="checkbox"
+            :checked="settings.confirmBeforeSyncOverwrite"
+            @change="onConfirmBeforeSyncOverwriteChange"
+          />
+          <span>{{ $t('ui.confirmBeforeSyncOverwrite') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="auto-scroll-first-difference"
+            type="checkbox"
+            :checked="settings.autoScrollToFirstDifference"
+            @change="onAutoScrollToFirstDifferenceChange"
+          />
+          <span>{{ $t('ui.autoScrollToFirstDifference') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="collapse-identical-folders-default"
+            type="checkbox"
+            :checked="settings.collapseIdenticalFoldersDefault"
+            @change="onCollapseIdenticalFoldersDefaultChange"
+          />
+          <span>{{ $t('ui.collapseIdenticalFoldersDefault') }}</span>
         </label>
         <NButton
           size="small"

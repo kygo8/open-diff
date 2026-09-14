@@ -932,9 +932,9 @@ function applyFolderCompareResponse(response: FolderCompareResponse): void {
   rows.value = applyManualAlignments(normalized, manualAlignments.value)
   leftRoot.value = response.leftRoot
   rightRoot.value = response.rightRoot
-  expandedDirectoryIds.value = new Set(
-    rows.value.filter((row) => row.kind === 'directory').map((row) => row.id),
-  )
+  expandedDirectoryIds.value = settings.collapseIdenticalFoldersDefault
+    ? directoryIdsWithDifferences(rows.value)
+    : new Set(rows.value.filter((row) => row.kind === 'directory').map((row) => row.id))
   selectedRowId.value = undefined
   excludedRowIds.value = new Set()
   alignWithTargetId.value = ''
@@ -943,6 +943,42 @@ function applyFolderCompareResponse(response: FolderCompareResponse): void {
   lastDifferenceNavigation.value = undefined
   minorOnly.value = false
   scrollTop.value = 0
+
+  if (settings.autoScrollToFirstDifference && differenceRows.value.length > 0) {
+    const firstDifference = differenceRows.value[0]
+
+    currentDifferenceIndex.value = 0
+    selectedRowId.value = firstDifference.id
+    lastDifferenceNavigation.value = t('status.folderDifferencePosition', {
+      index: 1,
+      total: differenceRows.value.length,
+      name: displayName(firstDifference),
+    })
+  }
+}
+
+function directoryIdsWithDifferences(treeRows: FolderTreeRow[]): Set<string> {
+  const expandIds = new Set<string>()
+  const byId = new Map(treeRows.map((row) => [row.id, row]))
+
+  for (const row of treeRows) {
+    if (row.status === 'Same') {
+      continue
+    }
+
+    let parentId = row.parentId
+
+    while (parentId) {
+      expandIds.add(parentId)
+      parentId = byId.get(parentId)?.parentId
+    }
+
+    if (row.kind === 'directory') {
+      expandIds.add(row.id)
+    }
+  }
+
+  return expandIds
 }
 
 function folderCompareResponseRowToTreeRow(row: FolderCompareResponseRow): FolderTreeRow {
@@ -1578,7 +1614,7 @@ function runSyncPreview(): void {
     ['Delete', 'Overwrite'].includes(item.action),
   )
 
-  if (riskyItems.length > 0) {
+  if (riskyItems.length > 0 && settings.confirmBeforeSyncOverwrite) {
     pendingSyncSafetyItems.value = riskyItems
 
     return
@@ -2065,6 +2101,14 @@ onUnmounted(() => {
               type="checkbox"
             />
             <span>{{ $t('ui.compareAttributes') }}</span>
+          </label>
+          <label>
+            <input
+              v-model="folderCriteria.sizeOnlyUnimportant"
+              data-testid="folder-criteria-size-only"
+              type="checkbox"
+            />
+            <span>{{ $t('ui.sizeOnlyUnimportant') }}</span>
           </label>
           <label>
             <input

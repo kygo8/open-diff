@@ -64,6 +64,9 @@ const fontSizeStorageKey = 'open-diff-font-size'
 const diffColorsStorageKey = 'open-diff-diff-colors'
 const confirmBeforeDeleteStorageKey = 'open-diff-confirm-before-delete'
 const wrapTextDefaultStorageKey = 'open-diff-wrap-text-default'
+const confirmBeforeSyncOverwriteStorageKey = 'open-diff-confirm-before-sync-overwrite'
+const autoScrollToFirstDifferenceStorageKey = 'open-diff-auto-scroll-first-difference'
+const collapseIdenticalFoldersDefaultStorageKey = 'open-diff-collapse-identical-folders-default'
 const showSessionToolbarsStorageKey = 'open-diff-show-session-toolbars'
 const showToolbarLabelsStorageKey = 'open-diff-show-toolbar-labels'
 const largeToolbarButtonsStorageKey = 'open-diff-large-toolbar-buttons'
@@ -96,6 +99,9 @@ export const useSettingsStore = defineStore('settings', () => {
   const diffColors = ref<DiffHighlightColors>(loadDiffColors())
   const confirmBeforeDelete = ref(loadConfirmBeforeDelete())
   const wrapTextDefault = ref(loadWrapTextDefault())
+  const confirmBeforeSyncOverwrite = ref(loadConfirmBeforeSyncOverwrite())
+  const autoScrollToFirstDifference = ref(loadAutoScrollToFirstDifference())
+  const collapseIdenticalFoldersDefault = ref(loadCollapseIdenticalFoldersDefault())
   const showSessionToolbars = ref(loadShowSessionToolbars())
   const showToolbarLabels = ref(loadShowToolbarLabels())
   const largeToolbarButtons = ref(loadLargeToolbarButtons())
@@ -189,6 +195,30 @@ export const useSettingsStore = defineStore('settings', () => {
     wrapTextDefault,
     (value) => {
       localStorage.setItem(wrapTextDefaultStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    confirmBeforeSyncOverwrite,
+    (value) => {
+      localStorage.setItem(confirmBeforeSyncOverwriteStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    autoScrollToFirstDifference,
+    (value) => {
+      localStorage.setItem(autoScrollToFirstDifferenceStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    collapseIdenticalFoldersDefault,
+    (value) => {
+      localStorage.setItem(collapseIdenticalFoldersDefaultStorageKey, value ? '1' : '0')
     },
     { immediate: true, flush: 'sync' },
   )
@@ -380,6 +410,18 @@ export const useSettingsStore = defineStore('settings', () => {
     wrapTextDefault.value = value
   }
 
+  function setConfirmBeforeSyncOverwrite(value: boolean): void {
+    confirmBeforeSyncOverwrite.value = value
+  }
+
+  function setAutoScrollToFirstDifference(value: boolean): void {
+    autoScrollToFirstDifference.value = value
+  }
+
+  function setCollapseIdenticalFoldersDefault(value: boolean): void {
+    collapseIdenticalFoldersDefault.value = value
+  }
+
   function setShowSessionToolbars(value: boolean): void {
     showSessionToolbars.value = value
   }
@@ -422,6 +464,9 @@ export const useSettingsStore = defineStore('settings', () => {
       diffColors: { ...diffColors.value },
       confirmBeforeDelete: confirmBeforeDelete.value,
       wrapTextDefault: wrapTextDefault.value,
+      confirmBeforeSyncOverwrite: confirmBeforeSyncOverwrite.value,
+      autoScrollToFirstDifference: autoScrollToFirstDifference.value,
+      collapseIdenticalFoldersDefault: collapseIdenticalFoldersDefault.value,
       showSessionToolbars: showSessionToolbars.value,
       showToolbarLabels: showToolbarLabels.value,
       largeToolbarButtons: largeToolbarButtons.value,
@@ -457,6 +502,21 @@ export const useSettingsStore = defineStore('settings', () => {
     diffColors.value = { ...packageValue.diffColors }
     setConfirmBeforeDelete(packageValue.confirmBeforeDelete)
     setWrapTextDefault(packageValue.wrapTextDefault)
+    setConfirmBeforeSyncOverwrite(
+      typeof packageValue.confirmBeforeSyncOverwrite === 'boolean'
+        ? packageValue.confirmBeforeSyncOverwrite
+        : true,
+    )
+    setAutoScrollToFirstDifference(
+      typeof packageValue.autoScrollToFirstDifference === 'boolean'
+        ? packageValue.autoScrollToFirstDifference
+        : false,
+    )
+    setCollapseIdenticalFoldersDefault(
+      typeof packageValue.collapseIdenticalFoldersDefault === 'boolean'
+        ? packageValue.collapseIdenticalFoldersDefault
+        : false,
+    )
     setShowSessionToolbars(packageValue.showSessionToolbars)
     setShowToolbarLabels(packageValue.showToolbarLabels)
     setLargeToolbarButtons(packageValue.largeToolbarButtons)
@@ -487,6 +547,9 @@ export const useSettingsStore = defineStore('settings', () => {
     resetDiffColors()
     setConfirmBeforeDelete(true)
     setWrapTextDefault(false)
+    setConfirmBeforeSyncOverwrite(true)
+    setAutoScrollToFirstDifference(false)
+    setCollapseIdenticalFoldersDefault(false)
     setShowSessionToolbars(true)
     setShowToolbarLabels(true)
     setLargeToolbarButtons(true)
@@ -508,6 +571,9 @@ export const useSettingsStore = defineStore('settings', () => {
     diffColors,
     confirmBeforeDelete,
     wrapTextDefault,
+    confirmBeforeSyncOverwrite,
+    autoScrollToFirstDifference,
+    collapseIdenticalFoldersDefault,
     showSessionToolbars,
     showToolbarLabels,
     largeToolbarButtons,
@@ -530,6 +596,9 @@ export const useSettingsStore = defineStore('settings', () => {
     resetDiffColors,
     setConfirmBeforeDelete,
     setWrapTextDefault,
+    setConfirmBeforeSyncOverwrite,
+    setAutoScrollToFirstDifference,
+    setCollapseIdenticalFoldersDefault,
     setShowSessionToolbars,
     setShowToolbarLabels,
     setLargeToolbarButtons,
@@ -700,6 +769,36 @@ function loadConfirmBeforeDelete(): boolean {
 
 function loadWrapTextDefault(): boolean {
   const stored = localStorage.getItem(wrapTextDefaultStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadConfirmBeforeSyncOverwrite(): boolean {
+  const stored = localStorage.getItem(confirmBeforeSyncOverwriteStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadAutoScrollToFirstDifference(): boolean {
+  const stored = localStorage.getItem(autoScrollToFirstDifferenceStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadCollapseIdenticalFoldersDefault(): boolean {
+  const stored = localStorage.getItem(collapseIdenticalFoldersDefaultStorageKey)
 
   if (stored === null) {
     return false

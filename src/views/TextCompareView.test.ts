@@ -324,6 +324,7 @@ describe('TextCompareView', () => {
   it('exports the current text compare as a CSV report', async () => {
     const wrapper = mountTextCompareView()
 
+    expect(wrapper.find('[data-testid="export-text-markdown-report"]').exists()).toBe(true)
     await wrapper.find('[data-testid="export-text-csv-report"]').trigger('click')
     await flushPromises()
 

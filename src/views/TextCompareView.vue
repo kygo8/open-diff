@@ -583,7 +583,7 @@ function swapPaths(): void {
 }
 
 async function exportCurrentReport(
-  format: 'html' | 'text' | 'json' | 'xml' | 'csv',
+  format: 'html' | 'text' | 'json' | 'xml' | 'csv' | 'markdown',
 ): Promise<void> {
   const extension = reportFileExtension(format)
   const outputPath = `${leftPathLabel.value || 'text-compare'}.${extension}`
@@ -1292,6 +1292,13 @@ function toggleSourceEditors(): void {
           @click="exportCurrentReport('csv')"
         >
           {{ $t('ui.export') }} {{ $t('ui.csv') }}
+        </button>
+        <button
+          type="button"
+          data-testid="export-text-markdown-report"
+          @click="exportCurrentReport('markdown')"
+        >
+          {{ $t('ui.export') }} {{ $t('ui.markdown') }}
         </button>
         <span
           v-if="reportStatus"

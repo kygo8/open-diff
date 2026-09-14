@@ -224,7 +224,7 @@ describe('RemoteProfileView', () => {
 
     await flushPromises()
     await wrapper.find('[data-testid="new-remote-profile"]').trigger('click')
-    await wrapper.find('[data-testid="remote-profile-protocol-select"]').setValue('s3')
+    await wrapper.find('[data-testid="remote-profile-protocol-select"]').setValue('dropbox')
 
     const save = wrapper.find('[data-testid="save-remote-profile"]')
 
@@ -233,9 +233,14 @@ describe('RemoteProfileView', () => {
     expect(save.text()).not.toContain('unimplemented')
     expect(
       wrapper
-        .find('[data-testid="remote-profile-protocol-select"] option[value="s3"]')
+        .find('[data-testid="remote-profile-protocol-select"] option[value="dropbox"]')
         .attributes('disabled'),
     ).toBeDefined()
+    expect(
+      wrapper
+        .find('[data-testid="remote-profile-protocol-select"] option[value="s3"]')
+        .attributes('disabled'),
+    ).toBeUndefined()
 
     await save.trigger('click')
     await flushPromises()

@@ -333,6 +333,11 @@ export const deDE: LanguagePack = {
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
     'ui.s3': 'S3',
+    'ui.s3Bucket': 'Bucket',
+    'ui.s3Region': 'Region',
+    'ui.s3PathStyle': 'Pfadstil-Endpunkt',
+    'ui.accessKeyId': 'Zugriffsschlüssel-ID',
+    'ui.secretAccessKey': 'Geheimer Zugriffsschlüssel',
     'ui.sampleRate': 'Abtastrate',
     'ui.save': 'Speichern',
     'ui.saveAs': 'Speichern unter',
@@ -690,6 +695,7 @@ export const deDE: LanguagePack = {
     'ui.unchanged': 'Unverändert',
     'ui.untitledFormat': 'Unbenanntes Format',
     'ui.csv': 'CSV',
+    'ui.markdown': 'Markdown',
     'ui.chunkLength': 'Chunk length',
     'ui.delimiter': 'Delimiter',
     'ui.html': 'HTML',
@@ -725,7 +731,7 @@ export const deDE: LanguagePack = {
     'ui.openInTextCompare': 'In Textvergleich öffnen',
     'ui.password': 'Passwort',
     'ui.remoteNotImplemented':
-      'SFTP, FTP und WebDAV können verbinden, listen und übertragen. S3, Dropbox, OneDrive und SVN bleiben unimplementiert.',
+      'SFTP, FTP, FTPS, WebDAV und S3 können verbinden, listen und übertragen. Dropbox, OneDrive und SVN bleiben unimplementiert (OAuth-Cloud-Laufwerke bleiben geplant).',
     'ui.remoteUriHint':
       'Lokaler Pfad oder sftp://profile/id/path bzw. webdav://profile/id/path nach dem Speichern eines Profils',
     'ui.reportKind': 'Report kind',
@@ -815,7 +821,7 @@ export const deDE: LanguagePack = {
     'status.remoteConnected': 'Verbunden: {detail}',
     'status.remoteFailed': 'Verbindung fehlgeschlagen: {detail}',
     'status.remoteUnavailable':
-      'Dieses Protokoll ist nicht implementiert; nur SFTP, FTP und WebDAV sind aktiv',
+      'Dieses Protokoll ist nicht implementiert; nur SFTP, FTP, FTPS, WebDAV und S3 sind aktiv',
     'status.svnConfigWritten': 'SVN-Wrapper und Snippet geschrieben',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

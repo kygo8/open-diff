@@ -165,5 +165,6 @@ describe('ReportsScriptView', () => {
       .map((option) => (option.element as HTMLOptionElement).value)
 
     expect(options).toContain('csv')
+    expect(options).toContain('markdown')
   })
 })

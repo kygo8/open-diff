@@ -329,6 +329,11 @@ export const esES: LanguagePack = {
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
     'ui.s3': 'S3',
+    'ui.s3Bucket': 'Bucket',
+    'ui.s3Region': 'Región',
+    'ui.s3PathStyle': 'Endpoint path-style',
+    'ui.accessKeyId': 'ID de clave de acceso',
+    'ui.secretAccessKey': 'Clave de acceso secreta',
     'ui.sampleRate': 'Frecuencia de muestreo',
     'ui.save': 'Guardar',
     'ui.saveAs': 'Guardar como',
@@ -684,6 +689,7 @@ export const esES: LanguagePack = {
     'ui.unchanged': 'Sin cambios',
     'ui.untitledFormat': 'Formato sin título',
     'ui.csv': 'CSV',
+    'ui.markdown': 'Markdown',
     'ui.chunkLength': 'Chunk length',
     'ui.delimiter': 'Delimiter',
     'ui.html': 'HTML',
@@ -720,7 +726,7 @@ export const esES: LanguagePack = {
     'ui.openInTextCompare': 'Abrir en comparación de texto',
     'ui.password': 'Contraseña',
     'ui.remoteNotImplemented':
-      'SFTP, FTP y WebDAV pueden conectar, listar y transferir. S3, Dropbox, OneDrive y SVN siguen sin implementarse.',
+      'SFTP, FTP, FTPS, WebDAV y S3 pueden conectar, listar y transferir. Dropbox, OneDrive y SVN siguen sin implementarse (unidades en la nube OAuth siguen planificadas).',
     'ui.remoteUriHint':
       'Use una ruta local, o sftp://profile/id/path o webdav://profile/id/path después de guardar un perfil',
     'ui.reportKind': 'Report kind',
@@ -810,7 +816,7 @@ export const esES: LanguagePack = {
     'status.remoteConnected': 'Conectado: {detail}',
     'status.remoteFailed': 'Error de conexión: {detail}',
     'status.remoteUnavailable':
-      'Este protocolo no está implementado; solo SFTP, FTP y WebDAV están activos',
+      'Este protocolo no está implementado; solo SFTP, FTP, FTPS, WebDAV y S3 están activos',
     'status.svnConfigWritten': 'Se escribieron el wrapper y el fragmento de SVN',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

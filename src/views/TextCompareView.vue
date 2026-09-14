@@ -185,6 +185,9 @@ watch(
       case 'copy-right':
         copyCurrentDiff('leftToRight')
         break
+      case 'toggle-minor':
+        toggleTextMinorRules()
+        break
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
@@ -203,6 +206,11 @@ watch(
       case 'save-as':
       case 'undo':
       case 'workspace-load':
+      case 'collapse-all':
+      case 'expand-all':
+      case 'next-conflict':
+      case 'previous-conflict':
+      case 'sync-now':
       case 'workspace-save':
         break
     }

@@ -15,6 +15,9 @@ export const deDE: LanguagePack = {
     'command.ready': 'Verfügbar',
     'command.searchPlaceholder': 'Suchbefehle',
     'command.toggleTheme': 'Thema umschalten',
+    'command.toggleMinor': 'Nebensächliche umschalten',
+    'command.expandAll': 'Alle erweitern',
+    'command.collapseAll': 'Alle einklappen',
     'error.app.unknown.title': 'Unerwarteter Fehler',
     'error.file.notFound.message': '{path} konnte nicht gefunden werden.',
     'error.file.notFound.suggestion':

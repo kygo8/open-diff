@@ -451,6 +451,12 @@ watch(
       case 'copy-right':
         favorSide('right')
         break
+      case 'previous-conflict':
+        goToConflict(-1)
+        break
+      case 'next-conflict':
+        goToConflict(1)
+        break
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
@@ -476,6 +482,10 @@ watch(
       case 'swap':
       case 'undo':
       case 'workspace-load':
+      case 'collapse-all':
+      case 'expand-all':
+      case 'sync-now':
+      case 'toggle-minor':
       case 'workspace-save':
         break
     }

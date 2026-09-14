@@ -43,6 +43,18 @@ export type CommandId =
   | 'help.about'
   | 'help.checkForUpdates'
   | 'help.support'
+  | 'open.folderSync'
+  | 'open.folderMerge'
+  | 'open.textMerge'
+  | 'open.registryCompare'
+  | 'open.hexCompare'
+  | 'open.tableCompare'
+  | 'merge.previousConflict'
+  | 'merge.nextConflict'
+  | 'view.toggleMinor'
+  | 'view.expandAll'
+  | 'view.collapseAll'
+  | 'sync.syncNow'
 
 export type CommandVisibility = 'global' | 'view' | 'hidden'
 export type ShortcutScope = 'global' | 'text-compare'
@@ -88,6 +100,12 @@ export type CommandAction =
         | 'import-settings'
         | 'restore-factory-defaults'
         | 'save-snapshot'
+        | 'previous-conflict'
+        | 'next-conflict'
+        | 'toggle-minor'
+        | 'expand-all'
+        | 'collapse-all'
+        | 'sync-now'
     }
 
 export interface CommandShortcut {
@@ -564,6 +582,126 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Shift', 'H'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'help-support' },
+  },
+  {
+    id: 'open.folderSync',
+    titleKey: 'ui.folderSync',
+    keywords: ['folder', 'sync', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'G'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/sync/folder', titleKey: 'ui.folderSync' },
+  },
+  {
+    id: 'open.folderMerge',
+    titleKey: 'ui.folderMerge',
+    keywords: ['folder', 'merge', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'B'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/merge/folder', titleKey: 'ui.folderMerge' },
+  },
+  {
+    id: 'open.textMerge',
+    titleKey: 'ui.textMerge',
+    keywords: ['text', 'merge', 'open', 'conflict'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'K'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/merge/text', titleKey: 'ui.textMerge' },
+  },
+  {
+    id: 'open.registryCompare',
+    titleKey: 'ui.registryCompare',
+    keywords: ['registry', 'compare', 'open', 'reg'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'N'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/compare/registry', titleKey: 'ui.registryCompare' },
+  },
+  {
+    id: 'open.hexCompare',
+    titleKey: 'ui.hexCompare',
+    keywords: ['hex', 'binary', 'compare', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'H'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/compare/hex', titleKey: 'ui.hexCompare' },
+  },
+  {
+    id: 'open.tableCompare',
+    titleKey: 'ui.tableCompare',
+    keywords: ['table', 'csv', 'compare', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'J'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/compare/table', titleKey: 'ui.tableCompare' },
+  },
+  {
+    id: 'merge.previousConflict',
+    titleKey: 'ui.previousConflict',
+    keywords: ['previous', 'conflict', 'merge', 'navigation'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Shift', 'F8'], scope: 'text-compare' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'previous-conflict' },
+  },
+  {
+    id: 'merge.nextConflict',
+    titleKey: 'ui.nextConflict',
+    keywords: ['next', 'conflict', 'merge', 'navigation'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['F8'], scope: 'text-compare' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'next-conflict' },
+  },
+  {
+    id: 'view.toggleMinor',
+    titleKey: 'command.toggleMinor',
+    keywords: ['toggle', 'minor', 'unimportant', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'M'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'toggle-minor' },
+  },
+  {
+    id: 'view.expandAll',
+    titleKey: 'command.expandAll',
+    keywords: ['expand', 'all', 'tree', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'E'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'expand-all' },
+  },
+  {
+    id: 'view.collapseAll',
+    titleKey: 'command.collapseAll',
+    keywords: ['collapse', 'all', 'tree', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'L'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'collapse-all' },
+  },
+  {
+    id: 'sync.syncNow',
+    titleKey: 'ui.syncNow',
+    keywords: ['sync', 'now', 'folder', 'execute'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'Enter'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'sync-now' },
   },
 ]
 

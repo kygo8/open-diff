@@ -262,7 +262,7 @@ These items stay unimplemented and are labeled as such in the UI:
 - Remaining archive write gaps beyond ZIP/7z/TAR/TAR.GZ/GZIP (those write/replace/delete and folder-compare copy-in paths are live).
 - Remaining automation script language coverage (full legacy dialects). Niche verbs such as VIEW, ALIGN, WAIT/SLEEP, EXPAND-ALL/COLLAPSE-ALL, MERGE, and COMPARE options are supported; unknown names return `unsupported`.
 - Live registry write/apply back to Windows hives (read-only live key compare and offline REGF hive-file compare ship today; `.reg` export compare remains).
-- Niche shortcut chords and remaining report formats beyond the shipped HTML/text/JSON/XML/CSV/Markdown exports.
+- Remaining niche shortcut chords beyond the shipped open/session/merge-conflict/minor/expand/collapse/sync defaults, and remaining report formats beyond the shipped HTML/text/JSON/XML/CSV/Markdown exports.
 
 ## Typical Use Cases
 

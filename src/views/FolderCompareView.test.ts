@@ -819,6 +819,7 @@ describe('FolderCompareView', () => {
     expect(wrapper.find('[data-testid="folder-left-archive-chip"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folder-right-archive-chip"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folder-browse-archive-left"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-archive-session-status"]').exists()).toBe(true)
   })
 
   it('disables copy into archive sides while leaving extract-to-folder enabled', async () => {

@@ -50,7 +50,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.folderSync',
     priority: 'P1',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/sync/folder',
   },
   {
@@ -61,7 +61,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.textMerge',
     priority: 'P1',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/merge/text',
   },
   {
@@ -72,7 +72,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.tableCompare',
     priority: 'P1',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/compare/table',
   },
   {
@@ -83,7 +83,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.hexCompare',
     priority: 'P1',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/compare/hex',
   },
   {
@@ -94,7 +94,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.pictureCompare',
     priority: 'P1',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/compare/picture',
   },
   {
@@ -105,7 +105,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.folderMerge',
     priority: 'P2',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/merge/folder',
   },
   {
@@ -127,7 +127,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.textPatch',
     priority: 'P2',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/patch/text',
   },
   {
@@ -138,7 +138,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.clipboardCompare',
     priority: 'P2',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/compare/clipboard',
   },
   {
@@ -160,7 +160,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.mediaCompare',
     priority: 'P3',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/compare/media',
   },
   {
@@ -171,7 +171,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.versionCompare',
     priority: 'P3',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/compare/version',
   },
   {
@@ -182,7 +182,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     summaryKey: 'session.summary.archiveCompare',
     priority: 'P2',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/compare/folder',
   },
   {

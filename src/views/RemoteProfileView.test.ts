@@ -11,6 +11,11 @@ import {
   testRemoteProfile,
 } from '@/api/remote'
 import { remoteProfilesStorageKey, saveLocalRemoteProfiles } from '@/app/remoteProfilesLocal'
+import { openPathExternal } from '@/api/integration'
+
+vi.mock('@/api/integration', () => ({
+  openPathExternal: vi.fn().mockResolvedValue({ path: 'https://example.com', launched: true }),
+}))
 
 vi.mock('@/api/remote', async (importOriginal) => {
   const actual = await importOriginal<typeof remoteApi>()
@@ -39,6 +44,7 @@ describe('RemoteProfileView', () => {
     vi.mocked(deleteRemoteProfile).mockClear()
     vi.mocked(testRemoteProfile).mockClear()
     vi.mocked(listRemotePath).mockClear()
+    vi.mocked(openPathExternal).mockClear()
     vi.mocked(listRemoteProfiles).mockRejectedValue(new Error('no backend'))
     vi.mocked(saveRemoteProfile).mockRejectedValue(new Error('no backend'))
     vi.mocked(deleteRemoteProfile).mockRejectedValue(new Error('no backend'))
@@ -252,5 +258,40 @@ describe('RemoteProfileView', () => {
         .attributes('disabled'),
     ).toBeUndefined()
     expect(wrapper.find('[data-testid="remote-oauth-token-hint"]').exists()).toBe(true)
+  })
+
+  it('shows Dropbox OAuth helper and applies a pasted redirect token', async () => {
+    const wrapper = mount(RemoteProfileView, {
+      global: { plugins: [createPinia()] },
+    })
+
+    await flushPromises()
+    await wrapper.find('[data-testid="new-remote-profile"]').trigger('click')
+    await wrapper.find('[data-testid="remote-profile-protocol-select"]').setValue('dropbox')
+    await wrapper.find('[data-testid="remote-oauth-client-id"]').setValue('dbx-client')
+
+    expect(wrapper.find('[data-testid="remote-oauth-helper"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="remote-oauth-open-browser"]').trigger('click')
+    await flushPromises()
+
+    expect(openPathExternal).toHaveBeenCalled()
+
+    const opened = vi.mocked(openPathExternal).mock.calls.at(-1)?.[0] ?? ''
+
+    expect(opened).toContain('https://www.dropbox.com/oauth2/authorize?')
+    expect(opened).toContain('client_id=dbx-client')
+
+    await wrapper
+      .find('[data-testid="remote-oauth-paste"]')
+      .setValue(
+        'https://www.dropbox.com/1/oauth2/redirect_receiver#access_token=dropbox-tok&token_type=bearer',
+      )
+    await wrapper.find('[data-testid="remote-oauth-apply-paste"]').trigger('click')
+
+    expect(
+      (wrapper.find('[data-testid="remote-profile-password-input"]').element as HTMLInputElement)
+        .value,
+    ).toBe('dropbox-tok')
   })
 })

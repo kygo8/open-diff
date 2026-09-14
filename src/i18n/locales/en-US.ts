@@ -716,12 +716,23 @@ export const enUS: LanguagePack = {
     'ui.loadFiles': 'Load Files',
     'ui.openInTextCompare': 'Open in Text Compare',
     'ui.password': 'Password',
+    'ui.oauthClientId': 'OAuth client id',
+    'ui.oauthClientIdHint':
+      'Use the client id from your own Dropbox or Microsoft app registration. Open Diff does not ship app secrets.',
+    'ui.oauthOpenBrowser': 'Open authorize URL',
+    'ui.oauthPasteRedirect': 'Paste redirect URL or token',
+    'ui.oauthApplyPaste': 'Apply pasted token',
+    'ui.oauthHelperHint':
+      'Opens the provider authorize page in your browser (token response, no client secret). After sign-in, paste the redirect URL (or the access token) below, then Save the profile.',
+    'ui.exportMergeReport': 'Export merge report',
+    'ui.archiveSessionStatus':
+      'Archive Compare session — ZIP/TAR/7z sides with extract-on-copy into folders',
     'ui.oauthAccessToken': 'Access token',
     'ui.oauthTokenHint':
-      'Paste a Dropbox API or Microsoft Graph access token. Host may be left as dropbox / onedrive. Full browser OAuth is not bundled; use a token from your app console or device-code flow.',
+      'Paste a Dropbox API or Microsoft Graph access token, or use Open authorize URL with your app client id and paste the redirect URL. Host may be left as dropbox / onedrive.',
     'ui.tokenAccountOptional': 'Account (optional)',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV, S3, Dropbox, OneDrive, and SVN can connect, list, and transfer. Paste a cloud access token into the token field (browser OAuth dance is not bundled).',
+      'SFTP, FTP, FTPS, WebDAV, S3, Dropbox, OneDrive, and SVN can connect, list, and transfer. Cloud profiles accept a pasted access token; Dropbox/OneDrive can also open a browser authorize URL from your client id.',
     'ui.remoteUriHint':
       'Use a local path, or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, or svn://profile/id/path after saving a profile',
     'ui.reportKind': 'Report kind',

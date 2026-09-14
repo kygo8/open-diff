@@ -734,6 +734,17 @@ export const deDE: LanguagePack = {
     'ui.loadFiles': 'Dateien laden',
     'ui.openInTextCompare': 'In Textvergleich öffnen',
     'ui.password': 'Passwort',
+    'ui.oauthClientId': 'OAuth-Client-ID',
+    'ui.oauthClientIdHint':
+      'Verwenden Sie die Client-ID Ihrer eigenen Dropbox- oder Microsoft-App. Open Diff liefert keine App-Geheimnisse.',
+    'ui.oauthOpenBrowser': 'Autorisierungs-URL öffnen',
+    'ui.oauthPasteRedirect': 'Weiterleitungs-URL oder Token einfügen',
+    'ui.oauthApplyPaste': 'Eingefügtes Token übernehmen',
+    'ui.oauthHelperHint':
+      'Öffnet die Anbieter-Autorisierungsseite im Browser (Token-Antwort, kein Client-Geheimnis). Nach der Anmeldung die Weiterleitungs-URL (oder das Zugriffstoken) unten einfügen und das Profil speichern.',
+    'ui.exportMergeReport': 'Merge-Bericht exportieren',
+    'ui.archiveSessionStatus':
+      'Archivvergleich — ZIP/TAR/7z-Seiten mit Extraktion beim Kopieren in Ordner',
     'ui.oauthAccessToken': 'Zugriffstoken',
     'ui.oauthTokenHint':
       'Dropbox-API- oder Microsoft-Graph-Zugriffstoken einfügen. Host kann dropbox / onedrive bleiben. Vollständiges Browser-OAuth ist nicht gebündelt; Token aus App-Konsole oder Gerätecode-Flow verwenden.',

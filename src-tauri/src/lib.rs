@@ -35,6 +35,8 @@ pub fn run() {
             commands::compare_media_files,
             commands::compare_picture_files,
             commands::compare_registry_exports,
+            commands::compare_registry_live_keys,
+            commands::compare_registry_hive_files,
             commands::compare_table,
             commands::compare_table_csv,
             commands::compare_version_files,

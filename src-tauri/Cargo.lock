@@ -2680,6 +2680,7 @@ dependencies = [
  "media-core",
  "merge-core",
  "policy-core",
+ "regf-rs",
  "registry-core",
  "remote-core",
  "report-core",
@@ -3215,9 +3216,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
+name = "regf-rs"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "349e79c5a22cd52d15fe4d364428b1c1040a6b2025a763c59f645a955ceae1ef"
+
+[[package]]
 name = "registry-core"
 version = "1.1.2"
 dependencies = [
+ "regf-rs",
  "serde",
 ]
 

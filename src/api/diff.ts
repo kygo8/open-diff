@@ -27,6 +27,8 @@ import type {
   PictureCompareRequest,
   PictureCompareResponse,
   RegistryCompareRequest,
+  RegistryLiveCompareRequest,
+  RegistryHiveCompareRequest,
   RegistryCompareResponse,
   RenameFolderEntryRequest,
   TextMergeRequest,
@@ -283,6 +285,30 @@ export function compareRegistryExports(
   return invoke<RegistryCompareResponse>('compare_registry_exports', {
     left: request.left,
     right: request.right,
+    leftName: request.leftName,
+    rightName: request.rightName,
+  })
+}
+
+export function compareRegistryLiveKeys(
+  request: RegistryLiveCompareRequest,
+): Promise<RegistryCompareResponse> {
+  return invoke<RegistryCompareResponse>('compare_registry_live_keys', {
+    leftKey: request.leftKey,
+    rightKey: request.rightKey,
+    leftName: request.leftName,
+    rightName: request.rightName,
+  })
+}
+
+export function compareRegistryHiveFiles(
+  request: RegistryHiveCompareRequest,
+): Promise<RegistryCompareResponse> {
+  return invoke<RegistryCompareResponse>('compare_registry_hive_files', {
+    leftPath: request.leftPath,
+    rightPath: request.rightPath,
+    leftRoot: request.leftRoot,
+    rightRoot: request.rightRoot,
     leftName: request.leftName,
     rightName: request.rightName,
   })

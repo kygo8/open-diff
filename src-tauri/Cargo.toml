@@ -92,6 +92,7 @@ media-core = { path = "crates/media-core" }
 merge-core = { path = "crates/merge-core" }
 policy-core = { path = "crates/policy-core" }
 registry-core = { path = "crates/registry-core" }
+regf-rs = "0.1.1"
 remote-core = { path = "crates/remote-core" }
 report-core = { path = "crates/report-core" }
 script-core = { path = "crates/script-core" }

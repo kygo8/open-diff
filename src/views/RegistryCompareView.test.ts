@@ -2,7 +2,13 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import RegistryCompareView from './RegistryCompareView.vue'
-import { compareRegistryExports, readTextFile, saveTextFile } from '@/api/diff'
+import {
+  compareRegistryExports,
+  compareRegistryHiveFiles,
+  compareRegistryLiveKeys,
+  readTextFile,
+  saveTextFile,
+} from '@/api/diff'
 import { queryLiveWindowsRegistry } from '@/api/policy'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
@@ -19,10 +25,42 @@ vi.mock('@/api/policy', () => ({
     .mockRejectedValue(new Error('Live registry query is available on Windows only')),
 }))
 
+vi.mock('@/stores/policy', () => ({
+  usePolicyStore: () => ({
+    isWindows: false,
+    load: vi.fn().mockResolvedValue(undefined),
+  }),
+}))
+
 vi.mock('@/api/diff', () => ({
   saveTextFile: vi.fn().mockResolvedValue({
     path: 'C:/drop/registry-compare.txt',
     bytesWritten: 64,
+  }),
+  compareRegistryLiveKeys: vi
+    .fn()
+    .mockRejectedValue(new Error('Live registry compare is available on Windows only')),
+  compareRegistryHiveFiles: vi.fn().mockResolvedValue({
+    leftName: 'left-SOFTWARE',
+    rightName: 'right-SOFTWARE',
+    tree: [
+      {
+        path: 'HKLM/Software/OpenDiff',
+        label: 'OpenDiff',
+        status: 'modified',
+        values: [
+          {
+            keyPath: 'HKLM/Software/OpenDiff',
+            name: 'Theme',
+            status: 'modified',
+            left: { kind: 'REG_SZ', data: 'dark' },
+            right: { kind: 'REG_SZ', data: 'light' },
+          },
+        ],
+        children: [],
+      },
+    ],
+    summary: { added: 0, removed: 0, modified: 1, unchanged: 0 },
   }),
   compareRegistryExports: vi.fn().mockResolvedValue({
     leftName: 'fixture-left.reg',
@@ -66,6 +104,8 @@ describe('RegistryCompareView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.mocked(compareRegistryExports).mockClear()
+    vi.mocked(compareRegistryHiveFiles).mockClear()
+    vi.mocked(compareRegistryLiveKeys).mockClear()
     vi.mocked(readTextFile).mockClear()
     vi.mocked(saveTextFile).mockClear()
     clipboardWriteText.mockClear()
@@ -220,5 +260,34 @@ describe('RegistryCompareView', () => {
     expect(wrapper.find('[data-testid="registry-report-status"]').text()).toBe(
       'C:/drop/registry-compare.txt',
     )
+  })
+
+  it('compares offline hive file paths from the hive panel', async () => {
+    const wrapper = mount(RegistryCompareView)
+
+    await wrapper.find('[data-testid="registry-hive-left-path"]').setValue('/tmp/left-SOFTWARE')
+    await wrapper.find('[data-testid="registry-hive-right-path"]').setValue('/tmp/right-SOFTWARE')
+    await wrapper.find('[data-testid="registry-hive-root"]').setValue('Software')
+    await wrapper.find('[data-testid="registry-hive-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(compareRegistryHiveFiles).toHaveBeenCalledWith({
+      leftPath: '/tmp/left-SOFTWARE',
+      rightPath: '/tmp/right-SOFTWARE',
+      leftRoot: 'Software',
+      rightRoot: 'Software',
+    })
+    expect(wrapper.find('[data-testid="registry-summary-modified"]').text()).toContain('1')
+  })
+
+  it('shows live compare controls and keeps them disabled off Windows', () => {
+    const wrapper = mount(RegistryCompareView)
+
+    expect(wrapper.find('[data-testid="registry-live-compare"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="registry-live-windows-only"]').exists()).toBe(true)
+    expect(
+      (wrapper.find('[data-testid="registry-live-compare"]').element as HTMLButtonElement).disabled,
+    ).toBe(true)
+    expect(compareRegistryLiveKeys).not.toHaveBeenCalled()
   })
 })

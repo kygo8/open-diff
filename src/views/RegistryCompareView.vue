@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { compareRegistryExports, readTextFile, saveTextFile } from '@/api/diff'
+import {
+  compareRegistryExports,
+  compareRegistryHiveFiles,
+  compareRegistryLiveKeys,
+  readTextFile,
+  saveTextFile,
+} from '@/api/diff'
 import { queryLiveWindowsRegistry } from '@/api/policy'
+import { usePolicyStore } from '@/stores/policy'
 import type {
   RegistryCompareResponse,
   RegistryDiffStatus,
@@ -50,12 +57,21 @@ const liveQueryKey = ref('')
 const liveQueryResult = ref('')
 const liveQueryError = ref('')
 const liveQueryLoading = ref(false)
+const leftLiveKey = ref('HKCU\\Software')
+const rightLiveKey = ref('HKLM\\Software')
+const liveCompareLoading = ref(false)
+const leftHivePath = ref('')
+const rightHivePath = ref('')
+const hiveRootSubpath = ref('')
+const hiveCompareLoading = ref(false)
+const policy = usePolicyStore()
 const leftSourcePath = ref('')
 const rightSourcePath = ref('')
 const reportStatus = ref('')
 const viewActions = useViewActionsStore()
 
 onMounted(() => {
+  void policy.load()
   const launch = sessionLaunch.consumeLaunch('/compare/registry')
 
   if (!launch) {
@@ -305,6 +321,64 @@ async function runLiveRegistryQuery(): Promise<void> {
     liveQueryError.value = String(event)
   } finally {
     liveQueryLoading.value = false
+  }
+}
+
+async function runLiveRegistryCompare(): Promise<void> {
+  if (!leftLiveKey.value.trim() || !rightLiveKey.value.trim()) {
+    return
+  }
+
+  liveCompareLoading.value = true
+  error.value = ''
+  liveQueryError.value = ''
+
+  try {
+    const result = await compareRegistryLiveKeys({
+      leftKey: leftLiveKey.value.trim(),
+      rightKey: rightLiveKey.value.trim(),
+      leftName: leftLiveKey.value.trim(),
+      rightName: rightLiveKey.value.trim(),
+    })
+
+    leftExport.value = ''
+    rightExport.value = ''
+    leftSourcePath.value = leftLiveKey.value.trim()
+    rightSourcePath.value = rightLiveKey.value.trim()
+    applyRegistryResult(result)
+  } catch (event) {
+    error.value = String(event)
+  } finally {
+    liveCompareLoading.value = false
+  }
+}
+
+async function runHiveFileCompare(): Promise<void> {
+  if (!leftHivePath.value.trim() || !rightHivePath.value.trim()) {
+    return
+  }
+
+  hiveCompareLoading.value = true
+  error.value = ''
+
+  try {
+    const root = hiveRootSubpath.value.trim() || undefined
+    const result = await compareRegistryHiveFiles({
+      leftPath: leftHivePath.value.trim(),
+      rightPath: rightHivePath.value.trim(),
+      leftRoot: root,
+      rightRoot: root,
+    })
+
+    leftExport.value = ''
+    rightExport.value = ''
+    leftSourcePath.value = leftHivePath.value.trim()
+    rightSourcePath.value = rightHivePath.value.trim()
+    applyRegistryResult(result)
+  } catch (event) {
+    error.value = String(event)
+  } finally {
+    hiveCompareLoading.value = false
   }
 }
 
@@ -703,6 +777,41 @@ function runRegistryToolbarCommand(commandId: string): void {
           <span>{{ $t('ui.liveRegistryQueryHint') }}</span>
         </header>
         <div class="registry-live-row">
+          <label>
+            <span>{{ $t('ui.leftLiveKey') }}</span>
+            <input
+              v-model="leftLiveKey"
+              data-testid="registry-live-left-key"
+              type="text"
+              :placeholder="$t('ui.liveRegistryKeyPlaceholder')"
+            />
+          </label>
+          <label>
+            <span>{{ $t('ui.rightLiveKey') }}</span>
+            <input
+              v-model="rightLiveKey"
+              data-testid="registry-live-right-key"
+              type="text"
+              :placeholder="$t('ui.liveRegistryKeyPlaceholder')"
+            />
+          </label>
+          <button
+            type="button"
+            data-testid="registry-live-compare"
+            :disabled="liveCompareLoading || !leftLiveKey || !rightLiveKey || !policy.isWindows"
+            @click="runLiveRegistryCompare"
+          >
+            {{ $t('ui.compareLiveRegistry') }}
+          </button>
+        </div>
+        <p
+          v-if="!policy.isWindows"
+          class="empty"
+          data-testid="registry-live-windows-only"
+        >
+          {{ $t('ui.liveRegistryWindowsOnly') }}
+        </p>
+        <div class="registry-live-row">
           <input
             v-model="liveQueryKey"
             data-testid="registry-live-key"
@@ -730,6 +839,51 @@ function runRegistryToolbarCommand(commandId: string): void {
           class="registry-live-result"
           data-testid="registry-live-result"
           >{{ liveQueryResult }}</pre>
+      </section>
+
+      <section
+        class="registry-live-panel"
+        data-testid="registry-hive-panel"
+      >
+        <header>
+          <strong>{{ $t('ui.hiveFileCompare') }}</strong>
+          <span>{{ $t('ui.hiveFileCompareHint') }}</span>
+        </header>
+        <div class="registry-live-row">
+          <label>
+            <span>{{ $t('ui.leftHiveFile') }}</span>
+            <input
+              v-model="leftHivePath"
+              data-testid="registry-hive-left-path"
+              type="text"
+            />
+          </label>
+          <label>
+            <span>{{ $t('ui.rightHiveFile') }}</span>
+            <input
+              v-model="rightHivePath"
+              data-testid="registry-hive-right-path"
+              type="text"
+            />
+          </label>
+          <label>
+            <span>{{ $t('ui.hiveRootSubpath') }}</span>
+            <input
+              v-model="hiveRootSubpath"
+              data-testid="registry-hive-root"
+              type="text"
+              :placeholder="$t('ui.hiveRootSubpath')"
+            />
+          </label>
+          <button
+            type="button"
+            data-testid="registry-hive-compare"
+            :disabled="hiveCompareLoading || !leftHivePath || !rightHivePath"
+            @click="runHiveFileCompare"
+          >
+            {{ $t('ui.compareHiveFiles') }}
+          </button>
+        </div>
       </section>
     </section>
 
@@ -903,6 +1057,15 @@ h1 {
 .registry-live-row input {
   flex: 1 1 220px;
   min-width: 0;
+}
+
+.registry-live-row label {
+  display: grid;
+  flex: 1 1 200px;
+  gap: 4px;
+  min-width: 0;
+  color: var(--app-text-muted);
+  font-size: 12px;
 }
 
 .registry-live-result {

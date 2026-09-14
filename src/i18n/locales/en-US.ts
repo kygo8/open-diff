@@ -875,6 +875,13 @@ export const enUS: LanguagePack = {
     'ui.confirmBeforeSyncOverwrite': 'Confirm before folder sync overwrite',
     'ui.autoScrollToFirstDifference': 'Auto-scroll to first difference',
     'ui.collapseIdenticalFoldersDefault': 'Collapse identical folders by default',
+    'ui.showHiddenFiles': 'Show hidden files',
+    'ui.showHiddenFilesHint':
+      'When off, Folder Compare skips names that start with a dot (default off).',
+    'ui.notifyOnCompareComplete': 'Notify when compare finishes',
+    'ui.notifyOnCompareCompleteHint':
+      'Plays a short Web Audio beep and, when permitted, a desktop notification. Default off.',
+    'status.compareCompleteNotifyBody': 'Compare finished.',
     'ui.browseRemotePath': 'Browse remote path',
     'ui.parentFolder': 'Parent folder',
     'ui.useRemoteFolder': 'Use this folder',

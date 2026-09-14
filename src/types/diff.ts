@@ -172,6 +172,8 @@ export interface FolderCompareCriteria {
   timestampToleranceMs?: number
   /** Treat a one-hour modified-time skew as equal (DST / clock skew). */
   ignoreDaylightSavingHourOffset?: boolean
+  /** Include dotfile / hidden-name entries in Folder Compare. */
+  showHiddenFiles?: boolean
 }
 
 export interface FolderNameFilters {

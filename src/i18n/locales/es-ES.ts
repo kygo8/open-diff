@@ -890,6 +890,13 @@ export const esES: LanguagePack = {
     'ui.confirmBeforeSyncOverwrite': 'Confirmar antes de sobrescribir en sync de carpetas',
     'ui.autoScrollToFirstDifference': 'Desplazarse automáticamente a la primera diferencia',
     'ui.collapseIdenticalFoldersDefault': 'Contraer carpetas idénticas por defecto',
+    'ui.showHiddenFiles': 'Mostrar archivos ocultos',
+    'ui.showHiddenFilesHint':
+      'Si está desactivado, la comparación de carpetas omite nombres que empiezan por punto (desactivado por defecto).',
+    'ui.notifyOnCompareComplete': 'Avisar al terminar la comparación',
+    'ui.notifyOnCompareCompleteHint':
+      'Reproduce un breve pitido Web Audio y, si se permite, una notificación de escritorio. Desactivado por defecto.',
+    'status.compareCompleteNotifyBody': 'Comparación finalizada.',
     'ui.browseRemotePath': 'Examinar ruta remota',
     'ui.parentFolder': 'Carpeta principal',
     'ui.useRemoteFolder': 'Usar esta carpeta',

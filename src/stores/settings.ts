@@ -67,6 +67,8 @@ const wrapTextDefaultStorageKey = 'open-diff-wrap-text-default'
 const confirmBeforeSyncOverwriteStorageKey = 'open-diff-confirm-before-sync-overwrite'
 const autoScrollToFirstDifferenceStorageKey = 'open-diff-auto-scroll-first-difference'
 const collapseIdenticalFoldersDefaultStorageKey = 'open-diff-collapse-identical-folders-default'
+const showHiddenFilesStorageKey = 'open-diff-show-hidden-files'
+const notifyOnCompareCompleteStorageKey = 'open-diff-notify-on-compare-complete'
 const showSessionToolbarsStorageKey = 'open-diff-show-session-toolbars'
 const showToolbarLabelsStorageKey = 'open-diff-show-toolbar-labels'
 const largeToolbarButtonsStorageKey = 'open-diff-large-toolbar-buttons'
@@ -102,6 +104,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const confirmBeforeSyncOverwrite = ref(loadConfirmBeforeSyncOverwrite())
   const autoScrollToFirstDifference = ref(loadAutoScrollToFirstDifference())
   const collapseIdenticalFoldersDefault = ref(loadCollapseIdenticalFoldersDefault())
+  const showHiddenFiles = ref(loadShowHiddenFiles())
+  const notifyOnCompareComplete = ref(loadNotifyOnCompareComplete())
   const showSessionToolbars = ref(loadShowSessionToolbars())
   const showToolbarLabels = ref(loadShowToolbarLabels())
   const largeToolbarButtons = ref(loadLargeToolbarButtons())
@@ -219,6 +223,22 @@ export const useSettingsStore = defineStore('settings', () => {
     collapseIdenticalFoldersDefault,
     (value) => {
       localStorage.setItem(collapseIdenticalFoldersDefaultStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showHiddenFiles,
+    (value) => {
+      localStorage.setItem(showHiddenFilesStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    notifyOnCompareComplete,
+    (value) => {
+      localStorage.setItem(notifyOnCompareCompleteStorageKey, value ? '1' : '0')
     },
     { immediate: true, flush: 'sync' },
   )
@@ -422,6 +442,14 @@ export const useSettingsStore = defineStore('settings', () => {
     collapseIdenticalFoldersDefault.value = value
   }
 
+  function setShowHiddenFiles(value: boolean): void {
+    showHiddenFiles.value = value
+  }
+
+  function setNotifyOnCompareComplete(value: boolean): void {
+    notifyOnCompareComplete.value = value
+  }
+
   function setShowSessionToolbars(value: boolean): void {
     showSessionToolbars.value = value
   }
@@ -467,6 +495,8 @@ export const useSettingsStore = defineStore('settings', () => {
       confirmBeforeSyncOverwrite: confirmBeforeSyncOverwrite.value,
       autoScrollToFirstDifference: autoScrollToFirstDifference.value,
       collapseIdenticalFoldersDefault: collapseIdenticalFoldersDefault.value,
+      showHiddenFilesDefault: showHiddenFiles.value,
+      notifyOnCompareComplete: notifyOnCompareComplete.value,
       showSessionToolbars: showSessionToolbars.value,
       showToolbarLabels: showToolbarLabels.value,
       largeToolbarButtons: largeToolbarButtons.value,
@@ -517,6 +547,16 @@ export const useSettingsStore = defineStore('settings', () => {
         ? packageValue.collapseIdenticalFoldersDefault
         : false,
     )
+    setShowHiddenFiles(
+      typeof packageValue.showHiddenFilesDefault === 'boolean'
+        ? packageValue.showHiddenFilesDefault
+        : false,
+    )
+    setNotifyOnCompareComplete(
+      typeof packageValue.notifyOnCompareComplete === 'boolean'
+        ? packageValue.notifyOnCompareComplete
+        : false,
+    )
     setShowSessionToolbars(packageValue.showSessionToolbars)
     setShowToolbarLabels(packageValue.showToolbarLabels)
     setLargeToolbarButtons(packageValue.largeToolbarButtons)
@@ -550,6 +590,8 @@ export const useSettingsStore = defineStore('settings', () => {
     setConfirmBeforeSyncOverwrite(true)
     setAutoScrollToFirstDifference(false)
     setCollapseIdenticalFoldersDefault(false)
+    setShowHiddenFiles(false)
+    setNotifyOnCompareComplete(false)
     setShowSessionToolbars(true)
     setShowToolbarLabels(true)
     setLargeToolbarButtons(true)
@@ -574,6 +616,8 @@ export const useSettingsStore = defineStore('settings', () => {
     confirmBeforeSyncOverwrite,
     autoScrollToFirstDifference,
     collapseIdenticalFoldersDefault,
+    showHiddenFiles,
+    notifyOnCompareComplete,
     showSessionToolbars,
     showToolbarLabels,
     largeToolbarButtons,
@@ -599,6 +643,8 @@ export const useSettingsStore = defineStore('settings', () => {
     setConfirmBeforeSyncOverwrite,
     setAutoScrollToFirstDifference,
     setCollapseIdenticalFoldersDefault,
+    setShowHiddenFiles,
+    setNotifyOnCompareComplete,
     setShowSessionToolbars,
     setShowToolbarLabels,
     setLargeToolbarButtons,
@@ -799,6 +845,26 @@ function loadAutoScrollToFirstDifference(): boolean {
 
 function loadCollapseIdenticalFoldersDefault(): boolean {
   const stored = localStorage.getItem(collapseIdenticalFoldersDefaultStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadShowHiddenFiles(): boolean {
+  const stored = localStorage.getItem(showHiddenFilesStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadNotifyOnCompareComplete(): boolean {
+  const stored = localStorage.getItem(notifyOnCompareCompleteStorageKey)
 
   if (stored === null) {
     return false

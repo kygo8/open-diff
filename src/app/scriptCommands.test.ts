@@ -25,6 +25,12 @@ describe('scriptCommands', () => {
   it('keeps an honest unsupported list for known legacy gaps', () => {
     expect(unsupportedScriptCommands).toEqual([])
     expect(supportedScriptCommands).toContain('CRITERIA')
+    expect(supportedScriptCommands).toContain('FOLDER-SYNC-REPORT')
+    expect(supportedScriptCommands).toContain('FOLDER-MERGE-REPORT')
+    expect(supportedScriptCommands).toContain('ARCHIVE-REPORT')
+    expect(supportedScriptCommands).toContain('DATA-REPORT')
+    expect(supportedScriptCommands).toContain('SET')
+    expect(supportedScriptCommands).toContain('EXIT')
     expect(unsupportedScriptCommands).not.toContain('HEX-REPORT')
     expect(unsupportedScriptCommands).not.toContain('FILE-REPORT')
     expect(unsupportedScriptCommands).not.toContain('MEDIA-REPORT')

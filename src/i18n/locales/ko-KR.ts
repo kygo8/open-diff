@@ -869,6 +869,12 @@ export const koKR: LanguagePack = {
     'ui.confirmBeforeSyncOverwrite': '폴더 동기화 덮어쓰기 전 확인',
     'ui.autoScrollToFirstDifference': '첫 번째 차이로 자동 스크롤',
     'ui.collapseIdenticalFoldersDefault': '기본적으로 동일한 폴더 접기',
+    'ui.showHiddenFiles': '숨김 파일 표시',
+    'ui.showHiddenFilesHint': '끄면 폴더 비교에서 점으로 시작하는 이름을 건너뜁니다(기본값 끔).',
+    'ui.notifyOnCompareComplete': '비교 완료 시 알림',
+    'ui.notifyOnCompareCompleteHint':
+      '짧은 비프음을 재생하고, 허용되면 데스크톱 알림도 표시합니다. 기본값 끔.',
+    'status.compareCompleteNotifyBody': '비교가 완료되었습니다.',
     'ui.browseRemotePath': '원격 경로 찾아보기',
     'ui.parentFolder': '상위 폴더',
     'ui.useRemoteFolder': '이 폴더 사용',

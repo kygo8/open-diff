@@ -890,6 +890,13 @@ export const frFR: LanguagePack = {
     'ui.confirmBeforeSyncOverwrite': 'Confirmer avant écrasement de sync dossier',
     'ui.autoScrollToFirstDifference': 'Défiler automatiquement vers la première différence',
     'ui.collapseIdenticalFoldersDefault': 'Replier les dossiers identiques par défaut',
+    'ui.showHiddenFiles': 'Afficher les fichiers masqués',
+    'ui.showHiddenFilesHint':
+      'Désactivé, la comparaison de dossiers ignore les noms commençant par un point (désactivé par défaut).',
+    'ui.notifyOnCompareComplete': 'Notifier à la fin de la comparaison',
+    'ui.notifyOnCompareCompleteHint':
+      'Émet un court bip Web Audio et, si autorisé, une notification bureau. Désactivé par défaut.',
+    'status.compareCompleteNotifyBody': 'Comparaison terminée.',
     'ui.browseRemotePath': 'Parcourir le chemin distant',
     'ui.parentFolder': 'Dossier parent',
     'ui.useRemoteFolder': 'Utiliser ce dossier',

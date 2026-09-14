@@ -895,6 +895,13 @@ export const deDE: LanguagePack = {
     'ui.confirmBeforeSyncOverwrite': 'Vor Ordner-Sync-Überschreiben bestätigen',
     'ui.autoScrollToFirstDifference': 'Automatisch zum ersten Unterschied scrollen',
     'ui.collapseIdenticalFoldersDefault': 'Identische Ordner standardmäßig einklappen',
+    'ui.showHiddenFiles': 'Versteckte Dateien anzeigen',
+    'ui.showHiddenFilesHint':
+      'Wenn aus, überspringt der Ordnervergleich Namen, die mit einem Punkt beginnen (Standard aus).',
+    'ui.notifyOnCompareComplete': 'Bei Vergleichsende benachrichtigen',
+    'ui.notifyOnCompareCompleteHint':
+      'Spielt einen kurzen Web-Audio-Ton und zeigt bei Erlaubnis eine Desktop-Benachrichtigung. Standard aus.',
+    'status.compareCompleteNotifyBody': 'Vergleich abgeschlossen.',
     'ui.browseRemotePath': 'Remote-Pfad durchsuchen',
     'ui.parentFolder': 'Übergeordneter Ordner',
     'ui.useRemoteFolder': 'Diesen Ordner verwenden',

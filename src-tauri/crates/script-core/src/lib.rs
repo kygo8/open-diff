@@ -47,6 +47,10 @@ pub enum ScriptCommandKind {
     Snapshot { output: String },
     Sync { strategy: Option<String> },
     Criteria { tokens: Vec<String> },
+    FolderSyncReport { output: String },
+    FolderMergeReport { output: String },
+    ArchiveReport { output: String },
+    Exit,
     Unsupported { name: String },
 }
 
@@ -117,6 +121,8 @@ pub struct ScriptRuntimeState {
     pub criteria: Option<ScriptFolderCriteria>,
     /// Legacy CRITERIA tokens accepted but not applied to compare results.
     pub criteria_acknowledged: Vec<String>,
+    /// Set by EXIT/CLOSE so the runner stops without treating remaining lines as errors.
+    pub exited: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -185,6 +191,7 @@ impl ScriptFolderCriteria {
             ignore_daylight_saving_hour_offset: self.ignore_daylight_saving_hour_offset,
             ignored_timezone_hour_offsets: self.ignored_timezone_hour_offsets.clone(),
             follow_symlinks: self.follow_symlinks,
+            show_hidden_files: true,
         }
     }
 }
@@ -770,12 +777,36 @@ where
             ScriptCommandKind::Criteria { tokens } => {
                 apply_criteria_command(command, &mut state, tokens, &execution.variables)?;
             }
+            ScriptCommandKind::FolderSyncReport { output } => {
+                run_folder_sync_report_command(command, &mut state, output, &execution.variables)?;
+            }
+            ScriptCommandKind::FolderMergeReport { output } => {
+                run_folder_merge_report_command(command, &mut state, output, &execution.variables)?;
+            }
+            ScriptCommandKind::ArchiveReport { output } => {
+                run_archive_report_command(command, &mut state, output, &execution.variables)?;
+            }
+            ScriptCommandKind::Exit => {
+                state.exited = true;
+            }
             ScriptCommandKind::Unsupported { name } => {
                 return Err(execution_error(command, format!("{name} is unsupported")));
             }
         }
 
         executed += 1;
+        if state.exited {
+            structured_logs.push(script_command_log_event(command, executed, total));
+            if execution.mode == ScriptExecutionMode::Visible {
+                progress.push(ScriptProgressEvent {
+                    line: command.line,
+                    command: command.kind.command_name().to_owned(),
+                    completed: executed,
+                    total,
+                });
+            }
+            break;
+        }
         structured_logs.push(script_command_log_event(command, executed, total));
         if execution.mode == ScriptExecutionMode::Visible {
             progress.push(ScriptProgressEvent {
@@ -1102,7 +1133,8 @@ fn script_command_log_status(command: &ScriptCommandKind) -> LogStatus {
         | ScriptCommandKind::Criteria { .. }
         | ScriptCommandKind::Select { .. }
         | ScriptCommandKind::Expand { .. }
-        | ScriptCommandKind::Collapse { .. } => LogStatus::Info,
+        | ScriptCommandKind::Collapse { .. }
+        | ScriptCommandKind::Exit => LogStatus::Info,
         _ => LogStatus::Succeeded,
     }
 }
@@ -1139,6 +1171,10 @@ impl ScriptCommandKind {
             ScriptCommandKind::Snapshot { .. } => "SNAPSHOT",
             ScriptCommandKind::Sync { .. } => "SYNC",
             ScriptCommandKind::Criteria { .. } => "CRITERIA",
+            ScriptCommandKind::FolderSyncReport { .. } => "FOLDER-SYNC-REPORT",
+            ScriptCommandKind::FolderMergeReport { .. } => "FOLDER-MERGE-REPORT",
+            ScriptCommandKind::ArchiveReport { .. } => "ARCHIVE-REPORT",
+            ScriptCommandKind::Exit => "EXIT",
             ScriptCommandKind::Unsupported { .. } => "UNSUPPORTED",
         }
     }
@@ -1598,6 +1634,35 @@ fn parse_command(
         "CRITERIA" => Ok(ScriptCommandKind::Criteria {
             tokens: args.to_vec(),
         }),
+        "FOLDER-SYNC-REPORT" | "SYNC-REPORT" => parse_single_output_command(line, args, |output| {
+            ScriptCommandKind::FolderSyncReport { output }
+        }),
+        "FOLDER-MERGE-REPORT" | "MERGE-REPORT" => {
+            parse_single_output_command(line, args, |output| ScriptCommandKind::FolderMergeReport {
+                output,
+            })
+        }
+        "ARCHIVE-REPORT" | "LIST-ARCHIVE" => parse_single_output_command(line, args, |output| {
+            ScriptCommandKind::ArchiveReport { output }
+        }),
+        "DATA-REPORT" => parse_single_output_command(line, args, |output| {
+            ScriptCommandKind::TableReport { output }
+        }),
+        "SET" => {
+            if args.len() != 2 {
+                return Err(parse_error(line, "SET requires a key and value"));
+            }
+            Ok(ScriptCommandKind::Option {
+                key: args[0].clone(),
+                value: args[1].clone(),
+            })
+        }
+        "EXIT" | "CLOSE" => {
+            if !args.is_empty() {
+                return Err(parse_error(line, "EXIT does not accept arguments"));
+            }
+            Ok(ScriptCommandKind::Exit)
+        }
         unsupported if is_unsupported_script_command(unsupported) => {
             Ok(ScriptCommandKind::Unsupported {
                 name: unsupported.to_owned(),
@@ -1646,6 +1711,16 @@ pub fn supported_script_commands() -> &'static [&'static str] {
         "SNAPSHOT",
         "SYNC",
         "CRITERIA",
+        "FOLDER-SYNC-REPORT",
+        "SYNC-REPORT",
+        "FOLDER-MERGE-REPORT",
+        "MERGE-REPORT",
+        "ARCHIVE-REPORT",
+        "LIST-ARCHIVE",
+        "DATA-REPORT",
+        "SET",
+        "EXIT",
+        "CLOSE",
     ]
 }
 
@@ -2092,20 +2167,272 @@ fn touch_path(path: &str) -> Result<(), String> {
     file.set_modified(now).map_err(|error| error.to_string())
 }
 
-fn run_script_sync(left: &str, right: &str, strategy: &str) -> Result<(), String> {
+fn run_folder_sync_report_command(
+    command: &ScriptCommand,
+    state: &mut ScriptRuntimeState,
+    output: &str,
+    variables: &ScriptVariables,
+) -> Result<(), ScriptExecutionError> {
+    let output = expand_script_variables(output, variables).map_err(|error| {
+        execution_error(command, format!("{} at line {}", error.message, error.line))
+    })?;
+    if state.load_paths.len() < 2 {
+        return Err(execution_error(
+            command,
+            "FOLDER-SYNC-REPORT requires two LOAD paths",
+        ));
+    }
+    let strategy = state
+        .options
+        .iter()
+        .find(|option| option.key.eq_ignore_ascii_case("sync-strategy"))
+        .map(|option| option.value.as_str())
+        .unwrap_or("updateRight");
+    let left = &state.load_paths[0];
+    let right = &state.load_paths[1];
+    let plan = build_script_sync_plan(left, right, strategy)
+        .map_err(|reason| execution_error(command, reason))?;
+    let mut copy = 0usize;
+    let mut delete = 0usize;
+    let mut leave = 0usize;
+    let mut conflict = 0usize;
+    let mut row_lines = Vec::new();
+    for item in &plan.items {
+        let (action_label, detail) = match &item.action {
+            sync_core::SyncAction::Copy {
+                direction,
+                source_path,
+                target_path,
+            } => {
+                copy += 1;
+                (
+                    "copy",
+                    format!("{direction:?} {source_path} -> {target_path}"),
+                )
+            }
+            sync_core::SyncAction::Delete { target_path } => {
+                delete += 1;
+                ("delete", target_path.clone())
+            }
+            sync_core::SyncAction::Leave => {
+                leave += 1;
+                ("leave", String::new())
+            }
+            sync_core::SyncAction::Conflict { message, .. } => {
+                conflict += 1;
+                ("conflict", message.clone())
+            }
+        };
+        row_lines.push(format!(
+            "{}\t{}\t{}\t\t{}",
+            item.relative_path, action_label, item.reason, detail
+        ));
+    }
+    let report_text = format!(
+        "FOLDER-SYNC-REPORT\nleft: {left}\nright: {right}\nstrategy: {strategy}\nplan: {}\ntotal: {}\ncopy: {copy}\ndelete: {delete}\nleave: {leave}\nconflict: {conflict}\noverridden: 0\n\nrows:\n{}\n",
+        plan.name,
+        plan.items.len(),
+        row_lines.join("\n"),
+    );
+    write_script_report_file(&output, &report_text)
+        .map_err(|reason| execution_error(command, reason))?;
+    state.reports_written += 1;
+    state
+        .file_operations
+        .push(format!("FOLDER-SYNC-REPORT {output}"));
+    Ok(())
+}
+
+fn run_folder_merge_report_command(
+    command: &ScriptCommand,
+    state: &mut ScriptRuntimeState,
+    output: &str,
+    variables: &ScriptVariables,
+) -> Result<(), ScriptExecutionError> {
+    let output = expand_script_variables(output, variables).map_err(|error| {
+        execution_error(command, format!("{} at line {}", error.message, error.line))
+    })?;
+    if state.load_paths.len() < 2 {
+        return Err(execution_error(
+            command,
+            "FOLDER-MERGE-REPORT requires at least two LOAD paths",
+        ));
+    }
+    let (left, base, right) = if state.load_paths.len() >= 3 {
+        (
+            state.load_paths[0].as_str(),
+            state.load_paths[1].as_str(),
+            state.load_paths[2].as_str(),
+        )
+    } else {
+        (
+            state.load_paths[0].as_str(),
+            state.load_paths[0].as_str(),
+            state.load_paths[1].as_str(),
+        )
+    };
+    let document = build_script_folder_merge_document(left, base, right)
+        .map_err(|reason| execution_error(command, reason))?;
+    let plan = folder_merge_core::build_folder_merge_plan(&document);
+    let automatic = plan
+        .actions
+        .iter()
+        .filter(|action| !action.conflict)
+        .count();
+    let row_lines = plan
+        .actions
+        .iter()
+        .map(|action| {
+            format!(
+                "{}\t{:?}\t{}",
+                action.relative_path,
+                action.kind,
+                if action.conflict { "conflict" } else { "ok" }
+            )
+        })
+        .collect::<Vec<_>>();
+    let report_text = format!(
+        "FOLDER-MERGE-REPORT\nleft: {left}\nbase: {base}\nright: {right}\noutput: {output}\nactions: {}\nautomatic: {automatic}\nconflicts: {}\n\nrows:\n{}\n",
+        plan.actions.len(),
+        plan.conflicts,
+        row_lines.join("\n"),
+    );
+    write_script_report_file(&output, &report_text)
+        .map_err(|reason| execution_error(command, reason))?;
+    state.reports_written += 1;
+    state
+        .file_operations
+        .push(format!("FOLDER-MERGE-REPORT {output}"));
+    Ok(())
+}
+
+fn run_archive_report_command(
+    command: &ScriptCommand,
+    state: &mut ScriptRuntimeState,
+    output: &str,
+    variables: &ScriptVariables,
+) -> Result<(), ScriptExecutionError> {
+    let output = expand_script_variables(output, variables).map_err(|error| {
+        execution_error(command, format!("{} at line {}", error.message, error.line))
+    })?;
+    let archive_path = state
+        .selection
+        .clone()
+        .or_else(|| state.load_paths.first().cloned())
+        .ok_or_else(|| execution_error(command, "ARCHIVE-REPORT requires LOAD or SELECT first"))?;
+    let document = archive_core::ArchiveReader::open_path(&archive_path)
+        .map_err(|error| execution_error(command, format!("{error:?}")))?;
+    let format = archive_core::ArchiveFormat::detect(&document.name)
+        .map(|format| format!("{format:?}").to_ascii_lowercase())
+        .unwrap_or_else(|_| "unknown".to_owned());
+    let vfs = archive_core::ArchiveVfs::from_document(document.clone());
+    let entries = vfs.list_recursive();
+    let row_lines = entries
+        .iter()
+        .map(|entry| format!("{}\t{:?}\t{}", entry.path, entry.kind, entry.size))
+        .collect::<Vec<_>>();
+    let report_text = format!(
+        "ARCHIVE-REPORT\narchive: {archive_path}\nname: {}\nformat: {format}\nentries: {}\n\nrows:\n{}\n",
+        document.name,
+        entries.len(),
+        row_lines.join("\n"),
+    );
+    write_script_report_file(&output, &report_text)
+        .map_err(|reason| execution_error(command, reason))?;
+    state.reports_written += 1;
+    state
+        .file_operations
+        .push(format!("ARCHIVE-REPORT {output}"));
+    Ok(())
+}
+
+fn build_script_sync_plan(
+    left: &str,
+    right: &str,
+    strategy: &str,
+) -> Result<sync_core::SyncPlan, String> {
     let cancellation = job_core::CancellationToken::default();
     let left_tree = folder_core::scan_local_folder(left, &cancellation)
         .map_err(|error| format!("{error:?}"))?;
     let right_tree = folder_core::scan_local_folder(right, &cancellation)
         .map_err(|error| format!("{error:?}"))?;
     let rows = folder_core::align_folder_trees(&left_tree, &right_tree);
-    let plan = match strategy {
+    Ok(match strategy {
         "updateLeft" => sync_core::build_update_left_plan(left, right, &rows),
         "updateBoth" => sync_core::build_update_both_plan(left, right, &rows),
         "mirrorRight" => sync_core::build_mirror_to_right_plan(left, right, &rows),
         "mirrorLeft" => sync_core::build_mirror_to_left_plan(left, right, &rows),
         _ => sync_core::build_update_right_plan(left, right, &rows),
+    })
+}
+
+fn build_script_folder_merge_document(
+    left: &str,
+    base: &str,
+    right: &str,
+) -> Result<folder_merge_core::FolderMergeDocument, String> {
+    let cancellation = job_core::CancellationToken::default();
+    let left_tree = folder_core::scan_local_folder(left, &cancellation)
+        .map_err(|error| format!("{error:?}"))?;
+    let base_tree = folder_core::scan_local_folder(base, &cancellation)
+        .map_err(|error| format!("{error:?}"))?;
+    let right_tree = folder_core::scan_local_folder(right, &cancellation)
+        .map_err(|error| format!("{error:?}"))?;
+    let input = folder_merge_core::FolderMergeInput {
+        base: folder_merge_side_from_tree(
+            folder_merge_core::FolderMergeRole::Base,
+            base,
+            &base_tree,
+        ),
+        left: folder_merge_side_from_tree(
+            folder_merge_core::FolderMergeRole::Left,
+            left,
+            &left_tree,
+        ),
+        right: folder_merge_side_from_tree(
+            folder_merge_core::FolderMergeRole::Right,
+            right,
+            &right_tree,
+        ),
+        output_root: left.to_owned(),
     };
+    Ok(folder_merge_core::FolderMergeDocument::from_inputs(input))
+}
+
+fn folder_merge_side_from_tree(
+    role: folder_merge_core::FolderMergeRole,
+    root: &str,
+    tree: &folder_core::FolderScanNode,
+) -> folder_merge_core::FolderMergeSide {
+    let mut side = folder_merge_core::FolderMergeSide::new(role, root);
+    collect_folder_merge_entries(tree, &mut side.entries);
+    side
+}
+
+fn collect_folder_merge_entries(
+    node: &folder_core::FolderScanNode,
+    entries: &mut Vec<folder_merge_core::FolderMergeEntry>,
+) {
+    if !node.relative_path.is_empty() {
+        let kind = match node.kind {
+            folder_core::FolderNodeKind::Directory => {
+                folder_merge_core::FolderMergeEntryKind::Directory
+            }
+            folder_core::FolderNodeKind::File => folder_merge_core::FolderMergeEntryKind::File,
+        };
+        entries.push(folder_merge_core::FolderMergeEntry {
+            relative_path: node.relative_path.clone(),
+            kind,
+            content_fingerprint: None,
+        });
+    }
+    for child in &node.children {
+        collect_folder_merge_entries(child, entries);
+    }
+}
+
+fn run_script_sync(left: &str, right: &str, strategy: &str) -> Result<(), String> {
+    let plan = build_script_sync_plan(left, right, strategy)?;
 
     for item in plan.items {
         match item.action {
@@ -2254,6 +2581,139 @@ mod tests {
         assert!(!unsupported_script_commands().contains(&"ATTRIB"));
         assert!(!unsupported_script_commands().contains(&"HEX-REPORT"));
         assert!(!unsupported_script_commands().contains(&"FILE-REPORT"));
+    }
+
+    #[test]
+    fn parses_new_parity_script_commands_and_aliases() {
+        let script = parse_script(
+            r#"
+            SET sync-strategy updateRight
+            DATA-REPORT "out/data.txt"
+            FOLDER-SYNC-REPORT "out/sync.txt"
+            FOLDER-MERGE-REPORT "out/merge.txt"
+            ARCHIVE-REPORT "out/archive.txt"
+            EXIT
+            "#,
+        )
+        .expect("new commands should parse");
+
+        assert!(matches!(
+            script.commands[0].kind,
+            ScriptCommandKind::Option { .. }
+        ));
+        assert!(matches!(
+            script.commands[1].kind,
+            ScriptCommandKind::TableReport { .. }
+        ));
+        assert!(matches!(
+            script.commands[2].kind,
+            ScriptCommandKind::FolderSyncReport { .. }
+        ));
+        assert!(matches!(
+            script.commands[3].kind,
+            ScriptCommandKind::FolderMergeReport { .. }
+        ));
+        assert!(matches!(
+            script.commands[4].kind,
+            ScriptCommandKind::ArchiveReport { .. }
+        ));
+        assert!(matches!(script.commands[5].kind, ScriptCommandKind::Exit));
+        assert!(supported_script_commands().contains(&"FOLDER-SYNC-REPORT"));
+        assert!(supported_script_commands().contains(&"DATA-REPORT"));
+        assert!(supported_script_commands().contains(&"EXIT"));
+        assert!(supported_script_commands().contains(&"SET"));
+        assert!(supported_script_commands().contains(&"ARCHIVE-REPORT"));
+    }
+
+    #[test]
+    fn exit_stops_remaining_script_commands() {
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary {
+                    compared: 0,
+                    different: 0,
+                })
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script("LOG before\nEXIT\nLOG after").expect("parses");
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext::default(),
+            &mut NoopCompare,
+            &mut NoopReport,
+        )
+        .expect("runs");
+        assert_eq!(result.executed, 2);
+        assert!(result.state.exited);
+        assert_eq!(result.state.logs, vec!["before".to_owned()]);
+    }
+
+    #[test]
+    fn folder_sync_report_peeks_plan_without_copying() {
+        let root =
+            std::env::temp_dir().join(format!("open-diff-sync-report-{}", std::process::id()));
+        let left = root.join("left");
+        let right = root.join("right");
+        let _ = std::fs::remove_dir_all(&root);
+        std::fs::create_dir_all(left.join("sub")).unwrap();
+        std::fs::create_dir_all(&right).unwrap();
+        std::fs::write(left.join("sub/a.txt"), b"left-a").unwrap();
+        let report = root.join("sync-report.txt");
+
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script(&format!(
+            "LOAD \"{}\" \"{}\"\nFOLDER-SYNC-REPORT \"{}\"\n",
+            left.display(),
+            right.display(),
+            report.display()
+        ))
+        .expect("parses");
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext::default(),
+            &mut NoopCompare,
+            &mut NoopReport,
+        )
+        .expect("runs");
+        assert_eq!(result.state.reports_written, 1);
+        let text = std::fs::read_to_string(&report).expect("report written");
+        assert!(text.contains("FOLDER-SYNC-REPORT"));
+        assert!(text.contains("copy") || text.contains("leave"));
+        // peek must not create the missing right file
+        assert!(!right.join("sub/a.txt").exists());
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn close_alias_parses_as_exit() {
+        let script = parse_script("CLOSE").expect("parses");
+        assert!(matches!(script.commands[0].kind, ScriptCommandKind::Exit));
     }
 
     #[test]
@@ -2609,6 +3069,7 @@ mod tests {
                 expanded_paths: Vec::new(),
                 criteria: None,
                 criteria_acknowledged: Vec::new(),
+                exited: false,
             }
         );
         assert_eq!(

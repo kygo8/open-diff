@@ -204,14 +204,20 @@ describe('useSettingsStore', () => {
     expect(store.confirmBeforeSyncOverwrite).toBe(true)
     expect(store.autoScrollToFirstDifference).toBe(false)
     expect(store.collapseIdenticalFoldersDefault).toBe(false)
+    expect(store.showHiddenFiles).toBe(false)
+    expect(store.notifyOnCompareComplete).toBe(false)
 
     store.setConfirmBeforeSyncOverwrite(false)
     store.setAutoScrollToFirstDifference(true)
     store.setCollapseIdenticalFoldersDefault(true)
+    store.setShowHiddenFiles(true)
+    store.setNotifyOnCompareComplete(true)
 
     expect(localStorage.getItem('open-diff-confirm-before-sync-overwrite')).toBe('0')
     expect(localStorage.getItem('open-diff-auto-scroll-first-difference')).toBe('1')
     expect(localStorage.getItem('open-diff-collapse-identical-folders-default')).toBe('1')
+    expect(localStorage.getItem('open-diff-show-hidden-files')).toBe('1')
+    expect(localStorage.getItem('open-diff-notify-on-compare-complete')).toBe('1')
   })
 
   it('persists toolbar and backup option defaults', () => {

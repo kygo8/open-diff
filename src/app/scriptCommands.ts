@@ -10,13 +10,21 @@ export const supportedScriptCommands = [
   'REPORT',
   'HEX-REPORT',
   'TABLE-REPORT',
+  'DATA-REPORT',
   'PICTURE-REPORT',
   'VERSION-REPORT',
   'REGISTRY-REPORT',
   'MEDIA-REPORT',
+  'FOLDER-SYNC-REPORT',
+  'SYNC-REPORT',
+  'FOLDER-MERGE-REPORT',
+  'MERGE-REPORT',
+  'ARCHIVE-REPORT',
+  'LIST-ARCHIVE',
   'LOG',
   'BEEP',
   'OPTION',
+  'SET',
   'SELECT',
   'COPY',
   'COPYTO',
@@ -31,6 +39,8 @@ export const supportedScriptCommands = [
   'SNAPSHOT',
   'SYNC',
   'CRITERIA',
+  'EXIT',
+  'CLOSE',
 ] as const
 
 export const unsupportedScriptCommands = [] as const
@@ -49,6 +59,7 @@ export const compareReportExampleScript = [
   `text-report "\${output}"`,
   `hex-report "\${output}.hex.txt"`,
   `folder-report "\${output}.folder.txt"`,
+  `folder-sync-report "\${output}.sync.txt"`,
   `media-report "\${output}.media.txt"`,
   `picture-report "\${output}.picture.txt"`,
 ].join('\n')

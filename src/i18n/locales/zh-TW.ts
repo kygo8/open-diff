@@ -700,12 +700,22 @@ export const zhTW: LanguagePack = {
     'ui.loadFiles': '載入檔案',
     'ui.openInTextCompare': '在文字比較中開啟',
     'ui.password': '密碼',
+    'ui.oauthClientId': 'OAuth 用戶端 ID',
+    'ui.oauthClientIdHint':
+      '填入你自己的 Dropbox 或 Microsoft 應用程式用戶端 ID。Open Diff 不附帶應用程式祕密。',
+    'ui.oauthOpenBrowser': '開啟授權網址',
+    'ui.oauthPasteRedirect': '貼上重新導向網址或權杖',
+    'ui.oauthApplyPaste': '套用貼上的權杖',
+    'ui.oauthHelperHint':
+      '在瀏覽器開啟提供商授權頁（權杖回應，無需用戶端祕密）。登入後將重新導向網址（或存取權杖）貼到下方，然後儲存設定檔。',
+    'ui.exportMergeReport': '匯出合併報告',
+    'ui.archiveSessionStatus': '壓縮檔比對工作階段 — 支援 ZIP/TAR/7z，複製時解壓到資料夾',
     'ui.oauthAccessToken': '存取權杖',
     'ui.oauthTokenHint':
-      '貼上 Dropbox API 或 Microsoft Graph 存取權杖。主機可填 dropbox / onedrive。未內建瀏覽器 OAuth；請使用應用程式主控台或裝置碼流程取得權杖。',
+      '貼上 Dropbox API 或 Microsoft Graph 存取權杖。主機可填 dropbox / onedrive。或使用「開啟授權網址」並貼上重新導向網址。',
     'ui.tokenAccountOptional': '帳戶（選用）',
     'ui.remoteNotImplemented':
-      'SFTP、FTP、FTPS、WebDAV、S3、Dropbox、OneDrive 與 SVN 可連線、列出並傳輸。請將雲端存取權杖貼到權杖欄位（未內建瀏覽器 OAuth 流程）。',
+      'SFTP、FTP、FTPS、WebDAV、S3、Dropbox、OneDrive 與 SVN 可連線、列出並傳輸。雲端設定檔接受貼上的存取權杖；Dropbox/OneDrive 也可使用您的用戶端 ID 開啟瀏覽器授權網址。',
     'ui.remoteUriHint':
       '使用本機路徑，或在儲存設定後使用 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path 或 svn://profile/id/path',
     'ui.reportKind': 'Report kind',

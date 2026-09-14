@@ -729,6 +729,17 @@ export const esES: LanguagePack = {
     'ui.loadFiles': 'Cargar archivos',
     'ui.openInTextCompare': 'Abrir en comparación de texto',
     'ui.password': 'Contraseña',
+    'ui.oauthClientId': 'Id. de cliente OAuth',
+    'ui.oauthClientIdHint':
+      'Use el id. de cliente de su propia app de Dropbox o Microsoft. Open Diff no incluye secretos de aplicación.',
+    'ui.oauthOpenBrowser': 'Abrir URL de autorización',
+    'ui.oauthPasteRedirect': 'Pegar URL de redirección o token',
+    'ui.oauthApplyPaste': 'Aplicar token pegado',
+    'ui.oauthHelperHint':
+      'Abre la página de autorización del proveedor en el navegador (respuesta con token, sin secreto de cliente). Tras iniciar sesión, pegue la URL de redirección (o el token de acceso) abajo y guarde el perfil.',
+    'ui.exportMergeReport': 'Exportar informe de combinación',
+    'ui.archiveSessionStatus':
+      'Sesión Archive Compare — lados ZIP/TAR/7z con extracción al copiar a una carpeta',
     'ui.oauthAccessToken': 'Token de acceso',
     'ui.oauthTokenHint':
       'Pegue un token de acceso de Dropbox API o Microsoft Graph. El host puede dejarse como dropbox / onedrive. OAuth completo del navegador no está incluido; use un token de la consola de la app o del flujo de código de dispositivo.',

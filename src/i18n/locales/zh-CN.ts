@@ -699,12 +699,22 @@ export const zhCN: LanguagePack = {
     'ui.loadFiles': '加载文件',
     'ui.openInTextCompare': '在文本比较中打开',
     'ui.password': '密码',
+    'ui.oauthClientId': 'OAuth 客户端 ID',
+    'ui.oauthClientIdHint':
+      '填写你自己的 Dropbox 或 Microsoft 应用客户端 ID。Open Diff 不附带应用密钥。',
+    'ui.oauthOpenBrowser': '打开授权网址',
+    'ui.oauthPasteRedirect': '粘贴回调网址或令牌',
+    'ui.oauthApplyPaste': '应用粘贴的令牌',
+    'ui.oauthHelperHint':
+      '在浏览器中打开提供商授权页（令牌响应，无需客户端密钥）。登录后把回调网址（或访问令牌）粘贴到下方，然后保存配置。',
+    'ui.exportMergeReport': '导出合并报告',
+    'ui.archiveSessionStatus': '压缩包对比会话 — 支持 ZIP/TAR/7z，复制时解压到文件夹',
     'ui.oauthAccessToken': '访问令牌',
     'ui.oauthTokenHint':
-      '粘贴 Dropbox API 或 Microsoft Graph 访问令牌。主机可填写 dropbox / onedrive。未内置浏览器 OAuth；请使用应用控制台或设备码流程获取令牌。',
+      '粘贴 Dropbox API 或 Microsoft Graph 访问令牌，或使用「打开授权网址」并粘贴回调网址。主机可填写 dropbox / onedrive。',
     'ui.tokenAccountOptional': '账户（可选）',
     'ui.remoteNotImplemented':
-      'SFTP、FTP、FTPS、WebDAV、S3、Dropbox、OneDrive 和 SVN 可以连接、列出并传输。请将云盘访问令牌粘贴到令牌字段（未内置浏览器 OAuth 流程）。',
+      'SFTP、FTP、FTPS、WebDAV、S3、Dropbox、OneDrive 和 SVN 可以连接、列出并传输。云配置接受粘贴的访问令牌；Dropbox/OneDrive 也可使用你的客户端 ID 打开浏览器授权网址。',
     'ui.remoteUriHint':
       '使用本地路径，或在保存配置后使用 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path 或 svn://profile/id/path',
     'ui.reportKind': '报告类型',

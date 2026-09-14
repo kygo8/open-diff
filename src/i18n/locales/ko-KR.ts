@@ -712,6 +712,16 @@ export const koKR: LanguagePack = {
     'ui.loadFiles': '파일 불러오기',
     'ui.openInTextCompare': '텍스트 비교에서 열기',
     'ui.password': '비밀번호',
+    'ui.oauthClientId': 'OAuth 클라이언트 ID',
+    'ui.oauthClientIdHint':
+      '본인 Dropbox 또는 Microsoft 앱 등록의 클라이언트 ID를 사용하세요. Open Diff는 앱 비밀을 포함하지 않습니다.',
+    'ui.oauthOpenBrowser': '권한 URL 열기',
+    'ui.oauthPasteRedirect': '리디렉션 URL 또는 토큰 붙여넣기',
+    'ui.oauthApplyPaste': '붙여넣은 토큰 적용',
+    'ui.oauthHelperHint':
+      '브라우저에서 공급자 권한 페이지를 엽니다(토큰 응답, 클라이언트 비밀 없음). 로그인 후 리디렉션 URL(또는 액세스 토큰)을 아래에 붙여넣고 프로필을 저장하세요.',
+    'ui.exportMergeReport': '병합 보고서 내보내기',
+    'ui.archiveSessionStatus': '아카이브 비교 세션 — ZIP/TAR/7z, 복사 시 폴더로 추출',
     'ui.oauthAccessToken': '액세스 토큰',
     'ui.oauthTokenHint':
       'Dropbox API 또는 Microsoft Graph 액세스 토큰을 붙여넣으세요. 호스트는 dropbox / onedrive로 둘 수 있습니다. 브라우저 OAuth는 포함되지 않으며 앱 콘솔 또는 디바이스 코드 흐름에서 받은 토큰을 사용합니다.',

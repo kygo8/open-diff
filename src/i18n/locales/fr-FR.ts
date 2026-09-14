@@ -729,6 +729,17 @@ export const frFR: LanguagePack = {
     'ui.loadFiles': 'Charger les fichiers',
     'ui.openInTextCompare': 'Ouvrir dans la comparaison de texte',
     'ui.password': 'Mot de passe',
+    'ui.oauthClientId': 'ID client OAuth',
+    'ui.oauthClientIdHint':
+      'Utilisez l’ID client de votre propre application Dropbox ou Microsoft. Open Diff ne fournit aucun secret d’application.',
+    'ui.oauthOpenBrowser': 'Ouvrir l’URL d’autorisation',
+    'ui.oauthPasteRedirect': 'Coller l’URL de redirection ou le jeton',
+    'ui.oauthApplyPaste': 'Appliquer le jeton collé',
+    'ui.oauthHelperHint':
+      'Ouvre la page d’autorisation du fournisseur dans le navigateur (réponse jeton, sans secret client). Après connexion, collez l’URL de redirection (ou le jeton d’accès) ci-dessous, puis enregistrez le profil.',
+    'ui.exportMergeReport': 'Exporter le rapport de fusion',
+    'ui.archiveSessionStatus':
+      'Session Archive Compare — côtés ZIP/TAR/7z avec extraction à la copie vers un dossier',
     'ui.oauthAccessToken': "Jeton d'accès",
     'ui.oauthTokenHint':
       "Collez un jeton d'accès Dropbox API ou Microsoft Graph. L'hôte peut rester dropbox / onedrive. L'OAuth navigateur complet n'est pas inclus ; utilisez un jeton de la console d'application ou du flux code appareil.",

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { mergeTextFiles, saveTextFile } from '@/api/diff'
+import { buildTextMergeReportText, defaultTextMergeReportOutputPath } from '@/app/textMergeReport'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { pathPairTitle, singlePathTitle } from '@/app/sessionToolbars'
@@ -53,6 +54,7 @@ const outputLines = ref<string[]>([])
 const saveStatusKey = ref('ui.outputNotSaved')
 const saveStatusParams = ref<Record<string, string | number>>({})
 const saving = ref(false)
+const reportStatus = ref('')
 const loading = ref(false)
 const conflicts = ref<MergeConflict[]>([])
 const conflictPolicy = ref<ConflictPolicy>('markConflict')
@@ -429,6 +431,49 @@ watch(
   { immediate: true },
 )
 
+async function exportTextMergeReport(): Promise<void> {
+  if (!leftPath.value || !rightPath.value) {
+    return
+  }
+
+  const payload = buildTextMergeReportText({
+    leftPath: leftPath.value,
+    rightPath: rightPath.value,
+    centerPath: centerPath.value,
+    outputPath: outputPath.value,
+    conflictPolicy: conflictPolicy.value,
+    outputLineCount: outputLines.value.length,
+    conflicts: conflicts.value.map((conflict) => ({
+      line: conflict.line,
+      title: conflict.title,
+      resolved: conflict.resolved,
+      base: conflict.base,
+      left: conflict.left,
+      right: conflict.right,
+    })),
+  })
+  const reportPath = defaultTextMergeReportOutputPath(outputPath.value || leftPath.value)
+
+  try {
+    await navigator.clipboard.writeText(payload)
+  } catch {
+    // Clipboard may be unavailable in headless tests; still try file export.
+  }
+
+  try {
+    await saveTextFile({
+      path: reportPath,
+      text: payload,
+      createBackup: false,
+    })
+    reportStatus.value = reportPath
+  } catch (event) {
+    setSaveStatus('status.rawMessage', {
+      message: event instanceof Error ? event.message : String(event),
+    })
+  }
+}
+
 watch(
   () => [viewActions.sequence, viewActions.name] as const,
   ([, actionName]) => {
@@ -442,8 +487,10 @@ watch(
         void loadMerge()
         break
       case 'save':
-      case 'export':
         void saveOutput()
+        break
+      case 'export':
+        void exportTextMergeReport()
         break
       case 'copy-left':
         favorSide('left')
@@ -696,12 +743,27 @@ watch(
         >
           {{ $t('ui.saveOutput') }}
         </button>
+        <button
+          type="button"
+          class="toolbar-button"
+          data-testid="export-text-merge-report"
+          :disabled="!leftPath || !rightPath"
+          @click="exportTextMergeReport"
+        >
+          {{ $t('ui.exportMergeReport') }}
+        </button>
         <span
           class="status-chip"
           data-testid="merge-save-status"
         >
           {{ saveStatus }}
         </span>
+        <span
+          v-if="reportStatus"
+          class="status-chip"
+          data-testid="text-merge-report-status"
+          >{{ reportStatus }}</span
+        >
       </div>
 
       <p

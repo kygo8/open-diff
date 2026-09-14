@@ -141,6 +141,7 @@ const manualAlignments = ref<ManualAlignmentPair[]>([])
 const alignmentRootKey = ref('')
 const rows = ref<FolderTreeRow[]>([])
 const expandedDirectoryIds = ref<Set<string>>(new Set())
+const archiveSessionActive = ref(false)
 const leftRoot = ref('')
 const rightRoot = ref('')
 const folderCriteria = ref<FolderCompareCriteria>(loadFolderCompareCriteria())
@@ -248,6 +249,9 @@ function applyFolderLaunch(
 ): void {
   leftRoot.value = launch.locations.left?.uri ?? leftRoot.value
   rightRoot.value = launch.locations.right?.uri ?? rightRoot.value
+  archiveSessionActive.value =
+    launch.sessionType === 'archive-compare' ||
+    (isArchivePath(leftRoot.value) && isArchivePath(rightRoot.value))
   syncFolderTabTitle()
 
   if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
@@ -283,6 +287,9 @@ watch(
 )
 
 watch([leftRoot, rightRoot], () => {
+  if (isArchivePath(leftRoot.value) && isArchivePath(rightRoot.value)) {
+    archiveSessionActive.value = true
+  }
   syncFolderTabTitle()
 })
 
@@ -2075,6 +2082,13 @@ onUnmounted(() => {
           </label>
         </div>
         <p
+          v-if="archiveSessionActive"
+          class="archive-session-status"
+          data-testid="folder-archive-session-status"
+        >
+          {{ $t('ui.archiveSessionStatus') }}
+        </p>
+        <p
           class="archive-path-hint"
           data-testid="folder-path-hint"
         >
@@ -3232,6 +3246,16 @@ onUnmounted(() => {
   color: var(--app-text-muted);
   font-size: 11px;
   white-space: nowrap;
+}
+
+.archive-session-status {
+  margin: 0.35rem 0;
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.35rem;
+  background: var(--app-surface-muted);
+  color: var(--app-text-muted);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .archive-path-hint {

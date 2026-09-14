@@ -715,6 +715,16 @@ export const jaJP: LanguagePack = {
     'ui.loadFiles': 'ファイルを読み込む',
     'ui.openInTextCompare': 'テキスト比較で開く',
     'ui.password': 'パスワード',
+    'ui.oauthClientId': 'OAuth クライアント ID',
+    'ui.oauthClientIdHint':
+      'ご自身の Dropbox / Microsoft アプリ登録のクライアント ID を入力してください。Open Diff にアプリシークレットは同梱されません。',
+    'ui.oauthOpenBrowser': '認可 URL を開く',
+    'ui.oauthPasteRedirect': 'リダイレクト URL またはトークンを貼り付け',
+    'ui.oauthApplyPaste': '貼り付けたトークンを適用',
+    'ui.oauthHelperHint':
+      'ブラウザでプロバイダーの認可ページを開きます（トークン応答、クライアントシークレット不要）。サインイン後、リダイレクト URL（またはアクセストークン）を下に貼り付けてプロファイルを保存してください。',
+    'ui.exportMergeReport': 'マージレポートをエクスポート',
+    'ui.archiveSessionStatus': 'アーカイブ比較セッション — ZIP/TAR/7z、コピー時にフォルダーへ展開',
     'ui.oauthAccessToken': 'アクセストークン',
     'ui.oauthTokenHint':
       'Dropbox API または Microsoft Graph のアクセストークンを貼り付けます。ホストは dropbox / onedrive のままで構いません。ブラウザ OAuth は同梱せず、アプリコンソールまたはデバイスコードフローで取得したトークンを使います。',

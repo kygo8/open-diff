@@ -256,6 +256,23 @@ describe('TextMergeView', () => {
     ).toBe(false)
   })
 
+  it('exports a text merge report beside the output path', async () => {
+    const wrapper = await mountLoadedMerge()
+
+    await wrapper.find('[data-testid="export-text-merge-report"]').trigger('click')
+    await flushPromises()
+
+    expect(saveTextFile).toHaveBeenCalled()
+
+    const call = vi.mocked(saveTextFile).mock.calls.at(-1)?.[0]
+
+    expect(call?.path).toContain('text-merge-report.txt')
+    expect(call?.text ?? '').toContain('TEXT-MERGE-REPORT')
+    expect(wrapper.find('[data-testid="text-merge-report-status"]').text()).toContain(
+      'text-merge-report.txt',
+    )
+  })
+
   it('accepts the base side then advances to the next conflict', async () => {
     vi.mocked(mergeTextFiles).mockResolvedValueOnce({
       leftPath: 'left.txt',

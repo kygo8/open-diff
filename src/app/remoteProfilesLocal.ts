@@ -10,6 +10,8 @@ export interface LocalRemoteProfile {
   port: number | null
   rootPath: string
   username?: string
+  /** User-configured OAuth app client id for Dropbox/OneDrive browser helper. */
+  oauthClientId?: string
 }
 
 export function loadLocalRemoteProfiles(): LocalRemoteProfile[] {

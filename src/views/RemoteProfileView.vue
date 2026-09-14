@@ -5,6 +5,12 @@ import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import RemotePathBrowser from '@/components/remote/RemotePathBrowser.vue'
 import { isTauriRuntime } from '@/app/desktopDrop'
 import {
+  buildRemoteAuthorizeUrl,
+  extractOAuthAccessToken,
+  isOAuthCloudProtocol,
+} from '@/app/remoteOAuth'
+import { openPathExternal } from '@/api/integration'
+import {
   deleteLocalRemoteProfile,
   loadLocalRemoteProfiles,
   saveLocalRemoteProfiles,
@@ -58,6 +64,8 @@ interface RemoteProfileDraft {
   credentialKey: string
   username: string
   password: string
+  oauthClientId: string
+  oauthPaste: string
   uri: string
   implemented: boolean
 }
@@ -197,15 +205,33 @@ async function saveProfile(): Promise<void> {
     persistenceMode.value = 'desktop'
     applyViews(saved, nextProfile.id)
     mirrorViewsToLocal(saved)
+    if (draft.value.oauthClientId.trim()) {
+      const mirrored = loadLocalRemoteProfiles()
+      const existing = mirrored.find((profile) => profile.id === nextProfile.id)
+
+      upsertLocalRemoteProfile(mirrored, {
+        id: nextProfile.id,
+        name: nextProfile.name,
+        protocol: nextProfile.protocol,
+        host: nextProfile.endpoint.host,
+        port: nextProfile.endpoint.port,
+        rootPath: nextProfile.endpoint.rootPath,
+        username: draft.value.username.trim() || existing?.username,
+        oauthClientId: draft.value.oauthClientId.trim(),
+      })
+    }
     draft.value.password = ''
     setTestStatus(testDisabledReasonKey.value || initialTestStatusKey())
   } catch {
     persistenceMode.value = 'local'
+    const clientId = draft.value.oauthClientId
+
     persistLocalProfile(nextProfile, draft.value.username.trim() || undefined)
     selectedProfileId.value = nextProfile.id
     draft.value = {
       ...toDraft(nextProfile),
       username: draft.value.username,
+      oauthClientId: clientId,
       password: '',
       uri: formatRemoteUri(nextProfile.protocol, nextProfile.id, nextProfile.endpoint.rootPath),
     }
@@ -336,9 +362,12 @@ function applyViews(views: RemoteProfileView[], selectedId = selectedProfileId.v
   const selected = profiles.value.find((profile) => profile.id === selectedId) ?? profiles.value[0]
 
   selectedProfileId.value = selected.id
+  const localMatch = loadLocalRemoteProfiles().find((profile) => profile.id === selected.id)
+
   draft.value = {
     ...toDraft(selected),
     username: views.find((view) => view.id === selected.id)?.username ?? '',
+    oauthClientId: localMatch?.oauthClientId ?? '',
     uri: views.find((view) => view.id === selected.id)?.uri ?? '',
     implemented: isImplementedRemoteProtocol(selected.protocol),
   }
@@ -377,6 +406,7 @@ function applyLocalProfiles(
   draft.value = {
     ...toDraft(selected),
     username: source?.username ?? '',
+    oauthClientId: source?.oauthClientId ?? '',
     uri: formatRemoteUri(selected.protocol, selected.id, selected.endpoint.rootPath),
     implemented: isImplementedRemoteProtocol(selected.protocol),
   }
@@ -391,6 +421,7 @@ function persistLocalProfile(nextProfile: RemoteProfile, username?: string): voi
     port: nextProfile.endpoint.port,
     rootPath: nextProfile.endpoint.rootPath,
     username,
+    oauthClientId: draft.value.oauthClientId.trim() || undefined,
   })
 
   applyLocalProfiles(local, nextProfile.id)
@@ -435,6 +466,8 @@ function toDraft(profile: RemoteProfile): RemoteProfileDraft {
     credentialKey: profile.credentialRef.key,
     username: '',
     password: '',
+    oauthClientId: '',
+    oauthPaste: '',
     uri: '',
     implemented: isImplementedRemoteProtocol(profile.protocol),
   }
@@ -492,6 +525,43 @@ function slugify(value: string): string {
       .replace(/[^a-z0-9]+/gu, '-')
       .replace(/(^-|-$)/gu, '') || fallbackId
   )
+}
+
+async function openOAuthAuthorizeUrl(): Promise<void> {
+  if (!isOAuthCloudProtocol(draft.value.protocol)) {
+    return
+  }
+
+  const url = buildRemoteAuthorizeUrl(draft.value.protocol, draft.value.oauthClientId)
+
+  if (!url) {
+    setTestStatus('status.rawMessage', { message: t('ui.oauthClientIdHint') })
+
+    return
+  }
+
+  try {
+    await openPathExternal(url)
+    setTestStatus('status.rawMessage', { message: t('ui.oauthHelperHint') })
+  } catch (event) {
+    setTestStatus('status.remoteFailed', {
+      detail: event instanceof Error ? event.message : String(event),
+    })
+  }
+}
+
+function applyOAuthPaste(): void {
+  const token = extractOAuthAccessToken(draft.value.oauthPaste)
+
+  if (!token) {
+    setTestStatus('status.rawMessage', { message: t('ui.oauthPasteRedirect') })
+
+    return
+  }
+
+  draft.value.password = token
+  draft.value.oauthPaste = ''
+  setTestStatus('status.rawMessage', { message: t('ui.oauthApplyPaste') })
 }
 
 function protocolLabel(protocol: RemoteProtocol): string {
@@ -779,6 +849,50 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
           >
             {{ $t('ui.oauthTokenHint') }}
           </p>
+          <div
+            v-if="draft.protocol === 'dropbox' || draft.protocol === 'one-drive'"
+            class="oauth-helper"
+            data-testid="remote-oauth-helper"
+          >
+            <label>
+              <span>{{ $t('ui.oauthClientId') }}</span>
+              <input
+                v-model="draft.oauthClientId"
+                data-testid="remote-oauth-client-id"
+                type="text"
+                autocomplete="off"
+                :placeholder="$t('ui.oauthClientIdHint')"
+              />
+            </label>
+            <p class="secrets-hint">{{ $t('ui.oauthHelperHint') }}</p>
+            <div class="oauth-helper-actions">
+              <button
+                type="button"
+                data-testid="remote-oauth-open-browser"
+                :disabled="!draft.oauthClientId.trim()"
+                @click="openOAuthAuthorizeUrl"
+              >
+                {{ $t('ui.oauthOpenBrowser') }}
+              </button>
+            </div>
+            <label>
+              <span>{{ $t('ui.oauthPasteRedirect') }}</span>
+              <input
+                v-model="draft.oauthPaste"
+                data-testid="remote-oauth-paste"
+                type="text"
+                autocomplete="off"
+              />
+            </label>
+            <button
+              type="button"
+              data-testid="remote-oauth-apply-paste"
+              :disabled="!draft.oauthPaste.trim()"
+              @click="applyOAuthPaste"
+            >
+              {{ $t('ui.oauthApplyPaste') }}
+            </button>
+          </div>
           <p
             v-if="draft.uri"
             data-testid="remote-profile-uri"
@@ -1060,5 +1174,17 @@ select {
   .credential-key {
     grid-column: auto;
   }
+}
+
+.oauth-helper {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.oauth-helper-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 </style>

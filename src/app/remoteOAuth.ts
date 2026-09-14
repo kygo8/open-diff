@@ -1,3 +1,8 @@
+/**
+ * Browser authorize-URL helper for Dropbox/OneDrive using a *user-supplied*
+ * client id only. Open Diff does not ship app secrets; production-hardened
+ * OAuth (PKCE app registration, refresh-token vaulting) remains Planned.
+ */
 import type { RemoteProtocol } from '@/api/remote'
 
 /** Dropbox token redirect receiver used by desktop helpers (no client secret). */

@@ -519,6 +519,8 @@ watch(
       case 'sync-now':
       case 'toggle-minor':
       case 'workspace-save':
+      case 'run-script':
+      case 'save-report':
         break
     }
   },

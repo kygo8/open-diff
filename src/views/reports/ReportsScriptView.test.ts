@@ -208,6 +208,8 @@ describe('ReportsScriptView', () => {
 
     expect(options).toContain('csv')
     expect(options).toContain('markdown')
+    expect(options).toContain('tsv')
+    expect(options).toContain('yaml')
     expect(options).toContain('xml')
     expect(options).toContain('html-side-by-side')
   })

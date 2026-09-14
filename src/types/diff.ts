@@ -529,7 +529,8 @@ export interface TextMergeResponse {
 }
 
 export interface ExportReportRequest {
-  format: 'html' | 'html-side-by-side' | 'text' | 'json' | 'xml' | 'csv' | 'markdown'
+  format:
+    'html' | 'html-side-by-side' | 'text' | 'json' | 'xml' | 'csv' | 'markdown' | 'tsv' | 'yaml'
   outputPath?: string
 }
 

@@ -55,6 +55,12 @@ export type CommandId =
   | 'view.expandAll'
   | 'view.collapseAll'
   | 'sync.syncNow'
+  | 'open.pictureCompare'
+  | 'open.mediaCompare'
+  | 'open.versionCompare'
+  | 'open.archiveCompare'
+  | 'script.run'
+  | 'report.save'
 
 export type CommandVisibility = 'global' | 'view' | 'hidden'
 export type ShortcutScope = 'global' | 'text-compare'
@@ -106,6 +112,8 @@ export type CommandAction =
         | 'expand-all'
         | 'collapse-all'
         | 'sync-now'
+        | 'run-script'
+        | 'save-report'
     }
 
 export interface CommandShortcut {
@@ -702,6 +710,66 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Shift', 'Enter'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'sync-now' },
+  },
+  {
+    id: 'open.pictureCompare',
+    titleKey: 'ui.pictureCompare',
+    keywords: ['picture', 'image', 'compare', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'U'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/compare/picture', titleKey: 'ui.pictureCompare' },
+  },
+  {
+    id: 'open.mediaCompare',
+    titleKey: 'ui.mediaCompare',
+    keywords: ['media', 'audio', 'video', 'compare', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'A'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/compare/media', titleKey: 'ui.mediaCompare' },
+  },
+  {
+    id: 'open.versionCompare',
+    titleKey: 'ui.versionCompare',
+    keywords: ['version', 'exe', 'dll', 'compare', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'V'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/compare/version', titleKey: 'ui.versionCompare' },
+  },
+  {
+    id: 'open.archiveCompare',
+    titleKey: 'ui.archiveCompare',
+    keywords: ['archive', 'zip', 'tar', '7z', 'compare', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Z'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/compare/folder', titleKey: 'ui.archiveCompare' },
+  },
+  {
+    id: 'script.run',
+    titleKey: 'ui.runScript',
+    keywords: ['script', 'run', 'automation'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'C'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'run-script' },
+  },
+  {
+    id: 'report.save',
+    titleKey: 'ui.saveReport',
+    keywords: ['report', 'save', 'export'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'P'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'save-report' },
   },
 ]
 

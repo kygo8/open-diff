@@ -189,11 +189,12 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     type: 'script',
     title: 'Script',
     titleKey: 'ui.script',
-    summary: 'Run automation scripts to load, compare, report, and stop a session',
+    summary:
+      'Run automation scripts with LOAD/COMPARE/REPORT, file ops, IF/ELSE, CALL/INCLUDE, samples, run log, and Stop',
     summaryKey: 'session.summary.script',
     priority: 'P2',
     implemented: true,
-    maturity: 'partial',
+    maturity: 'ready',
     route: '/reports/scripts',
   },
 ]

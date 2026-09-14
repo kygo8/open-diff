@@ -156,7 +156,7 @@ Open Diff includes command-line and scripted workflows for the commands that are
 - Run comparisons from the command line, including `shell-compare`, `open`, `compare [--quiet]`, and `open-diff-cli --help` for session flags and exit codes.
 - Install optional macOS/Linux shell helpers (`.desktop` Open With or Open With `.app` stub) from Settings; Windows Explorer verbs remain available.
 - Generate machine-readable results.
-- Execute supported script commands such as LOAD, COMPARE, REPORT, and SYNC.
+- Execute supported script commands such as LOAD, COMPARE, REPORT, SYNC, IF/ELSE, CALL, and INCLUDE.
 - Generate Git difftool, Git mergetool, and Subversion external diff setup commands.
 
 ## Translations
@@ -258,10 +258,10 @@ Before creating a release tag, make sure the version is synchronized across:
 
 These items stay unimplemented and are labeled as such in the UI:
 
-- Hardened / production OAuth for Dropbox/OneDrive (Remote Profiles now open a browser authorize URL from a user-supplied client id and accept a pasted redirect URL or access token; no bundled app secrets). Dropbox API v2 and Microsoft Graph list/read/upload accept the stored access token; not production-hardened. S3 list/read/upload with access-key credentials is available; not production-hardened. FTPS list/read with explicit or implicit TLS is available; not production-hardened. SVN list/read/upload via the `svn` CLI is available (basic auth / anonymous; not production-hardened).
-- Remaining archive write gaps beyond ZIP/7z/TAR/TAR.GZ/GZIP (those write/replace/delete and folder-compare copy-in paths are live). Exotic archive formats beyond that set stay out of scope.
-- Remaining automation script language coverage (full legacy dialects). The script session runs LOAD/COMPARE/REPORT plus file verbs, VIEW/ALIGN/WAIT, MKDIR/ECHO, sample scripts, a run log, and Stop; unknown names return `unsupported`.
-- Remaining niche shortcut chords beyond the shipped open/session/merge-conflict/minor/expand/collapse/sync defaults, and remaining report formats beyond the shipped HTML/side-by-side HTML/text/JSON/XML/CSV/Markdown exports.
+- Hardened / production OAuth for Dropbox/OneDrive (Remote Profiles open a browser authorize URL from a user-supplied client id and accept a pasted redirect URL or access token; no bundled app secrets). Dropbox API v2 and Microsoft Graph list/read/upload accept the stored access token; not production-hardened. S3, FTPS, and SVN remotes are available; not production-hardened.
+- RAR archive **write**/edit (read/list via pure-Rust `rars` is available). Remaining exotic archive write gaps beyond ZIP/7z/TAR/TAR.GZ/GZIP stay out of scope.
+- Advanced legacy script dialect features beyond the shipped subset (nested expression IF, interactive prompts, and vendor-specific verbs). The script session already runs LOAD/COMPARE/REPORT, file verbs, IF/ELSE/ENDIF, CALL/INCLUDE, REM/CD, aliases, samples, a run log, and Stop.
+- Niche report layouts beyond the shipped HTML/side-by-side HTML/text/JSON/XML/CSV/Markdown/TSV/YAML exports.
 
 ## Typical Use Cases
 

@@ -47,7 +47,7 @@ describe('sessionCatalog', () => {
     expect(byType['text-patch']).toBe('ready')
     expect(byType['registry-compare']).toBe('ready')
 
-    expect(byType.script).toBe('partial')
+    expect(byType.script).toBe('ready')
     expect(sessionCatalog.every((entry) => Boolean(entry.maturity))).toBe(true)
   })
 })

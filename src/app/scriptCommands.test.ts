@@ -27,6 +27,10 @@ describe('scriptCommands', () => {
     expect(unsupportedScriptCommands).toEqual([])
     expect(supportedScriptCommands).toContain('CRITERIA')
     expect(supportedScriptCommands).toContain('FOLDER-SYNC-REPORT')
+    expect(supportedScriptCommands).toContain('IF')
+    expect(supportedScriptCommands).toContain('CALL')
+    expect(supportedScriptCommands).toContain('INCLUDE')
+    expect(supportedScriptCommands).toContain('FOLDER-COMPARE')
     expect(supportedScriptCommands).toContain('FOLDER-MERGE-REPORT')
     expect(supportedScriptCommands).toContain('ARCHIVE-REPORT')
     expect(supportedScriptCommands).toContain('DATA-REPORT')
@@ -55,6 +59,7 @@ describe('scriptCommands', () => {
       'text-report',
       'folder-sync',
       'wait-log',
+      'if-else',
     ])
     expect(sampleScripts[0]?.source).toContain('compare')
     expect(sampleScripts[1]?.source).toContain('sync')

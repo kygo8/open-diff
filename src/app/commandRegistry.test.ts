@@ -80,6 +80,25 @@ describe('commandRegistry', () => {
     expect(commandRegistry.find((command) => command.id === 'view.expandAll')?.enabled).toBe(true)
     expect(commandRegistry.find((command) => command.id === 'view.collapseAll')?.enabled).toBe(true)
     expect(commandRegistry.find((command) => command.id === 'sync.syncNow')?.enabled).toBe(true)
+    expect(commandRegistry.find((command) => command.id === 'open.pictureCompare')?.enabled).toBe(
+      true,
+    )
+    expect(
+      commandRegistry.find((command) => command.id === 'open.mediaCompare')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'Alt', 'A'],
+      scope: 'global',
+    })
+    expect(commandRegistry.find((command) => command.id === 'script.run')?.action).toEqual({
+      type: 'view-action',
+      name: 'run-script',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'report.save')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'Shift', 'P'],
+      scope: 'global',
+    })
   })
 
   it('filters commands by title and keywords', () => {

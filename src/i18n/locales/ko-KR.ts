@@ -322,6 +322,7 @@ export const koKR: LanguagePack = {
     'ui.s3': 'S3',
     'ui.s3Bucket': '버킷',
     'ui.s3Region': '리전',
+    'ui.s3RegionPlaceholder': 'us-east-1',
     'ui.s3PathStyle': '경로 스타일 엔드포인트',
     'ui.accessKeyId': '액세스 키 ID',
     'ui.secretAccessKey': '비밀 액세스 키',

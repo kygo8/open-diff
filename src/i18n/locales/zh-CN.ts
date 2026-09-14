@@ -312,6 +312,7 @@ export const zhCN: LanguagePack = {
     'ui.s3': 'S3',
     'ui.s3Bucket': '存储桶',
     'ui.s3Region': '区域',
+    'ui.s3RegionPlaceholder': 'us-east-1',
     'ui.s3PathStyle': '路径风格端点',
     'ui.accessKeyId': '访问密钥 ID',
     'ui.secretAccessKey': '秘密访问密钥',

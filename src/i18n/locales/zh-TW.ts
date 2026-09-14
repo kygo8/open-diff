@@ -313,6 +313,7 @@ export const zhTW: LanguagePack = {
     'ui.s3': 'S3',
     'ui.s3Bucket': '儲存貯體',
     'ui.s3Region': '區域',
+    'ui.s3RegionPlaceholder': 'us-east-1',
     'ui.s3PathStyle': '路徑風格端點',
     'ui.accessKeyId': '存取金鑰 ID',
     'ui.secretAccessKey': '秘密存取金鑰',

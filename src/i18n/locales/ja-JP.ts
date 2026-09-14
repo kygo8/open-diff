@@ -393,6 +393,7 @@ export const jaJP: LanguagePack = {
     'ui.s3': 'S3',
     'ui.s3Bucket': 'バケット',
     'ui.s3Region': 'リージョン',
+    'ui.s3RegionPlaceholder': 'us-east-1',
     'ui.s3PathStyle': 'パススタイルエンドポイント',
     'ui.accessKeyId': 'アクセスキー ID',
     'ui.secretAccessKey': 'シークレットアクセスキー',

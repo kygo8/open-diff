@@ -335,6 +335,7 @@ export const deDE: LanguagePack = {
     'ui.s3': 'S3',
     'ui.s3Bucket': 'Bucket',
     'ui.s3Region': 'Region',
+    'ui.s3RegionPlaceholder': 'us-east-1',
     'ui.s3PathStyle': 'Pfadstil-Endpunkt',
     'ui.accessKeyId': 'Zugriffsschlüssel-ID',
     'ui.secretAccessKey': 'Geheimer Zugriffsschlüssel',

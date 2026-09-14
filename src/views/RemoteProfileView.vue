@@ -712,7 +712,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
                 v-model="draft.region"
                 data-testid="remote-profile-region-input"
                 type="text"
-                placeholder="us-east-1"
+                :placeholder="$t('ui.s3RegionPlaceholder')"
               />
             </label>
             <label

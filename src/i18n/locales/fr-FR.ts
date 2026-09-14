@@ -331,6 +331,7 @@ export const frFR: LanguagePack = {
     'ui.s3': 'S3',
     'ui.s3Bucket': 'Bucket',
     'ui.s3Region': 'Région',
+    'ui.s3RegionPlaceholder': 'us-east-1',
     'ui.s3PathStyle': 'Point de terminaison path-style',
     'ui.accessKeyId': "ID de clé d'accès",
     'ui.secretAccessKey': "Clé d'accès secrète",

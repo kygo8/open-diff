@@ -331,6 +331,7 @@ export const esES: LanguagePack = {
     'ui.s3': 'S3',
     'ui.s3Bucket': 'Bucket',
     'ui.s3Region': 'Región',
+    'ui.s3RegionPlaceholder': 'us-east-1',
     'ui.s3PathStyle': 'Endpoint path-style',
     'ui.accessKeyId': 'ID de clave de acceso',
     'ui.secretAccessKey': 'Clave de acceso secreta',

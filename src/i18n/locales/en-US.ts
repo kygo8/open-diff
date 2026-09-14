@@ -394,6 +394,7 @@ export const enUS: LanguagePack = {
     'ui.s3': 'S3',
     'ui.s3Bucket': 'Bucket',
     'ui.s3Region': 'Region',
+    'ui.s3RegionPlaceholder': 'us-east-1',
     'ui.s3PathStyle': 'Path-style endpoint',
     'ui.accessKeyId': 'Access key ID',
     'ui.secretAccessKey': 'Secret access key',

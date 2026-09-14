@@ -410,6 +410,22 @@ export interface RegistryCompareRequest {
   rightName?: string
 }
 
+export interface RegistryLiveCompareRequest {
+  leftKey: string
+  rightKey: string
+  leftName?: string
+  rightName?: string
+}
+
+export interface RegistryHiveCompareRequest {
+  leftPath: string
+  rightPath: string
+  leftRoot?: string
+  rightRoot?: string
+  leftName?: string
+  rightName?: string
+}
+
 export type RegistryDiffStatus = 'added' | 'removed' | 'modified' | 'unchanged'
 
 export interface RegistryValueSide {

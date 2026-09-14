@@ -20,7 +20,7 @@ pub struct ScriptCommand {
 pub enum ScriptCommandKind {
     Load { paths: Vec<String> },
     Filter { patterns: Vec<String> },
-    Compare,
+    Compare { options: Vec<String> },
     TextReport { output: String },
     FolderReport { output: String },
     FileReport { output: String },
@@ -51,6 +51,9 @@ pub enum ScriptCommandKind {
     FolderMergeReport { output: String },
     ArchiveReport { output: String },
     Exit,
+    View { mode: String },
+    Align { mode: String },
+    Wait { milliseconds: u64 },
     Unsupported { name: String },
 }
 
@@ -123,6 +126,12 @@ pub struct ScriptRuntimeState {
     pub criteria_acknowledged: Vec<String>,
     /// Set by EXIT/CLOSE so the runner stops without treating remaining lines as errors.
     pub exited: bool,
+    /// Total milliseconds paused by WAIT/SLEEP.
+    pub waited_ms: u64,
+    /// Last VIEW mode token.
+    pub view_mode: Option<String>,
+    /// Last ALIGN mode token.
+    pub align_mode: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -373,9 +382,12 @@ where
                     })?;
                 state.filters = expanded_patterns;
             }
-            ScriptCommandKind::Compare => {
+            ScriptCommandKind::Compare { options } => {
                 if state.load_paths.is_empty() {
                     return Err(execution_error(command, "COMPARE requires LOAD first"));
+                }
+                if !options.is_empty() {
+                    apply_criteria_command(command, &mut state, options, &execution.variables)?;
                 }
 
                 let summary = engine
@@ -437,7 +449,10 @@ where
             ScriptCommandKind::Filter { patterns } => {
                 state.filters = expand_command_values(command, patterns, &execution.variables)?;
             }
-            ScriptCommandKind::Compare => {
+            ScriptCommandKind::Compare { options } => {
+                if !options.is_empty() {
+                    apply_criteria_command(command, &mut state, options, &execution.variables)?;
+                }
                 run_compare_command(command, &mut state, compare_engine)?;
             }
             ScriptCommandKind::TextReport { output } => {
@@ -785,6 +800,39 @@ where
             }
             ScriptCommandKind::ArchiveReport { output } => {
                 run_archive_report_command(command, &mut state, output, &execution.variables)?;
+            }
+            ScriptCommandKind::View { mode } => {
+                let values = expand_command_values(
+                    command,
+                    std::slice::from_ref(mode),
+                    &execution.variables,
+                )?;
+                state.view_mode = Some(values[0].clone());
+                state.options.push(ScriptOption {
+                    key: "view".to_owned(),
+                    value: values[0].clone(),
+                });
+                state.file_operations.push(format!("VIEW {}", values[0]));
+            }
+            ScriptCommandKind::Align { mode } => {
+                let values = expand_command_values(
+                    command,
+                    std::slice::from_ref(mode),
+                    &execution.variables,
+                )?;
+                state.align_mode = Some(values[0].clone());
+                state.options.push(ScriptOption {
+                    key: "align".to_owned(),
+                    value: values[0].clone(),
+                });
+                state.file_operations.push(format!("ALIGN {}", values[0]));
+            }
+            ScriptCommandKind::Wait { milliseconds } => {
+                if *milliseconds > 0 {
+                    std::thread::sleep(std::time::Duration::from_millis(*milliseconds));
+                }
+                state.waited_ms = state.waited_ms.saturating_add(*milliseconds);
+                state.file_operations.push(format!("WAIT {milliseconds}"));
             }
             ScriptCommandKind::Exit => {
                 state.exited = true;
@@ -1134,7 +1182,10 @@ fn script_command_log_status(command: &ScriptCommandKind) -> LogStatus {
         | ScriptCommandKind::Select { .. }
         | ScriptCommandKind::Expand { .. }
         | ScriptCommandKind::Collapse { .. }
-        | ScriptCommandKind::Exit => LogStatus::Info,
+        | ScriptCommandKind::Exit
+        | ScriptCommandKind::View { .. }
+        | ScriptCommandKind::Align { .. }
+        | ScriptCommandKind::Wait { .. } => LogStatus::Info,
         _ => LogStatus::Succeeded,
     }
 }
@@ -1144,7 +1195,7 @@ impl ScriptCommandKind {
         match self {
             ScriptCommandKind::Load { .. } => "LOAD",
             ScriptCommandKind::Filter { .. } => "FILTER",
-            ScriptCommandKind::Compare => "COMPARE",
+            ScriptCommandKind::Compare { .. } => "COMPARE",
             ScriptCommandKind::TextReport { .. } => "TEXT-REPORT",
             ScriptCommandKind::FolderReport { .. } => "FOLDER-REPORT",
             ScriptCommandKind::FileReport { .. } => "FILE-REPORT",
@@ -1175,6 +1226,9 @@ impl ScriptCommandKind {
             ScriptCommandKind::FolderMergeReport { .. } => "FOLDER-MERGE-REPORT",
             ScriptCommandKind::ArchiveReport { .. } => "ARCHIVE-REPORT",
             ScriptCommandKind::Exit => "EXIT",
+            ScriptCommandKind::View { .. } => "VIEW",
+            ScriptCommandKind::Align { .. } => "ALIGN",
+            ScriptCommandKind::Wait { .. } => "WAIT",
             ScriptCommandKind::Unsupported { .. } => "UNSUPPORTED",
         }
     }
@@ -1517,13 +1571,39 @@ fn parse_command(
                 patterns: args.to_vec(),
             })
         }
-        "COMPARE" => {
-            if !args.is_empty() {
-                return Err(parse_error(line, "COMPARE does not accept arguments"));
+        "COMPARE" => Ok(ScriptCommandKind::Compare {
+            options: args.to_vec(),
+        }),
+        "VIEW" => {
+            if args.len() != 1 {
+                return Err(parse_error(line, "VIEW requires a mode"));
             }
-
-            Ok(ScriptCommandKind::Compare)
+            Ok(ScriptCommandKind::View {
+                mode: args[0].clone(),
+            })
         }
+        "ALIGN" => {
+            if args.len() != 1 {
+                return Err(parse_error(line, "ALIGN requires a mode"));
+            }
+            Ok(ScriptCommandKind::Align {
+                mode: args[0].clone(),
+            })
+        }
+        "WAIT" | "SLEEP" => {
+            if args.len() != 1 {
+                return Err(parse_error(line, "WAIT/SLEEP requires milliseconds"));
+            }
+            let milliseconds = args[0].parse::<u64>().map_err(|_| {
+                parse_error(line, format!("invalid WAIT/SLEEP duration: {}", args[0]))
+            })?;
+            Ok(ScriptCommandKind::Wait { milliseconds })
+        }
+        "EXPANDALL" | "EXPAND-ALL" => Ok(ScriptCommandKind::Expand { path: None }),
+        "COLLAPSEALL" | "COLLAPSE-ALL" => Ok(ScriptCommandKind::Collapse { path: None }),
+        "MERGE" => parse_single_output_command(line, args, |output| {
+            ScriptCommandKind::FolderMergeReport { output }
+        }),
         "TEXT-REPORT" => parse_single_output_command(line, args, |output| {
             ScriptCommandKind::TextReport { output }
         }),
@@ -1721,6 +1801,15 @@ pub fn supported_script_commands() -> &'static [&'static str] {
         "SET",
         "EXIT",
         "CLOSE",
+        "VIEW",
+        "ALIGN",
+        "WAIT",
+        "SLEEP",
+        "EXPANDALL",
+        "EXPAND-ALL",
+        "COLLAPSEALL",
+        "COLLAPSE-ALL",
+        "MERGE",
     ]
 }
 
@@ -2142,7 +2231,11 @@ fn parse_expand_collapse_command(
         ));
     }
 
-    let path = args.first().cloned();
+    let path = match args.first() {
+        None => None,
+        Some(value) if value.eq_ignore_ascii_case("ALL") => None,
+        Some(value) => Some(value.clone()),
+    };
     if expand {
         Ok(ScriptCommandKind::Expand { path })
     } else {
@@ -2544,7 +2637,9 @@ mod tests {
                 },
                 ScriptCommand {
                     line: 5,
-                    kind: ScriptCommandKind::Compare,
+                    kind: ScriptCommandKind::Compare {
+                        options: Vec::new(),
+                    },
                 },
                 ScriptCommand {
                     line: 6,
@@ -2560,6 +2655,90 @@ mod tests {
                 },
             ]
         );
+    }
+
+    #[test]
+    fn parses_and_runs_niche_script_verbs() {
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary {
+                    compared: 1,
+                    different: 0,
+                })
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script(
+            r#"
+            VIEW side-by-side
+            ALIGN center
+            WAIT 1
+            SLEEP 2
+            EXPAND ALL
+            COLLAPSEALL
+            LOAD left right
+            COMPARE binary
+            "#,
+        )
+        .expect("niche verbs should parse");
+
+        assert!(matches!(
+            script.commands[0].kind,
+            ScriptCommandKind::View { .. }
+        ));
+        assert!(matches!(
+            script.commands[1].kind,
+            ScriptCommandKind::Align { .. }
+        ));
+        assert!(matches!(
+            script.commands[2].kind,
+            ScriptCommandKind::Wait { milliseconds: 1 }
+        ));
+        assert!(matches!(
+            script.commands[3].kind,
+            ScriptCommandKind::Wait { milliseconds: 2 }
+        ));
+        assert!(matches!(
+            script.commands[4].kind,
+            ScriptCommandKind::Expand { path: None }
+        ));
+        assert!(matches!(
+            script.commands[5].kind,
+            ScriptCommandKind::Collapse { path: None }
+        ));
+        assert!(matches!(
+            &script.commands[7].kind,
+            ScriptCommandKind::Compare { options } if options == &["binary".to_owned()]
+        ));
+
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext::default(),
+            &mut NoopCompare,
+            &mut NoopReport,
+        )
+        .expect("niche verbs should run");
+        assert_eq!(result.state.view_mode.as_deref(), Some("side-by-side"));
+        assert_eq!(result.state.align_mode.as_deref(), Some("center"));
+        assert_eq!(result.state.waited_ms, 3);
+        assert!(!result.state.folder_tree_expand_all); // last COLLAPSEALL
+        assert!(result.state.criteria.is_some());
+        assert!(supported_script_commands().contains(&"VIEW"));
+        assert!(supported_script_commands().contains(&"ALIGN"));
+        assert!(supported_script_commands().contains(&"WAIT"));
+        assert!(supported_script_commands().contains(&"SLEEP"));
+        assert!(supported_script_commands().contains(&"EXPANDALL"));
+        assert!(supported_script_commands().contains(&"MERGE"));
     }
 
     #[test]
@@ -3070,6 +3249,9 @@ mod tests {
                 criteria: None,
                 criteria_acknowledged: Vec::new(),
                 exited: false,
+                waited_ms: 0,
+                view_mode: None,
+                align_mode: None,
             }
         );
         assert_eq!(

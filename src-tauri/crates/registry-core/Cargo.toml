@@ -7,3 +7,5 @@ license.workspace = true
 
 [dependencies]
 serde.workspace = true
+
+regf-rs = "0.1.1"

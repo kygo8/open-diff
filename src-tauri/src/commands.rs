@@ -2639,6 +2639,105 @@ pub fn compare_registry_exports(
     ))
 }
 
+fn load_live_registry_document(
+    name: String,
+    key: &str,
+) -> Result<registry_core::RegistryDocument, AppErrorPayload> {
+    #[cfg(windows)]
+    {
+        let parsed = registry_core::parse_registry_key_path(key).map_err(registry_error)?;
+        registry_core::NativeRegistryLoader::load_subtree(
+            name,
+            &registry_core::WindowsNativeRegistryReader,
+            parsed.hive,
+            parsed.path,
+        )
+        .map_err(registry_error)
+    }
+
+    #[cfg(not(windows))]
+    {
+        let _ = name;
+        Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.app.unknown.title",
+            format!("Live registry compare is available on Windows only (requested key: {key})"),
+        ))
+    }
+}
+
+/// Compare two live Windows registry key paths (e.g. `HKCU\Software\OpenDiff`).
+/// Read-only. Offline platforms should use `.reg` exports or hive files instead.
+#[tauri::command]
+pub fn compare_registry_live_keys(
+    left_key: String,
+    right_key: String,
+    left_name: Option<String>,
+    right_name: Option<String>,
+) -> Result<RegistryCompareResponse, AppErrorPayload> {
+    let left_name = left_name.unwrap_or_else(|| left_key.clone());
+    let right_name = right_name.unwrap_or_else(|| right_key.clone());
+    let left_document = load_live_registry_document(left_name.clone(), &left_key)?;
+    let right_document = load_live_registry_document(right_name.clone(), &right_key)?;
+
+    Ok(compare_registry_documents(
+        &left_name,
+        &right_name,
+        &left_document,
+        &right_document,
+    ))
+}
+
+/// Compare two offline Windows REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT style).
+/// Works on every platform. Optional `root_subpath` limits the loaded subtree.
+#[tauri::command]
+pub fn compare_registry_hive_files(
+    left_path: String,
+    right_path: String,
+    left_root: Option<String>,
+    right_root: Option<String>,
+    left_name: Option<String>,
+    right_name: Option<String>,
+) -> Result<RegistryCompareResponse, AppErrorPayload> {
+    let left_name = left_name.unwrap_or_else(|| {
+        std::path::Path::new(&left_path)
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("left-hive")
+            .to_owned()
+    });
+    let right_name = right_name.unwrap_or_else(|| {
+        std::path::Path::new(&right_path)
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("right-hive")
+            .to_owned()
+    });
+    let left_hive = registry_core::infer_hive_for_file_name(&left_name);
+    let right_hive = registry_core::infer_hive_for_file_name(&right_name);
+    let left_document = registry_core::HiveFileLoader::load_path(
+        left_name.clone(),
+        &left_path,
+        left_hive,
+        left_root.unwrap_or_default(),
+    )
+    .map_err(registry_error)?;
+    let right_document = registry_core::HiveFileLoader::load_path(
+        right_name.clone(),
+        &right_path,
+        right_hive,
+        right_root.unwrap_or_default(),
+    )
+    .map_err(registry_error)?;
+
+    Ok(compare_registry_documents(
+        &left_name,
+        &right_name,
+        &left_document,
+        &right_document,
+    ))
+}
+
 #[tauri::command]
 pub fn compare_version_files(
     left_path: String,
@@ -6523,6 +6622,68 @@ mod tests {
         assert!(bytes.contains("workspace"));
         assert!(bytes.contains("main.rs"));
         assert!(!bytes.contains("generated-"));
+    }
+
+    #[test]
+    fn compare_registry_hive_files_compares_synthetic_regf_sides() {
+        let root = unique_temp_dir("registry-hive-compare");
+        fs::create_dir_all(&root).expect("fixture directory should be created");
+
+        let mut left_hive = regf_rs::Hive::new_empty("ROOT");
+        left_hive.create_key(r"Software\OpenDiff").unwrap();
+        left_hive
+            .set_value(
+                r"Software\OpenDiff",
+                "Theme",
+                regf_rs::RegValue::Sz("dark".to_owned()),
+            )
+            .unwrap();
+        let left_path = root.join("left-SOFTWARE");
+        left_hive.save(&left_path).unwrap();
+
+        let mut right_hive = regf_rs::Hive::new_empty("ROOT");
+        right_hive.create_key(r"Software\OpenDiff").unwrap();
+        right_hive
+            .set_value(
+                r"Software\OpenDiff",
+                "Theme",
+                regf_rs::RegValue::Sz("light".to_owned()),
+            )
+            .unwrap();
+        let right_path = root.join("right-SOFTWARE");
+        right_hive.save(&right_path).unwrap();
+
+        let response = compare_registry_hive_files(
+            left_path.display().to_string(),
+            right_path.display().to_string(),
+            Some("Software".to_owned()),
+            Some("Software".to_owned()),
+            None,
+            None,
+        )
+        .expect("hive files should compare");
+
+        assert_eq!(response.summary.modified, 1);
+        assert_eq!(response.summary.added + response.summary.removed, 0);
+        assert!(
+            !response.tree.is_empty(),
+            "hive compare should return a key tree"
+        );
+    }
+
+    #[test]
+    fn compare_registry_live_keys_reports_non_windows_honestly() {
+        #[cfg(not(windows))]
+        {
+            let error = compare_registry_live_keys(
+                r"HKCU\Software\OpenDiff".to_owned(),
+                r"HKLM\Software\OpenDiff".to_owned(),
+                None,
+                None,
+            )
+            .expect_err("live compare should refuse off Windows");
+            assert!(error.debug_message.to_ascii_lowercase().contains("windows"));
+        }
     }
 
     #[test]

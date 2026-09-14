@@ -270,13 +270,20 @@ impl RegFileParser {
     }
 }
 
-fn parse_reg_key(input: &str) -> RegistryResult<RegistryKey> {
-    let (hive_name, path) = input
-        .split_once('\\')
-        .ok_or_else(|| RegistryError::Parse(format!("invalid registry key: {input}")))?;
-    let hive = parse_hive(hive_name)?;
+pub fn parse_registry_key_path(input: &str) -> RegistryResult<RegistryKey> {
+    let normalized = input.trim().replace('/', "\\");
+    parse_reg_key(&normalized)
+}
 
-    Ok(RegistryKey::new(hive, path))
+fn parse_reg_key(input: &str) -> RegistryResult<RegistryKey> {
+    let input = input.trim().trim_start_matches('\\');
+    if let Some((hive_name, path)) = input.split_once('\\') {
+        let hive = parse_hive(hive_name)?;
+        return Ok(RegistryKey::new(hive, path));
+    }
+
+    let hive = parse_hive(input)?;
+    Ok(RegistryKey::new(hive, ""))
 }
 
 fn parse_hive(input: &str) -> RegistryResult<RegistryHive> {
@@ -615,6 +622,143 @@ fn parse_reg_query_values(
     Ok(values)
 }
 
+pub fn infer_hive_for_file_name(name: &str) -> RegistryHive {
+    let upper = name.to_ascii_uppercase();
+    if upper.contains("NTUSER") || upper.contains("USRCLASS") {
+        RegistryHive::CurrentUser
+    } else if upper.contains("USER") {
+        RegistryHive::Users
+    } else {
+        RegistryHive::LocalMachine
+    }
+}
+
+fn map_regf_value(value: regf_rs::RegValue) -> RegistryValueData {
+    match value {
+        regf_rs::RegValue::None => RegistryValueData::None,
+        regf_rs::RegValue::Sz(text) => RegistryValueData::String(text),
+        regf_rs::RegValue::ExpandSz(text) => RegistryValueData::ExpandString(text),
+        regf_rs::RegValue::Binary(bytes) => RegistryValueData::Binary(bytes),
+        regf_rs::RegValue::Dword(value) | regf_rs::RegValue::DwordBigEndian(value) => {
+            RegistryValueData::Dword(value)
+        }
+        regf_rs::RegValue::MultiSz(values) => RegistryValueData::MultiString(values),
+        regf_rs::RegValue::Qword(value) => RegistryValueData::Qword(value),
+        regf_rs::RegValue::Other { data, .. } => RegistryValueData::Binary(data),
+    }
+}
+
+/// Load an offline Windows REGF hive file (SYSTEM/SOFTWARE/NTUSER.DAT style) into a
+/// [`RegistryDocument`]. Paths inside the document use `/` separators relative to the
+/// hive root (or an optional subpath). This works on every platform — no live OS
+/// registry is required.
+pub struct HiveFileLoader;
+
+impl HiveFileLoader {
+    pub fn load_bytes(
+        name: impl Into<String>,
+        bytes: Vec<u8>,
+        hive: RegistryHive,
+        root_subpath: impl AsRef<str>,
+    ) -> RegistryResult<RegistryDocument> {
+        let name = name.into();
+        let hive_file = regf_rs::Hive::from_bytes(bytes).map_err(|error| {
+            RegistryError::Parse(format!("invalid registry hive file ({name}): {error}"))
+        })?;
+        let root_subpath = normalize_registry_path(root_subpath.as_ref()).replace('/', "\\");
+        let mut document = RegistryDocument::new(name);
+        load_hive_subtree(
+            &hive_file,
+            hive,
+            &root_subpath,
+            &root_subpath,
+            &mut document,
+        )?;
+        Ok(document)
+    }
+
+    pub fn load_path(
+        name: impl Into<String>,
+        path: impl AsRef<std::path::Path>,
+        hive: RegistryHive,
+        root_subpath: impl AsRef<str>,
+    ) -> RegistryResult<RegistryDocument> {
+        let path = path.as_ref();
+        let bytes = std::fs::read(path).map_err(|error| {
+            RegistryError::Backend(format!(
+                "failed to read hive file {}: {error}",
+                path.display()
+            ))
+        })?;
+        Self::load_bytes(name, bytes, hive, root_subpath)
+    }
+}
+
+fn load_hive_subtree(
+    hive_file: &regf_rs::Hive,
+    hive: RegistryHive,
+    absolute_path: &str,
+    document_path: &str,
+    document: &mut RegistryDocument,
+) -> RegistryResult<()> {
+    let lookup = if absolute_path.is_empty() {
+        String::new()
+    } else {
+        absolute_path.to_owned()
+    };
+
+    // Ensure the key exists (root path "" opens the hive root).
+    hive_file
+        .open(&lookup)
+        .map_err(|error| RegistryError::KeyNotFound(format!("{lookup} ({error})")))?;
+
+    let normalized_doc = normalize_registry_path(document_path);
+    document.keys.insert(
+        registry_key_id(hive, &normalized_doc),
+        RegistryKey::new(hive, &normalized_doc),
+    );
+
+    let values = hive_file.list_values(&lookup).map_err(|error| {
+        RegistryError::Backend(format!("failed to list hive values at {lookup}: {error}"))
+    })?;
+    for (name, value) in values {
+        let value_name = if name.is_empty() {
+            "@".to_owned()
+        } else {
+            name
+        };
+        let registry_value =
+            RegistryValue::new(hive, &normalized_doc, value_name, map_regf_value(value));
+        document.values.insert(
+            registry_value_id(
+                registry_value.hive,
+                &registry_value.key_path,
+                &registry_value.name,
+            ),
+            registry_value,
+        );
+    }
+
+    let children = hive_file.list_subkeys(&lookup).map_err(|error| {
+        RegistryError::Backend(format!("failed to list hive subkeys at {lookup}: {error}"))
+    })?;
+    for child in children {
+        let child_abs = if lookup.is_empty() {
+            child.clone()
+        } else {
+            format!("{lookup}\\{child}")
+        };
+        let child_doc = if normalized_doc.is_empty() {
+            normalize_registry_path(&child)
+        } else {
+            format!("{normalized_doc}/{}", normalize_registry_path(&child))
+        };
+        load_hive_subtree(hive_file, hive, &child_abs, &child_doc, document)?;
+    }
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -820,5 +964,62 @@ mod tests {
             error,
             RegistryError::KeyNotFound(path) if path == "HKCU/Software/Missing"
         ));
+    }
+
+    #[test]
+    fn parse_registry_key_path_accepts_short_and_long_hive_names() {
+        let key = parse_registry_key_path(r"HKCU\Software\OpenDiff").unwrap();
+        assert_eq!(key.hive, RegistryHive::CurrentUser);
+        assert_eq!(key.path, "Software/OpenDiff");
+
+        let root = parse_registry_key_path("HKLM").unwrap();
+        assert_eq!(root.hive, RegistryHive::LocalMachine);
+        assert_eq!(root.path, "");
+    }
+
+    #[test]
+    fn hive_file_loader_reads_synthetic_regf_bytes() {
+        let mut hive = regf_rs::Hive::new_empty("ROOT");
+        hive.create_key(r"Software\OpenDiff").unwrap();
+        hive.set_value(
+            r"Software\OpenDiff",
+            "Theme",
+            regf_rs::RegValue::Sz("dark".to_owned()),
+        )
+        .unwrap();
+        let bytes = hive.to_bytes();
+
+        let document =
+            HiveFileLoader::load_bytes("SOFTWARE", bytes, RegistryHive::LocalMachine, "Software")
+                .unwrap();
+
+        assert_eq!(
+            document
+                .value(RegistryHive::LocalMachine, "Software/OpenDiff", "Theme")
+                .unwrap()
+                .data,
+            RegistryValueData::String("dark".to_owned())
+        );
+        assert!(document.key(RegistryHive::LocalMachine, "Software").is_ok());
+        assert_eq!(
+            infer_hive_for_file_name("NTUSER.DAT"),
+            RegistryHive::CurrentUser
+        );
+        assert_eq!(
+            infer_hive_for_file_name("SOFTWARE"),
+            RegistryHive::LocalMachine
+        );
+    }
+
+    #[test]
+    fn hive_file_loader_rejects_non_regf_bytes() {
+        let error = HiveFileLoader::load_bytes(
+            "broken.dat",
+            b"not-a-hive".to_vec(),
+            RegistryHive::LocalMachine,
+            "",
+        )
+        .unwrap_err();
+        assert!(matches!(error, RegistryError::Parse(_)));
     }
 }

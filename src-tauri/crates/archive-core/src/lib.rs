@@ -87,6 +87,8 @@ pub enum ArchiveFormat {
     TarGz,
     Gz,
     SevenZip,
+    /// Read-only RAR list/extract via pure-Rust `rars` (no write).
+    Rar,
 }
 
 impl ArchiveFormat {
@@ -114,13 +116,17 @@ impl ArchiveFormat {
             return Ok(Self::SevenZip);
         }
 
+        if lower_name.ends_with(".rar") {
+            return Ok(Self::Rar);
+        }
+
         Err(ArchiveError::UnsupportedFormat(name.to_owned()))
     }
 
     pub fn is_implemented(self) -> bool {
         matches!(
             self,
-            Self::Zip | Self::Tar | Self::TarGz | Self::Gz | Self::SevenZip
+            Self::Zip | Self::Tar | Self::TarGz | Self::Gz | Self::SevenZip | Self::Rar
         )
     }
 
@@ -180,6 +186,7 @@ impl ArchiveReader {
             ArchiveFormat::TarGz => read_tar_document(name, bytes, true),
             ArchiveFormat::Gz => read_gzip_document(name, bytes),
             ArchiveFormat::SevenZip => read_seven_zip_document(name, bytes),
+            ArchiveFormat::Rar => read_rar_document(name, bytes),
         }
     }
 
@@ -502,6 +509,9 @@ pub fn write_archive_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>>
         ArchiveFormat::TarGz => write_tar_gz_bytes(document),
         ArchiveFormat::Gz => write_gzip_bytes(document),
         ArchiveFormat::SevenZip => write_seven_zip_bytes(document),
+        ArchiveFormat::Rar => Err(ArchiveError::UnsupportedFormat(
+            "RAR write is not implemented".to_owned(),
+        )),
     }
 }
 
@@ -634,6 +644,32 @@ fn read_seven_zip_document(
             Ok(true)
         })
         .map_err(|error| ArchiveError::InvalidArchive(error.to_string()))?;
+
+    Ok(document)
+}
+
+fn read_rar_document(name: impl Into<String>, bytes: &[u8]) -> ArchiveResult<ArchiveDocument> {
+    if bytes.is_empty() {
+        return Err(ArchiveError::InvalidArchive(
+            "RAR payload is empty".to_owned(),
+        ));
+    }
+
+    let archive = rars::ArchiveReader::read(bytes)
+        .map_err(|error| ArchiveError::InvalidArchive(error.to_string()))?;
+    let mut document = ArchiveDocument::new(name);
+
+    for member in archive.members() {
+        if member.meta.is_directory {
+            continue;
+        }
+        let entry_name = String::from_utf8_lossy(member.meta.name_bytes()).into_owned();
+        let contents = archive
+            .read_member(member.meta.name_bytes(), None)
+            .map_err(|error| ArchiveError::InvalidArchive(error.to_string()))?
+            .unwrap_or_default();
+        document = document.with_file(entry_name, contents);
+    }
 
     Ok(document)
 }
@@ -1072,11 +1108,33 @@ mod tests {
 
     #[test]
     fn archive_reader_rejects_unknown_extensions() {
-        let error = ArchiveFormat::detect("release.rar").unwrap_err();
+        let error = ArchiveFormat::detect("release.cab").unwrap_err();
 
         assert!(matches!(
             error,
-            ArchiveError::UnsupportedFormat(format) if format == "release.rar"
+            ArchiveError::UnsupportedFormat(format) if format == "release.cab"
         ));
+    }
+
+    #[test]
+    fn rar_format_is_read_only() {
+        assert_eq!(
+            ArchiveFormat::detect("release.rar").unwrap(),
+            ArchiveFormat::Rar
+        );
+        assert!(ArchiveFormat::Rar.is_implemented());
+        assert!(!ArchiveFormat::Rar.supports_write());
+    }
+
+    #[test]
+    fn reads_rar_archive_built_with_rars() {
+        let mut builder = rars::Builder::new(rars::ArchiveVersion::Rar50);
+        builder
+            .add_bytes(b"hello.txt".to_vec(), b"hello-rar".to_vec(), None, None)
+            .expect("add bytes");
+        let bytes = builder.to_bytes().expect("build rar");
+        let document = ArchiveReader::open_bytes("sample.rar", &bytes).expect("read rar");
+        let vfs = ArchiveVfs::from_document(document);
+        assert_eq!(vfs.read("/hello.txt").unwrap(), b"hello-rar");
     }
 }

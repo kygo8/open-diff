@@ -602,6 +602,8 @@ watch(
       case 'next-conflict':
       case 'previous-conflict':
       case 'workspace-save':
+      case 'run-script':
+      case 'save-report':
         break
     }
   },

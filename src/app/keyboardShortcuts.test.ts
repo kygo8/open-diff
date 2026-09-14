@@ -99,74 +99,150 @@ describe('keyboardShortcuts', () => {
     input.remove()
     div.remove()
   })
-})
 
-it('matches niche default chords for sync, minor, expand, and merge conflicts', () => {
-  expect(
-    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('g', { ctrlKey: true, altKey: true }), {
-      getEffectiveShortcut: (command) => command.defaultShortcut,
-      routePath: '/',
-    }),
-  ).toBe('open.folderSync')
+  it('matches niche default chords for sync, minor, expand, and merge conflicts', () => {
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('g', { ctrlKey: true, altKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/',
+        },
+      ),
+    ).toBe('open.folderSync')
 
-  expect(
-    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('n', { ctrlKey: true, altKey: true }), {
-      getEffectiveShortcut: (command) => command.defaultShortcut,
-      routePath: '/',
-    }),
-  ).toBe('open.registryCompare')
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('n', { ctrlKey: true, altKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/',
+        },
+      ),
+    ).toBe('open.registryCompare')
 
-  expect(
-    findCommandIdForKeyboardEvent(
-      commandRegistry,
-      keyEvent('m', { ctrlKey: true, shiftKey: true }),
-      {
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('m', { ctrlKey: true, shiftKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/compare/folder',
+        },
+      ),
+    ).toBe('view.toggleMinor')
+
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('e', { ctrlKey: true, shiftKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/compare/folder',
+        },
+      ),
+    ).toBe('view.expandAll')
+
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('Enter', { ctrlKey: true, shiftKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/sync/folder',
+        },
+      ),
+    ).toBe('sync.syncNow')
+
+    expect(
+      findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F8'), {
+        getEffectiveShortcut: (command) => command.defaultShortcut,
+        routePath: '/merge/text',
+      }),
+    ).toBe('merge.nextConflict')
+
+    expect(
+      findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F8', { shiftKey: true }), {
+        getEffectiveShortcut: (command) => command.defaultShortcut,
+        routePath: '/merge/text',
+      }),
+    ).toBe('merge.previousConflict')
+
+    expect(
+      findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F8'), {
         getEffectiveShortcut: (command) => command.defaultShortcut,
         routePath: '/compare/folder',
-      },
-    ),
-  ).toBe('view.toggleMinor')
+      }),
+    ).toBeUndefined()
+  })
 
-  expect(
-    findCommandIdForKeyboardEvent(
-      commandRegistry,
-      keyEvent('e', { ctrlKey: true, shiftKey: true }),
-      {
-        getEffectiveShortcut: (command) => command.defaultShortcut,
-        routePath: '/compare/folder',
-      },
-    ),
-  ).toBe('view.expandAll')
+  it('resolves picture/media/version/archive opens and script/report chords', () => {
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('u', { ctrlKey: true, altKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/',
+        },
+      ),
+    ).toBe('open.pictureCompare')
 
-  expect(
-    findCommandIdForKeyboardEvent(
-      commandRegistry,
-      keyEvent('Enter', { ctrlKey: true, shiftKey: true }),
-      {
-        getEffectiveShortcut: (command) => command.defaultShortcut,
-        routePath: '/sync/folder',
-      },
-    ),
-  ).toBe('sync.syncNow')
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('a', { ctrlKey: true, altKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/',
+        },
+      ),
+    ).toBe('open.mediaCompare')
 
-  expect(
-    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F8'), {
-      getEffectiveShortcut: (command) => command.defaultShortcut,
-      routePath: '/merge/text',
-    }),
-  ).toBe('merge.nextConflict')
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('v', { ctrlKey: true, altKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/',
+        },
+      ),
+    ).toBe('open.versionCompare')
 
-  expect(
-    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F8', { shiftKey: true }), {
-      getEffectiveShortcut: (command) => command.defaultShortcut,
-      routePath: '/merge/text',
-    }),
-  ).toBe('merge.previousConflict')
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('z', { ctrlKey: true, altKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/',
+        },
+      ),
+    ).toBe('open.archiveCompare')
 
-  expect(
-    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F8'), {
-      getEffectiveShortcut: (command) => command.defaultShortcut,
-      routePath: '/compare/folder',
-    }),
-  ).toBeUndefined()
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('c', { ctrlKey: true, altKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/reports/scripts',
+        },
+      ),
+    ).toBe('script.run')
+
+    expect(
+      findCommandIdForKeyboardEvent(
+        commandRegistry,
+        keyEvent('p', { ctrlKey: true, shiftKey: true }),
+        {
+          getEffectiveShortcut: (command) => command.defaultShortcut,
+          routePath: '/reports/scripts',
+        },
+      ),
+    ).toBe('report.save')
+  })
 })

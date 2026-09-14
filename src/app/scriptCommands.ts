@@ -51,6 +51,17 @@ export const supportedScriptCommands = [
   'MERGE',
   'MKDIR',
   'ECHO',
+  'IF',
+  'ELSE',
+  'ENDIF',
+  'CALL',
+  'INCLUDE',
+  'REM',
+  'CD',
+  'FOLDER-COMPARE',
+  'FILE-COMPARE',
+  'DATA-COMPARE',
+  'NAME-FILTER',
 ] as const
 
 export const unsupportedScriptCommands = [] as const
@@ -95,6 +106,16 @@ export const waitLogExampleScript = [
   'echo done',
 ].join('\n')
 
+export const ifElseExampleScript = [
+  'echo start',
+  'if true',
+  'echo branch-true',
+  'else',
+  'echo branch-false',
+  'endif',
+  'rem control flow sample',
+].join('\n')
+
 export const sampleScripts: SampleScript[] = [
   {
     id: 'text-report',
@@ -110,5 +131,10 @@ export const sampleScripts: SampleScript[] = [
     id: 'wait-log',
     titleKey: 'ui.scriptSampleWaitLog',
     source: waitLogExampleScript,
+  },
+  {
+    id: 'if-else',
+    titleKey: 'ui.scriptSampleIfElse',
+    source: ifElseExampleScript,
   },
 ]

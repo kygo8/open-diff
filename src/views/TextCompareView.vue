@@ -212,6 +212,8 @@ watch(
       case 'previous-conflict':
       case 'sync-now':
       case 'workspace-save':
+      case 'run-script':
+      case 'save-report':
         break
     }
   },

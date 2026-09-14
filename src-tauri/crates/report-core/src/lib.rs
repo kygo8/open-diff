@@ -407,6 +407,159 @@ fn escape_markdown_cell(value: &str) -> String {
         .replace('\r', "")
 }
 
+pub fn render_tsv_report(report: &UnifiedReport) -> String {
+    let mut output = String::from("section\tlabel\tleft\tright\tstatus\n");
+
+    output.push_str(&tsv_row(
+        "metadata",
+        "title",
+        Some(&report.title),
+        None,
+        "unchanged",
+    ));
+    output.push_str(&tsv_row(
+        "metadata",
+        "generatedAt",
+        Some(&report.metadata.generated_at),
+        None,
+        "unchanged",
+    ));
+    if let Some(left) = report.metadata.left_source.as_deref() {
+        output.push_str(&tsv_row(
+            "metadata",
+            "leftSource",
+            Some(left),
+            None,
+            "unchanged",
+        ));
+    }
+    if let Some(right) = report.metadata.right_source.as_deref() {
+        output.push_str(&tsv_row(
+            "metadata",
+            "rightSource",
+            Some(right),
+            None,
+            "unchanged",
+        ));
+    }
+
+    for section in &report.sections {
+        let section_name = report_section_kind_label(&section.kind);
+        for row in &section.rows {
+            output.push_str(&tsv_row(
+                section_name,
+                &row.label,
+                row.left.as_deref(),
+                row.right.as_deref(),
+                row_status_label(&row.status),
+            ));
+        }
+    }
+
+    output
+}
+
+fn tsv_row(
+    section: &str,
+    label: &str,
+    left: Option<&str>,
+    right: Option<&str>,
+    status: &str,
+) -> String {
+    format!(
+        "{}\t{}\t{}\t{}\t{}\n",
+        escape_tsv(section),
+        escape_tsv(label),
+        escape_tsv(left.unwrap_or("")),
+        escape_tsv(right.unwrap_or("")),
+        escape_tsv(status),
+    )
+}
+
+fn escape_tsv(value: &str) -> String {
+    value.replace(['\t', '\n'], " ").replace('\r', "")
+}
+
+pub fn render_yaml_report(report: &UnifiedReport) -> String {
+    let mut output = String::new();
+    output.push_str("title: ");
+    output.push_str(&yaml_scalar(&report.title));
+    output.push('\n');
+    output.push_str("kind: ");
+    output.push_str(&yaml_scalar(report_kind_label(&report.kind)));
+    output.push('\n');
+    output.push_str("metadata:\n");
+    output.push_str("  generatedAt: ");
+    output.push_str(&yaml_scalar(&report.metadata.generated_at));
+    output.push('\n');
+    if let Some(left) = report.metadata.left_source.as_deref() {
+        output.push_str("  leftSource: ");
+        output.push_str(&yaml_scalar(left));
+        output.push('\n');
+    }
+    if let Some(right) = report.metadata.right_source.as_deref() {
+        output.push_str("  rightSource: ");
+        output.push_str(&yaml_scalar(right));
+        output.push('\n');
+    }
+    output.push_str("sections:\n");
+    for section in &report.sections {
+        output.push_str("- title: ");
+        output.push_str(&yaml_scalar(&section.title));
+        output.push('\n');
+        output.push_str("  kind: ");
+        output.push_str(&yaml_scalar(report_section_kind_label(&section.kind)));
+        output.push('\n');
+        output.push_str("  rows:\n");
+        for row in &section.rows {
+            output.push_str("  - label: ");
+            output.push_str(&yaml_scalar(&row.label));
+            output.push('\n');
+            output.push_str("    left: ");
+            output.push_str(&yaml_scalar(row.left.as_deref().unwrap_or("")));
+            output.push('\n');
+            output.push_str("    right: ");
+            output.push_str(&yaml_scalar(row.right.as_deref().unwrap_or("")));
+            output.push('\n');
+            output.push_str("    status: ");
+            output.push_str(&yaml_scalar(row_status_label(&row.status)));
+            output.push('\n');
+        }
+    }
+    output
+}
+
+fn yaml_scalar(value: &str) -> String {
+    if value.is_empty() {
+        return "\"\"".to_owned();
+    }
+    let needs_quotes = value.chars().any(|ch| {
+        ch.is_whitespace()
+            || matches!(
+                ch,
+                ':' | '#'
+                    | '{'
+                    | '}'
+                    | '['
+                    | ']'
+                    | ','
+                    | '&'
+                    | '*'
+                    | '!'
+                    | '|'
+                    | '>'
+                    | '\''
+                    | '"'
+                    | '%'
+            )
+    });
+    if needs_quotes {
+        format!("\"{}\"", value.replace('\\', "\\\\").replace('"', "\\\""))
+    } else {
+        value.to_owned()
+    }
+}
+
 pub fn render_json_report(report: &UnifiedReport) -> Result<String, serde_json::Error> {
     serde_json::to_string_pretty(report)
 }
@@ -802,6 +955,62 @@ mod tests {
         assert!(markdown.contains("- Left Source: left/"));
         assert!(markdown.contains("## Paths"));
         assert!(markdown.contains("| a\\|b | one | two | different |"));
+    }
+
+    #[test]
+    fn renders_tsv_report_with_tab_separated_rows() {
+        let report = UnifiedReport::new(
+            ReportKind::Folder,
+            "Folder Report",
+            ReportMetadata {
+                generated_at: "now".to_owned(),
+                left_source: Some("left/".to_owned()),
+                right_source: Some("right/".to_owned()),
+            },
+        )
+        .with_section(ReportSection {
+            kind: ReportSectionKind::Differences,
+            title: "Differences".to_owned(),
+            rows: vec![ReportRow {
+                label: "a\tb".to_owned(),
+                left: Some("one".to_owned()),
+                right: Some("two".to_owned()),
+                status: ReportRowStatus::Different,
+            }],
+        });
+
+        let tsv = render_tsv_report(&report);
+        assert!(tsv.starts_with("section\tlabel\tleft\tright\tstatus\n"));
+        assert!(tsv.contains("differences\ta b\tone\ttwo\tdifferent"));
+    }
+
+    #[test]
+    fn renders_yaml_report_with_sections() {
+        let report = UnifiedReport::new(
+            ReportKind::Folder,
+            "Folder Report",
+            ReportMetadata {
+                generated_at: "now".to_owned(),
+                left_source: Some("left/".to_owned()),
+                right_source: Some("right/".to_owned()),
+            },
+        )
+        .with_section(ReportSection {
+            kind: ReportSectionKind::Differences,
+            title: "Differences".to_owned(),
+            rows: vec![ReportRow {
+                label: "notes:md".to_owned(),
+                left: Some("old".to_owned()),
+                right: Some("new".to_owned()),
+                status: ReportRowStatus::Different,
+            }],
+        });
+
+        let yaml = render_yaml_report(&report);
+        assert!(yaml.contains("title: \"Folder Report\""));
+        assert!(yaml.contains("sections:"));
+        assert!(yaml.contains("status: different"));
+        assert!(yaml.contains("\"notes:md\""));
     }
 
     #[test]

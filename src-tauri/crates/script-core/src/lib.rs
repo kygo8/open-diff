@@ -55,6 +55,13 @@ pub enum ScriptCommandKind {
     View { mode: String },
     Align { mode: String },
     Wait { milliseconds: u64 },
+    If { condition: String },
+    Else,
+    EndIf,
+    Call { path: String },
+    Include { path: String },
+    Rem { message: String },
+    Cd { path: String },
     Unsupported { name: String },
 }
 
@@ -282,6 +289,18 @@ pub struct ScriptExecutionError {
 }
 
 pub fn parse_script(source: &str) -> Result<ScriptDocument, ScriptParseError> {
+    parse_script_with_includes(source, None, 0)
+}
+
+fn parse_script_with_includes(
+    source: &str,
+    base_dir: Option<&std::path::Path>,
+    depth: usize,
+) -> Result<ScriptDocument, ScriptParseError> {
+    if depth > 8 {
+        return Err(parse_error(0, "INCLUDE nesting exceeds limit"));
+    }
+
     let mut commands = Vec::new();
 
     for (index, raw_line) in source.lines().enumerate() {
@@ -291,10 +310,26 @@ pub fn parse_script(source: &str) -> Result<ScriptDocument, ScriptParseError> {
             continue;
         };
 
-        commands.push(ScriptCommand {
-            line,
-            kind: parse_command(command, args, line)?,
-        });
+        let kind = parse_command(command, args, line)?;
+        match kind {
+            ScriptCommandKind::Include { path } => {
+                let resolved = if let Some(base) = base_dir {
+                    base.join(&path)
+                } else {
+                    std::path::PathBuf::from(&path)
+                };
+                let included = std::fs::read_to_string(&resolved).map_err(|error| {
+                    parse_error(
+                        line,
+                        format!("failed to INCLUDE {}: {error}", resolved.display()),
+                    )
+                })?;
+                let parent = resolved.parent().map(|path| path.to_path_buf());
+                let nested = parse_script_with_includes(&included, parent.as_deref(), depth + 1)?;
+                commands.extend(nested.commands);
+            }
+            other => commands.push(ScriptCommand { line, kind: other }),
+        }
     }
 
     Ok(ScriptDocument { commands })
@@ -495,6 +530,8 @@ where
     let mut progress = Vec::new();
     let mut structured_logs = Vec::new();
     let total = script.commands.len();
+    let mut skip_depth: usize = 0;
+    let mut taking_else = false;
 
     for command in &script.commands {
         if runner_should_stop() {
@@ -502,6 +539,59 @@ where
             state.logs.push("stopped".to_owned());
             break;
         }
+
+        match &command.kind {
+            ScriptCommandKind::If { condition } => {
+                if skip_depth > 0 {
+                    skip_depth += 1;
+                } else {
+                    let pass = evaluate_script_if_condition(condition, &state);
+                    if !pass {
+                        skip_depth = 1;
+                        taking_else = true;
+                    } else {
+                        taking_else = false;
+                    }
+                    state.file_operations.push(format!(
+                        "IF {} -> {}",
+                        condition,
+                        if pass { "true" } else { "false" }
+                    ));
+                }
+                executed += 1;
+                structured_logs.push(script_command_log_event(command, executed, total));
+                continue;
+            }
+            ScriptCommandKind::Else => {
+                if skip_depth == 0 {
+                    // Parent IF was true; skip ELSE branch until ENDIF.
+                    skip_depth = 1;
+                    taking_else = false;
+                } else if skip_depth == 1 && taking_else {
+                    skip_depth = 0;
+                    taking_else = false;
+                } else if skip_depth > 1 {
+                    // nested skip stays
+                }
+                state.file_operations.push("ELSE".to_owned());
+                executed += 1;
+                structured_logs.push(script_command_log_event(command, executed, total));
+                continue;
+            }
+            ScriptCommandKind::EndIf => {
+                skip_depth = skip_depth.saturating_sub(1);
+                taking_else = false;
+                state.file_operations.push("ENDIF".to_owned());
+                executed += 1;
+                structured_logs.push(script_command_log_event(command, executed, total));
+                continue;
+            }
+            _ if skip_depth > 0 => {
+                continue;
+            }
+            _ => {}
+        }
+
         match &command.kind {
             ScriptCommandKind::Load { paths } => {
                 state.load_paths = expand_command_values(command, paths, &execution.variables)?;
@@ -911,6 +1001,78 @@ where
             ScriptCommandKind::Exit => {
                 state.exited = true;
             }
+            ScriptCommandKind::If { .. } | ScriptCommandKind::Else | ScriptCommandKind::EndIf => {
+                // Handled above for skip control.
+            }
+            ScriptCommandKind::Call { path } => {
+                let path =
+                    expand_script_variables(path, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?;
+                let nested_source = std::fs::read_to_string(&path)
+                    .map_err(|error| execution_error(command, error.to_string()))?;
+                let nested =
+                    parse_script(&nested_source).map_err(|error| ScriptExecutionError {
+                        line: error.line,
+                        command: "CALL".to_owned(),
+                        reason: error.message,
+                    })?;
+                let nested_result = execute_automation_script(
+                    &nested,
+                    execution.clone(),
+                    compare_engine,
+                    report_engine,
+                )?;
+                state.logs.extend(nested_result.state.logs);
+                state
+                    .file_operations
+                    .extend(nested_result.state.file_operations);
+                state.reports_written = state
+                    .reports_written
+                    .saturating_add(nested_result.state.reports_written);
+                if let Some(summary) = nested_result.state.last_compare {
+                    state.last_compare = Some(summary);
+                }
+                if nested_result.state.exited {
+                    state.exited = true;
+                }
+                if nested_result.state.cancelled {
+                    state.cancelled = true;
+                    state.logs.push("stopped".to_owned());
+                }
+                state.file_operations.push(format!("CALL {path}"));
+            }
+            ScriptCommandKind::Include { path } => {
+                // INCLUDE is expanded at parse time; treat leftover as no-op.
+                state.file_operations.push(format!("INCLUDE {path}"));
+            }
+            ScriptCommandKind::Rem { message } => {
+                let message =
+                    expand_script_variables(message, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?;
+                state.logs.push(format!("REM {message}"));
+            }
+            ScriptCommandKind::Cd { path } => {
+                let path =
+                    expand_script_variables(path, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?;
+                state.options.push(ScriptOption {
+                    key: "working-dir".to_owned(),
+                    value: path.clone(),
+                });
+                state.file_operations.push(format!("CD {path}"));
+            }
             ScriptCommandKind::Unsupported { name } => {
                 return Err(execution_error(command, format!("{name} is unsupported")));
             }
@@ -1304,6 +1466,13 @@ impl ScriptCommandKind {
             ScriptCommandKind::View { .. } => "VIEW",
             ScriptCommandKind::Align { .. } => "ALIGN",
             ScriptCommandKind::Wait { .. } => "WAIT",
+            ScriptCommandKind::If { .. } => "IF",
+            ScriptCommandKind::Else => "ELSE",
+            ScriptCommandKind::EndIf => "ENDIF",
+            ScriptCommandKind::Call { .. } => "CALL",
+            ScriptCommandKind::Include { .. } => "INCLUDE",
+            ScriptCommandKind::Rem { .. } => "REM",
+            ScriptCommandKind::Cd { .. } => "CD",
             ScriptCommandKind::Unsupported { .. } => "UNSUPPORTED",
         }
     }
@@ -1641,7 +1810,7 @@ fn parse_command(
                 paths: args.to_vec(),
             })
         }
-        "FILTER" => {
+        "FILTER" | "NAME-FILTER" => {
             if args.is_empty() {
                 return Err(parse_error(line, "FILTER requires at least one pattern"));
             }
@@ -1650,9 +1819,11 @@ fn parse_command(
                 patterns: args.to_vec(),
             })
         }
-        "COMPARE" => Ok(ScriptCommandKind::Compare {
-            options: args.to_vec(),
-        }),
+        "COMPARE" | "FOLDER-COMPARE" | "FILE-COMPARE" | "DATA-COMPARE" => {
+            Ok(ScriptCommandKind::Compare {
+                options: args.to_vec(),
+            })
+        }
         "VIEW" => {
             if args.len() != 1 {
                 return Err(parse_error(line, "VIEW requires a mode"));
@@ -1837,6 +2008,36 @@ fn parse_command(
             }
             Ok(ScriptCommandKind::Exit)
         }
+        "IF" => {
+            if args.is_empty() {
+                return Err(parse_error(line, "IF requires a condition"));
+            }
+            Ok(ScriptCommandKind::If {
+                condition: args.join(" "),
+            })
+        }
+        "ELSE" => {
+            if !args.is_empty() {
+                return Err(parse_error(line, "ELSE does not accept arguments"));
+            }
+            Ok(ScriptCommandKind::Else)
+        }
+        "ENDIF" | "END-IF" | "FI" => {
+            if !args.is_empty() {
+                return Err(parse_error(line, "ENDIF does not accept arguments"));
+            }
+            Ok(ScriptCommandKind::EndIf)
+        }
+        "CALL" => parse_single_output_command(line, args, |path| ScriptCommandKind::Call { path }),
+        "INCLUDE" => {
+            parse_single_output_command(line, args, |path| ScriptCommandKind::Include { path })
+        }
+        "REM" | "COMMENT" => Ok(ScriptCommandKind::Rem {
+            message: args.join(" "),
+        }),
+        "CD" | "WORKINGDIR" | "WORKING-DIR" => {
+            parse_single_output_command(line, args, |path| ScriptCommandKind::Cd { path })
+        }
         unsupported if is_unsupported_script_command(unsupported) => {
             Ok(ScriptCommandKind::Unsupported {
                 name: unsupported.to_owned(),
@@ -1908,6 +2109,22 @@ pub fn supported_script_commands() -> &'static [&'static str] {
         "COLLAPSEALL",
         "COLLAPSE-ALL",
         "MERGE",
+        "IF",
+        "ELSE",
+        "ENDIF",
+        "END-IF",
+        "FI",
+        "CALL",
+        "INCLUDE",
+        "REM",
+        "COMMENT",
+        "CD",
+        "WORKINGDIR",
+        "WORKING-DIR",
+        "FOLDER-COMPARE",
+        "FILE-COMPARE",
+        "DATA-COMPARE",
+        "NAME-FILTER",
     ]
 }
 
@@ -2655,6 +2872,46 @@ fn parse_single_output_command(
     Ok(build(args[0].clone()))
 }
 
+fn evaluate_script_if_condition(condition: &str, state: &ScriptRuntimeState) -> bool {
+    let trimmed = condition.trim();
+    let lower = trimmed.to_ascii_lowercase();
+    match lower.as_str() {
+        "true" | "1" | "yes" => true,
+        "false" | "0" | "no" => false,
+        "compared" => state.last_compare.is_some(),
+        "equal" | "same" => state
+            .last_compare
+            .as_ref()
+            .map(|summary| summary.different == 0)
+            .unwrap_or(false),
+        "different" | "differs" => state
+            .last_compare
+            .as_ref()
+            .map(|summary| summary.different > 0)
+            .unwrap_or(false),
+        "selected" => state
+            .selection
+            .as_ref()
+            .map(|value| !value.is_empty())
+            .unwrap_or(false),
+        other if other.starts_with("exists ") => {
+            let path = trimmed[7..].trim().trim_matches('"');
+            std::path::Path::new(path).exists()
+        }
+        other if other.starts_with("option ") => {
+            let key = trimmed[7..].trim().to_ascii_lowercase();
+            state
+                .options
+                .iter()
+                .any(|option| option.key.eq_ignore_ascii_case(&key))
+        }
+        _ => {
+            // Unknown conditions default to false so scripts stay honest.
+            false
+        }
+    }
+}
+
 fn tokenize_script_line(raw_line: &str, line: usize) -> Result<Vec<String>, ScriptParseError> {
     let mut tokens = Vec::new();
     let mut current = String::new();
@@ -2840,6 +3097,121 @@ mod tests {
         assert!(supported_script_commands().contains(&"MKDIR"));
         assert!(supported_script_commands().contains(&"ECHO"));
         assert!(supported_script_commands().contains(&"PAUSE"));
+    }
+
+    #[test]
+    fn parses_and_runs_if_else_aliases_and_rem_cd() {
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let parsed = parse_script(
+            r#"
+            rem greeting
+            cd "/tmp"
+            folder-compare
+            name-filter "*.rs"
+            if true
+            echo same
+            else
+            echo different
+            endif
+            "#,
+        )
+        .expect("control-flow script should parse");
+        assert!(matches!(
+            parsed.commands[0].kind,
+            ScriptCommandKind::Rem { .. }
+        ));
+        assert!(matches!(
+            parsed.commands[1].kind,
+            ScriptCommandKind::Cd { .. }
+        ));
+        assert!(matches!(
+            parsed.commands[2].kind,
+            ScriptCommandKind::Compare { .. }
+        ));
+        assert!(matches!(
+            parsed.commands[3].kind,
+            ScriptCommandKind::Filter { .. }
+        ));
+        assert!(matches!(
+            parsed.commands[4].kind,
+            ScriptCommandKind::If { .. }
+        ));
+        assert!(supported_script_commands().contains(&"IF"));
+        assert!(supported_script_commands().contains(&"CALL"));
+        assert!(supported_script_commands().contains(&"INCLUDE"));
+        assert!(supported_script_commands().contains(&"FOLDER-COMPARE"));
+
+        let runnable = parse_script(
+            r#"
+            rem greeting
+            cd "/tmp"
+            if true
+            echo same
+            else
+            echo different
+            endif
+            "#,
+        )
+        .expect("runnable control-flow script should parse");
+        let mut compare = NoopCompare;
+        let mut report = NoopReport;
+        let result = execute_automation_script(
+            &runnable,
+            ScriptExecutionContext::default(),
+            &mut compare,
+            &mut report,
+        )
+        .expect("script should run");
+        assert!(result
+            .state
+            .logs
+            .iter()
+            .any(|line| line.starts_with("REM ")));
+        assert!(result.state.logs.iter().any(|line| line == "same"));
+        assert!(!result.state.logs.iter().any(|line| line == "different"));
+        assert!(result
+            .state
+            .options
+            .iter()
+            .any(|option| option.key == "working-dir"));
+    }
+
+    #[test]
+    fn include_expands_nested_script_file() {
+        let root =
+            std::env::temp_dir().join(format!("open-diff-script-include-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&root);
+        std::fs::create_dir_all(&root).unwrap();
+        let nested = root.join("nested.txt");
+        std::fs::write(&nested, "echo from-include\n").unwrap();
+        let main = format!(
+            "include \"{}\"\necho after\n",
+            nested.display().to_string().replace('\\', "/")
+        );
+        let script = parse_script(&main).expect("include should parse");
+        assert!(matches!(
+            script.commands[0].kind,
+            ScriptCommandKind::Log { .. }
+        ));
+        assert!(matches!(
+            script.commands[1].kind,
+            ScriptCommandKind::Log { .. }
+        ));
     }
 
     #[test]

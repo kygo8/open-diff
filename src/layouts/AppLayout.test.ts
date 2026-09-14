@@ -583,6 +583,26 @@ describe('AppLayout command palette', () => {
     wrapper.unmount()
   })
 
+  it('navigates picture/media/version/archive opens and dispatches script/report chords', async () => {
+    routePath = '/reports/scripts'
+    const wrapper = mountAppLayout()
+    const viewActions = (await import('@/stores/viewActions')).useViewActionsStore()
+    const tabs = useTabsStore()
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'u', ctrlKey: true, altKey: true }))
+    await wrapper.vm.$nextTick()
+    expect(tabs.tabs.some((tab) => tab.route === '/compare/picture')).toBe(true)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'c', ctrlKey: true, altKey: true }))
+    await wrapper.vm.$nextTick()
+    expect(viewActions.name).toBe('run-script')
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'p', ctrlKey: true, shiftKey: true }))
+    await wrapper.vm.$nextTick()
+    expect(viewActions.name).toBe('save-report')
+    wrapper.unmount()
+  })
+
   it('skips niche shortcuts while focus is in an editable field', async () => {
     routePath = '/sync/folder'
     const wrapper = mountAppLayout()

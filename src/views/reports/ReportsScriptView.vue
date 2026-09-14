@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { exportFolderCompareReport, exportTextCompareReport } from '@/api/diff'
 import { runScript, stopScript } from '@/api/script'
 import {
@@ -20,9 +20,11 @@ import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { useI18n } from '@/i18n'
 import { useLastCompareStore } from '@/stores/lastCompare'
+import { useViewActionsStore } from '@/stores/viewActions'
 
 type ReportKind = 'text' | 'folder'
-type ReportFormat = 'html' | 'html-side-by-side' | 'text' | 'json' | 'csv' | 'markdown' | 'xml'
+type ReportFormat =
+  'html' | 'html-side-by-side' | 'text' | 'json' | 'csv' | 'markdown' | 'xml' | 'tsv' | 'yaml'
 
 type ReportJob = RecentReportExport
 
@@ -47,6 +49,7 @@ const scriptResult = ref('')
 const scriptLog = ref<string[]>([])
 const scriptRunning = ref(false)
 const selectedSampleId = ref(sampleScripts[0]?.id ?? 'text-report')
+const viewActions = useViewActionsStore()
 
 function initialReportKind(): ReportKind {
   if (lastCompare.text) {
@@ -192,6 +195,64 @@ async function runCurrentScript(): Promise<void> {
   }
 }
 
+watch(
+  () => [viewActions.sequence, viewActions.name] as const,
+  ([sequence]) => {
+    if (!sequence) {
+      return
+    }
+
+    switch (viewActions.name) {
+      case 'run-script':
+        void runCurrentScript()
+        break
+      case 'save-report':
+        void runExport()
+        break
+      case null:
+      case 'about':
+      case 'check-for-updates':
+      case 'close-tab':
+      case 'collapse-all':
+      case 'compare':
+      case 'copy':
+      case 'copy-left':
+      case 'copy-right':
+      case 'cut':
+      case 'delete':
+      case 'expand-all':
+      case 'export':
+      case 'export-settings':
+      case 'filters':
+      case 'help-contents':
+      case 'help-support':
+      case 'import-settings':
+      case 'next-conflict':
+      case 'next-difference':
+      case 'paste':
+      case 'previous-conflict':
+      case 'previous-difference':
+      case 'redo':
+      case 'reload':
+      case 'restore-factory-defaults':
+      case 'rules':
+      case 'save':
+      case 'save-as':
+      case 'save-snapshot':
+      case 'session-settings':
+      case 'show-all':
+      case 'show-differences':
+      case 'swap':
+      case 'sync-now':
+      case 'toggle-minor':
+      case 'undo':
+      case 'workspace-load':
+      case 'workspace-save':
+        break
+    }
+  },
+)
+
 function fillFromLastCompare(): void {
   if (reportKind.value === 'folder' && lastCompare.folder) {
     leftPath.value = lastCompare.folder.leftRoot
@@ -283,6 +344,8 @@ function fillFromLastCompare(): void {
               <option value="json">{{ $t('ui.exportJson') }}</option>
               <option value="csv">{{ $t('ui.csv') }}</option>
               <option value="markdown">{{ $t('ui.markdown') }}</option>
+              <option value="tsv">{{ $t('ui.tsv') }}</option>
+              <option value="yaml">{{ $t('ui.yaml') }}</option>
               <option value="xml">{{ $t('ui.xml') }}</option>
             </select>
           </label>

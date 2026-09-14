@@ -669,11 +669,11 @@ export const zhCN: LanguagePack = {
     'ui.sheetNotSelected': '未选择',
     'ui.sheetSelectionEmpty': 'Excel 或 HTML 比较后显示工作表',
     'ui.sheetSelectionSummary': '左 {leftCount} / 右 {rightCount} · {leftSheet} vs {rightSheet}',
-    'session.summary.archiveCompare': '对比 ZIP/TAR 压缩包并支持复制到文件夹（7z 未实现）',
+    'session.summary.archiveCompare': '对比 ZIP/TAR/7z 压缩包并支持复制到文件夹',
     'session.summary.script': '运行简单脚本：加载、比较、导出报告',
     'ui.archiveCompare': '压缩包比较',
     'ui.archivePathHint':
-      '文件夹或 ZIP/TAR 压缩包（7z 未实现）。也支持快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path',
+      '文件夹或 ZIP/TAR/7z 压缩包。也支持快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path',
     'ui.applyToFile': '应用到文件',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -787,7 +787,7 @@ export const zhCN: LanguagePack = {
     'ui.browseArchive': '压缩包…',
     'ui.archiveSide': '压缩包',
     'ui.snapshotSide': '快照',
-    'status.notAnArchivePath': '不是 ZIP/TAR 压缩包：{path}',
+    'status.notAnArchivePath': '不是 ZIP/TAR/7z 压缩包：{path}',
     'status.attributesChangedBulk': '已更改 {count} 项属性 -> {state}',
     'status.renamedBulkPaths': '已重命名 {count} 项 -> {path}',
     'ui.registryMaturityNote':

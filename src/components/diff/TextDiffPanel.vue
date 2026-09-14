@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import type { DiffLine, InlineDiffSegment } from '@/types/diff'
 import { useSettingsStore } from '@/stores/settings'
@@ -213,30 +213,6 @@ const jumpToPreviousDiff = (): void => {
     jumpToLine(previousMarker.index)
   }
 }
-
-const handleKeydown = (event: KeyboardEvent): void => {
-  if (event.key !== 'F7') {
-    return
-  }
-
-  event.preventDefault()
-
-  if (event.shiftKey) {
-    jumpToPreviousDiff()
-
-    return
-  }
-
-  jumpToNextDiff()
-}
-
-onMounted(() => {
-  document.addEventListener('keydown', handleKeydown)
-})
-
-onBeforeUnmount(() => {
-  document.removeEventListener('keydown', handleKeydown)
-})
 
 const getInlineSegments = (line: DiffLine, side: 'left' | 'right'): InlineDiffSegment[] => {
   const segments = line.inlineSegments[side]

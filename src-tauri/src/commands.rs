@@ -6248,22 +6248,31 @@ mod tests {
     }
 
     #[test]
-    fn list_archive_rejects_7z_and_hex_tab_zip_payloads() {
+    fn list_archive_lists_seven_zip_and_rejects_hex_tab_zip_payloads() {
         let root = unique_temp_dir("archive-reject-command");
         fs::create_dir_all(&root).expect("fixture directory should be created");
         let seven = root.join("pkg.7z");
         let hex_zip = root.join("fake.zip");
-        fs::write(&seven, b"7z payload").expect("7z fixture should be writable");
+        let seven_doc = archive_core::ArchiveDocument::new("pkg.7z")
+            .with_file("/docs/readme.md", b"hello 7z".to_vec());
+        let seven_bytes =
+            archive_core::write_seven_zip_bytes(&seven_doc).expect("7z fixture should encode");
+        fs::write(&seven, seven_bytes).expect("7z fixture should be writable");
         fs::write(&hex_zip, b"/docs/readme.md\t6e6577\n").expect("hex zip should be writable");
 
-        let seven_error =
-            list_archive(seven.display().to_string()).expect_err("7z should stay unimplemented");
+        let listed = list_archive(seven.display().to_string()).expect("7z should list");
+        assert!(
+            listed
+                .entries
+                .iter()
+                .any(|entry| entry.path.contains("readme.md")),
+            "expected listed 7z entries: {:?}",
+            listed.entries
+        );
+
         let hex_error = list_archive(hex_zip.display().to_string())
             .expect_err("hex-tab zip should not compare as a real archive");
-
-        let seven_text = seven_error.debug_message;
         let hex_text = hex_error.debug_message;
-        assert!(seven_text.to_ascii_lowercase().contains("7z"));
         assert!(hex_text.contains("PK") || hex_text.to_ascii_lowercase().contains("zip"));
     }
 

@@ -259,7 +259,7 @@ Before creating a release tag, make sure the version is synchronized across:
 These items stay unimplemented and are labeled as such in the UI:
 
 - S3, Dropbox, OneDrive, FTPS, and SVN remote protocols.
-- 7z archive comparison (ZIP and TAR are live).
+- Writing/editing entries back into 7z archives (read/list/compare and copy-out are live).
 - Broader automation script language coverage. Supported commands run; others return `unsupported`.
 - Live Windows registry hives (exported `.reg` files compare).
 - Custom keyboard shortcuts and additional report formats.

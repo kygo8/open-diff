@@ -34,15 +34,19 @@ export interface RemoteEntry {
   size: number
 }
 
+const implementedRemoteProtocols: ReadonlySet<RemoteProtocol> = new Set([
+  'sftp',
+  'ftp',
+  'ftps',
+  'web-dav',
+  's3',
+  'dropbox',
+  'one-drive',
+  'subversion',
+])
+
 export function isImplementedRemoteProtocol(protocol: RemoteProtocol): boolean {
-  return (
-    protocol === 'sftp' ||
-    protocol === 'ftp' ||
-    protocol === 'ftps' ||
-    protocol === 'web-dav' ||
-    protocol === 's3' ||
-    protocol === 'subversion'
-  )
+  return implementedRemoteProtocols.has(protocol)
 }
 
 export function formatRemoteUri(

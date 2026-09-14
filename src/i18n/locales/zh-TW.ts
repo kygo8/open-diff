@@ -697,8 +697,12 @@ export const zhTW: LanguagePack = {
     'ui.loadFiles': '載入檔案',
     'ui.openInTextCompare': '在文字比較中開啟',
     'ui.password': '密碼',
+    'ui.oauthAccessToken': '存取權杖',
+    'ui.oauthTokenHint':
+      '貼上 Dropbox API 或 Microsoft Graph 存取權杖。主機可填 dropbox / onedrive。未內建瀏覽器 OAuth；請使用應用程式主控台或裝置碼流程取得權杖。',
+    'ui.tokenAccountOptional': '帳戶（選用）',
     'ui.remoteNotImplemented':
-      'SFTP、FTP、FTPS、WebDAV、S3 與 SVN 可連線、列出並傳輸。Dropbox 與 OneDrive 仍未實作（OAuth 雲端硬碟仍為規劃中）。',
+      'SFTP、FTP、FTPS、WebDAV、S3、Dropbox、OneDrive 與 SVN 可連線、列出並傳輸。請將雲端存取權杖貼到權杖欄位（未內建瀏覽器 OAuth 流程）。',
     'ui.remoteUriHint':
       '使用本機路徑，或在儲存設定後使用 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path 或 svn://profile/id/path',
     'ui.reportKind': 'Report kind',

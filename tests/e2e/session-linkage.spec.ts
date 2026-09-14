@@ -216,7 +216,10 @@ test('remote profiles keep unfinished protocols disabled and can test SFTP', asy
   ).toHaveJSProperty('disabled', false)
   await expect(
     page.locator('[data-testid="remote-profile-protocol-select"] option[value="dropbox"]'),
-  ).toHaveJSProperty('disabled', true)
+  ).toHaveJSProperty('disabled', false)
+  await expect(
+    page.locator('[data-testid="remote-profile-protocol-select"] option[value="one-drive"]'),
+  ).toHaveJSProperty('disabled', false)
   await expect(page.getByTestId('remote-profile-list')).not.toContainText('Prod SFTP')
   await page.getByTestId('new-remote-profile').click()
   await page.getByTestId('remote-profile-name-input').fill('CI SFTP')

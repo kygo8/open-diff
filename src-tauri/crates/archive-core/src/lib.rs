@@ -125,7 +125,10 @@ impl ArchiveFormat {
     }
 
     pub fn supports_write(self) -> bool {
-        matches!(self, Self::Zip | Self::SevenZip)
+        matches!(
+            self,
+            Self::Zip | Self::Tar | Self::TarGz | Self::Gz | Self::SevenZip
+        )
     }
 }
 
@@ -495,17 +498,10 @@ impl ZipArchiveEditor {
 pub fn write_archive_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
     match ArchiveFormat::detect(&document.name)? {
         ArchiveFormat::Zip => write_zip_bytes(document),
+        ArchiveFormat::Tar => write_tar_bytes(document),
+        ArchiveFormat::TarGz => write_tar_gz_bytes(document),
+        ArchiveFormat::Gz => write_gzip_bytes(document),
         ArchiveFormat::SevenZip => write_seven_zip_bytes(document),
-        other => Err(ArchiveError::UnsupportedFormat(format!(
-            "writing {} archives is not implemented",
-            match other {
-                ArchiveFormat::Tar => "tar",
-                ArchiveFormat::TarGz => "tar.gz",
-                ArchiveFormat::Gz => "gz",
-                ArchiveFormat::Zip => "zip",
-                ArchiveFormat::SevenZip => "7z",
-            }
-        ))),
     }
 }
 
@@ -640,6 +636,57 @@ fn read_seven_zip_document(
         .map_err(|error| ArchiveError::InvalidArchive(error.to_string()))?;
 
     Ok(document)
+}
+
+pub fn write_tar_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
+    let mut builder = tar::Builder::new(Cursor::new(Vec::new()));
+
+    for (path, bytes) in &document.files {
+        let mut header = tar::Header::new_gnu();
+        header.set_size(bytes.len() as u64);
+        header.set_mode(0o644);
+        header.set_cksum();
+        builder
+            .append_data(&mut header, path.trim_start_matches('/'), bytes.as_slice())
+            .map_err(|error| ArchiveError::Io(error.to_string()))?;
+    }
+
+    builder
+        .into_inner()
+        .map_err(|error| ArchiveError::Io(error.to_string()))
+        .map(|cursor| cursor.into_inner())
+}
+
+pub fn write_tar_gz_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
+    let tar_bytes = write_tar_bytes(document)?;
+    let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+    encoder
+        .write_all(&tar_bytes)
+        .map_err(|error| ArchiveError::Io(error.to_string()))?;
+    encoder
+        .finish()
+        .map_err(|error| ArchiveError::Io(error.to_string()))
+}
+
+pub fn write_gzip_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
+    if document.files.is_empty() {
+        return Err(ArchiveError::InvalidArchive(
+            "GZIP write requires exactly one file entry".to_owned(),
+        ));
+    }
+    if document.files.len() != 1 {
+        return Err(ArchiveError::InvalidArchive(
+            "GZIP write supports a single file entry only".to_owned(),
+        ));
+    }
+    let bytes = document.files.values().next().expect("checked non-empty");
+    let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+    encoder
+        .write_all(bytes)
+        .map_err(|error| ArchiveError::Io(error.to_string()))?;
+    encoder
+        .finish()
+        .map_err(|error| ArchiveError::Io(error.to_string()))
 }
 
 pub fn write_seven_zip_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
@@ -804,16 +851,25 @@ mod tests {
             ArchiveError::NotFound(_)
         ));
         assert!(ArchiveFormat::SevenZip.supports_write());
-        assert!(!ArchiveFormat::Tar.supports_write());
+        assert!(ArchiveFormat::Tar.supports_write());
+        assert!(ArchiveFormat::TarGz.supports_write());
+        assert!(ArchiveFormat::Gz.supports_write());
     }
 
     #[test]
-    fn write_archive_bytes_dispatches_zip_and_seven_zip_by_name() {
+    fn write_archive_bytes_dispatches_zip_seven_zip_and_tar_by_name() {
         let zip_doc = ArchiveDocument::new("bundle.zip").with_file("/a.txt", b"zip".to_vec());
         let seven_doc = ArchiveDocument::new("bundle.7z").with_file("/a.txt", b"seven".to_vec());
+        let tar_doc = ArchiveDocument::new("bundle.tar").with_file("/a.txt", b"tar".to_vec());
+        let tar_gz_doc =
+            ArchiveDocument::new("bundle.tar.gz").with_file("/a.txt", b"targz".to_vec());
+        let gz_doc = ArchiveDocument::new("payload.gz").with_file("/payload", b"gzip".to_vec());
 
         let zip_bytes = write_archive_bytes(&zip_doc).unwrap();
         let seven_bytes = write_archive_bytes(&seven_doc).unwrap();
+        let tar_bytes = write_archive_bytes(&tar_doc).unwrap();
+        let tar_gz_bytes = write_archive_bytes(&tar_gz_doc).unwrap();
+        let gz_bytes = write_archive_bytes(&gz_doc).unwrap();
 
         assert!(zip_bytes.starts_with(b"PK"));
         assert!(seven_bytes.starts_with(&[b'7', b'z', 0xBC, 0xAF, 0x27, 0x1C]));
@@ -833,10 +889,74 @@ mod tests {
                 .map(|(_, bytes)| bytes.as_slice()),
             Some(b"seven".as_slice())
         );
+        assert_eq!(
+            ArchiveReader::open_bytes("bundle.tar", &tar_bytes)
+                .unwrap()
+                .files()
+                .next()
+                .map(|(_, bytes)| bytes.as_slice()),
+            Some(b"tar".as_slice())
+        );
+        assert_eq!(
+            ArchiveReader::open_bytes("bundle.tar.gz", &tar_gz_bytes)
+                .unwrap()
+                .files()
+                .next()
+                .map(|(_, bytes)| bytes.as_slice()),
+            Some(b"targz".as_slice())
+        );
+        assert_eq!(
+            ArchiveReader::open_bytes("payload.gz", &gz_bytes)
+                .unwrap()
+                .files()
+                .next()
+                .map(|(_, bytes)| bytes.as_slice()),
+            Some(b"gzip".as_slice())
+        );
+    }
 
-        let tar_doc = ArchiveDocument::new("bundle.tar").with_file("/a.txt", b"x".to_vec());
-        let err = write_archive_bytes(&tar_doc).unwrap_err();
-        assert!(matches!(err, ArchiveError::UnsupportedFormat(_)));
+    #[test]
+    fn tar_and_gzip_editor_write_back_round_trips_replaced_entries() {
+        let original = ArchiveDocument::new("release.tar")
+            .with_file("/docs/readme.md", b"old".to_vec())
+            .with_file("/docs/changelog.md", b"changes".to_vec());
+        let bytes = write_tar_bytes(&original).unwrap();
+
+        let mut editor =
+            ArchiveVfs::from_document(ArchiveReader::open_bytes("release.tar", &bytes).unwrap())
+                .into_editor();
+        editor
+            .replace_file("/docs/readme.md", b"new-tar".to_vec())
+            .unwrap();
+        editor.delete_file("/docs/changelog.md").unwrap();
+
+        let rewritten = editor.write_back().unwrap();
+        let reopened = ArchiveReader::open_bytes("release.tar", &rewritten).unwrap();
+        let vfs = ArchiveVfs::from_document(reopened);
+        assert_eq!(vfs.read("/docs/readme.md").unwrap(), b"new-tar");
+        assert!(matches!(
+            vfs.read("/docs/changelog.md").unwrap_err(),
+            ArchiveError::NotFound(_)
+        ));
+
+        let tar_gz = ArchiveDocument::new("release.tar.gz")
+            .with_file("/docs/readme.md", b"gzipped".to_vec());
+        let tar_gz_bytes = write_tar_gz_bytes(&tar_gz).unwrap();
+        let tar_gz_opened = ArchiveReader::open_bytes("release.tar.gz", &tar_gz_bytes).unwrap();
+        assert_eq!(
+            ArchiveVfs::from_document(tar_gz_opened)
+                .read("/docs/readme.md")
+                .unwrap(),
+            b"gzipped"
+        );
+
+        let gz = ArchiveDocument::new("notes.gz").with_file("/notes", b"plain".to_vec());
+        let gz_bytes = write_gzip_bytes(&gz).unwrap();
+        let gz_opened = ArchiveReader::open_bytes("notes.gz", &gz_bytes).unwrap();
+        assert_eq!(
+            ArchiveVfs::from_document(gz_opened).read("/notes").unwrap(),
+            b"plain"
+        );
     }
 
     #[test]
@@ -886,7 +1006,7 @@ mod tests {
     fn archive_reader_opens_real_tar_and_seven_zip() {
         let document =
             ArchiveDocument::new("release.tar").with_file("/docs/readme.md", b"readme".to_vec());
-        let tar_bytes = write_tar_fixture(&document);
+        let tar_bytes = write_tar_bytes(&document).unwrap();
         let opened = ArchiveReader::open_bytes("release.tar", &tar_bytes).unwrap();
         let vfs = ArchiveVfs::from_document(opened);
 
@@ -958,23 +1078,5 @@ mod tests {
             error,
             ArchiveError::UnsupportedFormat(format) if format == "release.rar"
         ));
-    }
-
-    fn write_tar_fixture(document: &ArchiveDocument) -> Vec<u8> {
-        let mut builder = tar::Builder::new(Cursor::new(Vec::new()));
-
-        for (path, bytes) in &document.files {
-            let mut header = tar::Header::new_gnu();
-            header.set_size(bytes.len() as u64);
-            header.set_cksum();
-            builder
-                .append_data(&mut header, path.trim_start_matches('/'), bytes.as_slice())
-                .expect("tar entry should append");
-        }
-
-        builder
-            .into_inner()
-            .expect("tar should finish")
-            .into_inner()
     }
 }

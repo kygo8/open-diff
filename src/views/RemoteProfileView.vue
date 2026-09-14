@@ -660,16 +660,10 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
                 <option value="sftp">{{ $t('ui.sftp') }}</option>
                 <option value="web-dav">{{ $t('ui.webDav') }}</option>
                 <option value="s3">{{ $t('ui.s3') }}</option>
-                <option
-                  value="dropbox"
-                  disabled
-                >
+                <option value="dropbox">
                   {{ $t('ui.dropbox') }}
                 </option>
-                <option
-                  value="one-drive"
-                  disabled
-                >
+                <option value="one-drive">
                   {{ $t('ui.onedrive') }}
                 </option>
                 <option value="subversion">{{ $t('ui.subversion') }}</option>
@@ -733,7 +727,13 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
               </select>
             </label>
             <label>
-              <span>{{ draft.protocol === 's3' ? $t('ui.accessKeyId') : $t('ui.username') }}</span>
+              <span>{{
+                draft.protocol === 's3'
+                  ? $t('ui.accessKeyId')
+                  : draft.protocol === 'dropbox' || draft.protocol === 'one-drive'
+                    ? $t('ui.tokenAccountOptional')
+                    : $t('ui.username')
+              }}</span>
               <input
                 v-model="draft.username"
                 data-testid="remote-profile-username-input"
@@ -743,7 +743,11 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
             </label>
             <label v-if="policy.savePasswords">
               <span>{{
-                draft.protocol === 's3' ? $t('ui.secretAccessKey') : $t('ui.password')
+                draft.protocol === 's3'
+                  ? $t('ui.secretAccessKey')
+                  : draft.protocol === 'dropbox' || draft.protocol === 'one-drive'
+                    ? $t('ui.oauthAccessToken')
+                    : $t('ui.password')
               }}</span>
               <input
                 v-model="draft.password"
@@ -768,6 +772,13 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
             </label>
           </div>
           <p class="secrets-hint">{{ $t('ui.secretsHint') }}</p>
+          <p
+            v-if="draft.protocol === 'dropbox' || draft.protocol === 'one-drive'"
+            class="secrets-hint"
+            data-testid="remote-oauth-token-hint"
+          >
+            {{ $t('ui.oauthTokenHint') }}
+          </p>
           <p
             v-if="draft.uri"
             data-testid="remote-profile-uri"

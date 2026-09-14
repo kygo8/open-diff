@@ -18,13 +18,15 @@ pub fn protocol_is_implemented(protocol: RemoteProtocol) -> bool {
             | RemoteProtocol::Ftps
             | RemoteProtocol::WebDav
             | RemoteProtocol::S3
+            | RemoteProtocol::Dropbox
+            | RemoteProtocol::OneDrive
             | RemoteProtocol::Subversion
     )
 }
 
 pub fn unimplemented_protocol_message(protocol: RemoteProtocol) -> String {
     format!(
-        "{protocol:?} is unimplemented; only SFTP, FTP, FTPS, WebDAV, S3, and SVN connections are live"
+        "{protocol:?} is unimplemented; only SFTP, FTP, FTPS, WebDAV, S3, Dropbox, OneDrive, and SVN connections are live"
     )
 }
 
@@ -101,7 +103,26 @@ pub fn test_network_connection(
                 entries.len()
             ))
         }
-        other => Err(RemoteProviderError::UnsupportedProtocol(other)),
+        RemoteProtocol::Dropbox => {
+            let provider = crate::DropboxNetworkProvider::connect(profile, credential)?;
+            let root = profile.endpoint.root_path.as_deref().unwrap_or("/");
+            let entries = provider.list(root)?;
+            Ok(format!(
+                "Dropbox connected via {} and listed {} entries",
+                provider.api_host(),
+                entries.len()
+            ))
+        }
+        RemoteProtocol::OneDrive => {
+            let provider = crate::OneDriveNetworkProvider::connect(profile, credential)?;
+            let root = profile.endpoint.root_path.as_deref().unwrap_or("/");
+            let entries = provider.list(root)?;
+            Ok(format!(
+                "OneDrive connected via {} and listed {} entries",
+                provider.graph_host(),
+                entries.len()
+            ))
+        }
     }
 }
 
@@ -122,7 +143,12 @@ pub fn open_network_provider(
         RemoteProtocol::Subversion => Ok(Box::new(crate::SvnNetworkProvider::connect(
             profile, credential,
         )?)),
-        other => Err(RemoteProviderError::UnsupportedProtocol(other)),
+        RemoteProtocol::Dropbox => Ok(Box::new(crate::DropboxNetworkProvider::connect(
+            profile, credential,
+        )?)),
+        RemoteProtocol::OneDrive => Ok(Box::new(crate::OneDriveNetworkProvider::connect(
+            profile, credential,
+        )?)),
     }
 }
 
@@ -615,29 +641,43 @@ mod tests {
     }
 
     #[test]
-    fn unsupported_protocols_are_rejected_instead_of_using_memory_providers() {
-        let profile = RemoteProfile::new(
-            "team-dropbox",
-            "Team Dropbox",
-            RemoteProtocol::Dropbox,
-            RemoteEndpoint::new("api.dropboxapi.com").with_root_path("/OpenDiff"),
-            CredentialReference::profile_store("team-dropbox"),
-        );
-        let credential = RemoteCredential::bearer_token("token");
-        let error = test_network_connection(&profile, &credential).unwrap_err();
-
-        assert!(matches!(
-            error,
-            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::Dropbox)
-        ));
-        assert!(!protocol_is_implemented(RemoteProtocol::Dropbox));
-        assert!(!protocol_is_implemented(RemoteProtocol::OneDrive));
+    fn cloud_drive_protocols_are_implemented_and_attempt_live_connect() {
+        assert!(protocol_is_implemented(RemoteProtocol::Dropbox));
+        assert!(protocol_is_implemented(RemoteProtocol::OneDrive));
         assert!(protocol_is_implemented(RemoteProtocol::S3));
         assert!(protocol_is_implemented(RemoteProtocol::Subversion));
         assert!(protocol_is_implemented(RemoteProtocol::Sftp));
         assert!(protocol_is_implemented(RemoteProtocol::Ftp));
         assert!(protocol_is_implemented(RemoteProtocol::Ftps));
         assert!(protocol_is_implemented(RemoteProtocol::WebDav));
+
+        let dropbox = RemoteProfile::new(
+            "closed-dropbox",
+            "Closed Dropbox",
+            RemoteProtocol::Dropbox,
+            RemoteEndpoint::new("127.0.0.1")
+                .with_port(1)
+                .with_root_path("/"),
+            CredentialReference::profile_store("closed-dropbox"),
+        );
+        let dropbox_error =
+            test_network_connection(&dropbox, &RemoteCredential::bearer_token("token"))
+                .unwrap_err();
+        assert!(matches!(dropbox_error, RemoteProviderError::Backend(_)));
+
+        let onedrive = RemoteProfile::new(
+            "closed-onedrive",
+            "Closed OneDrive",
+            RemoteProtocol::OneDrive,
+            RemoteEndpoint::new("127.0.0.1")
+                .with_port(1)
+                .with_root_path("/"),
+            CredentialReference::profile_store("closed-onedrive"),
+        );
+        let onedrive_error =
+            test_network_connection(&onedrive, &RemoteCredential::bearer_token("token"))
+                .unwrap_err();
+        assert!(matches!(onedrive_error, RemoteProviderError::Backend(_)));
     }
 
     #[test]

@@ -217,7 +217,7 @@ describe('RemoteProfileView', () => {
     Reflect.deleteProperty(window, '__TAURI_INTERNALS__')
   })
 
-  it('disables save for unfinished remote protocols without unimplemented labels', async () => {
+  it('enables save for Dropbox and OneDrive token-based remotes', async () => {
     const wrapper = mount(RemoteProfileView, {
       global: { plugins: [createPinia()] },
     })
@@ -228,14 +228,19 @@ describe('RemoteProfileView', () => {
 
     const save = wrapper.find('[data-testid="save-remote-profile"]')
 
-    expect(save.attributes('disabled')).toBeDefined()
+    expect(save.attributes('disabled')).toBeUndefined()
     expect(save.text()).toBe('Save')
     expect(save.text()).not.toContain('unimplemented')
     expect(
       wrapper
         .find('[data-testid="remote-profile-protocol-select"] option[value="dropbox"]')
         .attributes('disabled'),
-    ).toBeDefined()
+    ).toBeUndefined()
+    expect(
+      wrapper
+        .find('[data-testid="remote-profile-protocol-select"] option[value="one-drive"]')
+        .attributes('disabled'),
+    ).toBeUndefined()
     expect(
       wrapper
         .find('[data-testid="remote-profile-protocol-select"] option[value="s3"]')
@@ -246,10 +251,6 @@ describe('RemoteProfileView', () => {
         .find('[data-testid="remote-profile-protocol-select"] option[value="subversion"]')
         .attributes('disabled'),
     ).toBeUndefined()
-
-    await save.trigger('click')
-    await flushPromises()
-
-    expect(saveRemoteProfile).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="remote-oauth-token-hint"]').exists()).toBe(true)
   })
 })

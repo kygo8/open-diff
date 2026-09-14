@@ -714,7 +714,7 @@ export const deDE: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'Archivvergleich',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': 'Auf Datei anwenden',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -731,8 +731,12 @@ export const deDE: LanguagePack = {
     'ui.loadFiles': 'Dateien laden',
     'ui.openInTextCompare': 'In Textvergleich öffnen',
     'ui.password': 'Passwort',
+    'ui.oauthAccessToken': 'Zugriffstoken',
+    'ui.oauthTokenHint':
+      'Dropbox-API- oder Microsoft-Graph-Zugriffstoken einfügen. Host kann dropbox / onedrive bleiben. Vollständiges Browser-OAuth ist nicht gebündelt; Token aus App-Konsole oder Gerätecode-Flow verwenden.',
+    'ui.tokenAccountOptional': 'Konto (optional)',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV, S3 und SVN können verbinden, listen und übertragen. Dropbox und OneDrive bleiben unimplementiert (OAuth-Cloud-Laufwerke bleiben geplant).',
+      'SFTP, FTP, FTPS, WebDAV, S3, Dropbox, OneDrive und SVN können verbinden, listen und übertragen. Cloud-Zugriffstoken in das Token-Feld einfügen (Browser-OAuth ist nicht gebündelt).',
     'ui.remoteUriHint':
       'Lokaler Pfad oder sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path bzw. svn://profile/id/path nach dem Speichern eines Profils',
     'ui.reportKind': 'Report kind',

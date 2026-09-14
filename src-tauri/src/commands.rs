@@ -1949,6 +1949,13 @@ fn remote_credential_for_profile(
         .load_secret(&profile.id)
         .map_err(profile_store_error)?
     {
+        if matches!(
+            profile.protocol,
+            remote_core::RemoteProtocol::Dropbox | remote_core::RemoteProtocol::OneDrive
+        ) {
+            let token = credential.secret().expose_secret().to_owned();
+            return Ok(remote_core::RemoteCredential::bearer_token(token));
+        }
         return Ok(credential);
     }
     if profile.protocol == remote_core::RemoteProtocol::Subversion {

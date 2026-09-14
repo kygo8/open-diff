@@ -709,7 +709,7 @@ export const frFR: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'Comparaison d’archives',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': 'Appliquer au fichier',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -726,8 +726,12 @@ export const frFR: LanguagePack = {
     'ui.loadFiles': 'Charger les fichiers',
     'ui.openInTextCompare': 'Ouvrir dans la comparaison de texte',
     'ui.password': 'Mot de passe',
+    'ui.oauthAccessToken': "Jeton d'accès",
+    'ui.oauthTokenHint':
+      "Collez un jeton d'accès Dropbox API ou Microsoft Graph. L'hôte peut rester dropbox / onedrive. L'OAuth navigateur complet n'est pas inclus ; utilisez un jeton de la console d'application ou du flux code appareil.",
+    'ui.tokenAccountOptional': 'Compte (facultatif)',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV, S3 et SVN peuvent se connecter, lister et transférer. Dropbox et OneDrive restent non implémentés (les lecteurs cloud OAuth restent prévus).',
+      "SFTP, FTP, FTPS, WebDAV, S3, Dropbox, OneDrive et SVN peuvent se connecter, lister et transférer. Collez un jeton d'accès cloud dans le champ jeton (OAuth navigateur non inclus).",
     'ui.remoteUriHint':
       'Utilisez un chemin local, ou sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path ou svn://profile/id/path après avoir enregistré un profil',
     'ui.reportKind': 'Report kind',

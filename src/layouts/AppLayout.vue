@@ -34,6 +34,7 @@ import {
 } from '@lucide/vue'
 import { commandRegistry, filterCommands } from '@/app/commandRegistry'
 import { createCommandExecutor, getCommandsForPlacement } from '@/app/commandSystem'
+import { findCommandIdForKeyboardEvent, isEditableKeyboardTarget } from '@/app/keyboardShortcuts'
 import { listenDesktopPathDrop } from '@/app/desktopDrop'
 import { openSessionWindow } from '@/app/sessionWindow'
 import { resolveDropLaunchFromPaths } from '@/app/dropLaunch'
@@ -723,7 +724,25 @@ function onChromeKeydown(event: KeyboardEvent): void {
       closeChromeMenus()
       commandPaletteOpen.value = false
     }
+
+    return
   }
+
+  if (commandPaletteOpen.value || isEditableKeyboardTarget(event.target)) {
+    return
+  }
+
+  const commandId = findCommandIdForKeyboardEvent(commandRegistry, event, {
+    getEffectiveShortcut: (command) => settings.getEffectiveShortcut(command),
+    routePath: route.path,
+  })
+
+  if (!commandId) {
+    return
+  }
+
+  event.preventDefault()
+  executeRegisteredCommand(commandId)
 }
 
 function requestCloseTab(tab: { id: string; title: string; dirty: boolean }): void {

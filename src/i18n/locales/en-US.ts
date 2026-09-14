@@ -686,12 +686,11 @@ export const enUS: LanguagePack = {
     'session.summary.textMerge': 'Combine left, right, and a base file into one result',
     'session.summary.textPatch': 'Review and apply a patch file',
     'session.summary.versionCompare': 'Compare version info inside program files',
-    'session.summary.archiveCompare':
-      'Compare ZIP/TAR sides and copy files out into a folder (7z not available)',
+    'session.summary.archiveCompare': 'Compare ZIP/TAR/7z sides and copy files out into a folder',
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'Archive Compare',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR archives (7z unimplemented). Snapshot JSON or sftp://profile/id/path and webdav://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path and webdav://profile/id/path also work.',
     'ui.applyToFile': 'Apply to File',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -812,7 +811,7 @@ export const enUS: LanguagePack = {
     'ui.browseArchive': 'Archive…',
     'ui.archiveSide': 'Archive',
     'ui.snapshotSide': 'Snapshot',
-    'status.notAnArchivePath': 'Not a ZIP/TAR archive: {path}',
+    'status.notAnArchivePath': 'Not a ZIP/TAR/7z archive: {path}',
     'status.attributesChangedBulk': 'Attributes changed on {count} items -> {state}',
     'status.renamedBulkPaths': 'Renamed {count} items -> {path}',
     'ui.registryMaturityNote':

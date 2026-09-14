@@ -215,15 +215,6 @@ describe('TextDiffPanel', () => {
 
     expect(body.element.scrollTop).toBe(24 * 4)
 
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F7' }))
-    await nextTick()
-
-    expect(body.element.scrollTop).toBe(24 * 39)
-
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F7', shiftKey: true }))
-    await nextTick()
-
-    expect(body.element.scrollTop).toBe(24 * 4)
     wrapper.unmount()
   })
 

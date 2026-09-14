@@ -118,7 +118,10 @@ impl ArchiveFormat {
     }
 
     pub fn is_implemented(self) -> bool {
-        matches!(self, Self::Zip | Self::Tar | Self::TarGz | Self::Gz)
+        matches!(
+            self,
+            Self::Zip | Self::Tar | Self::TarGz | Self::Gz | Self::SevenZip
+        )
     }
 }
 
@@ -169,23 +172,15 @@ impl ArchiveReader {
             ArchiveFormat::Tar => read_tar_document(name, bytes, false),
             ArchiveFormat::TarGz => read_tar_document(name, bytes, true),
             ArchiveFormat::Gz => read_gzip_document(name, bytes),
-            ArchiveFormat::SevenZip => Err(ArchiveError::UnsupportedFormat(
-                "7z is not implemented; use ZIP or TAR".to_owned(),
-            )),
+            ArchiveFormat::SevenZip => read_seven_zip_document(name, bytes),
         }
     }
 
     pub fn open(
         name: impl Into<String>,
-        format: ArchiveFormat,
+        _format: ArchiveFormat,
         entries: Vec<ArchiveSourceEntry>,
     ) -> ArchiveResult<ArchiveDocument> {
-        if format == ArchiveFormat::SevenZip {
-            return Err(ArchiveError::UnsupportedFormat(
-                "7z is not implemented; use ZIP or TAR".to_owned(),
-            ));
-        }
-
         let mut document = ArchiveDocument::new(name);
 
         for entry in entries {
@@ -569,6 +564,68 @@ fn read_gzip_document(name: impl Into<String>, bytes: &[u8]) -> ArchiveResult<Ar
     Ok(ArchiveDocument::new(file_name.clone()).with_file(file_name, contents))
 }
 
+fn read_seven_zip_document(
+    name: impl Into<String>,
+    bytes: &[u8],
+) -> ArchiveResult<ArchiveDocument> {
+    if bytes.is_empty() {
+        return Err(ArchiveError::InvalidArchive(
+            "7z payload is empty".to_owned(),
+        ));
+    }
+
+    if !bytes.starts_with(&[b'7', b'z', 0xBC, 0xAF, 0x27, 0x1C]) {
+        return Err(ArchiveError::InvalidArchive(
+            "7z payload is missing the 7z signature".to_owned(),
+        ));
+    }
+
+    let mut reader = sevenz_rust2::ArchiveReader::new(
+        Cursor::new(bytes.to_vec()),
+        sevenz_rust2::Password::empty(),
+    )
+    .map_err(|error| ArchiveError::InvalidArchive(error.to_string()))?;
+
+    let mut document = ArchiveDocument::new(name);
+    reader
+        .for_each_entries(|entry, reader| {
+            if entry.is_directory() {
+                return Ok(true);
+            }
+
+            let mut contents = Vec::new();
+            reader.read_to_end(&mut contents)?;
+            document = std::mem::take(&mut document).with_file(entry.name(), contents);
+            Ok(true)
+        })
+        .map_err(|error| ArchiveError::InvalidArchive(error.to_string()))?;
+
+    Ok(document)
+}
+
+pub fn write_seven_zip_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
+    let cursor = Cursor::new(Vec::new());
+    let mut writer = sevenz_rust2::ArchiveWriter::new(cursor)
+        .map_err(|error| ArchiveError::Io(error.to_string()))?;
+    writer.set_encrypt_header(false);
+
+    for (path, bytes) in &document.files {
+        let entry_name = path.trim_start_matches('/');
+        writer
+            .push_archive_entry(
+                sevenz_rust2::ArchiveEntry::new_file(entry_name),
+                Some(Cursor::new(bytes.clone())),
+            )
+            .map_err(|error| ArchiveError::Io(error.to_string()))?;
+    }
+
+    let finished = writer
+        .finish()
+        .map_err(|error| ArchiveError::Io(error.to_string()))?;
+
+    Ok(finished.into_inner())
+}
+
 fn insert_ancestor_directories(entries: &mut BTreeMap<String, ArchiveEntry>, file_path: &str) {
     let segments = file_path
         .trim_start_matches('/')
@@ -719,13 +776,13 @@ mod tests {
             ArchiveFormat::detect("release.7z").unwrap(),
             ArchiveFormat::SevenZip
         );
-        assert!(!ArchiveFormat::SevenZip.is_implemented());
+        assert!(ArchiveFormat::SevenZip.is_implemented());
         assert!(is_archive_path("pkg.zip"));
-        assert!(!is_archive_path("pkg.7z"));
+        assert!(is_archive_path("pkg.7z"));
     }
 
     #[test]
-    fn archive_reader_opens_real_tar_and_rejects_seven_zip() {
+    fn archive_reader_opens_real_tar_and_seven_zip() {
         let document =
             ArchiveDocument::new("release.tar").with_file("/docs/readme.md", b"readme".to_vec());
         let tar_bytes = write_tar_fixture(&document);
@@ -734,8 +791,19 @@ mod tests {
 
         assert_eq!(vfs.read("/docs/readme.md").unwrap(), b"readme");
 
-        let seven_zip = ArchiveReader::open_bytes("release.7z", b"7z payload").unwrap_err();
-        assert!(matches!(seven_zip, ArchiveError::UnsupportedFormat(_)));
+        let seven_doc = ArchiveDocument::new("release.7z")
+            .with_file("/docs/readme.md", b"hello 7z".to_vec())
+            .with_file("/bin/app.exe", b"binary".to_vec());
+        let seven_bytes = write_seven_zip_bytes(&seven_doc).unwrap();
+        assert!(seven_bytes.starts_with(&[b'7', b'z', 0xBC, 0xAF, 0x27, 0x1C]));
+
+        let opened_seven = ArchiveReader::open_bytes("release.7z", &seven_bytes).unwrap();
+        let seven_vfs = ArchiveVfs::from_document(opened_seven);
+        assert_eq!(seven_vfs.read("/docs/readme.md").unwrap(), b"hello 7z");
+        assert_eq!(seven_vfs.list("/").unwrap().len(), 2);
+
+        let invalid = ArchiveReader::open_bytes("release.7z", b"7z payload").unwrap_err();
+        assert!(matches!(invalid, ArchiveError::InvalidArchive(_)));
     }
 
     #[test]

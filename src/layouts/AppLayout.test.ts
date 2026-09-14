@@ -353,6 +353,38 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-panel"]').exists()).toBe(false)
   })
 
+  it('dispatches rebound session compare shortcuts from the chrome keydown handler', async () => {
+    routePath = '/compare/folder'
+    const wrapper = mountAppLayout()
+    const settings = useSettingsStore()
+    const viewActions = (await import('@/stores/viewActions')).useViewActionsStore()
+
+    expect(
+      settings.setShortcutOverride('session.compare', {
+        keys: ['F8'],
+        scope: 'global',
+      }),
+    ).toBe(true)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F8' }))
+    await wrapper.vm.$nextTick()
+
+    expect(viewActions.name).toBe('compare')
+    wrapper.unmount()
+  })
+
+  it('honors text-compare scoped next-difference shortcuts on text routes', async () => {
+    routePath = '/compare/text'
+    const wrapper = mountAppLayout()
+    const viewActions = (await import('@/stores/viewActions')).useViewActionsStore()
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F7' }))
+    await wrapper.vm.$nextTick()
+
+    expect(viewActions.name).toBe('next-difference')
+    wrapper.unmount()
+  })
+
   it('exposes clickable menus with aria-haspopup on Home', async () => {
     routePath = '/'
     const wrapper = mountAppLayout()

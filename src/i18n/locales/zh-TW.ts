@@ -670,11 +670,11 @@ export const zhTW: LanguagePack = {
     'ui.sheetNotSelected': '未選擇',
     'ui.sheetSelectionEmpty': 'Excel 或 HTML 比較後顯示工作表',
     'ui.sheetSelectionSummary': '左 {leftCount} / 右 {rightCount} · {leftSheet} vs {rightSheet}',
-    'session.summary.archiveCompare': '對比 ZIP/TAR 壓縮檔並支援複製到資料夾（7z 未實作）',
+    'session.summary.archiveCompare': '對比 ZIP/TAR/7z 壓縮檔並支援複製到資料夾',
     'session.summary.script': '執行簡單指令碼：載入、比較、匯出報告',
     'ui.archiveCompare': '壓縮檔比較',
     'ui.archivePathHint':
-      '資料夾或 ZIP/TAR 壓縮檔（7z 未實作）。也支援快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path',
+      '資料夾或 ZIP/TAR/7z 壓縮檔。也支援快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path',
     'ui.applyToFile': '套用到檔案',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -788,7 +788,7 @@ export const zhTW: LanguagePack = {
     'ui.browseArchive': '壓縮檔…',
     'ui.archiveSide': '壓縮檔',
     'ui.snapshotSide': '快照',
-    'status.notAnArchivePath': '不是 ZIP/TAR 壓縮檔：{path}',
+    'status.notAnArchivePath': '不是 ZIP/TAR/7z 壓縮檔：{path}',
     'status.attributesChangedBulk': '已變更 {count} 項屬性 -> {state}',
     'status.renamedBulkPaths': '已重新命名 {count} 項 -> {path}',
     'ui.registryMaturityNote':

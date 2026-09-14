@@ -693,7 +693,7 @@ export const koKR: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': '아카이브 비교',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': '파일에 적용',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -709,8 +709,12 @@ export const koKR: LanguagePack = {
     'ui.loadFiles': '파일 불러오기',
     'ui.openInTextCompare': '텍스트 비교에서 열기',
     'ui.password': '비밀번호',
+    'ui.oauthAccessToken': '액세스 토큰',
+    'ui.oauthTokenHint':
+      'Dropbox API 또는 Microsoft Graph 액세스 토큰을 붙여넣으세요. 호스트는 dropbox / onedrive로 둘 수 있습니다. 브라우저 OAuth는 포함되지 않으며 앱 콘솔 또는 디바이스 코드 흐름에서 받은 토큰을 사용합니다.',
+    'ui.tokenAccountOptional': '계정(선택)',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV, S3, SVN는 연결, 목록, 전송이 가능합니다. Dropbox와 OneDrive는 아직 구현되지 않았습니다(OAuth 클라우드 드라이브는 Planned).',
+      'SFTP, FTP, FTPS, WebDAV, S3, Dropbox, OneDrive, SVN는 연결, 목록, 전송이 가능합니다. 클라우드 액세스 토큰을 토큰 필드에 붙여넣으세요(브라우저 OAuth는 포함되지 않음).',
     'ui.remoteUriHint':
       '로컬 경로, 또는 프로필 저장 후 sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, svn://profile/id/path를 사용하세요',
     'ui.reportKind': 'Report kind',

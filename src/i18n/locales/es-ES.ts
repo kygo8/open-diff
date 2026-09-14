@@ -708,7 +708,7 @@ export const esES: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'Comparar archivos',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': 'Aplicar al archivo',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -726,8 +726,12 @@ export const esES: LanguagePack = {
     'ui.loadFiles': 'Cargar archivos',
     'ui.openInTextCompare': 'Abrir en comparación de texto',
     'ui.password': 'Contraseña',
+    'ui.oauthAccessToken': 'Token de acceso',
+    'ui.oauthTokenHint':
+      'Pegue un token de acceso de Dropbox API o Microsoft Graph. El host puede dejarse como dropbox / onedrive. OAuth completo del navegador no está incluido; use un token de la consola de la app o del flujo de código de dispositivo.',
+    'ui.tokenAccountOptional': 'Cuenta (opcional)',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV, S3 y SVN pueden conectar, listar y transferir. Dropbox y OneDrive siguen sin implementarse (unidades en la nube OAuth siguen planificadas).',
+      'SFTP, FTP, FTPS, WebDAV, S3, Dropbox, OneDrive y SVN pueden conectar, listar y transferir. Pegue un token de acceso en la nube en el campo de token (OAuth del navegador no está incluido).',
     'ui.remoteUriHint':
       'Use una ruta local, o sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path o svn://profile/id/path después de guardar un perfil',
     'ui.reportKind': 'Report kind',

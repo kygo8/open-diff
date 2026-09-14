@@ -696,8 +696,12 @@ export const zhCN: LanguagePack = {
     'ui.loadFiles': '加载文件',
     'ui.openInTextCompare': '在文本比较中打开',
     'ui.password': '密码',
+    'ui.oauthAccessToken': '访问令牌',
+    'ui.oauthTokenHint':
+      '粘贴 Dropbox API 或 Microsoft Graph 访问令牌。主机可填写 dropbox / onedrive。未内置浏览器 OAuth；请使用应用控制台或设备码流程获取令牌。',
+    'ui.tokenAccountOptional': '账户（可选）',
     'ui.remoteNotImplemented':
-      'SFTP、FTP、FTPS、WebDAV、S3 和 SVN 可以连接、列出并传输。Dropbox 和 OneDrive 仍未实现（OAuth 云盘仍为计划中）。',
+      'SFTP、FTP、FTPS、WebDAV、S3、Dropbox、OneDrive 和 SVN 可以连接、列出并传输。请将云盘访问令牌粘贴到令牌字段（未内置浏览器 OAuth 流程）。',
     'ui.remoteUriHint':
       '使用本地路径，或在保存配置后使用 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path 或 svn://profile/id/path',
     'ui.reportKind': '报告类型',

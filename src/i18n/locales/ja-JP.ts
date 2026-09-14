@@ -696,7 +696,7 @@ export const jaJP: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'アーカイブ比較',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': 'ファイルに適用',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -712,8 +712,12 @@ export const jaJP: LanguagePack = {
     'ui.loadFiles': 'ファイルを読み込む',
     'ui.openInTextCompare': 'テキスト比較で開く',
     'ui.password': 'パスワード',
+    'ui.oauthAccessToken': 'アクセストークン',
+    'ui.oauthTokenHint':
+      'Dropbox API または Microsoft Graph のアクセストークンを貼り付けます。ホストは dropbox / onedrive のままで構いません。ブラウザ OAuth は同梱せず、アプリコンソールまたはデバイスコードフローで取得したトークンを使います。',
+    'ui.tokenAccountOptional': 'アカウント（任意）',
     'ui.remoteNotImplemented':
-      'SFTP、FTP、FTPS、WebDAV、S3、SVN は接続・一覧・転送できます。Dropbox と OneDrive は未実装のままです（OAuth クラウドドライブは Planned）。',
+      'SFTP、FTP、FTPS、WebDAV、S3、Dropbox、OneDrive、SVN は接続・一覧・転送できます。クラウドアクセストークンをトークン欄に貼り付けてください（ブラウザ OAuth は同梱しません）。',
     'ui.remoteUriHint':
       'ローカルパス、またはプロファイル保存後の sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path、svn://profile/id/path を使います',
     'ui.reportKind': 'Report kind',

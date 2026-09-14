@@ -68,6 +68,18 @@ describe('commandRegistry', () => {
     expect(commandRegistry.find((command) => command.id === 'help.about')?.enabled).toBe(true)
     expect(commandRegistry.find((command) => command.id === 'edit.undo')?.enabled).toBe(true)
     expect(commandRegistry.find((command) => command.id === 'edit.paste')?.enabled).toBe(true)
+    expect(commandRegistry.find((command) => command.id === 'open.folderSync')?.enabled).toBe(true)
+    expect(commandRegistry.find((command) => command.id === 'open.registryCompare')?.enabled).toBe(
+      true,
+    )
+    expect(commandRegistry.find((command) => command.id === 'open.textMerge')?.enabled).toBe(true)
+    expect(
+      commandRegistry.find((command) => command.id === 'merge.nextConflict')?.defaultShortcut,
+    ).toEqual({ keys: ['F8'], scope: 'text-compare' })
+    expect(commandRegistry.find((command) => command.id === 'view.toggleMinor')?.enabled).toBe(true)
+    expect(commandRegistry.find((command) => command.id === 'view.expandAll')?.enabled).toBe(true)
+    expect(commandRegistry.find((command) => command.id === 'view.collapseAll')?.enabled).toBe(true)
+    expect(commandRegistry.find((command) => command.id === 'sync.syncNow')?.enabled).toBe(true)
   })
 
   it('filters commands by title and keywords', () => {

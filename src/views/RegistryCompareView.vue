@@ -460,6 +460,12 @@ watch(
       case 'copy-left':
         applySelectedValue('left')
         break
+      case 'expand-all':
+        expandAllKeys()
+        break
+      case 'collapse-all':
+        collapseAllKeys()
+        break
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
@@ -479,6 +485,10 @@ watch(
       case 'session-settings':
       case 'undo':
       case 'workspace-load':
+      case 'next-conflict':
+      case 'previous-conflict':
+      case 'sync-now':
+      case 'toggle-minor':
       case 'workspace-save':
         break
     }

@@ -557,6 +557,18 @@ watch(
       case 'save':
         void runSync()
         break
+      case 'sync-now':
+        void runSync()
+        break
+      case 'toggle-minor':
+        minorOnly.value = !minorOnly.value
+        break
+      case 'expand-all':
+        expandAllSyncPaths()
+        break
+      case 'collapse-all':
+        collapseAllSyncPaths()
+        break
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
@@ -587,6 +599,8 @@ watch(
       case 'show-differences':
       case 'undo':
       case 'workspace-load':
+      case 'next-conflict':
+      case 'previous-conflict':
       case 'workspace-save':
         break
     }

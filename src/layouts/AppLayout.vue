@@ -213,6 +213,9 @@ const appMenus: AppMenuDefinition[] = [
     commandIds: [
       'open.textCompare',
       'open.folderCompare',
+      'open.folderSync',
+      'open.textMerge',
+      'open.registryCompare',
       'session.newTab',
       'session.newWindow',
       'session.openSession',
@@ -233,7 +236,18 @@ const appMenus: AppMenuDefinition[] = [
   {
     id: 'file',
     titleKey: 'ui.file',
-    commandIds: ['open.textCompare', 'open.folderCompare', 'open.textPatch', 'open.settings'],
+    commandIds: [
+      'open.textCompare',
+      'open.folderCompare',
+      'open.folderSync',
+      'open.folderMerge',
+      'open.textMerge',
+      'open.registryCompare',
+      'open.hexCompare',
+      'open.tableCompare',
+      'open.textPatch',
+      'open.settings',
+    ],
   },
   {
     id: 'actions',
@@ -243,6 +257,7 @@ const appMenus: AppMenuDefinition[] = [
       'session.swap',
       'session.reload',
       'session.rules',
+      'sync.syncNow',
       'view.filters',
       'edit.copyLeft',
       'edit.copyRight',
@@ -266,7 +281,7 @@ const appMenus: AppMenuDefinition[] = [
   {
     id: 'search',
     titleKey: 'ui.search',
-    commandIds: ['diff.previous', 'diff.next'],
+    commandIds: ['diff.previous', 'diff.next', 'merge.previousConflict', 'merge.nextConflict'],
   },
   {
     id: 'view',
@@ -274,6 +289,9 @@ const appMenus: AppMenuDefinition[] = [
     commandIds: [
       'view.showAll',
       'view.showDifferences',
+      'view.toggleMinor',
+      'view.expandAll',
+      'view.collapseAll',
       'view.filters',
       'session.swap',
       'session.reload',

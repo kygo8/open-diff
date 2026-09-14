@@ -100,3 +100,73 @@ describe('keyboardShortcuts', () => {
     div.remove()
   })
 })
+
+it('matches niche default chords for sync, minor, expand, and merge conflicts', () => {
+  expect(
+    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('g', { ctrlKey: true, altKey: true }), {
+      getEffectiveShortcut: (command) => command.defaultShortcut,
+      routePath: '/',
+    }),
+  ).toBe('open.folderSync')
+
+  expect(
+    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('n', { ctrlKey: true, altKey: true }), {
+      getEffectiveShortcut: (command) => command.defaultShortcut,
+      routePath: '/',
+    }),
+  ).toBe('open.registryCompare')
+
+  expect(
+    findCommandIdForKeyboardEvent(
+      commandRegistry,
+      keyEvent('m', { ctrlKey: true, shiftKey: true }),
+      {
+        getEffectiveShortcut: (command) => command.defaultShortcut,
+        routePath: '/compare/folder',
+      },
+    ),
+  ).toBe('view.toggleMinor')
+
+  expect(
+    findCommandIdForKeyboardEvent(
+      commandRegistry,
+      keyEvent('e', { ctrlKey: true, shiftKey: true }),
+      {
+        getEffectiveShortcut: (command) => command.defaultShortcut,
+        routePath: '/compare/folder',
+      },
+    ),
+  ).toBe('view.expandAll')
+
+  expect(
+    findCommandIdForKeyboardEvent(
+      commandRegistry,
+      keyEvent('Enter', { ctrlKey: true, shiftKey: true }),
+      {
+        getEffectiveShortcut: (command) => command.defaultShortcut,
+        routePath: '/sync/folder',
+      },
+    ),
+  ).toBe('sync.syncNow')
+
+  expect(
+    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F8'), {
+      getEffectiveShortcut: (command) => command.defaultShortcut,
+      routePath: '/merge/text',
+    }),
+  ).toBe('merge.nextConflict')
+
+  expect(
+    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F8', { shiftKey: true }), {
+      getEffectiveShortcut: (command) => command.defaultShortcut,
+      routePath: '/merge/text',
+    }),
+  ).toBe('merge.previousConflict')
+
+  expect(
+    findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F8'), {
+      getEffectiveShortcut: (command) => command.defaultShortcut,
+      routePath: '/compare/folder',
+    }),
+  ).toBeUndefined()
+})

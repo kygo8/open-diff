@@ -565,6 +565,44 @@ describe('AppLayout command palette', () => {
     await wrapper.find('[data-testid="tab-ctx-close-others"]').trigger('click')
     expect(tabs.tabs.map((tab) => tab.route)).toEqual(['/', '/compare/folder'])
   })
+
+  it('dispatches niche toggle-minor and sync-now shortcuts from chrome keydown', async () => {
+    routePath = '/sync/folder'
+    const wrapper = mountAppLayout()
+    const viewActions = (await import('@/stores/viewActions')).useViewActionsStore()
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'm', ctrlKey: true, shiftKey: true }))
+    await wrapper.vm.$nextTick()
+    expect(viewActions.name).toBe('toggle-minor')
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, shiftKey: true }),
+    )
+    await wrapper.vm.$nextTick()
+    expect(viewActions.name).toBe('sync-now')
+    wrapper.unmount()
+  })
+
+  it('skips niche shortcuts while focus is in an editable field', async () => {
+    routePath = '/sync/folder'
+    const wrapper = mountAppLayout()
+    const viewActions = (await import('@/stores/viewActions')).useViewActionsStore()
+
+    viewActions.dispatch('compare')
+    const input = document.createElement('input')
+
+    document.body.append(input)
+
+    const event = new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, shiftKey: true })
+
+    Object.defineProperty(event, 'target', { value: input })
+    window.dispatchEvent(event)
+    await wrapper.vm.$nextTick()
+
+    expect(viewActions.name).toBe('compare')
+    input.remove()
+    wrapper.unmount()
+  })
 })
 
 function mountAppLayout(): VueWrapper {

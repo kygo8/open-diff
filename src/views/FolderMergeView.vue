@@ -525,6 +525,15 @@ watch(
       case 'save':
         void runFolderMerge()
         break
+      case 'toggle-minor':
+        toggleMinorImportanceFilter()
+        break
+      case 'expand-all':
+        expandAllMergePaths()
+        break
+      case 'collapse-all':
+        collapseAllMergePaths()
+        break
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
@@ -556,6 +565,9 @@ watch(
       case 'swap':
       case 'undo':
       case 'workspace-load':
+      case 'next-conflict':
+      case 'previous-conflict':
+      case 'sync-now':
       case 'workspace-save':
         break
     }

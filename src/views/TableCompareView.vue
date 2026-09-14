@@ -204,6 +204,12 @@ watch(
       case 'show-differences':
       case 'undo':
       case 'workspace-load':
+      case 'collapse-all':
+      case 'expand-all':
+      case 'next-conflict':
+      case 'previous-conflict':
+      case 'sync-now':
+      case 'toggle-minor':
       case 'workspace-save':
         break
     }

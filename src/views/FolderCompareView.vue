@@ -594,6 +594,15 @@ watch(
       case 'copy-right':
         copySelectedTo('Right')
         break
+      case 'toggle-minor':
+        showMinorFolderDifferences()
+        break
+      case 'expand-all':
+        expandAllFolders()
+        break
+      case 'collapse-all':
+        collapseAllFolders()
+        break
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
@@ -613,6 +622,9 @@ watch(
       case 'save-as':
       case 'undo':
       case 'workspace-load':
+      case 'next-conflict':
+      case 'previous-conflict':
+      case 'sync-now':
       case 'workspace-save':
         break
     }

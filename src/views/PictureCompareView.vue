@@ -157,6 +157,9 @@ watch(
       case 'save-as':
         void exportPictureReport()
         break
+      case 'toggle-minor':
+        showMinor.value = !showMinor.value
+        break
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
@@ -180,6 +183,11 @@ watch(
       case 'show-differences':
       case 'undo':
       case 'workspace-load':
+      case 'collapse-all':
+      case 'expand-all':
+      case 'next-conflict':
+      case 'previous-conflict':
+      case 'sync-now':
       case 'workspace-save':
         break
     }

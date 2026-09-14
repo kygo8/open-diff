@@ -87,7 +87,7 @@ pub enum ArchiveFormat {
     TarGz,
     Gz,
     SevenZip,
-    /// Read-only RAR list/extract via pure-Rust `rars` (no write).
+    /// RAR list/extract/write via pure-Rust `rars` (RAR 5).
     Rar,
 }
 
@@ -133,7 +133,7 @@ impl ArchiveFormat {
     pub fn supports_write(self) -> bool {
         matches!(
             self,
-            Self::Zip | Self::Tar | Self::TarGz | Self::Gz | Self::SevenZip
+            Self::Zip | Self::Tar | Self::TarGz | Self::Gz | Self::SevenZip | Self::Rar
         )
     }
 }
@@ -509,9 +509,7 @@ pub fn write_archive_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>>
         ArchiveFormat::TarGz => write_tar_gz_bytes(document),
         ArchiveFormat::Gz => write_gzip_bytes(document),
         ArchiveFormat::SevenZip => write_seven_zip_bytes(document),
-        ArchiveFormat::Rar => Err(ArchiveError::UnsupportedFormat(
-            "RAR write is not implemented".to_owned(),
-        )),
+        ArchiveFormat::Rar => write_rar_bytes(document),
     }
 }
 
@@ -725,6 +723,19 @@ pub fn write_gzip_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
         .map_err(|error| ArchiveError::Io(error.to_string()))
 }
 
+pub fn write_rar_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
+    let mut builder = rars::Builder::new(rars::ArchiveVersion::Rar50);
+    for (path, bytes) in &document.files {
+        let entry_name = path.trim_start_matches('/').as_bytes().to_vec();
+        builder
+            .add_bytes(entry_name, bytes.clone(), None, None)
+            .map_err(|error| ArchiveError::Io(error.to_string()))?;
+    }
+    builder
+        .to_bytes()
+        .map_err(|error| ArchiveError::Io(error.to_string()))
+}
+
 pub fn write_seven_zip_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
     let cursor = Cursor::new(Vec::new());
     let mut writer = sevenz_rust2::ArchiveWriter::new(cursor)
@@ -890,6 +901,7 @@ mod tests {
         assert!(ArchiveFormat::Tar.supports_write());
         assert!(ArchiveFormat::TarGz.supports_write());
         assert!(ArchiveFormat::Gz.supports_write());
+        assert!(ArchiveFormat::Rar.supports_write());
     }
 
     #[test]
@@ -900,12 +912,14 @@ mod tests {
         let tar_gz_doc =
             ArchiveDocument::new("bundle.tar.gz").with_file("/a.txt", b"targz".to_vec());
         let gz_doc = ArchiveDocument::new("payload.gz").with_file("/payload", b"gzip".to_vec());
+        let rar_doc = ArchiveDocument::new("bundle.rar").with_file("/a.txt", b"rar".to_vec());
 
         let zip_bytes = write_archive_bytes(&zip_doc).unwrap();
         let seven_bytes = write_archive_bytes(&seven_doc).unwrap();
         let tar_bytes = write_archive_bytes(&tar_doc).unwrap();
         let tar_gz_bytes = write_archive_bytes(&tar_gz_doc).unwrap();
         let gz_bytes = write_archive_bytes(&gz_doc).unwrap();
+        let rar_bytes = write_archive_bytes(&rar_doc).unwrap();
 
         assert!(zip_bytes.starts_with(b"PK"));
         assert!(seven_bytes.starts_with(&[b'7', b'z', 0xBC, 0xAF, 0x27, 0x1C]));
@@ -948,6 +962,14 @@ mod tests {
                 .next()
                 .map(|(_, bytes)| bytes.as_slice()),
             Some(b"gzip".as_slice())
+        );
+        assert_eq!(
+            ArchiveReader::open_bytes("bundle.rar", &rar_bytes)
+                .unwrap()
+                .files()
+                .next()
+                .map(|(_, bytes)| bytes.as_slice()),
+            Some(b"rar".as_slice())
         );
     }
 
@@ -1117,13 +1139,13 @@ mod tests {
     }
 
     #[test]
-    fn rar_format_is_read_only() {
+    fn rar_format_supports_read_and_write() {
         assert_eq!(
             ArchiveFormat::detect("release.rar").unwrap(),
             ArchiveFormat::Rar
         );
         assert!(ArchiveFormat::Rar.is_implemented());
-        assert!(!ArchiveFormat::Rar.supports_write());
+        assert!(ArchiveFormat::Rar.supports_write());
     }
 
     #[test]
@@ -1136,5 +1158,27 @@ mod tests {
         let document = ArchiveReader::open_bytes("sample.rar", &bytes).expect("read rar");
         let vfs = ArchiveVfs::from_document(document);
         assert_eq!(vfs.read("/hello.txt").unwrap(), b"hello-rar");
+    }
+
+    #[test]
+    fn writes_and_edits_rar_archive_round_trip() {
+        let document = ArchiveDocument::new("bundle.rar")
+            .with_file("/docs/readme.md", b"old-rar".to_vec())
+            .with_file("/docs/keep.txt", b"keep".to_vec());
+        let bytes = write_rar_bytes(&document).expect("write rar");
+        let opened = ArchiveReader::open_bytes("bundle.rar", &bytes).expect("read rar");
+        let mut editor = ArchiveVfs::from_document(opened).into_editor();
+        editor
+            .replace_file("/docs/readme.md", b"new-rar".to_vec())
+            .unwrap();
+        editor.delete_file("/docs/keep.txt").unwrap();
+        let rewritten = editor.write_back().expect("write back rar");
+        let reopened = ArchiveReader::open_bytes("bundle.rar", &rewritten).unwrap();
+        let vfs = ArchiveVfs::from_document(reopened);
+        assert_eq!(vfs.read("/docs/readme.md").unwrap(), b"new-rar");
+        assert!(matches!(
+            vfs.read("/docs/keep.txt").unwrap_err(),
+            ArchiveError::NotFound(_)
+        ));
     }
 }

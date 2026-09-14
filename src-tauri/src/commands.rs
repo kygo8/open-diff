@@ -6223,6 +6223,44 @@ mod tests {
     }
 
     #[test]
+    fn copy_folder_compare_entry_writes_into_rar_archive() {
+        let root = unique_temp_dir("rar-inject-copy-command");
+        fs::create_dir_all(&root).expect("fixture directory should be created");
+        let archive_doc = archive_core::ArchiveDocument::new("bundle.rar")
+            .with_file("/nested/readme.txt", b"old".to_vec());
+        let archive = root.join("bundle.rar");
+        let folder = root.join("out");
+        fs::create_dir_all(&folder).expect("output folder should be created");
+        fs::write(
+            &archive,
+            archive_core::write_rar_bytes(&archive_doc).unwrap(),
+        )
+        .unwrap();
+        fs::create_dir_all(folder.join("nested")).unwrap();
+        fs::write(folder.join("nested").join("readme.txt"), b"fresh-rar").unwrap();
+
+        let copy = copy_folder_compare_entry(
+            folder.display().to_string(),
+            archive.display().to_string(),
+            "nested/readme.txt".to_owned(),
+            folder_core::CopyDirection::ToRight,
+        )
+        .expect("copy into a rar archive should rewrite the archive");
+
+        assert_eq!(
+            copy.refreshed_status,
+            folder_core::FolderCompareStatus::Same
+        );
+        let updated = archive_core::ArchiveReader::open_path(&archive).unwrap();
+        assert_eq!(
+            archive_core::ArchiveVfs::from_document(updated)
+                .read("nested/readme.txt")
+                .unwrap(),
+            b"fresh-rar"
+        );
+    }
+
+    #[test]
     fn run_script_compares_files_and_writes_a_report() {
         let root = unique_temp_dir("script-command");
         fs::create_dir_all(&root).expect("fixture directory should be created");

@@ -259,7 +259,6 @@ Before creating a release tag, make sure the version is synchronized across:
 These items stay unimplemented and are labeled as such in the UI:
 
 - Hardened / production OAuth for Dropbox/OneDrive (Remote Profiles open a browser authorize URL from a user-supplied client id and accept a pasted redirect URL or access token; no bundled app secrets). Dropbox API v2 and Microsoft Graph list/read/upload accept the stored access token; not production-hardened. S3, FTPS, and SVN remotes are available; not production-hardened.
-- RAR archive **write**/edit (read/list via pure-Rust `rars` is available). Remaining exotic archive write gaps beyond ZIP/7z/TAR/TAR.GZ/GZIP stay out of scope.
 - Advanced legacy script dialect features beyond the shipped subset (nested expression IF, interactive prompts, and vendor-specific verbs). The script session already runs LOAD/COMPARE/REPORT, file verbs, IF/ELSE/ENDIF, CALL/INCLUDE, REM/CD, aliases, samples, a run log, and Stop.
 - Niche report layouts beyond the shipped HTML/side-by-side HTML/text/JSON/XML/CSV/Markdown/TSV/YAML exports.
 

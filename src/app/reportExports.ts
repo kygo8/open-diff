@@ -67,11 +67,15 @@ function isRecentReportExport(value: unknown): value is RecentReportExport {
   )
 }
 
-export type ReportExportFormat = 'html' | 'text' | 'json' | 'xml' | 'csv'
+export type ReportExportFormat = 'html' | 'text' | 'json' | 'xml' | 'csv' | 'markdown'
 
 export function reportFileExtension(format: ReportExportFormat): string {
   if (format === 'text') {
     return 'txt'
+  }
+
+  if (format === 'markdown') {
+    return 'md'
   }
 
   return format

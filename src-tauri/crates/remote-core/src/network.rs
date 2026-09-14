@@ -13,12 +13,18 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 pub fn protocol_is_implemented(protocol: RemoteProtocol) -> bool {
     matches!(
         protocol,
-        RemoteProtocol::Sftp | RemoteProtocol::Ftp | RemoteProtocol::Ftps | RemoteProtocol::WebDav
+        RemoteProtocol::Sftp
+            | RemoteProtocol::Ftp
+            | RemoteProtocol::Ftps
+            | RemoteProtocol::WebDav
+            | RemoteProtocol::S3
     )
 }
 
 pub fn unimplemented_protocol_message(protocol: RemoteProtocol) -> String {
-    format!("{protocol:?} is unimplemented; only SFTP, FTP, FTPS, and WebDAV connections are live")
+    format!(
+        "{protocol:?} is unimplemented; only SFTP, FTP, FTPS, WebDAV, and S3 connections are live"
+    )
 }
 
 pub fn test_network_connection(
@@ -74,6 +80,16 @@ pub fn test_network_connection(
                 entries.len()
             ))
         }
+        RemoteProtocol::S3 => {
+            let provider = crate::S3NetworkProvider::connect(profile, credential)?;
+            let entries = provider.list("/")?;
+            Ok(format!(
+                "S3 connected to bucket {} in {} and listed {} entries",
+                provider.bucket(),
+                provider.region(),
+                entries.len()
+            ))
+        }
         other => Err(RemoteProviderError::UnsupportedProtocol(other)),
     }
 }
@@ -87,6 +103,9 @@ pub fn open_network_provider(
         RemoteProtocol::Ftp => Ok(Box::new(FtpNetworkProvider::connect(profile, credential)?)),
         RemoteProtocol::Ftps => Ok(Box::new(FtpsNetworkProvider::connect(profile, credential)?)),
         RemoteProtocol::WebDav => Ok(Box::new(crate::WebDavNetworkProvider::connect(
+            profile, credential,
+        )?)),
+        RemoteProtocol::S3 => Ok(Box::new(crate::S3NetworkProvider::connect(
             profile, credential,
         )?)),
         other => Err(RemoteProviderError::UnsupportedProtocol(other)),
@@ -584,24 +603,46 @@ mod tests {
     #[test]
     fn unsupported_protocols_are_rejected_instead_of_using_memory_providers() {
         let profile = RemoteProfile::new(
-            "release-s3",
-            "Release S3",
-            RemoteProtocol::S3,
-            RemoteEndpoint::new("s3.amazonaws.com").with_root_path("bucket"),
-            CredentialReference::profile_store("release-s3"),
+            "team-dropbox",
+            "Team Dropbox",
+            RemoteProtocol::Dropbox,
+            RemoteEndpoint::new("api.dropboxapi.com").with_root_path("/OpenDiff"),
+            CredentialReference::profile_store("team-dropbox"),
         );
-        let credential = RemoteCredential::username_password("user", "secret");
+        let credential = RemoteCredential::bearer_token("token");
         let error = test_network_connection(&profile, &credential).unwrap_err();
 
         assert!(matches!(
             error,
-            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::S3)
+            RemoteProviderError::UnsupportedProtocol(RemoteProtocol::Dropbox)
         ));
-        assert!(!protocol_is_implemented(RemoteProtocol::S3));
+        assert!(!protocol_is_implemented(RemoteProtocol::Dropbox));
+        assert!(!protocol_is_implemented(RemoteProtocol::OneDrive));
+        assert!(protocol_is_implemented(RemoteProtocol::S3));
         assert!(protocol_is_implemented(RemoteProtocol::Sftp));
         assert!(protocol_is_implemented(RemoteProtocol::Ftp));
         assert!(protocol_is_implemented(RemoteProtocol::Ftps));
         assert!(protocol_is_implemented(RemoteProtocol::WebDav));
+    }
+
+    #[test]
+    fn s3_test_connection_attempts_a_real_https_connect() {
+        let profile = RemoteProfile::new(
+            "closed-s3",
+            "Closed S3",
+            RemoteProtocol::S3,
+            RemoteEndpoint::new("127.0.0.1")
+                .with_port(1)
+                .with_root_path("demo"),
+            CredentialReference::profile_store("closed-s3"),
+        )
+        .with_option("region", "us-east-1")
+        .with_option("pathStyle", "true")
+        .with_option("useHttps", "false");
+        let credential = RemoteCredential::username_password("AKIAEXAMPLE", "secret");
+        let error = test_network_connection(&profile, &credential).unwrap_err();
+
+        assert!(matches!(error, RemoteProviderError::Backend(_)));
     }
 
     #[test]

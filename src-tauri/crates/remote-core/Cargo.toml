@@ -6,9 +6,11 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+hmac = "0.12"
 logging-core = { path = "../logging-core" }
 serde.workspace = true
 serde_json.workspace = true
+sha2 = "0.10"
 ssh2 = "0.9.5"
 suppaftp = { version = "6.3.0", default-features = false, features = ["native-tls", "deprecated"] }
 ureq = "2.12.1"

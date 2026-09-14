@@ -329,6 +329,12 @@ export const frFR: LanguagePack = {
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
     'ui.s3': 'S3',
+    'ui.s3Bucket': 'Bucket',
+    'ui.s3Region': 'Région',
+    'ui.s3RegionPlaceholder': 'us-east-1',
+    'ui.s3PathStyle': 'Point de terminaison path-style',
+    'ui.accessKeyId': "ID de clé d'accès",
+    'ui.secretAccessKey': "Clé d'accès secrète",
     'ui.sampleRate': "Taux d'échantillonnage",
     'ui.save': 'Enregistrer',
     'ui.saveAs': 'Enregistrer sous',
@@ -685,6 +691,7 @@ export const frFR: LanguagePack = {
     'ui.unchanged': 'Inchangé',
     'ui.untitledFormat': 'Format sans titre',
     'ui.csv': 'CSV',
+    'ui.markdown': 'Markdown',
     'ui.chunkLength': 'Chunk length',
     'ui.delimiter': 'Delimiter',
     'ui.html': 'HTML',
@@ -720,7 +727,7 @@ export const frFR: LanguagePack = {
     'ui.openInTextCompare': 'Ouvrir dans la comparaison de texte',
     'ui.password': 'Mot de passe',
     'ui.remoteNotImplemented':
-      'SFTP, FTP et WebDAV peuvent se connecter, lister et transférer. S3, Dropbox, OneDrive et SVN restent non implémentés.',
+      'SFTP, FTP, FTPS, WebDAV et S3 peuvent se connecter, lister et transférer. Dropbox, OneDrive et SVN restent non implémentés (les lecteurs cloud OAuth restent prévus).',
     'ui.remoteUriHint':
       'Utilisez un chemin local, ou sftp://profile/id/path ou webdav://profile/id/path après avoir enregistré un profil',
     'ui.reportKind': 'Report kind',
@@ -810,7 +817,7 @@ export const frFR: LanguagePack = {
     'status.remoteConnected': 'Connecté : {detail}',
     'status.remoteFailed': 'Échec de la connexion : {detail}',
     'status.remoteUnavailable':
-      'Ce protocole n’est pas implémenté ; seuls SFTP, FTP et WebDAV sont actifs',
+      'Ce protocole n’est pas implémenté ; seuls SFTP, FTP, FTPS, WebDAV et S3 sont actifs',
     'status.svnConfigWritten': 'Wrapper et extrait SVN écrits',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

@@ -52,6 +52,8 @@ interface RemoteProfileDraft {
   host: string
   port: number | null
   rootPath: string
+  region: string
+  pathStyle: boolean
   credentialKind: CredentialReferenceKind
   credentialKey: string
   username: string
@@ -188,6 +190,8 @@ async function saveProfile(): Promise<void> {
       rootPath: nextProfile.endpoint.rootPath,
       username: draft.value.username.trim() || undefined,
       password: policy.savePasswords ? draft.value.password || undefined : undefined,
+      region: draft.value.protocol === 's3' ? draft.value.region.trim() || null : null,
+      pathStyle: draft.value.protocol === 's3' ? draft.value.pathStyle : null,
     })
 
     persistenceMode.value = 'desktop'
@@ -425,6 +429,8 @@ function toDraft(profile: RemoteProfile): RemoteProfileDraft {
     host: profile.endpoint.host,
     port: profile.endpoint.port,
     rootPath: profile.endpoint.rootPath,
+    region: '',
+    pathStyle: false,
     credentialKind: profile.credentialRef.kind,
     credentialKey: profile.credentialRef.key,
     username: '',
@@ -653,12 +659,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
                 <option value="ftps">{{ $t('ui.ftps') }}</option>
                 <option value="sftp">{{ $t('ui.sftp') }}</option>
                 <option value="web-dav">{{ $t('ui.webDav') }}</option>
-                <option
-                  value="s3"
-                  disabled
-                >
-                  {{ $t('ui.s3') }}
-                </option>
+                <option value="s3">{{ $t('ui.s3') }}</option>
                 <option
                   value="dropbox"
                   disabled
@@ -698,12 +699,32 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
               />
             </label>
             <label>
-              <span>{{ $t('ui.rootPath') }}</span>
+              <span>{{ draft.protocol === 's3' ? $t('ui.s3Bucket') : $t('ui.rootPath') }}</span>
               <input
                 v-model="draft.rootPath"
                 data-testid="remote-profile-root-input"
                 type="text"
               />
+            </label>
+            <label v-if="draft.protocol === 's3'">
+              <span>{{ $t('ui.s3Region') }}</span>
+              <input
+                v-model="draft.region"
+                data-testid="remote-profile-region-input"
+                type="text"
+                :placeholder="$t('ui.s3RegionPlaceholder')"
+              />
+            </label>
+            <label
+              v-if="draft.protocol === 's3'"
+              class="checkbox-row"
+            >
+              <input
+                v-model="draft.pathStyle"
+                data-testid="remote-profile-path-style-input"
+                type="checkbox"
+              />
+              <span>{{ $t('ui.s3PathStyle') }}</span>
             </label>
             <label>
               <span>{{ $t('ui.credentialReference') }}</span>
@@ -717,7 +738,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
               </select>
             </label>
             <label>
-              <span>{{ $t('ui.username') }}</span>
+              <span>{{ draft.protocol === 's3' ? $t('ui.accessKeyId') : $t('ui.username') }}</span>
               <input
                 v-model="draft.username"
                 data-testid="remote-profile-username-input"
@@ -726,7 +747,9 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
               />
             </label>
             <label v-if="policy.savePasswords">
-              <span>{{ $t('ui.password') }}</span>
+              <span>{{
+                draft.protocol === 's3' ? $t('ui.secretAccessKey') : $t('ui.password')
+              }}</span>
               <input
                 v-model="draft.password"
                 data-testid="remote-profile-password-input"
@@ -978,6 +1001,17 @@ label {
   display: grid;
   gap: 5px;
   min-width: 0;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-row input {
+  width: auto;
+  height: auto;
 }
 
 .credential-key {

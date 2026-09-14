@@ -258,11 +258,11 @@ Before creating a release tag, make sure the version is synchronized across:
 
 These items stay unimplemented and are labeled as such in the UI:
 
-- S3, Dropbox, OneDrive, and SVN remote protocols (FTPS list/read with explicit or implicit TLS is available; not production-hardened).
+- Dropbox, OneDrive, and SVN remote protocols (OAuth cloud drives remain Planned). S3 list/read/upload with access-key credentials is available; not production-hardened. FTPS list/read with explicit or implicit TLS is available; not production-hardened.
 - Writing/editing entries back into 7z archives (read/list/compare and copy-out are live).
 - Remaining automation script language coverage (niche verbs and full legacy dialects). Supported commands run; unknown names return `unsupported`.
 - Live Windows registry hives (exported `.reg` files compare).
-- Niche shortcut chords and remaining report formats beyond the shipped HTML/text/JSON/XML/CSV exports.
+- Niche shortcut chords and remaining report formats beyond the shipped HTML/text/JSON/XML/CSV/Markdown exports.
 
 ## Typical Use Cases
 

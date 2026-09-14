@@ -12,6 +12,8 @@ export interface RemoteProfileDraft {
   rootPath: string
   username?: string
   password?: string
+  region?: string | null
+  pathStyle?: boolean | null
 }
 
 export interface RemoteProfileView {
@@ -33,7 +35,13 @@ export interface RemoteEntry {
 }
 
 export function isImplementedRemoteProtocol(protocol: RemoteProtocol): boolean {
-  return protocol === 'sftp' || protocol === 'ftp' || protocol === 'ftps' || protocol === 'web-dav'
+  return (
+    protocol === 'sftp' ||
+    protocol === 'ftp' ||
+    protocol === 'ftps' ||
+    protocol === 'web-dav' ||
+    protocol === 's3'
+  )
 }
 
 export function formatRemoteUri(

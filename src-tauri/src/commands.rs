@@ -1565,6 +1565,10 @@ pub fn export_folder_compare_report(
             let report = folder_report_to_unified(&model, &left_root, &right_root);
             report_core::render_csv_report(&report)
         }
+        "markdown" | "md" => {
+            let report = folder_report_to_unified(&model, &left_root, &right_root);
+            report_core::render_markdown_report(&report)
+        }
         _ => folder_core::render_folder_report_html(&model, "Folder Compare"),
     };
 
@@ -1708,6 +1712,10 @@ pub struct RemoteProfileDraft {
     pub root_path: String,
     pub username: Option<String>,
     pub password: Option<String>,
+    #[serde(default)]
+    pub region: Option<String>,
+    #[serde(default)]
+    pub path_style: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
@@ -1772,6 +1780,17 @@ pub fn save_remote_profile(
     );
     if let Some(port) = draft.port {
         profile.endpoint.port = Some(port);
+    }
+    if let Some(region) = draft
+        .region
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+    {
+        profile = profile.with_option("region", region);
+    }
+    if let Some(path_style) = draft.path_style {
+        profile = profile.with_option("pathStyle", if path_style { "true" } else { "false" });
     }
     let policy = policy_core::load_effective_policy(crate::sources::default_config_dir());
     if !policy.allows(policy_core::PolicyCapability::RemoteProfiles) {
@@ -4588,6 +4607,7 @@ fn write_rendered_report(
         })?,
         "xml" => report_core::render_xml_report(report),
         "csv" => report_core::render_csv_report(report),
+        "markdown" | "md" => report_core::render_markdown_report(report),
         _ => report_core::render_html_report(report),
     };
 

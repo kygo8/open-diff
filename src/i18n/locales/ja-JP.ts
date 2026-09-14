@@ -130,6 +130,7 @@ export const jaJP: LanguagePack = {
     'ui.credentialKey': 'Credential key',
     'ui.credentialReference': 'Credential reference',
     'ui.csv': 'CSV',
+    'ui.markdown': 'Markdown',
     'ui.cut': 'Cut',
     'ui.chunkLength': 'Chunk length',
     'ui.d': 'D',
@@ -390,6 +391,12 @@ export const jaJP: LanguagePack = {
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
     'ui.s3': 'S3',
+    'ui.s3Bucket': 'バケット',
+    'ui.s3Region': 'リージョン',
+    'ui.s3RegionPlaceholder': 'us-east-1',
+    'ui.s3PathStyle': 'パススタイルエンドポイント',
+    'ui.accessKeyId': 'アクセスキー ID',
+    'ui.secretAccessKey': 'シークレットアクセスキー',
     'ui.same': 'Same',
     'ui.sampleRate': 'Sample Rate',
     'ui.save': 'Save',
@@ -706,7 +713,7 @@ export const jaJP: LanguagePack = {
     'ui.openInTextCompare': 'テキスト比較で開く',
     'ui.password': 'パスワード',
     'ui.remoteNotImplemented':
-      'SFTP、FTP、WebDAV は接続・一覧・転送できます。S3、Dropbox、OneDrive、SVN は未実装のままです。',
+      'SFTP、FTP、FTPS、WebDAV、S3 は接続・一覧・転送できます。Dropbox、OneDrive、SVN は未実装のままです（OAuth クラウドドライブは Planned）。',
     'ui.remoteUriHint':
       'ローカルパス、またはプロファイル保存後の sftp://profile/id/path や webdav://profile/id/path を使います',
     'ui.reportKind': 'Report kind',
@@ -794,7 +801,8 @@ export const jaJP: LanguagePack = {
     'status.patchWritten': 'パッチを {path} に書き込みました',
     'status.remoteConnected': '接続済み: {detail}',
     'status.remoteFailed': '接続に失敗しました: {detail}',
-    'status.remoteUnavailable': 'このプロトコルは未実装です。現在は SFTP、FTP、WebDAV のみ有効です',
+    'status.remoteUnavailable':
+      'このプロトコルは未実装です。現在は SFTP、FTP、FTPS、WebDAV、S3 のみ有効です',
     'status.svnConfigWritten': 'SVN ラッパーとスニペットを書き込みました',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

@@ -1571,7 +1571,9 @@ function mapSyncPreviewAction(action: string): SyncPreviewAction {
   return action === 'Overwrite' ? 'Overwrite' : 'Copy'
 }
 
-async function exportFolderReport(format: 'html' | 'text' | 'json' | 'xml' | 'csv'): Promise<void> {
+async function exportFolderReport(
+  format: 'html' | 'text' | 'json' | 'xml' | 'csv' | 'markdown',
+): Promise<void> {
   if (!leftRoot.value || !rightRoot.value) {
     return
   }
@@ -2203,6 +2205,14 @@ onUnmounted(() => {
             :disabled="!leftRoot || !rightRoot"
             @click="exportFolderReport('csv')"
             >{{ $t('ui.export') }} {{ $t('ui.csv') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="export-folder-markdown-report"
+            :disabled="!leftRoot || !rightRoot"
+            @click="exportFolderReport('markdown')"
+            >{{ $t('ui.export') }} {{ $t('ui.markdown') }}</NButton
           >
           <NButton
             size="small"

@@ -53,6 +53,7 @@ describe('reportExports', () => {
   it('maps report formats to file extensions', () => {
     expect(reportFileExtension('text')).toBe('txt')
     expect(reportFileExtension('csv')).toBe('csv')
+    expect(reportFileExtension('markdown')).toBe('md')
     expect(reportFileExtension('html')).toBe('html')
     expect(reportFileExtension('json')).toBe('json')
     expect(reportFileExtension('xml')).toBe('xml')

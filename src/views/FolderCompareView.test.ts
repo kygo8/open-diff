@@ -602,6 +602,7 @@ describe('FolderCompareView', () => {
     const wrapper = mountFolderCompareView()
 
     await runCompare(wrapper)
+    expect(wrapper.find('[data-testid="export-folder-markdown-report"]').exists()).toBe(true)
     await wrapper.find('[data-testid="export-folder-csv-report"]').trigger('click')
     await flushPromises()
 

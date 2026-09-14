@@ -130,6 +130,7 @@ export const enUS: LanguagePack = {
     'ui.credentialKey': 'Credential key',
     'ui.credentialReference': 'Credential reference',
     'ui.csv': 'CSV',
+    'ui.markdown': 'Markdown',
     'ui.cut': 'Cut',
     'ui.chunkLength': 'Chunk length',
     'ui.d': 'D',
@@ -391,6 +392,12 @@ export const enUS: LanguagePack = {
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
     'ui.s3': 'S3',
+    'ui.s3Bucket': 'Bucket',
+    'ui.s3Region': 'Region',
+    'ui.s3RegionPlaceholder': 'us-east-1',
+    'ui.s3PathStyle': 'Path-style endpoint',
+    'ui.accessKeyId': 'Access key ID',
+    'ui.secretAccessKey': 'Secret access key',
     'ui.same': 'Same',
     'ui.sampleRate': 'Sample Rate',
     'ui.save': 'Save',
@@ -707,9 +714,9 @@ export const enUS: LanguagePack = {
     'ui.openInTextCompare': 'Open in Text Compare',
     'ui.password': 'Password',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, and WebDAV can connect, list, and transfer. S3, Dropbox, OneDrive, and SVN stay unimplemented.',
+      'SFTP, FTP, FTPS, WebDAV, and S3 can connect, list, and transfer. Dropbox, OneDrive, and SVN stay unimplemented (OAuth cloud drives remain Planned).',
     'ui.remoteUriHint':
-      'Use a local path, or sftp://profile/id/path or webdav://profile/id/path after saving a profile',
+      'Use a local path, or sftp://profile/id/path, webdav://profile/id/path, or s3://profile/id/path after saving a profile',
     'ui.reportKind': 'Report kind',
     'ui.rightSheet': 'Right sheet',
     'ui.runScript': 'Run Script',
@@ -794,7 +801,7 @@ export const enUS: LanguagePack = {
     'status.remoteConnected': 'Connected: {detail}',
     'status.remoteFailed': 'Connection failed: {detail}',
     'status.remoteUnavailable':
-      'This protocol is unimplemented; only SFTP, FTP, and WebDAV connections are live',
+      'This protocol is unimplemented; only SFTP, FTP, FTPS, WebDAV, and S3 connections are live',
     'status.svnConfigWritten': 'Wrote SVN wrapper and snippet',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

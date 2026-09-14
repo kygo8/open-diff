@@ -320,6 +320,12 @@ export const koKR: LanguagePack = {
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
     'ui.s3': 'S3',
+    'ui.s3Bucket': '버킷',
+    'ui.s3Region': '리전',
+    'ui.s3RegionPlaceholder': 'us-east-1',
+    'ui.s3PathStyle': '경로 스타일 엔드포인트',
+    'ui.accessKeyId': '액세스 키 ID',
+    'ui.secretAccessKey': '비밀 액세스 키',
     'ui.sampleRate': '샘플링 속도',
     'ui.save': '저장',
     'ui.saveAs': '다른 이름으로 저장',
@@ -669,6 +675,7 @@ export const koKR: LanguagePack = {
     'ui.unchanged': '변경 없음',
     'ui.untitledFormat': '제목 없는 형식',
     'ui.csv': 'CSV',
+    'ui.markdown': 'Markdown',
     'ui.chunkLength': 'Chunk length',
     'ui.delimiter': 'Delimiter',
     'ui.html': 'HTML',
@@ -703,7 +710,7 @@ export const koKR: LanguagePack = {
     'ui.openInTextCompare': '텍스트 비교에서 열기',
     'ui.password': '비밀번호',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, WebDAV는 연결, 목록, 전송이 가능합니다. S3, Dropbox, OneDrive, SVN은 아직 구현되지 않았습니다.',
+      'SFTP, FTP, FTPS, WebDAV, S3는 연결, 목록, 전송이 가능합니다. Dropbox, OneDrive, SVN은 아직 구현되지 않았습니다(OAuth 클라우드 드라이브는 Planned).',
     'ui.remoteUriHint':
       '로컬 경로, 또는 프로필 저장 후 sftp://profile/id/path나 webdav://profile/id/path를 사용하세요',
     'ui.reportKind': 'Report kind',
@@ -789,7 +796,8 @@ export const koKR: LanguagePack = {
     'status.patchWritten': '패치를 {path}에 썼습니다',
     'status.remoteConnected': '연결됨: {detail}',
     'status.remoteFailed': '연결 실패: {detail}',
-    'status.remoteUnavailable': '이 프로토콜은 미구현입니다. 현재 SFTP, FTP, WebDAV만 동작합니다',
+    'status.remoteUnavailable':
+      '이 프로토콜은 미구현입니다. 현재 SFTP, FTP, FTPS, WebDAV, S3만 동작합니다',
     'status.svnConfigWritten': 'SVN 래퍼와 스니펫을 썼습니다',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

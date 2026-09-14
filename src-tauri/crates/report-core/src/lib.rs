@@ -293,6 +293,56 @@ fn escape_csv(value: &str) -> String {
     }
 }
 
+pub fn render_markdown_report(report: &UnifiedReport) -> String {
+    let mut output = String::new();
+    output.push_str("# ");
+    output.push_str(&report.title);
+    output.push_str("\n\n");
+    output.push_str("- Generated At: ");
+    output.push_str(&report.metadata.generated_at);
+    output.push('\n');
+    if let Some(left) = report.metadata.left_source.as_deref() {
+        output.push_str("- Left Source: ");
+        output.push_str(left);
+        output.push('\n');
+    }
+    if let Some(right) = report.metadata.right_source.as_deref() {
+        output.push_str("- Right Source: ");
+        output.push_str(right);
+        output.push('\n');
+    }
+    output.push('\n');
+
+    for section in &report.sections {
+        output.push_str("## ");
+        output.push_str(&section.title);
+        output.push_str("\n\n");
+        output.push_str("| Label | Left | Right | Status |\n");
+        output.push_str("| --- | --- | --- | --- |\n");
+        for row in &section.rows {
+            output.push_str("| ");
+            output.push_str(&escape_markdown_cell(&row.label));
+            output.push_str(" | ");
+            output.push_str(&escape_markdown_cell(row.left.as_deref().unwrap_or("")));
+            output.push_str(" | ");
+            output.push_str(&escape_markdown_cell(row.right.as_deref().unwrap_or("")));
+            output.push_str(" | ");
+            output.push_str(row_status_label(&row.status));
+            output.push_str(" |\n");
+        }
+        output.push('\n');
+    }
+
+    output
+}
+
+fn escape_markdown_cell(value: &str) -> String {
+    value
+        .replace('|', "\\|")
+        .replace('\n', "<br>")
+        .replace('\r', "")
+}
+
 pub fn render_json_report(report: &UnifiedReport) -> Result<String, serde_json::Error> {
     serde_json::to_string_pretty(report)
 }
@@ -628,6 +678,36 @@ mod tests {
         assert!(csv.contains("metadata,title,\"Folder, Report\",,unchanged"));
         assert!(csv.contains("metadata,leftSource,left/,,unchanged"));
         assert!(csv.contains("differences,\"notes,md\",\"old \"\"quote\"\"\",new,different"));
+    }
+
+    #[test]
+    fn renders_markdown_report_with_section_tables() {
+        let report = UnifiedReport::new(
+            ReportKind::Folder,
+            "Folder Report",
+            ReportMetadata {
+                generated_at: "2026-06-27T03:40:00Z".to_owned(),
+                left_source: Some("left/".to_owned()),
+                right_source: Some("right/".to_owned()),
+            },
+        )
+        .with_section(ReportSection {
+            kind: ReportSectionKind::Differences,
+            title: "Paths".to_owned(),
+            rows: vec![ReportRow {
+                label: "a|b".to_owned(),
+                left: Some("one".to_owned()),
+                right: Some("two".to_owned()),
+                status: ReportRowStatus::Different,
+            }],
+        });
+
+        let markdown = render_markdown_report(&report);
+
+        assert!(markdown.starts_with("# Folder Report\n"));
+        assert!(markdown.contains("- Left Source: left/"));
+        assert!(markdown.contains("## Paths"));
+        assert!(markdown.contains("| a\\|b | one | two | different |"));
     }
 
     #[test]

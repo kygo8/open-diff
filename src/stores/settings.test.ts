@@ -198,6 +198,22 @@ describe('useSettingsStore', () => {
     expect(localStorage.getItem('open-diff-wrap-text-default')).toBe('1')
   })
 
+  it('persists folder compare behavior tweaks', () => {
+    const store = useSettingsStore()
+
+    expect(store.confirmBeforeSyncOverwrite).toBe(true)
+    expect(store.autoScrollToFirstDifference).toBe(false)
+    expect(store.collapseIdenticalFoldersDefault).toBe(false)
+
+    store.setConfirmBeforeSyncOverwrite(false)
+    store.setAutoScrollToFirstDifference(true)
+    store.setCollapseIdenticalFoldersDefault(true)
+
+    expect(localStorage.getItem('open-diff-confirm-before-sync-overwrite')).toBe('0')
+    expect(localStorage.getItem('open-diff-auto-scroll-first-difference')).toBe('1')
+    expect(localStorage.getItem('open-diff-collapse-identical-folders-default')).toBe('1')
+  })
+
   it('persists toolbar and backup option defaults', () => {
     const store = useSettingsStore()
 

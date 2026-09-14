@@ -238,6 +238,21 @@ describe('SettingsView', () => {
     expect(settings.wrapTextDefault).toBe(true)
   })
 
+  it('persists sync-confirm, auto-scroll, and collapse-identical tweaks', async () => {
+    const wrapper = mountSettingsView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
+
+    await wrapper.find('[data-testid="confirm-before-sync-overwrite"]').setValue(false)
+    await wrapper.find('[data-testid="auto-scroll-first-difference"]').setValue(true)
+    await wrapper.find('[data-testid="collapse-identical-folders-default"]').setValue(true)
+
+    expect(settings.confirmBeforeSyncOverwrite).toBe(false)
+    expect(settings.autoScrollToFirstDifference).toBe(true)
+    expect(settings.collapseIdenticalFoldersDefault).toBe(true)
+  })
+
   it('restores factory defaults from the Tweaks options card', async () => {
     const wrapper = mountSettingsView()
     const settings = useSettingsStore()

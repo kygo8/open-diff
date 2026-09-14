@@ -20,6 +20,9 @@ export interface SettingsPackage {
   diffColors: DiffHighlightColors
   confirmBeforeDelete: boolean
   wrapTextDefault: boolean
+  confirmBeforeSyncOverwrite?: boolean
+  autoScrollToFirstDifference?: boolean
+  collapseIdenticalFoldersDefault?: boolean
   showSessionToolbars: boolean
   showToolbarLabels: boolean
   largeToolbarButtons: boolean

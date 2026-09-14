@@ -165,6 +165,8 @@ export interface FolderCompareCriteria {
   compareCrc: boolean
   /** Compare readonly attributes; attribute-only diffs surface as Minor. */
   compareAttributes?: boolean
+  /** Size-only metadata diffs surface as Minor when enabled. */
+  sizeOnlyUnimportant?: boolean
   followSymlinks?: boolean
   /** Allowed absolute modified-time skew in milliseconds. */
   timestampToleranceMs?: number
@@ -199,7 +201,7 @@ export interface FolderCompareRow {
   relativePath: string
   depth: number
   status: FolderCompareStatus
-  /** Timestamp/attribute-only difference — Folder Compare Minor filter. */
+  /** Timestamp/attribute/size-only difference — Folder Compare Minor filter. */
   unimportant?: boolean
   left?: FolderCompareSideEntry
   right?: FolderCompareSideEntry

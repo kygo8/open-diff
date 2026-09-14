@@ -35,6 +35,7 @@ const props = withDefaults(
       compareContents: true,
       compareCrc: false,
       compareAttributes: false,
+      sizeOnlyUnimportant: false,
       followSymlinks: false,
       timestampToleranceMs: 0,
       ignoreDaylightSavingHourOffset: false,
@@ -322,6 +323,14 @@ function applySettings(): void {
             data-testid="session-settings-compare-attributes"
           />
           <span>{{ $t('ui.compareAttributes') }}</span>
+        </label>
+        <label>
+          <input
+            v-model="draftFolder.sizeOnlyUnimportant"
+            type="checkbox"
+            data-testid="session-settings-size-only-unimportant"
+          />
+          <span>{{ $t('ui.sizeOnlyUnimportant') }}</span>
         </label>
         <label>
           <input

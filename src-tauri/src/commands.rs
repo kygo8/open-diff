@@ -345,6 +345,9 @@ pub struct FolderCompareCriteria {
     /// Compare readonly attributes; attribute-only diffs surface as Minor.
     #[serde(default)]
     pub compare_attributes: bool,
+    /// Size-only metadata diffs surface as Minor when enabled.
+    #[serde(default)]
+    pub size_only_unimportant: bool,
     #[serde(default)]
     pub follow_symlinks: bool,
     /// Allowed absolute modified-time skew in milliseconds.
@@ -363,6 +366,7 @@ impl Default for FolderCompareCriteria {
             compare_contents: true,
             compare_crc: false,
             compare_attributes: false,
+            size_only_unimportant: false,
             follow_symlinks: false,
             timestamp_tolerance_ms: 0,
             ignore_daylight_saving_hour_offset: false,
@@ -379,6 +383,7 @@ impl FolderCompareCriteria {
             compare_contents: self.compare_contents,
             compare_crc: self.compare_crc,
             compare_attributes: self.compare_attributes,
+            size_only_unimportant: self.size_only_unimportant,
             follow_symlinks: self.follow_symlinks,
             timestamp_tolerance_ms: self.timestamp_tolerance_ms,
             ignore_daylight_saving_hour_offset: self.ignore_daylight_saving_hour_offset,
@@ -2829,7 +2834,7 @@ fn folder_row_classification(
         return Ok((FolderCompareStatus::Same, false));
     }
 
-    // Content matches; metadata differs only by timestamp/attributes under active criteria.
+    // Content matches; metadata differs only by timestamp/attributes/size under active criteria.
     let unimportant = minor_metadata;
     Ok((FolderCompareStatus::Different, unimportant))
 }
@@ -4757,6 +4762,7 @@ mod tests {
                 compare_contents: false,
                 compare_crc: false,
                 compare_attributes: false,
+                size_only_unimportant: false,
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
@@ -4773,6 +4779,7 @@ mod tests {
                 compare_contents: true,
                 compare_crc: false,
                 compare_attributes: false,
+                size_only_unimportant: false,
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
@@ -4789,6 +4796,7 @@ mod tests {
                 compare_contents: false,
                 compare_crc: true,
                 compare_attributes: false,
+                size_only_unimportant: false,
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
@@ -4848,6 +4856,7 @@ mod tests {
                 compare_contents: false,
                 compare_crc: false,
                 compare_attributes: false,
+                size_only_unimportant: false,
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
@@ -4864,6 +4873,7 @@ mod tests {
                 compare_contents: false,
                 compare_crc: false,
                 compare_attributes: false,
+                size_only_unimportant: false,
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 2_000,
                 ignore_daylight_saving_hour_offset: false,
@@ -4920,6 +4930,7 @@ mod tests {
                 compare_contents: true,
                 compare_crc: false,
                 compare_attributes: false,
+                size_only_unimportant: false,
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
@@ -4960,6 +4971,7 @@ mod tests {
                 compare_contents: true,
                 compare_crc: false,
                 compare_attributes: true,
+                size_only_unimportant: false,
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
@@ -4981,6 +4993,7 @@ mod tests {
                 compare_contents: true,
                 compare_crc: false,
                 compare_attributes: false,
+                size_only_unimportant: false,
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
@@ -5013,6 +5026,63 @@ mod tests {
             }
             fs::set_permissions(&right_file, permissions).expect("clear readonly");
         }
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn compare_folder_paths_marks_size_only_diffs_as_minor_when_enabled() {
+        let root = unique_temp_dir("folder-minor-size");
+        let left = root.join("left");
+        let right = root.join("right");
+        fs::create_dir_all(&left).expect("left");
+        fs::create_dir_all(&right).expect("right");
+        fs::write(left.join("note.txt"), b"short").expect("left file");
+        fs::write(right.join("note.txt"), b"longer-bytes").expect("right file");
+
+        let enabled = compare_folder_paths(
+            left.display().to_string(),
+            right.display().to_string(),
+            Some(FolderCompareCriteria {
+                compare_size: true,
+                compare_modified_time: false,
+                compare_contents: false,
+                compare_crc: false,
+                compare_attributes: false,
+                size_only_unimportant: true,
+                follow_symlinks: false,
+                timestamp_tolerance_ms: 0,
+                ignore_daylight_saving_hour_offset: false,
+            }),
+            None,
+        )
+        .expect("size-only minor");
+
+        assert!(enabled.rows.iter().any(|row| {
+            row.relative_path == "note.txt" && row.status == "Different" && row.unimportant
+        }));
+
+        let disabled = compare_folder_paths(
+            left.display().to_string(),
+            right.display().to_string(),
+            Some(FolderCompareCriteria {
+                compare_size: true,
+                compare_modified_time: false,
+                compare_contents: false,
+                compare_crc: false,
+                compare_attributes: false,
+                size_only_unimportant: false,
+                follow_symlinks: false,
+                timestamp_tolerance_ms: 0,
+                ignore_daylight_saving_hour_offset: false,
+            }),
+            None,
+        )
+        .expect("size-only off");
+
+        assert!(disabled.rows.iter().any(|row| {
+            row.relative_path == "note.txt" && row.status == "Different" && !row.unimportant
+        }));
+
         let _ = fs::remove_dir_all(root);
     }
 

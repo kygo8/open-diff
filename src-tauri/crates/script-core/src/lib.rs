@@ -136,6 +136,9 @@ pub struct ScriptFolderCriteria {
     pub compare_crc: bool,
     #[serde(default)]
     pub compare_attributes: bool,
+    /// Treat size-only metadata mismatches as unimportant (Minor).
+    #[serde(default)]
+    pub size_only_unimportant: bool,
     #[serde(default)]
     pub timestamp_tolerance_ms: u128,
     #[serde(default)]
@@ -158,6 +161,7 @@ impl Default for ScriptFolderCriteria {
             compare_contents: true,
             compare_crc: false,
             compare_attributes: false,
+            size_only_unimportant: false,
             timestamp_tolerance_ms: 0,
             ignore_daylight_saving_hour_offset: false,
             ignored_timezone_hour_offsets: Vec::new(),
@@ -176,6 +180,7 @@ impl ScriptFolderCriteria {
             compare_contents: self.compare_contents,
             compare_crc: self.compare_crc,
             compare_attributes: self.compare_attributes,
+            size_only_unimportant: self.size_only_unimportant,
             timestamp_tolerance_ms: self.timestamp_tolerance_ms,
             ignore_daylight_saving_hour_offset: self.ignore_daylight_saving_hour_offset,
             ignored_timezone_hour_offsets: self.ignored_timezone_hour_offsets.clone(),
@@ -868,6 +873,7 @@ fn apply_criteria_command(
         ("compare-contents", criteria.compare_contents),
         ("compare-crc", criteria.compare_crc),
         ("compare-attributes", criteria.compare_attributes),
+        ("size-only-unimportant", criteria.size_only_unimportant),
         ("ignore-unimportant", criteria.ignore_unimportant),
         ("ignore-dst", criteria.ignore_daylight_saving_hour_offset),
         ("follow-symlinks", criteria.follow_symlinks),
@@ -917,7 +923,8 @@ fn apply_criteria_command(
 
 /// Map CRITERIA tokens onto folder Session Settings comparison flags.
 /// Supported: timestamp[:seconds], size, crc, binary, rules-based, attributes/attrib,
-/// ignore-unimportant, IgnoreDST / ignore-dst, timezone:<hours>, follow-symlinks.
+/// sizeonly / size-only, ignore-unimportant, IgnoreDST / ignore-dst, timezone:<hours>,
+/// follow-symlinks.
 /// Other legacy script tokens are acknowledged without changing compare results.
 pub fn parse_folder_criteria_tokens(
     tokens: &[String],
@@ -928,6 +935,7 @@ pub fn parse_folder_criteria_tokens(
         compare_contents: false,
         compare_crc: false,
         compare_attributes: false,
+        size_only_unimportant: false,
         timestamp_tolerance_ms: 0,
         ignore_daylight_saving_hour_offset: false,
         ignored_timezone_hour_offsets: Vec::new(),
@@ -1008,6 +1016,11 @@ pub fn parse_folder_criteria_tokens(
         }
         if lower == "attributes" || lower == "attrib" {
             criteria.compare_attributes = true;
+            continue;
+        }
+        if lower == "sizeonly" || lower == "size-only" {
+            criteria.compare_size = true;
+            criteria.size_only_unimportant = true;
             continue;
         }
         if lower.starts_with("attrib:")
@@ -2376,12 +2389,15 @@ mod tests {
             "ignore-unimportant".to_owned(),
             "follow-symlinks".to_owned(),
             "attributes".to_owned(),
+            "sizeonly".to_owned(),
         ])
         .expect("applied + ack tokens");
         assert!(criteria.compare_contents);
         assert!(criteria.ignore_unimportant);
         assert!(criteria.follow_symlinks);
         assert!(criteria.compare_attributes);
+        assert!(criteria.size_only_unimportant);
+        assert!(criteria.compare_size);
         assert!(acknowledged.is_empty());
 
         let (timed, _) = parse_folder_criteria_tokens(&[

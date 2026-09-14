@@ -216,6 +216,83 @@ pub fn render_text_report(report: &UnifiedReport) -> String {
     output
 }
 
+pub fn render_csv_report(report: &UnifiedReport) -> String {
+    let mut output = String::from("section,label,left,right,status\n");
+
+    output.push_str(&csv_row(
+        "metadata",
+        "title",
+        Some(&report.title),
+        None,
+        "unchanged",
+    ));
+    output.push_str(&csv_row(
+        "metadata",
+        "generatedAt",
+        Some(&report.metadata.generated_at),
+        None,
+        "unchanged",
+    ));
+    if let Some(left) = report.metadata.left_source.as_deref() {
+        output.push_str(&csv_row(
+            "metadata",
+            "leftSource",
+            Some(left),
+            None,
+            "unchanged",
+        ));
+    }
+    if let Some(right) = report.metadata.right_source.as_deref() {
+        output.push_str(&csv_row(
+            "metadata",
+            "rightSource",
+            Some(right),
+            None,
+            "unchanged",
+        ));
+    }
+
+    for section in &report.sections {
+        let section_name = report_section_kind_label(&section.kind);
+        for row in &section.rows {
+            output.push_str(&csv_row(
+                section_name,
+                &row.label,
+                row.left.as_deref(),
+                row.right.as_deref(),
+                row_status_label(&row.status),
+            ));
+        }
+    }
+
+    output
+}
+
+fn csv_row(
+    section: &str,
+    label: &str,
+    left: Option<&str>,
+    right: Option<&str>,
+    status: &str,
+) -> String {
+    format!(
+        "{},{},{},{},{}\n",
+        escape_csv(section),
+        escape_csv(label),
+        escape_csv(left.unwrap_or("")),
+        escape_csv(right.unwrap_or("")),
+        escape_csv(status),
+    )
+}
+
+fn escape_csv(value: &str) -> String {
+    if value.contains(',') || value.contains('"') || value.contains('\n') || value.contains('\r') {
+        format!("\"{}\"", value.replace('"', "\"\""))
+    } else {
+        value.to_owned()
+    }
+}
+
 pub fn render_json_report(report: &UnifiedReport) -> Result<String, serde_json::Error> {
     serde_json::to_string_pretty(report)
 }
@@ -521,6 +598,36 @@ mod tests {
         assert!(xml.contains("<section kind=\"differences\" title=\"Rows\">"));
         assert!(xml.contains("<left>A&amp;B</left>"));
         assert!(xml.contains("<right>A&lt;C</right>"));
+    }
+
+    #[test]
+    fn renders_csv_report_with_section_rows_and_escaping() {
+        let report = UnifiedReport::new(
+            ReportKind::Folder,
+            "Folder, Report",
+            ReportMetadata {
+                generated_at: "2026-06-27T03:30:00Z".to_owned(),
+                left_source: Some("left/".to_owned()),
+                right_source: Some("right/".to_owned()),
+            },
+        )
+        .with_section(ReportSection {
+            kind: ReportSectionKind::Differences,
+            title: "Paths".to_owned(),
+            rows: vec![ReportRow {
+                label: "notes,md".to_owned(),
+                left: Some("old \"quote\"".to_owned()),
+                right: Some("new".to_owned()),
+                status: ReportRowStatus::Different,
+            }],
+        });
+
+        let csv = render_csv_report(&report);
+
+        assert!(csv.starts_with("section,label,left,right,status\n"));
+        assert!(csv.contains("metadata,title,\"Folder, Report\",,unchanged"));
+        assert!(csv.contains("metadata,leftSource,left/,,unchanged"));
+        assert!(csv.contains("differences,\"notes,md\",\"old \"\"quote\"\"\",new,different"));
     }
 
     #[test]

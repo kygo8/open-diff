@@ -650,12 +650,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
                 data-testid="remote-profile-protocol-select"
               >
                 <option value="ftp">{{ $t('ui.ftp') }}</option>
-                <option
-                  value="ftps"
-                  disabled
-                >
-                  {{ $t('ui.ftps') }}
-                </option>
+                <option value="ftps">{{ $t('ui.ftps') }}</option>
                 <option value="sftp">{{ $t('ui.sftp') }}</option>
                 <option value="web-dav">{{ $t('ui.webDav') }}</option>
                 <option

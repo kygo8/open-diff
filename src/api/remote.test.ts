@@ -26,6 +26,7 @@ describe('remote api', () => {
   it('treats SFTP, FTP, and WebDAV as implemented protocols', () => {
     expect(isImplementedRemoteProtocol('sftp')).toBe(true)
     expect(isImplementedRemoteProtocol('ftp')).toBe(true)
+    expect(isImplementedRemoteProtocol('ftps')).toBe(true)
     expect(isImplementedRemoteProtocol('web-dav')).toBe(true)
     expect(isImplementedRemoteProtocol('s3')).toBe(false)
     expect(formatRemoteUri('sftp', 'prod-sftp', '/var/app')).toBe(

@@ -3,6 +3,7 @@ import {
   loadRecentReportExports,
   recordRecentReportExport,
   reportExportsStorageKey,
+  reportFileExtension,
   saveRecentReportExports,
 } from './reportExports'
 
@@ -47,5 +48,13 @@ describe('reportExports', () => {
 
     expect(next).toHaveLength(1)
     expect(next[0]?.name).toBe('new.html')
+  })
+
+  it('maps report formats to file extensions', () => {
+    expect(reportFileExtension('text')).toBe('txt')
+    expect(reportFileExtension('csv')).toBe('csv')
+    expect(reportFileExtension('html')).toBe('html')
+    expect(reportFileExtension('json')).toBe('json')
+    expect(reportFileExtension('xml')).toBe('xml')
   })
 })

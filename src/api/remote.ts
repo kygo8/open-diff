@@ -33,7 +33,7 @@ export interface RemoteEntry {
 }
 
 export function isImplementedRemoteProtocol(protocol: RemoteProtocol): boolean {
-  return protocol === 'sftp' || protocol === 'ftp' || protocol === 'web-dav'
+  return protocol === 'sftp' || protocol === 'ftp' || protocol === 'ftps' || protocol === 'web-dav'
 }
 
 export function formatRemoteUri(

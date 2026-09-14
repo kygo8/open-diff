@@ -598,6 +598,22 @@ describe('FolderCompareView', () => {
     )
   })
 
+  it('exports a folder compare CSV report', async () => {
+    const wrapper = mountFolderCompareView()
+
+    await runCompare(wrapper)
+    await wrapper.find('[data-testid="export-folder-csv-report"]').trigger('click')
+    await flushPromises()
+
+    expect(exportFolderCompareReport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        leftRoot: 'D:/left',
+        rightRoot: 'D:/right',
+        format: 'csv',
+      }),
+    )
+  })
+
   it('loads a real sync preview instead of demo rows', async () => {
     const wrapper = mountFolderCompareView()
 

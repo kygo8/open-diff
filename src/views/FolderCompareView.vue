@@ -16,6 +16,7 @@ import { isArchivePath } from '@/app/archivePath'
 import { folderSnapshotOutputPath, isSnapshotPath } from '@/app/snapshotPath'
 import { pickNativePath } from '@/app/filePicker'
 import { formatCompareError } from '@/app/compareError'
+import { reportFileExtension } from '@/app/reportExports'
 import { loadFolderDisplayFilters, saveFolderDisplayFilters } from '@/app/folderDisplayFilters'
 import { loadFolderCompareCriteria, saveFolderCompareCriteria } from '@/app/folderCompareCriteria'
 import {
@@ -1570,7 +1571,7 @@ function mapSyncPreviewAction(action: string): SyncPreviewAction {
   return action === 'Overwrite' ? 'Overwrite' : 'Copy'
 }
 
-async function exportFolderReport(format: 'html' | 'text'): Promise<void> {
+async function exportFolderReport(format: 'html' | 'text' | 'json' | 'xml' | 'csv'): Promise<void> {
   if (!leftRoot.value || !rightRoot.value) {
     return
   }
@@ -1579,7 +1580,7 @@ async function exportFolderReport(format: 'html' | 'text'): Promise<void> {
     leftRoot: leftRoot.value,
     rightRoot: rightRoot.value,
     format,
-    outputPath: `${leftRoot.value}/folder-compare.${format === 'text' ? 'txt' : 'html'}`,
+    outputPath: `${leftRoot.value}/folder-compare.${reportFileExtension(format)}`,
   })
 
   reportStatus.value = response.outputPath ?? format
@@ -2194,6 +2195,14 @@ onUnmounted(() => {
             :disabled="!leftRoot || !rightRoot"
             @click="exportFolderReport('html')"
             >{{ $t('ui.export') }} {{ $t('ui.html') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="export-folder-csv-report"
+            :disabled="!leftRoot || !rightRoot"
+            @click="exportFolderReport('csv')"
+            >{{ $t('ui.export') }} {{ $t('ui.csv') }}</NButton
           >
           <NButton
             size="small"

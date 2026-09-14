@@ -66,3 +66,13 @@ function isRecentReportExport(value: unknown): value is RecentReportExport {
     typeof item.createdAt === 'string'
   )
 }
+
+export type ReportExportFormat = 'html' | 'text' | 'json' | 'xml' | 'csv'
+
+export function reportFileExtension(format: ReportExportFormat): string {
+  if (format === 'text') {
+    return 'txt'
+  }
+
+  return format
+}

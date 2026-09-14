@@ -500,7 +500,7 @@ export interface TextMergeResponse {
 }
 
 export interface ExportReportRequest {
-  format: 'html' | 'text' | 'json' | 'xml'
+  format: 'html' | 'text' | 'json' | 'xml' | 'csv'
   outputPath?: string
 }
 

@@ -13,12 +13,12 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 pub fn protocol_is_implemented(protocol: RemoteProtocol) -> bool {
     matches!(
         protocol,
-        RemoteProtocol::Sftp | RemoteProtocol::Ftp | RemoteProtocol::WebDav
+        RemoteProtocol::Sftp | RemoteProtocol::Ftp | RemoteProtocol::Ftps | RemoteProtocol::WebDav
     )
 }
 
 pub fn unimplemented_protocol_message(protocol: RemoteProtocol) -> String {
-    format!("{protocol:?} is unimplemented; only SFTP, FTP, and WebDAV connections are live")
+    format!("{protocol:?} is unimplemented; only SFTP, FTP, FTPS, and WebDAV connections are live")
 }
 
 pub fn test_network_connection(
@@ -48,6 +48,22 @@ pub fn test_network_connection(
                 entries.len()
             ))
         }
+        RemoteProtocol::Ftps => {
+            let provider = FtpsNetworkProvider::connect(profile, credential)?;
+            let root = profile.endpoint.root_path.as_deref().unwrap_or("/");
+            let entries = provider.list(root)?;
+            let tls_mode = provider.tls_mode();
+            let default_port = match tls_mode {
+                crate::FtpsTlsMode::Implicit => 990,
+                crate::FtpsTlsMode::Explicit => 21,
+            };
+            Ok(format!(
+                "FTPS ({tls_mode:?}) connected to {}:{} and listed {} entries",
+                profile.endpoint.host,
+                profile.endpoint.port.unwrap_or(default_port),
+                entries.len()
+            ))
+        }
         RemoteProtocol::WebDav => {
             let provider = crate::WebDavNetworkProvider::connect(profile, credential)?;
             let root = profile.endpoint.root_path.as_deref().unwrap_or("/");
@@ -69,6 +85,7 @@ pub fn open_network_provider(
     match profile.protocol {
         RemoteProtocol::Sftp => Ok(Box::new(SftpNetworkProvider::connect(profile, credential)?)),
         RemoteProtocol::Ftp => Ok(Box::new(FtpNetworkProvider::connect(profile, credential)?)),
+        RemoteProtocol::Ftps => Ok(Box::new(FtpsNetworkProvider::connect(profile, credential)?)),
         RemoteProtocol::WebDav => Ok(Box::new(crate::WebDavNetworkProvider::connect(
             profile, credential,
         )?)),
@@ -269,6 +286,160 @@ impl RemoteFileProvider for FtpNetworkProvider {
     }
 }
 
+pub struct FtpsNetworkProvider {
+    stream: RefCell<suppaftp::NativeTlsFtpStream>,
+    tls_mode: crate::FtpsTlsMode,
+}
+
+impl FtpsNetworkProvider {
+    pub fn connect(
+        profile: &RemoteProfile,
+        credential: &RemoteCredential,
+    ) -> RemoteProviderResult<Self> {
+        if profile.protocol != RemoteProtocol::Ftps {
+            return Err(RemoteProviderError::UnsupportedProtocol(profile.protocol));
+        }
+
+        let tls_mode = resolve_ftps_tls_mode(profile);
+        let default_port = match tls_mode {
+            crate::FtpsTlsMode::Implicit => 990,
+            crate::FtpsTlsMode::Explicit => 21,
+        };
+        let address = socket_address(&profile.endpoint, default_port);
+        let domain = profile.endpoint.host.as_str();
+        let connector = build_ftps_connector(profile)?;
+        let mut stream = match tls_mode {
+            crate::FtpsTlsMode::Explicit => {
+                let plain = suppaftp::NativeTlsFtpStream::connect(&address)
+                    .map_err(|error| RemoteProviderError::Backend(error.to_string()))?;
+                plain
+                    .into_secure(connector, domain)
+                    .map_err(|error| RemoteProviderError::Backend(error.to_string()))?
+            }
+            crate::FtpsTlsMode::Implicit => {
+                suppaftp::NativeTlsFtpStream::connect_secure_implicit(&address, connector, domain)
+                    .map_err(|error| RemoteProviderError::Backend(error.to_string()))?
+            }
+        };
+        let username = credential_username(credential)?;
+        let password = credential_password(credential)?;
+        stream
+            .login(username, password)
+            .map_err(|error| RemoteProviderError::Backend(error.to_string()))?;
+
+        Ok(Self {
+            stream: RefCell::new(stream),
+            tls_mode,
+        })
+    }
+
+    pub fn tls_mode(&self) -> crate::FtpsTlsMode {
+        self.tls_mode.clone()
+    }
+}
+
+impl RemoteFileProvider for FtpsNetworkProvider {
+    fn list(&self, path: &str) -> RemoteProviderResult<Vec<RemoteEntry>> {
+        let path = normalize_remote_path(path)?;
+        let names = self
+            .stream
+            .borrow_mut()
+            .nlst(Some(&path))
+            .map_err(|error| RemoteProviderError::Backend(error.to_string()))?;
+
+        Ok(names
+            .into_iter()
+            .map(|name| {
+                let entry_path = if name.starts_with('/') {
+                    name
+                } else if path == "/" {
+                    format!("/{name}")
+                } else {
+                    format!("{path}/{name}")
+                };
+                RemoteEntry {
+                    path: entry_path,
+                    kind: RemoteEntryKind::File,
+                    size: 0,
+                }
+            })
+            .collect())
+    }
+
+    fn download(&self, path: &str) -> RemoteProviderResult<Vec<u8>> {
+        let path = normalize_remote_path(path)?;
+        let cursor = self
+            .stream
+            .borrow_mut()
+            .retr_as_buffer(&path)
+            .map_err(|error| RemoteProviderError::Backend(error.to_string()))?;
+        Ok(cursor.into_inner())
+    }
+
+    fn upload(&mut self, path: &str, bytes: Vec<u8>) -> RemoteProviderResult<()> {
+        let path = normalize_remote_path(path)?;
+        let mut cursor = std::io::Cursor::new(bytes);
+        self.stream
+            .borrow_mut()
+            .put_file(&path, &mut cursor)
+            .map_err(|error| RemoteProviderError::Backend(error.to_string()))?;
+        Ok(())
+    }
+
+    fn delete(&mut self, path: &str) -> RemoteProviderResult<()> {
+        let path = normalize_remote_path(path)?;
+        let mut stream = self.stream.borrow_mut();
+        stream
+            .rm(&path)
+            .or_else(|_| stream.rmdir(&path))
+            .map_err(|error| RemoteProviderError::Backend(error.to_string()))
+    }
+
+    fn rename(&mut self, from: &str, to: &str) -> RemoteProviderResult<()> {
+        let from = normalize_remote_path(from)?;
+        let to = normalize_remote_path(to)?;
+        self.stream
+            .borrow_mut()
+            .rename(&from, &to)
+            .map_err(|error| RemoteProviderError::Backend(error.to_string()))
+    }
+}
+
+fn resolve_ftps_tls_mode(profile: &RemoteProfile) -> crate::FtpsTlsMode {
+    if let Some(mode) = profile.options.get("tlsMode") {
+        if mode.eq_ignore_ascii_case("implicit") {
+            return crate::FtpsTlsMode::Implicit;
+        }
+        if mode.eq_ignore_ascii_case("explicit") {
+            return crate::FtpsTlsMode::Explicit;
+        }
+    }
+
+    match profile.endpoint.port {
+        Some(990) => crate::FtpsTlsMode::Implicit,
+        _ => crate::FtpsTlsMode::Explicit,
+    }
+}
+
+fn build_ftps_connector(
+    profile: &RemoteProfile,
+) -> RemoteProviderResult<suppaftp::NativeTlsConnector> {
+    let insecure = profile
+        .options
+        .get("insecureTls")
+        .map(|value| !value.eq_ignore_ascii_case("false"))
+        .unwrap_or(true);
+    let mut builder = suppaftp::native_tls::TlsConnector::builder();
+    if insecure {
+        builder.danger_accept_invalid_certs(true);
+        builder.danger_accept_invalid_hostnames(true);
+    }
+    let connector = builder
+        .build()
+        .map_err(|error| RemoteProviderError::Backend(error.to_string()))?;
+    Ok(suppaftp::NativeTlsConnector::from(connector))
+}
+
 fn connect_tcp(endpoint: &RemoteEndpoint, default_port: u16) -> RemoteProviderResult<TcpStream> {
     let address = socket_address(endpoint, default_port);
     let stream = TcpStream::connect_timeout(&resolve_address(&address)?, Duration::from_secs(8))
@@ -428,7 +599,64 @@ mod tests {
         ));
         assert!(!protocol_is_implemented(RemoteProtocol::S3));
         assert!(protocol_is_implemented(RemoteProtocol::Sftp));
+        assert!(protocol_is_implemented(RemoteProtocol::Ftp));
+        assert!(protocol_is_implemented(RemoteProtocol::Ftps));
         assert!(protocol_is_implemented(RemoteProtocol::WebDav));
+    }
+
+    #[test]
+    fn ftps_test_connection_attempts_a_real_tls_connect() {
+        let profile = RemoteProfile::new(
+            "closed-ftps",
+            "Closed FTPS",
+            RemoteProtocol::Ftps,
+            RemoteEndpoint::new("127.0.0.1").with_port(1),
+            CredentialReference::profile_store("closed-ftps"),
+        );
+        let credential = RemoteCredential::username_password("deploy", "secret");
+        let error = test_network_connection(&profile, &credential).unwrap_err();
+
+        assert!(matches!(error, RemoteProviderError::Backend(_)));
+    }
+
+    #[test]
+    fn ftps_tls_mode_defaults_from_port_and_options() {
+        let explicit = RemoteProfile::new(
+            "explicit-ftps",
+            "Explicit FTPS",
+            RemoteProtocol::Ftps,
+            RemoteEndpoint::new("127.0.0.1").with_port(21),
+            CredentialReference::profile_store("explicit-ftps"),
+        );
+        assert_eq!(
+            resolve_ftps_tls_mode(&explicit),
+            crate::FtpsTlsMode::Explicit
+        );
+
+        let implicit_port = RemoteProfile::new(
+            "implicit-port",
+            "Implicit port",
+            RemoteProtocol::Ftps,
+            RemoteEndpoint::new("127.0.0.1").with_port(990),
+            CredentialReference::profile_store("implicit-port"),
+        );
+        assert_eq!(
+            resolve_ftps_tls_mode(&implicit_port),
+            crate::FtpsTlsMode::Implicit
+        );
+
+        let implicit_option = RemoteProfile::new(
+            "implicit-option",
+            "Implicit option",
+            RemoteProtocol::Ftps,
+            RemoteEndpoint::new("127.0.0.1").with_port(21),
+            CredentialReference::profile_store("implicit-option"),
+        )
+        .with_option("tlsMode", "implicit");
+        assert_eq!(
+            resolve_ftps_tls_mode(&implicit_option),
+            crate::FtpsTlsMode::Implicit
+        );
     }
 
     #[test]

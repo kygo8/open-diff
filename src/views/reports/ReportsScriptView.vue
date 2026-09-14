@@ -21,7 +21,7 @@ import { useI18n } from '@/i18n'
 import { useLastCompareStore } from '@/stores/lastCompare'
 
 type ReportKind = 'text' | 'folder'
-type ReportFormat = 'html' | 'text' | 'json'
+type ReportFormat = 'html' | 'text' | 'json' | 'csv'
 
 type ReportJob = RecentReportExport
 
@@ -229,6 +229,7 @@ function fillFromLastCompare(): void {
               <option value="html">{{ $t('ui.html') }}</option>
               <option value="text">{{ $t('ui.text') }}</option>
               <option value="json">{{ $t('ui.exportJson') }}</option>
+              <option value="csv">{{ $t('ui.csv') }}</option>
             </select>
           </label>
           <label>

@@ -321,6 +321,19 @@ describe('TextCompareView', () => {
     expect(wrapper.find('[data-testid="text-report-status"]').text()).toContain('text-compare.html')
   })
 
+  it('exports the current text compare as a CSV report', async () => {
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="export-text-csv-report"]').trigger('click')
+    await flushPromises()
+
+    expect(exportTextCompareReport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        format: 'csv',
+      }),
+    )
+  })
+
   it('shows detected line endings for the current text inputs', async () => {
     const wrapper = mountTextCompareView()
 

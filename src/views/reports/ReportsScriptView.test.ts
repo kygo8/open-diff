@@ -155,4 +155,15 @@ describe('ReportsScriptView', () => {
     )
     expect(wrapper.text()).not.toMatch(/Beyond Compare|\bBC5?\b|Scooter/i)
   })
+
+  it('offers csv as a report export format', () => {
+    const wrapper = mount(ReportsScriptView)
+
+    const options = wrapper
+      .find('[data-testid="report-format"]')
+      .findAll('option')
+      .map((option) => (option.element as HTMLOptionElement).value)
+
+    expect(options).toContain('csv')
+  })
 })

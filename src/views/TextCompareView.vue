@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { diffText, exportTextCompareReport, readTextFile } from '@/api/diff'
+import { reportFileExtension } from '@/app/reportExports'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { notifyCompareComplete } from '@/app/compareCompleteNotify'
 import { useLastCompareStore } from '@/stores/lastCompare'
@@ -581,8 +582,10 @@ function swapPaths(): void {
   dirty.value = true
 }
 
-async function exportCurrentReport(format: 'html' | 'text' | 'json'): Promise<void> {
-  const extension = format === 'text' ? 'txt' : format
+async function exportCurrentReport(
+  format: 'html' | 'text' | 'json' | 'xml' | 'csv',
+): Promise<void> {
+  const extension = reportFileExtension(format)
   const outputPath = `${leftPathLabel.value || 'text-compare'}.${extension}`
   const response = await exportTextCompareReport({
     ...buildDiffRequest(),
@@ -1282,6 +1285,13 @@ function toggleSourceEditors(): void {
           @click="exportCurrentReport('text')"
         >
           {{ $t('ui.export') }} {{ $t('ui.text') }}
+        </button>
+        <button
+          type="button"
+          data-testid="export-text-csv-report"
+          @click="exportCurrentReport('csv')"
+        >
+          {{ $t('ui.export') }} {{ $t('ui.csv') }}
         </button>
         <span
           v-if="reportStatus"

@@ -1561,6 +1561,10 @@ pub fn export_folder_compare_report(
                 )
             })?
         }
+        "csv" => {
+            let report = folder_report_to_unified(&model, &left_root, &right_root);
+            report_core::render_csv_report(&report)
+        }
         _ => folder_core::render_folder_report_html(&model, "Folder Compare"),
     };
 
@@ -4583,6 +4587,7 @@ fn write_rendered_report(
             )
         })?,
         "xml" => report_core::render_xml_report(report),
+        "csv" => report_core::render_csv_report(report),
         _ => report_core::render_html_report(report),
     };
 

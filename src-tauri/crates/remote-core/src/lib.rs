@@ -5,7 +5,7 @@ mod webdav;
 
 pub use network::{
     open_network_provider, protocol_is_implemented, test_network_connection,
-    unimplemented_protocol_message, FtpNetworkProvider, SftpNetworkProvider,
+    unimplemented_protocol_message, FtpNetworkProvider, FtpsNetworkProvider, SftpNetworkProvider,
 };
 pub use persist::{default_profile, ProfileStoreError, RemoteProfileStore};
 pub use uri::{format_remote_uri, is_remote_uri, parse_remote_uri, RemoteUri};

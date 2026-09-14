@@ -10,5 +10,5 @@ logging-core = { path = "../logging-core" }
 serde.workspace = true
 serde_json.workspace = true
 ssh2 = "0.9.5"
-suppaftp = { version = "6.3.0", default-features = false, features = ["default"] }
+suppaftp = { version = "6.3.0", default-features = false, features = ["native-tls", "deprecated"] }
 ureq = "2.12.1"

@@ -241,6 +241,11 @@ describe('RemoteProfileView', () => {
         .find('[data-testid="remote-profile-protocol-select"] option[value="s3"]')
         .attributes('disabled'),
     ).toBeUndefined()
+    expect(
+      wrapper
+        .find('[data-testid="remote-profile-protocol-select"] option[value="subversion"]')
+        .attributes('disabled'),
+    ).toBeUndefined()
 
     await save.trigger('click')
     await flushPromises()

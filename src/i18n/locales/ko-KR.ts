@@ -693,7 +693,7 @@ export const koKR: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': '아카이브 비교',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path and webdav://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': '파일에 적용',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -710,9 +710,9 @@ export const koKR: LanguagePack = {
     'ui.openInTextCompare': '텍스트 비교에서 열기',
     'ui.password': '비밀번호',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV, S3는 연결, 목록, 전송이 가능합니다. Dropbox, OneDrive, SVN은 아직 구현되지 않았습니다(OAuth 클라우드 드라이브는 Planned).',
+      'SFTP, FTP, FTPS, WebDAV, S3, SVN는 연결, 목록, 전송이 가능합니다. Dropbox와 OneDrive는 아직 구현되지 않았습니다(OAuth 클라우드 드라이브는 Planned).',
     'ui.remoteUriHint':
-      '로컬 경로, 또는 프로필 저장 후 sftp://profile/id/path나 webdav://profile/id/path를 사용하세요',
+      '로컬 경로, 또는 프로필 저장 후 sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, svn://profile/id/path를 사용하세요',
     'ui.reportKind': 'Report kind',
     'ui.rightSheet': 'Right sheet',
     'ui.runScript': '스크립트 실행',
@@ -797,7 +797,7 @@ export const koKR: LanguagePack = {
     'status.remoteConnected': '연결됨: {detail}',
     'status.remoteFailed': '연결 실패: {detail}',
     'status.remoteUnavailable':
-      '이 프로토콜은 미구현입니다. 현재 SFTP, FTP, FTPS, WebDAV, S3만 동작합니다',
+      '이 프로토콜은 미구현입니다. 현재 SFTP, FTP, FTPS, WebDAV, S3, SVN만 동작합니다',
     'status.svnConfigWritten': 'SVN 래퍼와 스니펫을 썼습니다',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

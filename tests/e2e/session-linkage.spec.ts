@@ -212,6 +212,9 @@ test('remote profiles keep unfinished protocols disabled and can test SFTP', asy
     page.locator('[data-testid="remote-profile-protocol-select"] option[value="s3"]'),
   ).toHaveJSProperty('disabled', false)
   await expect(
+    page.locator('[data-testid="remote-profile-protocol-select"] option[value="subversion"]'),
+  ).toHaveJSProperty('disabled', false)
+  await expect(
     page.locator('[data-testid="remote-profile-protocol-select"] option[value="dropbox"]'),
   ).toHaveJSProperty('disabled', true)
   await expect(page.getByTestId('remote-profile-list')).not.toContainText('Prod SFTP')

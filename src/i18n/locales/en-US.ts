@@ -697,7 +697,7 @@ export const enUS: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'Archive Compare',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path and webdav://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': 'Apply to File',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -714,9 +714,9 @@ export const enUS: LanguagePack = {
     'ui.openInTextCompare': 'Open in Text Compare',
     'ui.password': 'Password',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV, and S3 can connect, list, and transfer. Dropbox, OneDrive, and SVN stay unimplemented (OAuth cloud drives remain Planned).',
+      'SFTP, FTP, FTPS, WebDAV, S3, and SVN can connect, list, and transfer. Dropbox and OneDrive stay unimplemented (OAuth cloud drives remain Planned).',
     'ui.remoteUriHint':
-      'Use a local path, or sftp://profile/id/path, webdav://profile/id/path, or s3://profile/id/path after saving a profile',
+      'Use a local path, or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, or svn://profile/id/path after saving a profile',
     'ui.reportKind': 'Report kind',
     'ui.rightSheet': 'Right sheet',
     'ui.runScript': 'Run Script',
@@ -801,7 +801,7 @@ export const enUS: LanguagePack = {
     'status.remoteConnected': 'Connected: {detail}',
     'status.remoteFailed': 'Connection failed: {detail}',
     'status.remoteUnavailable':
-      'This protocol is unimplemented; only SFTP, FTP, FTPS, WebDAV, and S3 connections are live',
+      'This protocol is unimplemented; only SFTP, FTP, FTPS, WebDAV, S3, and SVN connections are live',
     'status.svnConfigWritten': 'Wrote SVN wrapper and snippet',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

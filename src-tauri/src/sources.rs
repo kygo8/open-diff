@@ -233,10 +233,18 @@ pub fn read_remote_file(uri: &str) -> Result<Vec<u8>, String> {
         .find_profile(&parsed.profile_ref)
         .map_err(|error| format!("{error:?}"))?
         .ok_or_else(|| format!("remote profile not found: {}", parsed.profile_ref))?;
-    let credential = store
+    let credential = match store
         .load_secret(&profile.id)
         .map_err(|error| format!("{error:?}"))?
-        .ok_or_else(|| format!("no stored secret for profile {}", profile.id))?;
+    {
+        Some(credential) => credential,
+        None if profile.protocol == remote_core::RemoteProtocol::Subversion => {
+            remote_core::RemoteCredential::username_password("", "")
+        }
+        None => {
+            return Err(format!("no stored secret for profile {}", profile.id));
+        }
+    };
     let provider = remote_core::open_network_provider(&profile, &credential)
         .map_err(|error| format!("{error:?}"))?;
     provider
@@ -251,10 +259,18 @@ fn materialize_remote_source(uri: &str) -> Result<CompareSource, String> {
         .find_profile(&parsed.profile_ref)
         .map_err(|error| format!("{error:?}"))?
         .ok_or_else(|| format!("remote profile not found: {}", parsed.profile_ref))?;
-    let credential = store
+    let credential = match store
         .load_secret(&profile.id)
         .map_err(|error| format!("{error:?}"))?
-        .ok_or_else(|| format!("no stored secret for profile {}", profile.id))?;
+    {
+        Some(credential) => credential,
+        None if profile.protocol == remote_core::RemoteProtocol::Subversion => {
+            remote_core::RemoteCredential::username_password("", "")
+        }
+        None => {
+            return Err(format!("no stored secret for profile {}", profile.id));
+        }
+    };
     let provider = remote_core::open_network_provider(&profile, &credential)
         .map_err(|error| format!("{error:?}"))?;
     Ok(CompareSource::Archive(remote_listing_to_document(

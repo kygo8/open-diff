@@ -681,7 +681,7 @@ export const zhTW: LanguagePack = {
     'session.summary.script': '執行簡單指令碼：載入、比較、匯出報告',
     'ui.archiveCompare': '壓縮檔比較',
     'ui.archivePathHint':
-      '資料夾或 ZIP/TAR/7z 壓縮檔。也支援快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path',
+      '資料夾或 ZIP/TAR/7z 壓縮檔。也支援快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path、svn://profile/id/path',
     'ui.applyToFile': '套用到檔案',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -698,9 +698,9 @@ export const zhTW: LanguagePack = {
     'ui.openInTextCompare': '在文字比較中開啟',
     'ui.password': '密碼',
     'ui.remoteNotImplemented':
-      'SFTP、FTP、FTPS、WebDAV 與 S3 可連線、列出並傳輸。Dropbox、OneDrive 與 SVN 仍未實作（OAuth 雲端硬碟仍為規劃中）。',
+      'SFTP、FTP、FTPS、WebDAV、S3 與 SVN 可連線、列出並傳輸。Dropbox 與 OneDrive 仍未實作（OAuth 雲端硬碟仍為規劃中）。',
     'ui.remoteUriHint':
-      '使用本機路徑，或在儲存設定後使用 sftp://profile/id/path 或 webdav://profile/id/path',
+      '使用本機路徑，或在儲存設定後使用 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path 或 svn://profile/id/path',
     'ui.reportKind': 'Report kind',
     'ui.rightSheet': 'Right sheet',
     'ui.runScript': '執行指令碼',
@@ -778,7 +778,8 @@ export const zhTW: LanguagePack = {
     'status.patchWritten': '補丁已寫入 {path}',
     'status.remoteConnected': '已連線：{detail}',
     'status.remoteFailed': '連線失敗：{detail}',
-    'status.remoteUnavailable': '此通訊協定尚未實作；目前只有 SFTP、FTP、FTPS、WebDAV 與 S3 可用',
+    'status.remoteUnavailable':
+      '此通訊協定尚未實作；目前只有 SFTP、FTP、FTPS、WebDAV、S3 與 SVN 可用',
     'status.svnConfigWritten': '已寫入 SVN 包裝腳本與設定片段',
     'ui.howToStart': '怎麼開始',
     'ui.neverOpened': '尚未開啟',

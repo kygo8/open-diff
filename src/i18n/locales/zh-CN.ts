@@ -680,7 +680,7 @@ export const zhCN: LanguagePack = {
     'session.summary.script': '运行简单脚本：加载、比较、导出报告',
     'ui.archiveCompare': '压缩包比较',
     'ui.archivePathHint':
-      '文件夹或 ZIP/TAR/7z 压缩包。也支持快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path',
+      '文件夹或 ZIP/TAR/7z 压缩包。也支持快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path、svn://profile/id/path',
     'ui.applyToFile': '应用到文件',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -697,9 +697,9 @@ export const zhCN: LanguagePack = {
     'ui.openInTextCompare': '在文本比较中打开',
     'ui.password': '密码',
     'ui.remoteNotImplemented':
-      'SFTP、FTP、FTPS、WebDAV 和 S3 可以连接、列出并传输。Dropbox、OneDrive 和 SVN 仍未实现（OAuth 云盘仍为计划中）。',
+      'SFTP、FTP、FTPS、WebDAV、S3 和 SVN 可以连接、列出并传输。Dropbox 和 OneDrive 仍未实现（OAuth 云盘仍为计划中）。',
     'ui.remoteUriHint':
-      '使用本地路径，或在保存配置后使用 sftp://profile/id/path 或 webdav://profile/id/path',
+      '使用本地路径，或在保存配置后使用 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path 或 svn://profile/id/path',
     'ui.reportKind': '报告类型',
     'ui.rightSheet': '右侧工作表',
     'ui.runScript': '运行脚本',
@@ -777,7 +777,7 @@ export const zhCN: LanguagePack = {
     'status.patchWritten': '补丁已写入 {path}',
     'status.remoteConnected': '已连接：{detail}',
     'status.remoteFailed': '连接失败：{detail}',
-    'status.remoteUnavailable': '该协议尚未实现；目前只有 SFTP、FTP、FTPS、WebDAV 和 S3 可用',
+    'status.remoteUnavailable': '该协议尚未实现；目前只有 SFTP、FTP、FTPS、WebDAV、S3 和 SVN 可用',
     'status.svnConfigWritten': '已写入 SVN 包装脚本和配置片段',
     'ui.howToStart': '怎么开始',
     'ui.neverOpened': '尚未打开',

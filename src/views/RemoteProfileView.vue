@@ -672,12 +672,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
                 >
                   {{ $t('ui.onedrive') }}
                 </option>
-                <option
-                  value="subversion"
-                  disabled
-                >
-                  {{ $t('ui.subversion') }}
-                </option>
+                <option value="subversion">{{ $t('ui.subversion') }}</option>
               </select>
             </label>
             <label>

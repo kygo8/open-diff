@@ -709,7 +709,7 @@ export const frFR: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'Comparaison d’archives',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path and webdav://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': 'Appliquer au fichier',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -727,9 +727,9 @@ export const frFR: LanguagePack = {
     'ui.openInTextCompare': 'Ouvrir dans la comparaison de texte',
     'ui.password': 'Mot de passe',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV et S3 peuvent se connecter, lister et transférer. Dropbox, OneDrive et SVN restent non implémentés (les lecteurs cloud OAuth restent prévus).',
+      'SFTP, FTP, FTPS, WebDAV, S3 et SVN peuvent se connecter, lister et transférer. Dropbox et OneDrive restent non implémentés (les lecteurs cloud OAuth restent prévus).',
     'ui.remoteUriHint':
-      'Utilisez un chemin local, ou sftp://profile/id/path ou webdav://profile/id/path après avoir enregistré un profil',
+      'Utilisez un chemin local, ou sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path ou svn://profile/id/path après avoir enregistré un profil',
     'ui.reportKind': 'Report kind',
     'ui.rightSheet': 'Right sheet',
     'ui.runScript': 'Exécuter le script',
@@ -817,7 +817,7 @@ export const frFR: LanguagePack = {
     'status.remoteConnected': 'Connecté : {detail}',
     'status.remoteFailed': 'Échec de la connexion : {detail}',
     'status.remoteUnavailable':
-      'Ce protocole n’est pas implémenté ; seuls SFTP, FTP, FTPS, WebDAV et S3 sont actifs',
+      'Ce protocole n’est pas implémenté ; seuls SFTP, FTP, FTPS, WebDAV, S3 et SVN sont actifs',
     'status.svnConfigWritten': 'Wrapper et extrait SVN écrits',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

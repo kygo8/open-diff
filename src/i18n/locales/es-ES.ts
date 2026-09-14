@@ -708,7 +708,7 @@ export const esES: LanguagePack = {
     'session.summary.script': 'Run a simple script to load, compare, and export a report',
     'ui.archiveCompare': 'Comparar archivos',
     'ui.archivePathHint':
-      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path and webdav://profile/id/path also work.',
+      'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, and svn://profile/id/path also work.',
     'ui.applyToFile': 'Aplicar al archivo',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -727,9 +727,9 @@ export const esES: LanguagePack = {
     'ui.openInTextCompare': 'Abrir en comparación de texto',
     'ui.password': 'Contraseña',
     'ui.remoteNotImplemented':
-      'SFTP, FTP, FTPS, WebDAV y S3 pueden conectar, listar y transferir. Dropbox, OneDrive y SVN siguen sin implementarse (unidades en la nube OAuth siguen planificadas).',
+      'SFTP, FTP, FTPS, WebDAV, S3 y SVN pueden conectar, listar y transferir. Dropbox y OneDrive siguen sin implementarse (unidades en la nube OAuth siguen planificadas).',
     'ui.remoteUriHint':
-      'Use una ruta local, o sftp://profile/id/path o webdav://profile/id/path después de guardar un perfil',
+      'Use una ruta local, o sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path o svn://profile/id/path después de guardar un perfil',
     'ui.reportKind': 'Report kind',
     'ui.rightSheet': 'Right sheet',
     'ui.runScript': 'Ejecutar script',
@@ -817,7 +817,7 @@ export const esES: LanguagePack = {
     'status.remoteConnected': 'Conectado: {detail}',
     'status.remoteFailed': 'Error de conexión: {detail}',
     'status.remoteUnavailable':
-      'Este protocolo no está implementado; solo SFTP, FTP, FTPS, WebDAV y S3 están activos',
+      'Este protocolo no está implementado; solo SFTP, FTP, FTPS, WebDAV, S3 y SVN están activos',
     'status.svnConfigWritten': 'Se escribieron el wrapper y el fragmento de SVN',
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',

@@ -18,12 +18,13 @@ pub fn protocol_is_implemented(protocol: RemoteProtocol) -> bool {
             | RemoteProtocol::Ftps
             | RemoteProtocol::WebDav
             | RemoteProtocol::S3
+            | RemoteProtocol::Subversion
     )
 }
 
 pub fn unimplemented_protocol_message(protocol: RemoteProtocol) -> String {
     format!(
-        "{protocol:?} is unimplemented; only SFTP, FTP, FTPS, WebDAV, and S3 connections are live"
+        "{protocol:?} is unimplemented; only SFTP, FTP, FTPS, WebDAV, S3, and SVN connections are live"
     )
 }
 
@@ -90,6 +91,16 @@ pub fn test_network_connection(
                 entries.len()
             ))
         }
+        RemoteProtocol::Subversion => {
+            let provider = crate::SvnNetworkProvider::connect(profile, credential)?;
+            let root = profile.endpoint.root_path.as_deref().unwrap_or("/");
+            let entries = provider.list(root)?;
+            Ok(format!(
+                "SVN connected to {} and listed {} entries",
+                provider.repo_url(),
+                entries.len()
+            ))
+        }
         other => Err(RemoteProviderError::UnsupportedProtocol(other)),
     }
 }
@@ -106,6 +117,9 @@ pub fn open_network_provider(
             profile, credential,
         )?)),
         RemoteProtocol::S3 => Ok(Box::new(crate::S3NetworkProvider::connect(
+            profile, credential,
+        )?)),
+        RemoteProtocol::Subversion => Ok(Box::new(crate::SvnNetworkProvider::connect(
             profile, credential,
         )?)),
         other => Err(RemoteProviderError::UnsupportedProtocol(other)),
@@ -619,6 +633,7 @@ mod tests {
         assert!(!protocol_is_implemented(RemoteProtocol::Dropbox));
         assert!(!protocol_is_implemented(RemoteProtocol::OneDrive));
         assert!(protocol_is_implemented(RemoteProtocol::S3));
+        assert!(protocol_is_implemented(RemoteProtocol::Subversion));
         assert!(protocol_is_implemented(RemoteProtocol::Sftp));
         assert!(protocol_is_implemented(RemoteProtocol::Ftp));
         assert!(protocol_is_implemented(RemoteProtocol::Ftps));

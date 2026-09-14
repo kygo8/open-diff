@@ -123,6 +123,10 @@ impl ArchiveFormat {
             Self::Zip | Self::Tar | Self::TarGz | Self::Gz | Self::SevenZip
         )
     }
+
+    pub fn supports_write(self) -> bool {
+        matches!(self, Self::Zip | Self::SevenZip)
+    }
 }
 
 pub fn is_archive_path(path: impl AsRef<str>) -> bool {
@@ -315,6 +319,12 @@ impl ArchiveVfs {
             .keys()
             .any(|file_path| file_path.starts_with(&prefix))
     }
+
+    pub fn into_editor(self) -> ArchiveEditor {
+        ArchiveEditor {
+            document: self.document,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -448,6 +458,9 @@ pub struct ZipArchiveEditor {
     document: ArchiveDocument,
 }
 
+/// Editor used for writable archive formats (ZIP and 7z).
+pub type ArchiveEditor = ZipArchiveEditor;
+
 impl ZipArchiveEditor {
     pub fn replace_file(&mut self, path: impl AsRef<str>, bytes: Vec<u8>) -> ArchiveResult<()> {
         self.document
@@ -457,8 +470,16 @@ impl ZipArchiveEditor {
         Ok(())
     }
 
+    pub fn delete_file(&mut self, path: impl AsRef<str>) -> ArchiveResult<()> {
+        let path = normalize_archive_path(path.as_ref());
+        if self.document.files.remove(&path).is_none() {
+            return Err(ArchiveError::NotFound(path));
+        }
+        Ok(())
+    }
+
     pub fn write_back(self) -> ArchiveResult<Vec<u8>> {
-        write_zip_bytes(&self.document)
+        write_archive_bytes(&self.document)
     }
 
     pub fn write_to_path(self, path: impl AsRef<Path>) -> ArchiveResult<()> {
@@ -467,6 +488,24 @@ impl ZipArchiveEditor {
             File::create(path.as_ref()).map_err(|error| ArchiveError::Io(error.to_string()))?;
         file.write_all(&bytes)
             .map_err(|error| ArchiveError::Io(error.to_string()))
+    }
+}
+
+/// Encode an archive document using the format implied by `document.name`.
+pub fn write_archive_bytes(document: &ArchiveDocument) -> ArchiveResult<Vec<u8>> {
+    match ArchiveFormat::detect(&document.name)? {
+        ArchiveFormat::Zip => write_zip_bytes(document),
+        ArchiveFormat::SevenZip => write_seven_zip_bytes(document),
+        other => Err(ArchiveError::UnsupportedFormat(format!(
+            "writing {} archives is not implemented",
+            match other {
+                ArchiveFormat::Tar => "tar",
+                ArchiveFormat::TarGz => "tar.gz",
+                ArchiveFormat::Gz => "gz",
+                ArchiveFormat::Zip => "zip",
+                ArchiveFormat::SevenZip => "7z",
+            }
+        ))),
     }
 }
 
@@ -736,6 +775,68 @@ mod tests {
         assert_eq!(vfs.read("/docs/readme.md").unwrap(), b"new");
         assert_eq!(vfs.read("/docs/changelog.md").unwrap(), b"changes");
         assert_eq!(vfs.list("/docs").unwrap().len(), 2);
+    }
+
+    #[test]
+    fn seven_zip_editor_write_back_round_trips_replaced_entries() {
+        let original = ArchiveDocument::new("release.7z")
+            .with_file("/docs/readme.md", b"old".to_vec())
+            .with_file("/docs/changelog.md", b"changes".to_vec());
+        let bytes = write_seven_zip_bytes(&original).unwrap();
+
+        let mut editor =
+            ArchiveVfs::from_document(ArchiveReader::open_bytes("release.7z", &bytes).unwrap())
+                .into_editor();
+        editor
+            .replace_file("/docs/readme.md", b"new-7z".to_vec())
+            .unwrap();
+        editor.delete_file("/docs/changelog.md").unwrap();
+
+        let rewritten = editor.write_back().unwrap();
+        assert!(rewritten.starts_with(&[b'7', b'z', 0xBC, 0xAF, 0x27, 0x1C]));
+
+        let reopened = ArchiveReader::open_bytes("release.7z", &rewritten).unwrap();
+        let vfs = ArchiveVfs::from_document(reopened);
+
+        assert_eq!(vfs.read("/docs/readme.md").unwrap(), b"new-7z");
+        assert!(matches!(
+            vfs.read("/docs/changelog.md").unwrap_err(),
+            ArchiveError::NotFound(_)
+        ));
+        assert!(ArchiveFormat::SevenZip.supports_write());
+        assert!(!ArchiveFormat::Tar.supports_write());
+    }
+
+    #[test]
+    fn write_archive_bytes_dispatches_zip_and_seven_zip_by_name() {
+        let zip_doc = ArchiveDocument::new("bundle.zip").with_file("/a.txt", b"zip".to_vec());
+        let seven_doc = ArchiveDocument::new("bundle.7z").with_file("/a.txt", b"seven".to_vec());
+
+        let zip_bytes = write_archive_bytes(&zip_doc).unwrap();
+        let seven_bytes = write_archive_bytes(&seven_doc).unwrap();
+
+        assert!(zip_bytes.starts_with(b"PK"));
+        assert!(seven_bytes.starts_with(&[b'7', b'z', 0xBC, 0xAF, 0x27, 0x1C]));
+        assert_eq!(
+            ArchiveReader::open_bytes("bundle.zip", &zip_bytes)
+                .unwrap()
+                .files()
+                .next()
+                .map(|(_, bytes)| bytes.as_slice()),
+            Some(b"zip".as_slice())
+        );
+        assert_eq!(
+            ArchiveReader::open_bytes("bundle.7z", &seven_bytes)
+                .unwrap()
+                .files()
+                .next()
+                .map(|(_, bytes)| bytes.as_slice()),
+            Some(b"seven".as_slice())
+        );
+
+        let tar_doc = ArchiveDocument::new("bundle.tar").with_file("/a.txt", b"x".to_vec());
+        let err = write_archive_bytes(&tar_doc).unwrap_err();
+        assert!(matches!(err, ArchiveError::UnsupportedFormat(_)));
     }
 
     #[test]

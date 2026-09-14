@@ -284,7 +284,9 @@ export async function installTauriInvokeMock(page: Page): Promise<void> {
               host: draft.host,
               port: draft.port,
               rootPath: draft.rootPath || '/',
-              implemented: ['sftp', 'ftp', 'web-dav'].includes(draft.protocol),
+              implemented: ['sftp', 'ftp', 'ftps', 'web-dav', 's3', 'subversion'].includes(
+                draft.protocol,
+              ),
               uri: `${scheme}://profile/${draft.id}${normalizedRoot || '/'}`,
               username: draft.username ?? null,
             },

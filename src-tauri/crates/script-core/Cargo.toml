@@ -20,3 +20,5 @@ serde_json.workspace = true
 shared-types = { path = "../shared-types" }
 snapshot-core = { path = "../snapshot-core" }
 sync-core = { path = "../sync-core" }
+archive-core = { path = "../archive-core" }
+folder-merge-core = { path = "../folder-merge-core" }

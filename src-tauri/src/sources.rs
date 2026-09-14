@@ -51,11 +51,13 @@ pub fn load_compare_source(path: &str) -> Result<CompareSource, String> {
 pub fn scan_compare_source_with_options(
     source: &CompareSource,
     follow_symlinks: bool,
+    show_hidden_files: bool,
 ) -> Result<FolderScanNode, String> {
     match source {
         CompareSource::Local(path) => {
             let options = folder_core::FolderCompareOptions {
                 follow_symlinks,
+                show_hidden_files,
                 ..folder_core::FolderCompareOptions::default()
             };
             folder_core::scan_local_folder_with_options(

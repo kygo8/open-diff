@@ -247,10 +247,14 @@ describe('SettingsView', () => {
     await wrapper.find('[data-testid="confirm-before-sync-overwrite"]').setValue(false)
     await wrapper.find('[data-testid="auto-scroll-first-difference"]').setValue(true)
     await wrapper.find('[data-testid="collapse-identical-folders-default"]').setValue(true)
+    await wrapper.find('[data-testid="show-hidden-files"]').setValue(true)
+    await wrapper.find('[data-testid="notify-on-compare-complete"]').setValue(true)
 
     expect(settings.confirmBeforeSyncOverwrite).toBe(false)
     expect(settings.autoScrollToFirstDifference).toBe(true)
     expect(settings.collapseIdenticalFoldersDefault).toBe(true)
+    expect(settings.showHiddenFiles).toBe(true)
+    expect(settings.notifyOnCompareComplete).toBe(true)
   })
 
   it('restores factory defaults from the Tweaks options card', async () => {

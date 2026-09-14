@@ -3,7 +3,9 @@ import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { diffText, exportTextCompareReport, readTextFile } from '@/api/diff'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { notifyCompareComplete } from '@/app/compareCompleteNotify'
 import { useLastCompareStore } from '@/stores/lastCompare'
+import { useSettingsStore } from '@/stores/settings'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import type { TextDiffAlgorithm, TextDiffRequest, TextDiffResponse } from '@/types/diff'
@@ -39,6 +41,7 @@ const rightPathLabel = ref('')
 const statusBar = useStatusBarStore()
 const sessionLaunch = useSessionLaunchStore()
 const lastCompare = useLastCompareStore()
+const settings = useSettingsStore()
 const tabs = useTabsStore()
 const router = useRouter()
 const { t } = useI18n()
@@ -494,6 +497,11 @@ async function runDiff(): Promise<void> {
     bookmarks.value = {}
     currentDiffIndex.value = 0
     dirty.value = false
+    void notifyCompareComplete(
+      settings.notifyOnCompareComplete,
+      t('ui.notifyOnCompareComplete'),
+      t('status.compareCompleteNotifyBody'),
+    )
   } catch (event) {
     if (generation !== textCompareGeneration) {
       return

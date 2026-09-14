@@ -874,6 +874,13 @@ export const jaJP: LanguagePack = {
     'ui.confirmBeforeSyncOverwrite': 'Confirm before folder sync overwrite',
     'ui.autoScrollToFirstDifference': 'Auto-scroll to first difference',
     'ui.collapseIdenticalFoldersDefault': 'Collapse identical folders by default',
+    'ui.showHiddenFiles': '隠しファイルを表示',
+    'ui.showHiddenFilesHint':
+      'オフのとき、フォルダー比較はドットで始まる名前をスキップします（既定はオフ）。',
+    'ui.notifyOnCompareComplete': '比較完了時に通知',
+    'ui.notifyOnCompareCompleteHint':
+      '短いビープ音を再生し、許可されていればデスクトップ通知も出します。既定はオフ。',
+    'status.compareCompleteNotifyBody': '比較が完了しました。',
     'ui.browseRemotePath': 'リモートパスを参照',
     'ui.parentFolder': '親フォルダー',
     'ui.useRemoteFolder': 'このフォルダーを使用',

@@ -296,6 +296,26 @@ function onCollapseIdenticalFoldersDefaultChange(event: Event): void {
   settings.setCollapseIdenticalFoldersDefault(target.checked)
 }
 
+function onShowHiddenFilesChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowHiddenFiles(target.checked)
+}
+
+function onNotifyOnCompareCompleteChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setNotifyOnCompareComplete(target.checked)
+}
+
 function onShowSessionToolbarsChange(event: Event): void {
   const target = event.target
 
@@ -953,6 +973,26 @@ function parseShortcutText(value: string): string[] {
           />
           <span>{{ $t('ui.collapseIdenticalFoldersDefault') }}</span>
         </label>
+        <label class="tweak-row">
+          <input
+            data-testid="show-hidden-files"
+            type="checkbox"
+            :checked="settings.showHiddenFiles"
+            @change="onShowHiddenFilesChange"
+          />
+          <span>{{ $t('ui.showHiddenFiles') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.showHiddenFilesHint') }}</p>
+        <label class="tweak-row">
+          <input
+            data-testid="notify-on-compare-complete"
+            type="checkbox"
+            :checked="settings.notifyOnCompareComplete"
+            @change="onNotifyOnCompareCompleteChange"
+          />
+          <span>{{ $t('ui.notifyOnCompareComplete') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.notifyOnCompareCompleteHint') }}</p>
         <NButton
           size="small"
           data-testid="restore-factory-defaults"

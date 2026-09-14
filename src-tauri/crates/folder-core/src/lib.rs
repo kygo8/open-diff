@@ -70,6 +70,13 @@ pub struct FolderCompareOptions {
     /// When true, directory/file symbolic links are resolved during folder scans.
     #[serde(default)]
     pub follow_symlinks: bool,
+    /// When false, skip names that start with '.' during folder scans / filters.
+    #[serde(default = "default_show_hidden_files")]
+    pub show_hidden_files: bool,
+}
+
+fn default_show_hidden_files() -> bool {
+    true
 }
 
 impl Default for FolderCompareOptions {
@@ -86,6 +93,7 @@ impl Default for FolderCompareOptions {
             ignore_daylight_saving_hour_offset: false,
             ignored_timezone_hour_offsets: Vec::new(),
             follow_symlinks: false,
+            show_hidden_files: true,
         }
     }
 }
@@ -292,6 +300,24 @@ impl FileFilters {
 
         included && !excluded
     }
+}
+
+pub fn path_has_hidden_segment(relative_path: &str) -> bool {
+    relative_path
+        .split(['/', '\\'])
+        .any(|segment| segment.starts_with('.') && segment != "." && segment != "..")
+}
+
+pub fn filter_hidden_alignment_rows(
+    rows: Vec<FolderAlignmentRow>,
+    show_hidden_files: bool,
+) -> Vec<FolderAlignmentRow> {
+    if show_hidden_files {
+        return rows;
+    }
+    rows.into_iter()
+        .filter(|row| !path_has_hidden_segment(&row.relative_path))
+        .collect()
 }
 
 pub fn filter_alignment_rows(
@@ -1129,6 +1155,7 @@ pub fn scan_local_folder_with_options(
         root,
         cancel_token,
         options.follow_symlinks,
+        options.show_hidden_files,
         &mut visiting,
     )
 }
@@ -1138,6 +1165,7 @@ fn scan_path_entry(
     path: &Path,
     cancel_token: &job_core::CancellationToken,
     follow_symlinks: bool,
+    show_hidden_files: bool,
     visiting: &mut HashSet<PathBuf>,
 ) -> Result<FolderScanNode, FolderScanError> {
     if cancel_token.is_cancelled() {
@@ -1159,12 +1187,26 @@ fn scan_path_entry(
         if !visiting.insert(canonical.clone()) {
             return Ok(folder_node_from_fs_meta(root, path, &symlink_meta, true));
         }
-        let scanned = scan_resolved_path(root, path, cancel_token, follow_symlinks, visiting);
+        let scanned = scan_resolved_path(
+            root,
+            path,
+            cancel_token,
+            follow_symlinks,
+            show_hidden_files,
+            visiting,
+        );
         visiting.remove(&canonical);
         return scanned;
     }
 
-    scan_resolved_path(root, path, cancel_token, follow_symlinks, visiting)
+    scan_resolved_path(
+        root,
+        path,
+        cancel_token,
+        follow_symlinks,
+        show_hidden_files,
+        visiting,
+    )
 }
 
 fn scan_resolved_path(
@@ -1172,6 +1214,7 @@ fn scan_resolved_path(
     path: &Path,
     cancel_token: &job_core::CancellationToken,
     follow_symlinks: bool,
+    show_hidden_files: bool,
     visiting: &mut HashSet<PathBuf>,
 ) -> Result<FolderScanNode, FolderScanError> {
     if cancel_token.is_cancelled() {
@@ -1185,9 +1228,24 @@ fn scan_resolved_path(
 
     let mut children = fs::read_dir(path)
         .map_err(|error| FolderScanError::Vfs(error.to_string()))?
-        .map(|entry| {
-            let entry = entry.map_err(|error| FolderScanError::Vfs(error.to_string()))?;
-            scan_path_entry(root, &entry.path(), cancel_token, follow_symlinks, visiting)
+        .filter_map(|entry| {
+            let entry = match entry {
+                Ok(entry) => entry,
+                Err(error) => return Some(Err(FolderScanError::Vfs(error.to_string()))),
+            };
+            let name = entry.file_name();
+            let name = name.to_string_lossy();
+            if !show_hidden_files && name.starts_with('.') && name != "." && name != ".." {
+                return None;
+            }
+            Some(scan_path_entry(
+                root,
+                &entry.path(),
+                cancel_token,
+                follow_symlinks,
+                show_hidden_files,
+                visiting,
+            ))
         })
         .collect::<Result<Vec<_>, _>>()?;
 
@@ -2224,6 +2282,40 @@ mod tests {
         assert!(text.contains("Release Report"));
         assert!(text.contains("Total: 1"));
         assert!(text.contains("different | src/&main.rs | left/src/&main.rs | right/src/&main.rs"));
+    }
+
+    #[test]
+    fn scan_skips_hidden_names_when_disabled() {
+        let root =
+            std::env::temp_dir().join(format!("open-diff-hidden-scan-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&root);
+        std::fs::create_dir_all(&root).unwrap();
+        std::fs::write(root.join("visible.txt"), b"ok").unwrap();
+        std::fs::write(root.join(".secret"), b"nope").unwrap();
+        let cancel = job_core::CancellationToken::default();
+        let hidden = scan_local_folder_with_options(
+            &root,
+            &cancel,
+            &FolderCompareOptions {
+                show_hidden_files: false,
+                ..FolderCompareOptions::default()
+            },
+        )
+        .unwrap();
+        let names: Vec<_> = hidden.children.iter().map(|c| c.name.as_str()).collect();
+        assert!(names.contains(&"visible.txt"));
+        assert!(!names.iter().any(|n| n.starts_with('.')));
+        let shown = scan_local_folder_with_options(
+            &root,
+            &cancel,
+            &FolderCompareOptions {
+                show_hidden_files: true,
+                ..FolderCompareOptions::default()
+            },
+        )
+        .unwrap();
+        assert!(shown.children.iter().any(|c| c.name == ".secret"));
+        let _ = std::fs::remove_dir_all(&root);
     }
 
     #[test]

@@ -356,6 +356,13 @@ pub struct FolderCompareCriteria {
     /// Treat a one-hour modified-time skew as equal (DST / clock skew).
     #[serde(default)]
     pub ignore_daylight_saving_hour_offset: bool,
+    /// Include dotfile / hidden-name entries in Folder Compare scans.
+    #[serde(default = "default_show_hidden_files_criteria")]
+    pub show_hidden_files: bool,
+}
+
+fn default_show_hidden_files_criteria() -> bool {
+    true
 }
 
 impl Default for FolderCompareCriteria {
@@ -370,6 +377,7 @@ impl Default for FolderCompareCriteria {
             follow_symlinks: false,
             timestamp_tolerance_ms: 0,
             ignore_daylight_saving_hour_offset: false,
+            show_hidden_files: true,
         }
     }
 }
@@ -387,6 +395,7 @@ impl FolderCompareCriteria {
             follow_symlinks: self.follow_symlinks,
             timestamp_tolerance_ms: self.timestamp_tolerance_ms,
             ignore_daylight_saving_hour_offset: self.ignore_daylight_saving_hour_offset,
+            show_hidden_files: self.show_hidden_files,
             ..Default::default()
         }
     }
@@ -793,14 +802,22 @@ pub fn compare_folder_paths(
         .map_err(|error| compare_source_error(&left_root, error))?;
     let right_source = crate::sources::load_compare_source(&right_root)
         .map_err(|error| compare_source_error(&right_root, error))?;
-    let left_tree =
-        crate::sources::scan_compare_source_with_options(&left_source, options.follow_symlinks)
-            .map_err(|error| compare_source_error(&left_root, error))?;
-    let right_tree =
-        crate::sources::scan_compare_source_with_options(&right_source, options.follow_symlinks)
-            .map_err(|error| compare_source_error(&right_root, error))?;
+    let left_tree = crate::sources::scan_compare_source_with_options(
+        &left_source,
+        options.follow_symlinks,
+        options.show_hidden_files,
+    )
+    .map_err(|error| compare_source_error(&left_root, error))?;
+    let right_tree = crate::sources::scan_compare_source_with_options(
+        &right_source,
+        options.follow_symlinks,
+        options.show_hidden_files,
+    )
+    .map_err(|error| compare_source_error(&right_root, error))?;
     let alignment_rows =
         folder_core::align_folder_trees_with_options(&left_tree, &right_tree, &options);
+    let alignment_rows =
+        folder_core::filter_hidden_alignment_rows(alignment_rows, options.show_hidden_files);
     let alignment_rows = if name_filters.is_active() {
         folder_core::filter_alignment_rows(alignment_rows, &name_filters.to_file_filters())
     } else {
@@ -4766,6 +4783,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )
@@ -4783,6 +4801,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )
@@ -4800,6 +4819,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )
@@ -4860,6 +4880,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )
@@ -4877,6 +4898,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 2_000,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )
@@ -4934,6 +4956,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )
@@ -4975,6 +4998,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )
@@ -4997,6 +5021,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )
@@ -5052,6 +5077,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )
@@ -5074,6 +5100,7 @@ mod tests {
                 follow_symlinks: false,
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
+                show_hidden_files: true,
             }),
             None,
         )

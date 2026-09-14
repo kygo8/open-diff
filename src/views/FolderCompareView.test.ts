@@ -430,6 +430,7 @@ describe('FolderCompareView', () => {
         followSymlinks: false,
         timestampToleranceMs: 0,
         ignoreDaylightSavingHourOffset: false,
+        showHiddenFiles: false,
       },
       filters: {
         include: [],

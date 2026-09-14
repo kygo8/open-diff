@@ -23,6 +23,8 @@ export interface SettingsPackage {
   confirmBeforeSyncOverwrite?: boolean
   autoScrollToFirstDifference?: boolean
   collapseIdenticalFoldersDefault?: boolean
+  showHiddenFilesDefault?: boolean
+  notifyOnCompareComplete?: boolean
   showSessionToolbars: boolean
   showToolbarLabels: boolean
   largeToolbarButtons: boolean

@@ -80,6 +80,7 @@ import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import { useI18n } from '@/i18n'
+import { notifyCompareComplete } from '@/app/compareCompleteNotify'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useSettingsStore } from '@/stores/settings'
@@ -880,7 +881,10 @@ async function runFolderCompare(): Promise<void> {
     const response = await compareFolderPaths({
       leftRoot: leftRoot.value,
       rightRoot: rightRoot.value,
-      criteria: { ...folderCriteria.value },
+      criteria: {
+        ...folderCriteria.value,
+        showHiddenFiles: settings.showHiddenFiles,
+      },
       filters: { ...folderNameFilters.value },
     })
 
@@ -893,6 +897,11 @@ async function runFolderCompare(): Promise<void> {
       leftRoot: response.leftRoot,
       rightRoot: response.rightRoot,
     })
+    void notifyCompareComplete(
+      settings.notifyOnCompareComplete,
+      t('ui.notifyOnCompareComplete'),
+      t('status.compareCompleteNotifyBody'),
+    )
   } catch (error) {
     if (generation !== folderCompareGeneration) {
       return

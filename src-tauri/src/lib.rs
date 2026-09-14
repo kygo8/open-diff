@@ -23,6 +23,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            commands::apply_live_registry_value,
             commands::apply_text_patch,
             commands::apply_text_patch_to_file,
             commands::check_text_file_changed,
@@ -69,6 +70,7 @@ pub fn run() {
             commands::unregister_unix_shell_integration,
             commands::rename_folder_entry,
             commands::run_script,
+            commands::stop_script,
             commands::save_hex_edits,
             commands::save_remote_profile,
             commands::save_text_file,

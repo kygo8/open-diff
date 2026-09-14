@@ -30,6 +30,8 @@ import type {
   RegistryLiveCompareRequest,
   RegistryHiveCompareRequest,
   RegistryCompareResponse,
+  ApplyLiveRegistryValueRequest,
+  ApplyLiveRegistryValueResponse,
   RenameFolderEntryRequest,
   TextMergeRequest,
   TextMergeResponse,
@@ -311,6 +313,17 @@ export function compareRegistryHiveFiles(
     rightRoot: request.rightRoot,
     leftName: request.leftName,
     rightName: request.rightName,
+  })
+}
+
+export function applyLiveRegistryValue(
+  request: ApplyLiveRegistryValueRequest,
+): Promise<ApplyLiveRegistryValueResponse> {
+  return invoke<ApplyLiveRegistryValueResponse>('apply_live_registry_value', {
+    targetKey: request.targetKey,
+    name: request.name,
+    kind: request.kind,
+    data: request.data,
   })
 }
 

@@ -11,6 +11,7 @@ export interface ScriptRunResponse {
   different: number
   reportsWritten: number
   logs: string[]
+  cancelled?: boolean
 }
 
 export function runScript(request: ScriptRunRequest): Promise<ScriptRunResponse> {
@@ -18,4 +19,8 @@ export function runScript(request: ScriptRunRequest): Promise<ScriptRunResponse>
     source: request.source,
     path: request.path,
   })
+}
+
+export function stopScript(): Promise<boolean> {
+  return invoke<boolean>('stop_script')
 }

@@ -252,6 +252,14 @@ pub struct RegistryCompareResponse {
     pub summary: RegistryCompareSummary,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ApplyLiveRegistryValueResponse {
+    pub target_key: String,
+    pub name: String,
+    pub action: String,
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct RegistryKeyNode {
@@ -1684,6 +1692,10 @@ pub fn export_folder_compare_report(
             let report = folder_report_to_unified(&model, &left_root, &right_root);
             report_core::render_markdown_report(&report)
         }
+        "html-side-by-side" | "side-by-side" | "html-sxs" => {
+            let report = folder_report_to_unified(&model, &left_root, &right_root);
+            report_core::render_side_by_side_html_report(&report)
+        }
         _ => folder_core::render_folder_report_html(&model, "Folder Compare"),
     };
 
@@ -1786,6 +1798,7 @@ pub struct ScriptRunResponse {
     pub different: usize,
     pub reports_written: usize,
     pub logs: Vec<String>,
+    pub cancelled: bool,
 }
 
 #[tauri::command]
@@ -1813,7 +1826,14 @@ pub fn run_script(
         different: summary.different,
         reports_written: result.state.reports_written,
         logs: result.state.logs,
+        cancelled: result.state.cancelled,
     })
+}
+
+#[tauri::command]
+pub fn stop_script() -> Result<bool, AppErrorPayload> {
+    script_core::request_script_stop();
+    Ok(true)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -2736,6 +2756,42 @@ pub fn compare_registry_hive_files(
         &left_document,
         &right_document,
     ))
+}
+
+#[tauri::command]
+pub fn apply_live_registry_value(
+    target_key: String,
+    name: String,
+    kind: Option<String>,
+    data: Option<String>,
+) -> Result<ApplyLiveRegistryValueResponse, AppErrorPayload> {
+    let parsed = registry_core::parse_registry_key_path(&target_key).map_err(registry_error)?;
+    let op = if let Some(kind) = kind.filter(|value| !value.trim().is_empty()) {
+        let data = data.unwrap_or_default();
+        registry_core::RegistryWriteOp::Set {
+            hive: parsed.hive,
+            key_path: parsed.path,
+            name: name.clone(),
+            data: registry_core::registry_value_data_from_kind(&kind, &data)
+                .map_err(registry_error)?,
+        }
+    } else {
+        registry_core::RegistryWriteOp::Delete {
+            hive: parsed.hive,
+            key_path: parsed.path,
+            name: name.clone(),
+        }
+    };
+    let action = match &op {
+        registry_core::RegistryWriteOp::Set { .. } => "set",
+        registry_core::RegistryWriteOp::Delete { .. } => "delete",
+    };
+    registry_core::apply_live_registry_write(&op).map_err(registry_error)?;
+    Ok(ApplyLiveRegistryValueResponse {
+        target_key,
+        name,
+        action: action.to_owned(),
+    })
 }
 
 #[tauri::command]
@@ -4831,6 +4887,9 @@ fn write_rendered_report(
         "xml" => report_core::render_xml_report(report),
         "csv" => report_core::render_csv_report(report),
         "markdown" | "md" => report_core::render_markdown_report(report),
+        "html-side-by-side" | "side-by-side" | "html-sxs" => {
+            report_core::render_side_by_side_html_report(report)
+        }
         _ => report_core::render_html_report(report),
     };
 
@@ -6684,6 +6743,30 @@ mod tests {
             .expect_err("live compare should refuse off Windows");
             assert!(error.debug_message.to_ascii_lowercase().contains("windows"));
         }
+    }
+
+    #[test]
+    fn apply_live_registry_value_reports_non_windows_honestly() {
+        #[cfg(not(windows))]
+        {
+            let error = apply_live_registry_value(
+                r"HKCU\Software\OpenDiff".to_owned(),
+                "Theme".to_owned(),
+                Some("REG_SZ".to_owned()),
+                Some("dark".to_owned()),
+            )
+            .expect_err("live write should refuse off Windows");
+            assert!(error.debug_message.to_ascii_lowercase().contains("windows"));
+        }
+    }
+
+    #[test]
+    fn stop_script_sets_the_shared_cancel_flag() {
+        script_core::clear_script_stop();
+        assert!(!script_core::script_stop_requested());
+        assert!(stop_script().expect("stop should succeed"));
+        assert!(script_core::script_stop_requested());
+        script_core::clear_script_stop();
     }
 
     #[test]

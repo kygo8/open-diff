@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { exportFolderCompareReport, exportTextCompareReport } from '@/api/diff'
-import { runScript } from '@/api/script'
+import { runScript, stopScript } from '@/api/script'
 import {
   loadRecentReportExports,
   recordRecentReportExport,
@@ -10,6 +10,7 @@ import {
 import {
   compareReportExampleScript,
   formatCommandList,
+  sampleScripts,
   supportedScriptCommands,
   unsupportedScriptCommands,
 } from '@/app/scriptCommands'
@@ -21,7 +22,7 @@ import { useI18n } from '@/i18n'
 import { useLastCompareStore } from '@/stores/lastCompare'
 
 type ReportKind = 'text' | 'folder'
-type ReportFormat = 'html' | 'text' | 'json' | 'csv' | 'markdown'
+type ReportFormat = 'html' | 'html-side-by-side' | 'text' | 'json' | 'csv' | 'markdown' | 'xml'
 
 type ReportJob = RecentReportExport
 
@@ -43,7 +44,9 @@ const supportedCommandsLabel = formatCommandList(supportedScriptCommands)
 const unsupportedCommandsLabel = formatCommandList(unsupportedScriptCommands)
 const scriptPath = ref('')
 const scriptResult = ref('')
+const scriptLog = ref<string[]>([])
 const scriptRunning = ref(false)
+const selectedSampleId = ref(sampleScripts[0]?.id ?? 'text-report')
 
 function initialReportKind(): ReportKind {
   if (lastCompare.text) {
@@ -67,7 +70,14 @@ async function runExport(): Promise<void> {
   error.value = ''
 
   try {
-    const extension = reportFormat.value === 'text' ? 'txt' : reportFormat.value
+    let extension: string = reportFormat.value
+
+    if (reportFormat.value === 'text') {
+      extension = 'txt'
+    } else if (reportFormat.value === 'html-side-by-side') {
+      extension = 'html'
+    }
+
     const target = outputPath.value.trim() || `${reportKind.value}-compare.${extension}`
 
     const response =
@@ -112,10 +122,39 @@ async function runExport(): Promise<void> {
   }
 }
 
+function applySampleScript(id: string): void {
+  const sample = sampleScripts.find((entry) => entry.id === id)
+
+  if (!sample) {
+    return
+  }
+
+  selectedSampleId.value = sample.id
+  scriptSource.value = sample.source
+}
+
+function onSampleChange(event: Event): void {
+  const target = event.target
+
+  if (target instanceof HTMLSelectElement) {
+    applySampleScript(target.value)
+  }
+}
+
+async function stopCurrentScript(): Promise<void> {
+  try {
+    await stopScript()
+    scriptLog.value = [...scriptLog.value, t('ui.scriptStopped')]
+  } catch (event) {
+    error.value = String(event)
+  }
+}
+
 async function runCurrentScript(): Promise<void> {
   scriptRunning.value = true
   error.value = ''
   scriptResult.value = ''
+  scriptLog.value = [t('ui.scriptRunLog')]
 
   try {
     const response = await runScript({
@@ -123,13 +162,17 @@ async function runCurrentScript(): Promise<void> {
       path: scriptPath.value.trim() || undefined,
     })
 
-    scriptResult.value = [
+    const lines = [
       `executed=${String(response.executed)}`,
       `compared=${String(response.compared)}`,
       `different=${String(response.different)}`,
       `reports=${String(response.reportsWritten)}`,
+      ...(response.cancelled ? [t('ui.scriptStopped')] : []),
       ...response.logs,
-    ].join('\n')
+    ]
+
+    scriptLog.value = lines
+    scriptResult.value = lines.join('\n')
     jobs.value = recordRecentReportExport(jobs.value, {
       name: scriptPath.value.trim() || t('ui.script'),
       type: 'SCRIPT',
@@ -200,6 +243,14 @@ function fillFromLastCompare(): void {
         >
           {{ $t('ui.runScript') }}
         </button>
+        <button
+          type="button"
+          data-testid="stop-script"
+          :disabled="!scriptRunning"
+          @click="stopCurrentScript"
+        >
+          {{ $t('ui.stop') }}
+        </button>
       </WorkbenchToolbar>
     </template>
 
@@ -227,10 +278,12 @@ function fillFromLastCompare(): void {
               data-testid="report-format"
             >
               <option value="html">{{ $t('ui.html') }}</option>
+              <option value="html-side-by-side">{{ $t('ui.htmlSideBySide') }}</option>
               <option value="text">{{ $t('ui.text') }}</option>
               <option value="json">{{ $t('ui.exportJson') }}</option>
               <option value="csv">{{ $t('ui.csv') }}</option>
               <option value="markdown">{{ $t('ui.markdown') }}</option>
+              <option value="xml">{{ $t('ui.xml') }}</option>
             </select>
           </label>
           <label>
@@ -320,6 +373,22 @@ function fillFromLastCompare(): void {
           </div>
         </section>
         <label class="script-path">
+          <span>{{ $t('ui.scriptSample') }}</span>
+          <select
+            data-testid="script-sample"
+            :value="selectedSampleId"
+            @change="onSampleChange"
+          >
+            <option
+              v-for="sample in sampleScripts"
+              :key="sample.id"
+              :value="sample.id"
+            >
+              {{ $t(sample.titleKey) }}
+            </option>
+          </select>
+        </label>
+        <label class="script-path">
           <span>{{ $t('ui.scriptPath') }}</span>
           <input
             v-model="scriptPath"
@@ -332,6 +401,10 @@ function fillFromLastCompare(): void {
           data-testid="script-source"
           :placeholder="$t('ui.scriptSource')"
         />
+        <pre
+          v-if="scriptLog.length > 0"
+          data-testid="script-run-log"
+        ><code>{{ scriptLog.join('\n') }}</code></pre>
         <pre
           v-if="scriptResult"
           data-testid="script-result"
@@ -468,6 +541,7 @@ function fillFromLastCompare(): void {
 }
 
 .script-path input,
+.script-path select,
 .script-panel textarea {
   width: 100%;
   min-width: 0;

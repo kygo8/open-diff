@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ReportsScriptView from './ReportsScriptView.vue'
 import { exportFolderCompareReport, exportTextCompareReport } from '@/api/diff'
-import { runScript } from '@/api/script'
+import { runScript, stopScript, type ScriptRunResponse } from '@/api/script'
 import { reportExportsStorageKey, saveRecentReportExports } from '@/app/reportExports'
 import { useLastCompareStore } from '@/stores/lastCompare'
 
@@ -29,7 +29,9 @@ vi.mock('@/api/script', () => ({
     different: 1,
     reportsWritten: 1,
     logs: ['wrote report.txt'],
+    cancelled: false,
   }),
+  stopScript: vi.fn().mockResolvedValue(true),
 }))
 
 describe('ReportsScriptView', () => {
@@ -39,6 +41,7 @@ describe('ReportsScriptView', () => {
     vi.mocked(exportTextCompareReport).mockClear()
     vi.mocked(exportFolderCompareReport).mockClear()
     vi.mocked(runScript).mockClear()
+    vi.mocked(stopScript).mockClear()
   })
 
   it('starts with no fake completed jobs', () => {
@@ -131,6 +134,45 @@ describe('ReportsScriptView', () => {
     })
     expect(wrapper.find('[data-testid="script-result"]').text()).toContain('reports=1')
     expect(wrapper.find('[data-testid="script-result"]').text()).toContain('wrote report.txt')
+    expect(wrapper.find('[data-testid="script-run-log"]').text()).toContain('wrote report.txt')
+  })
+
+  it('loads a sample script and can request stop while running', async () => {
+    let release: ((value: ScriptRunResponse) => void) | undefined
+
+    vi.mocked(runScript).mockImplementationOnce(
+      () =>
+        new Promise<ScriptRunResponse>((resolve) => {
+          release = resolve
+        }),
+    )
+
+    const wrapper = mount(ReportsScriptView)
+
+    await wrapper.find('[data-testid="script-sample"]').setValue('wait-log')
+    expect(
+      (wrapper.find('[data-testid="script-source"]').element as HTMLTextAreaElement).value,
+    ).toContain('wait')
+
+    const run = wrapper.find('[data-testid="run-script"]').trigger('click')
+
+    await wrapper.vm.$nextTick()
+    expect(
+      (wrapper.find('[data-testid="stop-script"]').element as HTMLButtonElement).disabled,
+    ).toBe(false)
+    await wrapper.find('[data-testid="stop-script"]').trigger('click')
+    await flushPromises()
+    expect(stopScript).toHaveBeenCalled()
+    release?.({
+      executed: 1,
+      compared: 0,
+      different: 0,
+      reportsWritten: 0,
+      logs: ['stopped'],
+      cancelled: true,
+    })
+    await run
+    await flushPromises()
   })
 
   it('shows honest supported and unsupported script command lists', () => {
@@ -166,5 +208,7 @@ describe('ReportsScriptView', () => {
 
     expect(options).toContain('csv')
     expect(options).toContain('markdown')
+    expect(options).toContain('xml')
+    expect(options).toContain('html-side-by-side')
   })
 })

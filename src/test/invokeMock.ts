@@ -169,6 +169,12 @@ export function invokeResponse(command: string, args: Record<string, unknown> = 
         tree: [],
         summary: { added: 0, deleted: 0, modified: 0, same: 0 },
       }
+    case 'apply_live_registry_value':
+      return {
+        targetKey: args.targetKey ?? '',
+        name: args.name ?? '',
+        action: args.kind ? 'set' : 'delete',
+      }
     case 'compare_media_files':
       return {
         left: {
@@ -219,7 +225,16 @@ export function invokeResponse(command: string, args: Record<string, unknown> = 
         bytesWritten: 13,
       }
     case 'run_script':
-      return { executed: 1, compared: 1, different: 0, reportsWritten: 1, logs: ['ok'] }
+      return {
+        executed: 1,
+        compared: 1,
+        different: 0,
+        reportsWritten: 1,
+        logs: ['ok'],
+        cancelled: false,
+      }
+    case 'stop_script':
+      return true
     case 'list_remote_profiles':
       return []
     case 'save_remote_profile':

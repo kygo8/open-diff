@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  applyLiveRegistryValue,
   applyTextPatch,
   applyTextPatchToFile,
   changeFolderEntryAttributes,
@@ -450,6 +451,28 @@ describe('diff api', () => {
       rightName: 'right.reg',
     })
     expect(result.tree[0]?.values[0]?.name).toBe('Theme')
+  })
+
+  it('applies a live registry value through the Tauri command', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      targetKey: 'HKCU\\Software\\OpenDiff',
+      name: 'Theme',
+      action: 'set',
+    })
+
+    await applyLiveRegistryValue({
+      targetKey: 'HKCU\\Software\\OpenDiff',
+      name: 'Theme',
+      kind: 'REG_SZ',
+      data: 'dark',
+    })
+
+    expect(invoke).toHaveBeenCalledWith('apply_live_registry_value', {
+      targetKey: 'HKCU\\Software\\OpenDiff',
+      name: 'Theme',
+      kind: 'REG_SZ',
+      data: 'dark',
+    })
   })
 
   it('compares tables with format, sheets, keys, and mappings', async () => {

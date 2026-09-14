@@ -238,6 +238,24 @@ export async function installTauriInvokeMock(page: Page): Promise<void> {
             different: 0,
             reportsWritten: 0,
             logs: ['ok'],
+            cancelled: false,
+          })
+        }
+
+        if (command === 'stop_script') {
+          return Promise.resolve(true)
+        }
+
+        if (command === 'apply_live_registry_value') {
+          const payload =
+            args && typeof args === 'object'
+              ? (args as { targetKey?: string; name?: string; kind?: string })
+              : {}
+
+          return Promise.resolve({
+            targetKey: payload.targetKey ?? '',
+            name: payload.name ?? '',
+            action: payload.kind ? 'set' : 'delete',
           })
         }
 

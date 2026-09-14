@@ -759,6 +759,311 @@ fn load_hive_subtree(
     Ok(())
 }
 
+pub trait NativeRegistryWriter {
+    fn set_value(
+        &self,
+        hive: RegistryHive,
+        path: &str,
+        name: &str,
+        data: &RegistryValueData,
+    ) -> RegistryResult<()>;
+
+    fn delete_value(&self, hive: RegistryHive, path: &str, name: &str) -> RegistryResult<()>;
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RegistryWriteOp {
+    Set {
+        hive: RegistryHive,
+        key_path: String,
+        name: String,
+        data: RegistryValueData,
+    },
+    Delete {
+        hive: RegistryHive,
+        key_path: String,
+        name: String,
+    },
+}
+
+pub fn apply_registry_write(
+    writer: &impl NativeRegistryWriter,
+    op: &RegistryWriteOp,
+) -> RegistryResult<()> {
+    match op {
+        RegistryWriteOp::Set {
+            hive,
+            key_path,
+            name,
+            data,
+        } => writer.set_value(*hive, key_path, name, data),
+        RegistryWriteOp::Delete {
+            hive,
+            key_path,
+            name,
+        } => writer.delete_value(*hive, key_path, name),
+    }
+}
+
+/// Parse UI/command kind+data (as shown in Registry Compare) back into a typed value.
+pub fn registry_value_data_from_kind(kind: &str, data: &str) -> RegistryResult<RegistryValueData> {
+    match kind.trim().to_ascii_uppercase().as_str() {
+        "REG_SZ" | "SZ" | "STRING" => Ok(RegistryValueData::String(data.to_owned())),
+        "REG_EXPAND_SZ" | "EXPAND_SZ" => Ok(RegistryValueData::ExpandString(data.to_owned())),
+        "REG_DWORD" | "DWORD" => parse_dword(data).map(RegistryValueData::Dword),
+        "REG_QWORD" | "QWORD" => parse_qword(data).map(RegistryValueData::Qword),
+        "REG_BINARY" | "BINARY" | "HEX" => parse_binary(data).map(RegistryValueData::Binary),
+        "REG_MULTI_SZ" | "MULTI_SZ" => Ok(RegistryValueData::MultiString(
+            data.split([';', '\n'])
+                .map(str::trim)
+                .filter(|part| !part.is_empty())
+                .map(str::to_owned)
+                .collect(),
+        )),
+        "REG_NONE" | "NONE" => Ok(RegistryValueData::None),
+        _ => Err(RegistryError::Parse(format!(
+            "unsupported registry value kind: {kind}"
+        ))),
+    }
+}
+
+fn parse_dword(data: &str) -> RegistryResult<u32> {
+    let trimmed = data.trim();
+    if let Some(hex) = trimmed
+        .strip_prefix("0x")
+        .or_else(|| trimmed.strip_prefix("0X"))
+    {
+        return u32::from_str_radix(hex, 16)
+            .map_err(|_| RegistryError::Parse(format!("invalid dword value: {data}")));
+    }
+
+    trimmed
+        .parse()
+        .map_err(|_| RegistryError::Parse(format!("invalid dword value: {data}")))
+}
+
+fn parse_qword(data: &str) -> RegistryResult<u64> {
+    let trimmed = data.trim();
+    if let Some(hex) = trimmed
+        .strip_prefix("0x")
+        .or_else(|| trimmed.strip_prefix("0X"))
+    {
+        return u64::from_str_radix(hex, 16)
+            .map_err(|_| RegistryError::Parse(format!("invalid qword value: {data}")));
+    }
+
+    trimmed
+        .parse()
+        .map_err(|_| RegistryError::Parse(format!("invalid qword value: {data}")))
+}
+
+fn parse_binary(data: &str) -> RegistryResult<Vec<u8>> {
+    let mut bytes = Vec::new();
+    for part in data
+        .split([' ', ',', '-'])
+        .map(str::trim)
+        .filter(|part| !part.is_empty())
+    {
+        bytes.push(
+            u8::from_str_radix(part, 16)
+                .map_err(|_| RegistryError::Parse(format!("invalid hex byte: {part}")))?,
+        );
+    }
+
+    Ok(bytes)
+}
+
+#[cfg(windows)]
+fn live_value_name(name: &str) -> &str {
+    if name == "@" || name.eq_ignore_ascii_case("(Default)") {
+        ""
+    } else {
+        name
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct MemoryNativeRegistryWriter {
+    values: std::cell::RefCell<BTreeMap<String, RegistryValue>>,
+}
+
+impl MemoryNativeRegistryWriter {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn get_value(
+        &self,
+        hive: RegistryHive,
+        path: impl AsRef<str>,
+        name: &str,
+    ) -> Option<RegistryValue> {
+        let path = normalize_registry_path(path.as_ref());
+        self.values
+            .borrow()
+            .get(&registry_value_id(hive, &path, name))
+            .cloned()
+    }
+}
+
+impl NativeRegistryWriter for MemoryNativeRegistryWriter {
+    fn set_value(
+        &self,
+        hive: RegistryHive,
+        path: &str,
+        name: &str,
+        data: &RegistryValueData,
+    ) -> RegistryResult<()> {
+        let path = normalize_registry_path(path);
+        let value = RegistryValue::new(hive, &path, name, data.clone());
+        self.values.borrow_mut().insert(
+            registry_value_id(value.hive, &value.key_path, &value.name),
+            value,
+        );
+        Ok(())
+    }
+
+    fn delete_value(&self, hive: RegistryHive, path: &str, name: &str) -> RegistryResult<()> {
+        let path = normalize_registry_path(path);
+        self.values
+            .borrow_mut()
+            .remove(&registry_value_id(hive, &path, name));
+        Ok(())
+    }
+}
+
+#[cfg(windows)]
+#[derive(Debug, Clone, Default)]
+pub struct WindowsNativeRegistryWriter;
+
+#[cfg(windows)]
+fn predefined_key(hive: RegistryHive) -> winreg::RegKey {
+    let hkey = match hive {
+        RegistryHive::ClassesRoot => winreg::enums::HKEY_CLASSES_ROOT,
+        RegistryHive::CurrentUser => winreg::enums::HKEY_CURRENT_USER,
+        RegistryHive::LocalMachine => winreg::enums::HKEY_LOCAL_MACHINE,
+        RegistryHive::Users => winreg::enums::HKEY_USERS,
+        RegistryHive::CurrentConfig => winreg::enums::HKEY_CURRENT_CONFIG,
+    };
+    winreg::RegKey::predef(hkey)
+}
+
+#[cfg(windows)]
+fn windows_key_path(path: &str) -> String {
+    normalize_registry_path(path).replace('/', "\\")
+}
+
+#[cfg(windows)]
+fn utf16_null_bytes(text: &str) -> Vec<u8> {
+    text.encode_utf16()
+        .chain(std::iter::once(0))
+        .flat_map(u16::to_le_bytes)
+        .collect()
+}
+
+#[cfg(windows)]
+fn registry_data_to_reg_value(data: &RegistryValueData) -> winreg::RegValue {
+    match data {
+        RegistryValueData::String(text) => winreg::RegValue {
+            bytes: utf16_null_bytes(text),
+            vtype: winreg::enums::REG_SZ,
+        },
+        RegistryValueData::ExpandString(text) => winreg::RegValue {
+            bytes: utf16_null_bytes(text),
+            vtype: winreg::enums::REG_EXPAND_SZ,
+        },
+        RegistryValueData::Dword(value) => winreg::RegValue {
+            bytes: value.to_le_bytes().to_vec(),
+            vtype: winreg::enums::REG_DWORD,
+        },
+        RegistryValueData::Qword(value) => winreg::RegValue {
+            bytes: value.to_le_bytes().to_vec(),
+            vtype: winreg::enums::REG_QWORD,
+        },
+        RegistryValueData::Binary(bytes) => winreg::RegValue {
+            bytes: bytes.clone(),
+            vtype: winreg::enums::REG_BINARY,
+        },
+        RegistryValueData::MultiString(values) => {
+            let mut bytes = Vec::new();
+            for value in values {
+                bytes.extend(utf16_null_bytes(value));
+            }
+            bytes.extend(utf16_null_bytes(""));
+            winreg::RegValue {
+                bytes,
+                vtype: winreg::enums::REG_MULTI_SZ,
+            }
+        }
+        RegistryValueData::None => winreg::RegValue {
+            bytes: Vec::new(),
+            vtype: winreg::enums::REG_NONE,
+        },
+    }
+}
+
+#[cfg(windows)]
+impl NativeRegistryWriter for WindowsNativeRegistryWriter {
+    fn set_value(
+        &self,
+        hive: RegistryHive,
+        path: &str,
+        name: &str,
+        data: &RegistryValueData,
+    ) -> RegistryResult<()> {
+        let root = predefined_key(hive);
+        let win_path = windows_key_path(path);
+        let key = if win_path.is_empty() {
+            root
+        } else {
+            root.create_subkey_with_flags(&win_path, winreg::enums::KEY_WRITE)
+                .map(|(key, _)| key)
+                .map_err(|error| RegistryError::Backend(error.to_string()))?
+        };
+        key.set_raw_value(live_value_name(name), &registry_data_to_reg_value(data))
+            .map_err(|error| RegistryError::Backend(error.to_string()))
+    }
+
+    fn delete_value(&self, hive: RegistryHive, path: &str, name: &str) -> RegistryResult<()> {
+        let root = predefined_key(hive);
+        let win_path = windows_key_path(path);
+        let key = if win_path.is_empty() {
+            root
+        } else {
+            match root.open_subkey_with_flags(&win_path, winreg::enums::KEY_SET_VALUE) {
+                Ok(key) => key,
+                Err(_) => return Ok(()),
+            }
+        };
+        match key.delete_value(live_value_name(name)) {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(RegistryError::Backend(error.to_string())),
+        }
+    }
+}
+
+/// Apply a set or delete against the live Windows registry. Non-Windows hosts
+/// return a clear unsupported error so CI stays honest.
+pub fn apply_live_registry_write(op: &RegistryWriteOp) -> RegistryResult<()> {
+    #[cfg(windows)]
+    {
+        apply_registry_write(&WindowsNativeRegistryWriter, op)
+    }
+
+    #[cfg(not(windows))]
+    {
+        let _ = op;
+        Err(RegistryError::Backend(
+            "Live registry write is available on Windows only".to_owned(),
+        ))
+    }
+}
+
+pub fn live_registry_write_supported() -> bool {
+    cfg!(windows)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1021,5 +1326,79 @@ mod tests {
         )
         .unwrap_err();
         assert!(matches!(error, RegistryError::Parse(_)));
+    }
+
+    #[test]
+    fn memory_registry_writer_sets_and_deletes_values() {
+        let writer = MemoryNativeRegistryWriter::new();
+        apply_registry_write(
+            &writer,
+            &RegistryWriteOp::Set {
+                hive: RegistryHive::CurrentUser,
+                key_path: "Software/OpenDiff".to_owned(),
+                name: "Theme".to_owned(),
+                data: RegistryValueData::String("dark".to_owned()),
+            },
+        )
+        .unwrap();
+
+        assert_eq!(
+            writer
+                .get_value(RegistryHive::CurrentUser, "Software/OpenDiff", "Theme")
+                .unwrap()
+                .data,
+            RegistryValueData::String("dark".to_owned())
+        );
+
+        apply_registry_write(
+            &writer,
+            &RegistryWriteOp::Delete {
+                hive: RegistryHive::CurrentUser,
+                key_path: "Software/OpenDiff".to_owned(),
+                name: "Theme".to_owned(),
+            },
+        )
+        .unwrap();
+        assert!(writer
+            .get_value(RegistryHive::CurrentUser, "Software/OpenDiff", "Theme")
+            .is_none());
+    }
+
+    #[test]
+    fn registry_value_data_from_kind_parses_common_types() {
+        assert_eq!(
+            registry_value_data_from_kind("REG_SZ", "dark").unwrap(),
+            RegistryValueData::String("dark".to_owned())
+        );
+        assert_eq!(
+            registry_value_data_from_kind("REG_DWORD", "0x0000000a").unwrap(),
+            RegistryValueData::Dword(10)
+        );
+        assert_eq!(
+            registry_value_data_from_kind("REG_BINARY", "01,0a,ff").unwrap(),
+            RegistryValueData::Binary(vec![0x01, 0x0a, 0xff])
+        );
+        assert_eq!(
+            registry_value_data_from_kind("REG_MULTI_SZ", "one; two").unwrap(),
+            RegistryValueData::MultiString(vec!["one".to_owned(), "two".to_owned()])
+        );
+    }
+
+    #[test]
+    fn apply_live_registry_write_reports_non_windows_honestly() {
+        #[cfg(not(windows))]
+        {
+            let error = apply_live_registry_write(&RegistryWriteOp::Set {
+                hive: RegistryHive::CurrentUser,
+                key_path: "Software/OpenDiff".to_owned(),
+                name: "Theme".to_owned(),
+                data: RegistryValueData::String("dark".to_owned()),
+            })
+            .unwrap_err();
+            assert!(
+                matches!(error, RegistryError::Backend(message) if message.contains("Windows"))
+            );
+            assert!(!live_registry_write_supported());
+        }
     }
 }

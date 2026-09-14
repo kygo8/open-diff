@@ -41,6 +41,16 @@ export const supportedScriptCommands = [
   'CRITERIA',
   'EXIT',
   'CLOSE',
+  'VIEW',
+  'ALIGN',
+  'WAIT',
+  'SLEEP',
+  'PAUSE',
+  'EXPAND-ALL',
+  'COLLAPSE-ALL',
+  'MERGE',
+  'MKDIR',
+  'ECHO',
 ] as const
 
 export const unsupportedScriptCommands = [] as const
@@ -63,3 +73,42 @@ export const compareReportExampleScript = [
   `media-report "\${output}.media.txt"`,
   `picture-report "\${output}.picture.txt"`,
 ].join('\n')
+
+export interface SampleScript {
+  id: string
+  titleKey: string
+  source: string
+}
+
+export const folderSyncExampleScript = [
+  `load "\${left}"`,
+  `load "\${right}"`,
+  'compare',
+  'sync updateRight',
+  `folder-sync-report "\${output}.sync.txt"`,
+].join('\n')
+
+export const waitLogExampleScript = [
+  'echo start',
+  'view side-by-side',
+  'wait 10',
+  'echo done',
+].join('\n')
+
+export const sampleScripts: SampleScript[] = [
+  {
+    id: 'text-report',
+    titleKey: 'ui.scriptSampleTextReport',
+    source: compareReportExampleScript,
+  },
+  {
+    id: 'folder-sync',
+    titleKey: 'ui.scriptSampleFolderSync',
+    source: folderSyncExampleScript,
+  },
+  {
+    id: 'wait-log',
+    titleKey: 'ui.scriptSampleWaitLog',
+    source: waitLogExampleScript,
+  },
+]

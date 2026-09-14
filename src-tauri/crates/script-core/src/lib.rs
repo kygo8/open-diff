@@ -41,6 +41,7 @@ pub enum ScriptCommandKind {
     Delete { path: String },
     Rename { from: String, to: String },
     Touch { path: String },
+    Mkdir { path: String },
     Attrib { path: String, readonly: bool },
     Expand { path: Option<String> },
     Collapse { path: Option<String> },
@@ -132,6 +133,9 @@ pub struct ScriptRuntimeState {
     pub view_mode: Option<String>,
     /// Last ALIGN mode token.
     pub align_mode: Option<String>,
+    /// True when STOP interrupted the runner between commands or during WAIT.
+    #[serde(default)]
+    pub cancelled: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -319,6 +323,57 @@ pub fn expand_script_variables(
     Ok(output)
 }
 
+static SCRIPT_STOP_REQUESTED: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+static SCRIPT_STOP_LISTEN: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+
+pub fn request_script_stop() {
+    SCRIPT_STOP_REQUESTED.store(true, std::sync::atomic::Ordering::SeqCst);
+}
+
+pub fn clear_script_stop() {
+    SCRIPT_STOP_REQUESTED.store(false, std::sync::atomic::Ordering::SeqCst);
+}
+
+pub fn script_stop_requested() -> bool {
+    SCRIPT_STOP_REQUESTED.load(std::sync::atomic::Ordering::SeqCst)
+}
+
+#[cfg(test)]
+thread_local! {
+    static TEST_FORCE_STOP: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+fn runner_should_stop() -> bool {
+    #[cfg(test)]
+    {
+        if TEST_FORCE_STOP.with(std::cell::Cell::get) {
+            return true;
+        }
+    }
+
+    SCRIPT_STOP_LISTEN.load(std::sync::atomic::Ordering::SeqCst) && script_stop_requested()
+}
+
+fn wait_interruptible(milliseconds: u64) -> bool {
+    if milliseconds == 0 {
+        return runner_should_stop();
+    }
+
+    let deadline = std::time::Instant::now() + std::time::Duration::from_millis(milliseconds);
+    loop {
+        if runner_should_stop() {
+            return true;
+        }
+        let remaining = deadline.saturating_duration_since(std::time::Instant::now());
+        if remaining.is_zero() {
+            return runner_should_stop();
+        }
+        std::thread::sleep(remaining.min(std::time::Duration::from_millis(50)));
+    }
+}
+
 pub fn execute_script_with_handler<F>(
     script: &ScriptDocument,
     execution: ScriptExecutionContext,
@@ -442,6 +497,11 @@ where
     let total = script.commands.len();
 
     for command in &script.commands {
+        if runner_should_stop() {
+            state.cancelled = true;
+            state.logs.push("stopped".to_owned());
+            break;
+        }
         match &command.kind {
             ScriptCommandKind::Load { paths } => {
                 state.load_paths = expand_command_values(command, paths, &execution.variables)?;
@@ -662,6 +722,18 @@ where
                 touch_path(&path).map_err(|reason| execution_error(command, reason))?;
                 state.file_operations.push(format!("TOUCH {path}"));
             }
+            ScriptCommandKind::Mkdir { path } => {
+                let path =
+                    expand_script_variables(path, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?;
+                std::fs::create_dir_all(&path)
+                    .map_err(|error| execution_error(command, error.to_string()))?;
+                state.file_operations.push(format!("MKDIR {path}"));
+            }
             ScriptCommandKind::Snapshot { output } => {
                 let output =
                     expand_script_variables(output, &execution.variables).map_err(|error| {
@@ -828,11 +900,13 @@ where
                 state.file_operations.push(format!("ALIGN {}", values[0]));
             }
             ScriptCommandKind::Wait { milliseconds } => {
-                if *milliseconds > 0 {
-                    std::thread::sleep(std::time::Duration::from_millis(*milliseconds));
-                }
+                let cancelled = wait_interruptible(*milliseconds);
                 state.waited_ms = state.waited_ms.saturating_add(*milliseconds);
                 state.file_operations.push(format!("WAIT {milliseconds}"));
+                if cancelled {
+                    state.cancelled = true;
+                    state.logs.push("stopped".to_owned());
+                }
             }
             ScriptCommandKind::Exit => {
                 state.exited = true;
@@ -843,7 +917,7 @@ where
         }
 
         executed += 1;
-        if state.exited {
+        if state.exited || state.cancelled {
             structured_logs.push(script_command_log_event(command, executed, total));
             if execution.mode == ScriptExecutionMode::Visible {
                 progress.push(ScriptProgressEvent {
@@ -1216,6 +1290,7 @@ impl ScriptCommandKind {
             ScriptCommandKind::Delete { .. } => "DELETE",
             ScriptCommandKind::Rename { .. } => "RENAME",
             ScriptCommandKind::Touch { .. } => "TOUCH",
+            ScriptCommandKind::Mkdir { .. } => "MKDIR",
             ScriptCommandKind::Attrib { .. } => "ATTRIB",
             ScriptCommandKind::Expand { .. } => "EXPAND",
             ScriptCommandKind::Collapse { .. } => "COLLAPSE",
@@ -1302,6 +1377,7 @@ pub fn run_script_source(
     source: &str,
     execution: ScriptExecutionContext,
 ) -> Result<ScriptCompareExecutionResult, ScriptExecutionError> {
+    clear_script_stop();
     let script = parse_script(source).map_err(|error| ScriptExecutionError {
         line: error.line,
         command: "PARSE".to_owned(),
@@ -1309,7 +1385,10 @@ pub fn run_script_source(
     })?;
     let mut engine = FilesystemScriptEngine::new();
     let mut report_engine = FilesystemScriptEngine::new();
-    execute_automation_script(&script, execution, &mut engine, &mut report_engine)
+    SCRIPT_STOP_LISTEN.store(true, std::sync::atomic::Ordering::SeqCst);
+    let result = execute_automation_script(&script, execution, &mut engine, &mut report_engine);
+    SCRIPT_STOP_LISTEN.store(false, std::sync::atomic::Ordering::SeqCst);
+    result
 }
 
 pub fn run_script_file(
@@ -1680,6 +1759,21 @@ fn parse_command(
         "TOUCH" => {
             parse_single_output_command(line, args, |path| ScriptCommandKind::Touch { path })
         }
+        "MKDIR" | "MD" => {
+            parse_single_output_command(line, args, |path| ScriptCommandKind::Mkdir { path })
+        }
+        "ECHO" => {
+            parse_single_output_command(line, args, |message| ScriptCommandKind::Log { message })
+        }
+        "PAUSE" => {
+            if args.len() != 1 {
+                return Err(parse_error(line, "PAUSE requires milliseconds"));
+            }
+            let milliseconds = args[0]
+                .parse::<u64>()
+                .map_err(|_| parse_error(line, format!("invalid PAUSE duration: {}", args[0])))?;
+            Ok(ScriptCommandKind::Wait { milliseconds })
+        }
         "SNAPSHOT" => {
             parse_single_output_command(line, args, |output| ScriptCommandKind::Snapshot { output })
         }
@@ -1785,6 +1879,10 @@ pub fn supported_script_commands() -> &'static [&'static str] {
         "DELETE",
         "RENAME",
         "TOUCH",
+        "MKDIR",
+        "MD",
+        "ECHO",
+        "PAUSE",
         "ATTRIB",
         "EXPAND",
         "COLLAPSE",
@@ -2739,6 +2837,92 @@ mod tests {
         assert!(supported_script_commands().contains(&"SLEEP"));
         assert!(supported_script_commands().contains(&"EXPANDALL"));
         assert!(supported_script_commands().contains(&"MERGE"));
+        assert!(supported_script_commands().contains(&"MKDIR"));
+        assert!(supported_script_commands().contains(&"ECHO"));
+        assert!(supported_script_commands().contains(&"PAUSE"));
+    }
+
+    #[test]
+    fn mkdir_echo_and_pause_parse_and_create_directories() {
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let root =
+            std::env::temp_dir().join(format!("open-diff-script-mkdir-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&root);
+        let nested = root.join("nested");
+        let script = parse_script(&format!(
+            "echo start\nmkdir \"{}\"\npause 1\n",
+            nested.display().to_string().replace("\\", "/"),
+        ))
+        .expect("mkdir script should parse");
+        assert!(matches!(
+            script.commands[0].kind,
+            ScriptCommandKind::Log { .. }
+        ));
+        assert!(matches!(
+            script.commands[1].kind,
+            ScriptCommandKind::Mkdir { .. }
+        ));
+        assert!(matches!(
+            script.commands[2].kind,
+            ScriptCommandKind::Wait { milliseconds: 1 }
+        ));
+
+        execute_automation_script(
+            &script,
+            ScriptExecutionContext::default(),
+            &mut NoopCompare,
+            &mut NoopReport,
+        )
+        .expect("mkdir script should run");
+        assert!(nested.is_dir());
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn stop_request_cancels_remaining_commands() {
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        TEST_FORCE_STOP.with(|flag| flag.set(true));
+        let script = parse_script("log one\nlog two\n").expect("parse");
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext::default(),
+            &mut NoopCompare,
+            &mut NoopReport,
+        )
+        .expect("stopped script should return");
+        TEST_FORCE_STOP.with(|flag| flag.set(false));
+        assert!(result.state.cancelled);
+        assert_eq!(result.executed, 0);
     }
 
     #[test]
@@ -3252,6 +3436,7 @@ mod tests {
                 waited_ms: 0,
                 view_mode: None,
                 align_mode: None,
+                cancelled: false,
             }
         );
         assert_eq!(

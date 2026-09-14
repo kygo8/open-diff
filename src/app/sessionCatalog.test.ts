@@ -45,9 +45,9 @@ describe('sessionCatalog', () => {
     expect(byType['clipboard-compare']).toBe('ready')
     expect(byType['version-compare']).toBe('ready')
     expect(byType['text-patch']).toBe('ready')
-    expect(byType['registry-compare']).toBe('partial')
+    expect(byType['registry-compare']).toBe('ready')
 
-    expect(byType.script).toBe('limited')
+    expect(byType.script).toBe('partial')
     expect(sessionCatalog.every((entry) => Boolean(entry.maturity))).toBe(true)
   })
 })

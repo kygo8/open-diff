@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
+  applyLiveRegistryValue,
   compareRegistryExports,
   compareRegistryHiveFiles,
   compareRegistryLiveKeys,
@@ -247,7 +248,7 @@ function mapValueTree(
   }))
 }
 
-function applySelectedValue(source: 'left' | 'right'): void {
+async function applySelectedValue(source: 'left' | 'right'): Promise<void> {
   const current = selectedValue.value
 
   if (!current) {
@@ -255,6 +256,7 @@ function applySelectedValue(source: 'left' | 'right'): void {
   }
 
   const key = `${current.keyPath}::${current.name}`
+  const side = current[source]
 
   registryTree.value = mapValueTree(registryTree.value, (value) => {
     if (`${value.keyPath}::${value.name}` !== key) {
@@ -263,10 +265,37 @@ function applySelectedValue(source: 'left' | 'right'): void {
 
     return applyRegistryValueSide(value, source)
   })
-  lastApplyAction.value = t(
-    source === 'left' ? 'status.registryAppliedLeft' : 'status.registryAppliedRight',
-    { name: current.name },
-  )
+
+  if (!policy.isWindows) {
+    lastApplyAction.value = t(
+      source === 'left' ? 'status.registryAppliedLeft' : 'status.registryAppliedRight',
+      { name: current.name },
+    )
+
+    return
+  }
+
+  try {
+    const result = await applyLiveRegistryValue({
+      targetKey: current.keyPath.replaceAll('/', '\\'),
+      name: current.name,
+      kind: side?.kind,
+      data: side?.data,
+    })
+
+    let statusKey = 'status.registryWroteRight'
+
+    if (result.action === 'delete') {
+      statusKey = 'status.registryDeletedLive'
+    } else if (source === 'left') {
+      statusKey = 'status.registryWroteLeft'
+    }
+
+    lastApplyAction.value = t(statusKey, { name: current.name })
+  } catch (event) {
+    lastApplyAction.value = String(event)
+    liveQueryError.value = String(event)
+  }
 }
 
 function selectKey(path: string): void {
@@ -455,10 +484,10 @@ watch(
         break
       case 'copy':
       case 'copy-right':
-        applySelectedValue('right')
+        void applySelectedValue('right')
         break
       case 'copy-left':
-        applySelectedValue('left')
+        void applySelectedValue('left')
         break
       case 'expand-all':
         expandAllKeys()
@@ -548,7 +577,7 @@ function runRegistryToolbarCommand(commandId: string): void {
   }
 
   if (commandId === 'copy') {
-    applySelectedValue('right')
+    void applySelectedValue('right')
 
     return
   }
@@ -714,6 +743,11 @@ function runRegistryToolbarCommand(commandId: string): void {
         >
           {{ $t('ui.applyRightValue') }}
         </button>
+        <span
+          v-if="!policy.isWindows"
+          data-testid="registry-live-write-windows-only"
+          >{{ $t('ui.liveRegistryWriteWindowsOnly') }}</span
+        >
       </section>
 
       <section class="registry-layout">

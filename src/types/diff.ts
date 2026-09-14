@@ -456,6 +456,19 @@ export interface RegistryCompareResponse {
   summary: Record<RegistryDiffStatus, number>
 }
 
+export interface ApplyLiveRegistryValueRequest {
+  targetKey: string
+  name: string
+  kind?: string
+  data?: string
+}
+
+export interface ApplyLiveRegistryValueResponse {
+  targetKey: string
+  name: string
+  action: 'set' | 'delete'
+}
+
 export interface VersionCompareRequest {
   leftPath: string
   rightPath: string
@@ -516,7 +529,7 @@ export interface TextMergeResponse {
 }
 
 export interface ExportReportRequest {
-  format: 'html' | 'text' | 'json' | 'xml' | 'csv' | 'markdown'
+  format: 'html' | 'html-side-by-side' | 'text' | 'json' | 'xml' | 'csv' | 'markdown'
   outputPath?: string
 }
 

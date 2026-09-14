@@ -1,4 +1,4 @@
-/** Client-side registry export compare workspace helpers (not live hive writes). */
+/** Registry compare workspace helpers. Live Windows writes go through applyLiveRegistryValue. */
 
 export type RegistryWorkspaceStatus = 'added' | 'removed' | 'modified' | 'unchanged'
 

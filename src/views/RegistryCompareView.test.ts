@@ -3,6 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import RegistryCompareView from './RegistryCompareView.vue'
 import {
+  applyLiveRegistryValue,
   compareRegistryExports,
   compareRegistryHiveFiles,
   compareRegistryLiveKeys,
@@ -25,14 +26,21 @@ vi.mock('@/api/policy', () => ({
     .mockRejectedValue(new Error('Live registry query is available on Windows only')),
 }))
 
+const policyState = {
+  isWindows: false,
+  load: vi.fn().mockResolvedValue(undefined),
+}
+
 vi.mock('@/stores/policy', () => ({
-  usePolicyStore: () => ({
-    isWindows: false,
-    load: vi.fn().mockResolvedValue(undefined),
-  }),
+  usePolicyStore: () => policyState,
 }))
 
 vi.mock('@/api/diff', () => ({
+  applyLiveRegistryValue: vi.fn().mockResolvedValue({
+    targetKey: 'HKCU\\Software\\OpenDiff',
+    name: 'Theme',
+    action: 'set',
+  }),
   saveTextFile: vi.fn().mockResolvedValue({
     path: 'C:/drop/registry-compare.txt',
     bytesWritten: 64,
@@ -103,9 +111,11 @@ vi.mock('@/api/diff', () => ({
 describe('RegistryCompareView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    policyState.isWindows = false
     vi.mocked(compareRegistryExports).mockClear()
     vi.mocked(compareRegistryHiveFiles).mockClear()
     vi.mocked(compareRegistryLiveKeys).mockClear()
+    vi.mocked(applyLiveRegistryValue).mockClear()
     vi.mocked(readTextFile).mockClear()
     vi.mocked(saveTextFile).mockClear()
     clipboardWriteText.mockClear()
@@ -190,6 +200,8 @@ describe('RegistryCompareView', () => {
     await wrapper.find('[data-testid="registry-apply-right"]').trigger('click')
 
     expect(wrapper.find('[data-testid="registry-apply-status"]').text().length).toBeGreaterThan(0)
+    expect(applyLiveRegistryValue).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="registry-live-write-windows-only"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="registry-value-HKCU/Software/OpenDiff::Theme"]').text(),
     ).toContain('light')
@@ -278,6 +290,31 @@ describe('RegistryCompareView', () => {
       rightRoot: 'Software',
     })
     expect(wrapper.find('[data-testid="registry-summary-modified"]').text()).toContain('1')
+  })
+
+  it('writes the selected value to the live registry on Windows', async () => {
+    policyState.isWindows = true
+    const wrapper = mount(RegistryCompareView)
+
+    await wrapper.find('[data-testid="registry-left-export"]').setValue('left export')
+    await wrapper.find('[data-testid="registry-right-export"]').setValue('right export')
+    await wrapper.find('[data-testid="run-registry-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    await wrapper
+      .find('[data-testid="registry-value-HKCU/Software/OpenDiff::Theme"]')
+      .trigger('click')
+    await wrapper.find('[data-testid="registry-apply-right"]').trigger('click')
+    await flushPromises()
+
+    expect(applyLiveRegistryValue).toHaveBeenCalledWith({
+      targetKey: 'HKCU\\Software\\OpenDiff',
+      name: 'Theme',
+      kind: 'REG_SZ',
+      data: 'light',
+    })
+    expect(wrapper.find('[data-testid="registry-live-write-windows-only"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="registry-apply-status"]').text().length).toBeGreaterThan(0)
   })
 
   it('shows live compare controls and keeps them disabled off Windows', () => {

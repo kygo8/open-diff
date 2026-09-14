@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   formatCommandList,
+  sampleScripts,
   supportedScriptCommands,
   unsupportedScriptCommands,
 } from './scriptCommands'
@@ -31,6 +32,10 @@ describe('scriptCommands', () => {
     expect(supportedScriptCommands).toContain('DATA-REPORT')
     expect(supportedScriptCommands).toContain('SET')
     expect(supportedScriptCommands).toContain('EXIT')
+    expect(supportedScriptCommands).toContain('VIEW')
+    expect(supportedScriptCommands).toContain('WAIT')
+    expect(supportedScriptCommands).toContain('MKDIR')
+    expect(supportedScriptCommands).toContain('ECHO')
     expect(unsupportedScriptCommands).not.toContain('HEX-REPORT')
     expect(unsupportedScriptCommands).not.toContain('FILE-REPORT')
     expect(unsupportedScriptCommands).not.toContain('MEDIA-REPORT')
@@ -43,5 +48,16 @@ describe('scriptCommands', () => {
     )
 
     expect(overlap).toEqual([])
+  })
+
+  it('exposes sample scripts without claiming a full legacy dialect', () => {
+    expect(sampleScripts.map((sample) => sample.id)).toEqual([
+      'text-report',
+      'folder-sync',
+      'wait-log',
+    ])
+    expect(sampleScripts[0]?.source).toContain('compare')
+    expect(sampleScripts[1]?.source).toContain('sync')
+    expect(sampleScripts[2]?.source).toContain('wait')
   })
 })

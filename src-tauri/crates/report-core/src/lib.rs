@@ -161,6 +161,70 @@ pub fn render_html_report(report: &UnifiedReport) -> String {
     html
 }
 
+/// Two-pane HTML report with left/right columns instead of a dense table.
+pub fn render_side_by_side_html_report(report: &UnifiedReport) -> String {
+    let title = escape_html(&report.title);
+    let mut html = String::new();
+    html.push_str("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">");
+    html.push_str("<title>");
+    html.push_str(&title);
+    html.push_str("</title>");
+    html.push_str("<style>");
+    html.push_str(
+        "body{font-family:system-ui,sans-serif;margin:24px;color:#111827}\
+         .meta{margin:0 0 16px;color:#4b5563}\
+         .panes{display:grid;grid-template-columns:1fr 1fr;gap:12px}\
+         .pane{border:1px solid #d1d5db;border-radius:8px;overflow:hidden;background:#fff}\
+         .pane h2{margin:0;padding:8px 12px;background:#f3f4f6;font-size:14px}\
+         .row{display:grid;grid-template-columns:88px 1fr;gap:8px;padding:6px 10px;border-top:1px solid #e5e7eb;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap}\
+         .status-added{background:#ecfdf5}.status-removed{background:#fef2f2}.status-different{background:#fff7ed}\
+         .status{color:#6b7280;font-weight:700}",
+    );
+    html.push_str("</style></head><body>");
+    html.push_str("<h1>");
+    html.push_str(&title);
+    html.push_str("</h1><p class=\"meta\">");
+    html.push_str(&escape_html(&report.metadata.generated_at));
+    if let Some(left) = report.metadata.left_source.as_deref() {
+        html.push_str(" · left: ");
+        html.push_str(&escape_html(left));
+    }
+    if let Some(right) = report.metadata.right_source.as_deref() {
+        html.push_str(" · right: ");
+        html.push_str(&escape_html(right));
+    }
+    html.push_str("</p>");
+
+    for section in &report.sections {
+        html.push_str("<section><h2>");
+        html.push_str(&escape_html(&section.title));
+        html.push_str("</h2><div class=\"panes\"><div class=\"pane\"><h2>Left</h2>");
+        for row in &section.rows {
+            html.push_str("<div class=\"row ");
+            html.push_str(row_status_class(&row.status));
+            html.push_str("\"><span class=\"status\">");
+            html.push_str(&escape_html(&row.label));
+            html.push_str("</span><span>");
+            html.push_str(&escape_html(row.left.as_deref().unwrap_or("")));
+            html.push_str("</span></div>");
+        }
+        html.push_str("</div><div class=\"pane\"><h2>Right</h2>");
+        for row in &section.rows {
+            html.push_str("<div class=\"row ");
+            html.push_str(row_status_class(&row.status));
+            html.push_str("\"><span class=\"status\">");
+            html.push_str(&escape_html(&row.label));
+            html.push_str("</span><span>");
+            html.push_str(&escape_html(row.right.as_deref().unwrap_or("")));
+            html.push_str("</span></div>");
+        }
+        html.push_str("</div></div></section>");
+    }
+
+    html.push_str("</body></html>");
+    html
+}
+
 pub fn build_report_render_log_event(report: &UnifiedReport, format: &str) -> StructuredLogEvent {
     StructuredLogEvent::new(
         LogDomain::Report,
@@ -580,6 +644,36 @@ mod tests {
         assert!(html.contains("Context"));
         assert!(html.contains("&lt;old&gt;"));
         assert!(!html.contains("<old>"));
+    }
+
+    #[test]
+    fn renders_side_by_side_html_report_with_two_panes() {
+        let report = UnifiedReport::new(
+            ReportKind::Text,
+            "Left vs Right",
+            ReportMetadata {
+                generated_at: "2026-09-14T12:00:00Z".to_owned(),
+                left_source: Some("left.txt".to_owned()),
+                right_source: Some("right.txt".to_owned()),
+            },
+        )
+        .with_section(ReportSection {
+            kind: ReportSectionKind::Differences,
+            title: "Differences".to_owned(),
+            rows: vec![ReportRow {
+                label: "L1 / R1".to_owned(),
+                left: Some("alpha".to_owned()),
+                right: Some("beta".to_owned()),
+                status: ReportRowStatus::Different,
+            }],
+        });
+
+        let html = render_side_by_side_html_report(&report);
+        assert!(html.contains("class=\"panes\""));
+        assert!(html.contains("alpha"));
+        assert!(html.contains("beta"));
+        assert!(html.contains("left.txt"));
+        assert!(html.contains("right.txt"));
     }
 
     #[test]

@@ -1,7 +1,7 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useSettingsStore } from '@/stores/settings'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { buildFolderMergePlan, executeFolderMergePlan } from '@/api/folderMerge'
@@ -62,6 +62,10 @@ async function fillMergePaths(wrapper: VueWrapper): Promise<void> {
 }
 
 describe('FolderMergeView', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   beforeEach(() => {
     localStorage.clear()
     setActivePinia(createPinia())
@@ -152,6 +156,7 @@ describe('FolderMergeView', () => {
       rightRoot: 'D:/workspace/merge/right',
       outputRoot: 'D:/workspace/merge/output',
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
+      filters: { include: [], exclude: [], caseSensitive: false },
     })
     expect(wrapper.find('[data-testid="folder-merge-execution-status"]').text()).toContain(
       'Completed 4 / 4',
@@ -279,6 +284,38 @@ describe('FolderMergeView', () => {
     }
 
     expect(stored.include).toEqual(['*.ts', '*.vue'])
+  })
+
+  it('debounces Filters strip changes into an automatic plan rebuild', async () => {
+    vi.useFakeTimers()
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+    vi.mocked(buildFolderMergePlan).mockClear()
+
+    const pattern = wrapper.find('[data-testid="folder-merge-filter-pattern"]')
+
+    await pattern.setValue('*.txt')
+    await pattern.trigger('change')
+    await flushPromises()
+
+    expect(buildFolderMergePlan).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(350)
+    await flushPromises()
+
+    expect(buildFolderMergePlan).toHaveBeenCalledWith({
+      leftRoot: 'D:/workspace/merge/left',
+      baseRoot: 'D:/workspace/merge/base',
+      rightRoot: 'D:/workspace/merge/right',
+      outputRoot: 'D:/workspace/merge/output',
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
+      filters: { include: ['*.txt'], exclude: [], caseSensitive: false },
+    })
+
+    vi.useRealTimers()
   })
 
   it('filters Same OK rows and peeks a selected plan row', async () => {

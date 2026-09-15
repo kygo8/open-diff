@@ -155,6 +155,32 @@ function onFolderFilterStripChange(event: Event): void {
   persistFolderNameFilters()
 }
 
+let folderNameFilterRebuildTimer: ReturnType<typeof setTimeout> | undefined
+
+watch(
+  folderNameFilters,
+  () => {
+    if (folderNameFilterRebuildTimer !== undefined) {
+      clearTimeout(folderNameFilterRebuildTimer)
+    }
+
+    folderNameFilterRebuildTimer = setTimeout(() => {
+      folderNameFilterRebuildTimer = undefined
+
+      if (plan.value === undefined || mergeExecuting.value) {
+        return
+      }
+
+      if (!leftPath.value || !basePath.value || !rightPath.value) {
+        return
+      }
+
+      void buildFolderMergePlan()
+    }, 350)
+  },
+  { deep: true },
+)
+
 const showMergeSelect = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
 
@@ -438,6 +464,11 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  if (folderNameFilterRebuildTimer !== undefined) {
+    clearTimeout(folderNameFilterRebuildTimer)
+    folderNameFilterRebuildTimer = undefined
+  }
+
   folderPathNavStore.reset()
 })
 
@@ -520,6 +551,7 @@ async function runFolderMerge(): Promise<void> {
       rightRoot: rightPath.value,
       outputRoot: outputPath.value,
       archiveExtensions: [...settings.archiveExtensions],
+      filters: { ...folderNameFilters.value },
     })
   } catch (error) {
     mergeExecutionError.value = error instanceof Error ? error.message : String(error)

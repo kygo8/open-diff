@@ -42,6 +42,12 @@ import {
   selectRowIdsByNameFilter,
   selectRowIdsByStatuses,
 } from '@/app/folderRowSelection'
+import {
+  aggregateFolderSelection,
+  formatFolderSelectionLabel,
+  joinStatusFooterParts,
+} from '@/app/folderSelectionStatus'
+import { useStatusBarStore } from '@/stores/statusBar'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { defaultTextCompareSessionOptions } from '@/app/textCompareSessionOptions'
@@ -73,7 +79,7 @@ import type {
   FolderCompareRow as FolderCompareResponseRow,
   FolderCompareSideEntry,
 } from '@/types/diff'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import RemotePathBrowser from '@/components/remote/RemotePathBrowser.vue'
@@ -159,6 +165,7 @@ const sessionLaunch = useSessionLaunchStore()
 const lastCompare = useLastCompareStore()
 const tabs = useTabsStore()
 const settings = useSettingsStore()
+const statusBar = useStatusBarStore()
 const router = useRouter()
 const syncRunning = ref(false)
 const reportStatus = ref('')
@@ -915,44 +922,64 @@ function isRowChecked(rowId: string): boolean {
   return checkedRowIds.value.has(rowId)
 }
 
+const selectionFooterLabels = {
+  filesSelectedBytes: (count: number, bytes: number) =>
+    t('status.filesSelectedBytes', { count, bytes }),
+  filesSelectedBytesWithDate: (count: number, bytes: number, modified: string) =>
+    t('status.filesSelectedBytesWithDate', { count, bytes, modified }),
+  filesAndFoldersSelectedBytes: (files: number, folders: number, bytes: number) =>
+    t('status.filesAndFoldersSelectedBytes', { files, folders, bytes }),
+  foldersSelected: (count: number) => t('status.foldersSelected', { count }),
+  itemsSelected: (count: number) => t('status.itemsSelected', { count }),
+}
+
 const folderSelectionSummary = computed(() => {
-  const selected = rows.value.filter(
-    (row) => checkedRowIds.value.has(row.id) && row.kind === 'file',
-  )
-  const count = selected.length
-  const leftBytes = selected.reduce((total, row) => total + (row.leftByteSize ?? 0), 0)
-  const rightBytes = selected.reduce((total, row) => total + (row.rightByteSize ?? 0), 0)
-  const single = count === 1 ? selected[0] : undefined
+  const aggregate = aggregateFolderSelection(rows.value, checkedRowIds.value, selectedRowId.value)
 
   return {
-    count,
-    leftBytes,
-    rightBytes,
-    leftModified: single?.leftModified && single.leftModified !== '--' ? single.leftModified : '',
-    rightModified:
-      single?.rightModified && single.rightModified !== '--' ? single.rightModified : '',
+    ...aggregate,
     hasRoots: Boolean(leftRoot.value || rightRoot.value),
+    leftSelectionLabel: formatFolderSelectionLabel(
+      { ...aggregate, bytes: aggregate.leftBytes, modified: aggregate.leftModified },
+      selectionFooterLabels,
+    ),
+    rightSelectionLabel: formatFolderSelectionLabel(
+      { ...aggregate, bytes: aggregate.rightBytes, modified: aggregate.rightModified },
+      selectionFooterLabels,
+    ),
   }
 })
 
-function formatSelectionFooter(
-  count: number,
-  bytes: number,
-  modified = '',
-  freeSpace = '',
-): string {
-  let selection = t('status.filesSelectedBytes', { count, bytes })
-
-  if (count === 1 && modified) {
-    selection = t('status.filesSelectedBytesWithDate', { count, bytes, modified })
-  }
-
-  if (freeSpace) {
-    return count > 0 ? `${selection} · ${freeSpace}` : freeSpace
-  }
-
-  return selection
+function formatSelectionFooter(selectionLabel: string, freeSpace = ''): string {
+  return joinStatusFooterParts(selectionLabel, freeSpace)
 }
+
+watchEffect(() => {
+  const summary = folderSelectionSummary.value
+  const leftSelection = summary.leftSelectionLabel || null
+  const rightSelection = summary.rightSelectionLabel || null
+
+  let comparisonStatus = t('status.readyIdle')
+
+  if (folderCompareLoading.value) {
+    comparisonStatus = t('status.comparing')
+  } else if (rows.value.length > 0) {
+    comparisonStatus = t('status.compared')
+  }
+
+  statusBar.reportStatus({
+    comparisonStatus,
+    differenceCount:
+      rows.value.length > 0 ? rows.value.filter((row) => row.status === 'Different').length : null,
+    filterStatus: t('status.allRows'),
+    source: 'folder-compare',
+    chromeKind: 'folder-pair',
+    leftSelection,
+    leftFreeSpace: leftFreeSpaceLabel.value || null,
+    rightSelection,
+    rightFreeSpace: rightFreeSpaceLabel.value || null,
+  })
+})
 
 function isExpanded(row: FolderTreeRow): boolean {
   return expandedDirectoryIds.value.has(row.id)
@@ -2065,17 +2092,20 @@ onUnmounted(() => {
               >
             </div>
             <span
-              v-if="folderSelectionSummary.hasRoots"
               class="path-side-footer"
+              :class="{
+                'path-side-footer-muted': !formatSelectionFooter(
+                  folderSelectionSummary.leftSelectionLabel,
+                  leftFreeSpaceLabel,
+                ),
+              }"
               data-testid="folder-left-path-footer"
             >
               {{
                 formatSelectionFooter(
-                  folderSelectionSummary.count,
-                  folderSelectionSummary.leftBytes,
-                  folderSelectionSummary.leftModified,
+                  folderSelectionSummary.leftSelectionLabel,
                   leftFreeSpaceLabel,
-                )
+                ) || $t('status.panePlaceholder')
               }}
             </span>
           </label>
@@ -2122,17 +2152,20 @@ onUnmounted(() => {
               >
             </div>
             <span
-              v-if="folderSelectionSummary.hasRoots"
               class="path-side-footer"
+              :class="{
+                'path-side-footer-muted': !formatSelectionFooter(
+                  folderSelectionSummary.rightSelectionLabel,
+                  rightFreeSpaceLabel,
+                ),
+              }"
               data-testid="folder-right-path-footer"
             >
               {{
                 formatSelectionFooter(
-                  folderSelectionSummary.count,
-                  folderSelectionSummary.rightBytes,
-                  folderSelectionSummary.rightModified,
+                  folderSelectionSummary.rightSelectionLabel,
                   rightFreeSpaceLabel,
-                )
+                ) || $t('status.panePlaceholder')
               }}
             </span>
           </label>
@@ -3334,9 +3367,15 @@ onUnmounted(() => {
 
 .path-side-footer {
   display: block;
+  min-height: 14px;
   margin-top: 4px;
   color: var(--od-muted, #6b7280);
   font-size: 11px;
+  line-height: 14px;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 
 .archive-side-chip {

@@ -902,6 +902,15 @@ select {
   white-space: nowrap;
 }
 
+.status-summary-grid article[data-empty='true'] {
+  background: var(--app-surface-muted, #f3f4f6);
+}
+
+.status-summary-grid article[data-empty='true'] strong {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
 .split-pane-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

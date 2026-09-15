@@ -491,17 +491,43 @@ describe('AppLayout command palette', () => {
       encoding: 'UTF-8 / LF',
       filterStatus: 'All rows',
       source: 'text-compare',
+      chromeKind: 'text-session',
       loadTimeSeconds: 0.03,
       editMode: 'insert',
     })
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Compared')
-    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('≠ 4 difference sections')
-    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Encoding: UTF-8 / LF')
-    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Filter: All rows')
-    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Insert')
-    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Load time: 0.03 seconds')
+    const status = wrapper.find('[data-testid="status-bar"]')
+
+    expect(status.text()).toContain('≠ 4 difference sections')
+    expect(status.text()).toContain('All rows')
+    expect(status.text()).toContain('Insert')
+    expect(status.text()).toContain('Load time: 0.03 seconds')
+    expect(status.find('[data-testid="status-pane-diff"]').exists()).toBe(true)
+    expect(status.find('[data-testid="status-pane-edit"]').text()).toContain('Insert')
+  })
+
+  it('keeps empty folder-pair status panes instead of a blank bar', async () => {
+    const wrapper = mountAppLayout()
+    const statusBar = useStatusBarStore()
+
+    statusBar.reportStatus({
+      source: 'folder-compare',
+      chromeKind: 'folder-pair',
+      leftSelection: null,
+      leftFreeSpace: null,
+      rightSelection: null,
+      rightFreeSpace: null,
+    })
+    await wrapper.vm.$nextTick()
+
+    const status = wrapper.find('[data-testid="status-bar"]')
+
+    expect(status.findAll('.status-bar-pane')).toHaveLength(4)
+    expect(status.find('[data-testid="status-pane-left-selection"]').attributes('data-muted')).toBe(
+      'true',
+    )
+    expect(status.find('[data-testid="status-pane-left-selection"]').text()).toBe('—')
   })
 
   it('launches a compare session from a global desktop path drop', async () => {

@@ -5,7 +5,9 @@ import {
   formatEditModePhrase,
   formatLoadTimePhrase,
   isEditModeStatusSource,
+  isFolderPairStatusSource,
   isTextSessionStatusSource,
+  padStatusChromePanes,
 } from './statusBarPhrases'
 
 describe('statusBarPhrases', () => {
@@ -14,10 +16,14 @@ describe('statusBarPhrases', () => {
     expect(isTextSessionStatusSource('folder-compare')).toBe(false)
   })
 
-  it('detects edit-mode status sources', () => {
+  it('detects edit-mode and folder-pair status sources', () => {
     expect(isEditModeStatusSource('text-compare')).toBe(true)
     expect(isEditModeStatusSource('text-edit')).toBe(true)
     expect(isEditModeStatusSource('text-patch')).toBe(false)
+    expect(isFolderPairStatusSource('folder-compare')).toBe(true)
+    expect(isFolderPairStatusSource('folder-sync')).toBe(true)
+    expect(isFolderPairStatusSource('folder-merge')).toBe(true)
+    expect(isFolderPairStatusSource('text-compare')).toBe(false)
   })
 
   it('formats text difference section phrases', () => {
@@ -36,5 +42,16 @@ describe('statusBarPhrases', () => {
 
   it('computes elapsed seconds', () => {
     expect(elapsedSecondsSince(1000, 2500)).toBe(1.5)
+  })
+
+  it('pads status chrome panes to a fixed structure', () => {
+    expect(
+      padStatusChromePanes([{ text: 'Ready' }], 4, () => ({ text: '—', muted: true })),
+    ).toEqual([
+      { text: 'Ready' },
+      { text: '—', muted: true },
+      { text: '—', muted: true },
+      { text: '—', muted: true },
+    ])
   })
 })

@@ -549,6 +549,12 @@ export const enUS: LanguagePack = {
     'status.diskFreeOn': '{quantity} free on {root}',
     'status.pathFileMetadata': '{bytes} bytes, {modified}',
     'status.filesSelectedBytesWithDate': '{count} file(s) selected, {bytes} bytes, {modified}',
+    'status.panePlaceholder': '—',
+    'status.readyIdle': 'Ready',
+    'status.filesAndFoldersSelectedBytes':
+      '{files} file(s), {folders} folder(s) selected, {bytes} bytes',
+    'status.foldersSelected': '{count} folder(s) selected',
+    'status.itemsSelected': '{count} item(s) selected',
     'status.encoding': 'Encoding',
     'status.filter': 'Filter',
     'status.allRows': 'All rows',

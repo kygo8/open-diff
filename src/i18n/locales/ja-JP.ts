@@ -548,6 +548,12 @@ export const jaJP: LanguagePack = {
     'status.diskFreeOn': '{root} に {quantity} 空き',
     'status.pathFileMetadata': '{bytes} バイト、{modified}',
     'status.filesSelectedBytesWithDate': '{count} 個のファイルを選択、{bytes} バイト、{modified}',
+    'status.panePlaceholder': '—',
+    'status.readyIdle': '準備完了',
+    'status.filesAndFoldersSelectedBytes':
+      '{files} 個のファイル、{folders} 個のフォルダーを選択、{bytes} バイト',
+    'status.foldersSelected': '{count} 個のフォルダーを選択',
+    'status.itemsSelected': '{count} 項目を選択',
     'status.encoding': 'Encoding',
     'status.filter': 'Filter',
     'status.allRows': 'All rows',

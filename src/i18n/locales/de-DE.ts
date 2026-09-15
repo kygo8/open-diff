@@ -461,6 +461,12 @@ export const deDE: LanguagePack = {
     'status.diskFreeOn': '{quantity} frei auf {root}',
     'status.pathFileMetadata': '{bytes} Bytes, {modified}',
     'status.filesSelectedBytesWithDate': '{count} Datei(en) ausgewählt, {bytes} Bytes, {modified}',
+    'status.panePlaceholder': '—',
+    'status.readyIdle': 'Bereit',
+    'status.filesAndFoldersSelectedBytes':
+      '{files} Datei(en), {folders} Ordner ausgewählt, {bytes} Bytes',
+    'status.foldersSelected': '{count} Ordner ausgewählt',
+    'status.itemsSelected': '{count} Element(e) ausgewählt',
     'status.encoding': 'Codierung',
     'status.filter': 'Filter',
     'status.allRows': 'Alle Zeilen',

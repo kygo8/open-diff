@@ -5,6 +5,9 @@ import {
   formatEditModePhrase,
   formatLoadTimePhrase,
   isEditModeStatusSource,
+  isFolderPairStatusSource,
+  isTextSessionStatusSource,
+  type StatusChromeKind,
   type StatusEditMode,
 } from '@/app/statusBarPhrases'
 
@@ -18,6 +21,16 @@ export interface StatusBarReport {
   loadTimeSeconds: number | null
   /** Insert/Overwrite indicator for text editing sessions when known. */
   editMode: StatusEditMode | null
+  /** Capture-style chrome layout for the bottom status panes. */
+  chromeKind: StatusChromeKind
+  /** Folder-pair left selection summary (already localized) when known. */
+  leftSelection: string | null
+  /** Folder-pair left free-space label (already localized) when known. */
+  leftFreeSpace: string | null
+  /** Folder-pair right selection summary (already localized) when known. */
+  rightSelection: string | null
+  /** Folder-pair right free-space label (already localized) when known. */
+  rightFreeSpace: string | null
 }
 
 const defaultReport: StatusBarReport = {
@@ -28,6 +41,11 @@ const defaultReport: StatusBarReport = {
   source: 'workspace',
   loadTimeSeconds: null,
   editMode: null,
+  chromeKind: 'standard',
+  leftSelection: null,
+  leftFreeSpace: null,
+  rightSelection: null,
+  rightFreeSpace: null,
 }
 
 export const useStatusBarStore = defineStore('statusBar', () => {
@@ -55,6 +73,25 @@ export const useStatusBarStore = defineStore('statusBar', () => {
     return next
   })
 
+  const chromeKind = computed((): StatusChromeKind => {
+    if (report.value.chromeKind !== 'standard') {
+      return report.value.chromeKind
+    }
+
+    if (isFolderPairStatusSource(report.value.source)) {
+      return 'folder-pair'
+    }
+
+    if (
+      isTextSessionStatusSource(report.value.source) ||
+      isEditModeStatusSource(report.value.source)
+    ) {
+      return 'text-session'
+    }
+
+    return 'standard'
+  })
+
   function reportStatus(nextReport: Partial<StatusBarReport>): void {
     report.value = {
       ...report.value,
@@ -62,9 +99,15 @@ export const useStatusBarStore = defineStore('statusBar', () => {
     }
   }
 
+  function resetStatus(): void {
+    report.value = { ...defaultReport }
+  }
+
   return {
     report,
     segments,
+    chromeKind,
     reportStatus,
+    resetStatus,
   }
 })

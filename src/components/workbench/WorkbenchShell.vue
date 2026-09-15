@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject, type ComputedRef } from 'vue'
 import { useI18n } from '@/i18n'
 import type { SessionToolbarCommand } from '@/app/sessionToolbars'
 import { iconForSessionToolbarCommand } from '@/app/sessionToolbarIcons'
@@ -20,6 +20,18 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 const settings = useSettingsStore()
+
+interface ShellChromeInjection {
+  showTabStrip?: ComputedRef<boolean>
+  singleSessionFrame?: ComputedRef<boolean>
+}
+
+const injectedShellChrome = inject<ShellChromeInjection | null>('shellChrome', null)
+const preferSingleSessionFrame = computed(() => {
+  const frame = injectedShellChrome?.singleSessionFrame
+
+  return frame ? frame.value : false
+})
 const resolvedInspectorLabel = computed(() => props.inspectorLabel ?? t('ui.inspector'))
 const toolbarItems = computed(() => {
   const commands =
@@ -299,11 +311,15 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
 <template>
   <section
     class="workbench-shell"
-    :class="{ 'workbench-shell-compact': compact }"
+    :class="{
+      'workbench-shell-compact': compact,
+      'workbench-shell-single-session': preferSingleSessionFrame && !compact,
+    }"
     :data-compact="compact ? 'true' : 'false'"
+    :data-single-session-frame="preferSingleSessionFrame && !compact ? 'true' : 'false'"
   >
     <header
-      v-if="!compact"
+      v-if="!compact && !preferSingleSessionFrame"
       class="workbench-titlebar"
     >
       <div class="workbench-titlecopy">

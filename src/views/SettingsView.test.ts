@@ -356,6 +356,8 @@ describe('SettingsView', () => {
 
     await wrapper.find('[data-testid="options-section-tabs"]').trigger('click')
     expect(wrapper.find('[data-testid="options-tabs-card"]').isVisible()).toBe(true)
+    await wrapper.find('[data-testid="always-show-tab-bar"]').setValue(true)
+    expect(settings.alwaysShowTabBar).toBe(true)
     await wrapper.find('[data-testid="always-show-tab-bar"]').setValue(false)
     expect(settings.alwaysShowTabBar).toBe(false)
     await wrapper.find('[data-testid="open-sessions-in-new-tab"]').setValue(true)

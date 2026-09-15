@@ -706,3 +706,97 @@ function mountAppLayout(): VueWrapper {
     },
   })
 }
+
+describe('AppLayout tab strip chrome', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    setActivePinia(createPinia())
+    push.mockClear()
+    routePath = '/'
+  })
+
+  it('hides the tab strip for a sole Home tab even when alwaysShowTabBar is true', () => {
+    const settings = useSettingsStore()
+
+    settings.setAlwaysShowTabBar(true)
+    const wrapper = mountAppLayout()
+
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-show-tab-strip')).toBe(
+      'false',
+    )
+    expect(wrapper.find('[data-testid="tab-strip"]').isVisible()).toBe(false)
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-single-session-frame')).toBe(
+      'false',
+    )
+    wrapper.unmount()
+  })
+
+  it('hides the tab strip for a sole session when alwaysShowTabBar is false', () => {
+    routePath = '/compare/text'
+    const settings = useSettingsStore()
+    const tabs = useTabsStore()
+
+    settings.setAlwaysShowTabBar(false)
+    tabs.tabs = [
+      {
+        id: 'sess-1',
+        title: 'Text Compare',
+        titleKey: 'ui.textCompare',
+        route: '/compare/text',
+        dirty: false,
+      },
+    ]
+    tabs.activeTabId = 'sess-1'
+
+    const wrapper = mountAppLayout()
+
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-show-tab-strip')).toBe(
+      'false',
+    )
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-single-session-frame')).toBe(
+      'true',
+    )
+    expect(wrapper.find('[data-testid="tab-strip"]').isVisible()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('shows the tab strip for a sole session when alwaysShowTabBar is true', () => {
+    routePath = '/compare/text'
+    const settings = useSettingsStore()
+    const tabs = useTabsStore()
+
+    settings.setAlwaysShowTabBar(true)
+    tabs.tabs = [
+      {
+        id: 'sess-1',
+        title: 'Text Compare',
+        titleKey: 'ui.textCompare',
+        route: '/compare/text',
+        dirty: false,
+      },
+    ]
+    tabs.activeTabId = 'sess-1'
+
+    const wrapper = mountAppLayout()
+
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-show-tab-strip')).toBe('true')
+    expect(wrapper.find('[data-testid="tab-strip"]').isVisible()).toBe(true)
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-single-session-frame')).toBe(
+      'false',
+    )
+    wrapper.unmount()
+  })
+
+  it('defaults alwaysShowTabBar to false so Home starts without a tab strip', () => {
+    const settings = useSettingsStore()
+
+    expect(settings.alwaysShowTabBar).toBe(false)
+
+    const wrapper = mountAppLayout()
+
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-show-tab-strip')).toBe(
+      'false',
+    )
+    wrapper.unmount()
+  })
+})

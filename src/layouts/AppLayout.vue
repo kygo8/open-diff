@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, provide, ref, watch } from 'vue'
 import { useRoute, useRouter, RouterView } from 'vue-router'
 import {
   ArrowDown,
@@ -40,6 +40,7 @@ import { openSessionWindow } from '@/app/sessionWindow'
 import { resolveDropLaunchFromPaths } from '@/app/dropLaunch'
 import { sessionCatalog } from '@/app/sessionCatalog'
 import { isSessionWorkbenchRoute, tabRoutePathname } from '@/app/sessionTabRoute'
+import { isSingleSessionFrame, shouldShowTabStrip } from '@/app/shellChrome'
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { useI18n } from '@/i18n'
 import { usePolicyStore } from '@/stores/policy'
@@ -852,7 +853,28 @@ function activateTab(tabId: string): void {
   void router.push(tab.route)
 }
 
-const showTabStrip = computed(() => settings.alwaysShowTabBar || tabs.tabs.length > 1)
+const showTabStrip = computed(() => {
+  const sole = tabs.tabs.length === 1 ? tabs.tabs[0] : undefined
+
+  return shouldShowTabStrip({
+    alwaysShowTabBar: settings.alwaysShowTabBar,
+    tabCount: tabs.tabs.length,
+    soleTabId: sole?.id,
+    soleTabRoute: sole ? tabRoutePathname(sole.route) : undefined,
+  })
+})
+
+const singleSessionFrame = computed(() =>
+  isSingleSessionFrame({
+    showTabStrip: showTabStrip.value,
+    routePath: route.path,
+  }),
+)
+
+provide('shellChrome', {
+  showTabStrip,
+  singleSessionFrame,
+})
 
 function openCommandPalette(): void {
   commandPaletteOpen.value = true
@@ -1087,6 +1109,10 @@ const sourceSessionTypes = new Set<SessionType>([
 <template>
   <div
     class="app-shell"
+    :class="{ 'app-shell-single-session': singleSessionFrame }"
+    :data-show-tab-strip="showTabStrip ? 'true' : 'false'"
+    :data-single-session-frame="singleSessionFrame ? 'true' : 'false'"
+    data-testid="app-shell"
     @click="closeChromeMenus"
   >
     <header class="menu-bar">
@@ -1313,6 +1339,7 @@ const sourceSessionTypes = new Set<SessionType>([
           v-show="showTabStrip"
           class="tab-strip"
           data-testid="tab-strip"
+          :data-visible="showTabStrip ? 'true' : 'false'"
         >
           <div
             v-for="tab in tabs.tabs"

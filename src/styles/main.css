@@ -170,6 +170,73 @@ select {
   display: none;
 }
 
+/* Sole-session frame: drop web page padding and fuse path chrome to the shell. */
+.app-shell-single-session .workbench-main > section {
+  gap: 0 !important;
+  padding: 0 !important;
+}
+
+.app-shell-single-session .folder-toolbar {
+  gap: 0 !important;
+  padding: 0 !important;
+}
+
+.app-shell-single-session .folder-toolbar .path-pair {
+  gap: 4px !important;
+  min-height: 28px !important;
+  padding: 2px 6px !important;
+  border-bottom: 1px solid #bfc4cc !important;
+  background: #f3f3f3 !important;
+}
+
+.app-shell-single-session .folder-toolbar .path-pair > label {
+  gap: 1px !important;
+}
+
+.app-shell-single-session .folder-toolbar .path-pair > label > span:first-child {
+  /* Capture path row has no stacked Left/Right captions above the inputs. */
+  display: none !important;
+}
+
+.app-shell-single-session .folder-toolbar .path-pair .path-field-row {
+  gap: 4px !important;
+}
+
+.app-shell-single-session .folder-toolbar .path-pair .path-field-row > input,
+.app-shell-single-session .folder-toolbar .path-pair .path-field-row > .path-input {
+  height: 22px !important;
+  min-height: 22px !important;
+  font-size: 11px !important;
+}
+
+.app-shell-single-session .folder-toolbar .path-pair .path-field-row > button {
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 7px !important;
+  font-size: 11px !important;
+}
+
+.app-shell-single-session .path-side-footer {
+  min-height: 12px !important;
+  margin-top: 0 !important;
+  font-size: 10px !important;
+  line-height: 12px !important;
+}
+
+.app-shell-single-session .folder-toolbar .folder-criteria,
+.app-shell-single-session .folder-toolbar .folder-actions,
+.app-shell-single-session .folder-toolbar .archive-path-hint {
+  padding: 2px 6px !important;
+}
+
+.app-shell-single-session .workbench-shell-single-session .bc-session-toolbar {
+  border-bottom: 1px solid #bfc4cc;
+}
+
+.app-shell-single-session .workbench-main {
+  background: #ffffff;
+}
+
 .workbench-grid-compact {
   grid-template-columns: minmax(0, 1fr);
 }

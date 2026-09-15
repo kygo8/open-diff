@@ -41,7 +41,7 @@ import { resolveDropLaunchFromPaths } from '@/app/dropLaunch'
 import { sessionCatalog } from '@/app/sessionCatalog'
 import { createUntitledSession } from '@/app/sessionFactory'
 import { isSessionWorkbenchRoute, tabRoutePathname } from '@/app/sessionTabRoute'
-import { isSingleSessionFrame, shouldShowTabStrip } from '@/app/shellChrome'
+import { isSingleSessionFrame, preferDenseAppChrome, shouldShowTabStrip } from '@/app/shellChrome'
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { useI18n } from '@/i18n'
 import { usePolicyStore } from '@/stores/policy'
@@ -1046,9 +1046,12 @@ const singleSessionFrame = computed(() =>
   }),
 )
 
+const denseAppChrome = computed(() => preferDenseAppChrome({ showTabStrip: showTabStrip.value }))
+
 provide('shellChrome', {
   showTabStrip,
   singleSessionFrame,
+  denseAppChrome,
 })
 
 function openCommandPalette(): void {
@@ -1345,9 +1348,13 @@ const sourceSessionTypes = new Set<SessionType>([
 <template>
   <div
     class="app-shell"
-    :class="{ 'app-shell-single-session': singleSessionFrame }"
+    :class="{
+      'app-shell-single-session': singleSessionFrame,
+      'app-shell-dense-chrome': denseAppChrome,
+    }"
     :data-show-tab-strip="showTabStrip ? 'true' : 'false'"
     :data-single-session-frame="singleSessionFrame ? 'true' : 'false'"
+    :data-dense-chrome="denseAppChrome ? 'true' : 'false'"
     data-testid="app-shell"
     @click="closeChromeMenus"
   >
@@ -2457,5 +2464,51 @@ html[data-show-sidebar='1'] .sidebar {
   border-radius: 8px;
   background: var(--panel, #ffffff);
   box-shadow: 0 8px 24px rgb(15 23 42 / 0.18);
+}
+
+.app-shell-dense-chrome {
+  /* Title + menu only — closer to native frames without a tab strip. */
+  grid-template-rows: 54px minmax(0, 1fr) 24px;
+}
+
+.app-shell-dense-chrome .menu-bar {
+  grid-template-rows: 28px 26px;
+}
+
+.app-shell-dense-chrome .brand {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 15px;
+}
+
+.app-shell-dense-chrome .brand :deep(svg) {
+  width: 13px;
+  height: 13px;
+}
+
+.app-shell-dense-chrome .menus {
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+}
+
+.app-shell-dense-chrome .menus button {
+  height: 24px;
+  padding: 0 5px;
+  font-size: 12px;
+}
+
+.app-shell-dense-chrome .top-actions {
+  /* Capture frames omit web utility chrome; keep nodes for command-palette tests. */
+  position: absolute;
+  top: auto;
+  left: -10000px;
+  display: block;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
 }
 </style>

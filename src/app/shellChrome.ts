@@ -46,3 +46,11 @@ export function isSingleSessionFrame(input: SingleSessionFrameInput): boolean {
 
   return path !== '/'
 }
+
+/**
+ * When the tab strip is hidden (sole Home or single session), densify title/menu
+ * chrome and suppress redundant web-only top actions to match native frames.
+ */
+export function preferDenseAppChrome(input: { showTabStrip: boolean }): boolean {
+  return !input.showTabStrip
+}

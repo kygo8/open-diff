@@ -1890,7 +1890,10 @@ function toggleSourceEditors(): void {
 }
 
 .compare-toolbar {
+  flex-wrap: wrap;
   gap: 4px;
+  height: auto;
+  overflow: visible;
 }
 
 .stats {

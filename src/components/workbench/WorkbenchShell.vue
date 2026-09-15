@@ -2,7 +2,10 @@
 import { computed, inject, type ComputedRef } from 'vue'
 import { useI18n } from '@/i18n'
 import type { SessionToolbarCommand } from '@/app/sessionToolbars'
-import { visualForSessionToolbarCommand } from '@/app/sessionToolbarIcons'
+import {
+  sessionToolbarHasSeparatorBefore,
+  visualForSessionToolbarCommand,
+} from '@/app/sessionToolbarIcons'
 import { useSettingsStore } from '@/stores/settings'
 
 const props = defineProps<{
@@ -76,14 +79,16 @@ const toolbarItems = computed(() => {
 
       return true
     })
-    .map((command) => {
+    .map((command, index, list) => {
       const visual = visualForSessionToolbarCommand(command.id)
+      const previousId = index > 0 ? list[index - 1]?.id : undefined
 
       return {
         ...command,
         visual,
         icon: visual?.kind === 'icon' ? visual.icon : undefined,
         plate: visual?.kind === 'plate' ? visual : undefined,
+        groupStart: sessionToolbarHasSeparatorBefore(command.id, previousId),
       }
     })
 })
@@ -390,14 +395,19 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
           :key="toolbarItem.id"
           type="button"
           class="bc-toolbar-command"
-          :class="{ 'bc-toolbar-command-active': toolbarItem.active }"
+          :class="{
+            'bc-toolbar-command-active': toolbarItem.active,
+            'bc-toolbar-command-group-start': toolbarItem.groupStart,
+          }"
           :disabled="!toolbarItem.enabled"
           :aria-label="t(toolbarItem.labelKey)"
           :aria-pressed="toolbarItem.active ? 'true' : 'false'"
           :data-testid="`${testIdPrefix}-${toolbarItem.id}`"
           :data-active="toolbarItem.active ? 'true' : 'false'"
+          :data-command-id="toolbarItem.id"
           :data-has-icon="toolbarItem.visual && settings.showToolbarIcons ? 'true' : 'false'"
           :data-has-plate="toolbarItem.plate && settings.showToolbarIcons ? 'true' : 'false'"
+          :data-group-start="toolbarItem.groupStart ? 'true' : 'false'"
           :title="t(toolbarItem.labelKey)"
           @click="onToolbarCommand(toolbarItem)"
         >

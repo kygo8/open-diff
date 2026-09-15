@@ -36,6 +36,9 @@ const denseStatusRoutes = new Set([
   'media',
   'version',
   'table',
+  'folder',
+  'folder sync',
+  'folder merge',
 ])
 
 for (const [name, route] of routes) {

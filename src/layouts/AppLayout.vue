@@ -2310,6 +2310,13 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .status-bar[data-chrome-kind='folder-pair'] {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  height: 22px;
+  min-height: 22px;
+  font-size: 11px;
+}
+
+.status-bar[data-chrome-kind='folder-pair'] .status-bar-pane {
+  padding: 0 5px;
 }
 
 .status-bar[data-chrome-kind='text-session'],

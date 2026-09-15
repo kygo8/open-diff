@@ -1417,10 +1417,11 @@ h1 {
   display: grid;
   grid-template-columns: repeat(4, minmax(150px, 1fr)) auto;
   align-items: end;
-  gap: 6px;
-  padding: 6px 8px;
+  gap: 4px;
+  min-height: 26px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1431,13 +1432,17 @@ h1 {
 }
 
 .merge-path-footer {
+  display: block;
+  min-height: 11px;
+  margin-top: 1px;
   color: var(--od-muted, #6b7280);
-  font-size: 11px;
+  font-size: 10px;
+  line-height: 11px;
 }
 
 .merge-paths label span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .merge-paths input {
@@ -1463,10 +1468,10 @@ h1 {
 .merge-plan,
 .conflict-panel {
   display: grid;
-  gap: 8px;
-  padding: 10px;
+  gap: 4px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1502,7 +1507,7 @@ h1 {
   display: grid;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .merge-plan-row {
@@ -1524,7 +1529,7 @@ h1 {
 .merge-plan-row span,
 .merge-plan-row strong {
   min-width: 0;
-  padding: 8px 10px;
+  padding: 4px 8px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   text-overflow: ellipsis;
@@ -1607,10 +1612,10 @@ h1 {
 
 .folder-merge-peek-panel {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 4px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1674,6 +1679,7 @@ h1 {
 .folder-filter-chrome {
   align-items: center;
   min-height: 36px;
+  padding: 1px 0;
 }
 
 .folder-filter-strip {

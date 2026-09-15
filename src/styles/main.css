@@ -306,7 +306,9 @@ select {
 .workbench-toolbar-stack {
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+
+  /* Allow wrapped action toolbars (Run Diff / folder actions) to stay hit-testable */
+  overflow: visible;
 }
 
 .bc-session-toolbar {
@@ -365,6 +367,24 @@ select {
 
 .bc-toolbar-command-active:hover:not(:disabled) {
   background: #b7dbf8;
+}
+
+.bc-toolbar-command:active:not(:disabled) {
+  background: #b7dbf8;
+  box-shadow: inset 0 1px 2px rgb(30 60 90 / 0.22);
+}
+
+/* Capture MainBar group rhythm (~12px gaps on folder shots) */
+.bc-toolbar-command-group-start {
+  margin-left: 10px;
+  border-left: 1px solid #b0b6be;
+  box-shadow: inset 1px 0 0 #ffffff;
+}
+
+.bc-toolbar-command-group-start:first-child {
+  margin-left: 0;
+  border-left: 0;
+  box-shadow: none;
 }
 
 .bc-session-toolbar-compact {
@@ -435,6 +455,12 @@ select {
   font-size: 12px;
 }
 
+.bc-toolbar-plate[data-plate='home'] {
+  background: linear-gradient(180deg, #eef3f8 0%, #d5dde8 100%);
+  color: #1f3a5f;
+  border-color: #8aa0b8;
+}
+
 .bc-toolbar-plate[data-plate='refresh'],
 .bc-toolbar-plate[data-plate='reload'] {
   background: linear-gradient(180deg, #eaf8ef 0%, #cfead8 100%);
@@ -470,7 +496,8 @@ select {
   border-color: #d0b26a;
 }
 
-.bc-toolbar-plate[data-plate='filters'] {
+.bc-toolbar-plate[data-plate='filters'],
+.bc-toolbar-plate[data-plate='peek'] {
   background: linear-gradient(180deg, #e8f2fc 0%, #c9dff3 100%);
   color: #0b57a4;
   border-color: #7eacd8;
@@ -480,6 +507,106 @@ select {
   background: linear-gradient(180deg, #f7f1e6 0%, #e5d7c0 100%);
   color: #3b2f1c;
   border-color: #b7a789;
+}
+
+.bc-toolbar-plate[data-plate='stop'],
+.bc-toolbar-plate[data-plate='cancel'] {
+  background: linear-gradient(180deg, #fdeceb 0%, #f0c9c6 100%);
+  color: #a12622;
+  border-color: #d08a86;
+}
+
+.bc-toolbar-plate[data-plate='sync-now'],
+.bc-toolbar-plate[data-plate='accept'],
+.bc-toolbar-plate[data-plate='same-ok'] {
+  background: linear-gradient(180deg, #e8f7ec 0%, #c6e6d0 100%);
+  color: #0f7a3a;
+  border-color: #7cbc8f;
+}
+
+.bc-toolbar-plate[data-plate='merge'],
+.bc-toolbar-plate[data-plate='to-output'] {
+  background: linear-gradient(180deg, #efe8fb 0%, #d9c8f0 100%);
+  color: #5b2d91;
+  border-color: #a888d0;
+}
+
+.bc-toolbar-plate[data-plate='select'],
+.bc-toolbar-plate[data-plate='all'],
+.bc-toolbar-plate[data-plate='same'],
+.bc-toolbar-plate[data-plate='structure'],
+.bc-toolbar-plate[data-plate='files'],
+.bc-toolbar-plate[data-plate='minor'] {
+  background: linear-gradient(180deg, #f3f5f8 0%, #e0e4ea 100%);
+  color: #2a3441;
+  border-color: #9aa3ad;
+}
+
+.bc-toolbar-plate[data-plate='diffs'] {
+  background: linear-gradient(180deg, #fff4e8 0%, #f0d7b8 100%);
+  color: #9a4d00;
+  border-color: #d0a06a;
+}
+
+.bc-toolbar-command:hover:not(:disabled) .bc-toolbar-plate {
+  filter: brightness(0.97);
+  box-shadow:
+    inset 0 1px 0 #ffffffaa,
+    0 0 0 1px rgb(80 120 180 / 0.18);
+}
+
+.bc-toolbar-command:active:not(:disabled) .bc-toolbar-plate,
+.bc-toolbar-command-active .bc-toolbar-plate {
+  filter: brightness(0.93);
+  box-shadow: inset 0 1px 2px rgb(30 50 70 / 0.2);
+}
+
+/* Lucide outline icons: soft capture-like tints by command */
+.bc-toolbar-command[data-command-id='home'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='sessions'] .bc-toolbar-icon {
+  color: #1f3a5f;
+}
+
+.bc-toolbar-command[data-command-id='refresh'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='reload'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='accept'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='same-ok'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='sync-now'] .bc-toolbar-icon {
+  color: #0f7a3a;
+}
+
+.bc-toolbar-command[data-command-id='stop'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='cancel'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='delete'] .bc-toolbar-icon {
+  color: #a12622;
+}
+
+.bc-toolbar-command[data-command-id='filters'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='peek'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='next-diff'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='prev-diff'] .bc-toolbar-icon {
+  color: #0b57a4;
+}
+
+.bc-toolbar-command[data-command-id='merge'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='to-output'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='conflict'] .bc-toolbar-icon {
+  color: #5b2d91;
+}
+
+.bc-toolbar-command[data-command-id='diffs'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='expand'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='collapse'] .bc-toolbar-icon {
+  color: #8a5a00;
+}
+
+.bc-toolbar-command:hover:not(:disabled) .bc-toolbar-icon {
+  filter: brightness(0.92);
+}
+
+.bc-toolbar-command:active:not(:disabled) .bc-toolbar-icon,
+.bc-toolbar-command-active .bc-toolbar-icon {
+  filter: brightness(0.85);
 }
 
 .bc-toolbar-command[data-has-plate='true'] {
@@ -547,12 +674,14 @@ select {
 .workbench-toolbar,
 .path-pair-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0;
   min-width: 0;
+  height: auto;
   min-height: 32px;
   padding: 0 6px;
-  overflow: auto hidden;
+  overflow: visible;
   border-bottom: 1px solid #bfc4cc;
   background: #eeeeee;
 }
@@ -1866,4 +1995,142 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 4px !important;
   padding: 4px 6px !important;
   border-radius: 0 !important;
+}
+
+/* Folder Sync chrome densify toward Folder Compare path/filters/actions/status */
+.folder-sync-view .sync-settings {
+  gap: 4px !important;
+  min-height: 26px !important;
+  padding: 4px 6px !important;
+  border-radius: 0 !important;
+}
+
+.folder-sync-view .sync-settings span {
+  font-size: 11px !important;
+}
+
+.folder-sync-view .sync-settings input,
+.folder-sync-view .sync-settings select {
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 6px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.folder-sync-view .sync-setting-actions {
+  gap: 4px !important;
+}
+
+.folder-sync-view .sync-setting-actions .n-button,
+.folder-sync-view .sync-setting-actions button {
+  --n-height: 22px !important;
+  --n-padding: 0 8px !important;
+  --n-font-size: 11px !important;
+
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 8px !important;
+  font-size: 11px !important;
+}
+
+.folder-sync-view .path-side-footer {
+  min-height: 11px !important;
+  margin-top: 1px !important;
+  font-size: 10px !important;
+  line-height: 11px !important;
+}
+
+.folder-sync-view .sync-preview,
+.folder-sync-view .sync-run-status,
+.folder-sync-view .sync-chrome-panel,
+.folder-sync-view .folder-sync-peek-panel {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border-radius: 0 !important;
+}
+
+.folder-sync-view .sync-preview-row span,
+.folder-sync-view .sync-preview-row strong {
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+}
+
+.folder-sync-view .sync-preview-row select,
+.folder-sync-view .sync-reset-override {
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 6px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.folder-sync-view .folder-filter-chrome {
+  min-height: 36px !important;
+  padding: 1px 0 !important;
+}
+
+/* Folder Merge chrome densify toward Folder Compare path/filters/actions/status */
+.folder-merge-view .merge-paths {
+  gap: 4px !important;
+  min-height: 26px !important;
+  padding: 4px 6px !important;
+  border-radius: 0 !important;
+}
+
+.folder-merge-view .merge-paths label span {
+  font-size: 11px !important;
+}
+
+.folder-merge-view .merge-paths input {
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 6px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.folder-merge-view .merge-path-footer {
+  min-height: 11px !important;
+  margin-top: 1px !important;
+  font-size: 10px !important;
+  line-height: 11px !important;
+}
+
+.folder-merge-view .merge-actions {
+  gap: 4px !important;
+}
+
+.folder-merge-view .merge-actions .n-button,
+.folder-merge-view .merge-actions button,
+.folder-merge-view .merge-chrome-panel button {
+  --n-height: 22px !important;
+  --n-padding: 0 8px !important;
+  --n-font-size: 11px !important;
+
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 8px !important;
+  font-size: 11px !important;
+}
+
+.folder-merge-view .merge-plan,
+.folder-merge-view .conflict-panel,
+.folder-merge-view .merge-open-status,
+.folder-merge-view .merge-chrome-panel,
+.folder-merge-view .folder-merge-peek-panel {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border-radius: 0 !important;
+}
+
+.folder-merge-view .merge-plan-row span,
+.folder-merge-view .merge-plan-row strong {
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+}
+
+.folder-merge-view .folder-filter-chrome {
+  min-height: 36px !important;
+  padding: 1px 0 !important;
 }

@@ -1399,10 +1399,11 @@ h1 {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 180px auto;
   align-items: end;
-  gap: 6px;
-  padding: 6px 8px;
+  gap: 4px;
+  min-height: 26px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1414,7 +1415,7 @@ h1 {
 
 .sync-settings span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .sync-settings input,
@@ -1431,16 +1432,16 @@ h1 {
 
 .sync-setting-actions {
   display: flex;
-  gap: 8px;
+  gap: 4px;
 }
 
 .sync-preview,
 .sync-run-status {
   display: grid;
-  gap: 8px;
-  padding: 10px;
+  gap: 4px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1463,7 +1464,7 @@ h1 {
   display: grid;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .sync-preview-row {
@@ -1491,10 +1492,11 @@ h1 {
 }
 
 .sync-reset-override {
-  min-height: 26px;
-  padding: 0 8px;
+  height: 22px;
+  min-height: 22px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -1514,11 +1516,13 @@ h1 {
 
 .sync-preview-row select {
   width: 100%;
-  height: 26px;
+  height: 22px;
+  min-height: 22px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
+  font-size: 11px;
 }
 
 .sr-only {
@@ -1536,7 +1540,7 @@ h1 {
 .sync-preview-row span,
 .sync-preview-row strong {
   min-width: 0;
-  padding: 8px 10px;
+  padding: 4px 8px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   text-overflow: ellipsis;
@@ -1618,10 +1622,10 @@ h1 {
 
 .folder-sync-peek-panel {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 4px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1651,6 +1655,7 @@ h1 {
 .folder-filter-chrome {
   align-items: center;
   min-height: 36px;
+  padding: 1px 0;
 }
 
 .folder-filter-strip {

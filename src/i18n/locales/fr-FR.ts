@@ -346,6 +346,9 @@ export const frFR: LanguagePack = {
     'ui.saveSession': 'Enregistrer la session',
     'ui.saveSessionAs': 'Enregistrer la session sous...',
     'ui.clearSession': 'Effacer la session',
+    'ui.locked': 'Verrouillé',
+    'ui.browseForFolder': 'Parcourir les dossiers',
+    'ui.upOneLevel': 'Niveau supérieur',
     'ui.swapSides': 'Intervertir les côtés',
     'ui.savedSessions': 'Séances enregistrées',
     'ui.saveOutput': 'Enregistrer la sortie',
@@ -1069,6 +1072,8 @@ export const frFR: LanguagePack = {
     'ui.showGotoInToolbar': 'Afficher Aller à la ligne sur les barres texte',
     'ui.showWrapInToolbar': 'Afficher Retour à la ligne sur les barres texte',
     'ui.showSyncNowInToolbar': 'Afficher Synchroniser maintenant sur les barres Sync dossier',
+    'ui.showSyncCancelAcceptInToolbar':
+      'Afficher Annuler/Accepter sur les barres Synchronisation de dossiers',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
       "Lorsque c'est activé, les enregistrements par écrasement créent un .bak à côté du fichier et conservent les N dernières copies numérotées (.bak, .bak2, …). Désactivez pour écrire sans sauvegarde.",

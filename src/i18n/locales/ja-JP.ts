@@ -413,6 +413,9 @@ export const jaJP: LanguagePack = {
     'ui.saveSession': 'Save Session',
     'ui.saveSessionAs': 'Save Session As...',
     'ui.clearSession': 'Clear Session',
+    'ui.locked': 'Locked',
+    'ui.browseForFolder': 'Browse for Folder',
+    'ui.upOneLevel': 'Up One Level',
     'ui.swapSides': 'Swap Sides',
     'ui.savedSessions': 'Saved Sessions',
     'ui.saveOutput': 'Save Output',
@@ -1049,6 +1052,7 @@ export const jaJP: LanguagePack = {
     'ui.showGotoInToolbar': 'テキストツールバーに行へ移動を表示',
     'ui.showWrapInToolbar': 'テキストツールバーに折り返しを表示',
     'ui.showSyncNowInToolbar': 'フォルダー同期ツールバーに今すぐ同期を表示',
+    'ui.showSyncCancelAcceptInToolbar': 'フォルダー同期ツールバーにキャンセル/受け入れを表示',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
       '有効にすると、上書き保存時にファイル横へ .bak を作り、番号付きバックアップを最大 N 件保持します（.bak、.bak2…）。オフにするとバックアップなしで書き込みます。',

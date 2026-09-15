@@ -414,6 +414,9 @@ export const enUS: LanguagePack = {
     'ui.saveSession': 'Save Session',
     'ui.saveSessionAs': 'Save Session As...',
     'ui.clearSession': 'Clear Session',
+    'ui.locked': 'Locked',
+    'ui.browseForFolder': 'Browse for Folder',
+    'ui.upOneLevel': 'Up One Level',
     'ui.swapSides': 'Swap Sides',
     'ui.savedSessions': 'Saved Sessions',
     'ui.saveOutput': 'Save Output',
@@ -1050,6 +1053,7 @@ export const enUS: LanguagePack = {
     'ui.showGotoInToolbar': 'Show Go To Line on text toolbars',
     'ui.showWrapInToolbar': 'Show Wrap on text toolbars',
     'ui.showSyncNowInToolbar': 'Show Sync Now on Folder Sync toolbars',
+    'ui.showSyncCancelAcceptInToolbar': 'Show Cancel/Accept on Folder Sync toolbars',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
       'When enabled, overwrite saves create a .bak beside the file and keep the last N numbered copies (.bak, .bak2, …). Turn off to write without a backup.',

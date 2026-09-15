@@ -328,6 +328,9 @@ export const zhTW: LanguagePack = {
     'ui.saveSession': '儲存工作階段',
     'ui.saveSessionAs': '工作階段另存為...',
     'ui.clearSession': '清除工作階段',
+    'ui.locked': '鎖定',
+    'ui.browseForFolder': '瀏覽資料夾',
+    'ui.upOneLevel': '上一層',
     'ui.swapSides': '交換兩側',
     'ui.savedSessions': '已儲存工作階段',
     'ui.saveOutput': '儲存輸出',
@@ -1019,6 +1022,7 @@ export const zhTW: LanguagePack = {
     'ui.showGotoInToolbar': '在文字工具列顯示「移至行」',
     'ui.showWrapInToolbar': '在文字工具列顯示「換行」',
     'ui.showSyncNowInToolbar': '在資料夾同步工具列顯示「立即同步」',
+    'ui.showSyncCancelAcceptInToolbar': '在資料夾同步工具列顯示「取消/接受」',
     'ui.createBackupOnSave': '覆寫儲存時優先建立備份檔',
     'ui.backupHint':
       '啟用時，覆寫儲存會在檔案旁建立 .bak，並保留最近 N 份編號備份（.bak、.bak2…）。關閉則不建立備份。',

@@ -234,6 +234,7 @@ describe('useSettingsStore', () => {
     expect(store.showGotoInToolbar).toBe(false)
     expect(store.showWrapInToolbar).toBe(false)
     expect(store.showSyncNowInToolbar).toBe(false)
+    expect(store.showSyncCancelAcceptInToolbar).toBe(false)
 
     store.setShowSessionToolbars(false)
     store.setShowToolbarLabels(false)
@@ -244,6 +245,7 @@ describe('useSettingsStore', () => {
     store.setShowGotoInToolbar(true)
     store.setShowWrapInToolbar(true)
     store.setShowSyncNowInToolbar(true)
+    store.setShowSyncCancelAcceptInToolbar(true)
 
     expect(localStorage.getItem('open-diff-show-session-toolbars')).toBe('0')
     expect(localStorage.getItem('open-diff-show-toolbar-labels')).toBe('0')
@@ -254,6 +256,7 @@ describe('useSettingsStore', () => {
     expect(localStorage.getItem('open-diff-show-goto-in-toolbar')).toBe('1')
     expect(localStorage.getItem('open-diff-show-wrap-in-toolbar')).toBe('1')
     expect(localStorage.getItem('open-diff-show-sync-now-in-toolbar')).toBe('1')
+    expect(localStorage.getItem('open-diff-show-sync-cancel-accept-in-toolbar')).toBe('1')
   })
 
   it('persists status bar and path bar appearance chrome', () => {

@@ -70,6 +70,10 @@ const toolbarItems = computed(() => {
         return settings.showSyncNowInToolbar
       }
 
+      if (command.id === 'cancel' || command.id === 'accept') {
+        return settings.showSyncCancelAcceptInToolbar
+      }
+
       return true
     })
     .map((command) => {

@@ -86,6 +86,7 @@ describe('FolderSyncView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     useSettingsStore().setShowSyncNowInToolbar(true)
+    useSettingsStore().setShowSyncCancelAcceptInToolbar(true)
     vi.clearAllMocks()
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
@@ -228,6 +229,31 @@ describe('FolderSyncView', () => {
       strategy: 'updateBoth',
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
+  })
+
+  it('hides Sync Cancel/Accept on the session toolbar by default', () => {
+    useSettingsStore().setShowSyncNowInToolbar(false)
+    useSettingsStore().setShowSyncCancelAcceptInToolbar(false)
+
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.find('[data-testid="folder-sync-session-toolbar-cancel"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="folder-sync-session-toolbar-accept"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="folder-sync-session-toolbar-sync-now"]').exists()).toBe(
+      false,
+    )
+    expect(wrapper.find('[data-testid="folder-sync-cancel"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-sync-accept"]').exists()).toBe(true)
   })
 
   it('exposes Expand/Collapse/Select/Filters/Home session toolbar chrome', async () => {

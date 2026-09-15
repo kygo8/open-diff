@@ -36,6 +36,7 @@ const sample: SettingsPackage = {
   showGotoInToolbar: false,
   showWrapInToolbar: false,
   showSyncNowInToolbar: false,
+  showSyncCancelAcceptInToolbar: false,
   showStatusBar: true,
   showPathBars: true,
 }

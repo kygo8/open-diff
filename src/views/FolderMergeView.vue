@@ -29,6 +29,8 @@ import { collectExpandablePrefixes, isPathHiddenByCollapse } from '@/app/folderP
 import { buildFolderMergeToolbar, mergeSessionTitle, pathBaseName } from '@/app/sessionToolbars'
 import { useI18n } from '@/i18n'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { parentDirectoryPath } from '@/app/parentDirectoryPath'
+import { pickNativePath } from '@/app/filePicker'
 
 const leftPath = ref('')
 const basePath = ref('')
@@ -571,6 +573,34 @@ watch(
   { immediate: true },
 )
 
+async function browseMergeFolder(): Promise<void> {
+  const selected = await pickNativePath({ directory: true })
+
+  if (!selected) {
+    return
+  }
+
+  leftPath.value = selected
+}
+
+function upOneMergeLevel(): void {
+  const nextLeft = parentDirectoryPath(leftPath.value)
+  const nextBase = parentDirectoryPath(basePath.value)
+  const nextRight = parentDirectoryPath(rightPath.value)
+
+  if (nextLeft) {
+    leftPath.value = nextLeft
+  }
+
+  if (nextBase) {
+    basePath.value = nextBase
+  }
+
+  if (nextRight) {
+    rightPath.value = nextRight
+  }
+}
+
 watch(
   () => [viewActions.sequence, viewActions.name] as const,
   ([, actionName]) => {
@@ -598,6 +628,13 @@ watch(
       case 'collapse-all':
         collapseAllMergePaths()
         break
+      case 'browse-folder':
+        void browseMergeFolder()
+        break
+      case 'up-one-level':
+        upOneMergeLevel()
+        break
+      case 'toggle-session-locked':
       case 'about':
       case 'check-for-updates':
       case 'close-tab':

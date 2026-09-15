@@ -350,6 +350,9 @@ export const deDE: LanguagePack = {
     'ui.saveSession': 'Sitzung speichern',
     'ui.saveSessionAs': 'Sitzung speichern unter...',
     'ui.clearSession': 'Sitzung leeren',
+    'ui.locked': 'Gesperrt',
+    'ui.browseForFolder': 'Ordner durchsuchen',
+    'ui.upOneLevel': 'Eine Ebene höher',
     'ui.swapSides': 'Seiten tauschen',
     'ui.savedSessions': 'Gespeicherte Sitzungen',
     'ui.saveOutput': 'Ausgabe speichern',
@@ -1069,6 +1072,8 @@ export const deDE: LanguagePack = {
     'ui.showGotoInToolbar': 'Gehe zu Zeile in Text-Symbolleisten anzeigen',
     'ui.showWrapInToolbar': 'Umbruch in Text-Symbolleisten anzeigen',
     'ui.showSyncNowInToolbar': 'Jetzt synchronisieren in Ordner-Sync-Symbolleisten anzeigen',
+    'ui.showSyncCancelAcceptInToolbar':
+      'Abbrechen/Übernehmen in Ordner-Sync-Symbolleisten anzeigen',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
       'Wenn aktiviert, erzeugen Überschreibspeicherungen eine .bak neben der Datei und behalten die letzten N nummerierten Kopien (.bak, .bak2, …). Deaktivieren, um ohne Sicherung zu schreiben.',

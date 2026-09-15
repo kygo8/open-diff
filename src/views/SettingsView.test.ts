@@ -355,6 +355,7 @@ describe('SettingsView', () => {
     expect(settings.showGotoInToolbar).toBe(false)
     expect(settings.showWrapInToolbar).toBe(false)
     expect(settings.showSyncNowInToolbar).toBe(false)
+    expect(settings.showSyncCancelAcceptInToolbar).toBe(false)
     await wrapper.find('[data-testid="show-sessions-in-toolbar"]').setValue(true)
     expect(settings.showSessionsInToolbar).toBe(true)
     await wrapper.find('[data-testid="show-goto-in-toolbar"]').setValue(true)
@@ -363,6 +364,8 @@ describe('SettingsView', () => {
     expect(settings.showWrapInToolbar).toBe(true)
     await wrapper.find('[data-testid="show-sync-now-in-toolbar"]').setValue(true)
     expect(settings.showSyncNowInToolbar).toBe(true)
+    await wrapper.find('[data-testid="show-sync-cancel-accept-in-toolbar"]').setValue(true)
+    expect(settings.showSyncCancelAcceptInToolbar).toBe(true)
 
     await wrapper.find('[data-testid="options-section-confirmations"]').trigger('click')
     expect(wrapper.find('[data-testid="options-confirmations-card"]').isVisible()).toBe(true)

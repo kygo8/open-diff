@@ -337,6 +337,9 @@ export const koKR: LanguagePack = {
     'ui.saveSession': '세션 저장',
     'ui.saveSessionAs': '다른 이름으로 세션 저장...',
     'ui.clearSession': '세션 지우기',
+    'ui.locked': '잠금',
+    'ui.browseForFolder': '폴더 찾아보기',
+    'ui.upOneLevel': '한 수준 위로',
     'ui.swapSides': '양쪽 바꾸기',
     'ui.savedSessions': '저장된 세션',
     'ui.saveOutput': '출력 저장',
@@ -1041,6 +1044,7 @@ export const koKR: LanguagePack = {
     'ui.showGotoInToolbar': '텍스트 도구 모음에 줄로 이동 표시',
     'ui.showWrapInToolbar': '텍스트 도구 모음에 줄 바꿈 표시',
     'ui.showSyncNowInToolbar': '폴더 동기화 도구 모음에 지금 동기화 표시',
+    'ui.showSyncCancelAcceptInToolbar': '폴더 동기화 도구 모음에 취소/수락 표시',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
       '사용 시 덮어쓰기 저장은 파일 옆에 .bak을 만들고 번호가 매겨진 백업을 최대 N개 유지합니다(.bak, .bak2…). 끄면 백업 없이 저장합니다.',

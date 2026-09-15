@@ -682,6 +682,9 @@ watch(
       case 'collapse-all':
       case 'expand-all':
       case 'sync-now':
+      case 'browse-folder':
+      case 'up-one-level':
+      case 'toggle-session-locked':
       case 'toggle-minor':
       case 'workspace-save':
       case 'run-script':

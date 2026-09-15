@@ -50,6 +50,7 @@ import {
 import { useStatusBarStore } from '@/stores/statusBar'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { defaultTextCompareSessionOptions } from '@/app/textCompareSessionOptions'
 import { buildFolderCompareToolbar, pathBaseName, pathPairTitle } from '@/app/sessionToolbars'
 import {
@@ -646,6 +647,12 @@ watch(
       case 'collapse-all':
         collapseAllFolders()
         break
+      case 'browse-folder':
+        void browseFolder('left')
+        break
+      case 'up-one-level':
+        upOneFolderLevel()
+        break
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
@@ -669,6 +676,7 @@ watch(
       case 'next-conflict':
       case 'previous-conflict':
       case 'sync-now':
+      case 'toggle-session-locked':
       case 'workspace-save':
       case 'run-script':
       case 'save-report':
@@ -1932,6 +1940,19 @@ async function browseFolder(side: 'left' | 'right'): Promise<void> {
     leftRoot.value = selected
   } else {
     rightRoot.value = selected
+  }
+}
+
+function upOneFolderLevel(): void {
+  const nextLeft = parentDirectoryPath(leftRoot.value)
+  const nextRight = parentDirectoryPath(rightRoot.value)
+
+  if (nextLeft) {
+    leftRoot.value = nextLeft
+  }
+
+  if (nextRight) {
+    rightRoot.value = nextRight
   }
 }
 

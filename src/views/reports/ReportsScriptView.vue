@@ -245,6 +245,9 @@ watch(
       case 'show-differences':
       case 'swap':
       case 'sync-now':
+      case 'browse-folder':
+      case 'up-one-level':
+      case 'toggle-session-locked':
       case 'toggle-minor':
       case 'undo':
       case 'workspace-load':

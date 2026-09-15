@@ -2,8 +2,11 @@ import { afterEach, describe, expect, it } from 'vitest'
 import {
   deleteLocalRemoteProfile,
   loadLocalRemoteProfiles,
+  loadRemoteProfileDefaults,
+  remoteProfileDefaultsStorageKey,
   remoteProfilesStorageKey,
   saveLocalRemoteProfiles,
+  saveRemoteProfileDefaults,
   upsertLocalRemoteProfile,
 } from './remoteProfilesLocal'
 
@@ -59,5 +62,25 @@ describe('remoteProfilesLocal', () => {
     expect(updated[0]?.name).toBe('A2')
     expect(deleteLocalRemoteProfile(updated, 'a')).toEqual([])
     expect(loadLocalRemoteProfiles()).toEqual([])
+  })
+})
+
+describe('remoteProfileDefaults', () => {
+  afterEach(() => {
+    localStorage.removeItem(remoteProfileDefaultsStorageKey)
+  })
+
+  it('persists default name, protocol, and root path', () => {
+    saveRemoteProfileDefaults({
+      defaultName: 'Lab Profile',
+      defaultProtocol: 'ftps',
+      defaultRootPath: '/srv',
+    })
+
+    expect(loadRemoteProfileDefaults()).toEqual({
+      defaultName: 'Lab Profile',
+      defaultProtocol: 'ftps',
+      defaultRootPath: '/srv',
+    })
   })
 })

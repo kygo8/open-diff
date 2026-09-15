@@ -86,7 +86,7 @@ describe('SettingsView', () => {
   it('opens the remote profile management route', async () => {
     const wrapper = mountSettingsView()
 
-    await wrapper.find('[data-testid="options-section-formats"]').trigger('click')
+    await wrapper.find('[data-testid="options-section-profiles"]').trigger('click')
     await wrapper.find('[data-testid="open-remote-profiles"]').trigger('click')
 
     expect(push).toHaveBeenCalledWith('/settings/remote-profiles')
@@ -471,6 +471,66 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
     include: ['*.bin', '*.dat'],
     exclude: ['*.tmp'],
     caseSensitive: true,
+  })
+})
+
+it('persists Formats associations, Profiles defaults, Reports prefs, and Picture defaults', async () => {
+  const wrapper = mountSettingsView()
+
+  await wrapper.find('[data-testid="options-section-formats"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-formats-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="format-association-images"]').setValue(false)
+
+  const formats = JSON.parse(localStorage.getItem('open-diff-file-formats') ?? '[]') as {
+    id: string
+    enabled?: boolean
+  }[]
+
+  expect(formats.find((item) => item.id === 'images')).toMatchObject({ enabled: false })
+
+  await wrapper.find('[data-testid="options-section-profiles"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-profiles-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="profile-default-name"]').setValue('Stage Box')
+  await wrapper.find('[data-testid="profile-default-name"]').trigger('change')
+  await wrapper.find('[data-testid="profile-default-protocol"]').setValue('ftps')
+  await wrapper.find('[data-testid="profile-default-protocol"]').trigger('change')
+  await wrapper.find('[data-testid="profile-default-root-path"]').setValue('/data')
+  await wrapper.find('[data-testid="profile-default-root-path"]').trigger('change')
+  expect(
+    JSON.parse(localStorage.getItem('open-diff-remote-profile-defaults') ?? '{}'),
+  ).toMatchObject({
+    defaultName: 'Stage Box',
+    defaultProtocol: 'ftps',
+    defaultRootPath: '/data',
+  })
+
+  await wrapper.find('[data-testid="options-section-reports"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-reports-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="report-default-format"]').setValue('markdown')
+  await wrapper.find('[data-testid="report-default-format"]').trigger('change')
+  await wrapper.find('[data-testid="report-default-kind"]').setValue('folder')
+  await wrapper.find('[data-testid="report-default-kind"]').trigger('change')
+  expect(JSON.parse(localStorage.getItem('open-diff-report-preferences') ?? '{}')).toMatchObject({
+    defaultFormat: 'markdown',
+    defaultKind: 'folder',
+  })
+  await wrapper.find('[data-testid="open-reports-scripts"]').trigger('click')
+  expect(push).toHaveBeenCalledWith('/reports/scripts')
+
+  await wrapper.find('[data-testid="options-section-pictureCompare"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-picture-compare-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="picture-rgb-tolerance-default"]').setValue('12')
+  await wrapper.find('[data-testid="picture-rgb-tolerance-default"]').trigger('change')
+  await wrapper.find('[data-testid="picture-compare-alpha-default"]').setValue(false)
+  await wrapper.find('[data-testid="picture-show-meta-default"]').setValue(false)
+  await wrapper.find('[data-testid="picture-show-minor-default"]').setValue(true)
+  expect(
+    JSON.parse(localStorage.getItem('open-diff-picture-compare-options') ?? '{}'),
+  ).toMatchObject({
+    rgbTolerance: 12,
+    compareAlpha: false,
+    showMeta: false,
+    showMinor: true,
   })
 })
 

@@ -26,8 +26,6 @@ describe('text compare chrome density', () => {
     expect(diffPanel).toMatch(/\.diff-header\s*\{[\s\S]*?height:\s*22px/)
     expect(diffPanel).toMatch(/\.gutter\s*\{[\s\S]*?padding:\s*1px 6px/)
 
-    expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='text-session'\](?:,\s*\.status-bar\[data-chrome-kind='hex-session'\])?\s*\{[\s\S]*?height:\s*22px/,
-    )
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*22px/)
   })
 })

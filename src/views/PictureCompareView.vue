@@ -605,6 +605,7 @@ watchEffect(() => {
     filterStatus: t('status.allRows'),
     source: 'picture-compare',
     loadTimeSeconds: compared.value ? loadTimeSeconds.value : null,
+    chromeKind: 'picture-session',
   })
 })
 
@@ -1277,9 +1278,9 @@ async function runPictureCompare(): Promise<void> {
 <style scoped>
 .picture-compare-view {
   display: grid;
-  gap: 14px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 4px 6px;
   overflow: auto;
 }
 
@@ -1336,8 +1337,8 @@ h2 {
 .picture-path-panel,
 .picture-stat-grid {
   display: grid;
-  gap: 10px;
-  padding: 10px;
+  gap: 4px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
   border-radius: 8px;
   background: var(--app-surface);
@@ -1418,10 +1419,11 @@ h2 {
   grid-template-columns:
     repeat(3, minmax(140px, 1fr)) auto minmax(260px, auto) minmax(180px, auto)
     minmax(180px, auto);
-  gap: 10px;
-  padding: 10px;
+  gap: 4px 6px;
+  min-height: 26px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1451,8 +1453,8 @@ h2 {
 
 .picture-options-panel {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 4px 6px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
   border-radius: 10px;
   background: var(--app-surface);
@@ -1491,21 +1493,22 @@ h2 {
 
 .picture-options-panel input[type='number'] {
   width: 100%;
-  min-width: 0;
-  min-height: 32px;
-  padding: 0 8px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .picture-options-panel button {
   width: fit-content;
-  min-height: 32px;
-  padding: 0 12px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 6px;
   background: var(--app-bg);
@@ -1796,8 +1799,9 @@ h2 {
 
 .picture-blend-panel {
   display: grid;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 4px 6px;
+  min-height: 26px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
   border-radius: 8px;
   background: var(--app-surface);
@@ -1834,16 +1838,19 @@ h2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column: 1 / -1;
-  gap: 8px;
+  gap: 1px;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 0;
+  padding: 0 2px;
 }
 
 .path-side-footer {
-  min-height: 18px;
+  min-height: 10px;
+  margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

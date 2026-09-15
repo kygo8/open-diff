@@ -80,3 +80,78 @@ export function reportFileExtension(format: ReportExportFormat): string {
 
   return format
 }
+
+export const reportPreferencesStorageKey = 'open-diff-report-preferences'
+
+export type ReportPreferenceFormat =
+  'html' | 'html-side-by-side' | 'text' | 'json' | 'csv' | 'markdown' | 'xml'
+
+export type ReportPreferenceKind = 'text' | 'folder'
+
+export interface ReportPreferences {
+  defaultFormat: ReportPreferenceFormat
+  defaultKind: ReportPreferenceKind
+}
+
+const reportPreferenceFormats: readonly ReportPreferenceFormat[] = [
+  'html',
+  'html-side-by-side',
+  'text',
+  'json',
+  'csv',
+  'markdown',
+  'xml',
+]
+
+export function defaultReportPreferences(): ReportPreferences {
+  return {
+    defaultFormat: 'html',
+    defaultKind: 'text',
+  }
+}
+
+export function normalizeReportPreferenceFormat(value: unknown): ReportPreferenceFormat {
+  if (typeof value === 'string' && (reportPreferenceFormats as readonly string[]).includes(value)) {
+    return value as ReportPreferenceFormat
+  }
+
+  return 'html'
+}
+
+export function normalizeReportPreferenceKind(value: unknown): ReportPreferenceKind {
+  return value === 'folder' ? 'folder' : 'text'
+}
+
+export function loadReportPreferences(
+  storage: Pick<Storage, 'getItem'> = localStorage,
+): ReportPreferences {
+  try {
+    const raw = storage.getItem(reportPreferencesStorageKey)
+
+    if (!raw) {
+      return defaultReportPreferences()
+    }
+
+    const parsed = JSON.parse(raw) as Partial<ReportPreferences>
+
+    return {
+      defaultFormat: normalizeReportPreferenceFormat(parsed.defaultFormat),
+      defaultKind: normalizeReportPreferenceKind(parsed.defaultKind),
+    }
+  } catch {
+    return defaultReportPreferences()
+  }
+}
+
+export function saveReportPreferences(
+  prefs: ReportPreferences,
+  storage: Pick<Storage, 'setItem'> = localStorage,
+): void {
+  storage.setItem(reportPreferencesStorageKey, JSON.stringify(prefs))
+}
+
+export function clearRecentReportExports(
+  storage: Pick<Storage, 'removeItem'> = localStorage,
+): void {
+  storage.removeItem(reportExportsStorageKey)
+}

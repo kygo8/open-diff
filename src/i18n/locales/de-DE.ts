@@ -1140,6 +1140,33 @@ export const deDE: LanguagePack = {
     'ui.fileFiltersIncludePlaceholder': '*.*;*.txt (leer = alle)',
     'ui.fileFiltersHint':
       'Standard-Namensfilter für Ordnervergleich/-sync/-merge. Filterleiste und Sitzungseinstellungen können überschreiben.',
+    'ui.formatAssociations': 'Formatzuordnungen',
+    'ui.formatAssociationsHint':
+      'Integrierte Zuordnungen beim Öffnen nach Dateierweiterung aktivieren oder deaktivieren.',
+    'ui.profileDefaultName': 'Standard-Profilname',
+    'ui.profileDefaultProtocol': 'Standardprotokoll',
+    'ui.profileDefaultRootPath': 'Standard-Stammverzeichnis',
+    'ui.profileDefaultsHint':
+      'Gilt beim Erstellen eines neuen Remote-Profils. Gespeicherte Profile im Profilfenster verwalten.',
+    'ui.reportDefaultFormat': 'Standard-Berichtsformat',
+    'ui.reportDefaultKind': 'Standard-Berichtsart',
+    'ui.reportClearHistoryOnExit': 'Berichtverlauf beim Beenden löschen (Desktop)',
+    'ui.clearReportHistory': 'Berichtverlauf löschen',
+    'ui.openReportsScripts': 'Berichte / Skripte öffnen',
+    'ui.reportPreferencesHint':
+      'Standards für Berichte / Skripte. Sitzungsberichte wählen weiterhin ihren eigenen Ausgabepfad.',
+    'ui.reportHistoryCleared': 'Berichtverlauf gelöscht',
+    'ui.reportFormatHtml': 'HTML',
+    'ui.reportFormatHtmlSideBySide': 'HTML nebeneinander',
+    'ui.reportFormatText': 'Text',
+    'ui.reportFormatJson': 'JSON',
+    'ui.reportFormatCsv': 'CSV',
+    'ui.reportFormatMarkdown': 'Markdown',
+    'ui.reportFormatXml': 'XML',
+    'ui.pictureCompareOptionsHint':
+      'Standard-Toleranz und Panel-Sichtbarkeit für neue Bildvergleiche.',
+    'ui.pictureShowMetaDefault': 'Meta-Panel standardmäßig anzeigen',
+    'ui.pictureShowMinorDefault': 'Unwichtige Unterschiede standardmäßig anzeigen',
     'ui.startup': 'Start',
     'ui.loadLastWorkspaceOnStartup': 'Letzten Arbeitsbereich beim Start laden',
     'ui.startupHint':

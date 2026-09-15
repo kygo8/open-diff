@@ -22,6 +22,24 @@ export interface FileFormatDefinition {
   defaultView: FileFormatViewMode
   matcher: FileFormatMatcher
   rules: FileFormatRuleRefs
+  /** When false, association is skipped by matchFileFormat / session routing. */
+  enabled?: boolean
+}
+
+/** Built-in format ids surfaced as association toggles in Options → Formats. */
+export const optionsFormatAssociationIds = [
+  'images',
+  'media',
+  'source-code',
+  'csv',
+  'registry',
+  'version',
+] as const
+
+export type OptionsFormatAssociationId = (typeof optionsFormatAssociationIds)[number]
+
+export function isFileFormatEnabled(format: FileFormatDefinition): boolean {
+  return format.enabled !== false
 }
 
 export const fileFormatsStorageKey = 'open-diff-file-formats'
@@ -237,6 +255,18 @@ export function saveFileFormats(formats: FileFormatDefinition[]): void {
   localStorage.setItem(fileFormatsStorageKey, JSON.stringify(formats))
 }
 
+export function setFileFormatEnabled(
+  formats: FileFormatDefinition[],
+  id: string,
+  enabled: boolean,
+): FileFormatDefinition[] {
+  const next = formats.map((format) => (format.id === id ? { ...format, enabled } : format))
+
+  saveFileFormats(next)
+
+  return next
+}
+
 export function matchFileFormat(
   path: string,
   formats: FileFormatDefinition[] = loadFileFormats(),
@@ -245,6 +275,7 @@ export function matchFileFormat(
   const extension = extensionOf(path)
 
   return [...formats]
+    .filter(isFileFormatEnabled)
     .sort((left, right) => right.priority - left.priority || left.name.localeCompare(right.name))
     .find((format) => {
       if (extension && format.matcher.extensions.includes(extension)) {
@@ -324,6 +355,7 @@ function isFileFormatDefinition(value: unknown): value is FileFormatDefinition {
 function cloneFormats(formats: FileFormatDefinition[]): FileFormatDefinition[] {
   return formats.map((format) => ({
     ...format,
+    enabled: format.enabled !== false,
     matcher: {
       extensions: [...format.matcher.extensions],
       fileNames: [...format.matcher.fileNames],

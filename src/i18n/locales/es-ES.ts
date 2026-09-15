@@ -1138,6 +1138,33 @@ export const esES: LanguagePack = {
     'ui.fileFiltersIncludePlaceholder': '*.*;*.txt (vacío = todos)',
     'ui.fileFiltersHint':
       'Filtros de nombre predeterminados para Comparar/Sincronizar/Combinar carpetas. La barra Filtros y la configuración de sesión pueden anularlos.',
+    'ui.formatAssociations': 'Asociaciones de formato',
+    'ui.formatAssociationsHint':
+      'Activar o desactivar asociaciones integradas al abrir por extensión.',
+    'ui.profileDefaultName': 'Nombre de perfil predeterminado',
+    'ui.profileDefaultProtocol': 'Protocolo predeterminado',
+    'ui.profileDefaultRootPath': 'Ruta raíz predeterminada',
+    'ui.profileDefaultsHint':
+      'Se aplica al crear un perfil remoto. Gestione los perfiles guardados en la ventana Perfiles.',
+    'ui.reportDefaultFormat': 'Formato de informe predeterminado',
+    'ui.reportDefaultKind': 'Tipo de informe predeterminado',
+    'ui.reportClearHistoryOnExit': 'Borrar historial de informes al salir (escritorio)',
+    'ui.clearReportHistory': 'Borrar historial de informes',
+    'ui.openReportsScripts': 'Abrir Informes / Scripts',
+    'ui.reportPreferencesHint':
+      'Valores predeterminados de Informes / Scripts. Los informes de sesión aún eligen su ruta de salida.',
+    'ui.reportHistoryCleared': 'Historial de informes borrado',
+    'ui.reportFormatHtml': 'HTML',
+    'ui.reportFormatHtmlSideBySide': 'HTML en paralelo',
+    'ui.reportFormatText': 'Texto',
+    'ui.reportFormatJson': 'JSON',
+    'ui.reportFormatCsv': 'CSV',
+    'ui.reportFormatMarkdown': 'Markdown',
+    'ui.reportFormatXml': 'XML',
+    'ui.pictureCompareOptionsHint':
+      'Tolerancia y paneles predeterminados para nuevas sesiones de imagen.',
+    'ui.pictureShowMetaDefault': 'Mostrar panel Meta de forma predeterminada',
+    'ui.pictureShowMinorDefault': 'Mostrar diferencias menores de forma predeterminada',
     'ui.startup': 'Inicio',
     'ui.loadLastWorkspaceOnStartup': 'Cargar el último espacio de trabajo al iniciar',
     'ui.startupHint':

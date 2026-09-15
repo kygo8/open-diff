@@ -23,7 +23,14 @@ const routes = [
   ['reports scripts', '/reports/scripts'],
 ]
 
-const denseStatusRoutes = new Set(['text', 'text merge', 'registry', 'text patch', 'hex'])
+const denseStatusRoutes = new Set([
+  'text',
+  'text merge',
+  'registry',
+  'text patch',
+  'hex',
+  'picture',
+])
 
 for (const [name, route] of routes) {
   test(`${name} uses dense workbench shell`, async ({ page }) => {

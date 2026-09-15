@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
-import { comparePictureFiles, saveTextFile } from '@/api/diff'
+import { comparePictureFiles, pathFileStamp, saveTextFile } from '@/api/diff'
 import { buildPictureReportText, defaultPictureReportOutputPath } from '@/app/pictureReport'
 import { localFileSrc } from '@/app/localFileSrc'
-import type { PictureCompareResponse, PictureMetadataRow } from '@/types/diff'
+import type { FileStamp, PictureCompareResponse, PictureMetadataRow } from '@/types/diff'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
@@ -21,6 +21,7 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useI18n } from '@/i18n'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
@@ -43,6 +44,10 @@ const pixelPreview = ref<{
 const { t } = useI18n()
 const leftPath = ref('')
 const rightPath = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
+const leftPictureDimensions = ref('')
+const rightPictureDimensions = ref('')
 const sessionLaunch = useSessionLaunchStore()
 const tabs = useTabsStore()
 const router = useRouter()
@@ -498,9 +503,45 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
   }
 }
 
+const leftPathFooterLabel = computed(() =>
+  formatPicturePathFooter(leftFileStamp.value, leftPictureDimensions.value),
+)
+const rightPathFooterLabel = computed(() =>
+  formatPicturePathFooter(rightFileStamp.value, rightPictureDimensions.value),
+)
+
+function formatPicturePathFooter(stamp: FileStamp | null, dimensions: string): string {
+  if (!stamp) {
+    return ''
+  }
+
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+  const base = modified
+    ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
+    : t('status.bytes', { count: stamp.size })
+
+  if (!dimensions) {
+    return base
+  }
+
+  return t('status.pathFileMetadataWithDetail', { metadata: base, detail: dimensions })
+}
+
+async function refreshPicturePathStamps(): Promise<void> {
+  const [left, right] = await Promise.all([
+    leftPath.value ? pathFileStamp(leftPath.value).catch(() => null) : Promise.resolve(null),
+    rightPath.value ? pathFileStamp(rightPath.value).catch(() => null) : Promise.resolve(null),
+  ])
+
+  leftFileStamp.value = left
+  rightFileStamp.value = right
+}
+
 function applyPictureResult(result: PictureCompareResponse): void {
   leftPictureName.value = result.left.name
   rightPictureName.value = result.right.name
+  leftPictureDimensions.value = result.left.dimensions
+  rightPictureDimensions.value = result.right.dimensions
   metadataRows.value = result.metadataRows
   pictureStatistics.value = result.statistics
   syncPictureTabTitle()
@@ -574,6 +615,7 @@ async function runPictureCompare(): Promise<void> {
     applyPictureResult(result)
     compared.value = true
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
+    await refreshPicturePathStamps()
   } catch (event) {
     error.value = String(event)
   } finally {
@@ -629,6 +671,24 @@ async function runPictureCompare(): Promise<void> {
         >
           {{ $t('ui.runDiff') }}
         </button>
+
+        <div
+          class="bc-path-footers"
+          data-testid="picture-path-footers"
+        >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
+            data-testid="picture-left-path-footer"
+            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
+            data-testid="picture-right-path-footer"
+            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+        </div>
       </section>
       <p
         v-if="error"
@@ -1757,5 +1817,27 @@ h2 {
 
 .picture-diff-overlay-minor {
   opacity: 0.45;
+}
+
+.bc-path-footers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column: 1 / -1;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.path-side-footer {
+  min-height: 18px;
+  overflow: hidden;
+  color: var(--app-text-muted, #6b7280);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 </style>

@@ -75,6 +75,10 @@ const largeToolbarButtonsStorageKey = 'open-diff-large-toolbar-buttons'
 const createBackupOnSaveStorageKey = 'open-diff-create-backup-on-save'
 const showStatusBarStorageKey = 'open-diff-show-status-bar'
 const showPathBarsStorageKey = 'open-diff-show-path-bars'
+const showSidebarStorageKey = 'open-diff-show-sidebar'
+const showToolbarIconsStorageKey = 'open-diff-show-toolbar-icons'
+const confirmBeforeCloseDirtyTabStorageKey = 'open-diff-confirm-before-close-dirty-tab'
+const confirmBeforeOverwriteSaveStorageKey = 'open-diff-confirm-before-overwrite-save'
 const loadLastWorkspaceOnStartupStorageKey = 'open-diff-load-last-workspace-on-startup'
 const fontFamilyIds = new Set<FontFamilyId>(['system', 'segoe', 'inter', 'noto', 'mono'])
 const shortcutScopes = new Set<ShortcutScope>(['global', 'text-compare'])
@@ -112,6 +116,10 @@ export const useSettingsStore = defineStore('settings', () => {
   const createBackupOnSave = ref(loadCreateBackupOnSave())
   const showStatusBar = ref(loadShowStatusBar())
   const showPathBars = ref(loadShowPathBars())
+  const showSidebar = ref(loadShowSidebar())
+  const showToolbarIcons = ref(loadShowToolbarIcons())
+  const confirmBeforeCloseDirtyTab = ref(loadConfirmBeforeCloseDirtyTab())
+  const confirmBeforeOverwriteSave = ref(loadConfirmBeforeOverwriteSave())
   const loadLastWorkspaceOnStartup = ref(loadLoadLastWorkspaceOnStartup())
 
   bindSystemThemeListener((prefersDark) => {
@@ -288,6 +296,39 @@ export const useSettingsStore = defineStore('settings', () => {
     (value) => {
       localStorage.setItem(showPathBarsStorageKey, value ? '1' : '0')
       document.documentElement.dataset.showPathBars = value ? '1' : '0'
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showSidebar,
+    (value) => {
+      localStorage.setItem(showSidebarStorageKey, value ? '1' : '0')
+      document.documentElement.dataset.showSidebar = value ? '1' : '0'
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showToolbarIcons,
+    (value) => {
+      localStorage.setItem(showToolbarIconsStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    confirmBeforeCloseDirtyTab,
+    (value) => {
+      localStorage.setItem(confirmBeforeCloseDirtyTabStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    confirmBeforeOverwriteSave,
+    (value) => {
+      localStorage.setItem(confirmBeforeOverwriteSaveStorageKey, value ? '1' : '0')
     },
     { immediate: true, flush: 'sync' },
   )
@@ -474,6 +515,22 @@ export const useSettingsStore = defineStore('settings', () => {
     showPathBars.value = value
   }
 
+  function setShowSidebar(value: boolean): void {
+    showSidebar.value = value
+  }
+
+  function setShowToolbarIcons(value: boolean): void {
+    showToolbarIcons.value = value
+  }
+
+  function setConfirmBeforeCloseDirtyTab(value: boolean): void {
+    confirmBeforeCloseDirtyTab.value = value
+  }
+
+  function setConfirmBeforeOverwriteSave(value: boolean): void {
+    confirmBeforeOverwriteSave.value = value
+  }
+
   function setLoadLastWorkspaceOnStartup(value: boolean): void {
     loadLastWorkspaceOnStartup.value = value
   }
@@ -503,6 +560,10 @@ export const useSettingsStore = defineStore('settings', () => {
       createBackupOnSave: createBackupOnSave.value,
       showStatusBar: showStatusBar.value,
       showPathBars: showPathBars.value,
+      showSidebar: showSidebar.value,
+      showToolbarIcons: showToolbarIcons.value,
+      confirmBeforeCloseDirtyTab: confirmBeforeCloseDirtyTab.value,
+      confirmBeforeOverwriteSave: confirmBeforeOverwriteSave.value,
       loadLastWorkspaceOnStartup: loadLastWorkspaceOnStartup.value,
     }
   }
@@ -567,6 +628,20 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowPathBars(
       typeof packageValue.showPathBars === 'boolean' ? packageValue.showPathBars : true,
     )
+    setShowSidebar(typeof packageValue.showSidebar === 'boolean' ? packageValue.showSidebar : false)
+    setShowToolbarIcons(
+      typeof packageValue.showToolbarIcons === 'boolean' ? packageValue.showToolbarIcons : true,
+    )
+    setConfirmBeforeCloseDirtyTab(
+      typeof packageValue.confirmBeforeCloseDirtyTab === 'boolean'
+        ? packageValue.confirmBeforeCloseDirtyTab
+        : true,
+    )
+    setConfirmBeforeOverwriteSave(
+      typeof packageValue.confirmBeforeOverwriteSave === 'boolean'
+        ? packageValue.confirmBeforeOverwriteSave
+        : false,
+    )
     setLoadLastWorkspaceOnStartup(
       typeof packageValue.loadLastWorkspaceOnStartup === 'boolean'
         ? packageValue.loadLastWorkspaceOnStartup
@@ -598,6 +673,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setCreateBackupOnSave(false)
     setShowStatusBar(true)
     setShowPathBars(true)
+    setShowSidebar(false)
+    setShowToolbarIcons(true)
+    setConfirmBeforeCloseDirtyTab(true)
+    setConfirmBeforeOverwriteSave(false)
     setLoadLastWorkspaceOnStartup(false)
   }
 
@@ -624,6 +703,10 @@ export const useSettingsStore = defineStore('settings', () => {
     createBackupOnSave,
     showStatusBar,
     showPathBars,
+    showSidebar,
+    showToolbarIcons,
+    confirmBeforeCloseDirtyTab,
+    confirmBeforeOverwriteSave,
     loadLastWorkspaceOnStartup,
     toggleTheme,
     setTheme,
@@ -651,6 +734,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setCreateBackupOnSave,
     setShowStatusBar,
     setShowPathBars,
+    setShowSidebar,
+    setShowToolbarIcons,
+    setConfirmBeforeCloseDirtyTab,
+    setConfirmBeforeOverwriteSave,
     setLoadLastWorkspaceOnStartup,
     exportSettingsPackage,
     importSettingsPackage,
@@ -921,6 +1008,46 @@ function loadShowPathBars(): boolean {
   }
 
   return stored !== '0'
+}
+
+function loadShowSidebar(): boolean {
+  const stored = localStorage.getItem(showSidebarStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadShowToolbarIcons(): boolean {
+  const stored = localStorage.getItem(showToolbarIconsStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadConfirmBeforeCloseDirtyTab(): boolean {
+  const stored = localStorage.getItem(confirmBeforeCloseDirtyTabStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadConfirmBeforeOverwriteSave(): boolean {
+  const stored = localStorage.getItem(confirmBeforeOverwriteSaveStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
 }
 
 function loadLoadLastWorkspaceOnStartup(): boolean {

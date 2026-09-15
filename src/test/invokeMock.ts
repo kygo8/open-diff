@@ -272,6 +272,14 @@ export function invokeResponse(command: string, args: Record<string, unknown> = 
       return { savePasswords: true, remoteProfiles: true, updateChecks: true }
     case 'app_runtime_info':
       return { os: 'linux', family: 'unix' }
+    case 'path_file_stamp': {
+      const path = typeof args.path === 'string' ? args.path : 'file.bin'
+
+      return {
+        size: Math.max(1, path.length * 8),
+        modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30),
+      }
+    }
     case 'path_volume_info':
       return {
         path: args.path ?? '',

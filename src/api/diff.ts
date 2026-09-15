@@ -84,6 +84,10 @@ export function checkTextFileChanged(path: string, previousStamp: FileStamp): Pr
   })
 }
 
+export function pathFileStamp(path: string): Promise<FileStamp> {
+  return invoke<FileStamp>('path_file_stamp', { path })
+}
+
 export function pathVolumeInfo(path: string): Promise<PathVolumeInfo> {
   return invoke<PathVolumeInfo>('path_volume_info', { path })
 }

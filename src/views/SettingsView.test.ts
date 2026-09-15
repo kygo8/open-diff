@@ -346,6 +346,27 @@ describe('SettingsView', () => {
     await wrapper.find('[data-testid="options-section-confirmations"]').trigger('click')
     expect(wrapper.find('[data-testid="options-confirmations-card"]').isVisible()).toBe(true)
   })
+  it('persists Appearance sidebar, Toolbars icons, Backup overwrite confirm, and Tweaks dirty-tab confirm', async () => {
+    const wrapper = mount(SettingsView)
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-appearance"]').trigger('click')
+    await wrapper.find('[data-testid="show-sidebar"]').setValue(true)
+    expect(settings.showSidebar).toBe(true)
+    expect(document.documentElement.dataset.showSidebar).toBe('1')
+
+    await wrapper.find('[data-testid="options-section-toolbars"]').trigger('click')
+    await wrapper.find('[data-testid="show-toolbar-icons"]').setValue(false)
+    expect(settings.showToolbarIcons).toBe(false)
+
+    await wrapper.find('[data-testid="options-section-backup"]').trigger('click')
+    await wrapper.find('[data-testid="confirm-before-overwrite-save"]').setValue(true)
+    expect(settings.confirmBeforeOverwriteSave).toBe(true)
+
+    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
+    await wrapper.find('[data-testid="confirm-before-close-dirty-tab"]').setValue(false)
+    expect(settings.confirmBeforeCloseDirtyTab).toBe(false)
+  })
 })
 
 function mountSettingsView(): VueWrapper {

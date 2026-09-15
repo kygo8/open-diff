@@ -76,6 +76,10 @@ pub fn save_text_file_with_backup(
     })
 }
 
+pub fn path_file_stamp(path: impl AsRef<Path>) -> Result<FileStamp, FileReadError> {
+    file_stamp(path.as_ref())
+}
+
 fn file_stamp(path: &Path) -> Result<FileStamp, FileReadError> {
     let metadata = fs::metadata(path).map_err(file_io_error)?;
     let modified_at_ms = metadata
@@ -325,6 +329,16 @@ mod tests {
             .as_nanos();
 
         std::env::temp_dir().join(format!("open-diff-{name}-{stamp}.txt"))
+    }
+
+    #[test]
+    fn path_file_stamp_reads_size_and_mtime() {
+        let path = temp_file_path("stamp-bin");
+        fs::write(&path, b"abcdef").expect("fixture should be writable");
+        let stamp = path_file_stamp(&path).expect("stamp");
+        assert_eq!(stamp.size, 6);
+        assert!(stamp.modified_at_ms > 0);
+        fs::remove_file(path).expect("fixture should be removable");
     }
 
     #[test]

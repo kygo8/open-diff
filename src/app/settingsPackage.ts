@@ -31,6 +31,10 @@ export interface SettingsPackage {
   createBackupOnSave: boolean
   showStatusBar?: boolean
   showPathBars?: boolean
+  showSidebar?: boolean
+  showToolbarIcons?: boolean
+  confirmBeforeCloseDirtyTab?: boolean
+  confirmBeforeOverwriteSave?: boolean
   loadLastWorkspaceOnStartup?: boolean
 }
 

@@ -337,13 +337,13 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
           :aria-pressed="toolbarItem.active ? 'true' : 'false'"
           :data-testid="`${testIdPrefix}-${toolbarItem.id}`"
           :data-active="toolbarItem.active ? 'true' : 'false'"
-          :data-has-icon="toolbarItem.icon ? 'true' : 'false'"
+          :data-has-icon="toolbarItem.icon && settings.showToolbarIcons ? 'true' : 'false'"
           :title="t(toolbarItem.labelKey)"
           @click="onToolbarCommand(toolbarItem)"
         >
           <component
             :is="toolbarItem.icon"
-            v-if="toolbarItem.icon"
+            v-if="toolbarItem.icon && settings.showToolbarIcons"
             class="bc-toolbar-icon"
             aria-hidden="true"
             :size="settings.largeToolbarButtons ? 22 : 18"

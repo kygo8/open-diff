@@ -461,6 +461,7 @@ export const frFR: LanguagePack = {
     'status.overwriteMode': 'Écrasement',
     'status.diskFreeOn': '{quantity} libres sur {root}',
     'status.pathFileMetadata': '{bytes} octets, {modified}',
+    'status.pathFileMetadataWithDetail': '{metadata} · {detail}',
     'status.filesSelectedBytesWithDate':
       '{count} fichier(s) sélectionné(s), {bytes} octets, {modified}',
     'status.panePlaceholder': '—',
@@ -1028,6 +1029,11 @@ export const frFR: LanguagePack = {
     'ui.largeToolbarButtons': 'Large toolbar buttons',
     'ui.showStatusBar': 'Show status bar',
     'ui.showPathBars': 'Show path bars',
+    'ui.showSidebar': 'Afficher la barre latérale de l’espace de travail',
+    'ui.showToolbarIcons': 'Afficher les icônes de la barre d’outils',
+    'ui.confirmBeforeCloseDirtyTab': 'Confirmer avant de fermer les onglets modifiés',
+    'ui.confirmBeforeOverwriteSave': 'Confirmer avant les enregistrements avec écrasement',
+    'ui.confirmOverwriteSavePrompt': 'Écraser le fichier existant sur le disque ?',
     'ui.appearanceChromeHint':
       'Status and path bars can be hidden without changing compare behavior.',
     'ui.toolbarsHint': 'Session toolbars appear under the title bar in compare views.',

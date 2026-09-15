@@ -2886,6 +2886,29 @@ pub fn classify_paths(paths: Vec<String>) -> Vec<ClassifiedPathEntry> {
 }
 
 #[tauri::command]
+pub fn path_file_stamp(path: String) -> Result<FileStamp, AppErrorPayload> {
+    if path.trim().is_empty() {
+        return Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.file.readFailed.title",
+            "path is empty",
+        )
+        .with_param("path", &path));
+    }
+
+    if remote_core::is_remote_uri(&path) {
+        return Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.file.readFailed.title",
+            "file stamp is only available for local paths",
+        )
+        .with_param("path", &path));
+    }
+
+    file_core::path_file_stamp(&path).map_err(|error| file_error("read", &path, error))
+}
+
+#[tauri::command]
 pub fn path_volume_info(path: String) -> Result<PathVolumeInfo, AppErrorPayload> {
     if path.trim().is_empty() {
         return Err(AppErrorPayload::new(

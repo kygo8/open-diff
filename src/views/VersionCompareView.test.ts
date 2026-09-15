@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import VersionCompareView from './VersionCompareView.vue'
@@ -13,6 +13,10 @@ vi.mock('vue-router', () => ({
 }))
 
 vi.mock('@/api/diff', () => ({
+  pathFileStamp: vi.fn().mockResolvedValue({
+    size: 128,
+    modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30),
+  }),
   saveTextFile: vi.fn().mockResolvedValue({
     path: 'C:/apps/version-compare.txt',
     bytesWritten: 64,
@@ -281,4 +285,17 @@ it('exports the version report to clipboard and a sibling text file', async () =
   expect(wrapper.find('[data-testid="version-report-status"]').text()).toBe(
     'C:/apps/version-compare.txt',
   )
+})
+
+it('shows size/date path footers after compare', async () => {
+  const wrapper = mount(VersionCompareView)
+
+  await wrapper.find('[data-testid="version-left-path"]').setValue('C:/left.bin')
+  await wrapper.find('[data-testid="version-right-path"]').setValue('C:/right.bin')
+  await wrapper.find('[data-testid="run-version-compare"]').trigger('click')
+  await flushPromises()
+
+  expect(wrapper.find('[data-testid="version-path-footers"]').exists()).toBe(true)
+  expect(wrapper.find('[data-testid="version-left-path-footer"]').text()).toMatch(/bytes/)
+  expect(wrapper.find('[data-testid="version-right-path-footer"]').text()).toMatch(/bytes/)
 })

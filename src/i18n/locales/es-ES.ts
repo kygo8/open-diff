@@ -460,6 +460,7 @@ export const esES: LanguagePack = {
     'status.overwriteMode': 'Sobrescribir',
     'status.diskFreeOn': '{quantity} libres en {root}',
     'status.pathFileMetadata': '{bytes} bytes, {modified}',
+    'status.pathFileMetadataWithDetail': '{metadata} · {detail}',
     'status.filesSelectedBytesWithDate':
       '{count} archivo(s) seleccionado(s), {bytes} bytes, {modified}',
     'status.panePlaceholder': '—',
@@ -1027,6 +1028,11 @@ export const esES: LanguagePack = {
     'ui.largeToolbarButtons': 'Large toolbar buttons',
     'ui.showStatusBar': 'Show status bar',
     'ui.showPathBars': 'Show path bars',
+    'ui.showSidebar': 'Mostrar la barra lateral del espacio de trabajo',
+    'ui.showToolbarIcons': 'Mostrar iconos de la barra de herramientas',
+    'ui.confirmBeforeCloseDirtyTab': 'Confirmar antes de cerrar pestañas con cambios',
+    'ui.confirmBeforeOverwriteSave': 'Confirmar antes de guardar sobrescribiendo',
+    'ui.confirmOverwriteSavePrompt': '¿Sobrescribir el archivo existente en el disco?',
     'ui.appearanceChromeHint':
       'Status and path bars can be hidden without changing compare behavior.',
     'ui.toolbarsHint': 'Session toolbars appear under the title bar in compare views.',

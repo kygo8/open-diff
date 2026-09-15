@@ -933,7 +933,7 @@ function onChromeKeydown(event: KeyboardEvent): void {
 }
 
 function requestCloseTab(tab: { id: string; title: string; dirty: boolean }): void {
-  if (tab.dirty) {
+  if (tab.dirty && settings.confirmBeforeCloseDirtyTab) {
     pendingCloseTab.value = { id: tab.id, title: tab.title }
 
     return
@@ -1186,7 +1186,11 @@ const sourceSessionTypes = new Set<SessionType>([
     </header>
 
     <main class="desktop">
-      <aside class="sidebar">
+      <aside
+        class="sidebar"
+        data-testid="workspace-sidebar"
+        :data-visible="settings.showSidebar ? 'true' : 'false'"
+      >
         <div class="sidebar-head">
           <strong>{{ t('ui.workspace') }}</strong>
           <span>{{ t('app.workspaceStatus') }}</span>
@@ -2098,9 +2102,25 @@ const sourceSessionTypes = new Set<SessionType>([
   font-size: 11px;
 }
 
+html[data-show-sidebar='1'] .desktop {
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+html[data-show-sidebar='1'] .sidebar {
+  display: grid;
+}
+
 @media (width <= 1180px) {
   .desktop {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  html[data-show-sidebar='1'] .desktop {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  html[data-show-sidebar='1'] .sidebar {
+    display: none;
   }
 }
 

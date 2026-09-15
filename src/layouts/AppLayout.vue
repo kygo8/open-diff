@@ -720,26 +720,20 @@ const statusChromePanes = computed((): StatusChromePane[] => {
       statusBar.report.importantDifferenceCount,
       statusBar.report.unimportantDifferenceCount,
     )
+    const panes: StatusChromePane[] = []
 
     if (importance) {
-      return [
-        statusPane(importance, 'status-pane-importance'),
-        statusPane(statusBar.report.leftSelection, 'status-pane-left-selection'),
-        statusPane(statusBar.report.rightSelection, 'status-pane-right-selection'),
-        statusPane(
-          statusBar.report.leftFreeSpace ?? statusBar.report.rightFreeSpace,
-          'status-pane-left-free',
-          !(statusBar.report.leftFreeSpace ?? statusBar.report.rightFreeSpace),
-        ),
-      ]
+      panes.push(statusPane(importance, 'status-pane-importance'))
     }
 
-    return [
+    panes.push(
       statusPane(statusBar.report.leftSelection, 'status-pane-left-selection'),
       statusPane(statusBar.report.leftFreeSpace, 'status-pane-left-free'),
       statusPane(statusBar.report.rightSelection, 'status-pane-right-selection'),
       statusPane(statusBar.report.rightFreeSpace, 'status-pane-right-free'),
-    ]
+    )
+
+    return panes
   }
 
   if (kind === 'text-session') {
@@ -1396,6 +1390,8 @@ const sourceSessionTypes = new Set<SessionType>([
       class="status-bar"
       data-testid="status-bar"
       :data-chrome-kind="statusBar.chromeKind"
+      :data-pane-count="String(statusChromePanes.length)"
+      :style="{ gridTemplateColumns: `repeat(${statusChromePanes.length}, minmax(0, 1fr))` }"
     >
       <span
         v-for="(pane, index) in statusChromePanes"

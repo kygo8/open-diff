@@ -221,30 +221,32 @@ describe('SettingsView', () => {
     expect(settings.diffColors.addedBg).toBe('#f4fff4')
   })
 
-  it('persists tweaks for confirm-before-delete and wrap-text default', async () => {
+  it('persists confirmations and wrap-text default from Options', async () => {
     const wrapper = mountSettingsView()
     const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-confirmations"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-confirmations-card"]').isVisible()).toBe(true)
+
+    const confirm = wrapper.find('[data-testid="confirm-before-delete"]')
+
+    await confirm.setValue(false)
+    expect(settings.confirmBeforeDelete).toBe(false)
 
     await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
     expect(wrapper.find('[data-testid="options-tweaks-card"]').isVisible()).toBe(true)
-
-    const confirm = wrapper.find('[data-testid="confirm-before-delete"]')
-    const wrap = wrapper.find('[data-testid="wrap-text-default"]')
-
-    await confirm.setValue(false)
-    await wrap.setValue(true)
-
-    expect(settings.confirmBeforeDelete).toBe(false)
+    await wrapper.find('[data-testid="wrap-text-default"]').setValue(true)
     expect(settings.wrapTextDefault).toBe(true)
   })
 
-  it('persists sync-confirm, auto-scroll, and collapse-identical tweaks', async () => {
+  it('persists sync-confirm, auto-scroll, and collapse-identical options', async () => {
     const wrapper = mountSettingsView()
     const settings = useSettingsStore()
 
-    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
-
+    await wrapper.find('[data-testid="options-section-confirmations"]').trigger('click')
     await wrapper.find('[data-testid="confirm-before-sync-overwrite"]').setValue(false)
+
+    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
     await wrapper.find('[data-testid="auto-scroll-first-difference"]').setValue(true)
     await wrapper.find('[data-testid="collapse-identical-folders-default"]').setValue(true)
     await wrapper.find('[data-testid="show-hidden-files"]').setValue(true)
@@ -255,6 +257,16 @@ describe('SettingsView', () => {
     expect(settings.collapseIdenticalFoldersDefault).toBe(true)
     expect(settings.showHiddenFiles).toBe(true)
     expect(settings.notifyOnCompareComplete).toBe(true)
+  })
+
+  it('deepens text editing options with auto-scroll', async () => {
+    const wrapper = mountSettingsView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-textEditing"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-text-editing-card"]').isVisible()).toBe(true)
+    await wrapper.find('[data-testid="auto-scroll-first-difference-editing"]').setValue(true)
+    expect(settings.autoScrollToFirstDifference).toBe(true)
   })
 
   it('restores factory defaults from the Tweaks options card', async () => {
@@ -330,6 +342,9 @@ describe('SettingsView', () => {
     expect(wrapper.find('[data-testid="options-backup-card"]').isVisible()).toBe(true)
     await wrapper.find('[data-testid="create-backup-on-save"]').setValue(false)
     expect(settings.createBackupOnSave).toBe(false)
+
+    await wrapper.find('[data-testid="options-section-confirmations"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-confirmations-card"]').isVisible()).toBe(true)
   })
 })
 

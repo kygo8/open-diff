@@ -956,6 +956,9 @@ export const frFR: LanguagePack = {
     'ui.meta': 'Meta',
     'ui.colors': 'Couleurs',
     'ui.tweaks': 'Réglages',
+
+    'ui.confirmations': 'Confirmations',
+    'ui.confirmationsHint': 'Demander avant les opérations destructives de dossiers et de sync.',
     'ui.fontFamily': 'Police',
     'ui.fontSize': 'Taille de police',
     'ui.diffHighlightColors': 'Couleurs de surbrillance des différences',

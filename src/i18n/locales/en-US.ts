@@ -940,6 +940,9 @@ export const enUS: LanguagePack = {
     'ui.meta': 'Meta',
     'ui.colors': 'Colors',
     'ui.tweaks': 'Tweaks',
+
+    'ui.confirmations': 'Confirmations',
+    'ui.confirmationsHint': 'Ask before destructive folder and sync operations.',
     'ui.fontFamily': 'Font family',
     'ui.fontSize': 'Font size',
     'ui.diffHighlightColors': 'Diff highlight colors',
@@ -1010,7 +1013,8 @@ export const enUS: LanguagePack = {
     'ui.appearanceChromeHint':
       'Status and path bars can be hidden without changing compare behavior.',
     'ui.toolbarsHint': 'Session toolbars appear under the title bar in compare views.',
-    'ui.textEditingHint': 'Default wrap applies when opening new text compare and edit sessions.',
+    'ui.textEditingHint':
+      'Default wrap and first-difference scrolling apply when opening new text sessions.',
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
     'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',

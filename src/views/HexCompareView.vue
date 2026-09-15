@@ -451,6 +451,13 @@ watch([leftPath, rightPath], () => {
   syncHexTabTitle()
 })
 
+const leftPathFooterLabel = computed(() =>
+  leftTotalLen.value > 0 ? t('status.bytes', { count: leftTotalLen.value }) : '',
+)
+const rightPathFooterLabel = computed(() =>
+  rightTotalLen.value > 0 ? t('status.bytes', { count: rightTotalLen.value }) : '',
+)
+
 watchEffect(() => {
   const hasResult = leftCells.value.length > 0 || rightCells.value.length > 0
   let comparisonStatus = t('status.readyIdle')
@@ -464,6 +471,7 @@ watchEffect(() => {
   statusBar.reportStatus({
     comparisonStatus,
     differenceCount: hasResult ? diffRanges.value.length : null,
+    encoding: 'Binary',
     filterStatus: t('status.allRows'),
     source: 'hex-compare',
     loadTimeSeconds: hasResult ? loadTimeSeconds.value : null,
@@ -773,6 +781,23 @@ async function runHexSave(): Promise<void> {
             :title="rightPath"
           />
         </label>
+        <div
+          class="bc-path-footers"
+          data-testid="hex-path-footers"
+        >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
+            data-testid="hex-left-path-footer"
+            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
+            data-testid="hex-right-path-footer"
+            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+        </div>
         <label>
           <span>{{ $t('ui.viewportWidth') }}</span>
           <input
@@ -1473,5 +1498,26 @@ h2 {
 
 .hex-rules-row input[type='number'] {
   width: 96px;
+}
+
+.bc-path-footers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column: 1 / -1;
+  gap: 8px;
+  width: 100%;
+}
+
+.path-side-footer {
+  min-height: 18px;
+  overflow: hidden;
+  color: var(--app-text-muted, #6b7280);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 </style>

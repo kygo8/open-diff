@@ -19,14 +19,16 @@ import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useTabsStore } from '@/stores/tabs'
-import type { PatchFile, PatchLineKind, TextPatchResponse } from '@/types/diff'
+import type { FileStamp, PatchFile, PatchLineKind, TextPatchResponse } from '@/types/diff'
 
 const patchInput = ref('')
 const result = ref<TextPatchResponse | null>(null)
 const loading = ref(false)
 const error = ref('')
 const sourcePath = ref('')
+const sourceFileStamp = ref<FileStamp | null>(null)
 const targetPath = ref('')
 const sourceText = ref('')
 const patchedText = ref('')
@@ -124,6 +126,22 @@ const comparisonStatus = computed(() => {
   return t('app.ready')
 })
 
+const sourcePathFooterLabel = computed(() => {
+  const stamp = sourceFileStamp.value
+
+  if (!stamp) {
+    return ''
+  }
+
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+
+  if (!modified) {
+    return t('status.bytes', { count: stamp.size })
+  }
+
+  return t('status.pathFileMetadata', { bytes: stamp.size, modified })
+})
+
 watchEffect(() => {
   const differenceCount = result.value ? lineStats.value.added + lineStats.value.removed : null
   const importantDifferenceCount = differenceCount
@@ -176,6 +194,7 @@ async function loadAndParsePatchFile(path: string): Promise<void> {
     sourcePath.value = file.path
     sourceEncoding.value = file.encoding
     sourceLineEnding.value = file.lineEnding
+    sourceFileStamp.value = file.fileStamp
     result.value = await parseTextPatch(file.text)
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     selectedSectionIndex.value = 0
@@ -570,6 +589,22 @@ function lineNumber(value: number | null): string {
             data-testid="patch-target-file"
           />
         </label>
+        <div
+          class="bc-path-footers"
+          data-testid="patch-path-footers"
+        >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !sourcePathFooterLabel }"
+            data-testid="patch-source-path-footer"
+            >{{ sourcePathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+          <span
+            class="path-side-footer path-side-footer-muted"
+            data-testid="patch-target-path-footer"
+            >{{ $t('status.panePlaceholder') }}</span
+          >
+        </div>
         <NInput
           :value="sourceText"
           type="textarea"
@@ -1043,5 +1078,25 @@ function lineNumber(value: number | null): string {
 
 .patch-preview-context {
   background: transparent;
+}
+
+.bc-path-footers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.path-side-footer {
+  min-height: 18px;
+  overflow: hidden;
+  color: var(--app-text-muted, #6b7280);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 </style>

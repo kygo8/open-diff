@@ -12,6 +12,7 @@ import {
 import { queryLiveWindowsRegistry } from '@/api/policy'
 import { usePolicyStore } from '@/stores/policy'
 import type {
+  FileStamp,
   RegistryCompareResponse,
   RegistryDiffStatus,
   RegistryKeyNode,
@@ -32,6 +33,7 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useI18n } from '@/i18n'
 
@@ -70,6 +72,10 @@ const hiveCompareLoading = ref(false)
 const policy = usePolicyStore()
 const leftSourcePath = ref('')
 const rightSourcePath = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
+const leftEncoding = ref('')
+const rightEncoding = ref('')
 const reportStatus = ref('')
 const loadTimeSeconds = ref<number | null>(null)
 const statusBar = useStatusBarStore()
@@ -198,6 +204,35 @@ function applyRegistryResult(result: RegistryCompareResponse): void {
   lastApplyAction.value = ''
 }
 
+const leftPathFooterLabel = computed(() => formatRegistryPathFooter(leftFileStamp.value))
+const rightPathFooterLabel = computed(() => formatRegistryPathFooter(rightFileStamp.value))
+
+function formatRegistryPathFooter(stamp: FileStamp | null): string {
+  if (!stamp) {
+    return ''
+  }
+
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+
+  if (!modified) {
+    return t('status.bytes', { count: stamp.size })
+  }
+
+  return t('status.pathFileMetadata', { bytes: stamp.size, modified })
+}
+
+const registryStatusEncoding = computed(() => {
+  if (leftEncoding.value && rightEncoding.value) {
+    if (leftEncoding.value === rightEncoding.value) {
+      return leftEncoding.value
+    }
+
+    return `${leftEncoding.value} / ${rightEncoding.value}`
+  }
+
+  return leftEncoding.value || rightEncoding.value || 'UTF-8'
+})
+
 watchEffect(() => {
   const hasTree = registryTree.value.length > 0
   let comparisonStatus = t('status.readyIdle')
@@ -208,12 +243,20 @@ watchEffect(() => {
     comparisonStatus = t('status.compared')
   }
 
+  // Registry has no minor/unimportant classification — differing keys are Important.
+  const importantDifferenceCount = hasTree ? differingRegistryKeys.value.length : null
+  const unimportantDifferenceCount = hasTree ? 0 : null
+
   statusBar.reportStatus({
     comparisonStatus,
     differenceCount: hasTree ? differingRegistryKeys.value.length : null,
+    encoding: registryStatusEncoding.value,
     filterStatus: t('status.allRows'),
     source: 'registry-compare',
+    chromeKind: 'text-session',
     loadTimeSeconds: hasTree ? loadTimeSeconds.value : null,
+    importantDifferenceCount,
+    unimportantDifferenceCount,
   })
 })
 
@@ -253,6 +296,10 @@ async function loadLaunchRegistryExports(leftPath: string, rightPath: string): P
     rightExport.value = rightFile.text
     leftSourcePath.value = leftFile.path
     rightSourcePath.value = rightFile.path
+    leftFileStamp.value = leftFile.fileStamp
+    rightFileStamp.value = rightFile.fileStamp
+    leftEncoding.value = leftFile.encoding
+    rightEncoding.value = rightFile.encoding
     leftName.value = fileNameFromPath(leftFile.path)
     rightName.value = fileNameFromPath(rightFile.path)
     await runRegistryCompare()
@@ -733,6 +780,23 @@ function runRegistryToolbarCommand(commandId: string): void {
         >
           {{ $t('ui.runDiff') }}
         </button>
+        <div
+          class="bc-path-footers"
+          data-testid="registry-path-footers"
+        >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
+            data-testid="registry-left-path-footer"
+            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
+            data-testid="registry-right-path-footer"
+            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+        </div>
       </section>
 
       <p
@@ -1432,5 +1496,26 @@ h1 {
   .registry-source-pair {
     text-align: left;
   }
+}
+
+.bc-path-footers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.path-side-footer {
+  min-height: 18px;
+  overflow: hidden;
+  color: var(--app-text-muted, #6b7280);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 </style>

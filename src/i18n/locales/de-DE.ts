@@ -960,6 +960,9 @@ export const deDE: LanguagePack = {
     'ui.meta': 'Meta',
     'ui.colors': 'Farben',
     'ui.tweaks': 'Feineinstellungen',
+
+    'ui.confirmations': 'Bestätigungen',
+    'ui.confirmationsHint': 'Vor destruktiven Ordner- und Sync-Aktionen nachfragen.',
     'ui.fontFamily': 'Schriftart',
     'ui.fontSize': 'Schriftgröße',
     'ui.diffHighlightColors': 'Diff-Hervorhebungsfarben',

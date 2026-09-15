@@ -915,6 +915,9 @@ export const zhTW: LanguagePack = {
     'ui.meta': '中繼資料',
     'ui.colors': '顏色',
     'ui.tweaks': '調整',
+
+    'ui.confirmations': '確認',
+    'ui.confirmationsHint': '在破壞性資料夾與同步操作前詢問確認。',
     'ui.fontFamily': '字型',
     'ui.fontSize': '字級',
     'ui.diffHighlightColors': '差異醒目提示顏色',

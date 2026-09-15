@@ -82,6 +82,8 @@ const rightSheets = ref<string[]>([])
 const initialTableOptions = loadTableCompareSessionOptions()
 const keyColumnsInput = ref(initialTableOptions.keyColumns)
 const delimiterInput = ref(initialTableOptions.delimiter)
+const ignoreCase = ref(initialTableOptions.ignoreCase)
+const firstRowIsHeader = ref(initialTableOptions.firstRowIsHeader)
 const showSessionSettings = ref(false)
 const suppressSessionOptionRecompare = ref(false)
 const viewActions = useViewActionsStore()
@@ -114,6 +116,8 @@ function currentTableSessionOptions(): TableCompareSessionOptions {
     keyColumns: keyColumnsInput.value,
     delimiter: delimiterInput.value,
     ignoredColumns: [...ignoredColumnKeys.value],
+    ignoreCase: ignoreCase.value,
+    firstRowIsHeader: firstRowIsHeader.value,
   }
 }
 
@@ -141,6 +145,8 @@ function applyTableSessionSettings(
   keyColumnsInput.value = payload.options.keyColumns
   delimiterInput.value = payload.options.delimiter
   ignoredColumnKeys.value = [...payload.options.ignoredColumns]
+  ignoreCase.value = payload.options.ignoreCase
+  firstRowIsHeader.value = payload.options.firstRowIsHeader
   persistTableSessionOptions()
   suppressSessionOptionRecompare.value = false
   showSessionSettings.value = false
@@ -155,7 +161,7 @@ function applyTableSessionSettings(
 }
 
 watch(
-  [keyColumnsInput, delimiterInput, ignoredColumnKeys],
+  [keyColumnsInput, delimiterInput, ignoredColumnKeys, ignoreCase, firstRowIsHeader],
   () => {
     persistTableSessionOptions()
     maybeRecompareOnSessionOptionsChange()
@@ -571,6 +577,7 @@ watchEffect(() => {
     filterStatus: t('status.allRows'),
     source: 'table-compare',
     loadTimeSeconds: comparedRows.value ? loadTimeSeconds.value : null,
+    chromeKind: 'table-session',
   })
 })
 
@@ -599,6 +606,8 @@ async function runTableCompare(): Promise<void> {
           rightColumn: mapping.rightColumn,
         })),
       delimiter: delimiterInput.value || undefined,
+      ignoreCase: ignoreCase.value,
+      firstRowIsHeader: firstRowIsHeader.value,
     })
     const columns = columnsFromResult(result)
 
@@ -1002,6 +1011,22 @@ watch([leftPath, rightPath], () => {
             data-testid="table-delimiter"
           />
         </label>
+        <label class="table-option-toggle">
+          <input
+            v-model="firstRowIsHeader"
+            type="checkbox"
+            data-testid="table-first-row-header"
+          />
+          <span>{{ $t('ui.tableFirstRowIsHeader') }}</span>
+        </label>
+        <label class="table-option-toggle">
+          <input
+            v-model="ignoreCase"
+            type="checkbox"
+            data-testid="table-ignore-case"
+          />
+          <span>{{ $t('ui.tableIgnoreCaseDefault') }}</span>
+        </label>
       </section>
 
       <section class="column-map-controls">
@@ -1285,9 +1310,9 @@ watch([leftPath, rightPath], () => {
 <style scoped>
 .table-compare-view {
   display: grid;
-  gap: 14px;
+  gap: 6px;
   height: 100%;
-  padding: 16px;
+  padding: 6px 8px;
   overflow: auto;
 }
 
@@ -1352,10 +1377,10 @@ h2 {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
   align-items: end;
-  gap: 10px;
-  padding: 12px;
+  gap: 6px;
+  padding: 6px 8px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1371,13 +1396,14 @@ h2 {
 .table-source-controls input,
 .table-source-controls select {
   width: 100%;
-  height: 32px;
-  padding: 0 9px;
+  height: 24px;
+  min-height: 24px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--app-bg);
   color: var(--app-text);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .column-map-controls label {
@@ -1393,10 +1419,11 @@ h2 {
 
 .column-map-controls select {
   width: 100%;
-  height: 32px;
-  padding: 0 9px;
+  height: 24px;
+  min-height: 24px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--app-bg);
   color: var(--app-text);
   font-size: 13px;

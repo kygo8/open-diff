@@ -12,6 +12,7 @@ import {
   isPictureSessionStatusSource,
   isTextSessionStatusSource,
   isVersionSessionStatusSource,
+  isTableSessionStatusSource,
   padStatusChromePanes,
 } from './statusBarPhrases'
 
@@ -46,6 +47,7 @@ describe('statusBarPhrases', () => {
     expect(isPictureSessionStatusSource('picture-compare')).toBe(true)
     expect(isMediaSessionStatusSource('media-compare')).toBe(true)
     expect(isVersionSessionStatusSource('version-compare')).toBe(true)
+    expect(isTableSessionStatusSource('table-compare')).toBe(true)
     expect(isMediaSessionStatusSource('picture-compare')).toBe(false)
     expect(isVersionSessionStatusSource('media-compare')).toBe(false)
   })

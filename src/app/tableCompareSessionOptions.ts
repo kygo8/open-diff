@@ -4,6 +4,10 @@ export interface TableCompareSessionOptions {
   keyColumns: string
   delimiter: string
   ignoredColumns: string[]
+  /** When true, key/column matching ignores character case. */
+  ignoreCase: boolean
+  /** When true (default), the first delimited row is treated as column names. */
+  firstRowIsHeader: boolean
 }
 
 export function defaultTableCompareSessionOptions(): TableCompareSessionOptions {
@@ -11,6 +15,8 @@ export function defaultTableCompareSessionOptions(): TableCompareSessionOptions 
     keyColumns: '0',
     delimiter: '',
     ignoredColumns: [],
+    ignoreCase: true,
+    firstRowIsHeader: true,
   }
 }
 
@@ -36,6 +42,8 @@ export function loadTableCompareSessionOptions(
           : '0',
       delimiter: typeof parsed.delimiter === 'string' ? parsed.delimiter : '',
       ignoredColumns,
+      ignoreCase: parsed.ignoreCase !== false,
+      firstRowIsHeader: parsed.firstRowIsHeader !== false,
     }
   } catch {
     return defaultTableCompareSessionOptions()
@@ -52,6 +60,8 @@ export function saveTableCompareSessionOptions(
       keyColumns: state.keyColumns.trim() || '0',
       delimiter: state.delimiter,
       ignoredColumns: state.ignoredColumns.filter((item) => item.trim().length > 0),
+      ignoreCase: state.ignoreCase,
+      firstRowIsHeader: state.firstRowIsHeader,
     }),
   )
 }

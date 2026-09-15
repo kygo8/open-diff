@@ -1621,6 +1621,32 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+.table-compare-view {
+  padding: 6px 8px;
+}
+
+.table-compare-view .table-source-controls,
+.table-compare-view .table-controls,
+.table-compare-view .column-map-controls {
+  min-height: 26px;
+  padding: 6px 8px;
+  border-radius: 0;
+}
+
+.table-compare-view .table-source-controls input,
+.table-compare-view .table-source-controls select,
+.table-compare-view .table-controls input,
+.table-compare-view .table-controls button,
+.table-compare-view .column-map-controls select {
+  height: 24px;
+  min-height: 24px;
+  font-size: 12px;
+}
+
+.table-compare-view .path-side-footer {
+  font-size: 10px;
+}
+
 /* Text Compare chrome densify toward capture path/status/editor strips */
 .text-compare-view {
   gap: 4px !important;

@@ -15,6 +15,8 @@ import type {
   VersionFieldStatus,
   VersionSideSummary,
 } from '@/types/diff'
+import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { buildVersionCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
 import {
   buildVersionRulesCatalog,
@@ -148,7 +150,7 @@ const minorDifferenceCount = computed(
     ).length,
 )
 
-const versionToolbarCommands = computed(() =>
+const versionSessionToolbar = computed(() =>
   buildVersionCompareToolbar({
     home: true,
     all: true,
@@ -162,6 +164,17 @@ const versionToolbarCommands = computed(() =>
     reload: Boolean(leftPath.value && rightPath.value),
   }),
 )
+
+const versionSubtitle = computed(() => {
+  const left = leftVersion.value.name || leftPath.value
+  const right = rightVersion.value.name || rightPath.value
+
+  if (!left && !right) {
+    return ''
+  }
+
+  return `${left || '—'} -> ${right || '—'}`
+})
 
 function syncVersionTabTitle(): void {
   if (!leftPath.value || !rightPath.value) {
@@ -467,225 +480,258 @@ watch(
 </script>
 
 <template>
-  <section class="bc-session-toolbar">
-    <button
-      v-for="command in versionToolbarCommands"
-      :key="command.id"
-      class="bc-toolbar-command"
-      type="button"
-      :disabled="!command.enabled"
-      :data-testid="`version-toolbar-${command.id}`"
-      @click="runVersionToolbarCommand(command.id)"
-    >
-      <span class="bc-toolbar-glyph">{{ command.glyph }}</span>
-      <span>{{ $t(command.labelKey) }}</span>
-    </button>
-  </section>
-  <section class="version-compare-view">
-    <header class="version-header">
-      <div>
-        <p class="eyebrow">{{ $t('ui.versionCompare') }}</p>
-        <h1>{{ $t('ui.versionCompare') }}</h1>
-      </div>
-      <div class="version-source-pair">
-        <span>{{ $t('status.sideName', { side: $t('ui.left'), name: leftVersion.name }) }}</span>
-        <span>{{ $t('status.sideName', { side: $t('ui.right'), name: rightVersion.name }) }}</span>
-      </div>
-    </header>
-
-    <section class="version-path-panel">
-      <label>
-        <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
-        <input
-          v-model="leftPath"
-          type="text"
-          data-testid="version-left-path"
-        />
-      </label>
-      <label>
-        <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
-        <input
-          v-model="rightPath"
-          type="text"
-          data-testid="version-right-path"
-        />
-      </label>
-      <button
-        type="button"
-        data-testid="run-version-compare"
-        :disabled="loading"
-        @click="runVersionCompare"
-      >
-        {{ $t('ui.runDiff') }}
-      </button>
-      <div
-        class="bc-path-footers"
-        data-testid="version-path-footers"
-      >
-        <span
-          class="path-side-footer"
-          :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
-          data-testid="version-left-path-footer"
-          >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
-        >
-        <span
-          class="path-side-footer"
-          :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
-          data-testid="version-right-path-footer"
-          >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
-        >
-      </div>
-    </section>
-    <p
-      v-if="error"
-      class="version-error"
-      data-testid="version-compare-error"
-    >
-      {{ error }}
-    </p>
-
-    <section class="version-summary-grid">
-      <article
-        v-for="status in versionStatuses"
-        :key="status"
-        class="version-summary-item"
-        :class="`status-${status}`"
-      >
-        <strong :data-testid="`version-summary-${status}`">{{ versionSummary[status] }}</strong>
-        <span>{{ statusLabel(status) }}</span>
-      </article>
-      <article class="version-summary-item status-minor">
-        <strong data-testid="version-summary-minor">{{ minorDifferenceCount }}</strong>
-        <span>{{ $t('ui.minor') }}</span>
-      </article>
-    </section>
-
-    <section class="version-side-grid">
-      <article class="version-side">
-        <header>
-          <strong>{{ leftVersion.name }}</strong>
-          <span>{{ leftVersion.fileType }}</span>
-        </header>
-        <dl>
-          <div>
-            <dt>{{ $t('ui.fileVersion') }}</dt>
-            <dd>{{ leftVersion.fileVersion }}</dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.productVersion') }}</dt>
-            <dd>{{ leftVersion.productVersion }}</dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.targetOs') }}</dt>
-            <dd>{{ leftVersion.targetOs }}</dd>
-          </div>
-        </dl>
-      </article>
-
-      <article class="version-side">
-        <header>
-          <strong>{{ rightVersion.name }}</strong>
-          <span>{{ rightVersion.fileType }}</span>
-        </header>
-        <dl>
-          <div>
-            <dt>{{ $t('ui.fileVersion') }}</dt>
-            <dd>{{ rightVersion.fileVersion }}</dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.productVersion') }}</dt>
-            <dd>{{ rightVersion.productVersion }}</dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.targetOs') }}</dt>
-            <dd>{{ rightVersion.targetOs }}</dd>
-          </div>
-        </dl>
-      </article>
-    </section>
-
-    <section class="version-report-panel">
-      <header>
-        <strong>{{ $t('ui.versionFieldReport') }}</strong>
-        <span>{{ $t('status.fieldCount', { count: versionFields.length }) }}</span>
-        <button
-          type="button"
-          data-testid="export-version-report"
-          :disabled="versionFields.length === 0"
-          @click="exportVersionReport"
-        >
-          {{ $t('ui.export') }}
-        </button>
-        <span
-          v-if="reportStatus"
-          data-testid="version-report-status"
-          >{{ reportStatus }}</span
-        >
-      </header>
-      <div
-        class="version-report-table"
-        data-testid="version-report-table"
-      >
-        <div class="version-field-row version-field-head">
-          <span>{{ $t('ui.group') }}</span>
-          <span>{{ $t('ui.field') }}</span>
-          <span>{{ $t('ui.left') }}</span>
-          <span>{{ $t('ui.right') }}</span>
-          <span>{{ $t('ui.status') }}</span>
-          <span>{{ $t('ui.importance') }}</span>
+  <WorkbenchShell
+    :title="$t('ui.versionCompare')"
+    :eyebrow="$t('ui.version')"
+    :subtitle="versionSubtitle"
+    :inspector-label="$t('ui.versionCompareInspector')"
+    :toolbar-commands="versionSessionToolbar"
+    toolbar-test-id-prefix="version-session-toolbar"
+    @toolbar-command="runVersionToolbarCommand"
+  >
+    <section class="version-compare-view">
+      <header class="version-header">
+        <div>
+          <p class="eyebrow">{{ $t('ui.versionCompare') }}</p>
+          <h1>{{ $t('ui.versionCompare') }}</h1>
         </div>
-        <div
-          v-for="row in visibleVersionFields"
-          :key="row.field"
-          class="version-field-row"
-          :class="[`status-${row.status}`, { 'version-field-minor': !fieldIsImportant(row.field) }]"
-          :data-testid="`version-field-${row.field}`"
-          :data-important="fieldIsImportant(row.field) ? 'true' : 'false'"
-        >
-          <span>{{ row.group }}</span>
-          <strong>{{ row.field }}</strong>
-          <code>{{ valueText(row.left) }}</code>
-          <code>{{ valueText(row.right) }}</code>
-          <em>{{ statusLabel(row.status) }}</em>
-          <span>{{ fieldIsImportant(row.field) ? $t('ui.important') : $t('ui.unimportant') }}</span>
+        <div class="version-source-pair">
+          <span>{{ $t('status.sideName', { side: $t('ui.left'), name: leftVersion.name }) }}</span>
+          <span>{{
+            $t('status.sideName', { side: $t('ui.right'), name: rightVersion.name })
+          }}</span>
         </div>
-      </div>
-    </section>
-
-    <section
-      v-if="showVersionRules"
-      class="version-rules-panel"
-      data-testid="version-rules-panel"
-    >
-      <header>
-        <strong>{{ $t('ui.importanceRules') }}</strong>
-        <span>{{ $t('ui.versionRulesHint') }}</span>
-        <button
-          type="button"
-          data-testid="version-rules-reset"
-          @click="resetVersionRules"
-        >
-          {{ $t('ui.reset') }}
-        </button>
       </header>
-      <div class="version-rules-list">
-        <label
-          v-for="row in versionRulesCatalog"
-          :key="`rule-${row.field}`"
-          class="version-rule-row"
-          :data-testid="`version-rule-${row.field}`"
-        >
+
+      <section class="version-path-panel">
+        <label>
+          <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
           <input
-            type="checkbox"
-            :checked="fieldIsImportant(row.field)"
-            @change="toggleFieldImportance(row.field)"
+            v-model="leftPath"
+            type="text"
+            data-testid="version-left-path"
           />
-          <span>{{ row.field }}</span>
-          <em>{{ row.group }}</em>
         </label>
-      </div>
+        <label>
+          <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
+          <input
+            v-model="rightPath"
+            type="text"
+            data-testid="version-right-path"
+          />
+        </label>
+        <button
+          type="button"
+          data-testid="run-version-compare"
+          :disabled="loading"
+          @click="runVersionCompare"
+        >
+          {{ $t('ui.runDiff') }}
+        </button>
+        <div
+          class="bc-path-footers"
+          data-testid="version-path-footers"
+        >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
+            data-testid="version-left-path-footer"
+            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
+            data-testid="version-right-path-footer"
+            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+        </div>
+      </section>
+      <p
+        v-if="error"
+        class="version-error"
+        data-testid="version-compare-error"
+      >
+        {{ error }}
+      </p>
+
+      <section class="version-summary-grid">
+        <article
+          v-for="status in versionStatuses"
+          :key="status"
+          class="version-summary-item"
+          :class="`status-${status}`"
+        >
+          <strong :data-testid="`version-summary-${status}`">{{ versionSummary[status] }}</strong>
+          <span>{{ statusLabel(status) }}</span>
+        </article>
+        <article class="version-summary-item status-minor">
+          <strong data-testid="version-summary-minor">{{ minorDifferenceCount }}</strong>
+          <span>{{ $t('ui.minor') }}</span>
+        </article>
+      </section>
+
+      <section class="version-side-grid">
+        <article class="version-side">
+          <header>
+            <strong>{{ leftVersion.name }}</strong>
+            <span>{{ leftVersion.fileType }}</span>
+          </header>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.fileVersion') }}</dt>
+              <dd>{{ leftVersion.fileVersion }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.productVersion') }}</dt>
+              <dd>{{ leftVersion.productVersion }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.targetOs') }}</dt>
+              <dd>{{ leftVersion.targetOs }}</dd>
+            </div>
+          </dl>
+        </article>
+
+        <article class="version-side">
+          <header>
+            <strong>{{ rightVersion.name }}</strong>
+            <span>{{ rightVersion.fileType }}</span>
+          </header>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.fileVersion') }}</dt>
+              <dd>{{ rightVersion.fileVersion }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.productVersion') }}</dt>
+              <dd>{{ rightVersion.productVersion }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.targetOs') }}</dt>
+              <dd>{{ rightVersion.targetOs }}</dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+
+      <section class="version-report-panel">
+        <header>
+          <strong>{{ $t('ui.versionFieldReport') }}</strong>
+          <span>{{ $t('status.fieldCount', { count: versionFields.length }) }}</span>
+          <button
+            type="button"
+            data-testid="export-version-report"
+            :disabled="versionFields.length === 0"
+            @click="exportVersionReport"
+          >
+            {{ $t('ui.export') }}
+          </button>
+          <span
+            v-if="reportStatus"
+            data-testid="version-report-status"
+            >{{ reportStatus }}</span
+          >
+        </header>
+        <div
+          class="version-report-table"
+          data-testid="version-report-table"
+        >
+          <div class="version-field-row version-field-head">
+            <span>{{ $t('ui.group') }}</span>
+            <span>{{ $t('ui.field') }}</span>
+            <span>{{ $t('ui.left') }}</span>
+            <span>{{ $t('ui.right') }}</span>
+            <span>{{ $t('ui.status') }}</span>
+            <span>{{ $t('ui.importance') }}</span>
+          </div>
+          <div
+            v-for="row in visibleVersionFields"
+            :key="row.field"
+            class="version-field-row"
+            :class="[
+              `status-${row.status}`,
+              { 'version-field-minor': !fieldIsImportant(row.field) },
+            ]"
+            :data-testid="`version-field-${row.field}`"
+            :data-important="fieldIsImportant(row.field) ? 'true' : 'false'"
+          >
+            <span>{{ row.group }}</span>
+            <strong>{{ row.field }}</strong>
+            <code>{{ valueText(row.left) }}</code>
+            <code>{{ valueText(row.right) }}</code>
+            <em>{{ statusLabel(row.status) }}</em>
+            <span>{{
+              fieldIsImportant(row.field) ? $t('ui.important') : $t('ui.unimportant')
+            }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        v-if="showVersionRules"
+        class="version-rules-panel"
+        data-testid="version-rules-panel"
+      >
+        <header>
+          <strong>{{ $t('ui.importanceRules') }}</strong>
+          <span>{{ $t('ui.versionRulesHint') }}</span>
+          <button
+            type="button"
+            data-testid="version-rules-reset"
+            @click="resetVersionRules"
+          >
+            {{ $t('ui.reset') }}
+          </button>
+        </header>
+        <div class="version-rules-list">
+          <label
+            v-for="row in versionRulesCatalog"
+            :key="`rule-${row.field}`"
+            class="version-rule-row"
+            :data-testid="`version-rule-${row.field}`"
+          >
+            <input
+              type="checkbox"
+              :checked="fieldIsImportant(row.field)"
+              @change="toggleFieldImportance(row.field)"
+            />
+            <span>{{ row.field }}</span>
+            <em>{{ row.group }}</em>
+          </label>
+        </div>
+      </section>
     </section>
-  </section>
+
+    <template #inspector>
+      <WorkbenchInspector>
+        <section class="workbench-inspector-section">
+          <h2>{{ $t('ui.metadata') }}</h2>
+          <dl>
+            <div>
+              <dt>{{ $t('ui.add') }}</dt>
+              <dd data-tone="added">{{ versionSummary.added }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.delete') }}</dt>
+              <dd data-tone="deleted">{{ versionSummary.removed }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.modified') }}</dt>
+              <dd data-tone="modified">{{ versionSummary.modified }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.minor') }}</dt>
+              <dd>{{ minorDifferenceCount }}</dd>
+            </div>
+            <div>
+              <dt>{{ $t('ui.fileVersion') }}</dt>
+              <dd>{{ leftVersion.fileVersion }} / {{ rightVersion.fileVersion }}</dd>
+            </div>
+          </dl>
+        </section>
+      </WorkbenchInspector>
+    </template>
+  </WorkbenchShell>
 </template>
 <style scoped>
 .version-compare-view {

@@ -85,6 +85,11 @@ import {
   saveVersionCompareOptions,
   versionFieldFilters,
 } from '@/app/versionCompareOptions'
+import {
+  defaultTableCompareSessionOptions,
+  loadTableCompareSessionOptions,
+  saveTableCompareSessionOptions,
+} from '@/app/tableCompareSessionOptions'
 import type { RemoteProtocol } from '@/api/remote'
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { loadExternalApplications, saveExternalApplications } from '@/app/externalApplications'
@@ -123,6 +128,7 @@ type OptionsSectionId =
   | 'pictureCompare'
   | 'mediaCompare'
   | 'versionCompare'
+  | 'tableCompare'
   | 'fileFilters'
   | 'openWith'
   | 'shell'
@@ -155,6 +161,7 @@ const profileDefaultsDraft = ref<RemoteProfileDefaults>(loadRemoteProfileDefault
 const pictureCompareDefaultsDraft = ref(loadPictureCompareOptions())
 const mediaCompareDefaultsDraft = ref(loadMediaCompareOptions())
 const versionCompareDefaultsDraft = ref(loadVersionCompareOptions())
+const tableCompareDefaultsDraft = ref(loadTableCompareSessionOptions())
 const mediaFilterOptions = mediaFieldFilters.map((value) => ({
   value,
   labelKey: `ui.${value}` as const,
@@ -218,6 +225,7 @@ const optionsTree = [
       { id: 'pictureCompare' as const, labelKey: 'ui.pictureCompare' },
       { id: 'mediaCompare' as const, labelKey: 'ui.mediaCompare' },
       { id: 'versionCompare' as const, labelKey: 'ui.versionCompare' },
+      { id: 'tableCompare' as const, labelKey: 'ui.tableCompare' },
       { id: 'fileFilters' as const, labelKey: 'ui.fileFilters' },
     ],
   },
@@ -647,6 +655,8 @@ function restoreFactoryDefaultsFromOptions(): void {
   saveMediaCompareOptions(mediaCompareDefaultsDraft.value)
   versionCompareDefaultsDraft.value = defaultVersionCompareOptions()
   saveVersionCompareOptions(versionCompareDefaultsDraft.value)
+  tableCompareDefaultsDraft.value = defaultTableCompareSessionOptions()
+  saveTableCompareSessionOptions(tableCompareDefaultsDraft.value)
   optionsStatus.value = t('ui.restoreFactoryDefaults')
 }
 
@@ -706,6 +716,30 @@ function persistMediaCompareDefaultsDraft(): void {
 function persistVersionCompareDefaultsDraft(): void {
   saveVersionCompareOptions(versionCompareDefaultsDraft.value)
 }
+
+function persistTableCompareDefaultsDraft(): void {
+  tableCompareDefaultsDraft.value = {
+    ...tableCompareDefaultsDraft.value,
+    keyColumns: tableCompareDefaultsDraft.value.keyColumns.trim() || '0',
+    ignoredColumns: tableCompareDefaultsDraft.value.ignoredColumns
+      .map((item) => item.trim())
+      .filter(Boolean),
+  }
+  saveTableCompareSessionOptions(tableCompareDefaultsDraft.value)
+}
+
+const tableIgnoredColumnsDraft = computed({
+  get: () => tableCompareDefaultsDraft.value.ignoredColumns.join(', '),
+  set: (value: string) => {
+    tableCompareDefaultsDraft.value = {
+      ...tableCompareDefaultsDraft.value,
+      ignoredColumns: value
+        .split(/[,\n]/u)
+        .map((item) => item.trim())
+        .filter(Boolean),
+    }
+  },
+})
 
 function clearReportExportHistoryFromOptions(): void {
   clearRecentReportExports()
@@ -1473,6 +1507,66 @@ function parseShortcutText(value: string): string[] {
           <span>{{ $t('ui.versionShowRulesDefault') }}</span>
         </label>
         <p class="options-hint">{{ $t('ui.versionCompareOptionsHint') }}</p>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'tableCompare'"
+        :title="$t('ui.tableCompare')"
+        size="small"
+        data-testid="options-table-compare-card"
+      >
+        <label class="auto-save-limit-row">
+          <span>{{ $t('ui.keyColumns') }}</span>
+          <input
+            v-model="tableCompareDefaultsDraft.keyColumns"
+            class="auto-save-limit-input"
+            data-testid="table-key-columns-default"
+            type="text"
+            :placeholder="$t('ui.keyColumnsHint')"
+            @change="persistTableCompareDefaultsDraft"
+          />
+        </label>
+        <label class="auto-save-limit-row">
+          <span>{{ $t('ui.delimiter') }}</span>
+          <input
+            v-model="tableCompareDefaultsDraft.delimiter"
+            class="auto-save-limit-input"
+            data-testid="table-delimiter-default"
+            type="text"
+            maxlength="1"
+            @change="persistTableCompareDefaultsDraft"
+          />
+        </label>
+        <label class="auto-save-limit-row">
+          <span>{{ $t('ui.ignoredColumns') }}</span>
+          <input
+            v-model="tableIgnoredColumnsDraft"
+            class="auto-save-limit-input"
+            data-testid="table-ignored-columns-default"
+            type="text"
+            :placeholder="$t('ui.ignoredColumnsHint')"
+            @change="persistTableCompareDefaultsDraft"
+          />
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="tableCompareDefaultsDraft.firstRowIsHeader"
+            data-testid="table-first-row-header-default"
+            type="checkbox"
+            @change="persistTableCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.tableFirstRowIsHeader') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="tableCompareDefaultsDraft.ignoreCase"
+            data-testid="table-ignore-case-default"
+            type="checkbox"
+            @change="persistTableCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.tableIgnoreCaseDefault') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.tableCompareOptionsHint') }}</p>
       </NCard>
 
       <NCard

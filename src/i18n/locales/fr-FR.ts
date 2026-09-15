@@ -414,7 +414,9 @@ export const frFR: LanguagePack = {
     'ui.type': 'Taper',
     'ui.undo': 'Défaire',
     'ui.values': 'Valeurs',
+    'ui.version': 'Version',
     'ui.versionCompare': 'Comparaison des versions',
+    'ui.versionCompareInspector': 'Inspecteur de comparaison de versions',
     'ui.versionFieldReport': 'Rapport de champ de version',
     'ui.view': 'Affichage',
     'ui.viewportWidth': 'Largeur de la fenêtre',
@@ -1177,6 +1179,10 @@ export const frFR: LanguagePack = {
     'ui.versionShowRulesDefault': 'Afficher les règles d’importance par défaut',
     'ui.versionCompareOptionsHint':
       'Options de filtre et de règles par défaut pour les nouvelles sessions Version Compare.',
+    'ui.tableCompareOptionsHint':
+      'Colonnes clés, séparateur et options de correspondance par défaut pour les nouvelles sessions.',
+    'ui.tableFirstRowIsHeader': 'La première ligne contient les noms de colonnes',
+    'ui.tableIgnoreCaseDefault': 'Ignorer la casse lors de la correspondance des clés',
     'ui.startup': 'Démarrage',
     'ui.loadLastWorkspaceOnStartup': 'Charger le dernier espace de travail au démarrage',
     'ui.startupHint':

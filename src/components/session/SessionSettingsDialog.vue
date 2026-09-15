@@ -60,6 +60,8 @@ const props = withDefaults(
       keyColumns: '0',
       delimiter: '',
       ignoredColumns: [],
+      ignoreCase: true,
+      firstRowIsHeader: true,
     }),
     hexOptions: () => defaultHexCompareSessionOptions(),
     pictureOptions: () => defaultPictureCompareOptions(),
@@ -503,6 +505,22 @@ function applySettings(): void {
             data-testid="session-settings-table-ignored"
             :placeholder="$t('ui.ignoredColumnsHint')"
           />
+        </label>
+        <label>
+          <input
+            v-model="draftTable.firstRowIsHeader"
+            type="checkbox"
+            data-testid="session-settings-table-header-row"
+          />
+          <span>{{ $t('ui.tableFirstRowIsHeader') }}</span>
+        </label>
+        <label>
+          <input
+            v-model="draftTable.ignoreCase"
+            type="checkbox"
+            data-testid="session-settings-table-ignore-case"
+          />
+          <span>{{ $t('ui.tableIgnoreCaseDefault') }}</span>
         </label>
       </div>
 

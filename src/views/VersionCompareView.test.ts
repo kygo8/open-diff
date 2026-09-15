@@ -219,6 +219,30 @@ describe('VersionCompareView', () => {
 
     expect(wrapper.find('[data-testid="version-summary-minor"]').text()).toContain('0')
   })
+
+  it('shows a readable error when compare invoke rejects an AppErrorPayload', async () => {
+    vi.mocked(compareVersionFiles).mockRejectedValueOnce({
+      code: 'app.unknown',
+      messageKey: 'error.app.unknown.title',
+      params: {},
+      debugMessage: 'PE resource table missing',
+    })
+
+    const wrapper = mount(VersionCompareView)
+
+    await wrapper.find('[data-testid="version-left-path"]').setValue('C:/apps/fixture-left.exe')
+    await wrapper.find('[data-testid="version-right-path"]').setValue('C:/apps/fixture-right.exe')
+    await wrapper.find('[data-testid="run-version-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+    await Promise.resolve()
+    await wrapper.vm.$nextTick()
+
+    const errorEl = wrapper.find('[data-testid="version-compare-error"]')
+
+    expect(errorEl.exists()).toBe(true)
+    expect(errorEl.text()).toContain('PE resource table missing')
+    expect(errorEl.text()).not.toContain('[object Object]')
+  })
 })
 
 it('opens rules catalog before compare', async () => {

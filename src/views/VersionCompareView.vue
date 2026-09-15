@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { compareVersionFiles, saveTextFile } from '@/api/diff'
 import { buildVersionReportText, defaultVersionReportOutputPath } from '@/app/versionReport'
 import { useI18n } from '@/i18n'
+import { formatCompareError } from '@/app/compareError'
 import type {
   VersionCompareResponse,
   VersionFieldRow,
@@ -296,7 +297,7 @@ async function exportVersionReport(): Promise<void> {
     })
     reportStatus.value = outputPath
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 
@@ -311,7 +312,7 @@ async function runVersionCompare(): Promise<void> {
 
     applyVersionResult(result)
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }

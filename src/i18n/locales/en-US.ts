@@ -1103,6 +1103,22 @@ export const enUS: LanguagePack = {
     'ui.blendModeExclusion': 'Exclusion',
     'ui.blendModeLighten': 'Lighten',
     'ui.blendModeDarken': 'Darken',
+    'status.binaryDifferences': '≠ Binary differences',
+    'status.hexSame': '≠ Same',
+    'ui.optionsGroupCompare': 'Compare',
+    'ui.fileFilters': 'File Filters',
+    'ui.ignoreWhitespaceDifferences': 'Ignore whitespace differences',
+    'ui.ignoreCaseDifferences': 'Ignore character case',
+    'ui.ignoreLineEndingDifferences': 'Ignore line ending differences',
+    'ui.folderCompareOptionsHint':
+      'Default Folder Compare criteria for new sessions. Session Settings can still override them.',
+    'ui.hexDiffOnlyDefault': 'Show difference bytes only by default',
+    'ui.hexBytesPerRow': 'Bytes per row',
+    'ui.hexBytesPerRowAuto': 'Auto',
+    'ui.hexCompareOptionsHint': 'Default Hex Compare window and display options for new sessions.',
+    'ui.fileFiltersIncludePlaceholder': '*.*;*.txt (empty = all)',
+    'ui.fileFiltersHint':
+      'Default Folder Compare / Sync / Merge name filters. The Filters strip and Session Settings can override them.',
     'ui.startup': 'Startup',
     'ui.loadLastWorkspaceOnStartup': 'Load last workspace on startup',
     'ui.startupHint':

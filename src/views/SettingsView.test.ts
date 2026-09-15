@@ -419,6 +419,61 @@ describe('SettingsView', () => {
   })
 })
 
+it('persists Folder/Hex/File Filters compare options and text ignore defaults', async () => {
+  const wrapper = mountSettingsView()
+
+  await wrapper.find('[data-testid="options-section-textEditing"]').trigger('click')
+  await wrapper.find('[data-testid="ignore-whitespace-default"]').setValue(true)
+  await wrapper.find('[data-testid="ignore-case-default"]').setValue(true)
+  await wrapper.find('[data-testid="ignore-line-endings-default"]').setValue(true)
+  expect(
+    JSON.parse(localStorage.getItem('open-diff-text-compare-session-options') ?? '{}'),
+  ).toMatchObject({
+    ignoreWhitespace: true,
+    ignoreCase: true,
+    ignoreLineEndings: true,
+  })
+
+  await wrapper.find('[data-testid="options-section-folderCompare"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-folder-compare-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="folder-compare-follow-symlinks"]').setValue(true)
+  await wrapper.find('[data-testid="folder-compare-size-only-unimportant"]').setValue(true)
+  expect(
+    JSON.parse(localStorage.getItem('open-diff-folder-compare-criteria') ?? '{}'),
+  ).toMatchObject({
+    followSymlinks: true,
+    sizeOnlyUnimportant: true,
+  })
+
+  await wrapper.find('[data-testid="options-section-hexCompare"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-hex-compare-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="hex-diff-only-default"]').setValue(true)
+  await wrapper.find('[data-testid="hex-window-length-default"]').setValue('512')
+  await wrapper.find('[data-testid="hex-window-length-default"]').trigger('change')
+  await wrapper.find('[data-testid="hex-bytes-per-row-default"]').setValue('8')
+  await wrapper.find('[data-testid="hex-bytes-per-row-default"]').trigger('change')
+  expect(
+    JSON.parse(localStorage.getItem('open-diff-hex-compare-session-options') ?? '{}'),
+  ).toMatchObject({
+    diffOnly: true,
+    windowLength: 512,
+    bytesPerRow: '8',
+  })
+
+  await wrapper.find('[data-testid="options-section-fileFilters"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-file-filters-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="file-filters-include"]').setValue('*.bin;*.dat')
+  await wrapper.find('[data-testid="file-filters-include"]').trigger('change')
+  await wrapper.find('[data-testid="file-filters-exclude"]').setValue('*.tmp')
+  await wrapper.find('[data-testid="file-filters-exclude"]').trigger('change')
+  await wrapper.find('[data-testid="file-filters-case-sensitive"]').setValue(true)
+  expect(JSON.parse(localStorage.getItem('open-diff-folder-name-filters') ?? '{}')).toMatchObject({
+    include: ['*.bin', '*.dat'],
+    exclude: ['*.tmp'],
+    caseSensitive: true,
+  })
+})
+
 function mountSettingsView(): VueWrapper {
   return mount(SettingsView, {
     global: {

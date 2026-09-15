@@ -7,6 +7,7 @@ import {
   formatLoadTimePhrase,
   isEditModeStatusSource,
   isFolderPairStatusSource,
+  isHexSessionStatusSource,
   isTextSessionStatusSource,
   type StatusChromeKind,
   type StatusEditMode,
@@ -103,6 +104,10 @@ export const useStatusBarStore = defineStore('statusBar', () => {
       isEditModeStatusSource(report.value.source)
     ) {
       return 'text-session'
+    }
+
+    if (isHexSessionStatusSource(report.value.source)) {
+      return 'hex-session'
     }
 
     return 'standard'

@@ -9,7 +9,11 @@ import {
 } from '@/app/folderNameFilters'
 import type { TextCompareSessionOptions } from '@/app/textCompareSessionOptions'
 import type { TableCompareSessionOptions } from '@/app/tableCompareSessionOptions'
-import type { HexCompareSessionOptions } from '@/app/hexCompareSessionOptions'
+import {
+  defaultHexCompareSessionOptions,
+  normalizeHexBytesPerRow,
+  type HexCompareSessionOptions,
+} from '@/app/hexCompareSessionOptions'
 import {
   defaultPictureCompareOptions,
   type PictureCompareOptionsState,
@@ -57,10 +61,7 @@ const props = withDefaults(
       delimiter: '',
       ignoredColumns: [],
     }),
-    hexOptions: () => ({
-      windowLength: 256,
-      diffOnly: false,
-    }),
+    hexOptions: () => defaultHexCompareSessionOptions(),
     pictureOptions: () => defaultPictureCompareOptions(),
   },
 )
@@ -94,7 +95,11 @@ const draftTable = ref<TableCompareSessionOptions>({
   ...props.tableOptions,
   ignoredColumns: [...props.tableOptions.ignoredColumns],
 })
-const draftHex = ref<HexCompareSessionOptions>({ ...props.hexOptions })
+const draftHex = ref<HexCompareSessionOptions>({
+  ...defaultHexCompareSessionOptions(),
+  ...props.hexOptions,
+  bytesPerRow: normalizeHexBytesPerRow(props.hexOptions.bytesPerRow),
+})
 const draftPicture = ref<PictureCompareOptionsState>({ ...props.pictureOptions })
 const ignoreRegexDraft = ref(props.textOptions.ignoreRegexes.join(', '))
 const ignoredColumnsDraft = ref(props.tableOptions.ignoredColumns.join(', '))
@@ -127,7 +132,11 @@ watch(
       ...props.tableOptions,
       ignoredColumns: [...props.tableOptions.ignoredColumns],
     }
-    draftHex.value = { ...props.hexOptions }
+    draftHex.value = {
+      ...defaultHexCompareSessionOptions(),
+      ...props.hexOptions,
+      bytesPerRow: normalizeHexBytesPerRow(props.hexOptions.bytesPerRow),
+    }
     draftPicture.value = { ...props.pictureOptions }
     ignoreRegexDraft.value = props.textOptions.ignoreRegexes.join(', ')
     ignoredColumnsDraft.value = props.tableOptions.ignoredColumns.join(', ')
@@ -203,7 +212,13 @@ function applySettings(): void {
   }
 
   if (props.kind === 'hex') {
-    emit('apply', { kind: 'hex', options: { ...draftHex.value } })
+    emit('apply', {
+      kind: 'hex',
+      options: {
+        ...draftHex.value,
+        bytesPerRow: normalizeHexBytesPerRow(draftHex.value.bytesPerRow),
+      },
+    })
 
     return
   }
@@ -513,6 +528,17 @@ function applySettings(): void {
             data-testid="session-settings-hex-diff-only"
           />
           <span>{{ $t('ui.diffs') }}</span>
+        </label>
+        <label class="stack">
+          <span>{{ $t('ui.hexBytesPerRow') }}</span>
+          <select
+            v-model="draftHex.bytesPerRow"
+            data-testid="session-settings-hex-bytes-per-row"
+          >
+            <option value="auto">{{ $t('ui.hexBytesPerRowAuto') }}</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+          </select>
         </label>
       </div>
 

@@ -1,11 +1,12 @@
 /** Capture-aligned status bar phrase helpers (English defaults for the store). */
 
 const TEXT_SESSION_SOURCES = new Set(['text-compare', 'text-merge', 'text-patch'])
+const HEX_SESSION_SOURCES = new Set(['hex-compare'])
 const EDIT_MODE_SOURCES = new Set(['text-compare', 'text-merge', 'text-edit'])
 const FOLDER_PAIR_SOURCES = new Set(['folder-compare', 'folder-sync', 'folder-merge'])
 
 export type StatusEditMode = 'insert' | 'overwrite'
-export type StatusChromeKind = 'standard' | 'text-session' | 'folder-pair'
+export type StatusChromeKind = 'standard' | 'text-session' | 'folder-pair' | 'hex-session'
 
 export function isTextSessionStatusSource(source: string): boolean {
   return TEXT_SESSION_SOURCES.has(source)
@@ -19,10 +20,22 @@ export function isFolderPairStatusSource(source: string): boolean {
   return FOLDER_PAIR_SOURCES.has(source)
 }
 
+export function isHexSessionStatusSource(source: string): boolean {
+  return HEX_SESSION_SOURCES.has(source)
+}
+
 export function formatDifferenceCountPhrase(
   differenceCount: number | null,
   source: string,
 ): string {
+  if (isHexSessionStatusSource(source)) {
+    if (differenceCount === null || differenceCount === 0) {
+      return '≠ Same'
+    }
+
+    return '≠ Binary differences'
+  }
+
   if (!isTextSessionStatusSource(source)) {
     return `Differences: ${differenceCount === null ? '-' : String(differenceCount)}`
   }

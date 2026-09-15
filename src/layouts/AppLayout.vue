@@ -49,6 +49,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import {
   isEditModeStatusSource,
+  isHexSessionStatusSource,
   isTextSessionStatusSource,
   padStatusChromePanes,
 } from '@/app/statusBarPhrases'
@@ -816,6 +817,14 @@ interface StatusChromePane {
 }
 
 function localizedDifferenceSegment(differenceCount: number | null, source: string): string {
+  if (isHexSessionStatusSource(source)) {
+    if (differenceCount === null || differenceCount === 0) {
+      return t('status.hexSame')
+    }
+
+    return t('status.binaryDifferences')
+  }
+
   if (!isTextSessionStatusSource(source)) {
     return `${t('status.differences')}: ${differenceCount === null ? '-' : String(differenceCount)}`
   }
@@ -927,7 +936,7 @@ const statusChromePanes = computed((): StatusChromePane[] => {
     return panes
   }
 
-  if (kind === 'text-session') {
+  if (kind === 'text-session' || kind === 'hex-session') {
     let editModeText = ''
 
     if (statusBar.report.editMode === 'overwrite') {
@@ -2303,13 +2312,15 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.status-bar[data-chrome-kind='text-session'] {
+.status-bar[data-chrome-kind='text-session'],
+.status-bar[data-chrome-kind='hex-session'] {
   height: 22px;
   min-height: 22px;
   font-size: 11px;
 }
 
-.status-bar[data-chrome-kind='text-session'] .status-bar-pane {
+.status-bar[data-chrome-kind='text-session'] .status-bar-pane,
+.status-bar[data-chrome-kind='hex-session'] .status-bar-pane {
   padding: 0 5px;
 }
 

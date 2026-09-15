@@ -7,6 +7,7 @@ import {
   formatLoadTimePhrase,
   isEditModeStatusSource,
   isFolderPairStatusSource,
+  isHexSessionStatusSource,
   isTextSessionStatusSource,
   padStatusChromePanes,
 } from './statusBarPhrases'
@@ -32,6 +33,9 @@ describe('statusBarPhrases', () => {
     expect(formatDifferenceCountPhrase(1, 'text-compare')).toBe('≠ 1 difference section')
     expect(formatDifferenceCountPhrase(3, 'text-merge')).toBe('≠ 3 difference sections')
     expect(formatDifferenceCountPhrase(2, 'folder-compare')).toBe('Differences: 2')
+    expect(formatDifferenceCountPhrase(0, 'hex-compare')).toBe('≠ Same')
+    expect(formatDifferenceCountPhrase(3, 'hex-compare')).toBe('≠ Binary differences')
+    expect(isHexSessionStatusSource('hex-compare')).toBe(true)
   })
 
   it('formats importance phrases from important/unimportant counts', () => {

@@ -1121,6 +1121,23 @@ export const esES: LanguagePack = {
     'ui.blendModeExclusion': 'Exclusión',
     'ui.blendModeLighten': 'Aclarar',
     'ui.blendModeDarken': 'Oscurecer',
+    'status.binaryDifferences': '≠ Diferencias binarias',
+    'status.hexSame': '≠ Iguales',
+    'ui.optionsGroupCompare': 'Comparar',
+    'ui.fileFilters': 'Filtros de archivo',
+    'ui.ignoreWhitespaceDifferences': 'Ignorar diferencias de espacios',
+    'ui.ignoreCaseDifferences': 'Ignorar mayúsculas/minúsculas',
+    'ui.ignoreLineEndingDifferences': 'Ignorar finales de línea',
+    'ui.folderCompareOptionsHint':
+      'Criterios predeterminados para nuevas sesiones de carpetas. La configuración de sesión puede anularlos.',
+    'ui.hexDiffOnlyDefault': 'Mostrar solo bytes diferentes por defecto',
+    'ui.hexBytesPerRow': 'Bytes por fila',
+    'ui.hexBytesPerRowAuto': 'Auto',
+    'ui.hexCompareOptionsHint':
+      'Ventana y opciones de visualización predeterminadas para nuevas sesiones Hex.',
+    'ui.fileFiltersIncludePlaceholder': '*.*;*.txt (vacío = todos)',
+    'ui.fileFiltersHint':
+      'Filtros de nombre predeterminados para Comparar/Sincronizar/Combinar carpetas. La barra Filtros y la configuración de sesión pueden anularlos.',
     'ui.startup': 'Inicio',
     'ui.loadLastWorkspaceOnStartup': 'Cargar el último espacio de trabajo al iniciar',
     'ui.startupHint':

@@ -23,7 +23,7 @@ const routes = [
   ['reports scripts', '/reports/scripts'],
 ]
 
-const textSessionStatusRoutes = new Set(['text', 'text merge', 'registry', 'text patch'])
+const denseStatusRoutes = new Set(['text', 'text merge', 'registry', 'text patch', 'hex'])
 
 for (const [name, route] of routes) {
   test(`${name} uses dense workbench shell`, async ({ page }) => {
@@ -38,7 +38,7 @@ for (const [name, route] of routes) {
     await expect(page.locator('.sidebar')).toBeHidden()
     await expect(page.locator('.status-bar')).toHaveCSS(
       'height',
-      textSessionStatusRoutes.has(name) ? '22px' : '24px',
+      denseStatusRoutes.has(name) ? '22px' : '24px',
     )
     await expect(page.locator('.command-bar')).toHaveCount(0)
     await expect(page.locator('.pathbar')).toHaveCount(0)

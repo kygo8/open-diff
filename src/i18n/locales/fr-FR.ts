@@ -1124,6 +1124,23 @@ export const frFR: LanguagePack = {
     'ui.blendModeExclusion': 'Exclusion',
     'ui.blendModeLighten': 'Éclaircir',
     'ui.blendModeDarken': 'Obscurcir',
+    'status.binaryDifferences': '≠ Différences binaires',
+    'status.hexSame': '≠ Identique',
+    'ui.optionsGroupCompare': 'Comparaison',
+    'ui.fileFilters': 'Filtres de fichiers',
+    'ui.ignoreWhitespaceDifferences': 'Ignorer les différences d’espaces',
+    'ui.ignoreCaseDifferences': 'Ignorer la casse',
+    'ui.ignoreLineEndingDifferences': 'Ignorer les fins de ligne',
+    'ui.folderCompareOptionsHint':
+      'Critères par défaut des nouvelles sessions Dossier. Les paramètres de session peuvent les remplacer.',
+    'ui.hexDiffOnlyDefault': 'Afficher uniquement les octets différents par défaut',
+    'ui.hexBytesPerRow': 'Octets par ligne',
+    'ui.hexBytesPerRowAuto': 'Auto',
+    'ui.hexCompareOptionsHint':
+      'Fenêtre et options d’affichage par défaut des nouvelles sessions Hex.',
+    'ui.fileFiltersIncludePlaceholder': '*.*;*.txt (vide = tous)',
+    'ui.fileFiltersHint':
+      'Filtres de noms par défaut pour Comparer/Synchroniser/Fusionner dossiers. La barre Filtres et les paramètres de session peuvent remplacer.',
     'ui.startup': 'Démarrage',
     'ui.loadLastWorkspaceOnStartup': 'Charger le dernier espace de travail au démarrage',
     'ui.startupHint':

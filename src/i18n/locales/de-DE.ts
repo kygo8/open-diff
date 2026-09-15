@@ -1124,6 +1124,22 @@ export const deDE: LanguagePack = {
     'ui.blendModeExclusion': 'Ausschluss',
     'ui.blendModeLighten': 'Aufhellen',
     'ui.blendModeDarken': 'Abdunkeln',
+    'status.binaryDifferences': '≠ Binärunterschiede',
+    'status.hexSame': '≠ Gleich',
+    'ui.optionsGroupCompare': 'Vergleich',
+    'ui.fileFilters': 'Dateifilter',
+    'ui.ignoreWhitespaceDifferences': 'Leerzeichenunterschiede ignorieren',
+    'ui.ignoreCaseDifferences': 'Groß-/Kleinschreibung ignorieren',
+    'ui.ignoreLineEndingDifferences': 'Zeilenende-Unterschiede ignorieren',
+    'ui.folderCompareOptionsHint':
+      'Standardkriterien für neue Ordnervergleiche. Sitzungseinstellungen können sie überschreiben.',
+    'ui.hexDiffOnlyDefault': 'Standardmäßig nur Differenzbytes anzeigen',
+    'ui.hexBytesPerRow': 'Bytes pro Zeile',
+    'ui.hexBytesPerRowAuto': 'Auto',
+    'ui.hexCompareOptionsHint': 'Standardfenster und Anzeigeoptionen für neue Hex-Vergleiche.',
+    'ui.fileFiltersIncludePlaceholder': '*.*;*.txt (leer = alle)',
+    'ui.fileFiltersHint':
+      'Standard-Namensfilter für Ordnervergleich/-sync/-merge. Filterleiste und Sitzungseinstellungen können überschreiben.',
     'ui.startup': 'Start',
     'ui.loadLastWorkspaceOnStartup': 'Letzten Arbeitsbereich beim Start laden',
     'ui.startupHint':

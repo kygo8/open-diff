@@ -421,6 +421,46 @@ describe('FolderCompareView', () => {
     expect(stored.include).toEqual(['*.ts', '*.vue'])
   })
 
+  it('debounces Filters strip changes into an automatic compare rebuild', async () => {
+    vi.useFakeTimers()
+    const wrapper = mountFolderCompareView()
+
+    await runCompare(wrapper)
+    vi.mocked(compareFolderPaths).mockClear()
+
+    const pattern = wrapper.find('[data-testid="folder-filter-pattern"]')
+
+    await pattern.setValue('*.ts')
+    await pattern.trigger('change')
+    await flushPromises()
+
+    expect(compareFolderPaths).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(350)
+    await flushPromises()
+
+    expect(compareFolderPaths).toHaveBeenCalledWith({
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      criteria: {
+        compareSize: true,
+        compareModifiedTime: false,
+        compareContents: true,
+        compareCrc: false,
+        compareAttributes: false,
+        sizeOnlyUnimportant: false,
+        followSymlinks: false,
+        timestampToleranceMs: 0,
+        ignoreDaylightSavingHourOffset: false,
+        showHiddenFiles: false,
+      },
+      filters: { include: ['*.ts'], exclude: [], caseSensitive: false },
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
+    })
+
+    vi.useRealTimers()
+  })
+
   it('opens display filters and peek from the Filters strip glyph buttons', async () => {
     const wrapper = mountFolderCompareView()
 

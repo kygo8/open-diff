@@ -2303,6 +2303,16 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.status-bar[data-chrome-kind='text-session'] {
+  height: 22px;
+  min-height: 22px;
+  font-size: 11px;
+}
+
+.status-bar[data-chrome-kind='text-session'] .status-bar-pane {
+  padding: 0 5px;
+}
+
 .status-bar-pane {
   display: flex;
   align-items: center;

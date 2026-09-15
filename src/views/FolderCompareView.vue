@@ -639,6 +639,36 @@ function onFolderFilterStripChange(event: Event): void {
   applyFolderFilterStripPattern((event.target as HTMLInputElement).value)
 }
 
+let folderNameFilterRebuildTimer: ReturnType<typeof setTimeout> | undefined
+
+watch(
+  folderNameFilters,
+  () => {
+    if (folderNameFilterRebuildTimer !== undefined) {
+      clearTimeout(folderNameFilterRebuildTimer)
+    }
+
+    folderNameFilterRebuildTimer = setTimeout(() => {
+      folderNameFilterRebuildTimer = undefined
+
+      if (folderCompareLoading.value) {
+        return
+      }
+
+      if (!leftRoot.value || !rightRoot.value) {
+        return
+      }
+
+      if (rows.value.length === 0) {
+        return
+      }
+
+      void runFolderCompare()
+    }, 350)
+  },
+  { deep: true },
+)
+
 function applyFolderSessionSettings(
   payload:
     | { kind: 'folder'; criteria: FolderCompareCriteria; filters: FolderNameFilters }

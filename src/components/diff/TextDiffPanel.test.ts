@@ -92,7 +92,7 @@ describe('TextDiffPanel', () => {
     expect(rows).toHaveLength(3)
 
     for (const row of rows) {
-      expect(row.attributes('style')).toContain('--text-diff-row-height: 24px')
+      expect(row.attributes('style')).toContain('--text-diff-row-height: 20px')
       expect(row.findAll('.cell')).toHaveLength(2)
     }
   })
@@ -120,10 +120,10 @@ describe('TextDiffPanel', () => {
 
     expect(wrapper.findAll('.diff-row').length).toBeLessThan(80)
     expect(wrapper.find('[data-testid="text-diff-virtual-spacer"]').attributes('style')).toContain(
-      'height: 2400000px',
+      'height: 2000000px',
     )
 
-    body.element.scrollTop = 24 * 50_000
+    body.element.scrollTop = 20 * 50_000
     await body.trigger('scroll')
     await nextTick()
 
@@ -169,7 +169,7 @@ describe('TextDiffPanel', () => {
     await markers[1]?.trigger('click')
     await nextTick()
 
-    expect(body.element.scrollTop).toBe(24 * 59)
+    expect(body.element.scrollTop).toBe(20 * 59)
     expect(wrapper.text()).toContain('left 60')
   })
 
@@ -203,17 +203,17 @@ describe('TextDiffPanel', () => {
     await wrapper.find('[data-testid="text-diff-next-diff"]').trigger('click')
     await nextTick()
 
-    expect(body.element.scrollTop).toBe(24 * 4)
+    expect(body.element.scrollTop).toBe(20 * 4)
 
     await wrapper.find('[data-testid="text-diff-next-diff"]').trigger('click')
     await nextTick()
 
-    expect(body.element.scrollTop).toBe(24 * 39)
+    expect(body.element.scrollTop).toBe(20 * 39)
 
     await wrapper.find('[data-testid="text-diff-previous-diff"]').trigger('click')
     await nextTick()
 
-    expect(body.element.scrollTop).toBe(24 * 4)
+    expect(body.element.scrollTop).toBe(20 * 4)
 
     wrapper.unmount()
   })

@@ -23,6 +23,8 @@ const routes = [
   ['reports scripts', '/reports/scripts'],
 ]
 
+const textSessionStatusRoutes = new Set(['text', 'text merge', 'registry', 'text patch'])
+
 for (const [name, route] of routes) {
   test(`${name} uses dense workbench shell`, async ({ page }) => {
     await page.setViewportSize({ width: 1600, height: 1280 })
@@ -34,7 +36,10 @@ for (const [name, route] of routes) {
     )
     await expect(page.locator('.menu-bar')).toHaveCSS('height', '54px')
     await expect(page.locator('.sidebar')).toBeHidden()
-    await expect(page.locator('.status-bar')).toHaveCSS('height', '24px')
+    await expect(page.locator('.status-bar')).toHaveCSS(
+      'height',
+      textSessionStatusRoutes.has(name) ? '22px' : '24px',
+    )
     await expect(page.locator('.command-bar')).toHaveCount(0)
     await expect(page.locator('.pathbar')).toHaveCount(0)
     await expect(page.locator('.page-head')).toHaveCount(0)

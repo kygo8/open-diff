@@ -1264,7 +1264,9 @@ pub fn build_folder_merge_plan(
     right_root: String,
     output_root: String,
     archive_extensions: Option<Vec<String>>,
+    filters: Option<FolderNameFilters>,
 ) -> Result<FolderMergePlanResponse, AppErrorPayload> {
+    let name_filters = filters.unwrap_or_default();
     let document = folder_merge_document(
         &left_root,
         &base_root,
@@ -1272,6 +1274,11 @@ pub fn build_folder_merge_plan(
         &output_root,
         archive_extensions.as_deref(),
     )?;
+    let document = if name_filters.is_active() {
+        apply_name_filters_to_merge_document(document, &name_filters.to_file_filters())
+    } else {
+        document
+    };
     let rows = folder_merge_rows(&document);
     let conflicts = rows.iter().filter(|row| row.conflict.is_some()).count();
 
@@ -3562,6 +3569,49 @@ fn scan_folder_root_with_archive_extensions(
         .map_err(|error| compare_source_error(root, error))
 }
 
+fn apply_name_filters_to_merge_document(
+    mut document: folder_merge_core::FolderMergeDocument,
+    filters: &folder_core::FileFilters,
+) -> folder_merge_core::FolderMergeDocument {
+    // Match against the union of paths across sides (mirrors Sync alignment filtering),
+    // then keep matched paths and their ancestor directories on each side.
+    let all_paths: BTreeSet<String> = document
+        .base
+        .entries
+        .iter()
+        .chain(document.left.entries.iter())
+        .chain(document.right.entries.iter())
+        .map(|entry| entry.relative_path.clone())
+        .collect();
+
+    let matched: BTreeSet<String> = all_paths
+        .iter()
+        .filter(|path| filters.allows(path))
+        .cloned()
+        .collect();
+
+    let mut keep = matched.clone();
+    for path in &matched {
+        let mut end = path.len();
+        while let Some(slash) = path[..end].rfind('/') {
+            keep.insert(path[..slash].to_owned());
+            end = slash;
+        }
+    }
+
+    let retain = |entries: Vec<folder_merge_core::FolderMergeEntry>| {
+        entries
+            .into_iter()
+            .filter(|entry| keep.contains(&entry.relative_path))
+            .collect::<Vec<_>>()
+    };
+
+    document.base.entries = retain(document.base.entries);
+    document.left.entries = retain(document.left.entries);
+    document.right.entries = retain(document.right.entries);
+    document
+}
+
 fn folder_merge_document(
     left_root: &str,
     base_root: &str,
@@ -5668,6 +5718,7 @@ mod tests {
             right.display().to_string(),
             output.display().to_string(),
             None,
+            None,
         )
         .expect("valid folders should build a merge plan");
 
@@ -5701,6 +5752,94 @@ mod tests {
                     .map(|conflict| conflict.left_context.as_str())
                     == Some("Left: File")
         }));
+    }
+
+    #[test]
+    fn build_folder_merge_plan_applies_shared_name_filters() {
+        let root = unique_temp_dir("folder-merge-name-filters");
+        let base = root.join("base");
+        let left = root.join("left");
+        let right = root.join("right");
+        let output = root.join("output");
+
+        fs::create_dir_all(base.join("src")).expect("base src should be created");
+        fs::create_dir_all(left.join("src")).expect("left src should be created");
+        fs::create_dir_all(right.join("src")).expect("right src should be created");
+        fs::create_dir_all(&output).expect("output should be created");
+        fs::write(base.join("src").join("keep.txt"), "base keep").expect("base keep");
+        fs::write(left.join("src").join("keep.txt"), "left keep").expect("left keep");
+        fs::write(right.join("src").join("keep.txt"), "right keep").expect("right keep");
+        fs::write(left.join("src").join("skip.log"), "noise").expect("left skip");
+        fs::write(right.join("src").join("skip.log"), "noise").expect("right skip");
+        fs::write(left.join("extra.exe"), "binary").expect("left exe");
+        fs::write(right.join("extra.exe"), "binary").expect("right ex");
+
+        let include_only = build_folder_merge_plan(
+            left.display().to_string(),
+            base.display().to_string(),
+            right.display().to_string(),
+            output.display().to_string(),
+            None,
+            Some(FolderNameFilters {
+                include: vec!["*.txt".to_owned()],
+                exclude: Vec::new(),
+                case_sensitive: false,
+            }),
+        )
+        .expect("include filter should build a merge plan");
+
+        assert!(
+            include_only
+                .rows
+                .iter()
+                .any(|row| row.path == "src/keep.txt"),
+            "include *.txt should keep text files: {:?}",
+            include_only.rows
+        );
+        assert!(
+            include_only.rows.iter().any(|row| row.path == "src"),
+            "include filter should retain ancestor directories: {:?}",
+            include_only.rows
+        );
+        assert!(
+            include_only
+                .rows
+                .iter()
+                .all(|row| row.path != "src/skip.log" && row.path != "extra.exe"),
+            "include *.txt should drop non-matching files: {:?}",
+            include_only.rows
+        );
+
+        let exclude_logs = build_folder_merge_plan(
+            left.display().to_string(),
+            base.display().to_string(),
+            right.display().to_string(),
+            output.display().to_string(),
+            None,
+            Some(FolderNameFilters {
+                include: Vec::new(),
+                exclude: vec!["*.log".to_owned(), "*.exe".to_owned()],
+                case_sensitive: false,
+            }),
+        )
+        .expect("exclude filter should build a merge plan");
+
+        assert!(
+            exclude_logs
+                .rows
+                .iter()
+                .any(|row| row.path == "src/keep.txt"),
+            "exclude filter should keep text files: {:?}",
+            exclude_logs.rows
+        );
+        assert!(
+            exclude_logs
+                .rows
+                .iter()
+                .all(|row| row.path != "src/skip.log" && row.path != "extra.exe"),
+            "exclude *.log/*.exe should drop matching files: {:?}",
+            exclude_logs.rows
+        );
     }
 
     #[test]
@@ -5847,6 +5986,7 @@ mod tests {
             base.display().to_string(),
             right.display().to_string(),
             output.display().to_string(),
+            None,
             None,
         )
         .expect("valid folders should build a merge plan");
@@ -6367,6 +6507,7 @@ mod tests {
             right.display().to_string(),
             output.display().to_string(),
             Some(vec![".7z".into()]),
+            None,
         );
         assert!(
             excluded.is_err()
@@ -6383,6 +6524,7 @@ mod tests {
             right.display().to_string(),
             output.display().to_string(),
             Some(vec![".zip".into()]),
+            None,
         )
         .expect("zip should merge-plan as archive when listed");
         assert!(

@@ -1999,15 +1999,16 @@ function toggleSourceEditors(): void {
 .bc-path-footers {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 2px;
   padding: 0 2px;
 }
 
 .path-side-footer {
-  min-height: 14px;
+  min-height: 11px;
+  margin-top: 1px;
   color: var(--od-muted, #6b7280);
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 10px;
+  line-height: 11px;
 }
 
 .path-side-footer-muted {

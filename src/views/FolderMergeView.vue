@@ -492,6 +492,7 @@ async function buildFolderMergePlan(): Promise<void> {
     rightRoot: rightPath.value,
     outputRoot: outputPath.value,
     archiveExtensions: [...settings.archiveExtensions],
+    filters: { ...folderNameFilters.value },
   })
 
   loadTimeSeconds.value = elapsedSecondsSince(startedAt)

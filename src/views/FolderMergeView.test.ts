@@ -122,6 +122,7 @@ describe('FolderMergeView', () => {
       rightRoot: 'D:/workspace/merge/right',
       outputRoot: 'D:/workspace/merge/output',
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
+      filters: { include: [], exclude: [], caseSensitive: false },
     })
     expect(summary.text()).toContain('5')
     expect(summary.text()).toContain('2')
@@ -225,6 +226,7 @@ describe('FolderMergeView', () => {
       rightRoot: 'D:/workspace/merge/right',
       outputRoot: 'D:/workspace/merge/output',
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
+      filters: { include: [], exclude: [], caseSensitive: false },
     })
   })
 

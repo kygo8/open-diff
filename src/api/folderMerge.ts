@@ -14,6 +14,7 @@ export function buildFolderMergePlan(
     rightRoot: request.rightRoot,
     outputRoot: request.outputRoot,
     archiveExtensions: request.archiveExtensions,
+    filters: request.filters,
   })
 }
 

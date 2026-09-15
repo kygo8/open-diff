@@ -8,8 +8,10 @@ import {
   isEditModeStatusSource,
   isFolderPairStatusSource,
   isHexSessionStatusSource,
+  isMediaSessionStatusSource,
   isPictureSessionStatusSource,
   isTextSessionStatusSource,
+  isVersionSessionStatusSource,
   padStatusChromePanes,
 } from './statusBarPhrases'
 
@@ -42,6 +44,10 @@ describe('statusBarPhrases', () => {
     expect(formatDifferenceCountPhrase(1, 'picture-compare')).toBe('≠ 1 pixel')
     expect(formatDifferenceCountPhrase(4, 'picture-compare')).toBe('≠ 4 pixels')
     expect(isPictureSessionStatusSource('picture-compare')).toBe(true)
+    expect(isMediaSessionStatusSource('media-compare')).toBe(true)
+    expect(isVersionSessionStatusSource('version-compare')).toBe(true)
+    expect(isMediaSessionStatusSource('picture-compare')).toBe(false)
+    expect(isVersionSessionStatusSource('media-compare')).toBe(false)
   })
 
   it('formats importance phrases from important/unimportant counts', () => {

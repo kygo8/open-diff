@@ -3,12 +3,20 @@
 const TEXT_SESSION_SOURCES = new Set(['text-compare', 'text-merge', 'text-patch'])
 const HEX_SESSION_SOURCES = new Set(['hex-compare'])
 const PICTURE_SESSION_SOURCES = new Set(['picture-compare'])
+const MEDIA_SESSION_SOURCES = new Set(['media-compare'])
+const VERSION_SESSION_SOURCES = new Set(['version-compare'])
 const EDIT_MODE_SOURCES = new Set(['text-compare', 'text-merge', 'text-edit'])
 const FOLDER_PAIR_SOURCES = new Set(['folder-compare', 'folder-sync', 'folder-merge'])
 
 export type StatusEditMode = 'insert' | 'overwrite'
 export type StatusChromeKind =
-  'standard' | 'text-session' | 'folder-pair' | 'hex-session' | 'picture-session'
+  | 'standard'
+  | 'text-session'
+  | 'folder-pair'
+  | 'hex-session'
+  | 'picture-session'
+  | 'media-session'
+  | 'version-session'
 
 export function isTextSessionStatusSource(source: string): boolean {
   return TEXT_SESSION_SOURCES.has(source)
@@ -28,6 +36,14 @@ export function isHexSessionStatusSource(source: string): boolean {
 
 export function isPictureSessionStatusSource(source: string): boolean {
   return PICTURE_SESSION_SOURCES.has(source)
+}
+
+export function isMediaSessionStatusSource(source: string): boolean {
+  return MEDIA_SESSION_SOURCES.has(source)
+}
+
+export function isVersionSessionStatusSource(source: string): boolean {
+  return VERSION_SESSION_SOURCES.has(source)
 }
 
 export function formatDifferenceCountPhrase(

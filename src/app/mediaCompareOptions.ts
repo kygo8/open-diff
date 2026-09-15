@@ -1,5 +1,9 @@
 export const mediaCompareOptionsStorageKey = 'open-diff-media-compare-options'
 
+export const mediaFieldFilters = ['all', 'diffs', 'same', 'minor'] as const
+
+export type MediaFieldFilter = (typeof mediaFieldFilters)[number]
+
 /** Default tag fields treated as unimportant (minor) when comparing media metadata. */
 export const defaultUnimportantMediaFields = [
   'Comment',
@@ -69,11 +73,28 @@ export function buildMediaRulesCatalog(
 
 export interface MediaCompareOptionsState {
   unimportantFields: string[]
+  /** Keep left/right media players scrubbed together by default. */
+  syncPlayback: boolean
+  /** Initial field-row filter for new Media Compare sessions. */
+  defaultFilter: MediaFieldFilter
+  /** Open Importance Rules panel when a Media Compare session starts. */
+  showRules: boolean
+}
+
+export function normalizeMediaFieldFilter(value: unknown): MediaFieldFilter {
+  if (typeof value === 'string' && (mediaFieldFilters as readonly string[]).includes(value)) {
+    return value as MediaFieldFilter
+  }
+
+  return 'all'
 }
 
 export function defaultMediaCompareOptions(): MediaCompareOptionsState {
   return {
     unimportantFields: [...defaultUnimportantMediaFields],
+    syncPlayback: true,
+    defaultFilter: 'all',
+    showRules: false,
   }
 }
 
@@ -101,9 +122,13 @@ export function loadMediaCompareOptions(
     }
 
     const parsed = JSON.parse(raw) as Partial<MediaCompareOptionsState>
+    const defaults = defaultMediaCompareOptions()
 
     return {
       unimportantFields: normalizeFieldList(parsed.unimportantFields),
+      syncPlayback: parsed.syncPlayback !== false,
+      defaultFilter: normalizeMediaFieldFilter(parsed.defaultFilter ?? defaults.defaultFilter),
+      showRules: parsed.showRules === true,
     }
   } catch {
     return defaultMediaCompareOptions()
@@ -118,6 +143,9 @@ export function saveMediaCompareOptions(
     mediaCompareOptionsStorageKey,
     JSON.stringify({
       unimportantFields: normalizeFieldList(state.unimportantFields),
+      syncPlayback: state.syncPlayback,
+      defaultFilter: normalizeMediaFieldFilter(state.defaultFilter),
+      showRules: state.showRules,
     }),
   )
 }
@@ -139,11 +167,13 @@ export function toggleMediaFieldImportance(
 
   if (important) {
     return {
+      ...options,
       unimportantFields: [...options.unimportantFields, field],
     }
   }
 
   return {
+    ...options,
     unimportantFields: options.unimportantFields.filter(
       (entry) => entry.trim().toLowerCase() !== field.trim().toLowerCase(),
     ),

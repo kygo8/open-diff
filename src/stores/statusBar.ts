@@ -8,8 +8,10 @@ import {
   isEditModeStatusSource,
   isFolderPairStatusSource,
   isHexSessionStatusSource,
+  isMediaSessionStatusSource,
   isPictureSessionStatusSource,
   isTextSessionStatusSource,
+  isVersionSessionStatusSource,
   type StatusChromeKind,
   type StatusEditMode,
 } from '@/app/statusBarPhrases'
@@ -113,6 +115,14 @@ export const useStatusBarStore = defineStore('statusBar', () => {
 
     if (isPictureSessionStatusSource(report.value.source)) {
       return 'picture-session'
+    }
+
+    if (isMediaSessionStatusSource(report.value.source)) {
+      return 'media-session'
+    }
+
+    if (isVersionSessionStatusSource(report.value.source)) {
+      return 'version-session'
     }
 
     return 'standard'

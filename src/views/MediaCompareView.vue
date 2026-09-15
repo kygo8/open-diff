@@ -17,12 +17,13 @@ import { prefersVideoElement } from '@/app/mediaPlayback'
 import { buildMediaCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
 import {
   buildMediaRulesCatalog,
+  defaultUnimportantMediaFields,
   isMediaFieldImportant,
   loadMediaCompareOptions,
-  resetMediaCompareOptions,
   saveMediaCompareOptions,
   toggleMediaFieldImportance,
   type MediaCompareOptionsState,
+  type MediaFieldFilter,
 } from '@/app/mediaCompareOptions'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
@@ -34,8 +35,6 @@ import { useStatusBarStore } from '@/stores/statusBar'
 import { formatPathModifiedAt } from '@/app/pathMetadata'
 
 const mediaStatuses: MediaFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
-
-type MediaFieldFilter = 'all' | 'diffs' | 'same' | 'minor'
 
 const { t } = useI18n()
 const emptyMediaSide: MediaSideSummary = {
@@ -64,15 +63,15 @@ const rightMedia = ref<MediaSideSummary>({
 })
 const mediaFields = ref<MediaFieldRow[]>([])
 const mediaSummaryOverride = ref<Record<MediaFieldStatus, number> | null>(null)
-const fieldFilter = ref<MediaFieldFilter>('all')
+const mediaOptions = ref<MediaCompareOptionsState>(loadMediaCompareOptions())
+const fieldFilter = ref<MediaFieldFilter>(mediaOptions.value.defaultFilter)
 const loading = ref(false)
 const error = ref('')
 const reportStatus = ref('')
-const showMediaRules = ref(false)
-const mediaOptions = ref<MediaCompareOptionsState>(loadMediaCompareOptions())
+const showMediaRules = ref(mediaOptions.value.showRules)
 const leftPlayer = ref<HTMLMediaElement | null>(null)
 const rightPlayer = ref<HTMLMediaElement | null>(null)
-const syncPlayback = ref(true)
+const syncPlayback = ref(mediaOptions.value.syncPlayback)
 const playbackPosition = ref(0)
 const playbackDuration = ref(0)
 const isPlaying = ref(false)
@@ -284,6 +283,7 @@ watch(
       filterStatus: t('status.allRows'),
       source: 'media-compare',
       loadTimeSeconds: hasResult ? loadTimeSeconds.value : null,
+      chromeKind: 'media-session',
     })
   },
   { immediate: true },
@@ -314,13 +314,24 @@ function persistMediaOptions(): void {
   saveMediaCompareOptions(mediaOptions.value)
 }
 
+watch(syncPlayback, (value) => {
+  mediaOptions.value = {
+    ...mediaOptions.value,
+    syncPlayback: value,
+  }
+  persistMediaOptions()
+})
+
 function toggleFieldImportance(field: string): void {
   mediaOptions.value = toggleMediaFieldImportance(field, mediaOptions.value)
   persistMediaOptions()
 }
 
 function resetMediaRules(): void {
-  mediaOptions.value = resetMediaCompareOptions()
+  mediaOptions.value = {
+    ...mediaOptions.value,
+    unimportantFields: [...defaultUnimportantMediaFields],
+  }
   persistMediaOptions()
 }
 
@@ -951,10 +962,46 @@ function runMediaToolbarCommand(commandId: string): void {
 <style scoped>
 .media-compare-view {
   display: grid;
-  gap: 14px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 4px 6px;
   overflow: auto;
+}
+
+.media-path-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 4px;
+  min-height: 26px;
+  padding: 2px 6px;
+  border: 1px solid var(--app-border);
+  border-radius: 0;
+  background: var(--app-surface);
+}
+
+.media-path-panel label {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.media-path-panel span {
+  color: var(--app-text-muted);
+  font-size: 11px;
+}
+
+.media-path-panel input,
+.media-path-panel button {
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 11px;
 }
 
 .media-header {
@@ -1241,10 +1288,10 @@ h1 {
 
 .media-playback-panel {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 4px 6px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1308,16 +1355,19 @@ h1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column: 1 / -1;
-  gap: 8px;
+  gap: 1px;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 0;
+  padding: 0 2px;
 }
 
 .path-side-footer {
-  min-height: 18px;
+  min-height: 10px;
+  margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

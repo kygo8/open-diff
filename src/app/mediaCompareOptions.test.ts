@@ -15,24 +15,47 @@ describe('mediaCompareOptions', () => {
     localStorage.clear()
   })
 
-  it('loads defaults and persists unimportant fields', () => {
-    expect(loadMediaCompareOptions().unimportantFields).toContain('Comment')
+  it('loads defaults and persists session defaults with unimportant fields', () => {
+    const loadedMedia = loadMediaCompareOptions()
 
-    saveMediaCompareOptions({ unimportantFields: ['Comment', 'Title'] })
+    expect(loadedMedia.unimportantFields).toContain('Comment')
+    expect(loadedMedia.syncPlayback).toBe(true)
+    expect(loadedMedia.defaultFilter).toBe('all')
+    expect(loadedMedia.showRules).toBe(false)
+
+    saveMediaCompareOptions({
+      unimportantFields: ['Comment', 'Title'],
+      syncPlayback: false,
+      defaultFilter: 'diffs',
+      showRules: true,
+    })
 
     expect(localStorage.getItem(mediaCompareOptionsStorageKey)).toContain('Title')
-    expect(loadMediaCompareOptions().unimportantFields).toEqual(['Comment', 'Title'])
+    expect(loadMediaCompareOptions()).toMatchObject({
+      unimportantFields: ['Comment', 'Title'],
+      syncPlayback: false,
+      defaultFilter: 'diffs',
+      showRules: true,
+    })
   })
 
-  it('toggles field importance', () => {
+  it('toggles field importance while preserving session defaults', () => {
     const base = defaultMediaCompareOptions()
 
     expect(isMediaFieldImportant('Title', base)).toBe(true)
     expect(isMediaFieldImportant('Comment', base)).toBe(false)
 
-    const demoted = toggleMediaFieldImportance('Title', base)
+    const demoted = toggleMediaFieldImportance('Title', {
+      ...base,
+      syncPlayback: false,
+      defaultFilter: 'minor',
+      showRules: true,
+    })
 
     expect(isMediaFieldImportant('Title', demoted)).toBe(false)
+    expect(demoted.syncPlayback).toBe(false)
+    expect(demoted.defaultFilter).toBe('minor')
+    expect(demoted.showRules).toBe(true)
 
     const promoted = toggleMediaFieldImportance('Comment', demoted)
 
@@ -48,13 +71,16 @@ it('builds a rules catalog with known fields and extras', () => {
   expect(catalog.some((row) => row.field === 'CustomTag')).toBe(true)
 })
 
-it('resets importance rules to defaults', () => {
-  saveMediaCompareOptions({ unimportantFields: ['Title'] })
+it('resets importance rules and session defaults', () => {
+  saveMediaCompareOptions({
+    unimportantFields: ['Title'],
+    syncPlayback: false,
+    defaultFilter: 'same',
+    showRules: true,
+  })
   const reset = resetMediaCompareOptions()
 
   saveMediaCompareOptions(reset)
 
-  expect(loadMediaCompareOptions().unimportantFields).toEqual(
-    defaultMediaCompareOptions().unimportantFields,
-  )
+  expect(loadMediaCompareOptions()).toEqual(defaultMediaCompareOptions())
 })

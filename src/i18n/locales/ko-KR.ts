@@ -1135,6 +1135,13 @@ export const koKR: LanguagePack = {
     'ui.pictureCompareOptionsHint': '새 그림 비교 세션의 기본 허용치와 패널 표시입니다.',
     'ui.pictureShowMetaDefault': '기본적으로 Meta 패널 표시',
     'ui.pictureShowMinorDefault': '기본적으로 사소한 차이 표시',
+    'ui.mediaSyncPlaybackDefault': '기본적으로 재생 동기화',
+    'ui.mediaDefaultFilter': '기본 필드 필터',
+    'ui.mediaShowRulesDefault': '기본적으로 중요도 규칙 표시',
+    'ui.mediaCompareOptionsHint': '새 미디어 비교 세션의 기본 재생 및 필터 옵션.',
+    'ui.versionDefaultFilter': '기본 필드 필터',
+    'ui.versionShowRulesDefault': '기본적으로 중요도 규칙 표시',
+    'ui.versionCompareOptionsHint': '새 버전 비교 세션의 기본 필터 및 규칙 옵션.',
     'ui.startup': '시작',
     'ui.loadLastWorkspaceOnStartup': '시작 시 마지막 작업 공간 불러오기',
     'ui.startupHint':

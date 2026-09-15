@@ -1,5 +1,9 @@
 export const versionCompareOptionsStorageKey = 'open-diff-version-compare-options'
 
+export const versionFieldFilters = ['all', 'diffs', 'same', 'minor'] as const
+
+export type VersionFieldFilter = (typeof versionFieldFilters)[number]
+
 /** Default fields treated as unimportant (minor) when comparing version resources. */
 export const defaultUnimportantVersionFields = [
   'Comments',
@@ -52,11 +56,25 @@ export function buildVersionRulesCatalog(
 
 export interface VersionCompareOptionsState {
   unimportantFields: string[]
+  /** Initial field-row filter for new Version Compare sessions. */
+  defaultFilter: VersionFieldFilter
+  /** Open Importance Rules panel when a Version Compare session starts. */
+  showRules: boolean
+}
+
+export function normalizeVersionFieldFilter(value: unknown): VersionFieldFilter {
+  if (typeof value === 'string' && (versionFieldFilters as readonly string[]).includes(value)) {
+    return value as VersionFieldFilter
+  }
+
+  return 'all'
 }
 
 export function defaultVersionCompareOptions(): VersionCompareOptionsState {
   return {
     unimportantFields: [...defaultUnimportantVersionFields],
+    defaultFilter: 'all',
+    showRules: false,
   }
 }
 
@@ -84,9 +102,12 @@ export function loadVersionCompareOptions(
     }
 
     const parsed = JSON.parse(raw) as Partial<VersionCompareOptionsState>
+    const defaults = defaultVersionCompareOptions()
 
     return {
       unimportantFields: normalizeFieldList(parsed.unimportantFields),
+      defaultFilter: normalizeVersionFieldFilter(parsed.defaultFilter ?? defaults.defaultFilter),
+      showRules: parsed.showRules === true,
     }
   } catch {
     return defaultVersionCompareOptions()
@@ -101,6 +122,8 @@ export function saveVersionCompareOptions(
     versionCompareOptionsStorageKey,
     JSON.stringify({
       unimportantFields: normalizeFieldList(state.unimportantFields),
+      defaultFilter: normalizeVersionFieldFilter(state.defaultFilter),
+      showRules: state.showRules,
     }),
   )
 }
@@ -122,11 +145,13 @@ export function toggleVersionFieldImportance(
 
   if (important) {
     return {
+      ...options,
       unimportantFields: [...options.unimportantFields, field],
     }
   }
 
   return {
+    ...options,
     unimportantFields: options.unimportantFields.filter(
       (entry) => entry.trim().toLowerCase() !== field.trim().toLowerCase(),
     ),

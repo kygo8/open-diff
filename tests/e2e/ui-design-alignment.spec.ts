@@ -30,6 +30,7 @@ const denseStatusRoutes = new Set([
   'text patch',
   'hex',
   'picture',
+  'media',
 ])
 
 for (const [name, route] of routes) {

@@ -15,24 +15,42 @@ describe('versionCompareOptions', () => {
     localStorage.clear()
   })
 
-  it('loads defaults and persists unimportant fields', () => {
-    expect(loadVersionCompareOptions().unimportantFields).toContain('Comments')
+  it('loads defaults and persists session defaults with unimportant fields', () => {
+    const loadedVersion = loadVersionCompareOptions()
 
-    saveVersionCompareOptions({ unimportantFields: ['Comments', 'FileVersion'] })
+    expect(loadedVersion.unimportantFields).toContain('Comments')
+    expect(loadedVersion.defaultFilter).toBe('all')
+    expect(loadedVersion.showRules).toBe(false)
+
+    saveVersionCompareOptions({
+      unimportantFields: ['Comments', 'FileVersion'],
+      defaultFilter: 'diffs',
+      showRules: true,
+    })
 
     expect(localStorage.getItem(versionCompareOptionsStorageKey)).toContain('FileVersion')
-    expect(loadVersionCompareOptions().unimportantFields).toEqual(['Comments', 'FileVersion'])
+    expect(loadVersionCompareOptions()).toMatchObject({
+      unimportantFields: ['Comments', 'FileVersion'],
+      defaultFilter: 'diffs',
+      showRules: true,
+    })
   })
 
-  it('toggles field importance', () => {
+  it('toggles field importance while preserving session defaults', () => {
     const base = defaultVersionCompareOptions()
 
     expect(isVersionFieldImportant('FileVersion', base)).toBe(true)
     expect(isVersionFieldImportant('Comments', base)).toBe(false)
 
-    const demoted = toggleVersionFieldImportance('FileVersion', base)
+    const demoted = toggleVersionFieldImportance('FileVersion', {
+      ...base,
+      defaultFilter: 'minor',
+      showRules: true,
+    })
 
     expect(isVersionFieldImportant('FileVersion', demoted)).toBe(false)
+    expect(demoted.defaultFilter).toBe('minor')
+    expect(demoted.showRules).toBe(true)
 
     const promoted = toggleVersionFieldImportance('Comments', demoted)
 
@@ -48,13 +66,15 @@ it('builds a rules catalog with known fields and extras', () => {
   expect(catalog.some((row) => row.field === 'CustomField')).toBe(true)
 })
 
-it('resets importance rules to defaults', () => {
-  saveVersionCompareOptions({ unimportantFields: ['FileVersion'] })
+it('resets importance rules and session defaults', () => {
+  saveVersionCompareOptions({
+    unimportantFields: ['FileVersion'],
+    defaultFilter: 'same',
+    showRules: true,
+  })
   const reset = resetVersionCompareOptions()
 
   saveVersionCompareOptions(reset)
 
-  expect(loadVersionCompareOptions().unimportantFields).toEqual(
-    defaultVersionCompareOptions().unimportantFields,
-  )
+  expect(loadVersionCompareOptions()).toEqual(defaultVersionCompareOptions())
 })

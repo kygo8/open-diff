@@ -138,6 +138,28 @@ select {
   grid-template-rows: minmax(0, 1fr);
 }
 
+.workbench-shell-single-session {
+  /* Drop redundant title chrome; toolbar + path bars carry the frame. */
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.workbench-shell-single-session .workbench-titlebar {
+  display: none;
+}
+
+.workbench-shell-single-session .bc-session-toolbar {
+  min-height: 58px;
+}
+
+.workbench-shell-single-session .bc-toolbar-command {
+  min-width: 64px;
+  height: 58px;
+}
+
+.app-shell-single-session .tab-strip {
+  display: none;
+}
+
 .workbench-grid-compact {
   grid-template-columns: minmax(0, 1fr);
 }

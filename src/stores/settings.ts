@@ -723,7 +723,7 @@ export const useSettingsStore = defineStore('settings', () => {
         : false,
     )
     setAlwaysShowTabBar(
-      typeof packageValue.alwaysShowTabBar === 'boolean' ? packageValue.alwaysShowTabBar : true,
+      typeof packageValue.alwaysShowTabBar === 'boolean' ? packageValue.alwaysShowTabBar : false,
     )
     setOpenSessionsInNewTab(
       typeof packageValue.openSessionsInNewTab === 'boolean'
@@ -1172,7 +1172,8 @@ function loadAlwaysShowTabBar(): boolean {
   const stored = localStorage.getItem(alwaysShowTabBarStorageKey)
 
   if (stored === null) {
-    return true
+    // Capture-aligned default: single Home / session frames omit the tab strip.
+    return false
   }
 
   return stored === '1'

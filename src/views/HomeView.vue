@@ -615,7 +615,12 @@ function openSelectedPreview(): void {
     :title="$t('ui.newSession')"
     :inspector-label="$t('ui.workspaceInspector')"
   >
-    <section class="home-workspace bc-home-workspace">
+    <section
+      class="home-workspace bc-home-workspace"
+      data-testid="home-layout"
+      data-home-density="capture"
+      data-home-chrome="minimal"
+    >
       <aside
         class="bc-session-tree"
         :aria-label="$t('ui.sessions')"
@@ -722,7 +727,7 @@ function openSelectedPreview(): void {
       <main class="bc-home-main">
         <section class="bc-selected-session">
           <div class="bc-selected-title">
-            <FolderOpen :size="27" />
+            <FolderOpen :size="22" />
             <div>
               <strong :title="selectedSessionPreview.name">{{
                 selectedSessionPreview.name
@@ -810,7 +815,7 @@ function openSelectedPreview(): void {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="40"
+                  :size="34"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1123,13 +1128,15 @@ function openSelectedPreview(): void {
 
 .bc-home-workspace {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+
+  /* Capture-aligned left tree ~24% of a typical window; denser than prior 300px. */
+  grid-template-columns: minmax(220px, 248px) minmax(0, 1fr);
   background: #ffffff;
 }
 
 .bc-session-tree {
   display: grid;
-  grid-template-rows: 34px minmax(0, 1fr) 44px;
+  grid-template-rows: 28px minmax(0, 1fr) 36px;
   min-width: 0;
   min-height: 0;
   border-right: 1px solid #b9bec7;
@@ -1140,12 +1147,12 @@ function openSelectedPreview(): void {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 12px;
+  padding: 0 10px;
   overflow: hidden;
   border-bottom: 1px solid #c6ccd5;
   background: #eef1f5;
   color: #111827;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1;
   text-overflow: ellipsis;
@@ -1154,34 +1161,34 @@ function openSelectedPreview(): void {
 
 .bc-tree-list {
   min-height: 0;
-  padding: 2px 6px;
+  padding: 1px 4px;
   overflow: auto;
 }
 
 .bc-tree-row {
   display: grid;
-  grid-template-columns: 14px 18px minmax(0, 1fr);
+  grid-template-columns: 12px 16px minmax(0, 1fr);
   align-items: center;
   gap: 2px;
   width: 100%;
-  min-height: 22px;
+  min-height: 20px;
   padding: 0 2px;
   border: 0;
   background: transparent;
   color: #111827;
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
   text-align: left;
   cursor: pointer;
 }
 
 .bc-tree-row.child {
-  padding-left: 22px;
-  font-size: 13px;
+  padding-left: 18px;
+  font-size: 12px;
 }
 
 .bc-tree-row.saved {
-  padding-left: 40px;
+  padding-left: 34px;
   font-size: 12px;
 }
 
@@ -1200,29 +1207,29 @@ function openSelectedPreview(): void {
 
 .bc-tree-footer {
   display: grid;
-  grid-template-columns: 36px 36px minmax(0, 1fr);
+  grid-template-columns: 30px 30px minmax(0, 1fr);
   align-items: center;
-  gap: 4px;
-  padding: 4px 6px 6px;
+  gap: 3px;
+  padding: 3px 5px 4px;
   border-top: 1px solid #c6ccd5;
   background: #eef1f5;
 }
 
 .bc-tree-footer button {
-  height: 30px;
+  height: 26px;
   border: 1px solid #d1d5db;
   border-radius: 3px;
   background: #ffffff;
   color: #2f343a;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1;
 }
 
 .bc-tree-footer input {
   width: 100%;
   min-width: 0;
-  height: 30px;
-  padding: 0 8px;
+  height: 26px;
+  padding: 0 6px;
   overflow: hidden;
   border: 1px solid #c6ccd5;
   border-radius: 3px;
@@ -1245,22 +1252,22 @@ function openSelectedPreview(): void {
 
 .bc-selected-session {
   display: grid;
-  gap: 18px;
-  padding: 14px 20px 10px;
+  gap: 10px;
+  padding: 10px 16px 6px;
 }
 
 .bc-selected-title {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 10px;
   min-width: 0;
   color: #111827;
-  font-size: 25px;
+  font-size: 22px;
 }
 
 .bc-selected-title div {
   display: grid;
-  gap: 12px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -1273,30 +1280,30 @@ function openSelectedPreview(): void {
 }
 
 .bc-selected-title strong {
-  font-size: 27px;
+  font-size: 24px;
   font-weight: 500;
 }
 
 .bc-selected-title span {
-  font-size: 22px;
-  line-height: 1;
+  font-size: 18px;
+  line-height: 1.15;
 }
 
 .bc-selected-actions {
   display: flex;
-  gap: 18px;
+  gap: 12px;
 }
 
 .bc-selected-actions button {
-  width: 154px;
+  width: 132px;
   max-width: 100%;
-  height: 47px;
+  height: 36px;
   overflow: hidden;
   border: 1px solid #c7cdd6;
   border-radius: 3px;
   background: #ffffff;
   color: #111827;
-  font-size: 22px;
+  font-size: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
@@ -1314,7 +1321,7 @@ function openSelectedPreview(): void {
 }
 
 .new-session-panel {
-  padding: 8px 12px 28px;
+  padding: 2px 12px 16px;
 }
 
 .new-session-panel h2,
@@ -1326,35 +1333,35 @@ function openSelectedPreview(): void {
 
 .new-session-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(120px, 1fr));
-  gap: 14px 28px;
-  width: min(720px, calc(100% - 40px));
-  margin: 6px auto 10px;
+  grid-template-columns: repeat(3, minmax(110px, 1fr));
+  gap: 8px 16px;
+  width: min(560px, calc(100% - 32px));
+  margin: 2px auto 6px;
 }
 
 .bc-home-instructions {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   justify-items: center;
-  margin: 0 0 14px;
+  margin: 0 0 6px;
   color: #111827;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.2;
 }
 
 .bc-home-instructions strong {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
 .new-session-card {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 84px;
-  padding: 4px;
+  min-height: 72px;
+  padding: 2px;
   overflow: hidden;
   border: 0;
   border-radius: 2px;
@@ -1373,8 +1380,8 @@ function openSelectedPreview(): void {
 
 .session-card-icon {
   display: inline-grid;
-  width: 56px;
-  height: 48px;
+  width: 48px;
+  height: 42px;
   color: #4b5563;
   place-items: center;
 }
@@ -1383,9 +1390,9 @@ function openSelectedPreview(): void {
   max-width: 100%;
   margin: 0;
   overflow: hidden;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 400;
-  line-height: 1.25;
+  line-height: 1.2;
   text-align: center;
   white-space: nowrap;
   text-overflow: ellipsis;

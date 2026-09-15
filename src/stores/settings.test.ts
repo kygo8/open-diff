@@ -311,12 +311,14 @@ describe('useSettingsStore', () => {
   it('persists tab bar, new-tab sessions, difference toolbar, and archive extensions', () => {
     const store = useSettingsStore()
 
-    expect(store.alwaysShowTabBar).toBe(true)
+    expect(store.alwaysShowTabBar).toBe(false)
     expect(store.openSessionsInNewTab).toBe(false)
     expect(store.showNextDifferenceInToolbar).toBe(true)
     expect(store.showPrevDifferenceInToolbar).toBe(true)
     expect(store.archiveExtensions).toContain('.zip')
 
+    store.setAlwaysShowTabBar(true)
+    expect(localStorage.getItem('open-diff-always-show-tab-bar')).toBe('1')
     store.setAlwaysShowTabBar(false)
     store.setOpenSessionsInNewTab(true)
     store.setShowNextDifferenceInToolbar(false)

@@ -118,6 +118,7 @@ describe('FolderMergeView', () => {
       baseRoot: 'D:/workspace/merge/base',
       rightRoot: 'D:/workspace/merge/right',
       outputRoot: 'D:/workspace/merge/output',
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
     expect(summary.text()).toContain('5')
     expect(summary.text()).toContain('2')
@@ -146,6 +147,7 @@ describe('FolderMergeView', () => {
       baseRoot: 'D:/workspace/merge/base',
       rightRoot: 'D:/workspace/merge/right',
       outputRoot: 'D:/workspace/merge/output',
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
     expect(wrapper.find('[data-testid="folder-merge-execution-status"]').text()).toContain(
       'Completed 4 / 4',
@@ -219,6 +221,7 @@ describe('FolderMergeView', () => {
       baseRoot: 'D:/workspace/merge/base',
       rightRoot: 'D:/workspace/merge/right',
       outputRoot: 'D:/workspace/merge/output',
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
   })
 

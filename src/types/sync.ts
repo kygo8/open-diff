@@ -13,6 +13,7 @@ export interface FolderSyncPreviewRequest {
   rightRoot: string
   strategy: FolderSyncStrategy
   overrides?: FolderSyncActionOverride[]
+  archiveExtensions?: string[]
 }
 
 export type FolderSyncPreviewAction = 'Copy' | 'Delete' | 'Leave' | 'Conflict'

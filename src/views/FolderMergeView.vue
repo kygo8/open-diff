@@ -4,6 +4,7 @@ import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useRouter } from 'vue-router'
 import { useTabsStore } from '@/stores/tabs'
+import { useSettingsStore } from '@/stores/settings'
 import {
   buildFolderMergePlan as requestFolderMergePlan,
   executeFolderMergePlan,
@@ -42,6 +43,7 @@ const reportError = ref('')
 const router = useRouter()
 const sessionLaunch = useSessionLaunchStore()
 const tabs = useTabsStore()
+const settings = useSettingsStore()
 const { t } = useI18n()
 const statusBar = useStatusBarStore()
 const viewActions = useViewActionsStore()
@@ -381,6 +383,7 @@ async function buildFolderMergePlan(): Promise<void> {
     baseRoot: basePath.value,
     rightRoot: rightPath.value,
     outputRoot: outputPath.value,
+    archiveExtensions: [...settings.archiveExtensions],
   })
 
   loadTimeSeconds.value = elapsedSecondsSince(startedAt)
@@ -407,6 +410,7 @@ async function runFolderMerge(): Promise<void> {
       baseRoot: basePath.value,
       rightRoot: rightPath.value,
       outputRoot: outputPath.value,
+      archiveExtensions: [...settings.archiveExtensions],
     })
   } catch (error) {
     mergeExecutionError.value = error instanceof Error ? error.message : String(error)

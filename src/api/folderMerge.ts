@@ -13,6 +13,7 @@ export function buildFolderMergePlan(
     baseRoot: request.baseRoot,
     rightRoot: request.rightRoot,
     outputRoot: request.outputRoot,
+    archiveExtensions: request.archiveExtensions,
   })
 }
 
@@ -24,5 +25,6 @@ export function executeFolderMergePlan(
     baseRoot: request.baseRoot,
     rightRoot: request.rightRoot,
     outputRoot: request.outputRoot,
+    archiveExtensions: request.archiveExtensions,
   })
 }

@@ -649,6 +649,7 @@ watch(
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
+      case 'clear-session':
       case 'copy':
       case 'cut':
       case 'delete':

@@ -421,6 +421,60 @@ describe('AppLayout command palette', () => {
     ).toBeUndefined()
   })
 
+  it('labels Save Session and wires View Next/Prev Diff plus Clear Session', async () => {
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-file"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-session.save"]').text()).toContain(
+      'Save Session',
+    )
+    expect(wrapper.find('[data-testid="menu-command-session.saveAs"]').text()).toContain(
+      'Save Session As',
+    )
+
+    await wrapper.find('[data-testid="menu-view"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-diff.next"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-diff.previous"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="menu-command-diff.next"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-session.clear"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="menu-command-session.clear"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(wrapper.find('[data-testid="menu-command-report.save"]').exists()).toBe(true)
+  })
+
+  it('honestly disables session Save/Clear on Home', async () => {
+    routePath = '/'
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.save"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.clear"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.closeTab"]').attributes('disabled'),
+    ).toBeDefined()
+  })
+
+  it('persists the active session from Save Session menu', async () => {
+    const wrapper = mountAppLayout()
+    const savedSessions = (await import('@/stores/savedSessions')).useSavedSessionsStore()
+    const before = savedSessions.sessions.length
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    await wrapper.find('[data-testid="menu-command-session.save"]').trigger('click')
+
+    expect(savedSessions.sessions.length).toBe(before + 1)
+    expect(savedSessions.sessions.at(-1)?.sessionType).toBe('text-compare')
+  })
+
   it('closes an open application menu when clicking outside it', async () => {
     const wrapper = mountAppLayout()
 
@@ -435,6 +489,7 @@ describe('AppLayout command palette', () => {
 
   it('prompts before closing a dirty tab and closes after confirmation', async () => {
     const wrapper = mountAppLayout()
+    const tabs = useTabsStore()
 
     await wrapper.find('[data-testid="open-command-palette"]').trigger('click')
     await wrapper.find('[data-testid="command-search"]').setValue('text')
@@ -448,7 +503,8 @@ describe('AppLayout command palette', () => {
       throw new Error('Expected close tab button.')
     }
 
-    await wrapper.find('[data-testid="toolbar-command-session.save"]').trigger('click')
+    tabs.setTabDirty(tabs.activeTab.id, true)
+    await wrapper.vm.$nextTick()
     await closeButton.trigger('click')
 
     expect(wrapper.find('[data-testid="close-dirty-tab-prompt"]').exists()).toBe(true)

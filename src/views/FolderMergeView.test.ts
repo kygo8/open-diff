@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
@@ -63,6 +64,7 @@ async function fillMergePaths(wrapper: VueWrapper): Promise<void> {
 describe('FolderMergeView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    useSettingsStore().setShowSessionsInToolbar(true)
     push.mockClear()
     vi.mocked(buildFolderMergePlan).mockReset()
     vi.mocked(executeFolderMergePlan).mockReset()

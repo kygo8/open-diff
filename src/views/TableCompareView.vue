@@ -191,6 +191,7 @@ watch(
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
+      case 'clear-session':
       case 'copy':
       case 'copy-left':
       case 'copy-right':

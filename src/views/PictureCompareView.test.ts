@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import PictureCompareView from './PictureCompareView.vue'
 import { comparePictureFiles, saveTextFile } from '@/api/diff'
@@ -66,6 +67,7 @@ vi.mock('@/api/diff', () => ({
 describe('PictureCompareView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    useSettingsStore().setShowSessionsInToolbar(true)
     localStorage.clear()
     vi.mocked(comparePictureFiles).mockClear()
     vi.mocked(saveTextFile).mockClear()

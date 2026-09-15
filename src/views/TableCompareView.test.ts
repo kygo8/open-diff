@@ -1,5 +1,6 @@
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TableCompareView from './TableCompareView.vue'
 import { compareTable, readTextFile, saveTextFile } from '@/api/diff'
@@ -85,6 +86,7 @@ function mountTableCompareView(): VueWrapper {
 describe('TableCompareView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    useSettingsStore().setShowSessionsInToolbar(true)
     localStorage.clear()
     vi.mocked(compareTable).mockReset()
     vi.mocked(compareTable).mockResolvedValue({

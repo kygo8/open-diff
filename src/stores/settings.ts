@@ -783,18 +783,18 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowSessionsInToolbar(
       typeof packageValue.showSessionsInToolbar === 'boolean'
         ? packageValue.showSessionsInToolbar
-        : true,
+        : false,
     )
     setShowGotoInToolbar(
-      typeof packageValue.showGotoInToolbar === 'boolean' ? packageValue.showGotoInToolbar : true,
+      typeof packageValue.showGotoInToolbar === 'boolean' ? packageValue.showGotoInToolbar : false,
     )
     setShowWrapInToolbar(
-      typeof packageValue.showWrapInToolbar === 'boolean' ? packageValue.showWrapInToolbar : true,
+      typeof packageValue.showWrapInToolbar === 'boolean' ? packageValue.showWrapInToolbar : false,
     )
     setShowSyncNowInToolbar(
       typeof packageValue.showSyncNowInToolbar === 'boolean'
         ? packageValue.showSyncNowInToolbar
-        : true,
+        : false,
     )
     setShowStatusBar(
       typeof packageValue.showStatusBar === 'boolean' ? packageValue.showStatusBar : true,
@@ -869,10 +869,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setLargeToolbarButtons(true)
     setCreateBackupOnSave(false)
     setBackupRetentionCount(1)
-    setShowSessionsInToolbar(true)
-    setShowGotoInToolbar(true)
-    setShowWrapInToolbar(true)
-    setShowSyncNowInToolbar(true)
+    setShowSessionsInToolbar(false)
+    setShowGotoInToolbar(false)
+    setShowWrapInToolbar(false)
+    setShowSyncNowInToolbar(false)
     setShowStatusBar(true)
     setShowPathBars(true)
     setShowSidebar(false)
@@ -1358,7 +1358,7 @@ function loadShowSessionsInToolbar(): boolean {
   const stored = localStorage.getItem(showSessionsInToolbarStorageKey)
 
   if (stored === null) {
-    return true
+    return false
   }
 
   return stored === '1'
@@ -1368,7 +1368,7 @@ function loadShowGotoInToolbar(): boolean {
   const stored = localStorage.getItem(showGotoInToolbarStorageKey)
 
   if (stored === null) {
-    return true
+    return false
   }
 
   return stored === '1'
@@ -1378,7 +1378,7 @@ function loadShowWrapInToolbar(): boolean {
   const stored = localStorage.getItem(showWrapInToolbarStorageKey)
 
   if (stored === null) {
-    return true
+    return false
   }
 
   return stored === '1'
@@ -1388,7 +1388,7 @@ function loadShowSyncNowInToolbar(): boolean {
   const stored = localStorage.getItem(showSyncNowInToolbarStorageKey)
 
   if (stored === null) {
-    return true
+    return false
   }
 
   return stored === '1'

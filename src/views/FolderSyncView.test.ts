@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderSyncView from './FolderSyncView.vue'
 
@@ -84,6 +85,7 @@ const clipboardWriteText = vi.fn<(text: string) => Promise<void>>().mockResolved
 describe('FolderSyncView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    useSettingsStore().setShowSyncNowInToolbar(true)
     vi.clearAllMocks()
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,

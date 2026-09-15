@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { diffText, exportTextCompareReport, readTextFile } from '@/api/diff'
 import { reportFileExtension } from '@/app/reportExports'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { formatPathModifiedAt } from '@/app/pathMetadata'
+import {
+  applyOverwriteTyping,
+  isInsertToggleKey,
+  shouldHandleOverwriteKeydown,
+  toggleTextEditMode,
+  type TextEditMode,
+} from '@/app/textEditMode'
 import { notifyCompareComplete } from '@/app/compareCompleteNotify'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSettingsStore } from '@/stores/settings'
@@ -72,6 +79,7 @@ const error = ref('')
 let textCompareGeneration = 0
 const dirty = ref(false)
 const showSourceEditors = ref(false)
+const editMode = ref<TextEditMode>('insert')
 const leftUndoStack = ref<string[]>([])
 const leftRedoStack = ref<string[]>([])
 const rightUndoStack = ref<string[]>([])
@@ -414,12 +422,16 @@ watchEffect(() => {
     filterStatus: filterStatus.value,
     source: 'text-compare',
     loadTimeSeconds: result.value ? loadTimeSeconds.value : null,
-    // Overwrite mode is not implemented; report Insert while the session is active.
-    editMode: 'insert',
+    editMode: editMode.value,
   })
 })
 
+onUnmounted(() => {
+  window.removeEventListener('keydown', onSessionInsertKeydown)
+})
+
 onMounted(() => {
+  window.addEventListener('keydown', onSessionInsertKeydown)
   const launch = sessionLaunch.consumeLaunch('/compare/text')
 
   if (!launch) {
@@ -649,6 +661,41 @@ async function exportCurrentReport(
   })
 
   reportStatus.value = response.outputPath ?? outputPath
+}
+
+function onSourceEditorKeydown(side: 'left' | 'right', event: KeyboardEvent): void {
+  if (editMode.value !== 'overwrite' || !shouldHandleOverwriteKeydown(event)) {
+    return
+  }
+
+  const target = event.target
+
+  if (!(target instanceof HTMLTextAreaElement)) {
+    return
+  }
+
+  event.preventDefault()
+  const current = side === 'left' ? left.value : right.value
+  const next = applyOverwriteTyping(current, target.selectionStart, target.selectionEnd, event.key)
+
+  if (side === 'left') {
+    updateLeft(next.text)
+  } else {
+    updateRight(next.text)
+  }
+
+  void nextTick(() => {
+    target.setSelectionRange(next.caret, next.caret)
+  })
+}
+
+function onSessionInsertKeydown(event: KeyboardEvent): void {
+  if (!isInsertToggleKey(event)) {
+    return
+  }
+
+  event.preventDefault()
+  editMode.value = toggleTextEditMode(editMode.value)
 }
 
 function updateLeft(value: string): void {
@@ -1551,6 +1598,7 @@ function toggleSourceEditors(): void {
             :value="left"
             type="textarea"
             :placeholder="$t('ui.leftContent')"
+            @keydown="onSourceEditorKeydown('left', $event)"
             @update:value="updateLeft"
           />
         </section>
@@ -1563,6 +1611,7 @@ function toggleSourceEditors(): void {
             :value="right"
             type="textarea"
             :placeholder="$t('ui.rightContent')"
+            @keydown="onSourceEditorKeydown('right', $event)"
             @update:value="updateRight"
           />
         </section>

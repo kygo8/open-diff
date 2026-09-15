@@ -435,6 +435,7 @@ export const zhTW: LanguagePack = {
     'status.differenceSection': '≠ {count} 個差異段',
     'status.insertMode': '插入',
     'status.overwriteMode': '改寫',
+    'status.diskFreeOn': '{quantity} 可用空間於 {root}',
     'status.pathFileMetadata': '{bytes} 位元組，{modified}',
     'status.filesSelectedBytesWithDate': '已選 {count} 個檔案，{bytes} 位元組，{modified}',
     'status.encoding': '編碼',

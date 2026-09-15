@@ -9,3 +9,6 @@ license.workspace = true
 encoding_rs.workspace = true
 shared-types = { path = "../shared-types" }
 vfs-core = { path = "../vfs-core" }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"

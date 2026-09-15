@@ -453,6 +453,7 @@ export const esES: LanguagePack = {
     'status.differenceSection': '≠ {count} sección de diferencias',
     'status.insertMode': 'Insertar',
     'status.overwriteMode': 'Sobrescribir',
+    'status.diskFreeOn': '{quantity} libres en {root}',
     'status.pathFileMetadata': '{bytes} bytes, {modified}',
     'status.filesSelectedBytesWithDate':
       '{count} archivo(s) seleccionado(s), {bytes} bytes, {modified}',

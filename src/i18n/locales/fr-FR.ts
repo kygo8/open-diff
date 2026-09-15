@@ -454,6 +454,7 @@ export const frFR: LanguagePack = {
     'status.differenceSection': '≠ {count} section de différences',
     'status.insertMode': 'Insertion',
     'status.overwriteMode': 'Écrasement',
+    'status.diskFreeOn': '{quantity} libres sur {root}',
     'status.pathFileMetadata': '{bytes} octets, {modified}',
     'status.filesSelectedBytesWithDate':
       '{count} fichier(s) sélectionné(s), {bytes} octets, {modified}',

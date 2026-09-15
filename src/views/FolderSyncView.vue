@@ -24,6 +24,7 @@ import { useI18n } from '@/i18n'
 import { useTabsStore } from '@/stores/tabs'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
 
 interface SyncStrategyOption {
   value: FolderSyncStrategy
@@ -62,6 +63,8 @@ const sessionLaunch = useSessionLaunchStore()
 const viewActions = useViewActionsStore()
 const leftPath = ref('')
 const rightPath = ref('')
+const leftFreeSpaceLabel = ref('')
+const rightFreeSpaceLabel = ref('')
 const selectedStrategy = ref<FolderSyncStrategy>('updateBoth')
 const previewName = ref('')
 const previewLoading = ref(false)
@@ -454,9 +457,31 @@ watch(
     if (left && right) {
       tabs.setTabTitle('/sync/folder', syncPathPairTitle(left, right))
     }
+
+    void refreshSyncFreeSpace()
   },
   { immediate: true },
 )
+
+async function refreshSyncFreeSpace(): Promise<void> {
+  const [leftInfo, rightInfo] = await Promise.all([
+    fetchPathVolumeInfo(leftPath.value),
+    fetchPathVolumeInfo(rightPath.value),
+  ])
+
+  leftFreeSpaceLabel.value = leftInfo
+    ? t('status.diskFreeOn', {
+        quantity: formatFreeSpaceQuantity(leftInfo.freeBytes),
+        root: leftInfo.displayRoot,
+      })
+    : ''
+  rightFreeSpaceLabel.value = rightInfo
+    ? t('status.diskFreeOn', {
+        quantity: formatFreeSpaceQuantity(rightInfo.freeBytes),
+        root: rightInfo.displayRoot,
+      })
+    : ''
+}
 
 function swapSyncPaths(): void {
   const nextLeft = rightPath.value
@@ -639,6 +664,12 @@ watch(
             v-model="leftPath"
             data-testid="folder-sync-left-path"
           />
+          <span
+            v-if="leftFreeSpaceLabel"
+            class="path-side-footer"
+            data-testid="folder-sync-left-path-footer"
+            >{{ leftFreeSpaceLabel }}</span
+          >
         </label>
         <label>
           <span>{{ $t('ui.rightFolder') }}</span>
@@ -646,6 +677,12 @@ watch(
             v-model="rightPath"
             data-testid="folder-sync-right-path"
           />
+          <span
+            v-if="rightFreeSpaceLabel"
+            class="path-side-footer"
+            data-testid="folder-sync-right-path-footer"
+            >{{ rightFreeSpaceLabel }}</span
+          >
         </label>
         <label>
           <span>{{ $t('ui.strategy') }}</span>
@@ -991,6 +1028,13 @@ watch(
   </WorkbenchShell>
 </template>
 <style scoped>
+.path-side-footer {
+  display: block;
+  color: var(--app-muted, #6b7280);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
 .folder-sync-view {
   display: grid;
   gap: 14px;

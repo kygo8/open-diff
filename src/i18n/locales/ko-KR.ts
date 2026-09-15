@@ -444,6 +444,7 @@ export const koKR: LanguagePack = {
     'status.differenceSection': '≠ {count}개 차이 구역',
     'status.insertMode': '삽입',
     'status.overwriteMode': '덮어쓰기',
+    'status.diskFreeOn': '{root}에 {quantity} 남음',
     'status.pathFileMetadata': '{bytes}바이트, {modified}',
     'status.filesSelectedBytesWithDate': '파일 {count}개 선택, {bytes}바이트, {modified}',
     'status.encoding': '부호화',

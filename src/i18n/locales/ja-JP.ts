@@ -545,6 +545,7 @@ export const jaJP: LanguagePack = {
     'status.differenceSection': '≠ {count} 差分セクション',
     'status.insertMode': '挿入',
     'status.overwriteMode': '上書き',
+    'status.diskFreeOn': '{root} に {quantity} 空き',
     'status.pathFileMetadata': '{bytes} バイト、{modified}',
     'status.filesSelectedBytesWithDate': '{count} 個のファイルを選択、{bytes} バイト、{modified}',
     'status.encoding': 'Encoding',

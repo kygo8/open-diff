@@ -1,5 +1,5 @@
 use encoding_rs::GBK;
-use shared_types::{FileStamp, ReadTextFileResponse, SaveTextFileResponse};
+use shared_types::{FileStamp, PathVolumeInfo, ReadTextFileResponse, SaveTextFileResponse};
 use std::fs;
 use std::path::Path;
 use std::time::UNIX_EPOCH;
@@ -164,6 +164,154 @@ fn decode_utf16(
         .map_err(|_| FileReadError::UnsupportedEncoding)
 }
 
+pub fn path_volume_info(path: impl AsRef<Path>) -> Result<PathVolumeInfo, FileReadError> {
+    let requested = path.as_ref();
+    let probe = existing_ancestor(requested)?;
+    let free_bytes = available_bytes(&probe)?;
+    let display_root = volume_display_root(&probe);
+
+    Ok(PathVolumeInfo {
+        path: requested.display().to_string(),
+        free_bytes,
+        display_root,
+    })
+}
+
+fn existing_ancestor(path: &Path) -> Result<std::path::PathBuf, FileReadError> {
+    if path.as_os_str().is_empty() {
+        return Err(FileReadError::NotFound("path is empty".to_owned()));
+    }
+
+    let mut current = path.to_path_buf();
+    loop {
+        if current.exists() {
+            return Ok(current);
+        }
+
+        match current.parent() {
+            Some(parent) if parent != current.as_path() => current = parent.to_path_buf(),
+            _ => {
+                return Err(FileReadError::NotFound(format!(
+                    "no existing ancestor for {}",
+                    path.display()
+                )))
+            }
+        }
+    }
+}
+
+fn volume_display_root(path: &Path) -> String {
+    #[cfg(windows)]
+    {
+        use std::path::{Component, Prefix};
+        if let Some(Component::Prefix(prefix)) = path.components().next() {
+            match prefix.kind() {
+                Prefix::Disk(letter) | Prefix::VerbatimDisk(letter) => {
+                    return format!("{}:\\", letter as char);
+                }
+                Prefix::UNC(server, share) | Prefix::VerbatimUNC(server, share) => {
+                    return format!(
+                        "\\\\{}\\{}",
+                        server.to_string_lossy(),
+                        share.to_string_lossy()
+                    );
+                }
+                _ => {}
+            }
+        }
+    }
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if let Ok(start_meta) = fs::metadata(path) {
+            let start_dev = start_meta.dev();
+            let mut root = path.to_path_buf();
+            for ancestor in path.ancestors().skip(1) {
+                match fs::metadata(ancestor) {
+                    Ok(meta) if meta.dev() == start_dev => root = ancestor.to_path_buf(),
+                    _ => break,
+                }
+            }
+            return root.display().to_string();
+        }
+    }
+
+    path.display().to_string()
+}
+
+#[cfg(unix)]
+fn available_bytes(path: &Path) -> Result<u64, FileReadError> {
+    use std::ffi::CString;
+
+    let c_path = CString::new(path.as_os_str().as_encoded_bytes()).map_err(|_| {
+        FileReadError::Io(format!("path contains interior nul: {}", path.display()))
+    })?;
+
+    unsafe {
+        let mut stat = std::mem::MaybeUninit::<libc::statvfs>::zeroed();
+        if libc::statvfs(c_path.as_ptr(), stat.as_mut_ptr()) != 0 {
+            return Err(FileReadError::Io(format!(
+                "statvfs failed for {}: {}",
+                path.display(),
+                std::io::Error::last_os_error()
+            )));
+        }
+        let stat = stat.assume_init();
+        #[allow(clippy::unnecessary_cast)]
+        let free_bytes = (stat.f_bavail as u64).saturating_mul(stat.f_frsize as u64);
+        Ok(free_bytes)
+    }
+}
+
+#[cfg(windows)]
+fn available_bytes(path: &Path) -> Result<u64, FileReadError> {
+    use std::os::windows::ffi::OsStrExt;
+
+    #[link(name = "kernel32")]
+    extern "system" {
+        fn GetDiskFreeSpaceExW(
+            directory_name: *const u16,
+            free_bytes_available: *mut u64,
+            total_number_of_bytes: *mut u64,
+            total_number_of_free_bytes: *mut u64,
+        ) -> i32;
+    }
+
+    let wide: Vec<u16> = path
+        .as_os_str()
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect();
+    let mut free_available = 0u64;
+    let mut total = 0u64;
+    let mut total_free = 0u64;
+    let ok = unsafe {
+        GetDiskFreeSpaceExW(
+            wide.as_ptr(),
+            &mut free_available,
+            &mut total,
+            &mut total_free,
+        )
+    };
+    if ok == 0 {
+        return Err(FileReadError::Io(format!(
+            "GetDiskFreeSpaceExW failed for {}: {}",
+            path.display(),
+            std::io::Error::last_os_error()
+        )));
+    }
+    Ok(free_available)
+}
+
+#[cfg(not(any(unix, windows)))]
+fn available_bytes(path: &Path) -> Result<u64, FileReadError> {
+    Err(FileReadError::Io(format!(
+        "disk free space is unavailable on this platform for {}",
+        path.display()
+    )))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -313,5 +461,13 @@ mod tests {
         assert!(!Path::new(&format!("{}.bak", path.display())).exists());
 
         fs::remove_file(path).expect("fixture should be removable");
+    }
+    #[test]
+    fn path_volume_info_reports_free_bytes_for_temp_dir() {
+        let root = std::env::temp_dir();
+        let info = path_volume_info(&root).expect("temp dir volume should be readable");
+        assert!(info.free_bytes > 0, "expected positive free bytes");
+        assert!(!info.display_root.is_empty());
+        assert_eq!(info.path, root.display().to_string());
     }
 }

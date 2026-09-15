@@ -82,6 +82,7 @@ import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import { useI18n } from '@/i18n'
 import { notifyCompareComplete } from '@/app/compareCompleteNotify'
+import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useSettingsStore } from '@/stores/settings'
@@ -146,6 +147,8 @@ const expandedDirectoryIds = ref<Set<string>>(new Set())
 const archiveSessionActive = ref(false)
 const leftRoot = ref('')
 const rightRoot = ref('')
+const leftFreeSpaceLabel = ref('')
+const rightFreeSpaceLabel = ref('')
 const folderCriteria = ref<FolderCompareCriteria>(loadFolderCompareCriteria())
 const folderNameFilters = ref<FolderNameFilters>(loadFolderNameFilters())
 const showSessionSettings = ref(false)
@@ -293,7 +296,28 @@ watch([leftRoot, rightRoot], () => {
     archiveSessionActive.value = true
   }
   syncFolderTabTitle()
+  void refreshRootFreeSpace()
 })
+
+async function refreshRootFreeSpace(): Promise<void> {
+  const [leftInfo, rightInfo] = await Promise.all([
+    fetchPathVolumeInfo(leftRoot.value),
+    fetchPathVolumeInfo(rightRoot.value),
+  ])
+
+  leftFreeSpaceLabel.value = leftInfo
+    ? t('status.diskFreeOn', {
+        quantity: formatFreeSpaceQuantity(leftInfo.freeBytes),
+        root: leftInfo.displayRoot,
+      })
+    : ''
+  rightFreeSpaceLabel.value = rightInfo
+    ? t('status.diskFreeOn', {
+        quantity: formatFreeSpaceQuantity(rightInfo.freeBytes),
+        root: rightInfo.displayRoot,
+      })
+    : ''
+}
 
 const summary = computed(() => ({
   total: rows.value.length,
@@ -911,12 +935,23 @@ const folderSelectionSummary = computed(() => {
   }
 })
 
-function formatSelectionFooter(count: number, bytes: number, modified = ''): string {
+function formatSelectionFooter(
+  count: number,
+  bytes: number,
+  modified = '',
+  freeSpace = '',
+): string {
+  let selection = t('status.filesSelectedBytes', { count, bytes })
+
   if (count === 1 && modified) {
-    return t('status.filesSelectedBytesWithDate', { count, bytes, modified })
+    selection = t('status.filesSelectedBytesWithDate', { count, bytes, modified })
   }
 
-  return t('status.filesSelectedBytes', { count, bytes })
+  if (freeSpace) {
+    return count > 0 ? `${selection} · ${freeSpace}` : freeSpace
+  }
+
+  return selection
 }
 
 function isExpanded(row: FolderTreeRow): boolean {
@@ -2039,6 +2074,7 @@ onUnmounted(() => {
                   folderSelectionSummary.count,
                   folderSelectionSummary.leftBytes,
                   folderSelectionSummary.leftModified,
+                  leftFreeSpaceLabel,
                 )
               }}
             </span>
@@ -2095,6 +2131,7 @@ onUnmounted(() => {
                   folderSelectionSummary.count,
                   folderSelectionSummary.rightBytes,
                   folderSelectionSummary.rightModified,
+                  rightFreeSpaceLabel,
                 )
               }}
             </span>

@@ -458,6 +458,7 @@ export const deDE: LanguagePack = {
     'status.differenceSection': '≠ {count} Differenzabschnitt',
     'status.insertMode': 'Einfügen',
     'status.overwriteMode': 'Überschreiben',
+    'status.diskFreeOn': '{quantity} frei auf {root}',
     'status.pathFileMetadata': '{bytes} Bytes, {modified}',
     'status.filesSelectedBytesWithDate': '{count} Datei(en) ausgewählt, {bytes} Bytes, {modified}',
     'status.encoding': 'Codierung',

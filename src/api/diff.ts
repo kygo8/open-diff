@@ -9,6 +9,7 @@ import type {
   ExportReportResponse,
   ExportTextCompareReportRequest,
   FileStamp,
+  PathVolumeInfo,
   FolderCompareCopyRequest,
   FolderCompareCopyResponse,
   FolderCompareRequest,
@@ -81,6 +82,10 @@ export function checkTextFileChanged(path: string, previousStamp: FileStamp): Pr
     path,
     previousStamp,
   })
+}
+
+export function pathVolumeInfo(path: string): Promise<PathVolumeInfo> {
+  return invoke<PathVolumeInfo>('path_volume_info', { path })
 }
 
 export function compareTableCsv(request: TableCompareRequest): Promise<TableCompareResponse> {

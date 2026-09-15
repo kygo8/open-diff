@@ -253,7 +253,7 @@ watchEffect(() => {
     encoding: registryStatusEncoding.value,
     filterStatus: t('status.allRows'),
     source: 'registry-compare',
-    chromeKind: 'text-session',
+    chromeKind: 'registry-session',
     loadTimeSeconds: hasTree ? loadTimeSeconds.value : null,
     importantDifferenceCount,
     unimportantDifferenceCount,
@@ -1103,9 +1103,9 @@ function runRegistryToolbarCommand(commandId: string): void {
 <style scoped>
 .registry-compare-view {
   display: grid;
-  gap: 14px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 4px 6px;
   overflow: auto;
 }
 
@@ -1148,10 +1148,11 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   align-items: end;
-  gap: 10px;
-  padding: 10px;
+  gap: 4px;
+  min-height: 26px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1163,30 +1164,32 @@ h1 {
 
 .registry-input-panel span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .registry-input-panel textarea {
   min-width: 0;
-  min-height: 96px;
-  padding: 8px;
+  min-height: 72px;
+  padding: 4px 6px;
   font-family: var(--font-mono);
+  font-size: 11px;
   resize: vertical;
 }
 
 .registry-input-panel textarea,
 .registry-input-panel button {
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .registry-input-panel button {
-  min-height: 32px;
-  padding: 0 12px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
 }
 
 .registry-input-panel button:hover {
@@ -1211,12 +1214,12 @@ h1 {
 .registry-filter-bar,
 .registry-live-panel {
   margin: 0;
-  padding: 8px 10px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .registry-filter-bar,
@@ -1230,14 +1233,15 @@ h1 {
 .registry-filter-bar button,
 .registry-live-row button,
 .registry-live-row input {
-  height: 28px;
-  padding: 0 8px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .registry-live-row input {
@@ -1273,10 +1277,10 @@ h1 {
 
 .registry-report-panel {
   display: grid;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 4px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1288,12 +1292,14 @@ h1 {
 }
 
 .registry-report-panel header button {
-  height: 28px;
-  padding: 0 10px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--app-bg);
   color: var(--app-text);
+  font-size: 11px;
   cursor: pointer;
 }
 
@@ -1507,16 +1513,19 @@ h1 {
 .bc-path-footers {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 1px;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 0;
+  padding: 0 2px;
 }
 
 .path-side-footer {
-  min-height: 18px;
+  min-height: 10px;
+  margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

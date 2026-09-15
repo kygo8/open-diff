@@ -5,6 +5,7 @@ import ClipboardCompareView from './ClipboardCompareView.vue'
 import { diffText } from '@/api/diff'
 import { readClipboardTextSource } from '@/app/clipboardSource'
 import { useTabsStore } from '@/stores/tabs'
+import { useStatusBarStore } from '@/stores/statusBar'
 
 vi.mock('@/app/clipboardSource', () => ({
   readClipboardTextSource: vi.fn(),
@@ -111,6 +112,27 @@ describe('ClipboardCompareView', () => {
     )
     expect(wrapper.find('[data-testid="clipboard-diff-panel"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="clipboard-diff-stats"]').text()).toContain('1 modified')
+  })
+
+  it('reports clipboard-session status chrome after compare', async () => {
+    vi.mocked(readClipboardTextSource)
+      .mockResolvedValueOnce({ kind: 'clipboard-text', title: 'Clipboard Text', text: 'left text' })
+      .mockResolvedValueOnce({
+        kind: 'clipboard-text',
+        title: 'Clipboard Text',
+        text: 'right text',
+      })
+
+    const wrapper = mountClipboardCompareView()
+    const statusBar = useStatusBarStore()
+
+    await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
+    await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
+    await wrapper.find('[data-testid="clipboard-compare"]').trigger('click')
+
+    expect(statusBar.report.source).toBe('clipboard-compare')
+    expect(statusBar.report.chromeKind).toBe('clipboard-session')
+    expect(statusBar.report.differenceCount).toBe(1)
   })
 
   it('sets a path-pair style tab title for the selected entries', async () => {

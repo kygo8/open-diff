@@ -13,6 +13,8 @@ import {
   isTextSessionStatusSource,
   isVersionSessionStatusSource,
   isTableSessionStatusSource,
+  isRegistrySessionStatusSource,
+  isClipboardSessionStatusSource,
   padStatusChromePanes,
 } from './statusBarPhrases'
 
@@ -48,8 +50,12 @@ describe('statusBarPhrases', () => {
     expect(isMediaSessionStatusSource('media-compare')).toBe(true)
     expect(isVersionSessionStatusSource('version-compare')).toBe(true)
     expect(isTableSessionStatusSource('table-compare')).toBe(true)
+    expect(isRegistrySessionStatusSource('registry-compare')).toBe(true)
+    expect(isClipboardSessionStatusSource('clipboard-compare')).toBe(true)
     expect(isMediaSessionStatusSource('picture-compare')).toBe(false)
     expect(isVersionSessionStatusSource('media-compare')).toBe(false)
+    expect(isRegistrySessionStatusSource('table-compare')).toBe(false)
+    expect(isClipboardSessionStatusSource('registry-compare')).toBe(false)
   })
 
   it('formats importance phrases from important/unimportant counts', () => {

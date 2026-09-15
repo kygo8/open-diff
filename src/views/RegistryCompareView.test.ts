@@ -361,7 +361,7 @@ describe('RegistryCompareView', () => {
 
     expect(statusBar.report.importantDifferenceCount).toBe(1)
     expect(statusBar.report.unimportantDifferenceCount).toBe(0)
-    expect(statusBar.report.chromeKind).toBe('text-session')
+    expect(statusBar.report.chromeKind).toBe('registry-session')
     expect(statusBar.segments.some((segment) => segment.includes('Important Difference'))).toBe(
       true,
     )

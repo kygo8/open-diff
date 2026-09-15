@@ -783,6 +783,7 @@ select {
 .hex-compare-view,
 .picture-compare-view,
 .registry-compare-view,
+.clipboard-compare-view,
 .media-compare-view,
 .version-compare-view,
 .text-edit-view,
@@ -1619,6 +1620,98 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .version-compare-view .version-summary-item strong {
   font-size: 12px !important;
   line-height: 16px !important;
+}
+
+/* Registry Compare chrome densify toward capture path/status/toolbar/footer strips */
+.registry-compare-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.registry-compare-view .registry-input-panel {
+  gap: 4px !important;
+  min-height: 26px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.registry-compare-view .registry-input-panel span {
+  font-size: 11px !important;
+}
+
+.registry-compare-view .registry-input-panel textarea {
+  min-height: 72px !important;
+  padding: 4px 6px !important;
+  font-size: 11px !important;
+}
+
+.registry-compare-view .registry-input-panel button,
+.registry-compare-view .registry-filter-bar button,
+.registry-compare-view .registry-live-row button,
+.registry-compare-view .registry-live-row input,
+.registry-compare-view .registry-report-panel header button {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.registry-compare-view .bc-path-footers {
+  gap: 1px !important;
+  padding: 0 2px !important;
+}
+
+.registry-compare-view .path-side-footer {
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+}
+
+.registry-compare-view .registry-maturity,
+.registry-compare-view .registry-filter-bar,
+.registry-compare-view .registry-live-panel,
+.registry-compare-view .registry-report-panel {
+  gap: 4px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+/* Clipboard Compare chrome densify toward capture toolbar/history/status strips */
+.clipboard-compare-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.clipboard-compare-view .clipboard-toolbar {
+  gap: 4px 6px !important;
+  min-height: 26px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.clipboard-compare-view .status-chip {
+  font-size: 11px !important;
+}
+
+.clipboard-compare-view .clipboard-layout {
+  gap: 4px !important;
+}
+
+.clipboard-compare-view .history-pane,
+.clipboard-compare-view .diff-pane {
+  border-radius: 0 !important;
+}
+
+.clipboard-compare-view .history-pane {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.clipboard-compare-view .history-entry {
+  gap: 2px 6px !important;
+  padding: 4px 6px !important;
+  border-radius: 0 !important;
 }
 
 .table-compare-view {

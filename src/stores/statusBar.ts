@@ -13,6 +13,8 @@ import {
   isTextSessionStatusSource,
   isVersionSessionStatusSource,
   isTableSessionStatusSource,
+  isRegistrySessionStatusSource,
+  isClipboardSessionStatusSource,
   type StatusChromeKind,
   type StatusEditMode,
 } from '@/app/statusBarPhrases'
@@ -128,6 +130,14 @@ export const useStatusBarStore = defineStore('statusBar', () => {
 
     if (isTableSessionStatusSource(report.value.source)) {
       return 'table-session'
+    }
+
+    if (isRegistrySessionStatusSource(report.value.source)) {
+      return 'registry-session'
+    }
+
+    if (isClipboardSessionStatusSource(report.value.source)) {
+      return 'clipboard-session'
     }
 
     return 'standard'

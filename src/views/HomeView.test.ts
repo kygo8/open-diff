@@ -81,7 +81,7 @@ describe('HomeView', () => {
       'version-compare',
     ])
     expect(wrapper.find('[data-testid="home-how-to-start"]').text()).toContain(
-      'Drag folders or files onto a session icon',
+      'Drag folders or files onto session icon',
     )
     expect(wrapper.find('[data-testid="home-browse-folders"]').text()).toContain('Browse folders')
     expect(wrapper.find('[data-testid="home-drop-here"]').text()).toContain('Drop here')

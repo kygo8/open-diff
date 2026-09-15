@@ -148,8 +148,8 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
       item('copy', 'ui.copy', 'C'),
-      item('next-diff', 'ui.nextDifference', 'N'),
-      item('prev-diff', 'ui.previousDifference', 'P'),
+      item('next-diff', 'ui.nextDiff', 'N'),
+      item('prev-diff', 'ui.prevDiff', 'P'),
       item('swap', 'ui.swap', '<>'),
       item('reload', 'ui.reload', 'R'),
     ]
@@ -163,8 +163,8 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
       item('same', 'ui.same', '='),
       item('rules', 'ui.rules', 'R'),
       item('copy', 'ui.copy', 'C'),
-      item('next-diff', 'ui.nextDifference', 'N'),
-      item('prev-diff', 'ui.previousDifference', 'P'),
+      item('next-diff', 'ui.nextDiff', 'N'),
+      item('prev-diff', 'ui.prevDiff', 'P'),
       item('swap', 'ui.swap', '<>'),
       item('reload', 'ui.reload', 'R'),
     ]

@@ -206,8 +206,8 @@ const hexMeta: Record<(typeof hexCompareToolbarOrder)[number], ToolbarMeta> = {
   same: { glyph: '=', labelKey: 'ui.same' },
   rules: { glyph: 'R', labelKey: 'ui.rules' },
   copy: { glyph: 'C', labelKey: 'ui.copy' },
-  'next-diff': { glyph: 'N', labelKey: 'ui.nextDifference' },
-  'prev-diff': { glyph: 'P', labelKey: 'ui.previousDifference' },
+  'next-diff': { glyph: 'N', labelKey: 'ui.nextDiff' },
+  'prev-diff': { glyph: 'P', labelKey: 'ui.prevDiff' },
   swap: { glyph: '<>', labelKey: 'ui.swap' },
   reload: { glyph: 'R', labelKey: 'ui.reload' },
 }
@@ -220,8 +220,8 @@ const tableMeta: Record<(typeof tableCompareToolbarOrder)[number], ToolbarMeta> 
   minor: { glyph: '~', labelKey: 'ui.minor' },
   rules: { glyph: 'R', labelKey: 'ui.rules' },
   copy: { glyph: 'C', labelKey: 'ui.copy' },
-  'next-diff': { glyph: 'N', labelKey: 'ui.nextDifference' },
-  'prev-diff': { glyph: 'P', labelKey: 'ui.previousDifference' },
+  'next-diff': { glyph: 'N', labelKey: 'ui.nextDiff' },
+  'prev-diff': { glyph: 'P', labelKey: 'ui.prevDiff' },
   swap: { glyph: '<>', labelKey: 'ui.swap' },
   reload: { glyph: 'R', labelKey: 'ui.reload' },
 }
@@ -268,8 +268,8 @@ const versionMeta: Record<(typeof versionCompareToolbarOrder)[number], ToolbarMe
   same: { glyph: '=', labelKey: 'ui.same' },
   minor: { glyph: '~', labelKey: 'ui.minor' },
   rules: { glyph: 'R', labelKey: 'ui.rules' },
-  'next-diff': { glyph: 'N', labelKey: 'ui.nextDifference' },
-  'prev-diff': { glyph: 'P', labelKey: 'ui.previousDifference' },
+  'next-diff': { glyph: 'N', labelKey: 'ui.nextDiff' },
+  'prev-diff': { glyph: 'P', labelKey: 'ui.prevDiff' },
   swap: { glyph: '<>', labelKey: 'ui.swap' },
   reload: { glyph: 'R', labelKey: 'ui.reload' },
 }

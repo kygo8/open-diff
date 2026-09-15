@@ -217,10 +217,10 @@ select {
 }
 
 .app-shell-single-session .path-side-footer {
-  min-height: 12px !important;
+  min-height: 11px !important;
   margin-top: 0 !important;
   font-size: 10px !important;
-  line-height: 12px !important;
+  line-height: 11px !important;
 }
 
 .app-shell-single-session .folder-toolbar .folder-criteria,
@@ -821,10 +821,10 @@ select {
   grid-auto-rows: auto !important;
   align-items: stretch !important;
   align-content: start !important;
-  gap: 10px !important;
+  gap: 4px !important;
   height: auto !important;
   min-height: min-content !important;
-  padding: 8px 10px !important;
+  padding: 4px 6px !important;
   overflow: visible !important;
 }
 
@@ -846,14 +846,14 @@ select {
   display: grid !important;
   grid-template-columns: minmax(140px, 1fr) minmax(140px, 1fr) !important;
   grid-auto-rows: auto !important;
-  gap: 8px !important;
+  gap: 4px !important;
   height: auto !important;
   min-height: min-content !important;
 }
 
 .folder-toolbar .path-pair > label {
   display: grid !important;
-  gap: 4px !important;
+  gap: 2px !important;
   min-width: 0 !important;
   pointer-events: auto !important;
 }
@@ -881,10 +881,11 @@ select {
   flex: 1 1 auto !important;
   width: auto !important;
   min-width: 0 !important;
-  height: 24px !important;
-  min-height: 24px !important;
+  height: 22px !important;
+  min-height: 22px !important;
   padding: 0 6px !important;
   overflow: hidden !important;
+  font-size: 11px !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
   pointer-events: auto !important;
@@ -906,23 +907,25 @@ select {
 .folder-toolbar .folder-actions {
   display: flex !important;
   flex-wrap: wrap !important;
-  gap: 6px !important;
+  gap: 4px !important;
 }
 
 .folder-toolbar .folder-criteria {
   display: flex !important;
   flex-wrap: wrap !important;
   align-items: center !important;
-  gap: 8px 14px !important;
+  gap: 3px 8px !important;
+  font-size: 11px !important;
 }
 
 .folder-toolbar .folder-criteria legend {
   display: block !important;
   float: none !important;
   width: 100% !important;
-  margin: 0 0 6px !important;
+  margin: 0 0 2px !important;
   padding: 0 !important;
   color: #111111 !important;
+  font-size: 11px !important;
   font-weight: 600 !important;
 }
 
@@ -930,7 +933,7 @@ select {
   display: inline-flex !important;
   flex: 0 1 auto !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
   min-width: 0 !important;
   max-width: 100% !important;
   white-space: normal !important;
@@ -1237,13 +1240,44 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Dense path/status chrome toward capture strip height */
 .bc-path-footers {
-  gap: 4px !important;
-  padding: 0 2px 1px !important;
+  gap: 2px !important;
+  padding: 0 2px !important;
 }
 
 .path-side-footer {
-  min-height: 12px !important;
-  margin-top: 2px !important;
+  min-height: 11px !important;
+  margin-top: 1px !important;
   font-size: 10px !important;
-  line-height: 12px !important;
+  line-height: 11px !important;
+}
+
+/* Folder/Sync/Merge session body: cut leftover web page margins */
+.folder-compare-view,
+.folder-sync-view,
+.folder-merge-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.folder-compare-view .column-config,
+.folder-compare-view .display-filters,
+.folder-compare-view .folder-select-panel,
+.folder-sync-view .display-filters,
+.folder-merge-view .display-filters {
+  gap: 4px 8px !important;
+  min-height: 22px !important;
+  padding: 1px 2px !important;
+  font-size: 11px !important;
+}
+
+.folder-toolbar .folder-actions .n-button,
+.folder-toolbar .folder-actions button {
+  --n-height: 22px !important;
+  --n-padding: 0 8px !important;
+  --n-font-size: 11px !important;
+
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 8px !important;
+  font-size: 11px !important;
 }

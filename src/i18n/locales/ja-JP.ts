@@ -1144,6 +1144,14 @@ export const jaJP: LanguagePack = {
     'ui.pictureCompareOptionsHint': '新しいピクチャ比較セッションの既定許容値とパネル表示です。',
     'ui.pictureShowMetaDefault': '既定で Meta パネルを表示',
     'ui.pictureShowMinorDefault': '既定で軽微な差異を表示',
+    'ui.mediaSyncPlaybackDefault': '再生を既定で同期',
+    'ui.mediaDefaultFilter': '既定のフィールドフィルター',
+    'ui.mediaShowRulesDefault': '重要度ルールを既定で表示',
+    'ui.mediaCompareOptionsHint': '新しいメディア比較セッションの既定の再生とフィルター設定。',
+    'ui.versionDefaultFilter': '既定のフィールドフィルター',
+    'ui.versionShowRulesDefault': '重要度ルールを既定で表示',
+    'ui.versionCompareOptionsHint':
+      '新しいバージョン比較セッションの既定のフィルターとルール設定。',
     'ui.startup': '起動',
     'ui.loadLastWorkspaceOnStartup': '起動時に前回のワークスペースを読み込む',
     'ui.startupHint':

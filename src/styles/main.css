@@ -1514,6 +1514,113 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+/* Media Compare chrome densify toward capture path/status/toolbar/footer strips */
+.media-compare-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.media-compare-view .media-path-panel {
+  gap: 3px !important;
+  min-height: 26px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.media-compare-view .media-path-panel input,
+.media-compare-view .media-path-panel button {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.media-compare-view .bc-path-footers {
+  gap: 1px !important;
+  padding: 0 2px !important;
+  margin-top: 0 !important;
+}
+
+.media-compare-view .path-side-footer {
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+}
+
+.media-compare-view .media-playback-panel,
+.media-compare-view .media-summary-grid,
+.media-compare-view .media-side,
+.media-compare-view .media-report-panel,
+.media-compare-view .media-rules-panel {
+  gap: 4px 6px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.media-compare-view .media-field-row > * {
+  padding: 2px 6px !important;
+  line-height: 16px !important;
+}
+
+.media-compare-view .media-summary-item strong {
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+
+/* Version Compare chrome densify toward capture path/status/toolbar/footer strips */
+.version-compare-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.version-compare-view .version-path-panel {
+  gap: 3px !important;
+  min-height: 26px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.version-compare-view .version-path-panel input,
+.version-compare-view .version-path-panel button {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.version-compare-view .bc-path-footers {
+  gap: 1px !important;
+  padding: 0 2px !important;
+  margin-top: 0 !important;
+}
+
+.version-compare-view .path-side-footer {
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+}
+
+.version-compare-view .version-summary-grid,
+.version-compare-view .version-side,
+.version-compare-view .version-report-panel,
+.version-compare-view .version-rules-panel {
+  gap: 4px 6px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.version-compare-view .version-field-row > * {
+  padding: 2px 6px !important;
+  line-height: 16px !important;
+}
+
+.version-compare-view .version-summary-item strong {
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+
 /* Text Compare chrome densify toward capture path/status/editor strips */
 .text-compare-view {
   gap: 4px !important;

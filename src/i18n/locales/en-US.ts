@@ -1146,6 +1146,15 @@ export const enUS: LanguagePack = {
       'Default Picture Compare tolerance and panel visibility for new sessions.',
     'ui.pictureShowMetaDefault': 'Show Meta panel by default',
     'ui.pictureShowMinorDefault': 'Show minor differences by default',
+    'ui.mediaSyncPlaybackDefault': 'Sync playback by default',
+    'ui.mediaDefaultFilter': 'Default field filter',
+    'ui.mediaShowRulesDefault': 'Show Importance Rules by default',
+    'ui.mediaCompareOptionsHint':
+      'Default Media Compare playback and filter options for new sessions.',
+    'ui.versionDefaultFilter': 'Default field filter',
+    'ui.versionShowRulesDefault': 'Show Importance Rules by default',
+    'ui.versionCompareOptionsHint':
+      'Default Version Compare filter and rules options for new sessions.',
     'ui.startup': 'Startup',
     'ui.loadLastWorkspaceOnStartup': 'Load last workspace on startup',
     'ui.startupHint':

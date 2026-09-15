@@ -1165,6 +1165,15 @@ export const esES: LanguagePack = {
       'Tolerancia y paneles predeterminados para nuevas sesiones de imagen.',
     'ui.pictureShowMetaDefault': 'Mostrar panel Meta de forma predeterminada',
     'ui.pictureShowMinorDefault': 'Mostrar diferencias menores de forma predeterminada',
+    'ui.mediaSyncPlaybackDefault': 'Sincronizar reproducción de forma predeterminada',
+    'ui.mediaDefaultFilter': 'Filtro de campos predeterminado',
+    'ui.mediaShowRulesDefault': 'Mostrar reglas de importancia de forma predeterminada',
+    'ui.mediaCompareOptionsHint':
+      'Opciones predeterminadas de reproducción y filtro para nuevas sesiones de Media Compare.',
+    'ui.versionDefaultFilter': 'Filtro de campos predeterminado',
+    'ui.versionShowRulesDefault': 'Mostrar reglas de importancia de forma predeterminada',
+    'ui.versionCompareOptionsHint':
+      'Opciones predeterminadas de filtro y reglas para nuevas sesiones de Version Compare.',
     'ui.startup': 'Inicio',
     'ui.loadLastWorkspaceOnStartup': 'Cargar el último espacio de trabajo al iniciar',
     'ui.startupHint':

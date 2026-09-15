@@ -73,6 +73,18 @@ import {
   loadPictureCompareOptions,
   savePictureCompareOptions,
 } from '@/app/pictureCompareOptions'
+import {
+  defaultMediaCompareOptions,
+  loadMediaCompareOptions,
+  mediaFieldFilters,
+  saveMediaCompareOptions,
+} from '@/app/mediaCompareOptions'
+import {
+  defaultVersionCompareOptions,
+  loadVersionCompareOptions,
+  saveVersionCompareOptions,
+  versionFieldFilters,
+} from '@/app/versionCompareOptions'
 import type { RemoteProtocol } from '@/api/remote'
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { loadExternalApplications, saveExternalApplications } from '@/app/externalApplications'
@@ -109,6 +121,8 @@ type OptionsSectionId =
   | 'folderCompare'
   | 'hexCompare'
   | 'pictureCompare'
+  | 'mediaCompare'
+  | 'versionCompare'
   | 'fileFilters'
   | 'openWith'
   | 'shell'
@@ -139,6 +153,16 @@ const fileFormatsDraft = ref<FileFormatDefinition[]>(loadFileFormats())
 const reportPreferencesDraft = ref<ReportPreferences>(loadReportPreferences())
 const profileDefaultsDraft = ref<RemoteProfileDefaults>(loadRemoteProfileDefaults())
 const pictureCompareDefaultsDraft = ref(loadPictureCompareOptions())
+const mediaCompareDefaultsDraft = ref(loadMediaCompareOptions())
+const versionCompareDefaultsDraft = ref(loadVersionCompareOptions())
+const mediaFilterOptions = mediaFieldFilters.map((value) => ({
+  value,
+  labelKey: `ui.${value}` as const,
+}))
+const versionFilterOptions = versionFieldFilters.map((value) => ({
+  value,
+  labelKey: `ui.${value}` as const,
+}))
 const reportFormatOptions: { value: ReportPreferenceFormat; labelKey: string }[] = [
   { value: 'html', labelKey: 'ui.reportFormatHtml' },
   { value: 'html-side-by-side', labelKey: 'ui.reportFormatHtmlSideBySide' },
@@ -192,6 +216,8 @@ const optionsTree = [
       { id: 'folderCompare' as const, labelKey: 'ui.folderCompare' },
       { id: 'hexCompare' as const, labelKey: 'ui.hexCompare' },
       { id: 'pictureCompare' as const, labelKey: 'ui.pictureCompare' },
+      { id: 'mediaCompare' as const, labelKey: 'ui.mediaCompare' },
+      { id: 'versionCompare' as const, labelKey: 'ui.versionCompare' },
       { id: 'fileFilters' as const, labelKey: 'ui.fileFilters' },
     ],
   },
@@ -617,6 +643,10 @@ function restoreFactoryDefaultsFromOptions(): void {
   saveRemoteProfileDefaults(profileDefaultsDraft.value)
   pictureCompareDefaultsDraft.value = defaultPictureCompareOptions()
   savePictureCompareOptions(pictureCompareDefaultsDraft.value)
+  mediaCompareDefaultsDraft.value = defaultMediaCompareOptions()
+  saveMediaCompareOptions(mediaCompareDefaultsDraft.value)
+  versionCompareDefaultsDraft.value = defaultVersionCompareOptions()
+  saveVersionCompareOptions(versionCompareDefaultsDraft.value)
   optionsStatus.value = t('ui.restoreFactoryDefaults')
 }
 
@@ -667,6 +697,14 @@ function persistProfileDefaultsDraft(): void {
 
 function persistPictureCompareDefaultsDraft(): void {
   savePictureCompareOptions(pictureCompareDefaultsDraft.value)
+}
+
+function persistMediaCompareDefaultsDraft(): void {
+  saveMediaCompareOptions(mediaCompareDefaultsDraft.value)
+}
+
+function persistVersionCompareDefaultsDraft(): void {
+  saveVersionCompareOptions(versionCompareDefaultsDraft.value)
 }
 
 function clearReportExportHistoryFromOptions(): void {
@@ -1358,6 +1396,83 @@ function parseShortcutText(value: string): string[] {
           <span>{{ $t('ui.pictureShowMinorDefault') }}</span>
         </label>
         <p class="options-hint">{{ $t('ui.pictureCompareOptionsHint') }}</p>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'mediaCompare'"
+        :title="$t('ui.mediaCompare')"
+        size="small"
+        data-testid="options-media-compare-card"
+      >
+        <label class="tweak-row">
+          <input
+            v-model="mediaCompareDefaultsDraft.syncPlayback"
+            data-testid="media-sync-playback-default"
+            type="checkbox"
+            @change="persistMediaCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.mediaSyncPlaybackDefault') }}</span>
+        </label>
+        <label class="auto-save-limit-row">
+          <span>{{ $t('ui.mediaDefaultFilter') }}</span>
+          <select
+            v-model="mediaCompareDefaultsDraft.defaultFilter"
+            data-testid="media-default-filter"
+            @change="persistMediaCompareDefaultsDraft"
+          >
+            <option
+              v-for="option in mediaFilterOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ $t(option.labelKey) }}
+            </option>
+          </select>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="mediaCompareDefaultsDraft.showRules"
+            data-testid="media-show-rules-default"
+            type="checkbox"
+            @change="persistMediaCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.mediaShowRulesDefault') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.mediaCompareOptionsHint') }}</p>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'versionCompare'"
+        :title="$t('ui.versionCompare')"
+        size="small"
+        data-testid="options-version-compare-card"
+      >
+        <label class="auto-save-limit-row">
+          <span>{{ $t('ui.versionDefaultFilter') }}</span>
+          <select
+            v-model="versionCompareDefaultsDraft.defaultFilter"
+            data-testid="version-default-filter"
+            @change="persistVersionCompareDefaultsDraft"
+          >
+            <option
+              v-for="option in versionFilterOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ $t(option.labelKey) }}
+            </option>
+          </select>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="versionCompareDefaultsDraft.showRules"
+            data-testid="version-show-rules-default"
+            type="checkbox"
+            @change="persistVersionCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.versionShowRulesDefault') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.versionCompareOptionsHint') }}</p>
       </NCard>
 
       <NCard

@@ -17,6 +17,7 @@ const routes = [
   ['picture', '/compare/picture'],
   ['registry', '/compare/registry'],
   ['media', '/compare/media'],
+  ['version', '/compare/version'],
   ['text patch', '/patch/text'],
   ['remote profiles', '/settings/remote-profiles'],
   ['settings', '/settings'],
@@ -30,6 +31,8 @@ const denseStatusRoutes = new Set([
   'text patch',
   'hex',
   'picture',
+  'media',
+  'version',
 ])
 
 for (const [name, route] of routes) {

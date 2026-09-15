@@ -1168,6 +1168,15 @@ export const frFR: LanguagePack = {
       'Tolérance et panneaux par défaut pour les nouvelles sessions Image.',
     'ui.pictureShowMetaDefault': 'Afficher le panneau Meta par défaut',
     'ui.pictureShowMinorDefault': 'Afficher les différences mineures par défaut',
+    'ui.mediaSyncPlaybackDefault': 'Synchroniser la lecture par défaut',
+    'ui.mediaDefaultFilter': 'Filtre de champs par défaut',
+    'ui.mediaShowRulesDefault': 'Afficher les règles d’importance par défaut',
+    'ui.mediaCompareOptionsHint':
+      'Options de lecture et de filtre par défaut pour les nouvelles sessions Media Compare.',
+    'ui.versionDefaultFilter': 'Filtre de champs par défaut',
+    'ui.versionShowRulesDefault': 'Afficher les règles d’importance par défaut',
+    'ui.versionCompareOptionsHint':
+      'Options de filtre et de règles par défaut pour les nouvelles sessions Version Compare.',
     'ui.startup': 'Démarrage',
     'ui.loadLastWorkspaceOnStartup': 'Charger le dernier espace de travail au démarrage',
     'ui.startupHint':

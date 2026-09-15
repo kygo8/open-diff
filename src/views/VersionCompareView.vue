@@ -18,20 +18,19 @@ import type {
 import { buildVersionCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
 import {
   buildVersionRulesCatalog,
+  defaultUnimportantVersionFields,
   isVersionFieldImportant,
   loadVersionCompareOptions,
-  resetVersionCompareOptions,
   saveVersionCompareOptions,
   toggleVersionFieldImportance,
   type VersionCompareOptionsState,
+  type VersionFieldFilter,
 } from '@/app/versionCompareOptions'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useTabsStore } from '@/stores/tabs'
 
 const versionStatuses: VersionFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
-
-type VersionFieldFilter = 'all' | 'diffs' | 'same' | 'minor'
 
 const emptyVersionSide: VersionSideSummary = {
   name: '',
@@ -53,13 +52,13 @@ const leftVersion = ref<VersionSideSummary>({ ...emptyVersionSide })
 const rightVersion = ref<VersionSideSummary>({ ...emptyVersionSide })
 const versionFields = ref<VersionFieldRow[]>([])
 const versionSummaryOverride = ref<Record<VersionFieldStatus, number> | null>(null)
-const fieldFilter = ref<VersionFieldFilter>('all')
+const versionOptions = ref<VersionCompareOptionsState>(loadVersionCompareOptions())
+const fieldFilter = ref<VersionFieldFilter>(versionOptions.value.defaultFilter)
 const activeFieldIndex = ref(0)
 const loading = ref(false)
 const error = ref('')
 const reportStatus = ref('')
-const showVersionRules = ref(false)
-const versionOptions = ref<VersionCompareOptionsState>(loadVersionCompareOptions())
+const showVersionRules = ref(versionOptions.value.showRules)
 const statusBar = useStatusBarStore()
 const loadTimeSeconds = ref<number | null>(null)
 
@@ -373,7 +372,10 @@ function toggleFieldImportance(field: string): void {
 }
 
 function resetVersionRules(): void {
-  versionOptions.value = resetVersionCompareOptions()
+  versionOptions.value = {
+    ...versionOptions.value,
+    unimportantFields: [...defaultUnimportantVersionFields],
+  }
   persistVersionOptions()
 }
 
@@ -457,6 +459,7 @@ watch(
       filterStatus: t('status.allRows'),
       source: 'version-compare',
       loadTimeSeconds: hasResult ? loadTimeSeconds.value : null,
+      chromeKind: 'version-session',
     })
   },
   { immediate: true },
@@ -687,9 +690,9 @@ watch(
 <style scoped>
 .version-compare-view {
   display: grid;
-  gap: 14px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 4px 6px;
   overflow: auto;
 }
 
@@ -732,44 +735,47 @@ h1 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
   align-items: end;
-  gap: 10px;
-  padding: 10px;
+  gap: 4px;
+  min-height: 26px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .version-path-panel label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
   min-width: 0;
 }
 
 .version-path-panel span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .version-path-panel input {
-  min-height: 32px;
-  padding: 0 8px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .version-path-panel button {
-  min-height: 32px;
-  padding: 0 12px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .version-path-panel button:hover {
@@ -1039,16 +1045,19 @@ h1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column: 1 / -1;
-  gap: 8px;
+  gap: 1px;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 0;
+  padding: 0 2px;
 }
 
 .path-side-footer {
-  min-height: 18px;
+  min-height: 10px;
+  margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

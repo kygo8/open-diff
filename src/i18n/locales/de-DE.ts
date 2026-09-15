@@ -1167,6 +1167,15 @@ export const deDE: LanguagePack = {
       'Standard-Toleranz und Panel-Sichtbarkeit für neue Bildvergleiche.',
     'ui.pictureShowMetaDefault': 'Meta-Panel standardmäßig anzeigen',
     'ui.pictureShowMinorDefault': 'Unwichtige Unterschiede standardmäßig anzeigen',
+    'ui.mediaSyncPlaybackDefault': 'Wiedergabe standardmäßig synchronisieren',
+    'ui.mediaDefaultFilter': 'Standard-Feldfilter',
+    'ui.mediaShowRulesDefault': 'Wichtigkeitsregeln standardmäßig anzeigen',
+    'ui.mediaCompareOptionsHint':
+      'Standardoptionen für Wiedergabe und Filter neuer Medienvergleiche.',
+    'ui.versionDefaultFilter': 'Standard-Feldfilter',
+    'ui.versionShowRulesDefault': 'Wichtigkeitsregeln standardmäßig anzeigen',
+    'ui.versionCompareOptionsHint':
+      'Standardoptionen für Filter und Regeln neuer Versionsvergleiche.',
     'ui.startup': 'Start',
     'ui.loadLastWorkspaceOnStartup': 'Letzten Arbeitsbereich beim Start laden',
     'ui.startupHint':

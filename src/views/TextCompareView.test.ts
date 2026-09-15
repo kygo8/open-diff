@@ -359,6 +359,7 @@ describe('TextCompareView', () => {
         differenceCount: null,
         source: 'text-compare',
         loadTimeSeconds: null,
+        editMode: 'insert',
       }),
     )
 
@@ -371,6 +372,7 @@ describe('TextCompareView', () => {
         encoding: 'UTF-8 | Left: None | Right: None',
         filterStatus: 'All rows',
         source: 'text-compare',
+        editMode: 'insert',
       }),
     )
     expect(typeof statusBar.report.loadTimeSeconds).toBe('number')

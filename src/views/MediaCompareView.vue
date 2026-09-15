@@ -122,6 +122,7 @@ function applyMediaResult(result: MediaCompareResponse): void {
   leftMedia.value = result.left
   rightMedia.value = result.right
   mediaFields.value = result.fields
+  activeMediaFieldIndex.value = 0
   mediaSummaryOverride.value = result.summary
   reportStatus.value = ''
 }
@@ -214,6 +215,10 @@ const minorDifferenceCount = computed(
       (field) => field.status !== 'unchanged' && !fieldIsImportant(field.field),
     ).length,
 )
+const differingMediaFields = computed(() =>
+  mediaFields.value.filter((field) => field.status !== 'unchanged'),
+)
+const activeMediaFieldIndex = ref(0)
 
 const mediaSessionToolbar = computed(() =>
   buildMediaCompareToolbar({
@@ -223,6 +228,8 @@ const mediaSessionToolbar = computed(() =>
     same: true,
     minor: true,
     rules: true,
+    'next-diff': differingMediaFields.value.length > 0,
+    'prev-diff': differingMediaFields.value.length > 0,
     swap: Boolean(leftPath.value || rightPath.value),
     reload: Boolean(leftPath.value && rightPath.value),
     play2: canPreviewMedia.value,
@@ -348,6 +355,17 @@ function formatClock(seconds: number): string {
   return `${String(mins)}:${String(secs).padStart(2, '0')}`
 }
 
+function navigateMediaDifference(direction: 1 | -1): void {
+  const fields = differingMediaFields.value
+
+  if (fields.length === 0) {
+    return
+  }
+
+  activeMediaFieldIndex.value =
+    (activeMediaFieldIndex.value + direction + fields.length) % fields.length
+}
+
 function runMediaToolbarCommand(commandId: string): void {
   if (commandId === 'home') {
     tabs.openTab({ title: 'Home', titleKey: 'ui.home', route: '/', dirty: false })
@@ -397,6 +415,18 @@ function runMediaToolbarCommand(commandId: string): void {
 
   if (commandId === 'play2') {
     togglePlayback()
+
+    return
+  }
+
+  if (commandId === 'next-diff') {
+    navigateMediaDifference(1)
+
+    return
+  }
+
+  if (commandId === 'prev-diff') {
+    navigateMediaDifference(-1)
   }
 }
 </script>
@@ -670,9 +700,18 @@ function runMediaToolbarCommand(commandId: string): void {
             v-for="row in visibleMediaFields"
             :key="row.field"
             class="media-field-row"
-            :class="[`status-${row.status}`, { 'media-field-minor': !fieldIsImportant(row.field) }]"
+            :class="[
+              `status-${row.status}`,
+              {
+                'media-field-minor': !fieldIsImportant(row.field),
+                selected: differingMediaFields[activeMediaFieldIndex]?.field === row.field,
+              },
+            ]"
             :data-testid="`media-field-${row.field}`"
             :data-important="fieldIsImportant(row.field) ? 'true' : 'false'"
+            :data-selected="
+              differingMediaFields[activeMediaFieldIndex]?.field === row.field ? 'true' : 'false'
+            "
           >
             <strong>{{ row.field }}</strong>
             <code>{{ valueText(row.left) }}</code>
@@ -882,6 +921,11 @@ h1 {
   border: 1px solid var(--app-border);
   border-radius: 6px;
   background: var(--app-bg);
+}
+
+.media-field-row.selected {
+  outline: 1px solid var(--app-accent, #2563eb);
+  background: rgb(37 99 235 / 0.08);
 }
 
 .media-field-row {

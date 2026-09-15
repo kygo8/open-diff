@@ -492,6 +492,7 @@ describe('AppLayout command palette', () => {
       filterStatus: 'All rows',
       source: 'text-compare',
       loadTimeSeconds: 0.03,
+      editMode: 'insert',
     })
     await wrapper.vm.$nextTick()
 
@@ -499,6 +500,7 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('≠ 4 difference sections')
     expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Encoding: UTF-8 / LF')
     expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Filter: All rows')
+    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Insert')
     expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Load time: 0.03 seconds')
   })
 

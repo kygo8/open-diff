@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 import { readTextFile, saveTextFile } from '@/api/diff'
 import { useRouter } from 'vue-router'
 import { useI18n } from '@/i18n'
@@ -7,6 +7,8 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
+import { useStatusBarStore } from '@/stores/statusBar'
+import { formatPathModifiedAt } from '@/app/pathMetadata'
 import type { FileStamp } from '@/types/diff'
 import {
   resolveSyntaxGrammar,
@@ -30,6 +32,7 @@ const sessionLaunch = useSessionLaunchStore()
 const viewActions = useViewActionsStore()
 const tabs = useTabsStore()
 const settings = useSettingsStore()
+const statusBar = useStatusBarStore()
 const router = useRouter()
 const document = ref<LoadedTextDocument | null>(null)
 const editorText = ref('')
@@ -66,14 +69,35 @@ const metadataLabel = computed(() => {
     return t('status.noDocumentLoaded')
   }
 
-  return t('status.documentMetadata', {
+  const base = t('status.documentMetadata', {
     encoding: document.value.encoding,
     lineEnding: document.value.lineEnding,
     bytes: document.value.fileStamp.size,
   })
+  const modified = formatPathModifiedAt(document.value.fileStamp.modifiedAtMs)
+
+  return modified ? `${base} | ${modified}` : base
 })
 const dirty = computed(() => editorText.value !== savedText.value)
 const dirtyLabel = computed(() => (dirty.value ? t('status.unsavedChanges') : t('status.saved')))
+
+watchEffect(() => {
+  let comparisonStatus = t('status.noDocumentLoaded')
+
+  if (document.value) {
+    comparisonStatus = dirty.value ? t('status.unsavedChanges') : t('status.saved')
+  }
+
+  statusBar.reportStatus({
+    comparisonStatus,
+    differenceCount: null,
+    encoding: document.value?.encoding ?? 'UTF-8',
+    filterStatus: t('status.allRows'),
+    source: 'text-edit',
+    loadTimeSeconds: null,
+    editMode: document.value ? 'insert' : null,
+  })
+})
 const lineCount = computed(() =>
   editorText.value.length === 0 ? 0 : editorText.value.split('\n').length,
 )

@@ -451,6 +451,11 @@ export const esES: LanguagePack = {
     'status.differenceSectionUnknown': '≠ -',
     'status.differenceSections': '≠ {count} secciones de diferencias',
     'status.differenceSection': '≠ {count} sección de diferencias',
+    'status.insertMode': 'Insertar',
+    'status.overwriteMode': 'Sobrescribir',
+    'status.pathFileMetadata': '{bytes} bytes, {modified}',
+    'status.filesSelectedBytesWithDate':
+      '{count} archivo(s) seleccionado(s), {bytes} bytes, {modified}',
     'status.encoding': 'Codificación',
     'status.filter': 'Filtrar',
     'status.allRows': 'Todas las filas',

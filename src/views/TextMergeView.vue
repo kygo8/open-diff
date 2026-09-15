@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 import { mergeTextFiles, saveTextFile } from '@/api/diff'
 import { buildTextMergeReportText, defaultTextMergeReportOutputPath } from '@/app/textMergeReport'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
@@ -10,6 +10,8 @@ import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { useStatusBarStore } from '@/stores/statusBar'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 
 type MergePaneId = 'left' | 'base' | 'right' | 'output'
 type MergeSource = 'left' | 'base' | 'right'
@@ -41,6 +43,7 @@ const tabs = useTabsStore()
 const settings = useSettingsStore()
 const sessionLaunch = useSessionLaunchStore()
 const viewActions = useViewActionsStore()
+const statusBar = useStatusBarStore()
 const leftPath = ref('')
 const rightPath = ref('')
 const centerPath = ref('')
@@ -56,6 +59,7 @@ const saveStatusParams = ref<Record<string, string | number>>({})
 const saving = ref(false)
 const reportStatus = ref('')
 const loading = ref(false)
+const loadTimeSeconds = ref<number | null>(null)
 const conflicts = ref<MergeConflict[]>([])
 const conflictPolicy = ref<ConflictPolicy>('markConflict')
 const activeConflictIndex = ref(0)
@@ -90,6 +94,27 @@ const outputPane = computed<MergePane>(() => ({
 }))
 const mergeTargetLocked = computed(() => mergeTarget.value !== 'other')
 const unresolvedConflicts = computed(() => conflicts.value.filter((conflict) => !conflict.resolved))
+
+watchEffect(() => {
+  const hasContent = Boolean(leftPath.value || rightPath.value || outputLines.value.length)
+  let comparisonStatus = t('status.editing')
+
+  if (loading.value) {
+    comparisonStatus = t('status.comparing')
+  } else if (hasContent) {
+    comparisonStatus = t('status.compared')
+  }
+
+  statusBar.reportStatus({
+    comparisonStatus,
+    differenceCount: unresolvedConflicts.value.length,
+    encoding: 'UTF-8',
+    filterStatus: t('status.allRows'),
+    source: 'text-merge',
+    loadTimeSeconds: loadTimeSeconds.value,
+    editMode: hasContent ? 'insert' : null,
+  })
+})
 const currentConflict = computed<MergeConflict | undefined>(() => {
   const list = unresolvedConflicts.value
 
@@ -192,6 +217,8 @@ async function loadMerge(): Promise<void> {
   }
 
   loading.value = true
+  const mergeStartedAt = performance.now()
+
   try {
     const result = await mergeTextFiles({
       leftPath: leftPath.value,
@@ -226,6 +253,7 @@ async function loadMerge(): Promise<void> {
     await nextTick()
     scrollPanesToCurrentConflict()
   } finally {
+    loadTimeSeconds.value = elapsedSecondsSince(mergeStartedAt)
     loading.value = false
   }
 }

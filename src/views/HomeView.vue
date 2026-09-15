@@ -17,8 +17,6 @@ import {
   type LucideIcon,
 } from '@lucide/vue'
 import { readClipboardTextSource } from '@/app/clipboardSource'
-import { isArchivePath } from '@/app/archivePath'
-import { pickNativePath } from '@/app/filePicker'
 import { classifyDropInputs } from '@/app/dropInput'
 import { createLaunchFromDrop } from '@/app/dropLaunch'
 import { filterSavedSessions } from '@/app/savedSessions'
@@ -569,78 +567,6 @@ function removeSelectedFromTree(): void {
   savedSessions.requestDeleteSession(session.id)
 }
 
-async function browseFoldersToCompare(): Promise<void> {
-  const left = await pickNativePath({ directory: true })
-
-  if (!left) {
-    return
-  }
-
-  const right = await pickNativePath({ directory: true })
-
-  if (!right) {
-    return
-  }
-
-  sessionLaunch.setPendingLaunch({
-    id: crypto.randomUUID(),
-    source: 'home',
-    sessionType: 'folder-compare',
-    title: `${left} vs ${right}`,
-    route: '/compare/folder',
-    locations: {
-      left: { uri: left, displayName: left, kind: 'directory', readOnly: false },
-      right: { uri: right, displayName: right, kind: 'directory', readOnly: false },
-    },
-    autoRun: true,
-  })
-  tabs.openTab({
-    title: t('ui.folderCompare'),
-    titleKey: 'ui.folderCompare',
-    route: '/compare/folder',
-    dirty: false,
-  })
-  void router.push('/compare/folder')
-}
-
-async function browseArchivesToCompare(): Promise<void> {
-  const left = await pickNativePath({ directory: false })
-
-  if (!left) {
-    return
-  }
-
-  const right = await pickNativePath({ directory: false })
-
-  if (!right) {
-    return
-  }
-
-  if (!isArchivePath(left) || !isArchivePath(right)) {
-    return
-  }
-
-  sessionLaunch.setPendingLaunch({
-    id: crypto.randomUUID(),
-    source: 'home',
-    sessionType: 'archive-compare',
-    title: `${left} vs ${right}`,
-    route: '/compare/folder',
-    locations: {
-      left: { uri: left, displayName: left, kind: 'file', readOnly: true },
-      right: { uri: right, displayName: right, kind: 'file', readOnly: true },
-    },
-    autoRun: true,
-  })
-  tabs.openTab({
-    title: t('ui.archiveCompare'),
-    titleKey: 'ui.archiveCompare',
-    route: '/compare/folder',
-    dirty: false,
-  })
-  void router.push('/compare/folder')
-}
-
 function openSelectedPreview(): void {
   if (selectedSavedSession.value) {
     openSavedSession(selectedSavedSession.value)
@@ -838,29 +764,6 @@ function openSelectedPreview(): void {
             @drop="handleDrop"
           >
             <strong>{{ $t('ui.dragFoldersOrFilesOntoSessionIcon') }}</strong>
-            <div class="home-primary-ctas">
-              <button
-                type="button"
-                class="home-primary-cta"
-                data-testid="home-browse-folders"
-                @click="browseFoldersToCompare"
-              >
-                {{ $t('ui.browseFolders') }}
-              </button>
-              <button
-                type="button"
-                class="home-primary-cta"
-                data-testid="home-browse-archives"
-                @click="browseArchivesToCompare"
-              >
-                {{ $t('ui.browseArchive') }}
-              </button>
-              <span
-                class="home-drop-cta"
-                data-testid="home-drop-here"
-                >{{ $t('ui.dropHere') }}</span
-              >
-            </div>
           </div>
           <div class="new-session-grid">
             <article

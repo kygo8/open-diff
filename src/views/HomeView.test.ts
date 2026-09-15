@@ -83,8 +83,8 @@ describe('HomeView', () => {
     expect(wrapper.find('[data-testid="home-how-to-start"]').text()).toContain(
       'Drag folders or files onto session icon',
     )
-    expect(wrapper.find('[data-testid="home-browse-folders"]').text()).toContain('Browse folders')
-    expect(wrapper.find('[data-testid="home-drop-here"]').text()).toContain('Drop here')
+    expect(wrapper.find('[data-testid="home-browse-folders"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="home-drop-here"]').exists()).toBe(false)
     expect(wrapper.text()).toContain('Text Compare')
     expect(wrapper.find('[data-testid="home-tree-text-compare"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="home-tree-text-edit"]').exists()).toBe(false)

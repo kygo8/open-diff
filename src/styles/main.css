@@ -336,10 +336,87 @@ select {
   place-items: center;
 }
 
+.bc-toolbar-plate {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #9aa3ad;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #f7f8fa 0%, #e4e7eb 100%);
+  color: #1f2933;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+  place-items: center;
+  box-shadow: inset 0 1px 0 #ffffffcc;
+}
+
+.bc-session-toolbar-compact .bc-toolbar-plate {
+  width: 20px;
+  height: 20px;
+  font-size: 13px;
+}
+
+.bc-toolbar-plate[data-plate='refresh'],
+.bc-toolbar-plate[data-plate='reload'] {
+  background: linear-gradient(180deg, #eaf8ef 0%, #cfead8 100%);
+  color: #0f7a3a;
+  border-color: #7cbc8f;
+}
+
+.bc-toolbar-plate[data-plate='swap'] {
+  background: linear-gradient(180deg, #f4f5f7 0%, #d9dde3 100%);
+  color: #1f2a37;
+  border-color: #8b949e;
+}
+
+.bc-toolbar-plate[data-plate='copy'],
+.bc-toolbar-plate[data-plate='copy-left'],
+.bc-toolbar-plate[data-plate='copy-right'] {
+  background: linear-gradient(180deg, #eef4fb 0%, #d5e3f2 100%);
+  color: #1e3a5f;
+  border-color: #8aa4c3;
+}
+
+.bc-toolbar-plate[data-plate='next'],
+.bc-toolbar-plate[data-plate='prev'] {
+  background: linear-gradient(180deg, #edf4fc 0%, #d4e4f6 100%);
+  color: #1d4f91;
+  border-color: #89aed0;
+}
+
+.bc-toolbar-plate[data-plate='expand'],
+.bc-toolbar-plate[data-plate='collapse'] {
+  background: linear-gradient(180deg, #fff8e8 0%, #f0e0b0 100%);
+  color: #8a5a00;
+  border-color: #d0b26a;
+}
+
+.bc-toolbar-plate[data-plate='filters'] {
+  background: linear-gradient(180deg, #e8f2fc 0%, #c9dff3 100%);
+  color: #0b57a4;
+  border-color: #7eacd8;
+}
+
+.bc-toolbar-plate[data-plate='rules'] {
+  background: linear-gradient(180deg, #f7f1e6 0%, #e5d7c0 100%);
+  color: #3b2f1c;
+  border-color: #b7a789;
+}
+
+.bc-toolbar-command[data-has-plate='true'] {
+  min-width: 64px;
+}
+
+.bc-session-toolbar-compact .bc-toolbar-command[data-has-plate='true'] {
+  min-width: 48px;
+}
+
 .bc-toolbar-icon {
   display: block;
   flex-shrink: 0;
-  color: #2f353d;
+  color: #2a3038;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-icon {

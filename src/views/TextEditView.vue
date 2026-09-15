@@ -25,6 +25,7 @@ import {
   tokenizeSyntaxLine,
 } from '@/app/syntaxGrammars'
 import { resolveGoToLine } from '@/app/textEditNavigation'
+import { visualForSessionToolbarCommand } from '@/app/sessionToolbarIcons'
 
 interface LoadedTextDocument {
   path: string
@@ -644,28 +645,46 @@ function onFontSizeChange(event: Event): void {
   settings.setFontSize(Math.min(24, Math.max(12, Math.round(next))))
 }
 
-const textEditToolbarCommands = computed(() => [
-  { id: 'home', glyph: 'H', labelKey: 'ui.home', enabled: true },
-  { id: 'undo', glyph: 'U', labelKey: 'ui.undo', enabled: undoStack.value.length > 0 },
-  { id: 'redo', glyph: 'R', labelKey: 'ui.redo', enabled: redoStack.value.length > 0 },
-  { id: 'cut', glyph: 'X', labelKey: 'ui.cut', enabled: hasEditorContent.value },
-  { id: 'copy', glyph: 'C', labelKey: 'ui.copy', enabled: hasEditorContent.value },
-  {
-    id: 'paste',
-    glyph: 'P',
-    labelKey: 'ui.paste',
-    enabled: canPaste.value || document.value !== null,
-  },
-  { id: 'delete', glyph: 'D', labelKey: 'ui.delete', enabled: hasEditorContent.value },
-  { id: 'syntax', glyph: 'S', labelKey: 'ui.syntax', enabled: true },
-  { id: 'font', glyph: 'A', labelKey: 'ui.font', enabled: true },
-  { id: 'goto', glyph: '#', labelKey: 'ui.goToLine', enabled: hasEditorContent.value },
-  { id: 'wrap', glyph: 'W', labelKey: 'ui.wrap', enabled: true },
-])
+const textEditToolbarCommands = computed(() =>
+  [
+    { id: 'home', glyph: 'H', labelKey: 'ui.home', enabled: true },
+    { id: 'undo', glyph: 'U', labelKey: 'ui.undo', enabled: undoStack.value.length > 0 },
+    { id: 'redo', glyph: 'R', labelKey: 'ui.redo', enabled: redoStack.value.length > 0 },
+    { id: 'cut', glyph: 'X', labelKey: 'ui.cut', enabled: hasEditorContent.value },
+    { id: 'copy', glyph: 'C', labelKey: 'ui.copy', enabled: hasEditorContent.value },
+    {
+      id: 'paste',
+      glyph: 'P',
+      labelKey: 'ui.paste',
+      enabled: canPaste.value || document.value !== null,
+    },
+    { id: 'delete', glyph: 'D', labelKey: 'ui.delete', enabled: hasEditorContent.value },
+    { id: 'syntax', glyph: 'S', labelKey: 'ui.syntax', enabled: true },
+    { id: 'font', glyph: 'A', labelKey: 'ui.font', enabled: true },
+    { id: 'goto', glyph: '#', labelKey: 'ui.goToLine', enabled: hasEditorContent.value },
+    { id: 'wrap', glyph: 'W', labelKey: 'ui.wrap', enabled: true },
+  ].map((command) => {
+    const visual = visualForSessionToolbarCommand(command.id)
+
+    return {
+      ...command,
+      visual,
+      icon: visual?.kind === 'icon' ? visual.icon : undefined,
+      plate: visual?.kind === 'plate' ? visual : undefined,
+    }
+  }),
+)
 </script>
 
 <template>
-  <section class="bc-session-toolbar">
+  <section
+    class="bc-session-toolbar"
+    :class="{
+      'bc-session-toolbar-glyphs-only': !settings.showToolbarLabels,
+      'bc-session-toolbar-compact': !settings.largeToolbarButtons,
+    }"
+    :data-large-buttons="settings.largeToolbarButtons ? 'true' : 'false'"
+  >
     <button
       v-for="command in textEditToolbarCommands"
       :key="command.id"
@@ -679,6 +698,7 @@ const textEditToolbarCommands = computed(() => [
           (command.id === 'syntax' && syntaxMenuOpen),
       }"
       :disabled="!command.enabled"
+      :aria-label="$t(command.labelKey)"
       :aria-pressed="
         command.id === 'wrap'
           ? wordWrap
@@ -691,10 +711,34 @@ const textEditToolbarCommands = computed(() => [
                 : undefined
       "
       :data-testid="`text-edit-toolbar-${command.id}`"
+      :data-has-icon="command.visual && settings.showToolbarIcons ? 'true' : 'false'"
+      :data-has-plate="command.plate && settings.showToolbarIcons ? 'true' : 'false'"
+      :title="$t(command.labelKey)"
       @click="runTextEditCommand(command.id)"
     >
-      <span class="bc-toolbar-glyph">{{ command.glyph }}</span
-      ><span>{{ $t(command.labelKey) }}</span>
+      <span
+        v-if="command.plate && settings.showToolbarIcons"
+        class="bc-toolbar-plate"
+        :data-plate="command.plate.plate"
+        aria-hidden="true"
+        >{{ command.plate.symbol }}</span
+      >
+      <component
+        :is="command.icon"
+        v-else-if="command.icon && settings.showToolbarIcons"
+        class="bc-toolbar-icon"
+        aria-hidden="true"
+        :size="settings.largeToolbarButtons ? 22 : 18"
+        :stroke-width="2.25"
+        absolute-stroke-width
+      />
+      <span
+        v-else
+        class="bc-toolbar-glyph"
+        aria-hidden="true"
+        >{{ command.glyph }}</span
+      >
+      <span v-if="settings.showToolbarLabels">{{ $t(command.labelKey) }}</span>
     </button>
   </section>
   <section

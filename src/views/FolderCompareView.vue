@@ -20,7 +20,9 @@ import { reportFileExtension } from '@/app/reportExports'
 import { loadFolderDisplayFilters, saveFolderDisplayFilters } from '@/app/folderDisplayFilters'
 import { loadFolderCompareCriteria, saveFolderCompareCriteria } from '@/app/folderCompareCriteria'
 import {
+  formatFolderNameFilterStripPattern,
   loadFolderNameFilters,
+  parseFolderNameFilterStripPattern,
   saveFolderNameFilters,
   type FolderNameFilters,
 } from '@/app/folderNameFilters'
@@ -618,6 +620,22 @@ function openFolderSessionSettings(): void {
 
 function persistFolderNameFilters(): void {
   saveFolderNameFilters({ ...folderNameFilters.value })
+}
+
+const folderFilterStripPattern = computed(() =>
+  formatFolderNameFilterStripPattern(folderNameFilters.value),
+)
+
+function applyFolderFilterStripPattern(raw: string): void {
+  folderNameFilters.value = {
+    ...folderNameFilters.value,
+    include: parseFolderNameFilterStripPattern(raw),
+  }
+  persistFolderNameFilters()
+}
+
+function onFolderFilterStripChange(event: Event): void {
+  applyFolderFilterStripPattern((event.target as HTMLInputElement).value)
 }
 
 function applyFolderSessionSettings(
@@ -2219,6 +2237,57 @@ onUnmounted(() => {
     @toolbar-command="runFolderToolbarCommand"
   >
     <section class="folder-compare-view">
+      <section
+        v-show="showFolderFilters"
+        class="display-filters"
+        data-testid="folder-display-filters"
+      >
+        <div
+          class="folder-filter-strip"
+          data-testid="folder-filter-strip"
+        >
+          <span class="folder-filter-strip-label">{{ $t('ui.filters') }}:</span>
+          <input
+            class="folder-filter-pattern"
+            type="text"
+            data-testid="folder-filter-pattern"
+            spellcheck="false"
+            autocomplete="off"
+            :value="folderFilterStripPattern"
+            :aria-label="$t('ui.filters')"
+            @change="onFolderFilterStripChange"
+            @keydown.enter.prevent="onFolderFilterStripChange"
+          />
+        </div>
+        <label
+          v-for="option in displayStatusOptions"
+          :key="option.testId"
+        >
+          <input
+            :data-testid="`toggle-status-${option.testId}`"
+            type="checkbox"
+            :checked="areStatusesVisible(option.statuses)"
+            @change="toggleStatuses(option.statuses, ($event.target as HTMLInputElement).checked)"
+          />
+          <span>{{ $t(option.labelKey) }}</span>
+        </label>
+        <label>
+          <input
+            v-model="showSuppressedFilters"
+            data-testid="toggle-suppressed-filters"
+            type="checkbox"
+          />
+          <span>{{ $t('ui.suppressed') }}</span>
+        </label>
+        <label>
+          <input
+            v-model="filesOnlyFilter"
+            data-testid="toggle-files-only-filter"
+            type="checkbox"
+          />
+          <span>{{ $t('ui.filesOnly') }}</span>
+        </label>
+      </section>
       <header class="folder-toolbar">
         <div class="path-pair">
           <label>
@@ -2737,41 +2806,6 @@ onUnmounted(() => {
             @change="toggleColumn(column.id, ($event.target as HTMLInputElement).checked)"
           />
           <span>{{ $t(column.labelKey) }}</span>
-        </label>
-      </section>
-
-      <section
-        v-show="showFolderFilters"
-        class="display-filters"
-        data-testid="folder-display-filters"
-      >
-        <label
-          v-for="option in displayStatusOptions"
-          :key="option.testId"
-        >
-          <input
-            :data-testid="`toggle-status-${option.testId}`"
-            type="checkbox"
-            :checked="areStatusesVisible(option.statuses)"
-            @change="toggleStatuses(option.statuses, ($event.target as HTMLInputElement).checked)"
-          />
-          <span>{{ $t(option.labelKey) }}</span>
-        </label>
-        <label>
-          <input
-            v-model="showSuppressedFilters"
-            data-testid="toggle-suppressed-filters"
-            type="checkbox"
-          />
-          <span>{{ $t('ui.suppressed') }}</span>
-        </label>
-        <label>
-          <input
-            v-model="filesOnlyFilter"
-            data-testid="toggle-files-only-filter"
-            type="checkbox"
-          />
-          <span>{{ $t('ui.filesOnly') }}</span>
         </label>
       </section>
 
@@ -3659,6 +3693,37 @@ onUnmounted(() => {
   font-size: 11px;
 }
 
+.folder-filter-strip {
+  display: inline-flex;
+  flex: 1 1 280px;
+  align-items: center;
+  gap: 6px;
+  min-width: 220px;
+  max-width: 520px;
+  margin-right: 8px;
+}
+
+.folder-filter-strip-label {
+  flex: 0 0 auto;
+  color: #111827;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.folder-filter-pattern {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid #bfc4cc;
+  border-radius: 2px;
+  background: #ffffff;
+  color: #111111;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 11px;
+  line-height: 20px;
+}
+
 .column-config label,
 .display-filters label {
   display: inline-flex;
@@ -3957,7 +4022,7 @@ onUnmounted(() => {
 .tree-row span,
 .tree-row strong {
   min-width: 0;
-  padding: 8px 10px;
+  padding: 3px 8px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   text-overflow: ellipsis;
@@ -3967,7 +4032,7 @@ onUnmounted(() => {
 .tree-row {
   border-bottom: 1px solid var(--app-border);
   color: var(--app-text);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .tree-row.selected {

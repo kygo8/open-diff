@@ -1,12 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   defaultFolderNameFilters,
+  folderNameFilterAllPattern,
   folderNameFiltersAreActive,
   folderNameFiltersStorageKey,
   formatFolderNameFilterDraft,
+  formatFolderNameFilterStripPattern,
   loadFolderNameFilters,
   normalizeFolderNameFilters,
   parseFolderNameFilterDraft,
+  parseFolderNameFilterStripPattern,
   saveFolderNameFilters,
 } from './folderNameFilters'
 
@@ -72,4 +75,20 @@ describe('folderNameFilters', () => {
     ).toBe(true)
     expect(folderNameFiltersAreActive(defaultFolderNameFilters())).toBe(false)
   })
+})
+
+it('formats and parses the capture-like Filters strip pattern', () => {
+  expect(formatFolderNameFilterStripPattern(defaultFolderNameFilters())).toBe(
+    folderNameFilterAllPattern,
+  )
+  expect(
+    formatFolderNameFilterStripPattern({
+      include: ['*.ts', '*.vue'],
+      exclude: [],
+      caseSensitive: false,
+    }),
+  ).toBe('*.ts;*.vue')
+  expect(parseFolderNameFilterStripPattern('*.*')).toEqual([])
+  expect(parseFolderNameFilterStripPattern('')).toEqual([])
+  expect(parseFolderNameFilterStripPattern('*.ts; *.md')).toEqual(['*.ts', '*.md'])
 })

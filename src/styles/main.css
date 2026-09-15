@@ -952,11 +952,40 @@ select {
 }
 
 .folder-root-summary,
-.display-filters,
 .folder-summary,
 .manual-alignment-tools,
 .folder-operation-panel {
   display: none !important;
+}
+
+/* Capture-like Filters strip: no longer CSS-hidden; densify when visible */
+.folder-compare-view .display-filters,
+.folder-sync-view .display-filters,
+.folder-merge-view .display-filters {
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 4px 8px !important;
+  min-height: 24px !important;
+  padding: 2px 0 !important;
+  font-size: 11px !important;
+}
+
+.folder-filter-strip {
+  display: inline-flex !important;
+  flex: 1 1 280px !important;
+  align-items: center !important;
+  gap: 6px !important;
+  min-width: 220px !important;
+  max-width: 560px !important;
+}
+
+.folder-filter-pattern {
+  height: 22px !important;
+  border: 1px solid #bfc4cc !important;
+  border-radius: 2px !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-size: 11px !important;
 }
 
 .folder-toolbar input,
@@ -1280,4 +1309,23 @@ html[data-show-path-bars='0'] .path-pair-bar {
   min-height: 22px !important;
   padding: 0 8px !important;
   font-size: 11px !important;
+}
+
+/* Folder tree row density toward capture list height */
+.folder-compare-view .tree-head span,
+.folder-compare-view .tree-row span,
+.folder-compare-view .tree-row strong {
+  padding: 3px 8px !important;
+  font-size: 12px !important;
+}
+
+.folder-compare-view .tree-row {
+  font-size: 12px !important;
+}
+
+.folder-sync-view .sync-preview-row td,
+.folder-sync-view .sync-preview-head th {
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+  font-size: 12px !important;
 }

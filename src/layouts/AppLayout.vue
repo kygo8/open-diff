@@ -2292,20 +2292,25 @@ const sourceSessionTypes = new Set<SessionType>([
   min-height: 24px;
   padding: 0;
   border-top: 1px solid #c9cdd3;
-  background: #f4f4f4;
+  background: #f0f0f0;
   color: #111827;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 11px;
-  line-height: 1.2;
+  line-height: 1.15;
+}
+
+.status-bar[data-chrome-kind='folder-pair'] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .status-bar-pane {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 8px;
+  padding: 0 6px;
   overflow: hidden;
-  border-right: 1px solid #d2d6dc;
+  border-right: 1px solid #c9cdd3;
+  box-shadow: inset 1px 0 0 #ffffff;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

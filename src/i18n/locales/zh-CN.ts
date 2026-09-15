@@ -327,6 +327,9 @@ export const zhCN: LanguagePack = {
     'ui.saveSession': '保存会话',
     'ui.saveSessionAs': '会话另存为...',
     'ui.clearSession': '清除会话',
+    'ui.locked': '锁定',
+    'ui.browseForFolder': '浏览文件夹',
+    'ui.upOneLevel': '上一级',
     'ui.swapSides': '交换两侧',
     'ui.savedSessions': '已保存会话',
     'ui.saveOutput': '保存输出',
@@ -1017,6 +1020,7 @@ export const zhCN: LanguagePack = {
     'ui.showGotoInToolbar': '在文本工具栏显示“转到行”',
     'ui.showWrapInToolbar': '在文本工具栏显示“换行”',
     'ui.showSyncNowInToolbar': '在文件夹同步工具栏显示“立即同步”',
+    'ui.showSyncCancelAcceptInToolbar': '在文件夹同步工具栏显示“取消/接受”',
     'ui.createBackupOnSave': '覆盖保存时优先创建备份文件',
     'ui.backupHint':
       '启用时，覆盖保存会在文件旁创建 .bak，并保留最近 N 份编号备份（.bak、.bak2…）。关闭则不创建备份。',

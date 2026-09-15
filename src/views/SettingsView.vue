@@ -541,6 +541,16 @@ function onShowSyncNowInToolbarChange(event: Event): void {
   settings.setShowSyncNowInToolbar(target.checked)
 }
 
+function onShowSyncCancelAcceptInToolbarChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowSyncCancelAcceptInToolbar(target.checked)
+}
+
 function persistOpenWithApps(): void {
   saveExternalApplications(openWithApps.value)
 }
@@ -1309,6 +1319,15 @@ function parseShortcutText(value: string): string[] {
             @change="onShowSyncNowInToolbarChange"
           />
           <span>{{ $t('ui.showSyncNowInToolbar') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="show-sync-cancel-accept-in-toolbar"
+            type="checkbox"
+            :checked="settings.showSyncCancelAcceptInToolbar"
+            @change="onShowSyncCancelAcceptInToolbarChange"
+          />
+          <span>{{ $t('ui.showSyncCancelAcceptInToolbar') }}</span>
         </label>
         <p class="options-hint">{{ $t('ui.commandsVisibilityHint') }}</p>
       </NCard>

@@ -34,6 +34,7 @@ export interface SettingsPackage {
   showGotoInToolbar?: boolean
   showWrapInToolbar?: boolean
   showSyncNowInToolbar?: boolean
+  showSyncCancelAcceptInToolbar?: boolean
   showStatusBar?: boolean
   showPathBars?: boolean
   showSidebar?: boolean

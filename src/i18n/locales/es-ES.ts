@@ -346,6 +346,9 @@ export const esES: LanguagePack = {
     'ui.saveSession': 'Guardar sesión',
     'ui.saveSessionAs': 'Guardar sesión como...',
     'ui.clearSession': 'Borrar sesión',
+    'ui.locked': 'Bloqueado',
+    'ui.browseForFolder': 'Examinar carpeta',
+    'ui.upOneLevel': 'Subir un nivel',
     'ui.swapSides': 'Intercambiar lados',
     'ui.savedSessions': 'Sesiones guardadas',
     'ui.saveOutput': 'Guardar salida',
@@ -1066,6 +1069,8 @@ export const esES: LanguagePack = {
     'ui.showGotoInToolbar': 'Mostrar Ir a línea en las barras de texto',
     'ui.showWrapInToolbar': 'Mostrar Ajuste de línea en las barras de texto',
     'ui.showSyncNowInToolbar': 'Mostrar Sincronizar ahora en las barras de Sync de carpetas',
+    'ui.showSyncCancelAcceptInToolbar':
+      'Mostrar Cancelar/Aceptar en barras de Sincronización de carpetas',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
       'Si está activado, al sobrescribir se crea un .bak junto al archivo y se conservan las últimas N copias numeradas (.bak, .bak2, …). Desactive para escribir sin copia de seguridad.',

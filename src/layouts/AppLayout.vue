@@ -219,6 +219,7 @@ const commandQuery = ref('')
 const languageMenuOpen = ref(false)
 const activeMenu = ref<AppMenuId>()
 const lastViewAction = ref<ViewActionName>()
+const lastMenuSavedSessionId = ref<string>()
 const aboutDialogOpen = ref(false)
 const helpStatusMessage = ref('')
 const pendingCloseTab = ref<{ id: string; title: string }>()
@@ -250,6 +251,9 @@ const appMenus: AppMenuDefinition[] = [
       'session.rules',
       'session.settings',
       'session.clear',
+      'session.locked',
+      'session.browseFolder',
+      'session.upOneLevel',
       'session.closeTab',
       'report.save',
       'session.exit',
@@ -272,6 +276,8 @@ const appMenus: AppMenuDefinition[] = [
       'session.saveAs',
       'session.export',
       'session.reload',
+      'session.browseFolder',
+      'session.upOneLevel',
       'open.settings',
     ],
   },
@@ -324,6 +330,8 @@ const appMenus: AppMenuDefinition[] = [
       'view.filters',
       'session.swap',
       'session.reload',
+      'session.browseFolder',
+      'session.upOneLevel',
       'theme.toggle',
     ],
   },
@@ -445,6 +453,7 @@ function saveCurrentSessionFromMenu(saveAs: boolean): void {
   }
 
   savedSessions.saveSession(session)
+  lastMenuSavedSessionId.value = session.id
 
   if (active.id !== 'home') {
     tabs.setTabDirty(active.id, false)
@@ -452,6 +461,58 @@ function saveCurrentSessionFromMenu(saveAs: boolean): void {
 
   statusBar.reportStatus({
     comparisonStatus: saveAs ? t('ui.saveSessionAs') : t('ui.saveSession'),
+    source: 'session',
+  })
+}
+
+function resolveLockableSessionId(): string | undefined {
+  if (lastMenuSavedSessionId.value) {
+    const remembered = savedSessions.sessions.find(
+      (session) => session.id === lastMenuSavedSessionId.value,
+    )
+
+    if (remembered) {
+      return remembered.id
+    }
+  }
+
+  const sessionType = sessionTypeForActiveRoute()
+
+  if (!sessionType) {
+    return undefined
+  }
+
+  const matches = savedSessions.sessions.filter((session) => session.sessionType === sessionType)
+
+  return matches.at(-1)?.id
+}
+
+function toggleSessionLockedFromMenu(): void {
+  const sessionId = resolveLockableSessionId()
+
+  if (!sessionId || !isSessionWorkbenchPath(route.path)) {
+    statusBar.reportStatus({
+      comparisonStatus: t('ui.locked'),
+      source: 'session',
+    })
+
+    return
+  }
+
+  const session = savedSessions.sessions.find((item) => item.id === sessionId)
+
+  if (!session) {
+    statusBar.reportStatus({
+      comparisonStatus: t('ui.locked'),
+      source: 'session',
+    })
+
+    return
+  }
+
+  savedSessions.setSessionLocked(sessionId, !session.metadata.locked)
+  statusBar.reportStatus({
+    comparisonStatus: t('ui.locked'),
     source: 'session',
   })
 }
@@ -683,6 +744,9 @@ const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
     }
     if (name === 'clear-session') {
       clearSessionFromMenu()
+    }
+    if (name === 'toggle-session-locked') {
+      toggleSessionLockedFromMenu()
     }
     if (name === 'close-tab') {
       const active = tabs.activeTab
@@ -1062,6 +1126,25 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     command.id === 'sync.syncNow'
   ) {
     return { ...command, enabled: command.enabled && isSessionWorkbenchPath(route.path) }
+  }
+
+  if (command.id === 'session.locked') {
+    return {
+      ...command,
+      enabled:
+        command.enabled &&
+        isSessionWorkbenchPath(route.path) &&
+        Boolean(resolveLockableSessionId()),
+    }
+  }
+
+  if (command.id === 'session.browseFolder' || command.id === 'session.upOneLevel') {
+    const folderish =
+      route.path.includes('/folder') ||
+      route.path.includes('/sync') ||
+      route.path.includes('/merge')
+
+    return { ...command, enabled: command.enabled && folderish }
   }
 
   return command

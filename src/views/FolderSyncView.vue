@@ -28,6 +28,8 @@ import { useViewActionsStore } from '@/stores/viewActions'
 import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { joinStatusFooterParts } from '@/app/folderSelectionStatus'
+import { parentDirectoryPath } from '@/app/parentDirectoryPath'
+import { pickNativePath } from '@/app/filePicker'
 
 interface SyncStrategyOption {
   value: FolderSyncStrategy
@@ -608,6 +610,29 @@ async function saveSyncFolderSnapshot(): Promise<void> {
   }
 }
 
+async function browseSyncFolder(): Promise<void> {
+  const selected = await pickNativePath({ directory: true })
+
+  if (!selected) {
+    return
+  }
+
+  leftPath.value = selected
+}
+
+function upOneSyncLevel(): void {
+  const nextLeft = parentDirectoryPath(leftPath.value)
+  const nextRight = parentDirectoryPath(rightPath.value)
+
+  if (nextLeft) {
+    leftPath.value = nextLeft
+  }
+
+  if (nextRight) {
+    rightPath.value = nextRight
+  }
+}
+
 watch(
   () => [viewActions.sequence, viewActions.name] as const,
   ([, actionName]) => {
@@ -633,6 +658,12 @@ watch(
         break
       case 'sync-now':
         void runSync()
+        break
+      case 'browse-folder':
+        void browseSyncFolder()
+        break
+      case 'up-one-level':
+        upOneSyncLevel()
         break
       case 'toggle-minor':
         minorOnly.value = !minorOnly.value
@@ -678,6 +709,7 @@ watch(
       case 'workspace-load':
       case 'next-conflict':
       case 'previous-conflict':
+      case 'toggle-session-locked':
       case 'workspace-save':
       case 'run-script':
       case 'save-report':

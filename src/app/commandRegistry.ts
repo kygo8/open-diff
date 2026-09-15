@@ -16,6 +16,9 @@ export type CommandId =
   | 'session.loadWorkspace'
   | 'session.closeTab'
   | 'session.clear'
+  | 'session.locked'
+  | 'session.browseFolder'
+  | 'session.upOneLevel'
   | 'session.exit'
   | 'session.settings'
   | 'edit.copyLeft'
@@ -114,6 +117,9 @@ export type CommandAction =
         | 'expand-all'
         | 'collapse-all'
         | 'sync-now'
+        | 'browse-folder'
+        | 'up-one-level'
+        | 'toggle-session-locked'
         | 'run-script'
         | 'save-report'
     }
@@ -462,6 +468,36 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Shift', 'C'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'clear-session' },
+  },
+  {
+    id: 'session.locked',
+    titleKey: 'ui.locked',
+    keywords: ['session', 'locked', 'lock'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Q'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'toggle-session-locked' },
+  },
+  {
+    id: 'session.browseFolder',
+    titleKey: 'ui.browseForFolder',
+    keywords: ['session', 'browse', 'folder'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'W'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'browse-folder' },
+  },
+  {
+    id: 'session.upOneLevel',
+    titleKey: 'ui.upOneLevel',
+    keywords: ['session', 'up', 'parent', 'folder'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Alt', 'Up'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'up-one-level' },
   },
   {
     id: 'session.exit',

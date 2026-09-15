@@ -84,6 +84,7 @@ const showSessionsInToolbarStorageKey = 'open-diff-show-sessions-in-toolbar'
 const showGotoInToolbarStorageKey = 'open-diff-show-goto-in-toolbar'
 const showWrapInToolbarStorageKey = 'open-diff-show-wrap-in-toolbar'
 const showSyncNowInToolbarStorageKey = 'open-diff-show-sync-now-in-toolbar'
+const showSyncCancelAcceptInToolbarStorageKey = 'open-diff-show-sync-cancel-accept-in-toolbar'
 const showStatusBarStorageKey = 'open-diff-show-status-bar'
 const showPathBarsStorageKey = 'open-diff-show-path-bars'
 const showSidebarStorageKey = 'open-diff-show-sidebar'
@@ -134,6 +135,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const showGotoInToolbar = ref(loadShowGotoInToolbar())
   const showWrapInToolbar = ref(loadShowWrapInToolbar())
   const showSyncNowInToolbar = ref(loadShowSyncNowInToolbar())
+  const showSyncCancelAcceptInToolbar = ref(loadShowSyncCancelAcceptInToolbar())
   const showStatusBar = ref(loadShowStatusBar())
   const showPathBars = ref(loadShowPathBars())
   const showSidebar = ref(loadShowSidebar())
@@ -344,6 +346,14 @@ export const useSettingsStore = defineStore('settings', () => {
     showSyncNowInToolbar,
     (value) => {
       localStorage.setItem(showSyncNowInToolbarStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showSyncCancelAcceptInToolbar,
+    (value) => {
+      localStorage.setItem(showSyncCancelAcceptInToolbarStorageKey, value ? '1' : '0')
     },
     { immediate: true, flush: 'sync' },
   )
@@ -632,6 +642,10 @@ export const useSettingsStore = defineStore('settings', () => {
     showSyncNowInToolbar.value = value
   }
 
+  function setShowSyncCancelAcceptInToolbar(value: boolean): void {
+    showSyncCancelAcceptInToolbar.value = value
+  }
+
   function setShowStatusBar(value: boolean): void {
     showStatusBar.value = value
   }
@@ -708,6 +722,7 @@ export const useSettingsStore = defineStore('settings', () => {
       showGotoInToolbar: showGotoInToolbar.value,
       showWrapInToolbar: showWrapInToolbar.value,
       showSyncNowInToolbar: showSyncNowInToolbar.value,
+      showSyncCancelAcceptInToolbar: showSyncCancelAcceptInToolbar.value,
       showStatusBar: showStatusBar.value,
       showPathBars: showPathBars.value,
       showSidebar: showSidebar.value,
@@ -796,6 +811,11 @@ export const useSettingsStore = defineStore('settings', () => {
         ? packageValue.showSyncNowInToolbar
         : false,
     )
+    setShowSyncCancelAcceptInToolbar(
+      typeof packageValue.showSyncCancelAcceptInToolbar === 'boolean'
+        ? packageValue.showSyncCancelAcceptInToolbar
+        : false,
+    )
     setShowStatusBar(
       typeof packageValue.showStatusBar === 'boolean' ? packageValue.showStatusBar : true,
     )
@@ -873,6 +893,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowGotoInToolbar(false)
     setShowWrapInToolbar(false)
     setShowSyncNowInToolbar(false)
+    setShowSyncCancelAcceptInToolbar(false)
     setShowStatusBar(true)
     setShowPathBars(true)
     setShowSidebar(false)
@@ -913,6 +934,7 @@ export const useSettingsStore = defineStore('settings', () => {
     showGotoInToolbar,
     showWrapInToolbar,
     showSyncNowInToolbar,
+    showSyncCancelAcceptInToolbar,
     showStatusBar,
     showPathBars,
     showSidebar,
@@ -954,6 +976,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowGotoInToolbar,
     setShowWrapInToolbar,
     setShowSyncNowInToolbar,
+    setShowSyncCancelAcceptInToolbar,
     setShowStatusBar,
     setShowPathBars,
     setShowSidebar,
@@ -1386,6 +1409,16 @@ function loadShowWrapInToolbar(): boolean {
 
 function loadShowSyncNowInToolbar(): boolean {
   const stored = localStorage.getItem(showSyncNowInToolbarStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadShowSyncCancelAcceptInToolbar(): boolean {
+  const stored = localStorage.getItem(showSyncCancelAcceptInToolbarStorageKey)
 
   if (stored === null) {
     return false

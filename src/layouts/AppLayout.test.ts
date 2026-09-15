@@ -463,6 +463,50 @@ describe('AppLayout command palette', () => {
     ).toBeDefined()
   })
 
+  it('wires Locked, Browse for Folder, and Up One Level with honest disablement', async () => {
+    routePath = '/compare/folder'
+    const wrapper = mountAppLayout()
+    const savedSessions = (await import('@/stores/savedSessions')).useSavedSessionsStore()
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-session.browseFolder"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-session.upOneLevel"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="menu-command-session.browseFolder"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.locked"]').attributes('disabled'),
+    ).toBeDefined()
+
+    await wrapper.find('[data-testid="menu-command-session.save"]').trigger('click')
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.locked"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    const beforeLocked = savedSessions.sessions.at(-1)?.metadata.locked
+
+    await wrapper.find('[data-testid="menu-command-session.locked"]').trigger('click')
+    expect(savedSessions.sessions.at(-1)?.metadata.locked).toBe(!beforeLocked)
+
+    await wrapper.find('[data-testid="menu-view"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-session.browseFolder"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-session.upOneLevel"]').exists()).toBe(true)
+  })
+
+  it('disables Browse/Up One Level outside folder sessions', async () => {
+    routePath = '/compare/text'
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-file"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.browseFolder"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.upOneLevel"]').attributes('disabled'),
+    ).toBeDefined()
+  })
+
   it('persists the active session from Save Session menu', async () => {
     const wrapper = mountAppLayout()
     const savedSessions = (await import('@/stores/savedSessions')).useSavedSessionsStore()

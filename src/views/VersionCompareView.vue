@@ -226,6 +226,9 @@ watch(
       case 'expand-all':
       case 'collapse-all':
       case 'sync-now':
+      case 'browse-folder':
+      case 'up-one-level':
+      case 'toggle-session-locked':
       case 'run-script':
       case 'save-report':
         break

@@ -25,6 +25,8 @@ import {
   tableCompareToolbarOrder,
   textCompareToolbarOrder,
   textPatchToolbarOrder,
+  mediaCompareToolbarOrder,
+  registryCompareToolbarOrder,
   versionCompareToolbarOrder,
 } from './sessionToolbars'
 
@@ -118,12 +120,27 @@ describe('sessionToolbars', () => {
   })
 
   it('keeps Registry Media and Version toolbars ordered', () => {
+    expect(buildRegistryCompareToolbar({ home: true }).map((item) => item.id)).toEqual([
+      ...registryCompareToolbarOrder,
+    ])
+    expect(buildRegistryCompareToolbar({ home: true }).map((item) => item.id)).toContain(
+      'next-diff',
+    )
+    expect(buildRegistryCompareToolbar({ home: true }).map((item) => item.id)).toContain(
+      'prev-diff',
+    )
     expect(buildRegistryCompareToolbar({ home: true }).map((item) => item.id)).toContain('expand')
+    expect(buildMediaCompareToolbar({ home: true }).map((item) => item.id)).toEqual([
+      ...mediaCompareToolbarOrder,
+    ])
     expect(
       buildMediaCompareToolbar({ home: true, swap: true }).find((i) => i.id === 'swap')?.enabled,
     ).toBe(true)
     expect(buildMediaCompareToolbar({ home: true, play2: true }).map((item) => item.id)).toContain(
       'play2',
+    )
+    expect(buildMediaCompareToolbar({ home: true }).map((item) => item.id)).toEqual(
+      expect.arrayContaining(['next-diff', 'prev-diff', 'play2']),
     )
     expect(
       buildMediaCompareToolbar({ home: true, play2: true }).find((item) => item.id === 'play2')

@@ -184,6 +184,8 @@ describe('MediaCompareView', () => {
       wrapper.find('[data-testid="media-session-toolbar-minor"]').attributes('disabled'),
     ).toBeUndefined()
     expect(wrapper.find('[data-testid="media-session-toolbar-play2"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="media-session-toolbar-next-diff"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="media-session-toolbar-prev-diff"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="media-session-toolbar-rules"]').attributes('disabled'),
     ).toBeUndefined()
@@ -282,5 +284,30 @@ describe('MediaCompareView', () => {
     expect(errorEl.exists()).toBe(true)
     expect(errorEl.text()).toContain('unsupported media container')
     expect(errorEl.text()).not.toContain('[object Object]')
+  })
+
+  it('exposes Next Diff and Prev Diff and navigates differing tag fields', async () => {
+    const wrapper = mount(MediaCompareView)
+
+    expect(wrapper.find('[data-testid="media-session-toolbar-next-diff"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="media-session-toolbar-prev-diff"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="media-left-path"]').setValue('C:/music/fixture-left.mp3')
+    await wrapper.find('[data-testid="media-right-path"]').setValue('C:/music/fixture-right.mp3')
+    await wrapper.find('[data-testid="run-media-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(
+      wrapper.find('[data-testid="media-session-toolbar-next-diff"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    expect(wrapper.find('[data-testid="media-field-Title"]').attributes('data-selected')).toBe(
+      'true',
+    )
+
+    await wrapper.find('[data-testid="media-session-toolbar-next-diff"]').trigger('click')
+    expect(wrapper.find('[data-testid="media-field-Comment"]').attributes('data-selected')).toBe(
+      'true',
+    )
   })
 })

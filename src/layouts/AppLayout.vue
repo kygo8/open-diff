@@ -43,7 +43,7 @@ import { useI18n } from '@/i18n'
 import { usePolicyStore } from '@/stores/policy'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
-import { isTextSessionStatusSource } from '@/app/statusBarPhrases'
+import { isEditModeStatusSource, isTextSessionStatusSource } from '@/app/statusBarPhrases'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
@@ -637,6 +637,14 @@ const localizedStatusSegments = computed(() => {
     `${t('status.encoding')}: ${statusBar.report.encoding}`,
     `${t('status.filter')}: ${localizeStatusValue(statusBar.report.filterStatus)}`,
   ]
+
+  if (isEditModeStatusSource(statusBar.report.source) && statusBar.report.editMode) {
+    segments.push(
+      statusBar.report.editMode === 'overwrite'
+        ? t('status.overwriteMode')
+        : t('status.insertMode'),
+    )
+  }
 
   if (statusBar.report.loadTimeSeconds !== null) {
     segments.push(t('status.loadTime', { seconds: statusBar.report.loadTimeSeconds.toFixed(2) }))

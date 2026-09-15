@@ -111,6 +111,9 @@ watch(
 const flatRegistryKeys = computed<FlatRegistryKeyNode[]>(() =>
   flattenRegistryKeys(registryTree.value),
 )
+const differingRegistryKeys = computed(() =>
+  flatRegistryKeys.value.filter((key) => key.status !== 'unchanged'),
+)
 const visibleRegistryKeys = computed<FlatRegistryKeyNode[]>(() =>
   flattenRegistryKeys(registryTree.value, 0, collapsedKeyPaths.value),
 )
@@ -505,8 +508,12 @@ watch(
       case 'help-support':
       case 'import-settings':
       case 'next-difference':
-      case 'paste':
+        navigateRegistryDifference(1)
+        break
       case 'previous-difference':
+        navigateRegistryDifference(-1)
+        break
+      case 'paste':
       case 'redo':
       case 'restore-factory-defaults':
       case 'rules':
@@ -533,12 +540,31 @@ const registrySessionToolbar = computed(() =>
     diffs: true,
     same: true,
     copy: Boolean(selectedValue.value),
+    'next-diff': differingRegistryKeys.value.length > 0,
+    'prev-diff': differingRegistryKeys.value.length > 0,
     swap: Boolean(leftExport.value || rightExport.value),
     reload: Boolean(leftExport.value && rightExport.value),
     expand: registryTree.value.length > 0,
     collapse: registryTree.value.length > 0,
   }),
 )
+
+function navigateRegistryDifference(direction: 1 | -1): void {
+  const keys = differingRegistryKeys.value
+
+  if (keys.length === 0) {
+    return
+  }
+
+  const currentIndex = keys.findIndex((key) => key.path === selectedKeyPath.value)
+  let nextIndex = (currentIndex + direction + keys.length) % keys.length
+
+  if (currentIndex < 0) {
+    nextIndex = direction > 0 ? 0 : keys.length - 1
+  }
+
+  selectKey(keys[nextIndex].path)
+}
 
 function runRegistryToolbarCommand(commandId: string): void {
   if (commandId === 'home') {
@@ -602,6 +628,18 @@ function runRegistryToolbarCommand(commandId: string): void {
 
   if (commandId === 'reload') {
     void runRegistryCompare()
+
+    return
+  }
+
+  if (commandId === 'next-diff') {
+    navigateRegistryDifference(1)
+
+    return
+  }
+
+  if (commandId === 'prev-diff') {
+    navigateRegistryDifference(-1)
   }
 }
 </script>

@@ -5,12 +5,13 @@ import { diffText, exportTextCompareReport, readTextFile } from '@/api/diff'
 import { reportFileExtension } from '@/app/reportExports'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { notifyCompareComplete } from '@/app/compareCompleteNotify'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSettingsStore } from '@/stores/settings'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
-import type { TextDiffAlgorithm, TextDiffRequest, TextDiffResponse } from '@/types/diff'
+import type { FileStamp, TextDiffAlgorithm, TextDiffRequest, TextDiffResponse } from '@/types/diff'
 import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import RemotePathBrowser from '@/components/remote/RemotePathBrowser.vue'
@@ -38,6 +39,8 @@ type DiffLine = TextDiffResponse['lines'][number]
 
 const left = ref('')
 const right = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
 const leftPathLabel = ref('')
 const rightPathLabel = ref('')
 const statusBar = useStatusBarStore()
@@ -374,6 +377,23 @@ const findStatus = computed(() => {
 
   return `${String(currentFindIndex.value + 1)} / ${String(findMatches.value.length)}`
 })
+const leftPathFooterLabel = computed(() => formatPathSideFooter(leftFileStamp.value))
+const rightPathFooterLabel = computed(() => formatPathSideFooter(rightFileStamp.value))
+
+function formatPathSideFooter(stamp: FileStamp | null): string {
+  if (!stamp) {
+    return ''
+  }
+
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+
+  if (!modified) {
+    return t('status.bytes', { count: stamp.size })
+  }
+
+  return t('status.pathFileMetadata', { bytes: stamp.size, modified })
+}
+
 const comparisonStatus = computed(() => {
   if (loading.value) {
     return t('status.comparing')
@@ -394,6 +414,8 @@ watchEffect(() => {
     filterStatus: filterStatus.value,
     source: 'text-compare',
     loadTimeSeconds: result.value ? loadTimeSeconds.value : null,
+    // Overwrite mode is not implemented; report Insert while the session is active.
+    editMode: 'insert',
   })
 })
 
@@ -571,6 +593,8 @@ async function loadLaunchTextFiles(leftPath: string, rightPath: string): Promise
     right.value = rightFile.text
     leftPathLabel.value = leftFile.path
     rightPathLabel.value = rightFile.path
+    leftFileStamp.value = leftFile.fileStamp
+    rightFileStamp.value = rightFile.fileStamp
     result.value = await diffText(buildDiffRequest())
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
 
@@ -600,11 +624,14 @@ function swapPaths(): void {
   const nextLeft = right.value
   const nextRight = left.value
   const nextLeftPath = rightPathLabel.value
+  const nextLeftStamp = rightFileStamp.value
 
   left.value = nextLeft
   right.value = nextRight
   rightPathLabel.value = leftPathLabel.value
   leftPathLabel.value = nextLeftPath
+  rightFileStamp.value = leftFileStamp.value
+  leftFileStamp.value = nextLeftStamp
   dirty.value = true
 }
 
@@ -1371,52 +1398,71 @@ function toggleSourceEditors(): void {
           {{ $t('ui.cancel') }}
         </button>
       </section>
-      <section class="bc-path-row">
-        <input
-          v-model="leftPathLabel"
-          type="text"
-          class="path-input"
-          data-testid="text-left-path"
-          :title="leftPathLabel"
-          :placeholder="$t('ui.remoteUriHint')"
-        />
-        <button
-          type="button"
-          data-testid="text-browse-left"
-          @click="browseTextPath('left')"
+      <section class="bc-path-block">
+        <div class="bc-path-row">
+          <input
+            v-model="leftPathLabel"
+            type="text"
+            class="path-input"
+            data-testid="text-left-path"
+            :title="leftPathLabel"
+            :placeholder="$t('ui.remoteUriHint')"
+          />
+          <button
+            type="button"
+            data-testid="text-browse-left"
+            @click="browseTextPath('left')"
+          >
+            {{ $t('ui.browse') }}
+          </button>
+          <button
+            type="button"
+            data-testid="swap-text-paths"
+            @click="swapPaths"
+          >
+            &lt;&gt;
+          </button>
+          <input
+            v-model="rightPathLabel"
+            type="text"
+            class="path-input"
+            data-testid="text-right-path"
+            :title="rightPathLabel"
+            :placeholder="$t('ui.remoteUriHint')"
+          />
+          <button
+            type="button"
+            data-testid="text-browse-right"
+            @click="browseTextPath('right')"
+          >
+            {{ $t('ui.browse') }}
+          </button>
+          <button
+            type="button"
+            data-testid="load-text-files"
+            :disabled="loading || !leftPathLabel || !rightPathLabel"
+            @click="loadLaunchTextFiles(leftPathLabel, rightPathLabel)"
+          >
+            {{ $t('ui.loadFiles') }}
+          </button>
+        </div>
+        <div
+          v-if="leftPathFooterLabel || rightPathFooterLabel"
+          class="bc-path-footers"
         >
-          {{ $t('ui.browse') }}
-        </button>
-        <button
-          type="button"
-          data-testid="swap-text-paths"
-          @click="swapPaths"
-        >
-          &lt;&gt;
-        </button>
-        <input
-          v-model="rightPathLabel"
-          type="text"
-          class="path-input"
-          data-testid="text-right-path"
-          :title="rightPathLabel"
-          :placeholder="$t('ui.remoteUriHint')"
-        />
-        <button
-          type="button"
-          data-testid="text-browse-right"
-          @click="browseTextPath('right')"
-        >
-          {{ $t('ui.browse') }}
-        </button>
-        <button
-          type="button"
-          data-testid="load-text-files"
-          :disabled="loading || !leftPathLabel || !rightPathLabel"
-          @click="loadLaunchTextFiles(leftPathLabel, rightPathLabel)"
-        >
-          {{ $t('ui.loadFiles') }}
-        </button>
+          <span
+            v-if="leftPathFooterLabel"
+            class="path-side-footer"
+            data-testid="text-left-path-footer"
+            >{{ leftPathFooterLabel }}</span
+          >
+          <span
+            v-if="rightPathFooterLabel"
+            class="path-side-footer"
+            data-testid="text-right-path-footer"
+            >{{ rightPathFooterLabel }}</span
+          >
+        </div>
       </section>
       <WorkbenchToolbar class="find-toolbar">
         <input
@@ -1764,6 +1810,24 @@ function toggleSourceEditors(): void {
 .toolbar-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.bc-path-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bc-path-footers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 0 2px;
+}
+
+.path-side-footer {
+  color: var(--od-muted, #6b7280);
+  font-size: 11px;
 }
 
 .find-toolbar {

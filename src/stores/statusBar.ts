@@ -1,6 +1,12 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { formatDifferenceCountPhrase, formatLoadTimePhrase } from '@/app/statusBarPhrases'
+import {
+  formatDifferenceCountPhrase,
+  formatEditModePhrase,
+  formatLoadTimePhrase,
+  isEditModeStatusSource,
+  type StatusEditMode,
+} from '@/app/statusBarPhrases'
 
 export interface StatusBarReport {
   comparisonStatus: string
@@ -10,6 +16,8 @@ export interface StatusBarReport {
   source: string
   /** Elapsed compare/load time in seconds when a compare has completed. */
   loadTimeSeconds: number | null
+  /** Insert/Overwrite indicator for text editing sessions when known. */
+  editMode: StatusEditMode | null
 }
 
 const defaultReport: StatusBarReport = {
@@ -19,6 +27,7 @@ const defaultReport: StatusBarReport = {
   filterStatus: 'All rows',
   source: 'workspace',
   loadTimeSeconds: null,
+  editMode: null,
 }
 
 export const useStatusBarStore = defineStore('statusBar', () => {
@@ -30,6 +39,14 @@ export const useStatusBarStore = defineStore('statusBar', () => {
       `Encoding: ${report.value.encoding}`,
       `Filter: ${report.value.filterStatus}`,
     ]
+
+    if (isEditModeStatusSource(report.value.source)) {
+      const editMode = formatEditModePhrase(report.value.editMode)
+
+      if (editMode) {
+        next.push(editMode)
+      }
+    }
 
     if (report.value.loadTimeSeconds !== null) {
       next.push(formatLoadTimePhrase(report.value.loadTimeSeconds))

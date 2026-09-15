@@ -2,29 +2,39 @@ import { describe, expect, it } from 'vitest'
 import {
   elapsedSecondsSince,
   formatDifferenceCountPhrase,
+  formatEditModePhrase,
   formatLoadTimePhrase,
+  isEditModeStatusSource,
   isTextSessionStatusSource,
 } from './statusBarPhrases'
 
 describe('statusBarPhrases', () => {
-  it('keeps generic Differences wording for non-text sources', () => {
-    expect(formatDifferenceCountPhrase(null, 'workspace')).toBe('Differences: -')
-    expect(formatDifferenceCountPhrase(3, 'folder-compare')).toBe('Differences: 3')
+  it('detects text session sources for difference phrasing', () => {
+    expect(isTextSessionStatusSource('text-compare')).toBe(true)
+    expect(isTextSessionStatusSource('folder-compare')).toBe(false)
   })
 
-  it('uses difference section wording for text sessions', () => {
-    expect(isTextSessionStatusSource('text-compare')).toBe(true)
+  it('detects edit-mode status sources', () => {
+    expect(isEditModeStatusSource('text-compare')).toBe(true)
+    expect(isEditModeStatusSource('text-edit')).toBe(true)
+    expect(isEditModeStatusSource('text-patch')).toBe(false)
+  })
+
+  it('formats text difference section phrases', () => {
     expect(formatDifferenceCountPhrase(null, 'text-compare')).toBe('≠ -')
     expect(formatDifferenceCountPhrase(1, 'text-compare')).toBe('≠ 1 difference section')
-    expect(formatDifferenceCountPhrase(4, 'text-merge')).toBe('≠ 4 difference sections')
+    expect(formatDifferenceCountPhrase(3, 'text-merge')).toBe('≠ 3 difference sections')
+    expect(formatDifferenceCountPhrase(2, 'folder-compare')).toBe('Differences: 2')
   })
 
-  it('formats load time with two decimal places', () => {
+  it('formats load time and edit mode phrases', () => {
     expect(formatLoadTimePhrase(0.03)).toBe('Load time: 0.03 seconds')
-    expect(formatLoadTimePhrase(1)).toBe('Load time: 1.00 seconds')
+    expect(formatEditModePhrase('insert')).toBe('Insert')
+    expect(formatEditModePhrase('overwrite')).toBe('Overwrite')
+    expect(formatEditModePhrase(null)).toBeNull()
   })
 
-  it('measures elapsed seconds from a start mark', () => {
-    expect(elapsedSecondsSince(1000, 1042)).toBeCloseTo(0.042, 5)
+  it('computes elapsed seconds', () => {
+    expect(elapsedSecondsSince(1000, 2500)).toBe(1.5)
   })
 })

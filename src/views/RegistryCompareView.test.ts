@@ -327,4 +327,25 @@ describe('RegistryCompareView', () => {
     ).toBe(true)
     expect(compareRegistryLiveKeys).not.toHaveBeenCalled()
   })
+
+  it('wires Next Diff and Prev Diff toolbar buttons to differing keys', async () => {
+    const wrapper = mount(RegistryCompareView)
+
+    expect(wrapper.find('[data-testid="registry-session-toolbar-next-diff"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="registry-session-toolbar-prev-diff"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="registry-left-export"]').setValue('left export')
+    await wrapper.find('[data-testid="registry-right-export"]').setValue('right export')
+    await wrapper.find('[data-testid="run-registry-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(
+      wrapper.find('[data-testid="registry-session-toolbar-next-diff"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    await wrapper.find('[data-testid="registry-session-toolbar-next-diff"]').trigger('click')
+    expect(wrapper.find('[data-testid="registry-key-HKCU/Software/OpenDiff"]').classes()).toContain(
+      'selected',
+    )
+  })
 })

@@ -452,6 +452,11 @@ export const frFR: LanguagePack = {
     'status.differenceSectionUnknown': '≠ -',
     'status.differenceSections': '≠ {count} sections de différences',
     'status.differenceSection': '≠ {count} section de différences',
+    'status.insertMode': 'Insertion',
+    'status.overwriteMode': 'Écrasement',
+    'status.pathFileMetadata': '{bytes} octets, {modified}',
+    'status.filesSelectedBytesWithDate':
+      '{count} fichier(s) sélectionné(s), {bytes} octets, {modified}',
     'status.encoding': 'Codage',
     'status.filter': 'Filtre',
     'status.allRows': 'Toutes les lignes',

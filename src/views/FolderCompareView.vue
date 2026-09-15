@@ -898,16 +898,24 @@ const folderSelectionSummary = computed(() => {
   const count = selected.length
   const leftBytes = selected.reduce((total, row) => total + (row.leftByteSize ?? 0), 0)
   const rightBytes = selected.reduce((total, row) => total + (row.rightByteSize ?? 0), 0)
+  const single = count === 1 ? selected[0] : undefined
 
   return {
     count,
     leftBytes,
     rightBytes,
+    leftModified: single?.leftModified && single.leftModified !== '--' ? single.leftModified : '',
+    rightModified:
+      single?.rightModified && single.rightModified !== '--' ? single.rightModified : '',
     hasRoots: Boolean(leftRoot.value || rightRoot.value),
   }
 })
 
-function formatSelectionFooter(count: number, bytes: number): string {
+function formatSelectionFooter(count: number, bytes: number, modified = ''): string {
+  if (count === 1 && modified) {
+    return t('status.filesSelectedBytesWithDate', { count, bytes, modified })
+  }
+
   return t('status.filesSelectedBytes', { count, bytes })
 }
 
@@ -2030,6 +2038,7 @@ onUnmounted(() => {
                 formatSelectionFooter(
                   folderSelectionSummary.count,
                   folderSelectionSummary.leftBytes,
+                  folderSelectionSummary.leftModified,
                 )
               }}
             </span>
@@ -2085,6 +2094,7 @@ onUnmounted(() => {
                 formatSelectionFooter(
                   folderSelectionSummary.count,
                   folderSelectionSummary.rightBytes,
+                  folderSelectionSummary.rightModified,
                 )
               }}
             </span>

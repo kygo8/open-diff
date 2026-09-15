@@ -1034,6 +1034,9 @@ export const frFR: LanguagePack = {
     'ui.tabs': 'Onglets',
     'ui.alwaysShowTabBar': 'Toujours afficher la barre d’onglets',
     'ui.openSessionsInNewTab': 'Ouvrir les sessions dans de nouveaux onglets',
+    'ui.archiveTypesSynced': 'Types d’archives appliqués à la comparaison de dossiers.',
+    'ui.archiveTypesLocalOnly':
+      'Types d’archives enregistrés localement ; synchronisation du moteur de comparaison indisponible dans cet environnement.',
     'ui.tabsHint':
       'Si désactivé, la barre d’onglets est masquée lorsqu’il ne reste que l’accueil. Ouvrir dans de nouveaux onglets conserve les sessions existantes au lieu de réutiliser la même route.',
     'ui.showNextDifferenceInToolbar':

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { sessionCatalog } from '@/app/sessionCatalog'
+import { tabRoutePathname, withUniqueSessionQuery } from '@/app/sessionTabRoute'
 
 export interface AppTab {
   id: string
@@ -36,9 +37,10 @@ export const useTabsStore = defineStore('tabs', () => {
 
   function openTab(tab: Omit<AppTab, 'id'> & { forceNew?: boolean }): AppTab {
     const { forceNew, ...tabFields } = tab
+    const pathname = tabRoutePathname(tabFields.route)
 
     if (!forceNew) {
-      const existing = tabs.value.find((item) => item.route === tabFields.route)
+      const existing = tabs.value.find((item) => tabRoutePathname(item.route) === pathname)
 
       if (existing) {
         activeTabId.value = existing.id
@@ -47,12 +49,25 @@ export const useTabsStore = defineStore('tabs', () => {
       }
     }
 
-    const next = normalizeTab({ ...tabFields, id: crypto.randomUUID() })
+    const route = forceNew ? withUniqueSessionQuery(tabFields.route) : tabFields.route
+    const next = normalizeTab({ ...tabFields, route, id: crypto.randomUUID() })
 
     tabs.value.push(next)
     activeTabId.value = next.id
 
     return next
+  }
+
+  function activateTab(id: string): AppTab | undefined {
+    const tab = tabs.value.find((item) => item.id === id)
+
+    if (!tab) {
+      return undefined
+    }
+
+    activeTabId.value = id
+
+    return tab
   }
 
   function closeTab(id: string): void {
@@ -128,7 +143,12 @@ export const useTabsStore = defineStore('tabs', () => {
   }
 
   function setTabTitle(idOrRoute: string, title: string): boolean {
-    const tab = tabs.value.find((item) => item.id === idOrRoute || item.route === idOrRoute)
+    const tab = tabs.value.find(
+      (item) =>
+        item.id === idOrRoute ||
+        item.route === idOrRoute ||
+        tabRoutePathname(item.route) === idOrRoute,
+    )
 
     if (!tab || tab.id === 'home') {
       return false
@@ -165,6 +185,7 @@ export const useTabsStore = defineStore('tabs', () => {
     activeTabId,
     activeTab,
     openTab,
+    activateTab,
     closeTab,
     canCloseTab,
     canCloseOtherTabs,
@@ -181,6 +202,6 @@ export const useTabsStore = defineStore('tabs', () => {
 function normalizeTab(tab: AppTab): AppTab {
   return {
     ...tab,
-    titleKey: tab.titleKey ?? routeTitleKeys.get(tab.route),
+    titleKey: tab.titleKey ?? routeTitleKeys.get(tabRoutePathname(tab.route)),
   }
 }

@@ -460,6 +460,7 @@ describe('FolderCompareView', () => {
         exclude: [],
         caseSensitive: false,
       },
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
     expect(wrapper.text()).toContain('main.ts')
     expect(wrapper.text()).toContain('Different')

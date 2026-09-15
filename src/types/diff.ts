@@ -193,6 +193,7 @@ export interface FolderCompareRequest {
   rightRoot: string
   criteria?: FolderCompareCriteria
   filters?: FolderNameFilters
+  archiveExtensions?: string[]
 }
 
 export type FolderCompareStatus = 'Same' | 'Different' | 'Left only' | 'Right only'

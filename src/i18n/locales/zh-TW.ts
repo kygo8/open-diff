@@ -989,6 +989,8 @@ export const zhTW: LanguagePack = {
     'ui.tabs': '分頁',
     'ui.alwaysShowTabBar': '一律顯示分頁列',
     'ui.openSessionsInNewTab': '以新分頁開啟工作階段',
+    'ui.archiveTypesSynced': '封存類型已套用到資料夾比較。',
+    'ui.archiveTypesLocalOnly': '封存類型已儲存在本機；目前環境無法同步到比較引擎。',
     'ui.tabsHint':
       '停用時，僅剩首頁時會隱藏分頁列。以新分頁開啟工作階段可保留既有分頁，而不重用相同路由。',
     'ui.showNextDifferenceInToolbar': '在工作階段工具列顯示「下一個差異」',

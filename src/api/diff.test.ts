@@ -5,6 +5,7 @@ import {
   applyTextPatchToFile,
   changeFolderEntryAttributes,
   compareFolderPaths,
+  setArchiveExtensions,
   compareHexFiles,
   compareMediaFiles,
   comparePictureFiles,
@@ -147,8 +148,19 @@ describe('diff api', () => {
       rightRoot: 'D:/right',
       criteria: undefined,
       filters: undefined,
+      archiveExtensions: undefined,
     })
     expect(result.rows[0]?.relativePath).toBe('src/main.ts')
+  })
+
+  it('syncs archive extensions to the compare engine', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce(['.zip', '.7z'])
+    const result = await setArchiveExtensions(['.zip', '7z'])
+
+    expect(invoke).toHaveBeenCalledWith('set_archive_extensions', {
+      extensions: ['.zip', '7z'],
+    })
+    expect(result).toEqual(['.zip', '.7z'])
   })
 
   it('runs folder compare file operations through the Tauri command contracts', async () => {

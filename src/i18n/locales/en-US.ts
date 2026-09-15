@@ -1017,12 +1017,15 @@ export const enUS: LanguagePack = {
     'ui.alwaysShowTabBar': 'Always show tab bar',
     'ui.openSessionsInNewTab': 'Open sessions in new tabs',
     'ui.tabsHint':
-      'When disabled, the tab bar hides while only Home is open. Opening sessions in new tabs keeps prior session tabs instead of reusing the same route.',
+      'When disabled, the tab bar hides while only Home is open. Opening sessions in new tabs keeps prior session tabs with independent state (unique session query) instead of reusing the same route.',
+    'ui.archiveTypesSynced': 'Archive types applied to Folder Compare.',
+    'ui.archiveTypesLocalOnly':
+      'Archive types saved locally; compare engine sync unavailable in this environment.',
     'ui.showNextDifferenceInToolbar': 'Show Next Difference on session toolbars',
     'ui.showPrevDifferenceInToolbar': 'Show Previous Difference on session toolbars',
     'ui.archiveTypes': 'Archive types',
     'ui.archiveTypesHint':
-      'Extensions treated as archives in Folder Compare. Longer suffixes such as .tar.gz are matched first.',
+      'Extensions treated as archives in Folder Compare (frontend and compare engine). Longer suffixes such as .tar.gz are matched first.',
     'ui.archiveTypesPlaceholder': '.zip, .tar.gz, .7z',
     'ui.confirmBeforeCloseDirtyTab': 'Confirm before closing dirty tabs',
     'ui.confirmBeforeOverwriteSave': 'Confirm before overwrite saves',

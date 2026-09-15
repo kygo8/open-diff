@@ -93,7 +93,7 @@ describe('commandSystem', () => {
 function createExecutionContext(): CommandExecutionContext {
   return {
     navigate: vi.fn(),
-    openTab: vi.fn(),
+    openTab: vi.fn((tab: { route: string }) => ({ route: tab.route })),
     t: (key: string) =>
       ({
         'ui.folderCompare': 'Folder Compare',

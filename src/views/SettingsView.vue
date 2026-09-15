@@ -21,6 +21,7 @@ import { usePolicyStore } from '@/stores/policy'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { type DiffHighlightColors, useSettingsStore } from '@/stores/settings'
 import { formatArchiveSuffixesInput, parseArchiveSuffixesInput } from '@/app/archivePath'
+import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { loadExternalApplications, saveExternalApplications } from '@/app/externalApplications'
 import type { ExternalApplicationConfig } from '@/app/fileOpenActions'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
@@ -452,9 +453,15 @@ function onShowPrevDifferenceInToolbarChange(event: Event): void {
   settings.setShowPrevDifferenceInToolbar(target.checked)
 }
 
-function applyArchiveExtensionsFromOptions(): void {
+async function applyArchiveExtensionsFromOptions(): Promise<void> {
   settings.setArchiveExtensions(parseArchiveSuffixesInput(archiveExtensionsDraft.value))
   archiveExtensionsDraft.value = formatArchiveSuffixesInput(settings.archiveExtensions)
+  try {
+    await syncArchiveExtensionsBackend([...settings.archiveExtensions])
+    optionsStatus.value = t('ui.archiveTypesSynced')
+  } catch {
+    optionsStatus.value = t('ui.archiveTypesLocalOnly')
+  }
 }
 
 function onLoadLastWorkspaceOnStartupChange(event: Event): void {

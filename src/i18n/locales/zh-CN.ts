@@ -987,6 +987,8 @@ export const zhCN: LanguagePack = {
     'ui.tabs': '标签页',
     'ui.alwaysShowTabBar': '始终显示标签栏',
     'ui.openSessionsInNewTab': '在新标签页中打开会话',
+    'ui.archiveTypesSynced': '归档类型已应用到文件夹比较。',
+    'ui.archiveTypesLocalOnly': '归档类型已保存在本地；当前环境无法同步到比较引擎。',
     'ui.tabsHint':
       '关闭后，仅有主页时隐藏标签栏。在新标签页打开会话可保留已有会话标签，而不是复用同一路由。',
     'ui.showNextDifferenceInToolbar': '在会话工具栏显示“下一个差异”',

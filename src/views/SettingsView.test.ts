@@ -14,6 +14,10 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
 }))
 
+vi.mock('@/api/diff', () => ({
+  setArchiveExtensions: vi.fn().mockResolvedValue(['.zip', '.rar']),
+}))
+
 vi.mock('@/api/integration', () => ({
   writeGitIntegration: vi.fn().mockResolvedValue('wrote git'),
   writeSvnIntegration: vi.fn().mockResolvedValue('wrote svn'),
@@ -366,6 +370,7 @@ describe('SettingsView', () => {
     await wrapper.find('[data-testid="options-section-formats"]').trigger('click')
     await wrapper.find('[data-testid="archive-extensions-input"]').setValue('.zip, rar')
     await wrapper.find('[data-testid="apply-archive-extensions"]').trigger('click')
+    await flushPromises()
     expect(settings.archiveExtensions).toEqual(['.rar', '.zip'])
   })
 

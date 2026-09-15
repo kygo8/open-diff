@@ -14,10 +14,17 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 const push = vi.fn()
 let routePath = '/compare/text'
 
+vi.mock('@/api/diff', () => ({
+  setArchiveExtensions: vi.fn().mockResolvedValue([]),
+}))
+
 vi.mock('vue-router', () => ({
   RouterView: { template: '<div />' },
   useRoute: () => ({
     get path() {
+      return routePath
+    },
+    get fullPath() {
       return routePath
     },
   }),

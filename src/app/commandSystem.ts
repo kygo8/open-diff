@@ -4,7 +4,9 @@ export type ViewActionName = Extract<CommandAction, { type: 'view-action' }>['na
 
 export interface CommandExecutionContext {
   navigate: (route: string) => void
-  openTab: (tab: { route: string; title: string; titleKey?: string; dirty: boolean }) => void
+  openTab: (tab: { route: string; title: string; titleKey?: string; dirty: boolean }) => {
+    route: string
+  }
   t: (key: string) => string
   toggleTheme: () => void
   dispatchViewAction: (name: ViewActionName) => void
@@ -31,13 +33,14 @@ export function createCommandExecutor(
     }
 
     if (command.action.type === 'navigate') {
-      context.openTab({
+      const opened = context.openTab({
         route: command.action.route,
         title: context.t(command.action.titleKey),
         titleKey: command.action.titleKey,
         dirty: false,
       })
-      context.navigate(command.action.route)
+
+      context.navigate(opened.route)
 
       return true
     }

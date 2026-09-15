@@ -1033,6 +1033,9 @@ export const esES: LanguagePack = {
     'ui.tabs': 'Pestañas',
     'ui.alwaysShowTabBar': 'Mostrar siempre la barra de pestañas',
     'ui.openSessionsInNewTab': 'Abrir sesiones en pestañas nuevas',
+    'ui.archiveTypesSynced': 'Tipos de archivo aplicados a la comparación de carpetas.',
+    'ui.archiveTypesLocalOnly':
+      'Tipos de archivo guardados localmente; la sincronización del motor de comparación no está disponible en este entorno.',
     'ui.tabsHint':
       'Si se desactiva, la barra de pestañas se oculta cuando solo está abierta Inicio. Abrir en pestañas nuevas conserva las sesiones existentes en lugar de reutilizar la misma ruta.',
     'ui.showNextDifferenceInToolbar': 'Mostrar Siguiente diferencia en las barras de sesión',

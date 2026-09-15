@@ -52,6 +52,7 @@ pub fn run() {
             commands::export_text_compare_report,
             commands::find_hex_in_file,
             commands::list_archive,
+            commands::set_archive_extensions,
             commands::list_remote_path,
             commands::list_remote_profiles,
             commands::load_admin_policy,

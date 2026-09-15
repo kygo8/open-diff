@@ -6,6 +6,8 @@ const PICTURE_SESSION_SOURCES = new Set(['picture-compare'])
 const MEDIA_SESSION_SOURCES = new Set(['media-compare'])
 const VERSION_SESSION_SOURCES = new Set(['version-compare'])
 const TABLE_SESSION_SOURCES = new Set(['table-compare'])
+const REGISTRY_SESSION_SOURCES = new Set(['registry-compare'])
+const CLIPBOARD_SESSION_SOURCES = new Set(['clipboard-compare'])
 const EDIT_MODE_SOURCES = new Set(['text-compare', 'text-merge', 'text-edit'])
 const FOLDER_PAIR_SOURCES = new Set(['folder-compare', 'folder-sync', 'folder-merge'])
 
@@ -19,6 +21,8 @@ export type StatusChromeKind =
   | 'media-session'
   | 'version-session'
   | 'table-session'
+  | 'registry-session'
+  | 'clipboard-session'
 
 export function isTextSessionStatusSource(source: string): boolean {
   return TEXT_SESSION_SOURCES.has(source)
@@ -50,6 +54,14 @@ export function isVersionSessionStatusSource(source: string): boolean {
 
 export function isTableSessionStatusSource(source: string): boolean {
   return TABLE_SESSION_SOURCES.has(source)
+}
+
+export function isRegistrySessionStatusSource(source: string): boolean {
+  return REGISTRY_SESSION_SOURCES.has(source)
+}
+
+export function isClipboardSessionStatusSource(source: string): boolean {
+  return CLIPBOARD_SESSION_SOURCES.has(source)
 }
 
 export function formatDifferenceCountPhrase(

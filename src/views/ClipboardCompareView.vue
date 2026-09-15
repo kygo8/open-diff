@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { diffText } from '@/api/diff'
 import { readClipboardTextSource } from '@/app/clipboardSource'
@@ -8,6 +8,7 @@ import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import { useI18n } from '@/i18n'
 import { useTabsStore } from '@/stores/tabs'
+import { useStatusBarStore } from '@/stores/statusBar'
 import type { TextDiffResponse } from '@/types/diff'
 
 interface ClipboardHistoryEntry {
@@ -22,6 +23,7 @@ const history = ref<ClipboardHistoryEntry[]>([])
 const { t } = useI18n()
 const router = useRouter()
 const tabs = useTabsStore()
+const statusBar = useStatusBarStore()
 const leftEntryId = ref<number | null>(null)
 const rightEntryId = ref<number | null>(null)
 const nextEntryId = ref(1)
@@ -65,6 +67,28 @@ watch(
   },
   { immediate: true },
 )
+
+watchEffect(() => {
+  let comparisonStatus = t('status.readyIdle')
+
+  if (comparing.value || loading.value) {
+    comparisonStatus = t('status.comparing')
+  } else if (result.value) {
+    comparisonStatus = t('status.compared')
+  }
+
+  const differenceCount = result.value
+    ? result.value.stats.added + result.value.stats.deleted + result.value.stats.modified
+    : null
+
+  statusBar.reportStatus({
+    comparisonStatus,
+    differenceCount,
+    filterStatus: t('status.allRows'),
+    source: 'clipboard-compare',
+    chromeKind: 'clipboard-session',
+  })
+})
 
 async function captureClipboard(): Promise<void> {
   loading.value = true
@@ -313,9 +337,9 @@ function runClipboardToolbarCommand(commandId: string): void {
 .clipboard-compare-view {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  gap: 12px;
+  gap: 4px;
   height: 100%;
-  padding: 14px;
+  padding: 4px 6px;
   overflow: hidden;
 }
 
@@ -323,18 +347,23 @@ function runClipboardToolbarCommand(commandId: string): void {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 4px 6px;
+  min-height: 26px;
+  padding: 2px 6px;
+  border: 1px solid var(--app-border);
+  border-radius: 0;
+  background: var(--app-surface);
 }
 
 .status-chip {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .clipboard-layout {
   display: grid;
-  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: 4px;
   min-height: 0;
 }
 
@@ -343,43 +372,44 @@ function runClipboardToolbarCommand(commandId: string): void {
   min-width: 0;
   min-height: 0;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .history-pane {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 8px;
-  padding: 10px;
+  gap: 4px;
+  padding: 4px 6px;
 }
 
 .history-pane header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
+  min-height: 22px;
 }
 
 .history-pane header span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .history-list {
   display: grid;
   align-content: start;
-  gap: 8px;
+  gap: 4px;
   overflow: auto;
 }
 
 .history-entry {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 4px 8px;
-  padding: 9px;
+  gap: 2px 6px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   text-align: left;

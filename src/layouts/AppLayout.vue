@@ -936,7 +936,7 @@ const statusChromePanes = computed((): StatusChromePane[] => {
     return panes
   }
 
-  if (kind === 'text-session' || kind === 'hex-session') {
+  if (kind === 'text-session' || kind === 'hex-session' || kind === 'registry-session') {
     let editModeText = ''
 
     if (statusBar.report.editMode === 'overwrite') {
@@ -2317,7 +2317,9 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='picture-session'],
 .status-bar[data-chrome-kind='media-session'],
 .status-bar[data-chrome-kind='version-session'],
-.status-bar[data-chrome-kind='table-session'] {
+.status-bar[data-chrome-kind='table-session'],
+.status-bar[data-chrome-kind='registry-session'],
+.status-bar[data-chrome-kind='clipboard-session'] {
   height: 22px;
   min-height: 22px;
   font-size: 11px;
@@ -2328,7 +2330,9 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='picture-session'] .status-bar-pane,
 .status-bar[data-chrome-kind='media-session'] .status-bar-pane,
 .status-bar[data-chrome-kind='version-session'] .status-bar-pane,
-.status-bar[data-chrome-kind='table-session'] .status-bar-pane {
+.status-bar[data-chrome-kind='table-session'] .status-bar-pane,
+.status-bar[data-chrome-kind='registry-session'] .status-bar-pane,
+.status-bar[data-chrome-kind='clipboard-session'] .status-bar-pane {
   padding: 0 5px;
 }
 

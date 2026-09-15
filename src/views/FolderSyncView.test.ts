@@ -127,7 +127,7 @@ describe('FolderSyncView', () => {
     expect(wrapper.text()).toContain('Mirror to Right')
     expect(wrapper.text()).toContain('D:/deploy/package')
     expect(wrapper.text()).toContain('D:/deploy/prod')
-    expect(wrapper.text()).toContain('Copy L→R')
+    expect(wrapper.text()).toContain('Copy Left to Right')
     expect(wrapper.text()).toContain('Delete')
 
     expect(wrapper.find('[data-testid="folder-sync-title"]').text()).toContain('Update:')

@@ -415,14 +415,24 @@ const comparisonStatus = computed(() => {
 })
 
 watchEffect(() => {
+  const hasResult = Boolean(result.value)
+  const importantDifferenceCount = hasResult
+    ? diffRows.value.filter((line) => line.important !== false).length
+    : null
+  const unimportantDifferenceCount = hasResult
+    ? diffRows.value.filter((line) => line.important === false).length
+    : null
+
   statusBar.reportStatus({
     comparisonStatus: comparisonStatus.value,
-    differenceCount: result.value ? diffRows.value.length : null,
+    differenceCount: hasResult ? diffRows.value.length : null,
     encoding: statusBarEncoding.value,
     filterStatus: filterStatus.value,
     source: 'text-compare',
     chromeKind: 'text-session',
-    loadTimeSeconds: result.value ? loadTimeSeconds.value : null,
+    loadTimeSeconds: hasResult ? loadTimeSeconds.value : null,
+    importantDifferenceCount,
+    unimportantDifferenceCount,
     editMode: editMode.value,
   })
 })

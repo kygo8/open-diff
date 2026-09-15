@@ -3,6 +3,7 @@ import {
   buildClipboardCompareToolbar,
   buildFolderCompareToolbar,
   buildFolderMergeToolbar,
+  buildTextMergeToolbar,
   buildFolderSyncToolbar,
   buildHexCompareToolbar,
   buildMediaCompareToolbar,
@@ -15,6 +16,7 @@ import {
   clipboardCompareToolbarOrder,
   folderCompareToolbarOrder,
   folderMergeToolbarOrder,
+  textMergeToolbarOrder,
   folderSyncToolbarOrder,
   hexCompareToolbarOrder,
   mergeSessionTitle,
@@ -247,5 +249,37 @@ describe('sessionToolbars', () => {
     expect(toolbar.find((item) => item.id === 'to-output')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'same-ok')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'peek')?.enabled).toBe(true)
+  })
+
+  it('keeps Text Merge MainBar order with Favor then conflict nav', () => {
+    const toolbar = buildTextMergeToolbar({
+      home: true,
+      all: true,
+      diffs: true,
+      same: true,
+      context: true,
+      minor: true,
+      'same-ok': true,
+      'favor-left': true,
+      'favor-right': true,
+      rules: true,
+      format: true,
+      conflict: true,
+      left: true,
+      center: true,
+      right: true,
+      'next-conflict': true,
+      'prev-conflict': true,
+      swap: true,
+      reload: true,
+    })
+
+    expect(toolbar.map((item) => item.id)).toEqual([...textMergeToolbarOrder])
+    expect(toolbar.map((item) => item.id).indexOf('favor-left')).toBeLessThan(
+      toolbar.map((item) => item.id).indexOf('next-conflict'),
+    )
+    expect(toolbar.map((item) => item.id).indexOf('next-conflict')).toBeLessThan(
+      toolbar.map((item) => item.id).indexOf('prev-conflict'),
+    )
   })
 })

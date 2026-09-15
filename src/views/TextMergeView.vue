@@ -5,6 +5,7 @@ import { buildTextMergeReportText, defaultTextMergeReportOutputPath } from '@/ap
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { pathPairTitle, singlePathTitle } from '@/app/sessionToolbars'
+import { ArrowDownToLine, ArrowLeftFromLine, ArrowRightFromLine, ArrowUpToLine } from '@lucide/vue'
 import { useI18n } from '@/i18n'
 import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
@@ -661,21 +662,37 @@ watch(
           <span>{{ $t('ui.favorChrome') }}</span>
           <button
             type="button"
-            class="toolbar-button"
+            class="toolbar-button toolbar-button-icon"
             data-testid="merge-favor-left"
             :disabled="!currentConflict || currentConflict.resolved"
+            :title="$t('ui.favorLeft')"
+            :aria-label="$t('ui.favorLeft')"
             @click="favorSide('left')"
           >
-            {{ $t('ui.favorLeft') }}
+            <ArrowLeftFromLine
+              class="toolbar-button-glyph"
+              aria-hidden="true"
+              :size="settings.largeToolbarButtons ? 18 : 16"
+              :stroke-width="1.75"
+            />
+            <span>{{ $t('ui.favorLeft') }}</span>
           </button>
           <button
             type="button"
-            class="toolbar-button"
+            class="toolbar-button toolbar-button-icon"
             data-testid="merge-favor-right"
             :disabled="!currentConflict || currentConflict.resolved"
+            :title="$t('ui.favorRight')"
+            :aria-label="$t('ui.favorRight')"
             @click="favorSide('right')"
           >
-            {{ $t('ui.favorRight') }}
+            <ArrowRightFromLine
+              class="toolbar-button-glyph"
+              aria-hidden="true"
+              :size="settings.largeToolbarButtons ? 18 : 16"
+              :stroke-width="1.75"
+            />
+            <span>{{ $t('ui.favorRight') }}</span>
           </button>
         </span>
         <span
@@ -685,21 +702,37 @@ watch(
           <span data-testid="merge-conflict-position">{{ conflictPositionLabel }}</span>
           <button
             type="button"
-            class="toolbar-button"
+            class="toolbar-button toolbar-button-icon"
             data-testid="merge-prev-conflict"
             :disabled="unresolvedConflicts.length === 0"
+            :title="$t('ui.previousConflict')"
+            :aria-label="$t('ui.previousConflict')"
             @click="goToConflict(-1)"
           >
-            {{ $t('ui.previousConflict') }}
+            <ArrowUpToLine
+              class="toolbar-button-glyph"
+              aria-hidden="true"
+              :size="settings.largeToolbarButtons ? 18 : 16"
+              :stroke-width="1.75"
+            />
+            <span>{{ $t('ui.previousConflict') }}</span>
           </button>
           <button
             type="button"
-            class="toolbar-button"
+            class="toolbar-button toolbar-button-icon"
             data-testid="merge-next-conflict"
             :disabled="unresolvedConflicts.length === 0"
+            :title="$t('ui.nextConflict')"
+            :aria-label="$t('ui.nextConflict')"
             @click="goToConflict(1)"
           >
-            {{ $t('ui.nextConflict') }}
+            <ArrowDownToLine
+              class="toolbar-button-glyph"
+              aria-hidden="true"
+              :size="settings.largeToolbarButtons ? 18 : 16"
+              :stroke-width="1.75"
+            />
+            <span>{{ $t('ui.nextConflict') }}</span>
           </button>
           <button
             type="button"
@@ -1060,6 +1093,17 @@ watch(
   color: var(--app-text);
   font-size: 12px;
   cursor: pointer;
+}
+
+.toolbar-button-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-button-glyph {
+  flex-shrink: 0;
+  color: #2f353d;
 }
 
 .toolbar-button:disabled {

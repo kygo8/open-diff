@@ -311,6 +311,7 @@ const pictureSessionToolbar = computed(() =>
     minor: true,
     rules: true,
     format: true,
+    sessions: true,
     swap: Boolean(leftPath.value || rightPath.value),
     reload: Boolean(leftPath.value && rightPath.value),
     meta: true,
@@ -322,6 +323,7 @@ const pictureSessionToolbar = computed(() =>
       (item.id === 'blend' && blendEnabled.value) ||
       (item.id === 'minor' && showMinor.value) ||
       (item.id === 'format' && showSessionSettings.value) ||
+      (item.id === 'sessions' && showSessionSettings.value) ||
       (item.id === 'meta' && showMetaPanel.value),
   })),
 )
@@ -453,6 +455,9 @@ function runPictureToolbarCommand(commandId: string): void {
       openPictureSessionSettings()
       break
     case 'format':
+      openPictureSessionSettings()
+      break
+    case 'sessions':
       openPictureSessionSettings()
       break
     case 'meta':

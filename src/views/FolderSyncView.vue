@@ -101,9 +101,7 @@ const selectedStrategyLabel = computed(() =>
       'sync.strategy.updateBoth',
   ),
 )
-const canRunSync = computed(
-  () => previewRows.value.length > 0 && planAccepted.value && !syncRunning.value,
-)
+const canRunSync = computed(() => previewRows.value.length > 0 && !syncRunning.value)
 const overriddenRowCount = computed(
   () => previewRows.value.filter((row) => row.overrideAction !== row.plannedAction).length,
 )
@@ -148,7 +146,16 @@ const syncSessionToolbar = computed(() =>
     'sync-now': canRunSync.value,
     cancel: previewRows.value.length > 0,
     accept: previewRows.value.length > 0 && !planAccepted.value,
-  }),
+  }).map((item) => ({
+    ...item,
+    active:
+      (item.id === 'minor' && minorOnly.value) ||
+      (item.id === 'select' && showSyncSelect.value) ||
+      (item.id === 'peek' && showPeek.value) ||
+      (item.id === 'sync-now' && syncRunning.value) ||
+      (item.id === 'accept' && planAccepted.value) ||
+      (item.id === 'stop' && (previewLoading.value || syncRunning.value)),
+  })),
 )
 
 function goHomeFromSync(): void {
@@ -336,6 +343,10 @@ async function previewSync(): Promise<void> {
 async function runSync(): Promise<void> {
   if (!canRunSync.value) {
     return
+  }
+
+  if (!planAccepted.value) {
+    acceptSyncPlan()
   }
 
   syncRunning.value = true
@@ -658,6 +669,8 @@ watch(
       case 'rules':
       case 'save-as':
       case 'session-settings':
+        showSyncFilters.value = true
+        break
       case 'show-all':
       case 'show-differences':
       case 'undo':

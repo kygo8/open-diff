@@ -132,14 +132,15 @@ describe('FolderSyncView', () => {
     expect(wrapper.text()).toContain('Delete')
 
     expect(wrapper.find('[data-testid="folder-sync-title"]').text()).toContain('Update:')
-    expect(wrapper.find('[data-testid="folder-sync-run"]').attributes('disabled')).toBeDefined()
+    // Sync Now is available as soon as a preview exists; Accept remains optional densify chrome.
+    expect(wrapper.find('[data-testid="folder-sync-run"]').attributes('disabled')).toBeUndefined()
 
     await wrapper.find('[data-testid="folder-sync-accept"]').trigger('click')
     expect(wrapper.find('[data-testid="folder-sync-chrome-status"]').text()).toContain('accepted')
     expect(wrapper.find('[data-testid="folder-sync-run"]').attributes('disabled')).toBeUndefined()
 
     await wrapper.find('[data-testid="sync-override-copy-app"]').setValue('leave')
-    expect(wrapper.find('[data-testid="folder-sync-run"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-testid="folder-sync-run"]').attributes('disabled')).toBeUndefined()
     await wrapper.find('[data-testid="folder-sync-accept"]').trigger('click')
     await wrapper.find('[data-testid="folder-sync-run"]').trigger('click')
     await flushPromises()
@@ -259,6 +260,10 @@ describe('FolderSyncView', () => {
     expect(wrapper.find('[data-testid="folder-sync-session-toolbar-sync-now"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folder-sync-session-toolbar-minor"]').exists()).toBe(true)
 
+    expect(
+      wrapper.find('[data-testid="folder-sync-session-toolbar-sync-now"]').attributes('disabled'),
+    ).toBeUndefined()
+
     await wrapper.find('[data-testid="folder-sync-session-toolbar-accept"]').trigger('click')
     expect(
       wrapper.find('[data-testid="folder-sync-chrome-status"]').text().toLowerCase(),
@@ -266,6 +271,9 @@ describe('FolderSyncView', () => {
     expect(
       wrapper.find('[data-testid="folder-sync-session-toolbar-sync-now"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="folder-sync-session-toolbar-accept"]').attributes('data-active'),
+    ).toBe('true')
 
     await wrapper.find('[data-testid="folder-sync-session-toolbar-minor"]').trigger('click')
     expect(wrapper.find('[data-testid="sync-row-copy-app"]').exists()).toBe(false)

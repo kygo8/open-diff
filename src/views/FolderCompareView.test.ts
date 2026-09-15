@@ -293,6 +293,7 @@ describe('FolderCompareView', () => {
       'structure',
       'minor',
       'rules',
+      'sessions',
       'copy',
       'expand',
       'collapse',
@@ -331,6 +332,18 @@ describe('FolderCompareView', () => {
       wrapper.find('[data-testid="folder-session-toolbar-select"]').attributes('disabled'),
     ).toBeUndefined()
     expect(wrapper.html()).not.toContain('未实现')
+  })
+
+  it('opens session settings from the Sessions toolbar control', async () => {
+    const wrapper = mountFolderCompareView()
+
+    expect(wrapper.find('[data-testid="folder-session-toolbar-sessions"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="folder-session-toolbar-sessions"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    await wrapper.find('[data-testid="folder-session-toolbar-sessions"]').trigger('click')
+    expect(wrapper.find('[data-testid="session-settings-dialog"]').exists()).toBe(true)
   })
 
   it('filters to unimportant timestamp differences from the Minor toolbar', async () => {

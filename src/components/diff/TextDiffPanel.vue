@@ -403,6 +403,39 @@ const getDifferenceContextRowCount = (): number => differenceContextRows.value
 
 const getDisplayMode = (): DiffDisplayMode => displayMode.value
 
+const isWordWrapEnabled = (): boolean => wordWrap.value
+
+const jumpToLineNumber = (lineNumber: number, side: 'left' | 'right' = 'left'): boolean => {
+  if (!Number.isFinite(lineNumber) || lineNumber < 1) {
+    return false
+  }
+
+  const target = Math.trunc(lineNumber)
+  const matchIndex = displayRows.value.findIndex(({ line }) => {
+    const number = side === 'right' ? line.rightNumber : line.leftNumber
+
+    return number === target
+  })
+
+  if (matchIndex < 0) {
+    const fallback = displayRows.value.findIndex(({ line }) => {
+      return line.leftNumber === target || line.rightNumber === target
+    })
+
+    if (fallback < 0) {
+      return false
+    }
+
+    jumpToLine(fallback)
+
+    return true
+  }
+
+  jumpToLine(matchIndex)
+
+  return true
+}
+
 defineExpose({
   setDisplayMode,
   getDisplayMode,
@@ -410,6 +443,9 @@ defineExpose({
   getDifferenceContextRowCount,
   jumpToNextDiff,
   jumpToPreviousDiff,
+  toggleWordWrap,
+  isWordWrapEnabled,
+  jumpToLineNumber,
 })
 </script>
 

@@ -438,6 +438,12 @@ export const zhTW: LanguagePack = {
     'status.diskFreeOn': '{quantity} 可用空間於 {root}',
     'status.pathFileMetadata': '{bytes} 位元組，{modified}',
     'status.filesSelectedBytesWithDate': '已選 {count} 個檔案，{bytes} 位元組，{modified}',
+    'status.panePlaceholder': '—',
+    'status.readyIdle': '就緒',
+    'status.filesAndFoldersSelectedBytes':
+      '已選 {files} 個檔案、{folders} 個資料夾，{bytes} 位元組',
+    'status.foldersSelected': '已選 {count} 個資料夾',
+    'status.itemsSelected': '已選 {count} 項',
     'status.encoding': '編碼',
     'status.filter': '篩選',
     'status.allRows': '全部列',

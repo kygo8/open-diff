@@ -115,10 +115,11 @@ watchEffect(() => {
 
   statusBar.reportStatus({
     comparisonStatus,
-    differenceCount: unresolvedConflicts.value.length,
+    differenceCount: hasContent ? unresolvedConflicts.value.length : null,
     encoding: 'UTF-8',
     filterStatus: t('status.allRows'),
     source: 'text-merge',
+    chromeKind: 'text-session',
     loadTimeSeconds: loadTimeSeconds.value,
     editMode: hasContent ? editMode.value : null,
   })

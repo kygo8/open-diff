@@ -457,6 +457,12 @@ export const esES: LanguagePack = {
     'status.pathFileMetadata': '{bytes} bytes, {modified}',
     'status.filesSelectedBytesWithDate':
       '{count} archivo(s) seleccionado(s), {bytes} bytes, {modified}',
+    'status.panePlaceholder': '—',
+    'status.readyIdle': 'Listo',
+    'status.filesAndFoldersSelectedBytes':
+      '{files} archivo(s), {folders} carpeta(s) seleccionada(s), {bytes} bytes',
+    'status.foldersSelected': '{count} carpeta(s) seleccionada(s)',
+    'status.itemsSelected': '{count} elemento(s) seleccionado(s)',
     'status.encoding': 'Codificación',
     'status.filter': 'Filtrar',
     'status.allRows': 'Todas las filas',

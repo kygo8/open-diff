@@ -421,6 +421,7 @@ watchEffect(() => {
     encoding: statusBarEncoding.value,
     filterStatus: filterStatus.value,
     source: 'text-compare',
+    chromeKind: 'text-session',
     loadTimeSeconds: result.value ? loadTimeSeconds.value : null,
     editMode: editMode.value,
   })
@@ -1494,20 +1495,20 @@ function toggleSourceEditors(): void {
           </button>
         </div>
         <div
-          v-if="leftPathFooterLabel || rightPathFooterLabel"
           class="bc-path-footers"
+          data-testid="text-path-footers"
         >
           <span
-            v-if="leftPathFooterLabel"
             class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
             data-testid="text-left-path-footer"
-            >{{ leftPathFooterLabel }}</span
+            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
           >
           <span
-            v-if="rightPathFooterLabel"
             class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
             data-testid="text-right-path-footer"
-            >{{ rightPathFooterLabel }}</span
+            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
           >
         </div>
       </section>
@@ -1875,8 +1876,14 @@ function toggleSourceEditors(): void {
 }
 
 .path-side-footer {
+  min-height: 14px;
   color: var(--od-muted, #6b7280);
   font-size: 11px;
+  line-height: 14px;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 
 .find-toolbar {

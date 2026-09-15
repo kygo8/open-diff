@@ -43,7 +43,11 @@ import { useI18n } from '@/i18n'
 import { usePolicyStore } from '@/stores/policy'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
-import { isEditModeStatusSource, isTextSessionStatusSource } from '@/app/statusBarPhrases'
+import {
+  isEditModeStatusSource,
+  isTextSessionStatusSource,
+  padStatusChromePanes,
+} from '@/app/statusBarPhrases'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
@@ -614,6 +618,12 @@ const navigationItems = computed<NavigationItem[]>(() =>
 )
 const statusSegments = computed(() => statusBar.segments)
 
+interface StatusChromePane {
+  text: string
+  muted: boolean
+  testId: string
+}
+
 function localizedDifferenceSegment(differenceCount: number | null, source: string): string {
   if (!isTextSessionStatusSource(source)) {
     return `${t('status.differences')}: ${differenceCount === null ? '-' : String(differenceCount)}`
@@ -628,6 +638,20 @@ function localizedDifferenceSegment(differenceCount: number | null, source: stri
   }
 
   return t('status.differenceSections', { count: differenceCount })
+}
+
+function statusPane(
+  text: string | null | undefined,
+  testId: string,
+  forceMuted = false,
+): StatusChromePane {
+  const value = text?.trim() ?? ''
+
+  return {
+    text: value || t('status.panePlaceholder'),
+    muted: forceMuted || !value,
+    testId,
+  }
 }
 
 const localizedStatusSegments = computed(() => {
@@ -651,6 +675,63 @@ const localizedStatusSegments = computed(() => {
   }
 
   return segments
+})
+
+const statusChromePanes = computed((): StatusChromePane[] => {
+  const kind = statusBar.chromeKind
+
+  if (kind === 'folder-pair') {
+    return [
+      statusPane(statusBar.report.leftSelection, 'status-pane-left-selection'),
+      statusPane(statusBar.report.leftFreeSpace, 'status-pane-left-free'),
+      statusPane(statusBar.report.rightSelection, 'status-pane-right-selection'),
+      statusPane(statusBar.report.rightFreeSpace, 'status-pane-right-free'),
+    ]
+  }
+
+  if (kind === 'text-session') {
+    let editModeText = ''
+
+    if (statusBar.report.editMode === 'overwrite') {
+      editModeText = t('status.overwriteMode')
+    } else if (statusBar.report.editMode === 'insert') {
+      editModeText = t('status.insertMode')
+    }
+    const loadTimeText =
+      statusBar.report.loadTimeSeconds !== null
+        ? t('status.loadTime', { seconds: statusBar.report.loadTimeSeconds.toFixed(2) })
+        : ''
+
+    return [
+      statusPane(
+        localizedDifferenceSegment(statusBar.report.differenceCount, statusBar.report.source),
+        'status-pane-diff',
+        statusBar.report.differenceCount === null,
+      ),
+      statusPane(
+        localizeStatusValue(statusBar.report.filterStatus) ||
+          localizeStatusValue(statusBar.report.comparisonStatus) ||
+          t('status.readyIdle'),
+        'status-pane-filter',
+      ),
+      statusPane(editModeText, 'status-pane-edit', !editModeText),
+      statusPane(loadTimeText, 'status-pane-load', !loadTimeText),
+    ]
+  }
+
+  return padStatusChromePanes(
+    localizedStatusSegments.value.map((segmentText, index) => ({
+      text: segmentText,
+      muted: false,
+      testId: `status-pane-${String(index)}`,
+    })),
+    4,
+    () => statusPane('', 'status-pane-placeholder', true),
+  ).map((pane, index) => ({
+    text: pane.text,
+    muted: Boolean(pane.muted),
+    testId: pane.testId ?? `status-pane-${String(index)}`,
+  }))
 })
 const windowTitle = computed(() => {
   if (route.path === '/') {
@@ -1254,11 +1335,16 @@ const sourceSessionTypes = new Set<SessionType>([
       v-if="settings.showStatusBar"
       class="status-bar"
       data-testid="status-bar"
+      :data-chrome-kind="statusBar.chromeKind"
     >
       <span
-        v-for="(segment, index) in localizedStatusSegments"
+        v-for="(pane, index) in statusChromePanes"
         :key="`status-segment-${index}`"
-        >{{ segment }}</span
+        class="status-bar-pane"
+        :class="{ 'status-bar-pane-muted': pane.muted }"
+        :data-testid="pane.testId"
+        :data-muted="pane.muted ? 'true' : 'false'"
+        >{{ pane.text }}</span
       >
     </footer>
 
@@ -1838,23 +1924,36 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .status-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
-  align-items: center;
-  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
   min-width: 0;
-  padding: 0 10px;
+  height: 24px;
+  min-height: 24px;
+  padding: 0;
   border-top: 1px solid #c9cdd3;
   background: #f4f4f4;
   color: #111827;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
+  font-size: 12px;
 }
 
-.status-bar span {
+.status-bar-pane {
+  display: flex;
+  align-items: center;
   min-width: 0;
+  padding: 0 10px;
   overflow: hidden;
+  border-right: 1px solid #d2d6dc;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.status-bar-pane:last-child {
+  border-right: 0;
+}
+
+.status-bar-pane-muted {
+  color: #9ca3af;
 }
 
 .command-backdrop {

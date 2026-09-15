@@ -1089,4 +1089,33 @@ describe('FolderCompareView', () => {
       '91.8 GB free on C:\\',
     )
   })
+
+  it('keeps muted path-footer placeholders before roots are set', () => {
+    const wrapper = mountFolderCompareView()
+
+    expect(wrapper.find('[data-testid="folder-left-path-footer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-right-path-footer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-left-path-footer"]').text()).toBe('—')
+    expect(wrapper.find('[data-testid="folder-right-path-footer"]').classes()).toContain(
+      'path-side-footer-muted',
+    )
+  })
+
+  it('summarizes multi-select files with bytes beside free space', async () => {
+    const wrapper = mountFolderCompareView()
+
+    await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/left')
+    await wrapper.find('[data-testid="folder-right-root"]').setValue('D:/right')
+    await runCompare(wrapper)
+
+    await wrapper.find('[data-testid="folder-session-toolbar-select"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-testid="folder-select-all"]').trigger('click')
+    await flushPromises()
+
+    const leftFooter = wrapper.find('[data-testid="folder-left-path-footer"]').text()
+
+    expect(leftFooter).toMatch(/file\(s\) selected|folder\(s\) selected|item\(s\) selected/)
+    expect(leftFooter).toContain('91.8 GB free on C:\\')
+  })
 })

@@ -458,6 +458,12 @@ export const frFR: LanguagePack = {
     'status.pathFileMetadata': '{bytes} octets, {modified}',
     'status.filesSelectedBytesWithDate':
       '{count} fichier(s) sélectionné(s), {bytes} octets, {modified}',
+    'status.panePlaceholder': '—',
+    'status.readyIdle': 'Prêt',
+    'status.filesAndFoldersSelectedBytes':
+      '{files} fichier(s), {folders} dossier(s) sélectionné(s), {bytes} octets',
+    'status.foldersSelected': '{count} dossier(s) sélectionné(s)',
+    'status.itemsSelected': '{count} élément(s) sélectionné(s)',
     'status.encoding': 'Codage',
     'status.filter': 'Filtre',
     'status.allRows': 'Toutes les lignes',

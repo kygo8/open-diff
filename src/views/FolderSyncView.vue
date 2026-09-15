@@ -8,7 +8,7 @@ import type {
   FolderSyncPreviewRow,
   FolderSyncStrategy,
 } from '@/types/sync'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
@@ -25,6 +25,8 @@ import { useTabsStore } from '@/stores/tabs'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
+import { useStatusBarStore } from '@/stores/statusBar'
+import { joinStatusFooterParts } from '@/app/folderSelectionStatus'
 
 interface SyncStrategyOption {
   value: FolderSyncStrategy
@@ -57,6 +59,7 @@ const strategyOptions: SyncStrategyOption[] = [
   { value: 'mirrorLeft', labelKey: 'sync.strategy.mirrorLeft' },
 ]
 const { t } = useI18n()
+const statusBar = useStatusBarStore()
 const tabs = useTabsStore()
 const router = useRouter()
 const sessionLaunch = useSessionLaunchStore()
@@ -483,6 +486,37 @@ async function refreshSyncFreeSpace(): Promise<void> {
     : ''
 }
 
+const syncSelectionLabel = computed(() => {
+  const count = checkedRowIds.value.size
+
+  if (count <= 0) {
+    return ''
+  }
+
+  return t('status.itemsSelected', { count })
+})
+
+const leftSyncPathFooter = computed(() =>
+  joinStatusFooterParts(syncSelectionLabel.value, leftFreeSpaceLabel.value),
+)
+const rightSyncPathFooter = computed(() =>
+  joinStatusFooterParts(syncSelectionLabel.value, rightFreeSpaceLabel.value),
+)
+
+watchEffect(() => {
+  statusBar.reportStatus({
+    comparisonStatus: previewRows.value.length > 0 ? t('status.compared') : t('status.readyIdle'),
+    differenceCount: previewRows.value.length > 0 ? previewRows.value.length : null,
+    filterStatus: t('status.allRows'),
+    source: 'folder-sync',
+    chromeKind: 'folder-pair',
+    leftSelection: syncSelectionLabel.value || null,
+    leftFreeSpace: leftFreeSpaceLabel.value || null,
+    rightSelection: syncSelectionLabel.value || null,
+    rightFreeSpace: rightFreeSpaceLabel.value || null,
+  })
+})
+
 function swapSyncPaths(): void {
   const nextLeft = rightPath.value
 
@@ -665,10 +699,10 @@ watch(
             data-testid="folder-sync-left-path"
           />
           <span
-            v-if="leftFreeSpaceLabel"
             class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !leftSyncPathFooter }"
             data-testid="folder-sync-left-path-footer"
-            >{{ leftFreeSpaceLabel }}</span
+            >{{ leftSyncPathFooter || $t('status.panePlaceholder') }}</span
           >
         </label>
         <label>
@@ -678,10 +712,10 @@ watch(
             data-testid="folder-sync-right-path"
           />
           <span
-            v-if="rightFreeSpaceLabel"
             class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !rightSyncPathFooter }"
             data-testid="folder-sync-right-path-footer"
-            >{{ rightFreeSpaceLabel }}</span
+            >{{ rightSyncPathFooter || $t('status.panePlaceholder') }}</span
           >
         </label>
         <label>
@@ -1033,6 +1067,10 @@ watch(
   color: var(--app-muted, #6b7280);
   font-size: 12px;
   margin-top: 4px;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 
 .folder-sync-view {

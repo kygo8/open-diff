@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { useStatusBarStore } from '@/stores/statusBar'
 import { useRouter } from 'vue-router'
 import { useTabsStore } from '@/stores/tabs'
 import {
@@ -41,6 +42,7 @@ const router = useRouter()
 const sessionLaunch = useSessionLaunchStore()
 const tabs = useTabsStore()
 const { t } = useI18n()
+const statusBar = useStatusBarStore()
 const viewActions = useViewActionsStore()
 const lastOpenedConflictPath = ref('')
 const sameOkOnly = ref(false)
@@ -53,6 +55,7 @@ const collapsedPrefixes = ref<Set<string>>(new Set())
 const showMergeFilters = ref(false)
 const showMergeSelect = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
+
 const lastSelectionAction = ref('')
 const mergeChromeMessage = ref('')
 
@@ -299,6 +302,26 @@ onMounted(() => {
   ) {
     void buildFolderMergePlan()
   }
+})
+
+watchEffect(() => {
+  const selection =
+    checkedRowIds.value.size > 0
+      ? t('status.itemsSelected', { count: checkedRowIds.value.size })
+      : null
+  const editing = t('status.editingDisabled')
+
+  statusBar.reportStatus({
+    comparisonStatus: hasPlan.value ? t('status.compared') : t('status.readyIdle'),
+    differenceCount: hasPlan.value ? summary.value.conflicts : null,
+    filterStatus: t('status.allRows'),
+    source: 'folder-merge',
+    chromeKind: 'folder-pair',
+    leftSelection: selection ?? editing,
+    leftFreeSpace: null,
+    rightSelection: selection ?? editing,
+    rightFreeSpace: null,
+  })
 })
 
 async function saveMergeFolderSnapshot(): Promise<void> {

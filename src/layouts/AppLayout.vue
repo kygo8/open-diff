@@ -640,6 +640,32 @@ function localizedDifferenceSegment(differenceCount: number | null, source: stri
   return t('status.differenceSections', { count: differenceCount })
 }
 
+function localizedImportanceSegment(
+  importantCount: number | null,
+  unimportantCount: number | null,
+): string | null {
+  if (importantCount === null || unimportantCount === null) {
+    return null
+  }
+
+  if (importantCount === 0 && unimportantCount === 0) {
+    return t('status.same')
+  }
+
+  if (importantCount > 0 && unimportantCount === 0) {
+    return t('status.importantDifference')
+  }
+
+  if (importantCount === 0 && unimportantCount > 0) {
+    return t('status.unimportantDifference')
+  }
+
+  return t('status.importantUnimportantCounts', {
+    important: importantCount,
+    unimportant: unimportantCount,
+  })
+}
+
 function statusPane(
   text: string | null | undefined,
   testId: string,
@@ -662,6 +688,15 @@ const localizedStatusSegments = computed(() => {
     `${t('status.filter')}: ${localizeStatusValue(statusBar.report.filterStatus)}`,
   ]
 
+  const importance = localizedImportanceSegment(
+    statusBar.report.importantDifferenceCount,
+    statusBar.report.unimportantDifferenceCount,
+  )
+
+  if (importance) {
+    segments.push(importance)
+  }
+
   if (isEditModeStatusSource(statusBar.report.source) && statusBar.report.editMode) {
     segments.push(
       statusBar.report.editMode === 'overwrite'
@@ -681,6 +716,24 @@ const statusChromePanes = computed((): StatusChromePane[] => {
   const kind = statusBar.chromeKind
 
   if (kind === 'folder-pair') {
+    const importance = localizedImportanceSegment(
+      statusBar.report.importantDifferenceCount,
+      statusBar.report.unimportantDifferenceCount,
+    )
+
+    if (importance) {
+      return [
+        statusPane(importance, 'status-pane-importance'),
+        statusPane(statusBar.report.leftSelection, 'status-pane-left-selection'),
+        statusPane(statusBar.report.rightSelection, 'status-pane-right-selection'),
+        statusPane(
+          statusBar.report.leftFreeSpace ?? statusBar.report.rightFreeSpace,
+          'status-pane-left-free',
+          !(statusBar.report.leftFreeSpace ?? statusBar.report.rightFreeSpace),
+        ),
+      ]
+    }
+
     return [
       statusPane(statusBar.report.leftSelection, 'status-pane-left-selection'),
       statusPane(statusBar.report.leftFreeSpace, 'status-pane-left-free'),
@@ -701,12 +754,19 @@ const statusChromePanes = computed((): StatusChromePane[] => {
       statusBar.report.loadTimeSeconds !== null
         ? t('status.loadTime', { seconds: statusBar.report.loadTimeSeconds.toFixed(2) })
         : ''
+    const importance = localizedImportanceSegment(
+      statusBar.report.importantDifferenceCount,
+      statusBar.report.unimportantDifferenceCount,
+    )
+    const primaryStatus =
+      importance ??
+      localizedDifferenceSegment(statusBar.report.differenceCount, statusBar.report.source)
 
     return [
       statusPane(
-        localizedDifferenceSegment(statusBar.report.differenceCount, statusBar.report.source),
-        'status-pane-diff',
-        statusBar.report.differenceCount === null,
+        primaryStatus,
+        importance ? 'status-pane-importance' : 'status-pane-diff',
+        !importance && statusBar.report.differenceCount === null,
       ),
       statusPane(
         localizeStatusValue(statusBar.report.filterStatus) ||

@@ -1001,14 +1001,24 @@ watchEffect(() => {
     comparisonStatus = t('status.compared')
   }
 
+  const hasRows = rows.value.length > 0
+  const differentRows = rows.value.filter((row) => row.status === 'Different')
+  const importantDifferenceCount = hasRows
+    ? differentRows.filter((row) => row.unimportant !== true).length
+    : null
+  const unimportantDifferenceCount = hasRows
+    ? differentRows.filter((row) => row.unimportant === true).length
+    : null
+
   statusBar.reportStatus({
     comparisonStatus,
-    differenceCount:
-      rows.value.length > 0 ? rows.value.filter((row) => row.status === 'Different').length : null,
+    differenceCount: hasRows ? differentRows.length : null,
     filterStatus: t('status.allRows'),
     source: 'folder-compare',
     chromeKind: 'folder-pair',
-    loadTimeSeconds: rows.value.length > 0 ? loadTimeSeconds.value : null,
+    loadTimeSeconds: hasRows ? loadTimeSeconds.value : null,
+    importantDifferenceCount,
+    unimportantDifferenceCount,
     leftSelection,
     leftFreeSpace: leftFreeSpaceLabel.value || null,
     rightSelection,

@@ -77,6 +77,10 @@ export const sessionToolbarIcons: Readonly<Record<string, LucideIcon>> = {
   'favor-right': ArrowRightFromLine,
   'next-conflict': ArrowDownToLine,
   'prev-conflict': ArrowUpToLine,
+  conflict: GitMerge,
+  left: ArrowLeftFromLine,
+  center: Rows2,
+  right: ArrowRightFromLine,
 }
 
 export function iconForSessionToolbarCommand(id: string): LucideIcon | undefined {

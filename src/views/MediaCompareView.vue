@@ -27,6 +27,8 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useI18n } from '@/i18n'
 import { formatCompareError } from '@/app/compareError'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { useStatusBarStore } from '@/stores/statusBar'
 
 const mediaStatuses: MediaFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
 
@@ -68,6 +70,8 @@ const syncPlayback = ref(true)
 const playbackPosition = ref(0)
 const playbackDuration = ref(0)
 const isPlaying = ref(false)
+const statusBar = useStatusBarStore()
+const loadTimeSeconds = ref<number | null>(null)
 
 onMounted(() => {
   const launch = sessionLaunch.consumeLaunch('/compare/media')
@@ -165,6 +169,8 @@ async function exportMediaReport(): Promise<void> {
 }
 
 async function runMediaCompare(): Promise<void> {
+  const startedAt = performance.now()
+
   loading.value = true
   error.value = ''
   try {
@@ -174,6 +180,7 @@ async function runMediaCompare(): Promise<void> {
     })
 
     applyMediaResult(result)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
     error.value = formatCompareError(event, t)
   } finally {
@@ -215,6 +222,32 @@ const minorDifferenceCount = computed(
       (field) => field.status !== 'unchanged' && !fieldIsImportant(field.field),
     ).length,
 )
+
+watch(
+  [loading, mediaFields, loadTimeSeconds],
+  () => {
+    const hasResult = mediaFields.value.length > 0
+    let comparisonStatus = t('status.readyIdle')
+
+    if (loading.value) {
+      comparisonStatus = t('status.comparing')
+    } else if (hasResult) {
+      comparisonStatus = t('status.compared')
+    }
+
+    statusBar.reportStatus({
+      comparisonStatus,
+      differenceCount: hasResult
+        ? mediaFields.value.filter((field) => field.status !== 'unchanged').length
+        : null,
+      filterStatus: t('status.allRows'),
+      source: 'media-compare',
+      loadTimeSeconds: hasResult ? loadTimeSeconds.value : null,
+    })
+  },
+  { immediate: true },
+)
+
 const differingMediaFields = computed(() =>
   mediaFields.value.filter((field) => field.status !== 'unchanged'),
 )

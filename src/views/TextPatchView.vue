@@ -18,6 +18,7 @@ import { formatCompareError } from '@/app/compareError'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useTabsStore } from '@/stores/tabs'
 import type { PatchFile, PatchLineKind, TextPatchResponse } from '@/types/diff'
 
@@ -39,6 +40,7 @@ const tabs = useTabsStore()
 const router = useRouter()
 const { t } = useI18n()
 const selectedSectionIndex = ref(0)
+const loadTimeSeconds = ref<number | null>(null)
 
 const fileCount = computed(() => result.value?.files.length ?? 0)
 const hunkCount = computed(
@@ -123,12 +125,21 @@ const comparisonStatus = computed(() => {
 })
 
 watchEffect(() => {
+  const differenceCount = result.value ? lineStats.value.added + lineStats.value.removed : null
+  const importantDifferenceCount = differenceCount
+  const unimportantDifferenceCount = result.value ? 0 : null
+
   statusBar.reportStatus({
     comparisonStatus: comparisonStatus.value,
-    differenceCount: lineStats.value.added + lineStats.value.removed,
+    differenceCount,
     encoding: `${sourceEncoding.value} | ${sourceLineEnding.value}`,
     filterStatus: t('status.allRows'),
     source: 'text-patch',
+    chromeKind: 'text-session',
+    loadTimeSeconds: result.value ? loadTimeSeconds.value : null,
+    importantDifferenceCount,
+    unimportantDifferenceCount,
+    editMode: result.value ? 'insert' : null,
   })
 })
 
@@ -153,6 +164,8 @@ onMounted(() => {
 })
 
 async function loadAndParsePatchFile(path: string): Promise<void> {
+  const startedAt = performance.now()
+
   loading.value = true
   error.value = ''
 
@@ -164,6 +177,7 @@ async function loadAndParsePatchFile(path: string): Promise<void> {
     sourceEncoding.value = file.encoding
     sourceLineEnding.value = file.lineEnding
     result.value = await parseTextPatch(file.text)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     selectedSectionIndex.value = 0
   } catch (event) {
     error.value = formatCompareError(event, t)
@@ -259,11 +273,14 @@ async function applyCurrentPatch(): Promise<void> {
 }
 
 async function parseCurrentPatch(): Promise<void> {
+  const startedAt = performance.now()
+
   loading.value = true
   error.value = ''
 
   try {
     result.value = await parseTextPatch(patchInput.value)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     selectedSectionIndex.value = 0
     await nextTick()
     scrollToSelectedSection()

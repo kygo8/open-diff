@@ -3,6 +3,7 @@ import {
   elapsedSecondsSince,
   formatDifferenceCountPhrase,
   formatEditModePhrase,
+  formatImportancePhrase,
   formatLoadTimePhrase,
   isEditModeStatusSource,
   isFolderPairStatusSource,
@@ -31,6 +32,14 @@ describe('statusBarPhrases', () => {
     expect(formatDifferenceCountPhrase(1, 'text-compare')).toBe('≠ 1 difference section')
     expect(formatDifferenceCountPhrase(3, 'text-merge')).toBe('≠ 3 difference sections')
     expect(formatDifferenceCountPhrase(2, 'folder-compare')).toBe('Differences: 2')
+  })
+
+  it('formats importance phrases from important/unimportant counts', () => {
+    expect(formatImportancePhrase(null, null)).toBeNull()
+    expect(formatImportancePhrase(0, 0)).toBe('Same')
+    expect(formatImportancePhrase(2, 0)).toBe('Important Difference')
+    expect(formatImportancePhrase(0, 3)).toBe('Unimportant Difference')
+    expect(formatImportancePhrase(2, 3)).toBe('2 important, 3 unimportant')
   })
 
   it('formats load time and edit mode phrases', () => {

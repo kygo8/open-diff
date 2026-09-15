@@ -5,6 +5,8 @@ import { compareVersionFiles, saveTextFile } from '@/api/diff'
 import { buildVersionReportText, defaultVersionReportOutputPath } from '@/app/versionReport'
 import { useI18n } from '@/i18n'
 import { formatCompareError } from '@/app/compareError'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { useStatusBarStore } from '@/stores/statusBar'
 import type {
   VersionCompareResponse,
   VersionFieldRow,
@@ -52,6 +54,8 @@ const error = ref('')
 const reportStatus = ref('')
 const showVersionRules = ref(false)
 const versionOptions = ref<VersionCompareOptionsState>(loadVersionCompareOptions())
+const statusBar = useStatusBarStore()
+const loadTimeSeconds = ref<number | null>(null)
 
 onMounted(() => {
   const launch = sessionLaunch.consumeLaunch('/compare/version')
@@ -302,6 +306,8 @@ async function exportVersionReport(): Promise<void> {
 }
 
 async function runVersionCompare(): Promise<void> {
+  const startedAt = performance.now()
+
   loading.value = true
   error.value = ''
   try {
@@ -311,12 +317,38 @@ async function runVersionCompare(): Promise<void> {
     })
 
     applyVersionResult(result)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
     error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }
 }
+
+watch(
+  [loading, versionFields, loadTimeSeconds],
+  () => {
+    const hasResult = versionFields.value.length > 0
+    let comparisonStatus = t('status.readyIdle')
+
+    if (loading.value) {
+      comparisonStatus = t('status.comparing')
+    } else if (hasResult) {
+      comparisonStatus = t('status.compared')
+    }
+
+    statusBar.reportStatus({
+      comparisonStatus,
+      differenceCount: hasResult
+        ? versionFields.value.filter((field) => field.status !== 'unchanged').length
+        : null,
+      filterStatus: t('status.allRows'),
+      source: 'version-compare',
+      loadTimeSeconds: hasResult ? loadTimeSeconds.value : null,
+    })
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

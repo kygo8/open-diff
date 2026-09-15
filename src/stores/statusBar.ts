@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import {
   formatDifferenceCountPhrase,
   formatEditModePhrase,
+  formatImportancePhrase,
   formatLoadTimePhrase,
   isEditModeStatusSource,
   isFolderPairStatusSource,
@@ -19,6 +20,10 @@ export interface StatusBarReport {
   source: string
   /** Elapsed compare/load time in seconds when a compare has completed. */
   loadTimeSeconds: number | null
+  /** Important (non-minor) difference count when classification is available. */
+  importantDifferenceCount: number | null
+  /** Unimportant (minor) difference count when classification is available. */
+  unimportantDifferenceCount: number | null
   /** Insert/Overwrite indicator for text editing sessions when known. */
   editMode: StatusEditMode | null
   /** Capture-style chrome layout for the bottom status panes. */
@@ -40,6 +45,8 @@ const defaultReport: StatusBarReport = {
   filterStatus: 'All rows',
   source: 'workspace',
   loadTimeSeconds: null,
+  importantDifferenceCount: null,
+  unimportantDifferenceCount: null,
   editMode: null,
   chromeKind: 'standard',
   leftSelection: null,
@@ -64,6 +71,15 @@ export const useStatusBarStore = defineStore('statusBar', () => {
       if (editMode) {
         next.push(editMode)
       }
+    }
+
+    const importance = formatImportancePhrase(
+      report.value.importantDifferenceCount,
+      report.value.unimportantDifferenceCount,
+    )
+
+    if (importance) {
+      next.push(importance)
     }
 
     if (report.value.loadTimeSeconds !== null) {

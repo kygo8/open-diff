@@ -38,6 +38,34 @@ export function formatDifferenceCountPhrase(
   return `≠ ${String(differenceCount)} difference sections`
 }
 
+export function formatImportancePhrase(
+  importantCount: number | null | undefined,
+  unimportantCount: number | null | undefined,
+): string | null {
+  if (
+    importantCount === null ||
+    importantCount === undefined ||
+    unimportantCount === null ||
+    unimportantCount === undefined
+  ) {
+    return null
+  }
+
+  if (importantCount === 0 && unimportantCount === 0) {
+    return 'Same'
+  }
+
+  if (importantCount > 0 && unimportantCount === 0) {
+    return 'Important Difference'
+  }
+
+  if (importantCount === 0 && unimportantCount > 0) {
+    return 'Unimportant Difference'
+  }
+
+  return `${String(importantCount)} important, ${String(unimportantCount)} unimportant`
+}
+
 export function formatLoadTimePhrase(seconds: number): string {
   return `Load time: ${seconds.toFixed(2)} seconds`
 }

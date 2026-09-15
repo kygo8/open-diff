@@ -4,7 +4,7 @@ import { mergeTextFiles, saveTextFile } from '@/api/diff'
 import { buildTextMergeReportText, defaultTextMergeReportOutputPath } from '@/app/textMergeReport'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
-import { pathPairTitle, singlePathTitle } from '@/app/sessionToolbars'
+import { buildTextMergeToolbar, pathPairTitle, singlePathTitle } from '@/app/sessionToolbars'
 import { ArrowDownToLine, ArrowLeftFromLine, ArrowRightFromLine, ArrowUpToLine } from '@lucide/vue'
 import { useI18n } from '@/i18n'
 import { useTabsStore } from '@/stores/tabs'
@@ -114,14 +114,18 @@ watchEffect(() => {
     comparisonStatus = t('status.compared')
   }
 
+  const conflictCount = hasContent ? unresolvedConflicts.value.length : null
+
   statusBar.reportStatus({
     comparisonStatus,
-    differenceCount: hasContent ? unresolvedConflicts.value.length : null,
+    differenceCount: conflictCount,
     encoding: 'UTF-8',
     filterStatus: t('status.allRows'),
     source: 'text-merge',
     chromeKind: 'text-session',
     loadTimeSeconds: loadTimeSeconds.value,
+    importantDifferenceCount: conflictCount,
+    unimportantDifferenceCount: hasContent ? 0 : null,
     editMode: hasContent ? editMode.value : null,
   })
 })
@@ -147,6 +151,63 @@ const conflictPositionLabel = computed(() => {
 
   return t('status.conflictPosition', { index: index + 1, total: list.length })
 })
+
+const mergeSessionToolbar = computed(() =>
+  buildTextMergeToolbar({
+    home: true,
+    all: true,
+    diffs: true,
+    same: true,
+    context: true,
+    minor: true,
+    'same-ok': true,
+    'favor-left': Boolean(currentConflict.value && !currentConflict.value.resolved),
+    'favor-right': Boolean(currentConflict.value && !currentConflict.value.resolved),
+    rules: true,
+    format: true,
+    conflict: unresolvedConflicts.value.length > 0,
+    left: true,
+    center: true,
+    right: true,
+    'next-conflict': unresolvedConflicts.value.length > 0,
+    'prev-conflict': unresolvedConflicts.value.length > 0,
+    swap: Boolean(leftPath.value || rightPath.value),
+    reload: Boolean(leftPath.value && rightPath.value),
+  }),
+)
+
+function runMergeToolbarCommand(commandId: string): void {
+  switch (commandId) {
+    case 'home':
+      tabs.openTab({ title: t('ui.home'), titleKey: 'ui.home', route: '/', dirty: false })
+      break
+    case 'favor-left':
+      favorSide('left')
+      break
+    case 'favor-right':
+      favorSide('right')
+      break
+    case 'next-conflict':
+      goToConflict(1)
+      break
+    case 'prev-conflict':
+      goToConflict(-1)
+      break
+    case 'swap': {
+      const nextLeft = rightPath.value
+
+      rightPath.value = leftPath.value
+      leftPath.value = nextLeft
+      break
+    }
+    case 'reload':
+      void loadMerge()
+      break
+    default:
+      break
+  }
+}
+
 const outputHasConflictMarkers = computed(() =>
   outputLines.value.some((line) => /^(<{7}|={7}|>{7})/u.test(line)),
 )
@@ -626,6 +687,9 @@ watch(
     :eyebrow="$t('ui.merge')"
     :subtitle="conflictStatus"
     :inspector-label="$t('ui.textMergeInspector')"
+    :toolbar-commands="mergeSessionToolbar"
+    toolbar-test-id-prefix="merge-session-toolbar"
+    @toolbar-command="runMergeToolbarCommand"
   >
     <section class="text-merge-view">
       <div class="merge-toolbar">
@@ -659,10 +723,9 @@ watch(
           class="favor-chrome"
           data-testid="merge-favor-chrome"
         >
-          <span>{{ $t('ui.favorChrome') }}</span>
           <button
             type="button"
-            class="toolbar-button toolbar-button-icon"
+            class="toolbar-button toolbar-button-icon toolbar-button-dense"
             data-testid="merge-favor-left"
             :disabled="!currentConflict || currentConflict.resolved"
             :title="$t('ui.favorLeft')"
@@ -675,11 +738,10 @@ watch(
               :size="settings.largeToolbarButtons ? 18 : 16"
               :stroke-width="1.75"
             />
-            <span>{{ $t('ui.favorLeft') }}</span>
           </button>
           <button
             type="button"
-            class="toolbar-button toolbar-button-icon"
+            class="toolbar-button toolbar-button-icon toolbar-button-dense"
             data-testid="merge-favor-right"
             :disabled="!currentConflict || currentConflict.resolved"
             :title="$t('ui.favorRight')"
@@ -692,7 +754,6 @@ watch(
               :size="settings.largeToolbarButtons ? 18 : 16"
               :stroke-width="1.75"
             />
-            <span>{{ $t('ui.favorRight') }}</span>
           </button>
         </span>
         <span
@@ -702,24 +763,7 @@ watch(
           <span data-testid="merge-conflict-position">{{ conflictPositionLabel }}</span>
           <button
             type="button"
-            class="toolbar-button toolbar-button-icon"
-            data-testid="merge-prev-conflict"
-            :disabled="unresolvedConflicts.length === 0"
-            :title="$t('ui.previousConflict')"
-            :aria-label="$t('ui.previousConflict')"
-            @click="goToConflict(-1)"
-          >
-            <ArrowUpToLine
-              class="toolbar-button-glyph"
-              aria-hidden="true"
-              :size="settings.largeToolbarButtons ? 18 : 16"
-              :stroke-width="1.75"
-            />
-            <span>{{ $t('ui.previousConflict') }}</span>
-          </button>
-          <button
-            type="button"
-            class="toolbar-button toolbar-button-icon"
+            class="toolbar-button toolbar-button-icon toolbar-button-dense"
             data-testid="merge-next-conflict"
             :disabled="unresolvedConflicts.length === 0"
             :title="$t('ui.nextConflict')"
@@ -732,13 +776,34 @@ watch(
               :size="settings.largeToolbarButtons ? 18 : 16"
               :stroke-width="1.75"
             />
-            <span>{{ $t('ui.nextConflict') }}</span>
           </button>
+          <button
+            type="button"
+            class="toolbar-button toolbar-button-icon toolbar-button-dense"
+            data-testid="merge-prev-conflict"
+            :disabled="unresolvedConflicts.length === 0"
+            :title="$t('ui.previousConflict')"
+            :aria-label="$t('ui.previousConflict')"
+            @click="goToConflict(-1)"
+          >
+            <ArrowUpToLine
+              class="toolbar-button-glyph"
+              aria-hidden="true"
+              :size="settings.largeToolbarButtons ? 18 : 16"
+              :stroke-width="1.75"
+            />
+          </button>
+        </span>
+        <span
+          class="accept-chrome"
+          data-testid="merge-accept-chrome"
+        >
           <button
             type="button"
             class="toolbar-button"
             data-testid="merge-accept-left-then-next"
             :disabled="!currentConflict"
+            :title="$t('ui.acceptLeftThenNext')"
             @click="acceptThenNext('left')"
           >
             {{ $t('ui.acceptLeftThenNext') }}
@@ -748,6 +813,7 @@ watch(
             class="toolbar-button"
             data-testid="merge-accept-right-then-next"
             :disabled="!currentConflict"
+            :title="$t('ui.acceptRightThenNext')"
             @click="acceptThenNext('right')"
           >
             {{ $t('ui.acceptRightThenNext') }}
@@ -757,6 +823,7 @@ watch(
             class="toolbar-button"
             data-testid="merge-accept-base-then-next"
             :disabled="!currentConflict"
+            :title="$t('ui.acceptBaseThenNext')"
             @click="acceptThenNext('base')"
           >
             {{ $t('ui.acceptBaseThenNext') }}
@@ -1099,6 +1166,21 @@ watch(
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.favor-chrome,
+.conflict-nav-chrome,
+.accept-chrome {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-button-dense {
+  justify-content: center;
+  width: 28px;
+  padding: 0;
 }
 
 .toolbar-button-glyph {

@@ -133,6 +133,28 @@ export const versionCompareToolbarOrder = [
 
 export const textPatchToolbarOrder = ['home', 'next-section', 'prev-section'] as const
 
+export const textMergeToolbarOrder = [
+  'home',
+  'all',
+  'diffs',
+  'same',
+  'context',
+  'minor',
+  'same-ok',
+  'favor-left',
+  'favor-right',
+  'rules',
+  'format',
+  'conflict',
+  'left',
+  'center',
+  'right',
+  'next-conflict',
+  'prev-conflict',
+  'swap',
+  'reload',
+] as const
+
 export const clipboardCompareToolbarOrder = [
   'home',
   'capture',
@@ -304,6 +326,28 @@ const versionMeta: Record<(typeof versionCompareToolbarOrder)[number], ToolbarMe
   reload: { glyph: 'R', labelKey: 'ui.reload' },
 }
 
+const textMergeMeta: Record<(typeof textMergeToolbarOrder)[number], ToolbarMeta> = {
+  home: { glyph: 'H', labelKey: 'ui.home' },
+  all: { glyph: '*', labelKey: 'ui.all' },
+  diffs: { glyph: '!=', labelKey: 'ui.diffs' },
+  same: { glyph: '=', labelKey: 'ui.same' },
+  context: { glyph: 'C', labelKey: 'ui.context' },
+  minor: { glyph: '~', labelKey: 'ui.minor' },
+  'same-ok': { glyph: 'OK', labelKey: 'ui.sameOk' },
+  'favor-left': { glyph: '<', labelKey: 'ui.favorLeft' },
+  'favor-right': { glyph: '>', labelKey: 'ui.favorRight' },
+  rules: { glyph: 'R', labelKey: 'ui.rules' },
+  format: { glyph: 'F', labelKey: 'ui.format' },
+  conflict: { glyph: '!', labelKey: 'ui.conflict' },
+  left: { glyph: 'L', labelKey: 'ui.left' },
+  center: { glyph: 'B', labelKey: 'ui.center' },
+  right: { glyph: 'R', labelKey: 'ui.right' },
+  'next-conflict': { glyph: 'N', labelKey: 'ui.nextConflict' },
+  'prev-conflict': { glyph: 'P', labelKey: 'ui.previousConflict' },
+  swap: { glyph: '<>', labelKey: 'ui.swap' },
+  reload: { glyph: 'R', labelKey: 'ui.reload' },
+}
+
 const textPatchMeta: Record<(typeof textPatchToolbarOrder)[number], ToolbarMeta> = {
   home: { glyph: 'H', labelKey: 'ui.home' },
   'next-section': { glyph: 'N', labelKey: 'ui.nextSection' },
@@ -413,6 +457,12 @@ export function buildVersionCompareToolbar(
   enabled: Partial<Record<(typeof versionCompareToolbarOrder)[number], boolean>>,
 ): SessionToolbarCommand[] {
   return buildToolbar(versionCompareToolbarOrder, versionMeta, enabled)
+}
+
+export function buildTextMergeToolbar(
+  enabled: Partial<Record<(typeof textMergeToolbarOrder)[number], boolean>>,
+): SessionToolbarCommand[] {
+  return buildToolbar(textMergeToolbarOrder, textMergeMeta, enabled)
 }
 
 export function buildTextPatchToolbar(

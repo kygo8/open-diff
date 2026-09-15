@@ -8,6 +8,7 @@ import { useViewActionsStore } from '@/stores/viewActions'
 import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore, type FontFamilyId } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { formatPathModifiedAt } from '@/app/pathMetadata'
 import {
   applyOverwriteTyping,
@@ -72,6 +73,7 @@ const goToLineInput = ref('1')
 const goToLineStatus = ref('')
 const editorHostRef = ref<HTMLElement | null>(null)
 const editMode = ref<TextEditMode>('insert')
+const loadTimeSeconds = ref<number | null>(null)
 
 const fileTitle = computed(() => {
   if (!document.value) {
@@ -110,7 +112,7 @@ watchEffect(() => {
     encoding: document.value?.encoding ?? 'UTF-8',
     filterStatus: t('status.allRows'),
     source: 'text-edit',
-    loadTimeSeconds: null,
+    loadTimeSeconds: document.value ? loadTimeSeconds.value : null,
     editMode: document.value ? editMode.value : null,
   })
 })
@@ -164,6 +166,8 @@ onMounted(() => {
 })
 
 async function openDocument(): Promise<void> {
+  const startedAt = performance.now()
+
   loading.value = true
   error.value = ''
 
@@ -171,6 +175,7 @@ async function openDocument(): Promise<void> {
     const result = await readTextFile(pathInput.value)
 
     document.value = result
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     editorText.value = result.text
     savedText.value = result.text
     undoStack.value = []

@@ -163,6 +163,22 @@ describe('TextMergeView', () => {
     expect(wrapper.find('[data-testid="merge-save-status"]').text()).toContain('Saved 32 bytes')
   })
 
+  it('orders Favor then Next Conflict then Prev Conflict before accept actions', () => {
+    const wrapper = mount(TextMergeView)
+    const toolbar = wrapper.find('.merge-toolbar').text()
+    const html = wrapper.find('.merge-toolbar').html()
+    const favorIdx = html.indexOf('merge-favor-chrome')
+    const nextIdx = html.indexOf('merge-next-conflict')
+    const prevIdx = html.indexOf('merge-prev-conflict')
+    const acceptIdx = html.indexOf('merge-accept-chrome')
+
+    expect(favorIdx).toBeGreaterThan(-1)
+    expect(nextIdx).toBeGreaterThan(favorIdx)
+    expect(prevIdx).toBeGreaterThan(nextIdx)
+    expect(acceptIdx).toBeGreaterThan(prevIdx)
+    expect(toolbar).toBeTruthy()
+  })
+
   it('exposes Favor Left/Right chrome for the current conflict', () => {
     const wrapper = mount(TextMergeView)
 

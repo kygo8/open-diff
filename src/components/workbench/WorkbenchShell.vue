@@ -2,7 +2,7 @@
 import { computed, inject, type ComputedRef } from 'vue'
 import { useI18n } from '@/i18n'
 import type { SessionToolbarCommand } from '@/app/sessionToolbars'
-import { iconForSessionToolbarCommand } from '@/app/sessionToolbarIcons'
+import { visualForSessionToolbarCommand } from '@/app/sessionToolbarIcons'
 import { useSettingsStore } from '@/stores/settings'
 
 const props = defineProps<{
@@ -56,10 +56,16 @@ const toolbarItems = computed(() => {
 
       return true
     })
-    .map((command) => ({
-      ...command,
-      icon: iconForSessionToolbarCommand(command.id),
-    }))
+    .map((command) => {
+      const visual = visualForSessionToolbarCommand(command.id)
+
+      return {
+        ...command,
+        visual,
+        icon: visual?.kind === 'icon' ? visual.icon : undefined,
+        plate: visual?.kind === 'plate' ? visual : undefined,
+      }
+    })
 })
 const showSessionToolbar = computed(
   () => !props.compact && settings.showSessionToolbars && toolbarItems.value.length > 0,
@@ -370,17 +376,26 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
           :aria-pressed="toolbarItem.active ? 'true' : 'false'"
           :data-testid="`${testIdPrefix}-${toolbarItem.id}`"
           :data-active="toolbarItem.active ? 'true' : 'false'"
-          :data-has-icon="toolbarItem.icon && settings.showToolbarIcons ? 'true' : 'false'"
+          :data-has-icon="toolbarItem.visual && settings.showToolbarIcons ? 'true' : 'false'"
+          :data-has-plate="toolbarItem.plate && settings.showToolbarIcons ? 'true' : 'false'"
           :title="t(toolbarItem.labelKey)"
           @click="onToolbarCommand(toolbarItem)"
         >
+          <span
+            v-if="toolbarItem.plate && settings.showToolbarIcons"
+            class="bc-toolbar-plate"
+            :data-plate="toolbarItem.plate.plate"
+            aria-hidden="true"
+            >{{ toolbarItem.plate.symbol }}</span
+          >
           <component
             :is="toolbarItem.icon"
-            v-if="toolbarItem.icon && settings.showToolbarIcons"
+            v-else-if="toolbarItem.icon && settings.showToolbarIcons"
             class="bc-toolbar-icon"
             aria-hidden="true"
             :size="settings.largeToolbarButtons ? 22 : 18"
-            :stroke-width="1.75"
+            :stroke-width="2.25"
+            absolute-stroke-width
           />
           <span
             v-else

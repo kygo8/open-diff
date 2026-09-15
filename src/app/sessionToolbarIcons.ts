@@ -1,4 +1,4 @@
-/** Lucide icons for session toolbar command ids (presentation only). */
+/** Session toolbar visuals: denser CSS plates + Lucide icons (presentation only). */
 
 import {
   ArrowDownToLine,
@@ -7,9 +7,13 @@ import {
   ArrowRightFromLine,
   ArrowUpToLine,
   Asterisk,
+  Blend,
+  BookType,
   Briefcase,
   Check,
+  CircleGauge,
   CircleX,
+  ClipboardPaste,
   Copy,
   Diff,
   Equal,
@@ -26,19 +30,60 @@ import {
   ListTree,
   Play,
   PlayCircle,
+  Redo2,
   RefreshCw,
   RotateCw,
   Rows2,
   Scale,
+  Scissors,
+  SlidersHorizontal,
+  SquarePen,
+  Tag,
   TextWrap,
+  Trash2,
   Type,
+  Undo2,
   UnfoldVertical,
   X,
   type LucideIcon,
 } from '@lucide/vue'
 
+/** Compact tinted plate drawn in the toolbar (denser than outline icons). */
+export interface SessionToolbarPlate {
+  kind: 'plate'
+  /** CSS `data-plate` key for tinted chrome. */
+  plate: string
+  /** Short symbol rendered inside the plate. */
+  symbol: string
+}
+
+export type SessionToolbarVisual = { kind: 'icon'; icon: LucideIcon } | SessionToolbarPlate
+
 /**
- * Map known toolbar command ids to existing Lucide icons.
+ * Prefer filled/compact CSS glyph plates for high-traffic capture actions.
+ * Symbols are original unicode — not copied from third-party icon assets.
+ */
+export const sessionToolbarPlates: Readonly<Record<string, SessionToolbarPlate>> = {
+  refresh: { kind: 'plate', plate: 'refresh', symbol: '↻' },
+  reload: { kind: 'plate', plate: 'reload', symbol: '⟳' },
+  swap: { kind: 'plate', plate: 'swap', symbol: '↔' },
+  copy: { kind: 'plate', plate: 'copy', symbol: '⧉' },
+  'copy-left': { kind: 'plate', plate: 'copy-left', symbol: '◧' },
+  'copy-right': { kind: 'plate', plate: 'copy-right', symbol: '◨' },
+  'next-diff': { kind: 'plate', plate: 'next', symbol: '▾' },
+  'prev-diff': { kind: 'plate', plate: 'prev', symbol: '▴' },
+  'next-section': { kind: 'plate', plate: 'next', symbol: '▾' },
+  'prev-section': { kind: 'plate', plate: 'prev', symbol: '▴' },
+  'next-conflict': { kind: 'plate', plate: 'next', symbol: '▾' },
+  'prev-conflict': { kind: 'plate', plate: 'prev', symbol: '▴' },
+  expand: { kind: 'plate', plate: 'expand', symbol: '⤢' },
+  collapse: { kind: 'plate', plate: 'collapse', symbol: '⤡' },
+  filters: { kind: 'plate', plate: 'filters', symbol: '▽' },
+  rules: { kind: 'plate', plate: 'rules', symbol: '⚖' },
+}
+
+/**
+ * Lucide map for ids that keep outline icons (or plate fallbacks via plates map).
  * Unknown ids fall back to the letter glyph in the shell — do not invent misleading icons.
  */
 export const sessionToolbarIcons: Readonly<Record<string, LucideIcon>> = {
@@ -85,8 +130,45 @@ export const sessionToolbarIcons: Readonly<Record<string, LucideIcon>> = {
   left: ArrowLeftFromLine,
   center: Rows2,
   right: ArrowRightFromLine,
+  // Picture Compare letter-glyph leftovers
+  tol: CircleGauge,
+  range: SlidersHorizontal,
+  blend: Blend,
+  meta: Tag,
+  // Text Edit / general edit chrome
+  edit: SquarePen,
+  undo: Undo2,
+  redo: Redo2,
+  cut: Scissors,
+  paste: ClipboardPaste,
+  delete: Trash2,
+  syntax: BookType,
+}
+
+export function plateForSessionToolbarCommand(id: string): SessionToolbarPlate | undefined {
+  return Object.hasOwn(sessionToolbarPlates, id) ? sessionToolbarPlates[id] : undefined
 }
 
 export function iconForSessionToolbarCommand(id: string): LucideIcon | undefined {
-  return sessionToolbarIcons[id]
+  return Object.hasOwn(sessionToolbarIcons, id) ? sessionToolbarIcons[id] : undefined
+}
+
+/**
+ * Prefer a CSS glyph plate when defined; otherwise a Lucide icon.
+ * Callers honor showToolbarIcons — return undefined only when neither exists.
+ */
+export function visualForSessionToolbarCommand(id: string): SessionToolbarVisual | undefined {
+  const plate = plateForSessionToolbarCommand(id)
+
+  if (plate) {
+    return plate
+  }
+
+  const icon = iconForSessionToolbarCommand(id)
+
+  if (icon) {
+    return { kind: 'icon', icon }
+  }
+
+  return undefined
 }

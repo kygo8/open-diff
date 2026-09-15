@@ -268,6 +268,8 @@ watch(
       case 'sync-now':
       case 'browse-folder':
       case 'up-one-level':
+      case 'path-back':
+      case 'path-forward':
       case 'toggle-session-locked':
       case 'toggle-minor':
       case 'workspace-save':

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useRouter } from 'vue-router'
@@ -29,6 +29,17 @@ import { collectExpandablePrefixes, isPathHiddenByCollapse } from '@/app/folderP
 import { buildFolderMergeToolbar, mergeSessionTitle, pathBaseName } from '@/app/sessionToolbars'
 import { useI18n } from '@/i18n'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { useFolderPathNavStore } from '@/stores/folderPathNav'
+import {
+  createFolderPathNavStack,
+  folderPathNavBack,
+  folderPathNavCanBack,
+  folderPathNavCanForward,
+  folderPathNavCommit,
+  folderPathNavForward,
+  folderMergePathTriplesEqual,
+  type FolderMergePathTriple,
+} from '@/app/folderPathNavigation'
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
 
@@ -49,6 +60,65 @@ const settings = useSettingsStore()
 const { t } = useI18n()
 const statusBar = useStatusBarStore()
 const viewActions = useViewActionsStore()
+const folderPathNavStore = useFolderPathNavStore()
+const folderPathNavStack = ref(createFolderPathNavStack<FolderMergePathTriple>())
+let applyingFolderPathHistory = false
+
+function currentMergePathTriple(): FolderMergePathTriple {
+  return { left: leftPath.value, base: basePath.value, right: rightPath.value }
+}
+
+function publishFolderPathNavCapabilities(): void {
+  folderPathNavStore.setCapabilities({
+    canGoBack: folderPathNavCanBack(folderPathNavStack.value),
+    canGoForward: folderPathNavCanForward(folderPathNavStack.value),
+  })
+}
+
+function recordFolderPathCommit(): void {
+  if (applyingFolderPathHistory) {
+    return
+  }
+
+  folderPathNavStack.value = folderPathNavCommit(
+    folderPathNavStack.value,
+    currentMergePathTriple(),
+    folderMergePathTriplesEqual,
+  )
+  publishFolderPathNavCapabilities()
+}
+
+function applyMergePathTriple(triple: FolderMergePathTriple): void {
+  applyingFolderPathHistory = true
+  leftPath.value = triple.left
+  basePath.value = triple.base
+  rightPath.value = triple.right
+  applyingFolderPathHistory = false
+  publishFolderPathNavCapabilities()
+}
+
+function goFolderPathBack(): void {
+  const result = folderPathNavBack(folderPathNavStack.value)
+
+  if (!result) {
+    return
+  }
+
+  folderPathNavStack.value = result.stack
+  applyMergePathTriple(result.entry)
+}
+
+function goFolderPathForward(): void {
+  const result = folderPathNavForward(folderPathNavStack.value)
+
+  if (!result) {
+    return
+  }
+
+  folderPathNavStack.value = result.stack
+  applyMergePathTriple(result.entry)
+}
+
 const lastOpenedConflictPath = ref('')
 const sameOkOnly = ref(false)
 const importanceFilter = ref<'all' | 'same' | 'minor' | 'diffs'>('all')
@@ -271,6 +341,7 @@ function swapMergeSides(): void {
   plan.value = undefined
   execution.value = undefined
   mergeChromeMessage.value = t('ui.swap')
+  recordFolderPathCommit()
 }
 
 function stopMergeWork(): void {
@@ -329,6 +400,7 @@ onMounted(() => {
   basePath.value = launch.locations.center?.uri ?? basePath.value
   rightPath.value = launch.locations.right?.uri ?? rightPath.value
   outputPath.value = launch.locations.output?.uri ?? outputPath.value
+  recordFolderPathCommit()
 
   if (
     launch.autoRun &&
@@ -338,6 +410,10 @@ onMounted(() => {
   ) {
     void buildFolderMergePlan()
   }
+})
+
+onUnmounted(() => {
+  folderPathNavStore.reset()
 })
 
 watchEffect(() => {
@@ -581,23 +657,32 @@ async function browseMergeFolder(): Promise<void> {
   }
 
   leftPath.value = selected
+  recordFolderPathCommit()
 }
 
 function upOneMergeLevel(): void {
   const nextLeft = parentDirectoryPath(leftPath.value)
   const nextBase = parentDirectoryPath(basePath.value)
   const nextRight = parentDirectoryPath(rightPath.value)
+  let changed = false
 
   if (nextLeft) {
     leftPath.value = nextLeft
+    changed = true
   }
 
   if (nextBase) {
     basePath.value = nextBase
+    changed = true
   }
 
   if (nextRight) {
     rightPath.value = nextRight
+    changed = true
+  }
+
+  if (changed) {
+    recordFolderPathCommit()
   }
 }
 
@@ -633,6 +718,12 @@ watch(
         break
       case 'up-one-level':
         upOneMergeLevel()
+        break
+      case 'path-back':
+        goFolderPathBack()
+        break
+      case 'path-forward':
+        goFolderPathForward()
         break
       case 'toggle-session-locked':
       case 'about':
@@ -722,6 +813,8 @@ watch(
           <input
             v-model="leftPath"
             data-testid="folder-merge-left-path"
+            @keydown.enter.prevent="recordFolderPathCommit"
+            @change="recordFolderPathCommit"
           />
           <span
             class="merge-path-footer"
@@ -734,6 +827,8 @@ watch(
           <input
             v-model="basePath"
             data-testid="folder-merge-base-path"
+            @keydown.enter.prevent="recordFolderPathCommit"
+            @change="recordFolderPathCommit"
           />
           <span
             class="merge-path-footer"
@@ -746,6 +841,8 @@ watch(
           <input
             v-model="rightPath"
             data-testid="folder-merge-right-path"
+            @keydown.enter.prevent="recordFolderPathCommit"
+            @change="recordFolderPathCommit"
           />
           <span
             class="merge-path-footer"

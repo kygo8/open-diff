@@ -56,6 +56,7 @@ import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { useFolderPathNavStore } from '@/stores/folderPathNav'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useWorkspacesStore } from '@/stores/workspaces'
 import { createFolderSnapshot } from '@/api/diff'
@@ -96,6 +97,7 @@ const policy = usePolicyStore()
 const statusBar = useStatusBarStore()
 const tabs = useTabsStore()
 const viewActions = useViewActionsStore()
+const folderPathNav = useFolderPathNavStore()
 const sessionLaunch = useSessionLaunchStore()
 const savedSessions = useSavedSessionsStore()
 const workspaces = useWorkspacesStore()
@@ -252,6 +254,8 @@ const appMenus: AppMenuDefinition[] = [
       'session.settings',
       'session.clear',
       'session.locked',
+      'session.back',
+      'session.forward',
       'session.browseFolder',
       'session.upOneLevel',
       'session.closeTab',
@@ -276,6 +280,8 @@ const appMenus: AppMenuDefinition[] = [
       'session.saveAs',
       'session.export',
       'session.reload',
+      'session.back',
+      'session.forward',
       'session.browseFolder',
       'session.upOneLevel',
       'open.settings',
@@ -330,6 +336,8 @@ const appMenus: AppMenuDefinition[] = [
       'view.filters',
       'session.swap',
       'session.reload',
+      'session.back',
+      'session.forward',
       'session.browseFolder',
       'session.upOneLevel',
       'theme.toggle',
@@ -1145,6 +1153,17 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
       route.path.includes('/merge')
 
     return { ...command, enabled: command.enabled && folderish }
+  }
+
+  if (command.id === 'session.back' || command.id === 'session.forward') {
+    const folderish =
+      route.path.includes('/folder') ||
+      route.path.includes('/sync') ||
+      route.path.includes('/merge')
+    const historyReady =
+      command.id === 'session.back' ? folderPathNav.canGoBack : folderPathNav.canGoForward
+
+    return { ...command, enabled: command.enabled && folderish && historyReady }
   }
 
   return command

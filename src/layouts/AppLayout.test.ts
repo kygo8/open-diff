@@ -9,6 +9,7 @@ import { createAppI18n, installI18n } from '@/i18n'
 import { useSettingsStore } from '@/stores/settings'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { useFolderPathNavStore } from '@/stores/folderPathNav'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 const push = vi.fn()
@@ -471,9 +472,17 @@ describe('AppLayout command palette', () => {
     await wrapper.find('[data-testid="menu-session"]').trigger('click')
     expect(wrapper.find('[data-testid="menu-command-session.browseFolder"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-session.upOneLevel"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-session.back"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-session.forward"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="menu-command-session.browseFolder"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.back"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.forward"]').attributes('disabled'),
+    ).toBeDefined()
     expect(
       wrapper.find('[data-testid="menu-command-session.locked"]').attributes('disabled'),
     ).toBeDefined()
@@ -492,6 +501,36 @@ describe('AppLayout command palette', () => {
     await wrapper.find('[data-testid="menu-view"]').trigger('click')
     expect(wrapper.find('[data-testid="menu-command-session.browseFolder"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-session.upOneLevel"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-session.back"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-session.forward"]').exists()).toBe(true)
+  })
+
+  it('enables Session Back/Forward from folder path history capabilities', async () => {
+    routePath = '/compare/folder'
+    const wrapper = mountAppLayout()
+    const folderPathNav = useFolderPathNavStore()
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.back"]').attributes('disabled'),
+    ).toBeDefined()
+
+    folderPathNav.setCapabilities({ canGoBack: true, canGoForward: false })
+    await wrapper.vm.$nextTick()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.back"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.forward"]').attributes('disabled'),
+    ).toBeDefined()
+
+    folderPathNav.setCapabilities({ canGoBack: true, canGoForward: true })
+    await wrapper.vm.$nextTick()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.forward"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    folderPathNav.reset()
   })
 
   it('disables Browse/Up One Level outside folder sessions', async () => {
@@ -504,6 +543,12 @@ describe('AppLayout command palette', () => {
     ).toBeDefined()
     expect(
       wrapper.find('[data-testid="menu-command-session.upOneLevel"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.back"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.forward"]').attributes('disabled'),
     ).toBeDefined()
   })
 

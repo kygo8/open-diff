@@ -349,6 +349,8 @@ export const esES: LanguagePack = {
     'ui.locked': 'Bloqueado',
     'ui.browseForFolder': 'Examinar carpeta',
     'ui.upOneLevel': 'Subir un nivel',
+    'ui.back': 'Atrás',
+    'ui.forward': 'Adelante',
     'ui.swapSides': 'Intercambiar lados',
     'ui.savedSessions': 'Sesiones guardadas',
     'ui.saveOutput': 'Guardar salida',

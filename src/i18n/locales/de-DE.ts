@@ -353,6 +353,8 @@ export const deDE: LanguagePack = {
     'ui.locked': 'Gesperrt',
     'ui.browseForFolder': 'Ordner durchsuchen',
     'ui.upOneLevel': 'Eine Ebene höher',
+    'ui.back': 'Zurück',
+    'ui.forward': 'Vorwärts',
     'ui.swapSides': 'Seiten tauschen',
     'ui.savedSessions': 'Gespeicherte Sitzungen',
     'ui.saveOutput': 'Ausgabe speichern',

@@ -19,7 +19,15 @@ import type {
 } from '@/types/folderMerge'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import { Eye, Funnel } from '@lucide/vue'
 import { createFolderSnapshot, saveTextFile } from '@/api/diff'
+import {
+  formatFolderNameFilterStripPattern,
+  loadFolderNameFilters,
+  parseFolderNameFilterStripPattern,
+  saveFolderNameFilters,
+  type FolderNameFilters,
+} from '@/app/folderNameFilters'
 import {
   buildFolderMergeReportText,
   defaultFolderMergeReportOutputPath,
@@ -130,6 +138,23 @@ const showMergeRules = ref(false)
 const selectedPlanRowId = ref('')
 const collapsedPrefixes = ref<Set<string>>(new Set())
 const showMergeFilters = ref(false)
+const folderNameFilters = ref<FolderNameFilters>(loadFolderNameFilters())
+const folderFilterStripPattern = computed(() =>
+  formatFolderNameFilterStripPattern(folderNameFilters.value),
+)
+
+function persistFolderNameFilters(): void {
+  saveFolderNameFilters({ ...folderNameFilters.value })
+}
+
+function onFolderFilterStripChange(event: Event): void {
+  folderNameFilters.value = {
+    ...folderNameFilters.value,
+    include: parseFolderNameFilterStripPattern((event.target as HTMLInputElement).value),
+  }
+  persistFolderNameFilters()
+}
+
 const showMergeSelect = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
 
@@ -806,6 +831,71 @@ watch(
           </div>
         </section>
       </header>
+
+      <section
+        class="display-filters folder-filter-chrome"
+        data-testid="folder-merge-filter-strip"
+      >
+        <div class="folder-filter-strip">
+          <span class="folder-filter-strip-label">{{ $t('ui.filters') }}:</span>
+          <input
+            class="folder-filter-pattern"
+            type="text"
+            data-testid="folder-merge-filter-pattern"
+            spellcheck="false"
+            autocomplete="off"
+            :value="folderFilterStripPattern"
+            :aria-label="$t('ui.filters')"
+            @change="onFolderFilterStripChange"
+            @keydown.enter.prevent="onFolderFilterStripChange"
+          />
+          <div
+            class="folder-filter-strip-actions"
+            data-testid="folder-merge-filter-strip-actions"
+          >
+            <button
+              type="button"
+              class="folder-filter-strip-btn"
+              :class="{ 'folder-filter-strip-btn-active': showMergeFilters }"
+              data-testid="folder-merge-filter-strip-filters"
+              :aria-label="$t('ui.filters')"
+              :aria-pressed="showMergeFilters ? 'true' : 'false'"
+              :title="$t('ui.filters')"
+              :disabled="!hasPlan"
+              @click="showMergeFilters = !showMergeFilters"
+            >
+              <Funnel
+                class="folder-filter-strip-icon"
+                :size="16"
+                :stroke-width="2.25"
+                absolute-stroke-width
+                aria-hidden="true"
+              />
+              <span>{{ $t('ui.filters') }}</span>
+            </button>
+            <button
+              type="button"
+              class="folder-filter-strip-btn"
+              :class="{ 'folder-filter-strip-btn-active': showPeek }"
+              data-testid="folder-merge-filter-strip-peek"
+              :aria-label="$t('ui.peek')"
+              :aria-pressed="showPeek ? 'true' : 'false'"
+              :title="$t('ui.peek')"
+              :disabled="!hasPlan"
+              @click="togglePeekPanel()"
+            >
+              <Eye
+                class="folder-filter-strip-icon"
+                :size="16"
+                :stroke-width="2.25"
+                absolute-stroke-width
+                aria-hidden="true"
+              />
+              <span>{{ $t('ui.peek') }}</span>
+            </button>
+          </div>
+        </div>
+      </section>
 
       <section class="merge-paths">
         <label>
@@ -1546,5 +1636,86 @@ h1 {
 .merge-select-cell {
   display: flex;
   align-items: center;
+}
+
+.folder-filter-chrome {
+  align-items: center;
+  min-height: 36px;
+}
+
+.folder-filter-strip {
+  display: inline-flex;
+  flex: 1 1 280px;
+  align-items: center;
+  gap: 6px;
+  min-width: 220px;
+  max-width: 640px;
+}
+
+.folder-filter-strip-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+  gap: 0;
+}
+
+.folder-filter-strip-btn {
+  display: grid;
+  grid-template-rows: 16px auto;
+  align-content: center;
+  justify-items: center;
+  box-sizing: border-box;
+  min-width: 44px;
+  max-width: 56px;
+  height: 36px;
+  padding: 1px 4px;
+  border: 0;
+  border-right: 1px solid #c9cdd3;
+  background: transparent;
+  color: #1a1a1a;
+  font-size: 10px;
+  line-height: 11px;
+  cursor: default;
+}
+
+.folder-filter-strip-btn:first-child {
+  border-left: 1px solid #c9cdd3;
+}
+
+.folder-filter-strip-btn:hover:not(:disabled) {
+  background: #dceeff;
+}
+
+.folder-filter-strip-btn-active {
+  background: #c8e4ff;
+  box-shadow: inset 0 0 0 1px #89bdea;
+}
+
+.folder-filter-strip-btn:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.folder-filter-strip-icon {
+  color: #2a3038;
+}
+
+.folder-filter-strip-label {
+  flex: 0 0 auto;
+  color: #111827;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.folder-filter-pattern {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid #bfc4cc;
+  border-radius: 2px;
+  background: #ffffff;
+  color: #111111;
+  font-size: 11px;
 }
 </style>

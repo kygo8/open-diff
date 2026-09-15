@@ -38,4 +38,8 @@ it('surfaces display-filters instead of CSS-hiding the Filters strip', () => {
   expect(syncView).toMatch(/data-testid="folder-sync-filter-strip"/)
   expect(syncView).toMatch(/data-testid="folder-sync-filter-strip-filters"/)
   expect(syncView).toMatch(/data-testid="folder-sync-filter-strip-peek"/)
+  expect(mergeView).toMatch(/data-testid="folder-merge-filter-strip"/)
+  expect(mergeView).toMatch(/data-testid="folder-merge-filter-pattern"/)
+  expect(mergeView).toMatch(/data-testid="folder-merge-filter-strip-filters"/)
+  expect(mergeView).toMatch(/data-testid="folder-merge-filter-strip-peek"/)
 })

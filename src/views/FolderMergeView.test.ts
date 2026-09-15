@@ -63,6 +63,7 @@ async function fillMergePaths(wrapper: VueWrapper): Promise<void> {
 
 describe('FolderMergeView', () => {
   beforeEach(() => {
+    localStorage.clear()
     setActivePinia(createPinia())
     useSettingsStore().setShowSessionsInToolbar(true)
     push.mockClear()
@@ -225,6 +226,57 @@ describe('FolderMergeView', () => {
       outputRoot: 'D:/workspace/merge/output',
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
+  })
+
+  it('exposes Filters and Peek glyph buttons on the Filters strip', async () => {
+    const wrapper = mountFolderMergeView()
+
+    expect(wrapper.find('[data-testid="folder-merge-filter-strip"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-filter-pattern"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-filter-strip-filters"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-filter-strip-peek"]').exists()).toBe(true)
+    expect(
+      (wrapper.find('[data-testid="folder-merge-filter-pattern"]').element as HTMLInputElement)
+        .value,
+    ).toBe('*.*')
+    expect(
+      wrapper.find('[data-testid="folder-merge-filter-strip-filters"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="folder-merge-filter-strip-peek"]').attributes('disabled'),
+    ).toBeDefined()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    expect(
+      wrapper.find('[data-testid="folder-merge-filter-strip-filters"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="folder-merge-filter-strip-peek"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    await wrapper.find('[data-testid="folder-merge-filter-strip-filters"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-merge-filters-panel"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="folder-merge-filter-strip-peek"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-merge-peek-panel"]').exists()).toBe(true)
+  })
+
+  it('persists the Filters strip name pattern', async () => {
+    const wrapper = mountFolderMergeView()
+    const pattern = wrapper.find('[data-testid="folder-merge-filter-pattern"]')
+
+    await pattern.setValue('*.ts;*.vue')
+    await pattern.trigger('change')
+    expect((pattern.element as HTMLInputElement).value).toBe('*.ts;*.vue')
+
+    const stored = JSON.parse(localStorage.getItem('open-diff-folder-name-filters') ?? '{}') as {
+      include: string[]
+    }
+
+    expect(stored.include).toEqual(['*.ts', '*.vue'])
   })
 
   it('filters Same OK rows and peeks a selected plan row', async () => {

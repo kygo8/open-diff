@@ -1187,12 +1187,19 @@ pub fn preview_folder_sync(
     right_root: String,
     strategy: String,
     archive_extensions: Option<Vec<String>>,
+    filters: Option<FolderNameFilters>,
 ) -> Result<FolderSyncPreviewResponse, AppErrorPayload> {
     let configured = archive_core::configured_archive_extensions();
     let extensions = archive_extensions.as_deref().or(configured.as_deref());
+    let name_filters = filters.unwrap_or_default();
     let left_tree = scan_folder_root_with_archive_extensions(&left_root, extensions)?;
     let right_tree = scan_folder_root_with_archive_extensions(&right_root, extensions)?;
     let alignment_rows = folder_core::align_folder_trees(&left_tree, &right_tree);
+    let alignment_rows = if name_filters.is_active() {
+        folder_core::filter_alignment_rows(alignment_rows, &name_filters.to_file_filters())
+    } else {
+        alignment_rows
+    };
     let plan = folder_sync_plan(&left_root, &right_root, &strategy, &alignment_rows)?;
     let rows = plan
         .items
@@ -5581,6 +5588,7 @@ mod tests {
             right.display().to_string(),
             "mirrorRight".to_owned(),
             None,
+            None,
         )
         .expect("valid folders should build a sync preview");
 
@@ -6303,6 +6311,7 @@ mod tests {
             right.display().to_string(),
             "updateBoth".to_owned(),
             Some(vec![".7z".into()]),
+            None,
         );
         assert!(
             excluded.is_err()
@@ -6320,6 +6329,7 @@ mod tests {
             right.display().to_string(),
             "updateBoth".to_owned(),
             Some(vec![".zip".into()]),
+            None,
         )
         .expect("zip should sync-preview as archive when listed");
         assert!(

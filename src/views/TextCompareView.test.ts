@@ -49,6 +49,8 @@ const NInputStub = defineComponent({
   template: '<textarea :value="value" @input="$emit(\'update:value\', $event.target.value)" />',
 })
 
+let textDiffStubWordWrap = false
+
 const TextDiffPanelStub = {
   name: 'TextDiffPanel',
   props: {
@@ -59,6 +61,32 @@ const TextDiffPanelStub = {
     grammar: {
       type: Object,
       default: undefined,
+    },
+  },
+  methods: {
+    setDisplayMode(_mode?: string): void {
+      void _mode
+    },
+    getDisplayMode(): 'all' | 'differences' | 'same' {
+      return 'all'
+    },
+    setDifferenceContextRowCount(value?: number): void {
+      void value
+    },
+    getDifferenceContextRowCount(): number {
+      return 0
+    },
+    toggleWordWrap(): void {
+      textDiffStubWordWrap = !textDiffStubWordWrap
+    },
+    isWordWrapEnabled(): boolean {
+      return textDiffStubWordWrap
+    },
+    jumpToLineNumber(_line?: number, _side?: 'left' | 'right'): boolean {
+      void _line
+      void _side
+
+      return true
     },
   },
   template:
@@ -93,6 +121,7 @@ function mountTextCompareView(): VueWrapper {
 
 describe('TextCompareView', () => {
   beforeEach(() => {
+    textDiffStubWordWrap = false
     setActivePinia(createPinia())
     vi.mocked(diffText).mockClear()
     vi.mocked(readTextFile).mockClear()
@@ -110,6 +139,8 @@ describe('TextCompareView', () => {
       'rules',
       'format',
       'sessions',
+      'goto',
+      'wrap',
       'copy',
       'next-section',
       'prev-section',
@@ -146,6 +177,24 @@ describe('TextCompareView', () => {
       wrapper.find('[data-testid="text-session-toolbar-bar"]').attributes('data-large-buttons'),
     ).toBe('true')
     expect(wrapper.html()).not.toContain('未实现')
+  })
+
+  it('exposes Go To Line and Wrap on the Text Compare toolbar', async () => {
+    const wrapper = mountTextCompareView()
+
+    expect(wrapper.find('[data-testid="text-session-toolbar-goto"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="text-session-toolbar-wrap"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="text-session-toolbar-wrap"]').attributes('data-active'),
+    ).toBe('false')
+
+    await wrapper.find('[data-testid="text-session-toolbar-wrap"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="text-session-toolbar-wrap"]').attributes('data-active'),
+    ).toBe('true')
+
+    await wrapper.find('[data-testid="text-session-toolbar-goto"]').trigger('click')
+    expect(wrapper.find('[data-testid="text-compare-goto-menu"]').exists()).toBe(true)
   })
 
   it('toggles the text rules panel from the session toolbar', async () => {

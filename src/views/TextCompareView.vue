@@ -34,6 +34,7 @@ import { isTauriRuntime } from '@/app/desktopDrop'
 import { formatRemoteUri, isImplementedRemoteProtocol, parseRemoteUri } from '@/api/remote'
 import { formatCompareError } from '@/app/compareError'
 import { buildTextCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
+import { resolveGoToLine } from '@/app/textEditNavigation'
 import {
   loadTextCompareSessionOptions,
   saveTextCompareSessionOptions,
@@ -66,6 +67,10 @@ const ignoreLineEndings = ref(initialTextSessionOptions.ignoreLineEndings)
 const ignoreRegexInput = ref(initialTextSessionOptions.ignoreRegexes.join(', '))
 const showTextRules = ref(true)
 const showContextPanel = ref(false)
+const goToMenuOpen = ref(false)
+const goToLineInput = ref('1')
+const goToLineStatus = ref('')
+const wordWrapActive = ref(settings.wrapTextDefault)
 const contextLineCount = ref(2)
 const showSessionSettings = ref(false)
 const viewActions = useViewActionsStore()
@@ -995,6 +1000,9 @@ const textDiffPanelRef = ref<{
   getDisplayMode: () => 'all' | 'differences' | 'same'
   setDifferenceContextRowCount: (value: number) => void
   getDifferenceContextRowCount: () => number
+  toggleWordWrap: () => void
+  isWordWrapEnabled: () => boolean
+  jumpToLineNumber: (lineNumber: number, side?: 'left' | 'right') => boolean
 } | null>(null)
 const textDisplayMode = ref<'all' | 'differences' | 'same' | 'context'>('all')
 
@@ -1022,6 +1030,8 @@ const textSessionToolbar = computed(() =>
     rules: true,
     format: fileFormats.value.length > 0,
     sessions: true,
+    goto: true,
+    wrap: true,
     copy: Boolean(result.value) && activeDiffRows.value.length > 0,
     'next-section': activeDiffRows.value.length > 0,
     'prev-section': activeDiffRows.value.length > 0,
@@ -1036,7 +1046,10 @@ const textSessionToolbar = computed(() =>
       (item.id === 'same' && textDisplayMode.value === 'same') ||
       (item.id === 'context' && textDisplayMode.value === 'context') ||
       (item.id === 'minor' && ignoreWhitespace.value) ||
-      (item.id === 'rules' && showTextRules.value),
+      (item.id === 'rules' && showTextRules.value) ||
+      (item.id === 'goto' && goToMenuOpen.value) ||
+      (item.id === 'wrap' && wordWrapActive.value) ||
+      (item.id === 'sessions' && showSessionSettings.value),
   })),
 )
 
@@ -1088,6 +1101,66 @@ function onContextLineCountInput(event: Event): void {
   }
 }
 
+function toggleTextCompareWrap(): void {
+  wordWrapActive.value = !wordWrapActive.value
+  const panel = textDiffPanelRef.value
+
+  if (
+    panel &&
+    typeof panel.isWordWrapEnabled === 'function' &&
+    typeof panel.toggleWordWrap === 'function' &&
+    panel.isWordWrapEnabled() !== wordWrapActive.value
+  ) {
+    panel.toggleWordWrap()
+  }
+}
+
+watch(result, async () => {
+  await nextTick()
+  const panel = textDiffPanelRef.value
+
+  if (!panel || typeof panel.isWordWrapEnabled !== 'function') {
+    return
+  }
+
+  if (panel.isWordWrapEnabled() !== wordWrapActive.value) {
+    panel.toggleWordWrap()
+  }
+})
+
+function openTextGoToMenu(): void {
+  goToMenuOpen.value = !goToMenuOpen.value
+  goToLineStatus.value = ''
+  if (goToMenuOpen.value && goToLineInput.value.trim() === '') {
+    goToLineInput.value = '1'
+  }
+}
+
+function applyTextGoToLine(): void {
+  const source = left.value || right.value
+  const resolved = resolveGoToLine(source, goToLineInput.value)
+
+  if (!resolved) {
+    goToLineStatus.value = t('status.goToLineInvalid')
+
+    return
+  }
+
+  goToLineInput.value = String(resolved.line)
+  const panel = textDiffPanelRef.value
+  let jumped = false
+
+  if (panel?.jumpToLineNumber(resolved.line, 'left') === true) {
+    jumped = true
+  } else if (panel?.jumpToLineNumber(resolved.line, 'right') === true) {
+    jumped = true
+  }
+
+  goToLineStatus.value = jumped
+    ? t('status.goToLinePosition', { line: resolved.line, total: resolved.totalLines })
+    : t('status.goToLineInvalid')
+}
+
 function runTextToolbarCommand(commandId: string): void {
   switch (commandId) {
     case 'home':
@@ -1116,6 +1189,12 @@ function runTextToolbarCommand(commandId: string): void {
       break
     case 'sessions':
       openTextSessionSettings()
+      break
+    case 'goto':
+      openTextGoToMenu()
+      break
+    case 'wrap':
+      toggleTextCompareWrap()
       break
     case 'copy':
       copyCurrentDiff('leftToRight')
@@ -1382,6 +1461,39 @@ function toggleSourceEditors(): void {
               @input="onContextLineCountInput"
             />
           </label>
+        </section>
+        <section
+          v-if="goToMenuOpen"
+          class="text-context-panel"
+          data-testid="text-compare-goto-menu"
+        >
+          <header>
+            <strong>{{ $t('ui.goToLine') }}</strong>
+          </header>
+          <label class="text-context-lines">
+            <span>{{ $t('ui.goToLine') }}</span>
+            <input
+              v-model="goToLineInput"
+              data-testid="text-compare-goto-line"
+              type="number"
+              min="1"
+              :aria-label="$t('ui.goToLine')"
+              @keydown.enter.prevent="applyTextGoToLine"
+            />
+          </label>
+          <button
+            type="button"
+            class="toolbar-button"
+            data-testid="text-compare-goto-apply"
+            @click="applyTextGoToLine"
+          >
+            {{ $t('ui.goTo') }}
+          </button>
+          <span
+            class="status-chip"
+            data-testid="text-compare-goto-status"
+            >{{ goToLineStatus }}</span
+          >
         </section>
         <button
           type="button"

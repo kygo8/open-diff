@@ -816,6 +816,7 @@ const folderSessionToolbar = computed(() =>
     structure: true,
     minor: rows.value.length > 0,
     rules: true,
+    sessions: true,
     copy: canCopyToRight.value,
     expand: true,
     collapse: true,
@@ -838,6 +839,7 @@ const folderSessionToolbar = computed(() =>
       (item.id === 'structure' && flatStructure.value) ||
       (item.id === 'minor' && minorOnly.value) ||
       (item.id === 'rules' && showFolderRules.value) ||
+      (item.id === 'sessions' && showSessionSettings.value) ||
       (item.id === 'filters' && showFolderFilters.value) ||
       (item.id === 'select' && showFolderSelect.value) ||
       (item.id === 'files' && filesOnlyFilter.value) ||
@@ -867,6 +869,9 @@ function runFolderToolbarCommand(commandId: string): void {
       break
     case 'rules':
       showFolderRules.value = !showFolderRules.value
+      break
+    case 'sessions':
+      openFolderSessionSettings()
       break
     case 'copy':
       if (canCopyToRight.value) {

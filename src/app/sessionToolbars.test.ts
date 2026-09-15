@@ -55,7 +55,10 @@ describe('sessionToolbars', () => {
     })
 
     expect(toolbar.map((item) => item.id)).toEqual([...folderCompareToolbarOrder])
-    expect(toolbar.map((item) => item.id)).toEqual(expect.arrayContaining(['diffs', 'structure']))
+    expect(toolbar.map((item) => item.id)).toEqual(
+      expect.arrayContaining(['diffs', 'structure', 'sessions']),
+    )
+    expect(toolbar.find((item) => item.id === 'sessions')?.labelKey).toBe('ui.sessions')
     expect(toolbar.find((item) => item.id === 'peek')?.enabled).toBe(false)
     expect(toolbar.find((item) => item.id === 'home')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'diffs')?.labelKey).toBe('ui.diffs')
@@ -78,6 +81,9 @@ describe('sessionToolbars', () => {
     expect(toolbar.find((item) => item.id === 'minor')?.enabled).toBe(false)
     expect(toolbar.map((item) => item.id)).toContain('format')
     expect(toolbar.map((item) => item.id)).toContain('sessions')
+    expect(toolbar.map((item) => item.id)).toEqual(expect.arrayContaining(['goto', 'wrap']))
+    expect(toolbar.find((item) => item.id === 'goto')?.labelKey).toBe('ui.goToLine')
+    expect(toolbar.find((item) => item.id === 'wrap')?.labelKey).toBe('ui.wrap')
   })
 
   it('keeps Hex Compare toolbar in expected order', () => {
@@ -121,6 +127,7 @@ describe('sessionToolbars', () => {
 
     expect(toolbar.map((item) => item.id)).toEqual([...pictureCompareToolbarOrder])
     expect(toolbar.map((item) => item.id)).toContain('format')
+    expect(toolbar.map((item) => item.id)).toContain('sessions')
     expect(toolbar.find((item) => item.id === 'tol')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'range')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'format')?.enabled).toBe(true)
@@ -219,6 +226,8 @@ describe('sessionToolbars', () => {
     expect(toolbar.find((item) => item.id === 'home')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'accept')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'sync-now')?.enabled).toBe(true)
+    expect(toolbar.find((item) => item.id === 'sync-now')?.labelKey).toBe('ui.syncNow')
+    expect(toolbar.map((item) => item.id).slice(-3)).toEqual(['sync-now', 'cancel', 'accept'])
     expect(toolbar.find((item) => item.id === 'stop')?.enabled).toBe(false)
   })
 
@@ -244,7 +253,10 @@ describe('sessionToolbars', () => {
     })
 
     expect(toolbar.map((item) => item.id)).toEqual([...folderMergeToolbarOrder])
-    expect(toolbar.map((item) => item.id)).toEqual(expect.arrayContaining(['diffs', 'structure']))
+    expect(toolbar.map((item) => item.id)).toEqual(
+      expect.arrayContaining(['diffs', 'structure', 'sessions']),
+    )
+    expect(toolbar.find((item) => item.id === 'sessions')?.labelKey).toBe('ui.sessions')
     expect(toolbar.find((item) => item.id === 'merge')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'to-output')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'same-ok')?.enabled).toBe(true)

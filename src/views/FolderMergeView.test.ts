@@ -274,6 +274,9 @@ describe('FolderMergeView', () => {
     )
     expect(wrapper.find('[data-testid="folder-merge-session-toolbar-select"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folder-merge-session-toolbar-same-ok"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-session-toolbar-sessions"]').exists()).toBe(
+      true,
+    )
     expect(wrapper.find('[data-testid="folder-merge-session-toolbar-merge"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folder-merge-session-toolbar-to-output"]').exists()).toBe(
       true,

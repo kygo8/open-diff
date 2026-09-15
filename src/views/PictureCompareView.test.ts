@@ -259,6 +259,7 @@ describe('PictureCompareView', () => {
       'minor',
       'rules',
       'format',
+      'sessions',
       'swap',
       'reload',
       'meta',

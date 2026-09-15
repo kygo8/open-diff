@@ -453,4 +453,51 @@ describe('TextDiffPanel', () => {
 
     expect(wrapper.find('.diff-panel-word-wrap').exists()).toBe(true)
   })
+
+  it('exposes wrap toggle and jumpToLineNumber for session toolbar chrome', async () => {
+    const lines: DiffLine[] = [
+      {
+        leftNumber: 1,
+        rightNumber: 1,
+        leftText: 'one',
+        rightText: 'one',
+        kind: 'equal',
+        inlineSegments: { left: [], right: [] },
+      },
+      {
+        leftNumber: 2,
+        rightNumber: 2,
+        leftText: 'two',
+        rightText: 'too',
+        kind: 'modified',
+        inlineSegments: { left: [], right: [] },
+      },
+      {
+        leftNumber: 3,
+        rightNumber: 3,
+        leftText: 'three',
+        rightText: 'three',
+        kind: 'equal',
+        inlineSegments: { left: [], right: [] },
+      },
+    ]
+
+    const wrapper = mount(TextDiffPanel, { props: { lines } })
+    const panel = wrapper.vm as unknown as {
+      toggleWordWrap: () => void
+      isWordWrapEnabled: () => boolean
+      jumpToLineNumber: (line: number, side?: 'left' | 'right') => boolean
+    }
+
+    expect(panel.isWordWrapEnabled()).toBe(false)
+    panel.toggleWordWrap()
+    await nextTick()
+    expect(panel.isWordWrapEnabled()).toBe(true)
+    expect(wrapper.find('[data-testid="text-diff-toggle-word-wrap"]').classes()).toContain(
+      'diff-option-button-active',
+    )
+
+    expect(panel.jumpToLineNumber(2, 'left')).toBe(true)
+    expect(panel.jumpToLineNumber(99, 'left')).toBe(false)
+  })
 })

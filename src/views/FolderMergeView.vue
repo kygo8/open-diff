@@ -103,6 +103,7 @@ const mergeSessionToolbar = computed(() =>
     minor: hasPlan.value,
     'same-ok': hasPlan.value,
     rules: hasPlan.value,
+    sessions: true,
     merge: hasPlan.value && Boolean(outputPath.value) && !mergeExecuting.value,
     'to-output': Boolean(outputPath.value),
     expand: hasPlan.value,
@@ -124,6 +125,7 @@ const mergeSessionToolbar = computed(() =>
       (item.id === 'minor' && importanceFilter.value === 'minor') ||
       (item.id === 'same-ok' && sameOkOnly.value) ||
       (item.id === 'rules' && showMergeRules.value) ||
+      (item.id === 'sessions' && showMergeRules.value) ||
       (item.id === 'filters' && showMergeFilters.value) ||
       (item.id === 'select' && showMergeSelect.value) ||
       (item.id === 'files' && filesOnlyFilter.value) ||
@@ -216,6 +218,9 @@ function runMergeToolbarCommand(commandId: string): void {
       toggleSameOkFilter()
       break
     case 'rules':
+      showMergeRules.value = !showMergeRules.value
+      break
+    case 'sessions':
       showMergeRules.value = !showMergeRules.value
       break
     case 'merge':
@@ -619,6 +624,8 @@ watch(
       case 'rules':
       case 'save-as':
       case 'session-settings':
+        showMergeRules.value = true
+        break
       case 'show-all':
       case 'show-differences':
       case 'swap':

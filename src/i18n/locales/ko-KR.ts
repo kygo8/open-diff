@@ -1094,6 +1094,22 @@ export const koKR: LanguagePack = {
     'ui.blendModeExclusion': '제외',
     'ui.blendModeLighten': '밝게',
     'ui.blendModeDarken': '어둡게',
+    'status.binaryDifferences': '≠ 바이너리 차이',
+    'status.hexSame': '≠ 같음',
+    'ui.optionsGroupCompare': '비교',
+    'ui.fileFilters': '파일 필터',
+    'ui.ignoreWhitespaceDifferences': '공백 차이 무시',
+    'ui.ignoreCaseDifferences': '대소문자 무시',
+    'ui.ignoreLineEndingDifferences': '줄 끝 차이 무시',
+    'ui.folderCompareOptionsHint':
+      '새 폴더 비교 세션의 기본 비교 기준입니다. 세션 설정에서 덮어쓸 수 있습니다.',
+    'ui.hexDiffOnlyDefault': '기본적으로 다른 바이트만 표시',
+    'ui.hexBytesPerRow': '행당 바이트',
+    'ui.hexBytesPerRowAuto': '자동',
+    'ui.hexCompareOptionsHint': '새 Hex 비교 세션의 기본 창/표시 옵션입니다.',
+    'ui.fileFiltersIncludePlaceholder': '*.*;*.txt (비우면 전체)',
+    'ui.fileFiltersHint':
+      '폴더 비교/동기화/병합의 기본 이름 필터입니다. 필터 줄과 세션 설정에서 덮어쓸 수 있습니다.',
     'ui.startup': '시작',
     'ui.loadLastWorkspaceOnStartup': '시작 시 마지막 작업 공간 불러오기',
     'ui.startupHint':

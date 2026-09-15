@@ -21,6 +21,30 @@ import { usePolicyStore } from '@/stores/policy'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { type DiffHighlightColors, useSettingsStore } from '@/stores/settings'
 import { formatArchiveSuffixesInput, parseArchiveSuffixesInput } from '@/app/archivePath'
+import {
+  loadFolderCompareCriteria,
+  saveFolderCompareCriteria,
+  defaultFolderCompareCriteria,
+} from '@/app/folderCompareCriteria'
+import {
+  formatFolderNameFilterDraft,
+  formatFolderNameFilterStripPattern,
+  loadFolderNameFilters,
+  parseFolderNameFilterStripPattern,
+  saveFolderNameFilters,
+  defaultFolderNameFilters,
+} from '@/app/folderNameFilters'
+import {
+  defaultTextCompareSessionOptions,
+  loadTextCompareSessionOptions,
+  saveTextCompareSessionOptions,
+} from '@/app/textCompareSessionOptions'
+import {
+  defaultHexCompareSessionOptions,
+  loadHexCompareSessionOptions,
+  normalizeHexBytesPerRow,
+  saveHexCompareSessionOptions,
+} from '@/app/hexCompareSessionOptions'
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { loadExternalApplications, saveExternalApplications } from '@/app/externalApplications'
 import type { ExternalApplicationConfig } from '@/app/fileOpenActions'
@@ -53,6 +77,9 @@ type OptionsSectionId =
   | 'tabs'
   | 'startup'
   | 'textEditing'
+  | 'folderCompare'
+  | 'hexCompare'
+  | 'fileFilters'
   | 'openWith'
   | 'shell'
   | 'backup'
@@ -66,6 +93,16 @@ type OptionsSectionId =
 
 const optionsSection = ref<OptionsSectionId>('appearance')
 const archiveExtensionsDraft = ref(formatArchiveSuffixesInput(settings.archiveExtensions))
+const folderCriteriaDraft = ref(loadFolderCompareCriteria())
+const textCompareDefaultsDraft = ref(loadTextCompareSessionOptions())
+const hexCompareDefaultsDraft = ref(loadHexCompareSessionOptions())
+const fileFiltersDraft = ref(loadFolderNameFilters())
+const fileFiltersIncludeDraft = ref(
+  formatFolderNameFilterStripPattern(fileFiltersDraft.value) === '*.*'
+    ? ''
+    : formatFolderNameFilterStripPattern(fileFiltersDraft.value),
+)
+const fileFiltersExcludeDraft = ref(formatFolderNameFilterDraft(fileFiltersDraft.value.exclude))
 const optionsTree = [
   {
     groupKey: 'ui.optionsGroupDisplay',
@@ -83,6 +120,14 @@ const optionsTree = [
       { id: 'textEditing' as const, labelKey: 'ui.textEditing' },
       { id: 'openWith' as const, labelKey: 'ui.openWith' },
       { id: 'backup' as const, labelKey: 'ui.backup' },
+    ],
+  },
+  {
+    groupKey: 'ui.optionsGroupCompare',
+    items: [
+      { id: 'folderCompare' as const, labelKey: 'ui.folderCompare' },
+      { id: 'hexCompare' as const, labelKey: 'ui.hexCompare' },
+      { id: 'fileFilters' as const, labelKey: 'ui.fileFilters' },
     ],
   },
   {
@@ -478,7 +523,45 @@ function onLoadLastWorkspaceOnStartupChange(event: Event): void {
 
 function restoreFactoryDefaultsFromOptions(): void {
   settings.restoreFactoryDefaults()
+  folderCriteriaDraft.value = defaultFolderCompareCriteria()
+  saveFolderCompareCriteria(folderCriteriaDraft.value)
+  textCompareDefaultsDraft.value = defaultTextCompareSessionOptions()
+  saveTextCompareSessionOptions(textCompareDefaultsDraft.value)
+  hexCompareDefaultsDraft.value = defaultHexCompareSessionOptions()
+  saveHexCompareSessionOptions(hexCompareDefaultsDraft.value)
+  fileFiltersDraft.value = defaultFolderNameFilters()
+  saveFolderNameFilters(fileFiltersDraft.value)
+  fileFiltersIncludeDraft.value = ''
+  fileFiltersExcludeDraft.value = ''
   optionsStatus.value = t('ui.restoreFactoryDefaults')
+}
+
+function persistFolderCriteriaDraft(): void {
+  saveFolderCompareCriteria(folderCriteriaDraft.value)
+}
+
+function persistTextCompareDefaultsDraft(): void {
+  saveTextCompareSessionOptions(textCompareDefaultsDraft.value)
+}
+
+function persistHexCompareDefaultsDraft(): void {
+  hexCompareDefaultsDraft.value = {
+    ...hexCompareDefaultsDraft.value,
+    bytesPerRow: normalizeHexBytesPerRow(hexCompareDefaultsDraft.value.bytesPerRow),
+  }
+  saveHexCompareSessionOptions(hexCompareDefaultsDraft.value)
+}
+
+function persistFileFiltersDraft(): void {
+  fileFiltersDraft.value = {
+    include: parseFolderNameFilterStripPattern(fileFiltersIncludeDraft.value),
+    exclude: fileFiltersExcludeDraft.value
+      .split(/[\n,;]/u)
+      .map((item) => item.trim())
+      .filter(Boolean),
+    caseSensitive: fileFiltersDraft.value.caseSensitive,
+  }
+  saveFolderNameFilters(fileFiltersDraft.value)
 }
 
 function onCreateBackupOnSaveChange(event: Event): void {
@@ -998,7 +1081,159 @@ function parseShortcutText(value: string): string[] {
           />
           <span>{{ $t('ui.autoScrollToFirstDifference') }}</span>
         </label>
+        <label class="tweak-row">
+          <input
+            v-model="textCompareDefaultsDraft.ignoreWhitespace"
+            data-testid="ignore-whitespace-default"
+            type="checkbox"
+            @change="persistTextCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.ignoreWhitespaceDifferences') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="textCompareDefaultsDraft.ignoreCase"
+            data-testid="ignore-case-default"
+            type="checkbox"
+            @change="persistTextCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.ignoreCaseDifferences') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="textCompareDefaultsDraft.ignoreLineEndings"
+            data-testid="ignore-line-endings-default"
+            type="checkbox"
+            @change="persistTextCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.ignoreLineEndingDifferences') }}</span>
+        </label>
         <p class="options-hint">{{ $t('ui.textEditingHint') }}</p>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'folderCompare'"
+        :title="$t('ui.folderCompare')"
+        size="small"
+        data-testid="options-folder-compare-card"
+      >
+        <label class="tweak-row">
+          <input
+            v-model="folderCriteriaDraft.compareContents"
+            data-testid="folder-compare-contents"
+            type="checkbox"
+            @change="persistFolderCriteriaDraft"
+          />
+          <span>{{ $t('ui.compareBinaryContents') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="folderCriteriaDraft.compareSize"
+            data-testid="folder-compare-size"
+            type="checkbox"
+            @change="persistFolderCriteriaDraft"
+          />
+          <span>{{ $t('ui.compareBySize') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="folderCriteriaDraft.followSymlinks"
+            data-testid="folder-compare-follow-symlinks"
+            type="checkbox"
+            @change="persistFolderCriteriaDraft"
+          />
+          <span>{{ $t('ui.followSymlinks') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="folderCriteriaDraft.sizeOnlyUnimportant"
+            data-testid="folder-compare-size-only-unimportant"
+            type="checkbox"
+            @change="persistFolderCriteriaDraft"
+          />
+          <span>{{ $t('ui.sizeOnlyUnimportant') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.folderCompareOptionsHint') }}</p>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'hexCompare'"
+        :title="$t('ui.hexCompare')"
+        size="small"
+        data-testid="options-hex-compare-card"
+      >
+        <label class="tweak-row">
+          <input
+            v-model="hexCompareDefaultsDraft.diffOnly"
+            data-testid="hex-diff-only-default"
+            type="checkbox"
+            @change="persistHexCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.hexDiffOnlyDefault') }}</span>
+        </label>
+        <label class="auto-save-limit-row">
+          <span>{{ $t('ui.windowLength') }}</span>
+          <input
+            v-model.number="hexCompareDefaultsDraft.windowLength"
+            class="auto-save-limit-input"
+            data-testid="hex-window-length-default"
+            type="number"
+            min="16"
+            max="4096"
+            @change="persistHexCompareDefaultsDraft"
+          />
+        </label>
+        <label class="auto-save-limit-row">
+          <span>{{ $t('ui.hexBytesPerRow') }}</span>
+          <select
+            v-model="hexCompareDefaultsDraft.bytesPerRow"
+            data-testid="hex-bytes-per-row-default"
+            @change="persistHexCompareDefaultsDraft"
+          >
+            <option value="auto">{{ $t('ui.hexBytesPerRowAuto') }}</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+          </select>
+        </label>
+        <p class="options-hint">{{ $t('ui.hexCompareOptionsHint') }}</p>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'fileFilters'"
+        :title="$t('ui.fileFilters')"
+        size="small"
+        data-testid="options-file-filters-card"
+      >
+        <label class="stack-row">
+          <span>{{ $t('ui.includePatterns') }}</span>
+          <input
+            v-model="fileFiltersIncludeDraft"
+            data-testid="file-filters-include"
+            type="text"
+            :placeholder="$t('ui.fileFiltersIncludePlaceholder')"
+            @change="persistFileFiltersDraft"
+          />
+        </label>
+        <label class="stack-row">
+          <span>{{ $t('ui.excludePatterns') }}</span>
+          <input
+            v-model="fileFiltersExcludeDraft"
+            data-testid="file-filters-exclude"
+            type="text"
+            :placeholder="$t('ui.globPatterns')"
+            @change="persistFileFiltersDraft"
+          />
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="fileFiltersDraft.caseSensitive"
+            data-testid="file-filters-case-sensitive"
+            type="checkbox"
+            @change="persistFileFiltersDraft"
+          />
+          <span>{{ $t('ui.caseSensitiveNames') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.fileFiltersHint') }}</p>
       </NCard>
 
       <NCard
@@ -1780,6 +2015,22 @@ function parseShortcutText(value: string): string[] {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.stack-row {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.stack-row input {
+  min-width: 0;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
 }
 
 .diff-color-grid {

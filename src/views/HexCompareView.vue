@@ -38,7 +38,9 @@ import { useViewActionsStore } from '@/stores/viewActions'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import {
   loadHexCompareSessionOptions,
+  resolveHexBytesPerRow,
   saveHexCompareSessionOptions,
+  type HexBytesPerRowPreference,
   type HexCompareSessionOptions,
 } from '@/app/hexCompareSessionOptions'
 import {
@@ -87,6 +89,7 @@ const diffOnly = computed({
 })
 const hexOffset = ref(0)
 const hexLength = ref(initialHexOptions.windowLength)
+const bytesPerRowPreference = ref<HexBytesPerRowPreference>(initialHexOptions.bytesPerRow)
 const showSessionSettings = ref(false)
 const viewActions = useViewActionsStore()
 const jumpOffsetInput = ref('0')
@@ -115,7 +118,9 @@ const tabs = useTabsStore()
 const settings = useSettingsStore()
 const router = useRouter()
 const { t } = useI18n()
-const bytesPerRow = computed(() => (viewportWidth.value < 480 ? 8 : 16))
+const bytesPerRow = computed(() =>
+  resolveHexBytesPerRow(bytesPerRowPreference.value, viewportWidth.value),
+)
 
 const leftHex = computed<HexSideRows>(() =>
   buildHexRows(leftCells.value, bytesPerRow.value, leftTotalLen.value, leftPath.value),
@@ -165,6 +170,7 @@ function currentHexSessionOptions(): HexCompareSessionOptions {
   return {
     windowLength: hexLength.value,
     diffOnly: diffOnly.value,
+    bytesPerRow: bytesPerRowPreference.value,
   }
 }
 
@@ -190,6 +196,7 @@ function applyHexSessionSettings(
 
   hexLength.value = payload.options.windowLength
   diffOnly.value = payload.options.diffOnly
+  bytesPerRowPreference.value = payload.options.bytesPerRow
   persistHexSessionOptions()
   showSessionSettings.value = false
   if (leftPath.value && rightPath.value) {
@@ -197,7 +204,7 @@ function applyHexSessionSettings(
   }
 }
 
-watch([hexLength, diffOnly], () => {
+watch([hexLength, diffOnly, bytesPerRowPreference], () => {
   persistHexSessionOptions()
 })
 
@@ -513,6 +520,8 @@ watchEffect(() => {
     filterStatus: t('status.allRows'),
     source: 'hex-compare',
     loadTimeSeconds: hasResult ? loadTimeSeconds.value : null,
+    chromeKind: 'hex-session',
+    editMode: 'insert',
   })
 })
 
@@ -1300,9 +1309,9 @@ async function runHexSave(): Promise<void> {
 <style scoped>
 .hex-compare-view {
   display: grid;
-  gap: 14px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 4px 6px;
   overflow: auto;
 }
 
@@ -1360,23 +1369,23 @@ h2 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 10px;
+  gap: 4px 6px;
   min-width: 0;
-  padding: 10px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .hex-wrap-controls label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
   min-width: 0;
 }
 
 .hex-wrap-controls span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .hex-wrap-controls input {
@@ -1387,12 +1396,14 @@ h2 {
 .hex-wrap-controls strong {
   min-width: 0;
   max-width: 100%;
-  padding: 7px 9px;
+  height: 20px;
+  padding: 0 6px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 20px;
   text-align: center;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1401,24 +1412,24 @@ h2 {
 .hex-pane-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 4px;
 }
 
 .hex-side {
   display: grid;
-  gap: 8px;
+  gap: 2px;
   min-width: 0;
-  padding: 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .hex-viewport {
-  max-height: 190px;
+  max-height: none;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
 }
 
@@ -1426,10 +1437,11 @@ h2 {
   display: grid;
   grid-template-columns: 84px minmax(240px, 1fr) 132px;
   min-width: 460px;
-  min-height: 34px;
+  min-height: 18px;
   border-bottom: 1px solid var(--app-border);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 12px;
+  line-height: 18px;
 }
 
 .hex-row:last-child {
@@ -1440,7 +1452,7 @@ h2 {
 .hex-bytes,
 .hex-ascii {
   min-width: 0;
-  padding: 8px 10px;
+  padding: 0 6px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   text-overflow: ellipsis;
@@ -1454,15 +1466,15 @@ h2 {
 .hex-byte {
   display: inline-flex;
   justify-content: center;
-  width: 22px;
-  padding: 0 0.15rem;
+  width: 20px;
+  padding: 0;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 0;
   background: transparent;
   color: inherit;
   font: inherit;
   cursor: pointer;
-  margin-right: 6px;
+  margin-right: 4px;
 }
 
 .hex-byte-selected {
@@ -1553,17 +1565,17 @@ h2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column: 1 / -1;
-  gap: 8px;
+  gap: 1px;
   width: 100%;
+  padding: 0 2px;
 }
 
 .path-side-footer {
-  min-height: 18px;
-  overflow: hidden;
-  color: var(--app-text-muted, #6b7280);
-  font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-height: 10px;
+  margin-top: 0;
+  color: var(--app-text-muted);
+  font-size: 10px;
+  line-height: 10px;
 }
 
 .path-side-footer-muted {

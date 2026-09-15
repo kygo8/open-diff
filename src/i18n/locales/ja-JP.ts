@@ -1102,6 +1102,22 @@ export const jaJP: LanguagePack = {
     'ui.blendModeExclusion': '除外',
     'ui.blendModeLighten': '比較（明）',
     'ui.blendModeDarken': '比較（暗）',
+    'status.binaryDifferences': '≠ バイナリの差分',
+    'status.hexSame': '≠ 同一',
+    'ui.optionsGroupCompare': '比較',
+    'ui.fileFilters': 'ファイルフィルタ',
+    'ui.ignoreWhitespaceDifferences': '空白の違いを無視',
+    'ui.ignoreCaseDifferences': '大文字小文字を無視',
+    'ui.ignoreLineEndingDifferences': '改行の違いを無視',
+    'ui.folderCompareOptionsHint':
+      '新しいフォルダ比較セッションの既定の比較条件です。セッション設定で上書きできます。',
+    'ui.hexDiffOnlyDefault': '既定で差分バイトのみ表示',
+    'ui.hexBytesPerRow': '行あたりのバイト数',
+    'ui.hexBytesPerRowAuto': '自動',
+    'ui.hexCompareOptionsHint': '新しい Hex 比較セッションの既定のウィンドウ／表示オプションです。',
+    'ui.fileFiltersIncludePlaceholder': '*.*;*.txt（空 = すべて）',
+    'ui.fileFiltersHint':
+      'フォルダ比較／同期／マージの既定の名前フィルタです。Filters バーとセッション設定で上書きできます。',
     'ui.startup': '起動',
     'ui.loadLastWorkspaceOnStartup': '起動時に前回のワークスペースを読み込む',
     'ui.startupHint':

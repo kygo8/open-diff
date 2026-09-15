@@ -1388,6 +1388,70 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 12px !important;
 }
 
+/* Hex Compare chrome densify toward capture path/status/toolbar/footer strips */
+.hex-compare-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.hex-compare-view .bc-path-row {
+  gap: 3px !important;
+  min-height: 26px !important;
+  padding: 1px 6px !important;
+}
+
+.hex-compare-view .bc-path-row input {
+  height: 20px !important;
+  padding: 0 5px !important;
+  font-size: 11px !important;
+}
+
+.hex-compare-view .bc-path-row button {
+  height: 20px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.hex-compare-view .bc-path-footers {
+  gap: 1px !important;
+  padding: 0 2px !important;
+}
+
+.hex-compare-view .path-side-footer {
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+}
+
+.hex-compare-view .hex-wrap-controls {
+  gap: 4px 6px !important;
+  min-height: 26px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.hex-compare-view .hex-wrap-controls input,
+.hex-compare-view .hex-wrap-controls select,
+.hex-compare-view .hex-wrap-controls button {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.hex-compare-view .hex-row {
+  min-height: 18px !important;
+  font-size: 12px !important;
+  line-height: 18px !important;
+}
+
+.hex-compare-view .hex-offset,
+.hex-compare-view .hex-bytes,
+.hex-compare-view .hex-ascii {
+  padding: 0 6px !important;
+}
+
 /* Text Compare chrome densify toward capture path/status/editor strips */
 .text-compare-view {
   gap: 4px !important;

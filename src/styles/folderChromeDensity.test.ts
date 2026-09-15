@@ -25,3 +25,12 @@ describe('folder chrome density', () => {
     expect(mergeView).toMatch(/\.folder-merge-view\s*\{[\s\S]*?padding:\s*4px 6px/)
   })
 })
+
+it('surfaces display-filters instead of CSS-hiding the Filters strip', () => {
+  expect(css).not.toMatch(/\.folder-root-summary,\s*\.display-filters,\s*\.folder-summary/)
+  expect(css).toMatch(/\.folder-filter-strip\s*\{/)
+  expect(css).toMatch(/\.folder-filter-pattern\s*\{/)
+  expect(folderView).toMatch(/data-testid="folder-filter-strip"/)
+  expect(folderView).toMatch(/data-testid="folder-filter-pattern"/)
+  expect(syncView).toMatch(/data-testid="folder-sync-filter-strip"/)
+})

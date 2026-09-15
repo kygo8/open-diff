@@ -81,3 +81,27 @@ export function saveFolderNameFilters(
 export function folderNameFiltersAreActive(filters: FolderNameFilters): boolean {
   return filters.include.length > 0 || filters.exclude.length > 0
 }
+
+export const folderNameFilterAllPattern = '*.*'
+
+/** Compact capture-like include mask for the Filters strip (`*.*` when unrestricted). */
+export function formatFolderNameFilterStripPattern(filters: FolderNameFilters): string {
+  const include = normalizeFolderNameFilters(filters).include
+
+  if (include.length === 0) {
+    return folderNameFilterAllPattern
+  }
+
+  return include.join(';')
+}
+
+/** Parse strip input into include patterns; empty / `*.*` means all names. */
+export function parseFolderNameFilterStripPattern(raw: string): string[] {
+  const trimmed = raw.trim()
+
+  if (!trimmed || trimmed === folderNameFilterAllPattern) {
+    return []
+  }
+
+  return parseFolderNameFilterDraft(trimmed)
+}

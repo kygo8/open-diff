@@ -678,6 +678,31 @@ describe('AppLayout command palette', () => {
     expect(status.find('[data-testid="status-pane-edit"]').text()).toContain('Insert')
   })
 
+  it('keeps a folder-pair segmented status strip structure', async () => {
+    const wrapper = mountAppLayout()
+    const statusBar = useStatusBarStore()
+
+    statusBar.reportStatus({
+      source: 'folder-compare',
+      chromeKind: 'folder-pair',
+      leftSelection: '1 file(s) selected, 22 bytes',
+      leftFreeSpace: '91.8 GB free on C:\\',
+      rightSelection: '1 file(s) selected, 23 bytes',
+      rightFreeSpace: '91.8 GB free on C:\\',
+    })
+    await wrapper.vm.$nextTick()
+
+    const status = wrapper.find('[data-testid="status-bar"]')
+
+    expect(status.attributes('data-chrome-kind')).toBe('folder-pair')
+    expect(status.attributes('data-pane-count')).toBe('4')
+    expect(status.findAll('.status-bar-pane')).toHaveLength(4)
+    expect(status.find('[data-testid="status-pane-left-selection"]').text()).toContain('22 bytes')
+    expect(status.find('[data-testid="status-pane-left-free"]').text()).toContain('91.8 GB')
+    expect(status.find('[data-testid="status-pane-right-selection"]').text()).toContain('23 bytes')
+    expect(status.find('[data-testid="status-pane-right-free"]').text()).toContain('91.8 GB')
+  })
+
   it('keeps empty folder-pair status panes instead of a blank bar', async () => {
     const wrapper = mountAppLayout()
     const statusBar = useStatusBarStore()

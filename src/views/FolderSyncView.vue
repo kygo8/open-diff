@@ -17,6 +17,13 @@ import {
   buildFolderSyncReportText,
   defaultFolderSyncReportOutputPath,
 } from '@/app/folderSyncReport'
+import {
+  formatFolderNameFilterStripPattern,
+  loadFolderNameFilters,
+  parseFolderNameFilterStripPattern,
+  saveFolderNameFilters,
+  type FolderNameFilters,
+} from '@/app/folderNameFilters'
 import { folderSnapshotOutputPath } from '@/app/snapshotPath'
 import { collectExpandablePrefixes, isPathHiddenByCollapse } from '@/app/folderPathGroups'
 import { buildFolderSyncToolbar, pathBaseName, syncPathPairTitle } from '@/app/sessionToolbars'
@@ -155,6 +162,23 @@ const planAccepted = ref(false)
 const syncChromeMessage = ref('')
 const collapsedPrefixes = ref<Set<string>>(new Set())
 const showSyncFilters = ref(false)
+const folderNameFilters = ref<FolderNameFilters>(loadFolderNameFilters())
+const folderFilterStripPattern = computed(() =>
+  formatFolderNameFilterStripPattern(folderNameFilters.value),
+)
+
+function persistFolderNameFilters(): void {
+  saveFolderNameFilters({ ...folderNameFilters.value })
+}
+
+function onFolderFilterStripChange(event: Event): void {
+  folderNameFilters.value = {
+    ...folderNameFilters.value,
+    include: parseFolderNameFilterStripPattern((event.target as HTMLInputElement).value),
+  }
+  persistFolderNameFilters()
+}
+
 const showSyncSelect = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
 const showPeek = ref(false)
@@ -830,6 +854,26 @@ watch(
           <span>{{ $t('ui.completed') }}</span>
         </div>
       </header>
+
+      <section
+        class="display-filters"
+        data-testid="folder-sync-filter-strip"
+      >
+        <div class="folder-filter-strip">
+          <span class="folder-filter-strip-label">{{ $t('ui.filters') }}:</span>
+          <input
+            class="folder-filter-pattern"
+            type="text"
+            data-testid="folder-sync-filter-pattern"
+            spellcheck="false"
+            autocomplete="off"
+            :value="folderFilterStripPattern"
+            :aria-label="$t('ui.filters')"
+            @change="onFolderFilterStripChange"
+            @keydown.enter.prevent="onFolderFilterStripChange"
+          />
+        </div>
+      </section>
 
       <section class="sync-settings">
         <label>
@@ -1520,5 +1564,33 @@ h1 {
 .folder-sync-peek-panel dd {
   margin: 2px 0 0;
   font-size: 13px;
+}
+
+.folder-filter-strip {
+  display: inline-flex;
+  flex: 1 1 280px;
+  align-items: center;
+  gap: 6px;
+  min-width: 220px;
+  max-width: 520px;
+}
+
+.folder-filter-strip-label {
+  flex: 0 0 auto;
+  color: #111827;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.folder-filter-pattern {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid #bfc4cc;
+  border-radius: 2px;
+  background: #ffffff;
+  color: #111111;
+  font-size: 11px;
 }
 </style>

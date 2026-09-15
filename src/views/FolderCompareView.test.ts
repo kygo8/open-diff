@@ -394,6 +394,31 @@ describe('FolderCompareView', () => {
     await wrapper.find('[data-testid="folder-select-clear"]').trigger('click')
   })
 
+  it('surfaces a capture-like Filters strip with the current name pattern', async () => {
+    const wrapper = mountFolderCompareView()
+
+    const strip = wrapper.find('[data-testid="folder-filter-strip"]')
+    const pattern = wrapper.find('[data-testid="folder-filter-pattern"]')
+
+    expect(strip.exists()).toBe(true)
+    expect(pattern.exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
+    ).not.toContain('display: none')
+    expect(strip.text()).toContain('Filters')
+    expect((pattern.element as HTMLInputElement).value).toBe('*.*')
+
+    await pattern.setValue('*.ts;*.vue')
+    await pattern.trigger('change')
+    expect((pattern.element as HTMLInputElement).value).toBe('*.ts;*.vue')
+
+    const stored = JSON.parse(localStorage.getItem('open-diff-folder-name-filters') ?? '{}') as {
+      include: string[]
+    }
+
+    expect(stored.include).toEqual(['*.ts', '*.vue'])
+  })
+
   it('toggles rules and filters panels from the session toolbar', async () => {
     const wrapper = mountFolderCompareView()
 

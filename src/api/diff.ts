@@ -74,6 +74,7 @@ export function saveTextFile(request: SaveTextFileRequest): Promise<SaveTextFile
     path: request.path,
     text: request.text,
     createBackup: request.createBackup ?? true,
+    backupRetention: request.backupRetention ?? 1,
   })
 }
 
@@ -254,6 +255,7 @@ export function saveHexEdits(request: HexSaveRequest): Promise<HexSaveResult> {
     path: request.path,
     edits: request.edits,
     createBackup: request.createBackup ?? true,
+    backupRetention: request.backupRetention ?? 1,
   })
 }
 

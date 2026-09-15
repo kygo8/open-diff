@@ -1005,8 +1005,17 @@ export const zhCN: LanguagePack = {
     'ui.openWithHint': '启用的应用程序会出现在文件夹比较的“打开方式”操作中。',
     'ui.applicationName': '应用程序名称',
     'ui.shellOptionsHint': '注册 shell 集成，以便操作系统用 OpenDiff 打开路径。',
+    'ui.backupRetentionCount': '保留编号备份数量',
+    'ui.commandsVisibility': '命令',
+    'ui.commandsVisibilityHint':
+      '显示或隐藏会话工具栏中可选的额外命令（相对参考主工具栏的扩展项）。',
+    'ui.showSessionsInToolbar': '在会话工具栏显示“会话”',
+    'ui.showGotoInToolbar': '在文本工具栏显示“转到行”',
+    'ui.showWrapInToolbar': '在文本工具栏显示“换行”',
+    'ui.showSyncNowInToolbar': '在文件夹同步工具栏显示“立即同步”',
     'ui.createBackupOnSave': '覆盖保存时优先创建备份文件',
-    'ui.backupHint': '启用时，覆盖保存会在文件旁创建 .bak；关闭则直接覆盖写入。',
+    'ui.backupHint':
+      '启用时，覆盖保存会在文件旁创建 .bak，并保留最近 N 份编号备份（.bak、.bak2…）。关闭则不创建备份。',
     'ui.selectAll': '全选',
     'ui.selectAllFiles': '选择所有文件',
     'ui.selectSame': '选择相同项',

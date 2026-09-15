@@ -1038,9 +1038,17 @@ export const enUS: LanguagePack = {
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
     'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.backupRetentionCount': 'Keep numbered backups',
+    'ui.commandsVisibility': 'Commands',
+    'ui.commandsVisibilityHint':
+      'Show or hide optional session toolbar commands that Open Diff adds beyond the capture MainBar core set.',
+    'ui.showSessionsInToolbar': 'Show Sessions on session toolbars',
+    'ui.showGotoInToolbar': 'Show Go To Line on text toolbars',
+    'ui.showWrapInToolbar': 'Show Wrap on text toolbars',
+    'ui.showSyncNowInToolbar': 'Show Sync Now on Folder Sync toolbars',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
-      'When enabled, overwrite saves create a .bak beside the file. Turn off to write without a backup.',
+      'When enabled, overwrite saves create a .bak beside the file and keep the last N numbered copies (.bak, .bak2, …). Turn off to write without a backup.',
     'ui.selectAll': 'Select All',
     'ui.selectAllFiles': 'Select All Files',
     'ui.selectSame': 'Select Same',

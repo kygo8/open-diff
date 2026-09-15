@@ -31,6 +31,11 @@ const sample: SettingsPackage = {
   showToolbarLabels: true,
   largeToolbarButtons: true,
   createBackupOnSave: false,
+  backupRetentionCount: 1,
+  showSessionsInToolbar: true,
+  showGotoInToolbar: true,
+  showWrapInToolbar: true,
+  showSyncNowInToolbar: true,
   showStatusBar: true,
   showPathBars: true,
 }

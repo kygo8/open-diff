@@ -771,6 +771,7 @@ async function runHexSave(): Promise<void> {
       path: leftPath.value,
       edits: pendingEdits.value,
       createBackup: settings.createBackupOnSave,
+      backupRetention: settings.backupRetentionCount,
     })
 
     saveStatus.value = String(result.bytesWritten)

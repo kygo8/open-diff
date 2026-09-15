@@ -1054,9 +1054,17 @@ export const esES: LanguagePack = {
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
     'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.backupRetentionCount': 'Conservar copias de seguridad numeradas',
+    'ui.commandsVisibility': 'Comandos',
+    'ui.commandsVisibilityHint':
+      'Mostrar u ocultar comandos opcionales de las barras de sesión más allá del conjunto principal de la barra de captura.',
+    'ui.showSessionsInToolbar': 'Mostrar Sesiones en las barras de sesión',
+    'ui.showGotoInToolbar': 'Mostrar Ir a línea en las barras de texto',
+    'ui.showWrapInToolbar': 'Mostrar Ajuste de línea en las barras de texto',
+    'ui.showSyncNowInToolbar': 'Mostrar Sincronizar ahora en las barras de Sync de carpetas',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
-      'Si está activado, al sobrescribir se crea un .bak junto al archivo. Desactívelo para guardar sin copia.',
+      'Si está activado, al sobrescribir se crea un .bak junto al archivo y se conservan las últimas N copias numeradas (.bak, .bak2, …). Desactive para escribir sin copia de seguridad.',
     'ui.selectAll': 'Select All',
     'ui.selectAllFiles': 'Select All Files',
     'ui.selectSame': 'Select Same',

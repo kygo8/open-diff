@@ -79,6 +79,11 @@ const showSessionToolbarsStorageKey = 'open-diff-show-session-toolbars'
 const showToolbarLabelsStorageKey = 'open-diff-show-toolbar-labels'
 const largeToolbarButtonsStorageKey = 'open-diff-large-toolbar-buttons'
 const createBackupOnSaveStorageKey = 'open-diff-create-backup-on-save'
+const backupRetentionCountStorageKey = 'open-diff-backup-retention-count'
+const showSessionsInToolbarStorageKey = 'open-diff-show-sessions-in-toolbar'
+const showGotoInToolbarStorageKey = 'open-diff-show-goto-in-toolbar'
+const showWrapInToolbarStorageKey = 'open-diff-show-wrap-in-toolbar'
+const showSyncNowInToolbarStorageKey = 'open-diff-show-sync-now-in-toolbar'
 const showStatusBarStorageKey = 'open-diff-show-status-bar'
 const showPathBarsStorageKey = 'open-diff-show-path-bars'
 const showSidebarStorageKey = 'open-diff-show-sidebar'
@@ -124,6 +129,11 @@ export const useSettingsStore = defineStore('settings', () => {
   const showToolbarLabels = ref(loadShowToolbarLabels())
   const largeToolbarButtons = ref(loadLargeToolbarButtons())
   const createBackupOnSave = ref(loadCreateBackupOnSave())
+  const backupRetentionCount = ref(loadBackupRetentionCount())
+  const showSessionsInToolbar = ref(loadShowSessionsInToolbar())
+  const showGotoInToolbar = ref(loadShowGotoInToolbar())
+  const showWrapInToolbar = ref(loadShowWrapInToolbar())
+  const showSyncNowInToolbar = ref(loadShowSyncNowInToolbar())
   const showStatusBar = ref(loadShowStatusBar())
   const showPathBars = ref(loadShowPathBars())
   const showSidebar = ref(loadShowSidebar())
@@ -294,6 +304,46 @@ export const useSettingsStore = defineStore('settings', () => {
     createBackupOnSave,
     (value) => {
       localStorage.setItem(createBackupOnSaveStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    backupRetentionCount,
+    (value) => {
+      localStorage.setItem(backupRetentionCountStorageKey, String(value))
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showSessionsInToolbar,
+    (value) => {
+      localStorage.setItem(showSessionsInToolbarStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showGotoInToolbar,
+    (value) => {
+      localStorage.setItem(showGotoInToolbarStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showWrapInToolbar,
+    (value) => {
+      localStorage.setItem(showWrapInToolbarStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showSyncNowInToolbar,
+    (value) => {
+      localStorage.setItem(showSyncNowInToolbarStorageKey, value ? '1' : '0')
     },
     { immediate: true, flush: 'sync' },
   )
@@ -562,6 +612,26 @@ export const useSettingsStore = defineStore('settings', () => {
     createBackupOnSave.value = value
   }
 
+  function setBackupRetentionCount(value: number): void {
+    backupRetentionCount.value = Math.max(1, Math.min(9, Math.floor(value)))
+  }
+
+  function setShowSessionsInToolbar(value: boolean): void {
+    showSessionsInToolbar.value = value
+  }
+
+  function setShowGotoInToolbar(value: boolean): void {
+    showGotoInToolbar.value = value
+  }
+
+  function setShowWrapInToolbar(value: boolean): void {
+    showWrapInToolbar.value = value
+  }
+
+  function setShowSyncNowInToolbar(value: boolean): void {
+    showSyncNowInToolbar.value = value
+  }
+
   function setShowStatusBar(value: boolean): void {
     showStatusBar.value = value
   }
@@ -633,6 +703,11 @@ export const useSettingsStore = defineStore('settings', () => {
       showToolbarLabels: showToolbarLabels.value,
       largeToolbarButtons: largeToolbarButtons.value,
       createBackupOnSave: createBackupOnSave.value,
+      backupRetentionCount: backupRetentionCount.value,
+      showSessionsInToolbar: showSessionsInToolbar.value,
+      showGotoInToolbar: showGotoInToolbar.value,
+      showWrapInToolbar: showWrapInToolbar.value,
+      showSyncNowInToolbar: showSyncNowInToolbar.value,
       showStatusBar: showStatusBar.value,
       showPathBars: showPathBars.value,
       showSidebar: showSidebar.value,
@@ -702,6 +777,25 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowToolbarLabels(packageValue.showToolbarLabels)
     setLargeToolbarButtons(packageValue.largeToolbarButtons)
     setCreateBackupOnSave(packageValue.createBackupOnSave)
+    setBackupRetentionCount(
+      typeof packageValue.backupRetentionCount === 'number' ? packageValue.backupRetentionCount : 1,
+    )
+    setShowSessionsInToolbar(
+      typeof packageValue.showSessionsInToolbar === 'boolean'
+        ? packageValue.showSessionsInToolbar
+        : true,
+    )
+    setShowGotoInToolbar(
+      typeof packageValue.showGotoInToolbar === 'boolean' ? packageValue.showGotoInToolbar : true,
+    )
+    setShowWrapInToolbar(
+      typeof packageValue.showWrapInToolbar === 'boolean' ? packageValue.showWrapInToolbar : true,
+    )
+    setShowSyncNowInToolbar(
+      typeof packageValue.showSyncNowInToolbar === 'boolean'
+        ? packageValue.showSyncNowInToolbar
+        : true,
+    )
     setShowStatusBar(
       typeof packageValue.showStatusBar === 'boolean' ? packageValue.showStatusBar : true,
     )
@@ -774,6 +868,11 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowToolbarLabels(true)
     setLargeToolbarButtons(true)
     setCreateBackupOnSave(false)
+    setBackupRetentionCount(1)
+    setShowSessionsInToolbar(true)
+    setShowGotoInToolbar(true)
+    setShowWrapInToolbar(true)
+    setShowSyncNowInToolbar(true)
     setShowStatusBar(true)
     setShowPathBars(true)
     setShowSidebar(false)
@@ -809,6 +908,11 @@ export const useSettingsStore = defineStore('settings', () => {
     showToolbarLabels,
     largeToolbarButtons,
     createBackupOnSave,
+    backupRetentionCount,
+    showSessionsInToolbar,
+    showGotoInToolbar,
+    showWrapInToolbar,
+    showSyncNowInToolbar,
     showStatusBar,
     showPathBars,
     showSidebar,
@@ -845,6 +949,11 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowToolbarLabels,
     setLargeToolbarButtons,
     setCreateBackupOnSave,
+    setBackupRetentionCount,
+    setShowSessionsInToolbar,
+    setShowGotoInToolbar,
+    setShowWrapInToolbar,
+    setShowSyncNowInToolbar,
     setShowStatusBar,
     setShowPathBars,
     setShowSidebar,
@@ -1227,6 +1336,62 @@ function loadCreateBackupOnSave(): boolean {
   }
 
   return stored !== '0'
+}
+
+function loadBackupRetentionCount(): number {
+  const rawValue = localStorage.getItem(backupRetentionCountStorageKey)
+
+  if (rawValue === null) {
+    return 1
+  }
+
+  const parsed = Number(rawValue)
+
+  if (!Number.isFinite(parsed)) {
+    return 1
+  }
+
+  return Math.max(1, Math.min(9, Math.floor(parsed)))
+}
+
+function loadShowSessionsInToolbar(): boolean {
+  const stored = localStorage.getItem(showSessionsInToolbarStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadShowGotoInToolbar(): boolean {
+  const stored = localStorage.getItem(showGotoInToolbarStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadShowWrapInToolbar(): boolean {
+  const stored = localStorage.getItem(showWrapInToolbarStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadShowSyncNowInToolbar(): boolean {
+  const stored = localStorage.getItem(showSyncNowInToolbarStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
 }
 
 function applyDiffColors(colors: DiffHighlightColors): void {

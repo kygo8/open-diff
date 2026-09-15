@@ -1037,9 +1037,17 @@ export const jaJP: LanguagePack = {
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
     'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.backupRetentionCount': '番号付きバックアップを保持',
+    'ui.commandsVisibility': 'コマンド',
+    'ui.commandsVisibilityHint':
+      'キャプチャ MainBar の基本セットを超えるオプションのセッションツールバーコマンドを表示または非表示にします。',
+    'ui.showSessionsInToolbar': 'セッションツールバーにセッションを表示',
+    'ui.showGotoInToolbar': 'テキストツールバーに行へ移動を表示',
+    'ui.showWrapInToolbar': 'テキストツールバーに折り返しを表示',
+    'ui.showSyncNowInToolbar': 'フォルダー同期ツールバーに今すぐ同期を表示',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
-      '有効な場合、上書き保存時にファイル横へ .bak を作成します。無効にするとバックアップなしで書き込みます。',
+      '有効にすると、上書き保存時にファイル横へ .bak を作り、番号付きバックアップを最大 N 件保持します（.bak、.bak2…）。オフにするとバックアップなしで書き込みます。',
     'ui.selectAll': 'Select All',
     'ui.selectAllFiles': 'Select All Files',
     'ui.selectSame': 'Select Same',

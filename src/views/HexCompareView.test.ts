@@ -416,6 +416,7 @@ describe('HexCompareView', () => {
       path: 'C:/bin/left.bin',
       edits: [{ offset: 1, value: 88 }],
       createBackup: true,
+      backupRetention: 1,
     })
   })
 

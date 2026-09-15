@@ -1470,18 +1470,23 @@ pub fn save_hex_edits(
     path: String,
     edits: Vec<hex_core::HexByteEdit>,
     create_backup: Option<bool>,
+    backup_retention: Option<u32>,
 ) -> Result<hex_core::HexSaveResult, AppErrorPayload> {
-    hex_core::save_hex_byte_edits_with_backup(&path, &edits, create_backup.unwrap_or(true)).map_err(
-        |error| {
-            AppErrorPayload::new(
-                AppErrorCode::FileWriteFailed,
-                "error.file.writeFailed.message",
-                format!("{error:?}"),
-            )
-            .with_param("path", &path)
-            .with_suggestion_key("error.file.writeFailed.suggestion")
-        },
+    hex_core::save_hex_byte_edits_with_backup_retention(
+        &path,
+        &edits,
+        create_backup.unwrap_or(true),
+        backup_retention.unwrap_or(1).clamp(1, 9),
     )
+    .map_err(|error| {
+        AppErrorPayload::new(
+            AppErrorCode::FileWriteFailed,
+            "error.file.writeFailed.message",
+            format!("{error:?}"),
+        )
+        .with_param("path", &path)
+        .with_suggestion_key("error.file.writeFailed.suggestion")
+    })
 }
 
 #[tauri::command]
@@ -2894,9 +2899,15 @@ pub fn save_text_file(
     path: String,
     text: String,
     create_backup: Option<bool>,
+    backup_retention: Option<u32>,
 ) -> Result<SaveTextFileResponse, AppErrorPayload> {
-    file_core::save_text_file_with_backup(&path, text, create_backup.unwrap_or(true))
-        .map_err(|error| file_error("write", &path, error))
+    file_core::save_text_file_with_backup_retention(
+        &path,
+        text,
+        create_backup.unwrap_or(true),
+        backup_retention.unwrap_or(1).clamp(1, 9),
+    )
+    .map_err(|error| file_error("write", &path, error))
 }
 
 #[tauri::command]
@@ -7204,6 +7215,7 @@ mod tests {
             path.display().to_string(),
             "saved from command".to_owned(),
             Some(true),
+            None,
         )
         .expect("temp file should save");
 

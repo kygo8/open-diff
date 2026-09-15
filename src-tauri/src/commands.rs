@@ -1303,7 +1303,9 @@ pub fn execute_folder_merge_plan(
     right_root: String,
     output_root: String,
     archive_extensions: Option<Vec<String>>,
+    filters: Option<FolderNameFilters>,
 ) -> Result<FolderMergeExecutionResponse, AppErrorPayload> {
+    let name_filters = filters.unwrap_or_default();
     let document = folder_merge_document(
         &left_root,
         &base_root,
@@ -1311,6 +1313,11 @@ pub fn execute_folder_merge_plan(
         &output_root,
         archive_extensions.as_deref(),
     )?;
+    let document = if name_filters.is_active() {
+        apply_name_filters_to_merge_document(document, &name_filters.to_file_filters())
+    } else {
+        document
+    };
     let plan = folder_merge_core::build_folder_merge_plan(&document);
 
     fs::create_dir_all(&output_root).map_err(|error| file_io_error(&output_root, error))?;
@@ -3939,7 +3946,7 @@ fn copy_folder_merge_source(
     let source = folder_merge_path(source_root, relative_path);
     let target = folder_merge_path(output_root, relative_path);
 
-    match copy_path_recursive(&source, &target) {
+    match copy_folder_merge_path(&source, &target) {
         Ok(()) => (
             FolderMergeExecutionStatus::Executed,
             success_detail.to_owned(),
@@ -3971,7 +3978,7 @@ fn keep_or_seed_folder_merge_output(
         .iter()
         .map(|root| folder_merge_path(root, &action.relative_path))
         .find(|path| path.exists())
-        .map(|source| match copy_path_recursive(&source, &target) {
+        .map(|source| match copy_folder_merge_path(&source, &target) {
             Ok(()) => (
                 FolderMergeExecutionStatus::Executed,
                 "Copied unchanged item to output.".to_owned(),
@@ -4016,6 +4023,30 @@ fn delete_folder_merge_output(
             format!("Failed: {error}"),
         ),
     }
+}
+
+/// Copy one merge plan path into output.
+/// Directories are created empty — children are applied by their own plan rows —
+/// so name-mask filters are not bypassed by recursive directory copies.
+fn copy_folder_merge_path(source: &Path, target: &Path) -> std::io::Result<()> {
+    if source.is_dir() {
+        if target.is_file() {
+            fs::remove_file(target)?;
+        }
+
+        fs::create_dir_all(target)?;
+        return Ok(());
+    }
+
+    if target.is_dir() {
+        fs::remove_dir_all(target)?;
+    }
+
+    if let Some(parent) = target.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    fs::copy(source, target).map(|_| ())
 }
 
 fn copy_path_recursive(source: &Path, target: &Path) -> std::io::Result<()> {
@@ -5843,6 +5874,70 @@ mod tests {
     }
 
     #[test]
+    fn execute_folder_merge_plan_applies_shared_name_filters() {
+        let root = unique_temp_dir("folder-merge-execute-name-filters");
+        let base = root.join("base");
+        let left = root.join("left");
+        let right = root.join("right");
+        let output = root.join("output");
+
+        fs::create_dir_all(base.join("src")).expect("base src should be created");
+        fs::create_dir_all(left.join("src")).expect("left src should be created");
+        fs::create_dir_all(right.join("src")).expect("right src should be created");
+        fs::create_dir_all(&output).expect("output should be created");
+        fs::write(base.join("src").join("keep.txt"), "keep").expect("base keep");
+        fs::write(left.join("src").join("keep.txt"), "keep").expect("left keep");
+        fs::write(right.join("src").join("keep.txt"), "keep").expect("right keep");
+        fs::write(left.join("src").join("skip.log"), "noise").expect("left skip");
+        fs::write(right.join("src").join("skip.log"), "noise").expect("right skip");
+        fs::write(left.join("extra.exe"), "binary").expect("left ex");
+        fs::write(right.join("extra.exe"), "binary").expect("right ex");
+        fs::write(left.join("only.txt"), "left only").expect("left only");
+
+        let response = execute_folder_merge_plan(
+            left.display().to_string(),
+            base.display().to_string(),
+            right.display().to_string(),
+            output.display().to_string(),
+            None,
+            Some(FolderNameFilters {
+                include: vec!["*.txt".to_owned()],
+                exclude: Vec::new(),
+                case_sensitive: false,
+            }),
+        )
+        .expect("include filter should execute a merge plan");
+
+        assert_eq!(
+            fs::read_to_string(output.join("src").join("keep.txt")).expect("keep should exist"),
+            "keep",
+            "include *.txt should copy matching text files"
+        );
+        assert_eq!(
+            fs::read_to_string(output.join("only.txt")).expect("only.txt should exist"),
+            "left only",
+            "include *.txt should copy left-only matching files"
+        );
+        assert!(
+            !output.join("src").join("skip.log").exists(),
+            "include *.txt should not copy non-matching log files"
+        );
+        assert!(
+            !output.join("extra.exe").exists(),
+            "include *.txt should not copy non-matching binaries"
+        );
+        assert_eq!(response.summary.failed, 0);
+        assert!(
+            response
+                .rows
+                .iter()
+                .all(|row| row.path != "src/skip.log" && row.path != "extra.exe"),
+            "execute rows should omit filtered paths: {:?}",
+            response.rows
+        );
+    }
+
+    #[test]
     fn folder_compare_file_operation_commands_apply_local_changes() {
         let root = unique_temp_dir("folder-operation-command");
         let left = root.join("left");
@@ -5941,6 +6036,7 @@ mod tests {
             right.display().to_string(),
             output.display().to_string(),
             None,
+            None,
         )
         .expect("valid folders should execute automatic merge actions");
 
@@ -6004,6 +6100,7 @@ mod tests {
             base.display().to_string(),
             right.display().to_string(),
             output.display().to_string(),
+            None,
             None,
         )
         .expect("valid folders should execute automatic merge actions");

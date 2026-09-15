@@ -180,6 +180,36 @@ function onFolderFilterStripChange(event: Event): void {
   persistFolderNameFilters()
 }
 
+let folderNameFilterRebuildTimer: ReturnType<typeof setTimeout> | undefined
+
+watch(
+  folderNameFilters,
+  () => {
+    if (folderNameFilterRebuildTimer !== undefined) {
+      clearTimeout(folderNameFilterRebuildTimer)
+    }
+
+    folderNameFilterRebuildTimer = setTimeout(() => {
+      folderNameFilterRebuildTimer = undefined
+
+      if (previewLoading.value || syncRunning.value) {
+        return
+      }
+
+      if (!leftPath.value || !rightPath.value) {
+        return
+      }
+
+      if (!previewName.value && previewRows.value.length === 0) {
+        return
+      }
+
+      void previewSync()
+    }, 350)
+  },
+  { deep: true },
+)
+
 const showSyncSelect = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
 const showPeek = ref(false)
@@ -403,6 +433,11 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  if (folderNameFilterRebuildTimer !== undefined) {
+    clearTimeout(folderNameFilterRebuildTimer)
+    folderNameFilterRebuildTimer = undefined
+  }
+
   folderPathNavStore.reset()
 })
 

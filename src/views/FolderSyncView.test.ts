@@ -1,7 +1,7 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useSettingsStore } from '@/stores/settings'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderSyncView from './FolderSyncView.vue'
 
 const push = vi.fn()
@@ -83,6 +83,10 @@ vi.mock('@/api/sync', () => ({
 const clipboardWriteText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined)
 
 describe('FolderSyncView', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   beforeEach(() => {
     localStorage.clear()
     setActivePinia(createPinia())
@@ -373,6 +377,48 @@ describe('FolderSyncView', () => {
 
     await wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').trigger('click')
     expect(wrapper.find('[data-testid="folder-sync-peek-panel"]').exists()).toBe(true)
+  })
+
+  it('debounces Filters strip changes into an automatic sync preview rebuild', async () => {
+    vi.useFakeTimers()
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+    vi.mocked(previewFolderSync).mockClear()
+
+    const pattern = wrapper.find('[data-testid="folder-sync-filter-pattern"]')
+
+    await pattern.setValue('*.exe')
+    await pattern.trigger('change')
+    await flushPromises()
+
+    expect(previewFolderSync).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(350)
+    await flushPromises()
+
+    expect(previewFolderSync).toHaveBeenCalledWith({
+      leftRoot: 'D:/deploy/package',
+      rightRoot: 'D:/deploy/prod',
+      strategy: 'updateBoth',
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
+      filters: { include: ['*.exe'], exclude: [], caseSensitive: false },
+    })
+
+    vi.useRealTimers()
   })
 
   it('exports the folder sync report to clipboard and a sibling text file', async () => {

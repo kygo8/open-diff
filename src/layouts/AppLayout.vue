@@ -1476,7 +1476,8 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menu-panel button {
   min-width: 0;
-  min-height: 28px;
+  height: 24px;
+  min-height: 24px;
   padding: 0 8px;
   overflow: hidden;
   border: 0;

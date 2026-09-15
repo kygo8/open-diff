@@ -390,6 +390,8 @@ const hexSessionToolbar = computed(() =>
     diffs: true,
     same: leftCells.value.length > 0 || rightCells.value.length > 0,
     rules: true,
+    format: true,
+    sessions: true,
     copy: selectedByteOffset.value !== null,
     'next-diff': navigationRanges.value.length > 0,
     'prev-diff': navigationRanges.value.length > 0,
@@ -413,6 +415,12 @@ function runHexToolbarCommand(commandId: string): void {
       rowFilter.value = 'same'
       break
     case 'rules':
+      openHexSessionSettings()
+      break
+    case 'format':
+      openHexSessionSettings()
+      break
+    case 'sessions':
       openHexSessionSettings()
       break
     case 'copy':

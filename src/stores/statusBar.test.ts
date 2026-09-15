@@ -16,6 +16,7 @@ describe('useStatusBarStore', () => {
       encoding: 'UTF-8',
       filterStatus: 'All rows',
       source: 'workspace',
+      loadTimeSeconds: null,
     })
     expect(store.segments).toEqual([
       'Ready',
@@ -34,6 +35,7 @@ describe('useStatusBarStore', () => {
       encoding: 'UTF-8 / LF',
       filterStatus: '1 ignored',
       source: 'text-compare',
+      loadTimeSeconds: 0.03,
     })
 
     expect(store.report).toEqual({
@@ -42,12 +44,14 @@ describe('useStatusBarStore', () => {
       encoding: 'UTF-8 / LF',
       filterStatus: '1 ignored',
       source: 'text-compare',
+      loadTimeSeconds: 0.03,
     })
     expect(store.segments).toEqual([
       'Compared',
-      'Differences: 3',
+      '≠ 3 difference sections',
       'Encoding: UTF-8 / LF',
       'Filter: 1 ignored',
+      'Load time: 0.03 seconds',
     ])
   })
 })

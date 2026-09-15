@@ -719,6 +719,8 @@ const tableSessionToolbar = computed(() =>
     same: false,
     minor: false,
     rules: false,
+    format: true,
+    sessions: true,
     copy: false,
     'next-diff': tableDifferenceCells.value.length > 0,
     'prev-diff': tableDifferenceCells.value.length > 0,
@@ -731,6 +733,12 @@ function runTableToolbarCommand(commandId: string): void {
   switch (commandId) {
     case 'home':
       goHomeFromTable()
+      break
+    case 'format':
+      openTableSessionSettings()
+      break
+    case 'sessions':
+      openTableSessionSettings()
       break
     case 'next-diff':
       goToNextTableDifference()

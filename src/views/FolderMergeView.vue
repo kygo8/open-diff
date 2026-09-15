@@ -619,6 +619,11 @@ watch(
             v-model="leftPath"
             data-testid="folder-merge-left-path"
           />
+          <span
+            class="merge-path-footer"
+            data-testid="folder-merge-left-editing-status"
+            >{{ $t('status.editingDisabled') }}</span
+          >
         </label>
         <label>
           <span>{{ $t('ui.baseFolder') }}</span>
@@ -626,6 +631,11 @@ watch(
             v-model="basePath"
             data-testid="folder-merge-base-path"
           />
+          <span
+            class="merge-path-footer"
+            data-testid="folder-merge-base-editing-status"
+            >{{ $t('status.editingDisabled') }}</span
+          >
         </label>
         <label>
           <span>{{ $t('ui.rightFolder') }}</span>
@@ -633,6 +643,11 @@ watch(
             v-model="rightPath"
             data-testid="folder-merge-right-path"
           />
+          <span
+            class="merge-path-footer"
+            data-testid="folder-merge-right-editing-status"
+            >{{ $t('status.editingDisabled') }}</span
+          >
         </label>
         <label>
           <span>{{ $t('ui.outputFolder') }}</span>
@@ -1089,6 +1104,11 @@ h1 {
   display: grid;
   gap: 5px;
   min-width: 0;
+}
+
+.merge-path-footer {
+  color: var(--od-muted, #6b7280);
+  font-size: 11px;
 }
 
 .merge-paths label span {

@@ -118,6 +118,8 @@ describe('HexCompareView', () => {
       'diffs',
       'same',
       'rules',
+      'format',
+      'sessions',
       'copy',
       'next-diff',
       'prev-diff',

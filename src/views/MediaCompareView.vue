@@ -225,6 +225,7 @@ const mediaSessionToolbar = computed(() =>
     rules: true,
     swap: Boolean(leftPath.value || rightPath.value),
     reload: Boolean(leftPath.value && rightPath.value),
+    play2: canPreviewMedia.value,
   }),
 )
 
@@ -390,6 +391,12 @@ function runMediaToolbarCommand(commandId: string): void {
 
   if (commandId === 'reload') {
     void runMediaCompare()
+
+    return
+  }
+
+  if (commandId === 'play2') {
+    togglePlayback()
   }
 }
 </script>

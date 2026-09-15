@@ -131,6 +131,8 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
       item('context', 'ui.context', 'C'),
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
+      item('format', 'ui.format', 'F'),
+      item('sessions', 'ui.sessions', 'S'),
       item('copy', 'ui.copy', 'C'),
       item('next-section', 'ui.nextSection', 'N'),
       item('prev-section', 'ui.prevSection', 'P'),
@@ -147,6 +149,8 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
       item('same', 'ui.same', '='),
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
+      item('format', 'ui.format', 'F'),
+      item('sessions', 'ui.sessions', 'S'),
       item('copy', 'ui.copy', 'C'),
       item('next-diff', 'ui.nextDiff', 'N'),
       item('prev-diff', 'ui.prevDiff', 'P'),
@@ -162,6 +166,8 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
       item('diffs', 'ui.diffs', '!='),
       item('same', 'ui.same', '='),
       item('rules', 'ui.rules', 'R'),
+      item('format', 'ui.format', 'F'),
+      item('sessions', 'ui.sessions', 'S'),
       item('copy', 'ui.copy', 'C'),
       item('next-diff', 'ui.nextDiff', 'N'),
       item('prev-diff', 'ui.prevDiff', 'P'),
@@ -208,6 +214,7 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
       item('rules', 'ui.rules', 'R'),
       item('swap', 'ui.swap', '<>'),
       item('reload', 'ui.reload', 'R'),
+      item('play2', 'ui.play2', 'P2'),
     ]
   }
 

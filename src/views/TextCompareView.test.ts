@@ -108,6 +108,8 @@ describe('TextCompareView', () => {
       'context',
       'minor',
       'rules',
+      'format',
+      'sessions',
       'copy',
       'next-section',
       'prev-section',
@@ -356,6 +358,7 @@ describe('TextCompareView', () => {
         comparisonStatus: 'Editing',
         differenceCount: null,
         source: 'text-compare',
+        loadTimeSeconds: null,
       }),
     )
 
@@ -370,6 +373,8 @@ describe('TextCompareView', () => {
         source: 'text-compare',
       }),
     )
+    expect(typeof statusBar.report.loadTimeSeconds).toBe('number')
+    expect(statusBar.report.loadTimeSeconds ?? -1).toBeGreaterThanOrEqual(0)
   })
 
   it('marks edits as dirty and recomputes diff from edited text', async () => {

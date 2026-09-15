@@ -183,6 +183,7 @@ describe('MediaCompareView', () => {
     expect(
       wrapper.find('[data-testid="media-session-toolbar-minor"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(wrapper.find('[data-testid="media-session-toolbar-play2"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="media-session-toolbar-rules"]').attributes('disabled'),
     ).toBeUndefined()

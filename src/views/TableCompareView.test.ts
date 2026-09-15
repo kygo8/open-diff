@@ -289,6 +289,8 @@ describe('TableCompareView', () => {
       'same',
       'minor',
       'rules',
+      'format',
+      'sessions',
       'copy',
       'next-diff',
       'prev-diff',

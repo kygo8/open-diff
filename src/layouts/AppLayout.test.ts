@@ -491,13 +491,15 @@ describe('AppLayout command palette', () => {
       encoding: 'UTF-8 / LF',
       filterStatus: 'All rows',
       source: 'text-compare',
+      loadTimeSeconds: 0.03,
     })
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Compared')
-    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Differences: 4')
+    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('≠ 4 difference sections')
     expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Encoding: UTF-8 / LF')
     expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Filter: All rows')
+    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Load time: 0.03 seconds')
   })
 
   it('launches a compare session from a global desktop path drop', async () => {

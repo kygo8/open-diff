@@ -580,6 +580,7 @@ watch(
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
+      case 'clear-session':
       case 'cut':
       case 'delete':
       case 'export-settings':

@@ -213,6 +213,7 @@ watch(
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
+      case 'clear-session':
       case 'collapse-all':
       case 'compare':
       case 'copy':

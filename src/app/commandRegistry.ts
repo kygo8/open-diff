@@ -15,6 +15,7 @@ export type CommandId =
   | 'session.openSession'
   | 'session.loadWorkspace'
   | 'session.closeTab'
+  | 'session.clear'
   | 'session.exit'
   | 'session.settings'
   | 'edit.copyLeft'
@@ -91,6 +92,7 @@ export type CommandAction =
         | 'show-differences'
         | 'workspace-save'
         | 'close-tab'
+        | 'clear-session'
         | 'about'
         | 'check-for-updates'
         | 'help-contents'
@@ -197,7 +199,7 @@ export const commandRegistry: AppCommand[] = [
   },
   {
     id: 'session.save',
-    titleKey: 'ui.save',
+    titleKey: 'ui.saveSession',
     keywords: ['save', 'session'],
     enabled: true,
     visibility: 'view',
@@ -207,7 +209,7 @@ export const commandRegistry: AppCommand[] = [
   },
   {
     id: 'session.saveAs',
-    titleKey: 'ui.saveAs',
+    titleKey: 'ui.saveSessionAs',
     keywords: ['save', 'as', 'session'],
     enabled: true,
     visibility: 'view',
@@ -452,6 +454,16 @@ export const commandRegistry: AppCommand[] = [
     action: { type: 'view-action', name: 'close-tab' },
   },
   {
+    id: 'session.clear',
+    titleKey: 'ui.clearSession',
+    keywords: ['session', 'clear', 'reset'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'C'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'clear-session' },
+  },
+  {
     id: 'session.exit',
     titleKey: 'ui.exit',
     keywords: ['exit', 'quit'],
@@ -473,7 +485,7 @@ export const commandRegistry: AppCommand[] = [
   },
   {
     id: 'session.swap',
-    titleKey: 'ui.swap',
+    titleKey: 'ui.swapSides',
     keywords: ['session', 'swap', 'sides'],
     enabled: true,
     visibility: 'view',

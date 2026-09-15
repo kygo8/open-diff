@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import HexCompareView from './HexCompareView.vue'
 import {
@@ -69,6 +70,7 @@ async function runCompare(wrapper: ReturnType<typeof mount>): Promise<void> {
 describe('HexCompareView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    useSettingsStore().setShowSessionsInToolbar(true)
     vi.mocked(compareHexFiles).mockReset()
     vi.mocked(pathFileStamp).mockReset()
     vi.mocked(pathFileStamp).mockResolvedValue({

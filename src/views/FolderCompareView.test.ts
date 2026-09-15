@@ -1,5 +1,6 @@
 import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FolderCompareView from './FolderCompareView.vue'
 import {
@@ -225,6 +226,7 @@ describe('FolderCompareView', () => {
   beforeEach(() => {
     localStorage.clear()
     setActivePinia(createPinia())
+    useSettingsStore().setShowSessionsInToolbar(true)
     push.mockClear()
     vi.clearAllMocks()
   })

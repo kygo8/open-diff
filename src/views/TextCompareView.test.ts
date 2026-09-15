@@ -1,5 +1,6 @@
 import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextCompareView from './TextCompareView.vue'
@@ -123,6 +124,9 @@ describe('TextCompareView', () => {
   beforeEach(() => {
     textDiffStubWordWrap = false
     setActivePinia(createPinia())
+    useSettingsStore().setShowSessionsInToolbar(true)
+    useSettingsStore().setShowGotoInToolbar(true)
+    useSettingsStore().setShowWrapInToolbar(true)
     vi.mocked(diffText).mockClear()
     vi.mocked(readTextFile).mockClear()
   })

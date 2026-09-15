@@ -39,6 +39,7 @@ import { listenDesktopPathDrop } from '@/app/desktopDrop'
 import { openSessionWindow } from '@/app/sessionWindow'
 import { resolveDropLaunchFromPaths } from '@/app/dropLaunch'
 import { sessionCatalog } from '@/app/sessionCatalog'
+import { createUntitledSession } from '@/app/sessionFactory'
 import { isSessionWorkbenchRoute, tabRoutePathname } from '@/app/sessionTabRoute'
 import { isSingleSessionFrame, shouldShowTabStrip } from '@/app/shellChrome'
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
@@ -248,7 +249,9 @@ const appMenus: AppMenuDefinition[] = [
       'session.reload',
       'session.rules',
       'session.settings',
+      'session.clear',
       'session.closeTab',
+      'report.save',
       'session.exit',
     ],
   },
@@ -284,6 +287,7 @@ const appMenus: AppMenuDefinition[] = [
       'view.filters',
       'edit.copyLeft',
       'edit.copyRight',
+      'report.save',
       'workspace.save',
     ],
   },
@@ -315,6 +319,8 @@ const appMenus: AppMenuDefinition[] = [
       'view.toggleMinor',
       'view.expandAll',
       'view.collapseAll',
+      'diff.next',
+      'diff.previous',
       'view.filters',
       'session.swap',
       'session.reload',
@@ -390,6 +396,96 @@ async function openHelpLink(url: string, kind: 'updates' | 'docs' | 'support'): 
 
 function closeAboutDialog(): void {
   aboutDialogOpen.value = false
+}
+
+function sessionTypeForActiveRoute(): SessionType | undefined {
+  const pathname = tabRoutePathname(route.fullPath)
+  const entry = sessionCatalog.find((item) => item.route === pathname)
+
+  return entry?.type
+}
+
+function saveCurrentSessionFromMenu(saveAs: boolean): void {
+  const sessionType = sessionTypeForActiveRoute()
+
+  if (!sessionType || !isSessionWorkbenchPath(route.path)) {
+    statusBar.reportStatus({
+      comparisonStatus: t('ui.saveSession'),
+      source: 'session',
+    })
+
+    return
+  }
+
+  const active = tabs.activeTab
+  let name = active.titleKey ? t(active.titleKey) : active.title
+
+  if (saveAs) {
+    name = `${name} Copy`
+  }
+
+  const session = createUntitledSession(sessionType)
+
+  session.name = name
+
+  if (lastCompare.folder && sessionType.startsWith('folder')) {
+    session.locations = {
+      left: { uri: lastCompare.folder.leftRoot, readOnly: false },
+      right: { uri: lastCompare.folder.rightRoot, readOnly: false },
+    }
+  } else if (lastCompare.text && sessionType.includes('text')) {
+    session.locations = {
+      left: lastCompare.text.leftSource
+        ? { uri: lastCompare.text.leftSource, readOnly: false }
+        : undefined,
+      right: lastCompare.text.rightSource
+        ? { uri: lastCompare.text.rightSource, readOnly: false }
+        : undefined,
+    }
+  }
+
+  savedSessions.saveSession(session)
+
+  if (active.id !== 'home') {
+    tabs.setTabDirty(active.id, false)
+  }
+
+  statusBar.reportStatus({
+    comparisonStatus: saveAs ? t('ui.saveSessionAs') : t('ui.saveSession'),
+    source: 'session',
+  })
+}
+
+function clearSessionFromMenu(): void {
+  const sessionType = sessionTypeForActiveRoute()
+  const active = tabs.activeTab
+
+  if (!sessionType || !isSessionWorkbenchPath(route.path) || !tabs.canCloseTab(active.id)) {
+    statusBar.reportStatus({
+      comparisonStatus: t('ui.clearSession'),
+      source: 'session',
+    })
+
+    return
+  }
+
+  const entry = sessionCatalog.find((item) => item.type === sessionType)
+  const routePath = entry?.route ?? tabRoutePathname(active.route)
+
+  tabs.closeTab(active.id)
+  const opened = tabs.openTab({
+    title: entry ? t(entry.titleKey) : active.title,
+    titleKey: entry?.titleKey,
+    route: routePath,
+    dirty: false,
+    forceNew: true,
+  })
+
+  void router.push(opened.route)
+  statusBar.reportStatus({
+    comparisonStatus: t('ui.clearSession'),
+    source: 'session',
+  })
 }
 
 function saveCurrentWorkspaceFromMenu(): void {
@@ -582,8 +678,11 @@ const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
     if (name === 'help-support') {
       void openHelpLink(SUPPORT_URL, 'support')
     }
-    if (name === 'save' && tabs.activeTab.id !== 'home') {
-      tabs.setTabDirty(tabs.activeTab.id, true)
+    if (name === 'save' || name === 'save-as') {
+      saveCurrentSessionFromMenu(name === 'save-as')
+    }
+    if (name === 'clear-session') {
+      clearSessionFromMenu()
     }
     if (name === 'close-tab') {
       const active = tabs.activeTab
@@ -938,10 +1037,41 @@ function localizeStatusValue(value: string): string {
   return keys[value] ? t(keys[value]) : value
 }
 
+function isSessionWorkbenchPath(path: string): boolean {
+  return path !== '/' && path !== '/settings' && !path.startsWith('/settings/')
+}
+
+function resolveMenuCommand(command: AppCommand): AppCommand {
+  if (command.id === 'session.closeTab') {
+    return { ...command, enabled: tabs.canCloseTab(tabs.activeTab.id) }
+  }
+
+  if (
+    command.id === 'session.save' ||
+    command.id === 'session.saveAs' ||
+    command.id === 'session.clear' ||
+    command.id === 'session.export' ||
+    command.id === 'session.compare' ||
+    command.id === 'session.swap' ||
+    command.id === 'session.reload' ||
+    command.id === 'session.rules' ||
+    command.id === 'session.settings' ||
+    command.id === 'report.save' ||
+    command.id === 'diff.next' ||
+    command.id === 'diff.previous' ||
+    command.id === 'sync.syncNow'
+  ) {
+    return { ...command, enabled: command.enabled && isSessionWorkbenchPath(route.path) }
+  }
+
+  return command
+}
+
 function commandsForMenu(menu: AppMenuDefinition): AppCommand[] {
   return menu.commandIds
     .map((commandId) => menuCommandLookup.value.get(commandId))
     .filter((command): command is AppCommand => Boolean(command?.placements.includes('menu')))
+    .map(resolveMenuCommand)
 }
 
 function toggleApplicationMenu(menu: AppMenuId): void {
@@ -2056,14 +2186,15 @@ const sourceSessionTypes = new Set<SessionType>([
   background: #f4f4f4;
   color: #111827;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.2;
 }
 
 .status-bar-pane {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 10px;
+  padding: 0 8px;
   overflow: hidden;
   border-right: 1px solid #d2d6dc;
   text-overflow: ellipsis;

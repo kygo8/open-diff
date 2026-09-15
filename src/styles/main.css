@@ -483,8 +483,8 @@ select {
   align-items: center;
   gap: 0;
   min-width: 0;
-  min-height: 58px;
-  padding: 0 8px;
+  min-height: 32px;
+  padding: 0 6px;
   overflow: auto hidden;
   border-bottom: 1px solid #bfc4cc;
   background: #eeeeee;
@@ -493,12 +493,12 @@ select {
 .workbench-toolbar select,
 .workbench-toolbar input,
 .path-pair-bar input {
-  height: 24px;
+  height: 22px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-canvas);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .workbench-toolbar button,
@@ -512,14 +512,14 @@ select {
   min-width: 0;
   max-width: 12em;
   height: auto;
-  min-height: 24px;
-  padding: 4px 10px;
+  min-height: 22px;
+  padding: 2px 8px;
   overflow: hidden;
   border: 1px solid transparent;
   border-radius: 2px;
   background: transparent;
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -560,8 +560,8 @@ select {
 .path-pair-bar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr) auto;
-  min-height: 48px;
-  padding: 4px 10px;
+  min-height: 32px;
+  padding: 2px 8px;
   background: #f3f3f3;
 }
 
@@ -575,7 +575,7 @@ select {
 
 .path-pair-field span {
   color: var(--app-text-muted);
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -588,9 +588,9 @@ select {
 }
 
 .path-pair-swap {
-  width: 36px;
-  min-width: 36px;
-  height: 34px;
+  width: 28px;
+  min-width: 28px;
+  height: 24px;
   padding: 0;
 }
 
@@ -598,9 +598,9 @@ select {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 6px;
-  min-height: 40px;
-  padding: 4px 10px;
+  gap: 4px;
+  min-height: 28px;
+  padding: 2px 8px;
   border-bottom: 1px solid #bfc4cc;
   background: #f3f3f3;
 }
@@ -608,14 +608,14 @@ select {
 .bc-path-row input {
   width: 100%;
   min-width: 0;
-  height: 30px;
-  padding: 0 8px;
+  height: 22px;
+  padding: 0 6px;
   overflow: hidden;
   border: 1px solid #bfc4cc;
   border-radius: 2px;
   background: #ffffff;
   color: #111111;
-  font-size: 12px;
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -625,14 +625,14 @@ select {
   width: auto;
   min-width: max-content;
   max-width: none;
-  height: 34px;
-  padding: 0 10px;
+  height: 22px;
+  padding: 0 8px;
   overflow: visible;
   border: 1px solid #bfc4cc;
   border-radius: 2px;
   background: #ffffff;
   color: #111111;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -814,9 +814,9 @@ select {
   flex: 1 1 auto !important;
   width: auto !important;
   min-width: 0 !important;
-  height: 30px !important;
-  min-height: 30px !important;
-  padding: 0 8px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  padding: 0 6px !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
@@ -1166,4 +1166,17 @@ select {
 html[data-show-path-bars='0'] .bc-path-row,
 html[data-show-path-bars='0'] .path-pair-bar {
   display: none !important;
+}
+
+/* Dense path/status chrome toward capture strip height */
+.bc-path-footers {
+  gap: 4px !important;
+  padding: 0 2px 1px !important;
+}
+
+.path-side-footer {
+  min-height: 12px !important;
+  margin-top: 2px !important;
+  font-size: 10px !important;
+  line-height: 12px !important;
 }

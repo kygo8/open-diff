@@ -372,6 +372,7 @@ watch(
       case 'show-differences':
       case 'workspace-save':
       case 'close-tab':
+      case 'clear-session':
       case 'about':
       case 'check-for-updates':
       case 'help-contents':

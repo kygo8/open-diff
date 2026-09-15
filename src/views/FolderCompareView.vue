@@ -50,6 +50,17 @@ import {
 import { useStatusBarStore } from '@/stores/statusBar'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { useFolderPathNavStore } from '@/stores/folderPathNav'
+import {
+  createFolderPathNavStack,
+  folderPathNavBack,
+  folderPathNavCanBack,
+  folderPathNavCanForward,
+  folderPathNavCommit,
+  folderPathNavForward,
+  folderPathPairsEqual,
+  type FolderPathPair,
+} from '@/app/folderPathNavigation'
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { defaultTextCompareSessionOptions } from '@/app/textCompareSessionOptions'
 import { buildFolderCompareToolbar, pathBaseName, pathPairTitle } from '@/app/sessionToolbars'
@@ -162,6 +173,64 @@ const folderNameFilters = ref<FolderNameFilters>(loadFolderNameFilters())
 const showSessionSettings = ref(false)
 const showPeekPanel = ref(false)
 const viewActions = useViewActionsStore()
+const folderPathNavStore = useFolderPathNavStore()
+const folderPathNavStack = ref(createFolderPathNavStack<FolderPathPair>())
+let applyingFolderPathHistory = false
+
+function currentFolderPathPair(): FolderPathPair {
+  return { left: leftRoot.value, right: rightRoot.value }
+}
+
+function publishFolderPathNavCapabilities(): void {
+  folderPathNavStore.setCapabilities({
+    canGoBack: folderPathNavCanBack(folderPathNavStack.value),
+    canGoForward: folderPathNavCanForward(folderPathNavStack.value),
+  })
+}
+
+function recordFolderPathCommit(): void {
+  if (applyingFolderPathHistory) {
+    return
+  }
+
+  folderPathNavStack.value = folderPathNavCommit(
+    folderPathNavStack.value,
+    currentFolderPathPair(),
+    folderPathPairsEqual,
+  )
+  publishFolderPathNavCapabilities()
+}
+
+function applyFolderPathPair(pair: FolderPathPair): void {
+  applyingFolderPathHistory = true
+  leftRoot.value = pair.left
+  rightRoot.value = pair.right
+  applyingFolderPathHistory = false
+  publishFolderPathNavCapabilities()
+}
+
+function goFolderPathBack(): void {
+  const result = folderPathNavBack(folderPathNavStack.value)
+
+  if (!result) {
+    return
+  }
+
+  folderPathNavStack.value = result.stack
+  applyFolderPathPair(result.entry)
+}
+
+function goFolderPathForward(): void {
+  const result = folderPathNavForward(folderPathNavStack.value)
+
+  if (!result) {
+    return
+  }
+
+  folderPathNavStack.value = result.stack
+  applyFolderPathPair(result.entry)
+}
+
 const textSettingsPlaceholder = defaultTextCompareSessionOptions()
 const sessionLaunch = useSessionLaunchStore()
 const lastCompare = useLastCompareStore()
@@ -258,6 +327,7 @@ function applyRemoteProfile(side: FolderSide, profileId: string): void {
   }
 
   syncFolderTabTitle()
+  recordFolderPathCommit()
 }
 
 function applyFolderLaunch(
@@ -269,6 +339,7 @@ function applyFolderLaunch(
     launch.sessionType === 'archive-compare' ||
     (isArchivePath(leftRoot.value) && isArchivePath(rightRoot.value))
   syncFolderTabTitle()
+  recordFolderPathCommit()
 
   if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
     void runFolderCompare()
@@ -653,6 +724,12 @@ watch(
       case 'up-one-level':
         upOneFolderLevel()
         break
+      case 'path-back':
+        goFolderPathBack()
+        break
+      case 'path-forward':
+        goFolderPathForward()
+        break
       case 'about':
       case 'check-for-updates':
       case 'close-tab':
@@ -755,6 +832,7 @@ function swapFolderRoots(): void {
   rightRoot.value = leftRoot.value
   leftRoot.value = nextLeft
   syncFolderTabTitle()
+  recordFolderPathCommit()
 }
 
 function showAllFolderStatuses(): void {
@@ -1456,6 +1534,8 @@ async function browseArchive(side: 'left' | 'right'): Promise<void> {
   } else {
     rightRoot.value = selected
   }
+
+  recordFolderPathCommit()
 }
 
 function copySelectedTo(direction: 'Left' | 'Right'): void {
@@ -1941,18 +2021,27 @@ async function browseFolder(side: 'left' | 'right'): Promise<void> {
   } else {
     rightRoot.value = selected
   }
+
+  recordFolderPathCommit()
 }
 
 function upOneFolderLevel(): void {
   const nextLeft = parentDirectoryPath(leftRoot.value)
   const nextRight = parentDirectoryPath(rightRoot.value)
+  let changed = false
 
   if (nextLeft) {
     leftRoot.value = nextLeft
+    changed = true
   }
 
   if (nextRight) {
     rightRoot.value = nextRight
+    changed = true
+  }
+
+  if (changed) {
+    recordFolderPathCommit()
   }
 }
 
@@ -1998,6 +2087,7 @@ function applyRemoteBrowsePath(path: string): void {
   }
 
   syncFolderTabTitle()
+  recordFolderPathCommit()
 }
 
 function handlePathFieldDrop(event: DragEvent, side: 'left' | 'right'): void {
@@ -2015,6 +2105,8 @@ function handlePathFieldDrop(event: DragEvent, side: 'left' | 'right'): void {
   } else {
     rightRoot.value = path
   }
+
+  recordFolderPathCommit()
 }
 
 function openRowContextMenu(event: MouseEvent, row: FolderTreeRow): void {
@@ -2082,6 +2174,8 @@ async function runPathMenuAction(action: 'clear' | 'paste'): Promise<void> {
       rightRoot.value = ''
     }
 
+    recordFolderPathCommit()
+
     return
   }
 
@@ -2097,6 +2191,8 @@ async function runPathMenuAction(action: 'clear' | 'paste'): Promise<void> {
     } else {
       rightRoot.value = text.trim()
     }
+
+    recordFolderPathCommit()
   } catch {
     // ponytail: ignore clipboard denial
   }
@@ -2108,6 +2204,7 @@ function handleTreeScroll(event: Event): void {
 
 onUnmounted(() => {
   window.removeEventListener('click', closeContextMenus)
+  folderPathNavStore.reset()
 })
 </script>
 
@@ -2138,6 +2235,8 @@ onUnmounted(() => {
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'left')"
                 @contextmenu="openPathContextMenu($event, 'left')"
+                @keydown.enter.prevent="recordFolderPathCommit"
+                @change="recordFolderPathCommit"
               />
               <button
                 type="button"
@@ -2198,6 +2297,8 @@ onUnmounted(() => {
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'right')"
                 @contextmenu="openPathContextMenu($event, 'right')"
+                @keydown.enter.prevent="recordFolderPathCommit"
+                @change="recordFolderPathCommit"
               />
               <button
                 type="button"

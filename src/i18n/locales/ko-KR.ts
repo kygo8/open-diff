@@ -340,6 +340,8 @@ export const koKR: LanguagePack = {
     'ui.locked': '잠금',
     'ui.browseForFolder': '폴더 찾아보기',
     'ui.upOneLevel': '한 수준 위로',
+    'ui.back': '뒤로',
+    'ui.forward': '앞으로',
     'ui.swapSides': '양쪽 바꾸기',
     'ui.savedSessions': '저장된 세션',
     'ui.saveOutput': '출력 저장',

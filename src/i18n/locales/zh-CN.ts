@@ -330,6 +330,8 @@ export const zhCN: LanguagePack = {
     'ui.locked': '锁定',
     'ui.browseForFolder': '浏览文件夹',
     'ui.upOneLevel': '上一级',
+    'ui.back': '后退',
+    'ui.forward': '前进',
     'ui.swapSides': '交换两侧',
     'ui.savedSessions': '已保存会话',
     'ui.saveOutput': '保存输出',

@@ -331,6 +331,8 @@ export const zhTW: LanguagePack = {
     'ui.locked': '鎖定',
     'ui.browseForFolder': '瀏覽資料夾',
     'ui.upOneLevel': '上一層',
+    'ui.back': '上一頁',
+    'ui.forward': '下一頁',
     'ui.swapSides': '交換兩側',
     'ui.savedSessions': '已儲存工作階段',
     'ui.saveOutput': '儲存輸出',

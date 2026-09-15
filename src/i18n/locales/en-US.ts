@@ -417,6 +417,8 @@ export const enUS: LanguagePack = {
     'ui.locked': 'Locked',
     'ui.browseForFolder': 'Browse for Folder',
     'ui.upOneLevel': 'Up One Level',
+    'ui.back': 'Back',
+    'ui.forward': 'Forward',
     'ui.swapSides': 'Swap Sides',
     'ui.savedSessions': 'Saved Sessions',
     'ui.saveOutput': 'Save Output',

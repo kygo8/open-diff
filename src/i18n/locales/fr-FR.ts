@@ -349,6 +349,8 @@ export const frFR: LanguagePack = {
     'ui.locked': 'Verrouillé',
     'ui.browseForFolder': 'Parcourir les dossiers',
     'ui.upOneLevel': 'Niveau supérieur',
+    'ui.back': 'Précédent',
+    'ui.forward': 'Suivant',
     'ui.swapSides': 'Intervertir les côtés',
     'ui.savedSessions': 'Séances enregistrées',
     'ui.saveOutput': 'Enregistrer la sortie',

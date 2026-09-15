@@ -19,6 +19,8 @@ export type CommandId =
   | 'session.locked'
   | 'session.browseFolder'
   | 'session.upOneLevel'
+  | 'session.back'
+  | 'session.forward'
   | 'session.exit'
   | 'session.settings'
   | 'edit.copyLeft'
@@ -119,6 +121,8 @@ export type CommandAction =
         | 'sync-now'
         | 'browse-folder'
         | 'up-one-level'
+        | 'path-back'
+        | 'path-forward'
         | 'toggle-session-locked'
         | 'run-script'
         | 'save-report'
@@ -249,7 +253,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['copy', 'left'],
     enabled: true,
     visibility: 'view',
-    defaultShortcut: { keys: ['Alt', 'Left'], scope: 'global' },
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Left'], scope: 'global' },
     placements: ['command-palette', 'toolbar', 'menu'],
     action: { type: 'view-action', name: 'copy-left' },
   },
@@ -259,7 +263,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['copy', 'right'],
     enabled: true,
     visibility: 'view',
-    defaultShortcut: { keys: ['Alt', 'Right'], scope: 'global' },
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Right'], scope: 'global' },
     placements: ['command-palette', 'toolbar', 'menu'],
     action: { type: 'view-action', name: 'copy-right' },
   },
@@ -498,6 +502,26 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Alt', 'Up'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'up-one-level' },
+  },
+  {
+    id: 'session.back',
+    titleKey: 'ui.back',
+    keywords: ['session', 'back', 'history', 'folder', 'path'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Alt', 'Left'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'path-back' },
+  },
+  {
+    id: 'session.forward',
+    titleKey: 'ui.forward',
+    keywords: ['session', 'forward', 'history', 'folder', 'path'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Alt', 'Right'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'path-forward' },
   },
   {
     id: 'session.exit',

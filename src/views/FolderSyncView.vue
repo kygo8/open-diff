@@ -8,7 +8,7 @@ import type {
   FolderSyncPreviewRow,
   FolderSyncStrategy,
 } from '@/types/sync'
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
@@ -25,6 +25,17 @@ import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { useFolderPathNavStore } from '@/stores/folderPathNav'
+import {
+  createFolderPathNavStack,
+  folderPathNavBack,
+  folderPathNavCanBack,
+  folderPathNavCanForward,
+  folderPathNavCommit,
+  folderPathNavForward,
+  folderPathPairsEqual,
+  type FolderPathPair,
+} from '@/app/folderPathNavigation'
 import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { joinStatusFooterParts } from '@/app/folderSelectionStatus'
@@ -70,6 +81,65 @@ const sessionLaunch = useSessionLaunchStore()
 const viewActions = useViewActionsStore()
 const leftPath = ref('')
 const rightPath = ref('')
+
+const folderPathNavStore = useFolderPathNavStore()
+const folderPathNavStack = ref(createFolderPathNavStack<FolderPathPair>())
+let applyingFolderPathHistory = false
+
+function currentSyncPathPair(): FolderPathPair {
+  return { left: leftPath.value, right: rightPath.value }
+}
+
+function publishFolderPathNavCapabilities(): void {
+  folderPathNavStore.setCapabilities({
+    canGoBack: folderPathNavCanBack(folderPathNavStack.value),
+    canGoForward: folderPathNavCanForward(folderPathNavStack.value),
+  })
+}
+
+function recordFolderPathCommit(): void {
+  if (applyingFolderPathHistory) {
+    return
+  }
+
+  folderPathNavStack.value = folderPathNavCommit(
+    folderPathNavStack.value,
+    currentSyncPathPair(),
+    folderPathPairsEqual,
+  )
+  publishFolderPathNavCapabilities()
+}
+
+function applySyncPathPair(pair: FolderPathPair): void {
+  applyingFolderPathHistory = true
+  leftPath.value = pair.left
+  rightPath.value = pair.right
+  applyingFolderPathHistory = false
+  publishFolderPathNavCapabilities()
+}
+
+function goFolderPathBack(): void {
+  const result = folderPathNavBack(folderPathNavStack.value)
+
+  if (!result) {
+    return
+  }
+
+  folderPathNavStack.value = result.stack
+  applySyncPathPair(result.entry)
+}
+
+function goFolderPathForward(): void {
+  const result = folderPathNavForward(folderPathNavStack.value)
+
+  if (!result) {
+    return
+  }
+
+  folderPathNavStack.value = result.stack
+  applySyncPathPair(result.entry)
+}
+
 const leftFreeSpaceLabel = ref('')
 const rightFreeSpaceLabel = ref('')
 const selectedStrategy = ref<FolderSyncStrategy>('updateBoth')
@@ -300,10 +370,15 @@ onMounted(() => {
 
   leftPath.value = launch.locations.left?.uri ?? leftPath.value
   rightPath.value = launch.locations.right?.uri ?? rightPath.value
+  recordFolderPathCommit()
 
   if (launch.autoRun && launch.locations.left?.uri && launch.locations.right?.uri) {
     void previewSync()
   }
+})
+
+onUnmounted(() => {
+  folderPathNavStore.reset()
 })
 
 async function previewSync(): Promise<void> {
@@ -539,6 +614,7 @@ function swapSyncPaths(): void {
 
   rightPath.value = leftPath.value
   leftPath.value = nextLeft
+  recordFolderPathCommit()
 }
 
 async function exportFolderSyncReport(): Promise<void> {
@@ -618,18 +694,26 @@ async function browseSyncFolder(): Promise<void> {
   }
 
   leftPath.value = selected
+  recordFolderPathCommit()
 }
 
 function upOneSyncLevel(): void {
   const nextLeft = parentDirectoryPath(leftPath.value)
   const nextRight = parentDirectoryPath(rightPath.value)
+  let changed = false
 
   if (nextLeft) {
     leftPath.value = nextLeft
+    changed = true
   }
 
   if (nextRight) {
     rightPath.value = nextRight
+    changed = true
+  }
+
+  if (changed) {
+    recordFolderPathCommit()
   }
 }
 
@@ -664,6 +748,12 @@ watch(
         break
       case 'up-one-level':
         upOneSyncLevel()
+        break
+      case 'path-back':
+        goFolderPathBack()
+        break
+      case 'path-forward':
+        goFolderPathForward()
         break
       case 'toggle-minor':
         minorOnly.value = !minorOnly.value
@@ -747,6 +837,8 @@ watch(
           <input
             v-model="leftPath"
             data-testid="folder-sync-left-path"
+            @keydown.enter.prevent="recordFolderPathCommit"
+            @change="recordFolderPathCommit"
           />
           <span
             class="path-side-footer"
@@ -760,6 +852,8 @@ watch(
           <input
             v-model="rightPath"
             data-testid="folder-sync-right-path"
+            @keydown.enter.prevent="recordFolderPathCommit"
+            @change="recordFolderPathCommit"
           />
           <span
             class="path-side-footer"

@@ -14,6 +14,7 @@ import {
   CircleGauge,
   CircleX,
   ClipboardPaste,
+  ClipboardPlus,
   Copy,
   Diff,
   Equal,
@@ -130,6 +131,9 @@ export const sessionToolbarIcons: Readonly<Record<string, LucideIcon>> = {
   left: ArrowLeftFromLine,
   center: Rows2,
   right: ArrowRightFromLine,
+  // Clipboard Compare letter-glyph leftovers
+  capture: ClipboardPlus,
+  compare: Diff,
   // Picture Compare letter-glyph leftovers
   tol: CircleGauge,
   range: SlidersHorizontal,

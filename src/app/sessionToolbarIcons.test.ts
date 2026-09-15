@@ -32,6 +32,8 @@ describe('sessionToolbarIcons', () => {
 
   it('maps remaining letter-glyph ids to Lucide icons', () => {
     for (const id of [
+      'capture',
+      'compare',
       'tol',
       'range',
       'blend',

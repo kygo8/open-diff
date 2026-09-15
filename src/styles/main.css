@@ -314,6 +314,37 @@ select {
   place-items: center;
 }
 
+.bc-toolbar-icon {
+  display: block;
+  flex-shrink: 0;
+  color: #2f353d;
+}
+
+.bc-session-toolbar-compact .bc-toolbar-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.bc-toolbar-command[data-has-icon='true'] {
+  /* Icon + optional label stays capture-dense without widening letter glyphs. */
+  min-width: 64px;
+}
+
+.bc-session-toolbar-compact .bc-toolbar-command[data-has-icon='true'] {
+  min-width: 48px;
+}
+
+.bc-session-toolbar-glyphs-only .bc-toolbar-command[data-has-icon='true'] {
+  min-width: 44px;
+  max-width: 56px;
+}
+
+.bc-session-toolbar-compact.bc-session-toolbar-glyphs-only
+  .bc-toolbar-command[data-has-icon='true'] {
+  min-width: 36px;
+  max-width: 44px;
+}
+
 .workbench-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from '@/i18n'
 import type { SessionToolbarCommand } from '@/app/sessionToolbars'
+import { iconForSessionToolbarCommand } from '@/app/sessionToolbarIcons'
 import { useSettingsStore } from '@/stores/settings'
 
 const props = defineProps<{
@@ -21,16 +22,19 @@ const { t } = useI18n()
 const settings = useSettingsStore()
 const resolvedInspectorLabel = computed(() => props.inspectorLabel ?? t('ui.inspector'))
 const toolbarItems = computed(() => {
-  if (props.toolbarCommands) {
-    return props.toolbarCommands
-  }
+  const commands =
+    props.toolbarCommands ??
+    toolbarForTitle(props.title).map((item): SessionToolbarCommand => ({
+      id: item.id,
+      glyph: item.glyph,
+      labelKey: item.labelKey,
+      enabled: false,
+      active: false,
+    }))
 
-  return toolbarForTitle(props.title).map((item): SessionToolbarCommand => ({
-    id: item.id,
-    glyph: item.glyph,
-    labelKey: item.labelKey,
-    enabled: false,
-    active: false,
+  return commands.map((command) => ({
+    ...command,
+    icon: iconForSessionToolbarCommand(command.id),
   }))
 })
 const showSessionToolbar = computed(
@@ -313,13 +317,28 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
           class="bc-toolbar-command"
           :class="{ 'bc-toolbar-command-active': toolbarItem.active }"
           :disabled="!toolbarItem.enabled"
+          :aria-label="t(toolbarItem.labelKey)"
           :aria-pressed="toolbarItem.active ? 'true' : 'false'"
           :data-testid="`${testIdPrefix}-${toolbarItem.id}`"
           :data-active="toolbarItem.active ? 'true' : 'false'"
+          :data-has-icon="toolbarItem.icon ? 'true' : 'false'"
           :title="t(toolbarItem.labelKey)"
           @click="onToolbarCommand(toolbarItem)"
         >
-          <span class="bc-toolbar-glyph">{{ toolbarItem.glyph }}</span>
+          <component
+            :is="toolbarItem.icon"
+            v-if="toolbarItem.icon"
+            class="bc-toolbar-icon"
+            aria-hidden="true"
+            :size="settings.largeToolbarButtons ? 22 : 18"
+            :stroke-width="1.75"
+          />
+          <span
+            v-else
+            class="bc-toolbar-glyph"
+            aria-hidden="true"
+            >{{ toolbarItem.glyph }}</span
+          >
           <span v-if="settings.showToolbarLabels">{{ t(toolbarItem.labelKey) }}</span>
         </button>
       </section>

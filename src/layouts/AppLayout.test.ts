@@ -892,6 +892,8 @@ describe('AppLayout tab strip chrome', () => {
     expect(wrapper.find('[data-testid="app-shell"]').attributes('data-single-session-frame')).toBe(
       'false',
     )
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-dense-chrome')).toBe('true')
+    expect(wrapper.find('[data-testid="app-shell"]').classes()).toContain('app-shell-dense-chrome')
     wrapper.unmount()
   })
 
@@ -921,6 +923,10 @@ describe('AppLayout tab strip chrome', () => {
       'true',
     )
     expect(wrapper.find('[data-testid="tab-strip"]').isVisible()).toBe(false)
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-dense-chrome')).toBe('true')
+    expect(wrapper.find('[data-testid="app-shell"]').classes()).toContain(
+      'app-shell-single-session',
+    )
     wrapper.unmount()
   })
 
@@ -948,6 +954,7 @@ describe('AppLayout tab strip chrome', () => {
     expect(wrapper.find('[data-testid="app-shell"]').attributes('data-single-session-frame')).toBe(
       'false',
     )
+    expect(wrapper.find('[data-testid="app-shell"]').attributes('data-dense-chrome')).toBe('false')
     wrapper.unmount()
   })
 

@@ -28,7 +28,11 @@ for (const [name, route] of routes) {
     await page.setViewportSize({ width: 1600, height: 1280 })
     await page.goto(route)
 
-    await expect(page.locator('.menu-bar')).toHaveCSS('height', '78px')
+    await expect(page.locator('[data-testid="app-shell"]')).toHaveAttribute(
+      'data-dense-chrome',
+      'true',
+    )
+    await expect(page.locator('.menu-bar')).toHaveCSS('height', '54px')
     await expect(page.locator('.sidebar')).toBeHidden()
     await expect(page.locator('.status-bar')).toHaveCSS('height', '24px')
     await expect(page.locator('.command-bar')).toHaveCount(0)

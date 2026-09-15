@@ -618,7 +618,7 @@ function openSelectedPreview(): void {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture"
+      data-home-density="capture-tight"
       data-home-chrome="minimal"
     >
       <aside
@@ -727,7 +727,7 @@ function openSelectedPreview(): void {
       <main class="bc-home-main">
         <section class="bc-selected-session">
           <div class="bc-selected-title">
-            <FolderOpen :size="22" />
+            <FolderOpen :size="20" />
             <div>
               <strong :title="selectedSessionPreview.name">{{
                 selectedSessionPreview.name
@@ -815,7 +815,7 @@ function openSelectedPreview(): void {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="34"
+                  :size="44"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1136,7 +1136,7 @@ function openSelectedPreview(): void {
 
 .bc-session-tree {
   display: grid;
-  grid-template-rows: 28px minmax(0, 1fr) 36px;
+  grid-template-rows: 24px minmax(0, 1fr) 30px;
   min-width: 0;
   min-height: 0;
   border-right: 1px solid #b9bec7;
@@ -1147,12 +1147,12 @@ function openSelectedPreview(): void {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 10px;
+  padding: 0 8px;
   overflow: hidden;
   border-bottom: 1px solid #c6ccd5;
   background: #eef1f5;
   color: #111827;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1;
   text-overflow: ellipsis;
@@ -1207,35 +1207,35 @@ function openSelectedPreview(): void {
 
 .bc-tree-footer {
   display: grid;
-  grid-template-columns: 30px 30px minmax(0, 1fr);
+  grid-template-columns: 26px 26px minmax(0, 1fr);
   align-items: center;
-  gap: 3px;
-  padding: 3px 5px 4px;
+  gap: 2px;
+  padding: 2px 4px 3px;
   border-top: 1px solid #c6ccd5;
   background: #eef1f5;
 }
 
 .bc-tree-footer button {
-  height: 26px;
+  height: 22px;
   border: 1px solid #d1d5db;
-  border-radius: 3px;
+  border-radius: 2px;
   background: #ffffff;
   color: #2f343a;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1;
 }
 
 .bc-tree-footer input {
   width: 100%;
   min-width: 0;
-  height: 26px;
-  padding: 0 6px;
+  height: 22px;
+  padding: 0 5px;
   overflow: hidden;
   border: 1px solid #c6ccd5;
-  border-radius: 3px;
+  border-radius: 2px;
   background: #ffffff;
   color: #111827;
-  font-size: 12px;
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1252,22 +1252,22 @@ function openSelectedPreview(): void {
 
 .bc-selected-session {
   display: grid;
-  gap: 10px;
-  padding: 10px 16px 6px;
+  gap: 6px;
+  padding: 6px 12px 4px;
 }
 
 .bc-selected-title {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
   color: #111827;
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .bc-selected-title div {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -1280,30 +1280,32 @@ function openSelectedPreview(): void {
 }
 
 .bc-selected-title strong {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 500;
+  line-height: 1.15;
 }
 
 .bc-selected-title span {
-  font-size: 18px;
-  line-height: 1.15;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.25;
 }
 
 .bc-selected-actions {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 .bc-selected-actions button {
-  width: 132px;
+  width: 110px;
   max-width: 100%;
-  height: 36px;
+  height: 28px;
   overflow: hidden;
   border: 1px solid #c7cdd6;
-  border-radius: 3px;
+  border-radius: 2px;
   background: #ffffff;
-  color: #111827;
-  font-size: 16px;
+  color: #1d4f91;
+  font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
@@ -1311,6 +1313,11 @@ function openSelectedPreview(): void {
 
 .bc-selected-actions button:first-child {
   border-color: #4aa3ff;
+  color: #1d4f91;
+}
+
+.bc-selected-actions button:last-child {
+  color: #111827;
 }
 
 .new-session-panel,
@@ -1321,7 +1328,7 @@ function openSelectedPreview(): void {
 }
 
 .new-session-panel {
-  padding: 2px 12px 16px;
+  padding: 0 10px 8px;
 }
 
 .new-session-panel h2,
@@ -1333,35 +1340,35 @@ function openSelectedPreview(): void {
 
 .new-session-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(110px, 1fr));
-  gap: 8px 16px;
-  width: min(560px, calc(100% - 32px));
-  margin: 2px auto 6px;
+  grid-template-columns: repeat(3, minmax(100px, 1fr));
+  gap: 4px 14px;
+  width: min(520px, calc(100% - 24px));
+  margin: 0 auto 4px;
 }
 
 .bc-home-instructions {
   display: grid;
-  gap: 2px;
+  gap: 1px;
   justify-items: center;
-  margin: 0 0 6px;
+  margin: 2px 0 4px;
   color: #111827;
   font-size: 12px;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 .bc-home-instructions strong {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
 }
 
 .new-session-card {
   display: grid;
-  gap: 2px;
+  gap: 1px;
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 72px;
-  padding: 2px;
+  min-height: 78px;
+  padding: 2px 1px 4px;
   overflow: hidden;
   border: 0;
   border-radius: 2px;
@@ -1369,6 +1376,7 @@ function openSelectedPreview(): void {
   color: #111827;
   cursor: pointer;
   justify-items: center;
+  align-content: start;
   box-sizing: border-box;
 }
 
@@ -1380,9 +1388,9 @@ function openSelectedPreview(): void {
 
 .session-card-icon {
   display: inline-grid;
-  width: 48px;
-  height: 42px;
-  color: #4b5563;
+  width: 56px;
+  height: 48px;
+  color: #374151;
   place-items: center;
 }
 
@@ -1390,9 +1398,9 @@ function openSelectedPreview(): void {
   max-width: 100%;
   margin: 0;
   overflow: hidden;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
-  line-height: 1.2;
+  line-height: 1.15;
   text-align: center;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1707,13 +1715,14 @@ tr:hover .row-actions,
 
 .session-maturity {
   display: inline-flex;
-  padding: 0.1rem 0.45rem;
+  margin-top: 1px;
+  padding: 0 4px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--accent, #2563eb) 14%, transparent);
-  color: var(--text-muted, #475569);
-  font-size: 0.7rem;
-  margin-top: 0.35rem;
-  letter-spacing: 0.02em;
+  background: color-mix(in srgb, var(--accent, #2563eb) 12%, transparent);
+  color: var(--text-muted, #64748b);
+  font-size: 9px;
+  letter-spacing: 0.01em;
+  line-height: 14px;
 }
 
 .session-maturity[data-maturity='limited'] {

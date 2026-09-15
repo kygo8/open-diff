@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isSingleSessionFrame, shouldShowTabStrip } from './shellChrome'
+import { isSingleSessionFrame, preferDenseAppChrome, shouldShowTabStrip } from './shellChrome'
 
 describe('shouldShowTabStrip', () => {
   it('shows when more than one tab is open', () => {
@@ -73,5 +73,15 @@ describe('isSingleSessionFrame', () => {
         routePath: '/compare/folder',
       }),
     ).toBe(false)
+  })
+})
+
+describe('preferDenseAppChrome', () => {
+  it('is true when the tab strip is hidden', () => {
+    expect(preferDenseAppChrome({ showTabStrip: false })).toBe(true)
+  })
+
+  it('is false when the tab strip is visible', () => {
+    expect(preferDenseAppChrome({ showTabStrip: true })).toBe(false)
   })
 })

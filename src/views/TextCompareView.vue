@@ -1864,12 +1864,12 @@ function toggleSourceEditors(): void {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 6px 10px;
+  gap: 8px;
+  padding: 3px 8px;
   border-bottom: 1px solid var(--app-border-soft, #d7dbe3);
   background: var(--app-surface-low, #f3f3f3);
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .text-compare-progress button,
@@ -1879,61 +1879,62 @@ function toggleSourceEditors(): void {
 }
 
 .text-compare-progress button {
-  height: 26px;
-  padding: 0 10px;
+  height: 22px;
+  padding: 0 8px;
   border: 1px solid var(--app-border, #c7cdd6);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-canvas, #ffffff);
   color: var(--app-text, #111111);
+  font-size: 11px;
   cursor: pointer;
 }
 
 .compare-toolbar {
-  gap: 6px;
+  gap: 4px;
 }
 
 .stats {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .status-chip {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .text-rules-panel {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
-  padding: 6px 8px;
+  padding: 3px 6px;
   border: 1px solid var(--od-border, #d0d7de);
-  border-radius: 6px;
+  border-radius: 2px;
 }
 
 .text-rules-panel legend {
   padding: 0 4px;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .text-context-panel {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
-  padding: 6px 8px;
+  padding: 3px 6px;
   border: 1px solid var(--od-border, #d0d7de);
-  border-radius: 6px;
+  border-radius: 2px;
 }
 
 .text-context-panel header {
   display: inline-flex;
   flex-direction: column;
-  gap: 2px;
-  font-size: 12px;
+  gap: 1px;
+  font-size: 11px;
 }
 
 .text-context-panel header span {
@@ -1943,42 +1944,43 @@ function toggleSourceEditors(): void {
 .text-context-lines {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 4px;
+  font-size: 11px;
 }
 
 .text-context-lines input {
-  width: 64px;
-  height: 24px;
-  padding: 0 6px;
+  width: 56px;
+  height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-canvas);
   color: var(--app-text);
+  font-size: 11px;
 }
 
 .algorithm-select {
-  height: 24px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-canvas);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .toolbar-button {
   flex: 0 0 auto;
   width: auto;
   max-width: 12em;
-  height: 28px;
-  padding: 0 10px;
+  height: 22px;
+  padding: 0 8px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-canvas);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1993,22 +1995,22 @@ function toggleSourceEditors(): void {
 .bc-path-block {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 1px;
 }
 
 .bc-path-footers {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
+  gap: 1px;
   padding: 0 2px;
 }
 
 .path-side-footer {
-  min-height: 11px;
-  margin-top: 1px;
+  min-height: 10px;
+  margin-top: 0;
   color: var(--od-muted, #6b7280);
   font-size: 10px;
-  line-height: 11px;
+  line-height: 10px;
 }
 
 .path-side-footer-muted {
@@ -2016,49 +2018,49 @@ function toggleSourceEditors(): void {
 }
 
 .find-toolbar {
-  gap: 8px;
+  gap: 4px;
 }
 
 .find-input {
-  width: 220px;
-  height: 24px;
-  padding: 0 8px;
+  width: 200px;
+  height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-canvas);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .find-option {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .text-workbench-main {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   height: 100%;
   min-height: 0;
-  padding: 8px;
+  padding: 4px 6px;
   overflow: hidden;
 }
 
 .input-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  flex: 0 0 128px;
-  gap: 8px;
+  flex: 0 0 112px;
+  gap: 4px;
   min-height: 0;
 }
 
 .text-source-pane {
   display: grid;
-  grid-template-rows: 28px minmax(0, 1fr);
+  grid-template-rows: 22px minmax(0, 1fr);
   min-width: 0;
   min-height: 0;
   overflow: hidden;

@@ -1387,3 +1387,66 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding-bottom: 3px !important;
   font-size: 12px !important;
 }
+
+/* Text Compare chrome densify toward capture path/status/editor strips */
+.text-compare-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.text-compare-view .bc-path-row {
+  gap: 3px !important;
+  min-height: 26px !important;
+  padding: 1px 6px !important;
+}
+
+.text-compare-view .bc-path-row input {
+  height: 20px !important;
+  padding: 0 5px !important;
+  font-size: 11px !important;
+}
+
+.text-compare-view .bc-path-row button {
+  height: 20px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.text-compare-view .bc-path-footers {
+  gap: 1px !important;
+  padding: 0 2px !important;
+}
+
+.text-compare-view .path-side-footer {
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+}
+
+.text-compare-view .text-workbench-main {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.text-compare-view .diff-panel {
+  border-radius: 0 !important;
+}
+
+.text-compare-view .diff-header {
+  height: 22px !important;
+  padding-right: 14px !important;
+  padding-left: 44px !important;
+  font-size: 11px !important;
+}
+
+.text-compare-view .diff-body {
+  height: calc(100% - 22px) !important;
+  font-size: 12px !important;
+}
+
+.text-compare-view .gutter,
+.text-compare-view .cell {
+  padding: 1px 6px !important;
+  line-height: 18px !important;
+}

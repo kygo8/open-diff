@@ -60,6 +60,7 @@ describe('sync api', () => {
       rightRoot: 'D:/right',
       strategy: 'mirrorRight',
       archiveExtensions: undefined,
+      filters: undefined,
     })
     expect(result.rows[0]?.relativePath).toBe('package/app.exe')
   })
@@ -86,6 +87,7 @@ describe('sync api', () => {
       rightRoot: 'D:/right.zip',
       strategy: 'mirrorRight',
       archiveExtensions: ['.zip'],
+      filters: undefined,
     })
 
     vi.mocked(invoke).mockResolvedValueOnce({
@@ -113,6 +115,32 @@ describe('sync api', () => {
       strategy: 'mirrorRight',
       overrides: [],
       archiveExtensions: ['.zip'],
+    })
+  })
+
+  it('forwards name filters on folder sync preview', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      name: 'Mirror to Right',
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      strategy: 'mirrorRight',
+      rows: [],
+      summary: { total: 0, copy: 0, delete: 0, leave: 0, conflict: 0 },
+    })
+
+    await previewFolderSync({
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      strategy: 'mirrorRight',
+      filters: { include: ['*.exe'], exclude: [], caseSensitive: false },
+    })
+
+    expect(invoke).toHaveBeenCalledWith('preview_folder_sync', {
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      strategy: 'mirrorRight',
+      archiveExtensions: undefined,
+      filters: { include: ['*.exe'], exclude: [], caseSensitive: false },
     })
   })
 

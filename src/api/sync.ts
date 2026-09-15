@@ -13,6 +13,7 @@ export function previewFolderSync(
     rightRoot: request.rightRoot,
     strategy: request.strategy,
     archiveExtensions: request.archiveExtensions,
+    filters: request.filters,
   })
 }
 

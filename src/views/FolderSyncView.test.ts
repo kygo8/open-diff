@@ -84,6 +84,7 @@ const clipboardWriteText = vi.fn<(text: string) => Promise<void>>().mockResolved
 
 describe('FolderSyncView', () => {
   beforeEach(() => {
+    localStorage.clear()
     setActivePinia(createPinia())
     useSettingsStore().setShowSyncNowInToolbar(true)
     useSettingsStore().setShowSyncCancelAcceptInToolbar(true)
@@ -126,6 +127,7 @@ describe('FolderSyncView', () => {
       rightRoot: 'D:/deploy/prod',
       strategy: 'mirrorRight',
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
+      filters: { include: [], exclude: [], caseSensitive: false },
     })
     expect(wrapper.find('[data-testid="folder-sync-preview-panel"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('Mirror to Right')
@@ -228,6 +230,7 @@ describe('FolderSyncView', () => {
       rightRoot: 'D:/deploy/prod',
       strategy: 'updateBoth',
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
+      filters: { include: [], exclude: [], caseSensitive: false },
     })
   })
 

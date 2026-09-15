@@ -416,6 +416,7 @@ async function previewSync(): Promise<void> {
       rightRoot: rightPath.value,
       strategy: selectedStrategy.value,
       archiveExtensions: [...settings.archiveExtensions],
+      filters: { ...folderNameFilters.value },
     })
 
     previewName.value = response.name

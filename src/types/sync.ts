@@ -1,3 +1,5 @@
+import type { FolderNameFilters } from '@/types/diff'
+
 export type FolderSyncStrategy =
   'updateRight' | 'updateLeft' | 'updateBoth' | 'mirrorRight' | 'mirrorLeft'
 
@@ -14,6 +16,7 @@ export interface FolderSyncPreviewRequest {
   strategy: FolderSyncStrategy
   overrides?: FolderSyncActionOverride[]
   archiveExtensions?: string[]
+  filters?: FolderNameFilters
 }
 
 export type FolderSyncPreviewAction = 'Copy' | 'Delete' | 'Leave' | 'Conflict'

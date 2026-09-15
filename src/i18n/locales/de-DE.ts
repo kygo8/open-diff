@@ -692,6 +692,8 @@ export const deDE: LanguagePack = {
     'ui.autoSaved': 'Auto-saved',
     'ui.cut': 'Cut',
     'ui.diffs': 'Diffs',
+    'ui.structure': 'Struktur',
+    'ui.font': 'Schrift',
     'ui.dragFoldersOrFilesOntoSessionIcon': 'Drop two files or folders here',
     'ui.minor': 'Minor',
     'ui.orClickSessionIconToBegin': 'Or click a card below. Choose paths, then Compare.',

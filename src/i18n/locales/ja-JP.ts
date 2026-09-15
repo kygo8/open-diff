@@ -152,6 +152,8 @@ export const jaJP: LanguagePack = {
     'ui.differenceRatio': 'Difference Ratio',
     'ui.differencesOnly': 'Differences only',
     'ui.diffs': 'Diffs',
+    'ui.structure': '構造',
+    'ui.font': 'フォント',
     'ui.different': 'Different',
     'ui.differentPixels': 'Different Pixels',
     'ui.dropbox': 'Dropbox',

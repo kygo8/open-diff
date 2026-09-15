@@ -659,6 +659,8 @@ export const zhCN: LanguagePack = {
     'ui.autoSaved': '自动保存',
     'ui.cut': '剪切',
     'ui.diffs': '差异',
+    'ui.structure': '结构',
+    'ui.font': '字体',
     'ui.dragFoldersOrFilesOntoSessionIcon': '把两个文件或文件夹拖到这里',
     'ui.minor': '次要',
     'ui.orClickSessionIconToBegin': '或点下面的卡片。',

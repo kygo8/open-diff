@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useRouter } from 'vue-router'
 import { useTabsStore } from '@/stores/tabs'
 import {
@@ -46,8 +47,10 @@ const statusBar = useStatusBarStore()
 const viewActions = useViewActionsStore()
 const lastOpenedConflictPath = ref('')
 const sameOkOnly = ref(false)
-const importanceFilter = ref<'all' | 'same' | 'minor'>('all')
+const importanceFilter = ref<'all' | 'same' | 'minor' | 'diffs'>('all')
 const filesOnlyFilter = ref(false)
+const flatStructure = ref(false)
+const loadTimeSeconds = ref<number | null>(null)
 const showPeek = ref(false)
 const showMergeRules = ref(false)
 const selectedPlanRowId = ref('')
@@ -66,6 +69,8 @@ const filteredPlanRows = computed(() => {
 
   if (sameOkOnly.value || importanceFilter.value === 'same') {
     rows = rows.filter((row) => row.action === 'Keep output')
+  } else if (importanceFilter.value === 'diffs') {
+    rows = rows.filter((row) => Boolean(row.conflict) || row.action !== 'Keep output')
   } else if (importanceFilter.value === 'minor') {
     rows = rows.filter((row) => !row.conflict && row.action !== 'Keep output')
   }
@@ -80,7 +85,7 @@ const filteredPlanRows = computed(() => {
 })
 const visiblePlanRows = computed(() =>
   filteredPlanRows.value.filter(
-    (row) => !isPathHiddenByCollapse(row.path, collapsedPrefixes.value),
+    (row) => flatStructure.value || !isPathHiddenByCollapse(row.path, collapsedPrefixes.value),
   ),
 )
 const canBuildMergePlan = computed(() =>
@@ -90,7 +95,9 @@ const mergeSessionToolbar = computed(() =>
   buildFolderMergeToolbar({
     home: true,
     all: hasPlan.value,
+    diffs: hasPlan.value,
     same: hasPlan.value,
+    structure: hasPlan.value,
     minor: hasPlan.value,
     'same-ok': hasPlan.value,
     rules: hasPlan.value,
@@ -105,7 +112,21 @@ const mergeSessionToolbar = computed(() =>
     stop: mergeExecuting.value,
     filters: hasPlan.value,
     peek: hasPlan.value,
-  }),
+  }).map((item) => ({
+    ...item,
+    active:
+      (item.id === 'all' && importanceFilter.value === 'all' && !sameOkOnly.value) ||
+      (item.id === 'diffs' && importanceFilter.value === 'diffs') ||
+      (item.id === 'same' && importanceFilter.value === 'same') ||
+      (item.id === 'structure' && flatStructure.value) ||
+      (item.id === 'minor' && importanceFilter.value === 'minor') ||
+      (item.id === 'same-ok' && sameOkOnly.value) ||
+      (item.id === 'rules' && showMergeRules.value) ||
+      (item.id === 'filters' && showMergeFilters.value) ||
+      (item.id === 'select' && showMergeSelect.value) ||
+      (item.id === 'files' && filesOnlyFilter.value) ||
+      (item.id === 'peek' && showPeek.value),
+  })),
 )
 
 function goHomeFromMerge(): void {
@@ -177,8 +198,14 @@ function runMergeToolbarCommand(commandId: string): void {
     case 'all':
       setImportanceFilter('all')
       break
+    case 'diffs':
+      setImportanceFilter('diffs')
+      break
     case 'same':
       setImportanceFilter('same')
+      break
+    case 'structure':
+      flatStructure.value = !flatStructure.value
       break
     case 'minor':
       toggleMinorImportanceFilter()
@@ -317,6 +344,7 @@ watchEffect(() => {
     filterStatus: t('status.allRows'),
     source: 'folder-merge',
     chromeKind: 'folder-pair',
+    loadTimeSeconds: hasPlan.value ? loadTimeSeconds.value : null,
     leftSelection: selection ?? editing,
     leftFreeSpace: null,
     rightSelection: selection ?? editing,
@@ -346,12 +374,16 @@ async function saveMergeFolderSnapshot(): Promise<void> {
 }
 
 async function buildFolderMergePlan(): Promise<void> {
+  const startedAt = performance.now()
+
   plan.value = await requestFolderMergePlan({
     leftRoot: leftPath.value,
     baseRoot: basePath.value,
     rightRoot: rightPath.value,
     outputRoot: outputPath.value,
   })
+
+  loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   execution.value = undefined
   mergeExecutionError.value = undefined
   reportStatus.value = ''
@@ -457,7 +489,7 @@ function toggleSameOkFilter(): void {
   sameOkOnly.value = !sameOkOnly.value
 }
 
-function setImportanceFilter(next: 'all' | 'same' | 'minor'): void {
+function setImportanceFilter(next: 'all' | 'same' | 'minor' | 'diffs'): void {
   importanceFilter.value = next
   sameOkOnly.value = false
 }

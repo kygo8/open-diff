@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { compareHexFiles, findHexInFile, saveHexEdits, saveTextFile } from '@/api/diff'
 import type {
@@ -24,6 +24,8 @@ import {
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useSettingsStore } from '@/stores/settings'
 import { useTabsStore } from '@/stores/tabs'
+import { useStatusBarStore } from '@/stores/statusBar'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useViewActionsStore } from '@/stores/viewActions'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import {
@@ -95,6 +97,8 @@ const copyStatus = ref('')
 const reportStatus = ref('')
 const saveStatus = ref('')
 const loading = ref(false)
+const loadTimeSeconds = ref<number | null>(null)
+const statusBar = useStatusBarStore()
 const error = ref('')
 const sessionLaunch = useSessionLaunchStore()
 const tabs = useTabsStore()
@@ -447,7 +451,28 @@ watch([leftPath, rightPath], () => {
   syncHexTabTitle()
 })
 
+watchEffect(() => {
+  const hasResult = leftCells.value.length > 0 || rightCells.value.length > 0
+  let comparisonStatus = t('status.readyIdle')
+
+  if (loading.value) {
+    comparisonStatus = t('status.comparing')
+  } else if (hasResult) {
+    comparisonStatus = t('status.compared')
+  }
+
+  statusBar.reportStatus({
+    comparisonStatus,
+    differenceCount: hasResult ? diffRanges.value.length : null,
+    filterStatus: t('status.allRows'),
+    source: 'hex-compare',
+    loadTimeSeconds: hasResult ? loadTimeSeconds.value : null,
+  })
+})
+
 async function runHexCompare(options?: { preserveNavigationRanges?: boolean }): Promise<void> {
+  const startedAt = performance.now()
+
   loading.value = true
   error.value = ''
   try {
@@ -459,6 +484,7 @@ async function runHexCompare(options?: { preserveNavigationRanges?: boolean }): 
     })
 
     applyHexResult(result, options?.preserveNavigationRanges === true)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
     error.value = formatCompareError(event, t)
   } finally {

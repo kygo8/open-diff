@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   applyLiveRegistryValue,
@@ -30,6 +30,8 @@ import { buildRegistryReportText, defaultRegistryReportOutputPath } from '@/app/
 import { buildRegistryCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
+import { useStatusBarStore } from '@/stores/statusBar'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useI18n } from '@/i18n'
 
@@ -69,6 +71,8 @@ const policy = usePolicyStore()
 const leftSourcePath = ref('')
 const rightSourcePath = ref('')
 const reportStatus = ref('')
+const loadTimeSeconds = ref<number | null>(null)
+const statusBar = useStatusBarStore()
 const viewActions = useViewActionsStore()
 
 onMounted(() => {
@@ -194,7 +198,28 @@ function applyRegistryResult(result: RegistryCompareResponse): void {
   lastApplyAction.value = ''
 }
 
+watchEffect(() => {
+  const hasTree = registryTree.value.length > 0
+  let comparisonStatus = t('status.readyIdle')
+
+  if (loading.value) {
+    comparisonStatus = t('status.comparing')
+  } else if (hasTree) {
+    comparisonStatus = t('status.compared')
+  }
+
+  statusBar.reportStatus({
+    comparisonStatus,
+    differenceCount: hasTree ? differingRegistryKeys.value.length : null,
+    filterStatus: t('status.allRows'),
+    source: 'registry-compare',
+    loadTimeSeconds: hasTree ? loadTimeSeconds.value : null,
+  })
+})
+
 async function runRegistryCompare(): Promise<void> {
+  const startedAt = performance.now()
+
   loading.value = true
   error.value = ''
   try {
@@ -206,6 +231,7 @@ async function runRegistryCompare(): Promise<void> {
     })
 
     applyRegistryResult(result)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
     error.value = String(event)
   } finally {
@@ -361,6 +387,8 @@ async function runLiveRegistryCompare(): Promise<void> {
     return
   }
 
+  const startedAt = performance.now()
+
   liveCompareLoading.value = true
   error.value = ''
   liveQueryError.value = ''
@@ -378,6 +406,7 @@ async function runLiveRegistryCompare(): Promise<void> {
     leftSourcePath.value = leftLiveKey.value.trim()
     rightSourcePath.value = rightLiveKey.value.trim()
     applyRegistryResult(result)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
     error.value = String(event)
   } finally {
@@ -389,6 +418,8 @@ async function runHiveFileCompare(): Promise<void> {
   if (!leftHivePath.value.trim() || !rightHivePath.value.trim()) {
     return
   }
+
+  const startedAt = performance.now()
 
   hiveCompareLoading.value = true
   error.value = ''
@@ -407,6 +438,7 @@ async function runHiveFileCompare(): Promise<void> {
     leftSourcePath.value = leftHivePath.value.trim()
     rightSourcePath.value = rightHivePath.value.trim()
     applyRegistryResult(result)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
     error.value = String(event)
   } finally {

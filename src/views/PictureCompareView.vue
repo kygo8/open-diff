@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { comparePictureFiles, saveTextFile } from '@/api/diff'
 import { buildPictureReportText, defaultPictureReportOutputPath } from '@/app/pictureReport'
@@ -19,6 +19,8 @@ import {
 } from '@/app/pictureCompareOptions'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
+import { useStatusBarStore } from '@/stores/statusBar'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useI18n } from '@/i18n'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
@@ -72,6 +74,8 @@ const pictureStatistics = ref<PictureCompareResponse['statistics']>({
 })
 const compared = ref(false)
 const reportStatus = ref('')
+const loadTimeSeconds = ref<number | null>(null)
+const statusBar = useStatusBarStore()
 const leftImageSrc = computed(() => (compared.value ? localFileSrc(leftPath.value) : ''))
 const rightImageSrc = computed(() => (compared.value ? localFileSrc(rightPath.value) : ''))
 const overlayStyle = computed(() => {
@@ -301,6 +305,7 @@ const pictureSessionToolbar = computed(() =>
     blend: true,
     minor: true,
     rules: true,
+    format: true,
     swap: Boolean(leftPath.value || rightPath.value),
     reload: Boolean(leftPath.value && rightPath.value),
     meta: true,
@@ -311,6 +316,7 @@ const pictureSessionToolbar = computed(() =>
       (item.id === 'range' && showRangePanel.value) ||
       (item.id === 'blend' && blendEnabled.value) ||
       (item.id === 'minor' && showMinor.value) ||
+      (item.id === 'format' && showSessionSettings.value) ||
       (item.id === 'meta' && showMetaPanel.value),
   })),
 )
@@ -441,6 +447,9 @@ function runPictureToolbarCommand(commandId: string): void {
     case 'rules':
       openPictureSessionSettings()
       break
+    case 'format':
+      openPictureSessionSettings()
+      break
     case 'meta':
       showMetaPanel.value = !showMetaPanel.value
       persistPictureOptions()
@@ -529,7 +538,27 @@ async function exportPictureReport(): Promise<void> {
   }
 }
 
+watchEffect(() => {
+  let comparisonStatus = t('status.readyIdle')
+
+  if (loading.value) {
+    comparisonStatus = t('status.comparing')
+  } else if (compared.value) {
+    comparisonStatus = t('status.compared')
+  }
+
+  statusBar.reportStatus({
+    comparisonStatus,
+    differenceCount: compared.value ? pictureStatistics.value.differentPixels : null,
+    filterStatus: t('status.allRows'),
+    source: 'picture-compare',
+    loadTimeSeconds: compared.value ? loadTimeSeconds.value : null,
+  })
+})
+
 async function runPictureCompare(): Promise<void> {
+  const startedAt = performance.now()
+
   loading.value = true
   error.value = ''
   try {
@@ -544,6 +573,7 @@ async function runPictureCompare(): Promise<void> {
 
     applyPictureResult(result)
     compared.value = true
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
     error.value = String(event)
   } finally {

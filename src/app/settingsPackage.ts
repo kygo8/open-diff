@@ -35,6 +35,11 @@ export interface SettingsPackage {
   showToolbarIcons?: boolean
   confirmBeforeCloseDirtyTab?: boolean
   confirmBeforeOverwriteSave?: boolean
+  alwaysShowTabBar?: boolean
+  openSessionsInNewTab?: boolean
+  showNextDifferenceInToolbar?: boolean
+  showPrevDifferenceInToolbar?: boolean
+  archiveExtensions?: string[]
   loadLastWorkspaceOnStartup?: boolean
 }
 

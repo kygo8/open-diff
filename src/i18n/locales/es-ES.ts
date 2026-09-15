@@ -1030,6 +1030,17 @@ export const esES: LanguagePack = {
     'ui.showPathBars': 'Show path bars',
     'ui.showSidebar': 'Mostrar la barra lateral del espacio de trabajo',
     'ui.showToolbarIcons': 'Mostrar iconos de la barra de herramientas',
+    'ui.tabs': 'Pestañas',
+    'ui.alwaysShowTabBar': 'Mostrar siempre la barra de pestañas',
+    'ui.openSessionsInNewTab': 'Abrir sesiones en pestañas nuevas',
+    'ui.tabsHint':
+      'Si se desactiva, la barra de pestañas se oculta cuando solo está abierta Inicio. Abrir en pestañas nuevas conserva las sesiones existentes en lugar de reutilizar la misma ruta.',
+    'ui.showNextDifferenceInToolbar': 'Mostrar Siguiente diferencia en las barras de sesión',
+    'ui.showPrevDifferenceInToolbar': 'Mostrar Diferencia anterior en las barras de sesión',
+    'ui.archiveTypes': 'Tipos de archivo',
+    'ui.archiveTypesHint':
+      'Extensiones tratadas como archivos en la comparación de carpetas. Los sufijos más largos como .tar.gz tienen prioridad.',
+    'ui.archiveTypesPlaceholder': '.zip, .tar.gz, .7z',
     'ui.confirmBeforeCloseDirtyTab': 'Confirmar antes de cerrar pestañas con cambios',
     'ui.confirmBeforeOverwriteSave': 'Confirmar antes de guardar sobrescribiendo',
     'ui.confirmOverwriteSavePrompt': '¿Sobrescribir el archivo existente en el disco?',

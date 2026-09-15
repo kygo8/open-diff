@@ -15,6 +15,12 @@ import {
   settingsPackageVersion,
   type SettingsPackage,
 } from '@/app/settingsPackage'
+import {
+  getArchiveSuffixes,
+  loadArchiveSuffixes,
+  resetArchiveSuffixes,
+  setArchiveSuffixes,
+} from '@/app/archivePath'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type FontFamilyId = 'system' | 'segoe' | 'inter' | 'noto' | 'mono'
@@ -79,6 +85,10 @@ const showSidebarStorageKey = 'open-diff-show-sidebar'
 const showToolbarIconsStorageKey = 'open-diff-show-toolbar-icons'
 const confirmBeforeCloseDirtyTabStorageKey = 'open-diff-confirm-before-close-dirty-tab'
 const confirmBeforeOverwriteSaveStorageKey = 'open-diff-confirm-before-overwrite-save'
+const alwaysShowTabBarStorageKey = 'open-diff-always-show-tab-bar'
+const openSessionsInNewTabStorageKey = 'open-diff-open-sessions-in-new-tab'
+const showNextDifferenceInToolbarStorageKey = 'open-diff-show-next-difference-in-toolbar'
+const showPrevDifferenceInToolbarStorageKey = 'open-diff-show-prev-difference-in-toolbar'
 const loadLastWorkspaceOnStartupStorageKey = 'open-diff-load-last-workspace-on-startup'
 const fontFamilyIds = new Set<FontFamilyId>(['system', 'segoe', 'inter', 'noto', 'mono'])
 const shortcutScopes = new Set<ShortcutScope>(['global', 'text-compare'])
@@ -120,6 +130,11 @@ export const useSettingsStore = defineStore('settings', () => {
   const showToolbarIcons = ref(loadShowToolbarIcons())
   const confirmBeforeCloseDirtyTab = ref(loadConfirmBeforeCloseDirtyTab())
   const confirmBeforeOverwriteSave = ref(loadConfirmBeforeOverwriteSave())
+  const alwaysShowTabBar = ref(loadAlwaysShowTabBar())
+  const openSessionsInNewTab = ref(loadOpenSessionsInNewTab())
+  const showNextDifferenceInToolbar = ref(loadShowNextDifferenceInToolbar())
+  const showPrevDifferenceInToolbar = ref(loadShowPrevDifferenceInToolbar())
+  const archiveExtensions = ref<string[]>(setArchiveSuffixes(loadArchiveSuffixes()))
   const loadLastWorkspaceOnStartup = ref(loadLoadLastWorkspaceOnStartup())
 
   bindSystemThemeListener((prefersDark) => {
@@ -334,6 +349,46 @@ export const useSettingsStore = defineStore('settings', () => {
   )
 
   watch(
+    alwaysShowTabBar,
+    (value) => {
+      localStorage.setItem(alwaysShowTabBarStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    openSessionsInNewTab,
+    (value) => {
+      localStorage.setItem(openSessionsInNewTabStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showNextDifferenceInToolbar,
+    (value) => {
+      localStorage.setItem(showNextDifferenceInToolbarStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showPrevDifferenceInToolbar,
+    (value) => {
+      localStorage.setItem(showPrevDifferenceInToolbarStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    archiveExtensions,
+    (value) => {
+      setArchiveSuffixes(value)
+    },
+    { flush: 'sync' },
+  )
+
+  watch(
     loadLastWorkspaceOnStartup,
     (value) => {
       localStorage.setItem(loadLastWorkspaceOnStartupStorageKey, value ? '1' : '0')
@@ -531,6 +586,26 @@ export const useSettingsStore = defineStore('settings', () => {
     confirmBeforeOverwriteSave.value = value
   }
 
+  function setAlwaysShowTabBar(value: boolean): void {
+    alwaysShowTabBar.value = value
+  }
+
+  function setOpenSessionsInNewTab(value: boolean): void {
+    openSessionsInNewTab.value = value
+  }
+
+  function setShowNextDifferenceInToolbar(value: boolean): void {
+    showNextDifferenceInToolbar.value = value
+  }
+
+  function setShowPrevDifferenceInToolbar(value: boolean): void {
+    showPrevDifferenceInToolbar.value = value
+  }
+
+  function setArchiveExtensions(values: string[]): void {
+    archiveExtensions.value = setArchiveSuffixes(values)
+  }
+
   function setLoadLastWorkspaceOnStartup(value: boolean): void {
     loadLastWorkspaceOnStartup.value = value
   }
@@ -564,6 +639,11 @@ export const useSettingsStore = defineStore('settings', () => {
       showToolbarIcons: showToolbarIcons.value,
       confirmBeforeCloseDirtyTab: confirmBeforeCloseDirtyTab.value,
       confirmBeforeOverwriteSave: confirmBeforeOverwriteSave.value,
+      alwaysShowTabBar: alwaysShowTabBar.value,
+      openSessionsInNewTab: openSessionsInNewTab.value,
+      showNextDifferenceInToolbar: showNextDifferenceInToolbar.value,
+      showPrevDifferenceInToolbar: showPrevDifferenceInToolbar.value,
+      archiveExtensions: [...archiveExtensions.value],
       loadLastWorkspaceOnStartup: loadLastWorkspaceOnStartup.value,
     }
   }
@@ -642,6 +722,29 @@ export const useSettingsStore = defineStore('settings', () => {
         ? packageValue.confirmBeforeOverwriteSave
         : false,
     )
+    setAlwaysShowTabBar(
+      typeof packageValue.alwaysShowTabBar === 'boolean' ? packageValue.alwaysShowTabBar : true,
+    )
+    setOpenSessionsInNewTab(
+      typeof packageValue.openSessionsInNewTab === 'boolean'
+        ? packageValue.openSessionsInNewTab
+        : false,
+    )
+    setShowNextDifferenceInToolbar(
+      typeof packageValue.showNextDifferenceInToolbar === 'boolean'
+        ? packageValue.showNextDifferenceInToolbar
+        : true,
+    )
+    setShowPrevDifferenceInToolbar(
+      typeof packageValue.showPrevDifferenceInToolbar === 'boolean'
+        ? packageValue.showPrevDifferenceInToolbar
+        : true,
+    )
+    setArchiveExtensions(
+      Array.isArray(packageValue.archiveExtensions)
+        ? packageValue.archiveExtensions.filter((item): item is string => typeof item === 'string')
+        : getArchiveSuffixes(),
+    )
     setLoadLastWorkspaceOnStartup(
       typeof packageValue.loadLastWorkspaceOnStartup === 'boolean'
         ? packageValue.loadLastWorkspaceOnStartup
@@ -677,6 +780,11 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowToolbarIcons(true)
     setConfirmBeforeCloseDirtyTab(true)
     setConfirmBeforeOverwriteSave(false)
+    setAlwaysShowTabBar(true)
+    setOpenSessionsInNewTab(false)
+    setShowNextDifferenceInToolbar(true)
+    setShowPrevDifferenceInToolbar(true)
+    setArchiveExtensions(resetArchiveSuffixes())
     setLoadLastWorkspaceOnStartup(false)
   }
 
@@ -707,6 +815,11 @@ export const useSettingsStore = defineStore('settings', () => {
     showToolbarIcons,
     confirmBeforeCloseDirtyTab,
     confirmBeforeOverwriteSave,
+    alwaysShowTabBar,
+    openSessionsInNewTab,
+    showNextDifferenceInToolbar,
+    showPrevDifferenceInToolbar,
+    archiveExtensions,
     loadLastWorkspaceOnStartup,
     toggleTheme,
     setTheme,
@@ -738,6 +851,11 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowToolbarIcons,
     setConfirmBeforeCloseDirtyTab,
     setConfirmBeforeOverwriteSave,
+    setAlwaysShowTabBar,
+    setOpenSessionsInNewTab,
+    setShowNextDifferenceInToolbar,
+    setShowPrevDifferenceInToolbar,
+    setArchiveExtensions,
     setLoadLastWorkspaceOnStartup,
     exportSettingsPackage,
     importSettingsPackage,
@@ -1045,6 +1163,46 @@ function loadConfirmBeforeOverwriteSave(): boolean {
 
   if (stored === null) {
     return false
+  }
+
+  return stored === '1'
+}
+
+function loadAlwaysShowTabBar(): boolean {
+  const stored = localStorage.getItem(alwaysShowTabBarStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadOpenSessionsInNewTab(): boolean {
+  const stored = localStorage.getItem(openSessionsInNewTabStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadShowNextDifferenceInToolbar(): boolean {
+  const stored = localStorage.getItem(showNextDifferenceInToolbarStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadShowPrevDifferenceInToolbar(): boolean {
+  const stored = localStorage.getItem(showPrevDifferenceInToolbarStorageKey)
+
+  if (stored === null) {
+    return true
   }
 
   return stored === '1'

@@ -1005,6 +1005,17 @@ export const koKR: LanguagePack = {
     'ui.showPathBars': 'Show path bars',
     'ui.showSidebar': '작업 영역 사이드바 표시',
     'ui.showToolbarIcons': '도구 모음 아이콘 표시',
+    'ui.tabs': '탭',
+    'ui.alwaysShowTabBar': '항상 탭 표시줄 표시',
+    'ui.openSessionsInNewTab': '새 탭에서 세션 열기',
+    'ui.tabsHint':
+      '끄면 홈만 열려 있을 때 탭 표시줄이 숨겨집니다. 새 탭에서 열면 같은 경로를 재사용하지 않고 기존 세션 탭을 유지합니다.',
+    'ui.showNextDifferenceInToolbar': '세션 도구 모음에 다음 차이 표시',
+    'ui.showPrevDifferenceInToolbar': '세션 도구 모음에 이전 차이 표시',
+    'ui.archiveTypes': '아카이브 형식',
+    'ui.archiveTypesHint':
+      '폴더 비교에서 아카이브로 취급할 확장자입니다. .tar.gz처럼 긴 접미사가 먼저 일치합니다.',
+    'ui.archiveTypesPlaceholder': '.zip, .tar.gz, .7z',
     'ui.confirmBeforeCloseDirtyTab': '저장되지 않은 탭을 닫기 전 확인',
     'ui.confirmBeforeOverwriteSave': '덮어쓰기 저장 전 확인',
     'ui.confirmOverwriteSavePrompt': '디스크의 기존 파일을 덮어쓸까요?',

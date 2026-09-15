@@ -2,7 +2,13 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import HexCompareView from './HexCompareView.vue'
-import { compareHexFiles, findHexInFile, saveHexEdits, saveTextFile } from '@/api/diff'
+import {
+  compareHexFiles,
+  findHexInFile,
+  pathFileStamp,
+  saveHexEdits,
+  saveTextFile,
+} from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 const push = vi.fn()
@@ -13,6 +19,10 @@ vi.mock('vue-router', () => ({
 }))
 
 vi.mock('@/api/diff', () => ({
+  pathFileStamp: vi.fn().mockResolvedValue({
+    size: 4,
+    modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30),
+  }),
   compareHexFiles: vi.fn().mockResolvedValue({
     left: {
       path: 'C:/bin/left.bin',
@@ -60,6 +70,11 @@ describe('HexCompareView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.mocked(compareHexFiles).mockReset()
+    vi.mocked(pathFileStamp).mockReset()
+    vi.mocked(pathFileStamp).mockResolvedValue({
+      size: 4,
+      modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30),
+    })
     vi.mocked(compareHexFiles).mockResolvedValue({
       left: {
         path: 'C:/bin/left.bin',
@@ -456,6 +471,17 @@ describe('HexCompareView', () => {
     expect(rightViewport.element.scrollTop).toBe(48)
 
     wrapper.unmount()
+  })
+
+  it('shows size/date path footers after compare', async () => {
+    const wrapper = mount(HexCompareView)
+
+    await runCompare(wrapper)
+
+    expect(wrapper.find('[data-testid="hex-path-footers"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="hex-left-path-footer"]').text()).toMatch(/bytes/)
+    expect(wrapper.find('[data-testid="hex-right-path-footer"]').text()).toMatch(/bytes/)
+    expect(wrapper.find('[data-testid="hex-left-path-footer"]').text()).toMatch(/2026-01-15/)
   })
 
   it('shows only rows containing byte differences when diff-only mode is enabled', async () => {

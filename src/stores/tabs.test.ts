@@ -77,3 +77,29 @@ describe('useTabsStore close actions', () => {
     expect(store.canCloseTabsToTheRight(store.activeTabId)).toBe(false)
   })
 })
+
+describe('useTabsStore openTab forceNew', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
+  it('reuses an existing route by default and creates another tab when forceNew is set', () => {
+    const store = useTabsStore()
+
+    const first = store.openTab({ title: 'Hex', route: '/compare/hex', dirty: false })
+    const reused = store.openTab({ title: 'Hex again', route: '/compare/hex', dirty: false })
+
+    expect(reused.id).toBe(first.id)
+    expect(store.tabs.filter((tab) => tab.route === '/compare/hex')).toHaveLength(1)
+
+    const forced = store.openTab({
+      title: 'Hex copy',
+      route: '/compare/hex',
+      dirty: false,
+      forceNew: true,
+    })
+
+    expect(forced.id).not.toBe(first.id)
+    expect(store.tabs.filter((tab) => tab.route === '/compare/hex')).toHaveLength(2)
+  })
+})

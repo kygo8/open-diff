@@ -1,11 +1,13 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useSettingsStore } from './settings'
+import { resetArchiveSuffixes } from '@/app/archivePath'
 import { commandRegistry } from '@/app/commandRegistry'
 
 describe('useSettingsStore', () => {
   beforeEach(() => {
     localStorage.clear()
+    resetArchiveSuffixes()
     setActivePinia(createPinia())
   })
 
@@ -305,5 +307,26 @@ describe('useSettingsStore', () => {
     expect(localStorage.getItem('open-diff-show-toolbar-icons')).toBe('0')
     expect(localStorage.getItem('open-diff-confirm-before-close-dirty-tab')).toBe('0')
     expect(localStorage.getItem('open-diff-confirm-before-overwrite-save')).toBe('1')
+  })
+  it('persists tab bar, new-tab sessions, difference toolbar, and archive extensions', () => {
+    const store = useSettingsStore()
+
+    expect(store.alwaysShowTabBar).toBe(true)
+    expect(store.openSessionsInNewTab).toBe(false)
+    expect(store.showNextDifferenceInToolbar).toBe(true)
+    expect(store.showPrevDifferenceInToolbar).toBe(true)
+    expect(store.archiveExtensions).toContain('.zip')
+
+    store.setAlwaysShowTabBar(false)
+    store.setOpenSessionsInNewTab(true)
+    store.setShowNextDifferenceInToolbar(false)
+    store.setShowPrevDifferenceInToolbar(false)
+    store.setArchiveExtensions(['.zip', 'rar'])
+
+    expect(localStorage.getItem('open-diff-always-show-tab-bar')).toBe('0')
+    expect(localStorage.getItem('open-diff-open-sessions-in-new-tab')).toBe('1')
+    expect(localStorage.getItem('open-diff-show-next-difference-in-toolbar')).toBe('0')
+    expect(localStorage.getItem('open-diff-show-prev-difference-in-toolbar')).toBe('0')
+    expect(store.archiveExtensions).toEqual(['.rar', '.zip'])
   })
 })

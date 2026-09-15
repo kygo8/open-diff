@@ -1031,6 +1031,19 @@ export const frFR: LanguagePack = {
     'ui.showPathBars': 'Show path bars',
     'ui.showSidebar': 'Afficher la barre latérale de l’espace de travail',
     'ui.showToolbarIcons': 'Afficher les icônes de la barre d’outils',
+    'ui.tabs': 'Onglets',
+    'ui.alwaysShowTabBar': 'Toujours afficher la barre d’onglets',
+    'ui.openSessionsInNewTab': 'Ouvrir les sessions dans de nouveaux onglets',
+    'ui.tabsHint':
+      'Si désactivé, la barre d’onglets est masquée lorsqu’il ne reste que l’accueil. Ouvrir dans de nouveaux onglets conserve les sessions existantes au lieu de réutiliser la même route.',
+    'ui.showNextDifferenceInToolbar':
+      'Afficher Différence suivante dans les barres d’outils de session',
+    'ui.showPrevDifferenceInToolbar':
+      'Afficher Différence précédente dans les barres d’outils de session',
+    'ui.archiveTypes': 'Types d’archives',
+    'ui.archiveTypesHint':
+      'Extensions traitées comme archives dans la comparaison de dossiers. Les suffixes plus longs comme .tar.gz sont prioritaires.',
+    'ui.archiveTypesPlaceholder': '.zip, .tar.gz, .7z',
     'ui.confirmBeforeCloseDirtyTab': 'Confirmer avant de fermer les onglets modifiés',
     'ui.confirmBeforeOverwriteSave': 'Confirmer avant les enregistrements avec écrasement',
     'ui.confirmOverwriteSavePrompt': 'Écraser le fichier existant sur le disque ?',

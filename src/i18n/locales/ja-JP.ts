@@ -1013,6 +1013,17 @@ export const jaJP: LanguagePack = {
     'ui.showPathBars': 'Show path bars',
     'ui.showSidebar': 'ワークスペースのサイドバーを表示',
     'ui.showToolbarIcons': 'ツールバーアイコンを表示',
+    'ui.tabs': 'タブ',
+    'ui.alwaysShowTabBar': 'タブバーを常に表示',
+    'ui.openSessionsInNewTab': 'セッションを新しいタブで開く',
+    'ui.tabsHint':
+      'オフにするとホームだけのときタブバーを隠します。新しいタブで開くと、同じルートを再利用せず既存セッションタブを残します。',
+    'ui.showNextDifferenceInToolbar': 'セッションツールバーに次の差分を表示',
+    'ui.showPrevDifferenceInToolbar': 'セッションツールバーに前の差分を表示',
+    'ui.archiveTypes': 'アーカイブの種類',
+    'ui.archiveTypesHint':
+      'フォルダー比較でアーカイブとして扱う拡張子です。.tar.gz のような長い接尾辞を優先します。',
+    'ui.archiveTypesPlaceholder': '.zip, .tar.gz, .7z',
     'ui.confirmBeforeCloseDirtyTab': '未保存タブを閉じる前に確認する',
     'ui.confirmBeforeOverwriteSave': '上書き保存の前に確認する',
     'ui.confirmOverwriteSavePrompt': 'ディスク上の既存ファイルを上書きしますか？',

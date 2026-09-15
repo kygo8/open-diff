@@ -1033,6 +1033,17 @@ export const deDE: LanguagePack = {
     'ui.showPathBars': 'Show path bars',
     'ui.showSidebar': 'Arbeitsbereich-Seitenleiste anzeigen',
     'ui.showToolbarIcons': 'Symbolleistensymbole anzeigen',
+    'ui.tabs': 'Registerkarten',
+    'ui.alwaysShowTabBar': 'Registerleisten immer anzeigen',
+    'ui.openSessionsInNewTab': 'Sitzungen in neuen Registerkarten öffnen',
+    'ui.tabsHint':
+      'Wenn deaktiviert, wird die Registerleiste ausgeblendet, solange nur Start geöffnet ist. Neue Registerkarten behalten vorhandene Sitzungen statt dieselbe Route wiederzuverwenden.',
+    'ui.showNextDifferenceInToolbar': '„Nächster Unterschied“ in Sitzungs-Symbolleisten anzeigen',
+    'ui.showPrevDifferenceInToolbar': '„Vorheriger Unterschied“ in Sitzungs-Symbolleisten anzeigen',
+    'ui.archiveTypes': 'Archivtypen',
+    'ui.archiveTypesHint':
+      'Erweiterungen, die im Ordnervergleich als Archive gelten. Längere Suffixe wie .tar.gz haben Vorrang.',
+    'ui.archiveTypesPlaceholder': '.zip, .tar.gz, .7z',
     'ui.confirmBeforeCloseDirtyTab': 'Vor dem Schließen geänderter Tabs bestätigen',
     'ui.confirmBeforeOverwriteSave': 'Vor Überschreibspeichern bestätigen',
     'ui.confirmOverwriteSavePrompt': 'Vorhandene Datei auf dem Datenträger überschreiben?',

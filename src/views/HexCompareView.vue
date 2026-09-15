@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
-import { compareHexFiles, findHexInFile, saveHexEdits, saveTextFile } from '@/api/diff'
+import {
+  compareHexFiles,
+  findHexInFile,
+  pathFileStamp,
+  saveHexEdits,
+  saveTextFile,
+} from '@/api/diff'
 import type {
+  FileStamp,
   HexByteEdit,
   HexCompareResponse,
   HexDiffRange,
   HexFindMatch,
   HexViewCell,
 } from '@/types/diff'
+import { formatPathModifiedAt } from '@/app/pathMetadata'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
@@ -62,6 +70,8 @@ const leftCells = ref<HexViewCell[]>([])
 const rightCells = ref<HexViewCell[]>([])
 const leftTotalLen = ref(0)
 const rightTotalLen = ref(0)
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
 const diffRangeCount = ref(0)
 const diffRanges = ref<HexDiffRange[]>([])
 const navigationRanges = ref<HexDiffRange[]>([])
@@ -369,6 +379,10 @@ function swapHexPaths(): void {
 
   rightTotalLen.value = leftTotalLen.value
   leftTotalLen.value = nextLeftLen
+  const nextLeftStamp = rightFileStamp.value
+
+  rightFileStamp.value = leftFileStamp.value
+  leftFileStamp.value = nextLeftStamp
   syncHexTabTitle()
 }
 
@@ -451,12 +465,30 @@ watch([leftPath, rightPath], () => {
   syncHexTabTitle()
 })
 
-const leftPathFooterLabel = computed(() =>
-  leftTotalLen.value > 0 ? t('status.bytes', { count: leftTotalLen.value }) : '',
-)
-const rightPathFooterLabel = computed(() =>
-  rightTotalLen.value > 0 ? t('status.bytes', { count: rightTotalLen.value }) : '',
-)
+const leftPathFooterLabel = computed(() => formatHexPathFooter(leftFileStamp.value))
+const rightPathFooterLabel = computed(() => formatHexPathFooter(rightFileStamp.value))
+
+function formatHexPathFooter(stamp: FileStamp | null): string {
+  if (!stamp) {
+    return ''
+  }
+
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+
+  return modified
+    ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
+    : t('status.bytes', { count: stamp.size })
+}
+
+async function refreshHexPathStamps(): Promise<void> {
+  const [left, right] = await Promise.all([
+    leftPath.value ? pathFileStamp(leftPath.value).catch(() => null) : Promise.resolve(null),
+    rightPath.value ? pathFileStamp(rightPath.value).catch(() => null) : Promise.resolve(null),
+  ])
+
+  leftFileStamp.value = left
+  rightFileStamp.value = right
+}
 
 watchEffect(() => {
   const hasResult = leftCells.value.length > 0 || rightCells.value.length > 0
@@ -492,6 +524,7 @@ async function runHexCompare(options?: { preserveNavigationRanges?: boolean }): 
     })
 
     applyHexResult(result, options?.preserveNavigationRanges === true)
+    await refreshHexPathStamps()
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
     error.value = formatCompareError(event, t)

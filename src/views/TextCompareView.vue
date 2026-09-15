@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { diffText, exportTextCompareReport, readTextFile } from '@/api/diff'
 import { reportFileExtension } from '@/app/reportExports'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { notifyCompareComplete } from '@/app/compareCompleteNotify'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSettingsStore } from '@/stores/settings'
@@ -40,6 +41,7 @@ const right = ref('')
 const leftPathLabel = ref('')
 const rightPathLabel = ref('')
 const statusBar = useStatusBarStore()
+const loadTimeSeconds = ref<number | null>(null)
 const sessionLaunch = useSessionLaunchStore()
 const lastCompare = useLastCompareStore()
 const settings = useSettingsStore()
@@ -108,6 +110,15 @@ function persistTextSessionOptions(): void {
 
 function openTextSessionSettings(): void {
   showSessionSettings.value = true
+}
+
+function focusTextFormatSelect(): void {
+  const select = document.querySelector<HTMLSelectElement>('[data-testid="text-format-select"]')
+
+  select?.focus()
+  if (selectedFormatId.value) {
+    applySelectedFileFormat(selectedFormatId.value)
+  }
 }
 
 function applyTextSessionSettings(
@@ -382,6 +393,7 @@ watchEffect(() => {
     encoding: statusBarEncoding.value,
     filterStatus: filterStatus.value,
     source: 'text-compare',
+    loadTimeSeconds: result.value ? loadTimeSeconds.value : null,
   })
 })
 
@@ -492,6 +504,7 @@ function recordCurrentTextCompare(): void {
 
 async function runDiff(): Promise<void> {
   const generation = ++textCompareGeneration
+  const startedAt = performance.now()
 
   loading.value = true
   error.value = ''
@@ -503,6 +516,7 @@ async function runDiff(): Promise<void> {
     }
 
     result.value = next
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     recordCurrentTextCompare()
     ignoredDiffKeys.value = new Set()
     bookmarks.value = {}
@@ -538,6 +552,7 @@ function cancelTextCompare(): void {
 
 async function loadLaunchTextFiles(leftPath: string, rightPath: string): Promise<void> {
   const generation = ++textCompareGeneration
+  const startedAt = performance.now()
 
   loading.value = true
   error.value = ''
@@ -557,6 +572,7 @@ async function loadLaunchTextFiles(leftPath: string, rightPath: string): Promise
     leftPathLabel.value = leftFile.path
     rightPathLabel.value = rightFile.path
     result.value = await diffText(buildDiffRequest())
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
 
     if (generation !== textCompareGeneration) {
       return
@@ -919,6 +935,8 @@ const textSessionToolbar = computed(() =>
     context: true,
     minor: true,
     rules: true,
+    format: fileFormats.value.length > 0,
+    sessions: true,
     copy: Boolean(result.value) && activeDiffRows.value.length > 0,
     'next-section': activeDiffRows.value.length > 0,
     'prev-section': activeDiffRows.value.length > 0,
@@ -1007,6 +1025,12 @@ function runTextToolbarCommand(commandId: string): void {
       break
     case 'rules':
       showTextRules.value = !showTextRules.value
+      break
+    case 'format':
+      focusTextFormatSelect()
+      break
+    case 'sessions':
+      openTextSessionSettings()
       break
     case 'copy':
       copyCurrentDiff('leftToRight')

@@ -43,6 +43,7 @@ import { useI18n } from '@/i18n'
 import { usePolicyStore } from '@/stores/policy'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { isTextSessionStatusSource } from '@/app/statusBarPhrases'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
@@ -612,12 +613,37 @@ const navigationItems = computed<NavigationItem[]>(() =>
     })),
 )
 const statusSegments = computed(() => statusBar.segments)
-const localizedStatusSegments = computed(() => [
-  localizeStatusValue(statusSegments.value[0]),
-  `${t('status.differences')}: ${statusBar.report.differenceCount === null ? '-' : String(statusBar.report.differenceCount)}`,
-  `${t('status.encoding')}: ${statusBar.report.encoding}`,
-  `${t('status.filter')}: ${localizeStatusValue(statusBar.report.filterStatus)}`,
-])
+
+function localizedDifferenceSegment(differenceCount: number | null, source: string): string {
+  if (!isTextSessionStatusSource(source)) {
+    return `${t('status.differences')}: ${differenceCount === null ? '-' : String(differenceCount)}`
+  }
+
+  if (differenceCount === null) {
+    return t('status.differenceSectionUnknown')
+  }
+
+  if (differenceCount === 1) {
+    return t('status.differenceSection', { count: differenceCount })
+  }
+
+  return t('status.differenceSections', { count: differenceCount })
+}
+
+const localizedStatusSegments = computed(() => {
+  const segments = [
+    localizeStatusValue(statusSegments.value[0]),
+    localizedDifferenceSegment(statusBar.report.differenceCount, statusBar.report.source),
+    `${t('status.encoding')}: ${statusBar.report.encoding}`,
+    `${t('status.filter')}: ${localizeStatusValue(statusBar.report.filterStatus)}`,
+  ]
+
+  if (statusBar.report.loadTimeSeconds !== null) {
+    segments.push(t('status.loadTime', { seconds: statusBar.report.loadTimeSeconds.toFixed(2) }))
+  }
+
+  return segments
+})
 const windowTitle = computed(() => {
   if (route.path === '/') {
     return 'Home - OpenDiff'
@@ -1221,10 +1247,11 @@ const sourceSessionTypes = new Set<SessionType>([
       class="status-bar"
       data-testid="status-bar"
     >
-      <span>{{ localizedStatusSegments[0] }}</span>
-      <span>{{ localizedStatusSegments[1] }}</span>
-      <span>{{ localizedStatusSegments[2] }}</span>
-      <span>{{ localizedStatusSegments[3] }}</span>
+      <span
+        v-for="(segment, index) in localizedStatusSegments"
+        :key="`status-segment-${index}`"
+        >{{ segment }}</span
+      >
     </footer>
 
     <div

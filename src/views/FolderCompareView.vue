@@ -102,6 +102,8 @@ interface FolderTreeRow {
   rightName?: string
   leftSize?: string
   rightSize?: string
+  leftByteSize?: number
+  rightByteSize?: number
   leftModified?: string
   rightModified?: string
   leftPath?: string
@@ -889,6 +891,26 @@ function isRowChecked(rowId: string): boolean {
   return checkedRowIds.value.has(rowId)
 }
 
+const folderSelectionSummary = computed(() => {
+  const selected = rows.value.filter(
+    (row) => checkedRowIds.value.has(row.id) && row.kind === 'file',
+  )
+  const count = selected.length
+  const leftBytes = selected.reduce((total, row) => total + (row.leftByteSize ?? 0), 0)
+  const rightBytes = selected.reduce((total, row) => total + (row.rightByteSize ?? 0), 0)
+
+  return {
+    count,
+    leftBytes,
+    rightBytes,
+    hasRoots: Boolean(leftRoot.value || rightRoot.value),
+  }
+})
+
+function formatSelectionFooter(count: number, bytes: number): string {
+  return t('status.filesSelectedBytes', { count, bytes })
+}
+
 function isExpanded(row: FolderTreeRow): boolean {
   return expandedDirectoryIds.value.has(row.id)
 }
@@ -1022,6 +1044,8 @@ function folderCompareResponseRowToTreeRow(row: FolderCompareResponseRow): Folde
     rightName: row.right?.name,
     leftSize: formatFolderSideSize(row.left),
     rightSize: formatFolderSideSize(row.right),
+    leftByteSize: row.left?.kind === 'file' ? row.left.size : undefined,
+    rightByteSize: row.right?.kind === 'file' ? row.right.size : undefined,
     leftModified: formatFolderModified(row.left?.modifiedAtMs),
     rightModified: formatFolderModified(row.right?.modifiedAtMs),
     leftPath: row.left?.path,
@@ -1997,6 +2021,18 @@ onUnmounted(() => {
                 >{{ $t('ui.snapshotSide') }}</span
               >
             </div>
+            <span
+              v-if="folderSelectionSummary.hasRoots"
+              class="path-side-footer"
+              data-testid="folder-left-path-footer"
+            >
+              {{
+                formatSelectionFooter(
+                  folderSelectionSummary.count,
+                  folderSelectionSummary.leftBytes,
+                )
+              }}
+            </span>
           </label>
           <label>
             <span>{{ $t('ui.rightFolder') }}</span>
@@ -2040,6 +2076,18 @@ onUnmounted(() => {
                 >{{ $t('ui.snapshotSide') }}</span
               >
             </div>
+            <span
+              v-if="folderSelectionSummary.hasRoots"
+              class="path-side-footer"
+              data-testid="folder-right-path-footer"
+            >
+              {{
+                formatSelectionFooter(
+                  folderSelectionSummary.count,
+                  folderSelectionSummary.rightBytes,
+                )
+              }}
+            </span>
           </label>
         </div>
 
@@ -3235,6 +3283,13 @@ onUnmounted(() => {
 .path-pair span {
   color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.path-side-footer {
+  display: block;
+  margin-top: 4px;
+  color: var(--od-muted, #6b7280);
+  font-size: 11px;
 }
 
 .archive-side-chip {

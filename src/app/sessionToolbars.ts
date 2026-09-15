@@ -35,6 +35,8 @@ export const textCompareToolbarOrder = [
   'context',
   'minor',
   'rules',
+  'format',
+  'sessions',
   'copy',
   'next-section',
   'prev-section',
@@ -48,6 +50,8 @@ export const hexCompareToolbarOrder = [
   'diffs',
   'same',
   'rules',
+  'format',
+  'sessions',
   'copy',
   'next-diff',
   'prev-diff',
@@ -62,6 +66,8 @@ export const tableCompareToolbarOrder = [
   'same',
   'minor',
   'rules',
+  'format',
+  'sessions',
   'copy',
   'next-diff',
   'prev-diff',
@@ -102,6 +108,7 @@ export const mediaCompareToolbarOrder = [
   'rules',
   'swap',
   'reload',
+  'play2',
 ] as const
 
 export const versionCompareToolbarOrder = [
@@ -192,6 +199,8 @@ const textMeta: Record<(typeof textCompareToolbarOrder)[number], ToolbarMeta> = 
   context: { glyph: 'C', labelKey: 'ui.context' },
   minor: { glyph: '~', labelKey: 'ui.minor' },
   rules: { glyph: 'R', labelKey: 'ui.rules' },
+  format: { glyph: 'F', labelKey: 'ui.format' },
+  sessions: { glyph: 'S', labelKey: 'ui.sessions' },
   copy: { glyph: 'C', labelKey: 'ui.copy' },
   'next-section': { glyph: 'N', labelKey: 'ui.nextSection' },
   'prev-section': { glyph: 'P', labelKey: 'ui.prevSection' },
@@ -205,6 +214,8 @@ const hexMeta: Record<(typeof hexCompareToolbarOrder)[number], ToolbarMeta> = {
   diffs: { glyph: '!=', labelKey: 'ui.diffs' },
   same: { glyph: '=', labelKey: 'ui.same' },
   rules: { glyph: 'R', labelKey: 'ui.rules' },
+  format: { glyph: 'F', labelKey: 'ui.format' },
+  sessions: { glyph: 'S', labelKey: 'ui.sessions' },
   copy: { glyph: 'C', labelKey: 'ui.copy' },
   'next-diff': { glyph: 'N', labelKey: 'ui.nextDiff' },
   'prev-diff': { glyph: 'P', labelKey: 'ui.prevDiff' },
@@ -219,6 +230,8 @@ const tableMeta: Record<(typeof tableCompareToolbarOrder)[number], ToolbarMeta> 
   same: { glyph: '=', labelKey: 'ui.same' },
   minor: { glyph: '~', labelKey: 'ui.minor' },
   rules: { glyph: 'R', labelKey: 'ui.rules' },
+  format: { glyph: 'F', labelKey: 'ui.format' },
+  sessions: { glyph: 'S', labelKey: 'ui.sessions' },
   copy: { glyph: 'C', labelKey: 'ui.copy' },
   'next-diff': { glyph: 'N', labelKey: 'ui.nextDiff' },
   'prev-diff': { glyph: 'P', labelKey: 'ui.prevDiff' },
@@ -259,6 +272,7 @@ const mediaMeta: Record<(typeof mediaCompareToolbarOrder)[number], ToolbarMeta> 
   rules: { glyph: 'R', labelKey: 'ui.rules' },
   swap: { glyph: '<>', labelKey: 'ui.swap' },
   reload: { glyph: 'R', labelKey: 'ui.reload' },
+  play2: { glyph: 'P2', labelKey: 'ui.play2' },
 }
 
 const versionMeta: Record<(typeof versionCompareToolbarOrder)[number], ToolbarMeta> = {

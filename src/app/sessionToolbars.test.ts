@@ -67,6 +67,8 @@ describe('sessionToolbars', () => {
 
     expect(toolbar.map((item) => item.id)).toEqual([...textCompareToolbarOrder])
     expect(toolbar.find((item) => item.id === 'minor')?.enabled).toBe(false)
+    expect(toolbar.map((item) => item.id)).toContain('format')
+    expect(toolbar.map((item) => item.id)).toContain('sessions')
   })
 
   it('keeps Hex Compare toolbar in expected order', () => {
@@ -120,6 +122,13 @@ describe('sessionToolbars', () => {
     expect(
       buildMediaCompareToolbar({ home: true, swap: true }).find((i) => i.id === 'swap')?.enabled,
     ).toBe(true)
+    expect(buildMediaCompareToolbar({ home: true, play2: true }).map((item) => item.id)).toContain(
+      'play2',
+    )
+    expect(
+      buildMediaCompareToolbar({ home: true, play2: true }).find((item) => item.id === 'play2')
+        ?.labelKey,
+    ).toBe('ui.play2')
     expect(buildVersionCompareToolbar({ home: true }).map((item) => item.id)).toEqual([
       ...versionCompareToolbarOrder,
     ])

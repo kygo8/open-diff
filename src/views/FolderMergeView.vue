@@ -1236,9 +1236,9 @@ watch(
 .folder-merge-view {
   display: grid;
   grid-template-rows: auto auto auto minmax(0, auto);
-  gap: 12px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 4px 6px;
   overflow: auto;
 }
 
@@ -1246,7 +1246,7 @@ watch(
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 8px;
 }
 
 .eyebrow {
@@ -1294,16 +1294,16 @@ h1 {
   display: grid;
   grid-template-columns: repeat(4, minmax(150px, 1fr)) auto;
   align-items: end;
-  gap: 10px;
-  padding: 12px;
+  gap: 6px;
+  padding: 6px 8px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 2px;
   background: var(--app-surface);
 }
 
 .merge-paths label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -1319,15 +1319,16 @@ h1 {
 
 .merge-paths input {
   width: 100%;
-  height: 32px;
-  padding: 0 9px;
+  height: 22px;
+  padding: 0 6px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
-  font-size: 13px;
+  font-size: 11px;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .merge-actions {
@@ -1522,20 +1523,23 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 4px 8px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 2px;
   background: var(--app-surface);
+  font-size: 11px;
 }
 
 .merge-chrome-panel button {
-  height: 28px;
-  padding: 0 10px;
+  height: 22px;
+  padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
+  font-size: 11px;
   cursor: pointer;
 }
 

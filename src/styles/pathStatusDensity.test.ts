@@ -11,5 +11,7 @@ describe('path/status strip density', () => {
     expect(css).toMatch(/\.bc-path-row input\s*\{[\s\S]*?height:\s*22px/)
     expect(css).toMatch(/\.path-pair-bar\s*\{[\s\S]*?min-height:\s*32px/)
     expect(css).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*10px/)
+    expect(css).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*11px/)
+    expect(css).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*11px/)
   })
 })

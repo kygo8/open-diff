@@ -1208,9 +1208,11 @@ watch(
 <style scoped>
 .path-side-footer {
   display: block;
+  min-height: 11px;
+  margin-top: 1px;
   color: var(--app-muted, #6b7280);
-  font-size: 12px;
-  margin-top: 4px;
+  font-size: 10px;
+  line-height: 11px;
 }
 
 .path-side-footer-muted {
@@ -1219,9 +1221,9 @@ watch(
 
 .folder-sync-view {
   display: grid;
-  gap: 14px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 4px 6px;
   overflow: auto;
 }
 
@@ -1229,7 +1231,7 @@ watch(
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 8px;
 }
 
 .eyebrow {
@@ -1271,16 +1273,16 @@ h1 {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 180px auto;
   align-items: end;
-  gap: 10px;
-  padding: 12px;
+  gap: 6px;
+  padding: 6px 8px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 2px;
   background: var(--app-surface);
 }
 
 .sync-settings label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -1292,13 +1294,13 @@ h1 {
 .sync-settings input,
 .sync-settings select {
   width: 100%;
-  height: 32px;
-  padding: 0 9px;
+  height: 22px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
-  font-size: 13px;
+  font-size: 11px;
 }
 
 .sync-setting-actions {
@@ -1453,27 +1455,29 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 4px 8px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 2px;
   background: var(--app-surface);
 }
 
 .sync-chrome-panel label {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: 4px;
+  font-size: 11px;
 }
 
 .sync-chrome-panel button {
-  height: 28px;
-  padding: 0 10px;
+  height: 22px;
+  padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
+  font-size: 11px;
   cursor: pointer;
 }
 

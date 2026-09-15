@@ -3492,9 +3492,9 @@ onUnmounted(() => {
 .folder-compare-view {
   display: grid;
   grid-template-rows: max-content max-content max-content max-content max-content minmax(0, 1fr);
-  gap: 12px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 4px 6px;
   overflow: hidden;
 }
 
@@ -3504,7 +3504,7 @@ onUnmounted(() => {
   align-content: start;
   align-items: stretch;
   align-self: start;
-  gap: 10px;
+  gap: 4px;
   height: auto;
   min-height: min-content;
   overflow: visible;
@@ -3525,29 +3525,29 @@ onUnmounted(() => {
 .path-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 4px;
   height: auto;
   min-height: min-content;
 }
 
 .path-pair label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
   min-width: 0;
 }
 
 .path-pair span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .path-side-footer {
   display: block;
-  min-height: 14px;
-  margin-top: 4px;
+  min-height: 11px;
+  margin-top: 1px;
   color: var(--od-muted, #6b7280);
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 10px;
+  line-height: 11px;
 }
 
 .path-side-footer-muted {
@@ -3579,47 +3579,49 @@ onUnmounted(() => {
 
 .archive-path-hint {
   color: var(--app-text-muted);
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 11px;
+  line-height: 1.25;
 }
 
 .folder-criteria {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 14px;
+  gap: 3px 8px;
   padding: 0;
   border: 0;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .folder-criteria legend {
   display: block;
   float: none;
   width: 100%;
-  margin: 0 0 6px;
+  margin: 0 0 2px;
   padding: 0;
   color: var(--app-text);
+  font-size: 11px;
   font-weight: 600;
 }
 
 .folder-criteria label {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .path-pair input {
   width: 100%;
   min-width: 0;
-  height: 32px;
-  padding: 0 9px;
+  height: 22px;
+  padding: 0 6px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-surface);
   color: var(--app-text);
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -3627,7 +3629,7 @@ onUnmounted(() => {
 .folder-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
 }
 
 .folder-root-summary {
@@ -3650,16 +3652,20 @@ onUnmounted(() => {
 .manual-alignment-tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  align-items: center;
+  gap: 4px 8px;
+  min-height: 22px;
+  padding: 1px 0;
+  font-size: 11px;
 }
 
 .column-config label,
 .display-filters label {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .manual-alignment-tools {
@@ -4030,7 +4036,7 @@ onUnmounted(() => {
 .path-field-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .path-field-row input,

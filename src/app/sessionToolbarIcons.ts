@@ -65,6 +65,7 @@ export type SessionToolbarVisual = { kind: 'icon'; icon: LucideIcon } | SessionT
  * Symbols are original unicode — not copied from third-party icon assets.
  */
 export const sessionToolbarPlates: Readonly<Record<string, SessionToolbarPlate>> = {
+  home: { kind: 'plate', plate: 'home', symbol: '⌂' },
   refresh: { kind: 'plate', plate: 'refresh', symbol: '↻' },
   reload: { kind: 'plate', plate: 'reload', symbol: '⟳' },
   swap: { kind: 'plate', plate: 'swap', symbol: '↔' },
@@ -81,6 +82,21 @@ export const sessionToolbarPlates: Readonly<Record<string, SessionToolbarPlate>>
   collapse: { kind: 'plate', plate: 'collapse', symbol: '⤡' },
   filters: { kind: 'plate', plate: 'filters', symbol: '▽' },
   rules: { kind: 'plate', plate: 'rules', symbol: '⚖' },
+  stop: { kind: 'plate', plate: 'stop', symbol: '■' },
+  peek: { kind: 'plate', plate: 'peek', symbol: '◉' },
+  'sync-now': { kind: 'plate', plate: 'sync-now', symbol: '▶' },
+  accept: { kind: 'plate', plate: 'accept', symbol: '✓' },
+  cancel: { kind: 'plate', plate: 'cancel', symbol: '✕' },
+  merge: { kind: 'plate', plate: 'merge', symbol: '⑂' },
+  'same-ok': { kind: 'plate', plate: 'same-ok', symbol: '✓' },
+  'to-output': { kind: 'plate', plate: 'to-output', symbol: '⇢' },
+  select: { kind: 'plate', plate: 'select', symbol: '☑' },
+  all: { kind: 'plate', plate: 'all', symbol: '✱' },
+  diffs: { kind: 'plate', plate: 'diffs', symbol: '≠' },
+  same: { kind: 'plate', plate: 'same', symbol: '=' },
+  structure: { kind: 'plate', plate: 'structure', symbol: '▤' },
+  minor: { kind: 'plate', plate: 'minor', symbol: '~' },
+  files: { kind: 'plate', plate: 'files', symbol: '▤' },
 }
 
 /**
@@ -147,6 +163,51 @@ export const sessionToolbarIcons: Readonly<Record<string, LucideIcon>> = {
   paste: ClipboardPaste,
   delete: Trash2,
   syntax: BookType,
+}
+
+/**
+ * Capture MainBar spacing (~12px group gaps on folder shots): mark commands that
+ * start a visual group so the shell can insert separator rhythm without PNGs.
+ */
+export const sessionToolbarSeparatorBeforeIds: ReadonlySet<string> = new Set([
+  'all',
+  'minor',
+  'structure',
+  'same-ok',
+  'rules',
+  'merge',
+  'to-output',
+  'copy',
+  'expand',
+  'swap',
+  'filters',
+  'peek',
+  'sync-now',
+  'cancel',
+  'accept',
+  'sessions',
+  'goto',
+  'wrap',
+  'next-diff',
+  'next-section',
+  'next-conflict',
+  'reload',
+  'format',
+])
+
+export function sessionToolbarHasSeparatorBefore(
+  id: string,
+  previousId: string | undefined,
+): boolean {
+  if (!previousId) {
+    return false
+  }
+
+  if (previousId === 'home') {
+    return true
+  }
+
+  return sessionToolbarSeparatorBeforeIds.has(id)
 }
 
 export function plateForSessionToolbarCommand(id: string): SessionToolbarPlate | undefined {

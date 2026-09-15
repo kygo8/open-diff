@@ -727,7 +727,7 @@ function openSelectedPreview(): void {
       <main class="bc-home-main">
         <section class="bc-selected-session">
           <div class="bc-selected-title">
-            <FolderOpen :size="20" />
+            <FolderOpen :size="18" />
             <div>
               <strong :title="selectedSessionPreview.name">{{
                 selectedSessionPreview.name
@@ -815,7 +815,7 @@ function openSelectedPreview(): void {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="44"
+                  :size="48"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1129,14 +1129,14 @@ function openSelectedPreview(): void {
 .bc-home-workspace {
   display: grid;
 
-  /* Capture-aligned left tree ~24% of a typical window; denser than prior 300px. */
-  grid-template-columns: minmax(220px, 248px) minmax(0, 1fr);
+  /* Capture-aligned left tree; pass-2 denser column toward home.png. */
+  grid-template-columns: minmax(210px, 236px) minmax(0, 1fr);
   background: #ffffff;
 }
 
 .bc-session-tree {
   display: grid;
-  grid-template-rows: 24px minmax(0, 1fr) 30px;
+  grid-template-rows: 22px minmax(0, 1fr) 26px;
   min-width: 0;
   min-height: 0;
   border-right: 1px solid #b9bec7;
@@ -1147,12 +1147,12 @@ function openSelectedPreview(): void {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 8px;
+  padding: 0 6px;
   overflow: hidden;
   border-bottom: 1px solid #c6ccd5;
   background: #eef1f5;
   color: #111827;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   line-height: 1;
   text-overflow: ellipsis;
@@ -1161,35 +1161,35 @@ function openSelectedPreview(): void {
 
 .bc-tree-list {
   min-height: 0;
-  padding: 1px 4px;
+  padding: 0 3px;
   overflow: auto;
 }
 
 .bc-tree-row {
   display: grid;
-  grid-template-columns: 12px 16px minmax(0, 1fr);
+  grid-template-columns: 12px 14px minmax(0, 1fr);
   align-items: center;
   gap: 2px;
   width: 100%;
-  min-height: 20px;
+  min-height: 18px;
   padding: 0 2px;
   border: 0;
   background: transparent;
   color: #111827;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 11px;
+  line-height: 14px;
   text-align: left;
   cursor: pointer;
 }
 
 .bc-tree-row.child {
-  padding-left: 18px;
-  font-size: 12px;
+  padding-left: 16px;
+  font-size: 11px;
 }
 
 .bc-tree-row.saved {
-  padding-left: 34px;
-  font-size: 12px;
+  padding-left: 30px;
+  font-size: 11px;
 }
 
 .bc-tree-row:hover,
@@ -1207,29 +1207,29 @@ function openSelectedPreview(): void {
 
 .bc-tree-footer {
   display: grid;
-  grid-template-columns: 26px 26px minmax(0, 1fr);
+  grid-template-columns: 22px 22px minmax(0, 1fr);
   align-items: center;
   gap: 2px;
-  padding: 2px 4px 3px;
+  padding: 2px 3px;
   border-top: 1px solid #c6ccd5;
   background: #eef1f5;
 }
 
 .bc-tree-footer button {
-  height: 22px;
+  height: 20px;
   border: 1px solid #d1d5db;
   border-radius: 2px;
   background: #ffffff;
   color: #2f343a;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1;
 }
 
 .bc-tree-footer input {
   width: 100%;
   min-width: 0;
-  height: 22px;
-  padding: 0 5px;
+  height: 20px;
+  padding: 0 4px;
   overflow: hidden;
   border: 1px solid #c6ccd5;
   border-radius: 2px;
@@ -1252,17 +1252,17 @@ function openSelectedPreview(): void {
 
 .bc-selected-session {
   display: grid;
-  gap: 6px;
-  padding: 6px 12px 4px;
+  gap: 4px;
+  padding: 4px 10px 2px;
 }
 
 .bc-selected-title {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
   color: #111827;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .bc-selected-title div {
@@ -1280,15 +1280,15 @@ function openSelectedPreview(): void {
 }
 
 .bc-selected-title strong {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 500;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .bc-selected-title span {
   color: #374151;
-  font-size: 13px;
-  line-height: 1.25;
+  font-size: 12px;
+  line-height: 1.2;
 }
 
 .bc-selected-actions {
@@ -1297,15 +1297,15 @@ function openSelectedPreview(): void {
 }
 
 .bc-selected-actions button {
-  width: 110px;
+  width: 96px;
   max-width: 100%;
-  height: 28px;
+  height: 24px;
   overflow: hidden;
   border: 1px solid #c7cdd6;
   border-radius: 2px;
   background: #ffffff;
   color: #1d4f91;
-  font-size: 13px;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
@@ -1328,7 +1328,7 @@ function openSelectedPreview(): void {
 }
 
 .new-session-panel {
-  padding: 0 10px 8px;
+  padding: 0 8px 6px;
 }
 
 .new-session-panel h2,
@@ -1340,20 +1340,20 @@ function openSelectedPreview(): void {
 
 .new-session-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(100px, 1fr));
-  gap: 4px 14px;
-  width: min(520px, calc(100% - 24px));
-  margin: 0 auto 4px;
+  grid-template-columns: repeat(3, minmax(104px, 1fr));
+  gap: 6px 18px;
+  width: min(540px, calc(100% - 20px));
+  margin: 4px auto 2px;
 }
 
 .bc-home-instructions {
   display: grid;
   gap: 1px;
   justify-items: center;
-  margin: 2px 0 4px;
+  margin: 4px 0 2px;
   color: #111827;
   font-size: 12px;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .bc-home-instructions strong {
@@ -1363,12 +1363,12 @@ function openSelectedPreview(): void {
 
 .new-session-card {
   display: grid;
-  gap: 1px;
+  gap: 2px;
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 78px;
-  padding: 2px 1px 4px;
+  min-height: 74px;
+  padding: 4px 2px 6px;
   overflow: hidden;
   border: 0;
   border-radius: 2px;
@@ -1388,9 +1388,9 @@ function openSelectedPreview(): void {
 
 .session-card-icon {
   display: inline-grid;
-  width: 56px;
-  height: 48px;
-  color: #374151;
+  width: 64px;
+  height: 52px;
+  color: #2f353d;
   place-items: center;
 }
 
@@ -1398,9 +1398,9 @@ function openSelectedPreview(): void {
   max-width: 100%;
   margin: 0;
   overflow: hidden;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 400;
-  line-height: 1.15;
+  line-height: 1.1;
   text-align: center;
   white-space: nowrap;
   text-overflow: ellipsis;

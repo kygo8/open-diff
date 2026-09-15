@@ -1113,9 +1113,9 @@ watch(
 .text-merge-view {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 10px;
+  gap: 4px;
   height: 100%;
-  padding: 10px;
+  padding: 4px 6px;
   overflow: hidden;
 }
 
@@ -1123,29 +1123,29 @@ watch(
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  min-height: 34px;
+  gap: 6px;
+  min-height: 26px;
 }
 
 .merge-toolbar > div {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 6px;
   min-width: 0;
 }
 
 .merge-toolbar span,
 .status-chip {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .status-chip {
   max-width: min(280px, 100%);
-  padding: 3px 7px;
+  padding: 1px 5px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-surface);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1155,33 +1155,34 @@ watch(
   width: 220px;
   min-width: 0;
   max-width: 100%;
-  height: 28px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 5px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-surface);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .toolbar-button {
-  height: 28px;
-  padding: 0 8px;
+  height: 22px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-surface);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.2;
   cursor: pointer;
 }
 
 .toolbar-button-icon {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .favor-chrome,
@@ -1190,12 +1191,12 @@ watch(
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .toolbar-button-dense {
   justify-content: center;
-  width: 28px;
+  width: 22px;
   padding: 0;
 }
 
@@ -1214,15 +1215,15 @@ watch(
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .sync-panes-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .merge-lines li.active,
@@ -1235,7 +1236,7 @@ watch(
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: 10px;
+  gap: 4px;
   min-height: 0;
 }
 
@@ -1246,7 +1247,7 @@ watch(
   min-height: 0;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1258,38 +1259,38 @@ watch(
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .merge-to-option {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .pane-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  min-height: 46px;
-  padding: 8px 10px;
+  gap: 6px;
+  min-height: 28px;
+  padding: 3px 6px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-muted);
 }
 
 .pane-header h2 {
-  margin: 0 0 2px;
-  font-size: 14px;
-  line-height: 1.2;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.15;
 }
 
 .pane-header span,
 .pane-header small {
   color: var(--app-text-muted);
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .merge-lines {
@@ -1301,6 +1302,7 @@ watch(
   overflow: auto;
   font-family: var(--font-mono);
   font-size: 12px;
+  line-height: 18px;
   list-style: none;
 }
 
@@ -1308,14 +1310,14 @@ watch(
   width: 100%;
   min-width: 0;
   min-height: 0;
-  padding: 8px;
+  padding: 4px 6px;
   border: 0;
   outline: 0;
   background: var(--app-surface);
   color: var(--app-text);
   font-family: var(--font-mono);
   font-size: 12px;
-  line-height: 24px;
+  line-height: 20px;
   resize: none;
   white-space: pre;
 }
@@ -1323,7 +1325,7 @@ watch(
 .merge-lines li {
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr);
-  min-height: 24px;
+  min-height: 20px;
   border-bottom: 1px solid var(--app-border);
 }
 
@@ -1341,7 +1343,7 @@ watch(
   display: grid;
   align-items: center;
   justify-content: end;
-  padding: 0 8px;
+  padding: 0 6px;
   background: var(--diff-gutter-bg);
   color: var(--app-text-muted);
   user-select: none;
@@ -1349,7 +1351,7 @@ watch(
 
 .merge-lines code {
   min-width: 0;
-  padding: 4px 8px;
+  padding: 1px 6px;
   overflow-wrap: anywhere;
   color: inherit;
   font-family: inherit;
@@ -1358,10 +1360,10 @@ watch(
 
 .conflict-panel {
   display: grid;
-  gap: 8px;
-  padding: 10px;
+  gap: 4px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1369,22 +1371,23 @@ watch(
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 6px;
+  min-height: 22px;
 }
 
 .conflict-panel h2 {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .conflict-panel header span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .conflict-list {
   display: grid;
-  gap: 8px;
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1393,14 +1396,14 @@ watch(
 .conflict-list li {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  padding: 8px;
+  gap: 4px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .conflict-list strong {
@@ -1422,10 +1425,10 @@ watch(
 
 .conflict-source button {
   justify-self: start;
-  height: 26px;
-  padding: 0 8px;
+  height: 22px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-surface);
   color: var(--app-text);
   font: inherit;
@@ -1479,6 +1482,6 @@ watch(
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 </style>

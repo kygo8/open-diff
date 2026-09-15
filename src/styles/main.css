@@ -1802,3 +1802,68 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 1px 6px !important;
   line-height: 18px !important;
 }
+
+/* Text Merge chrome densify toward capture path/toolbar/editor/status strips */
+.text-merge-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.text-merge-view .merge-toolbar {
+  gap: 6px !important;
+  min-height: 26px !important;
+}
+
+.text-merge-view .output-path-input {
+  height: 20px !important;
+  padding: 0 5px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.text-merge-view .toolbar-button {
+  height: 22px !important;
+  padding: 0 6px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.text-merge-view .toolbar-button-dense {
+  width: 22px !important;
+}
+
+.text-merge-view .merge-grid {
+  gap: 4px !important;
+}
+
+.text-merge-view .merge-pane {
+  border-radius: 0 !important;
+}
+
+.text-merge-view .pane-header {
+  min-height: 28px !important;
+  padding: 3px 6px !important;
+}
+
+.text-merge-view .pane-header h2 {
+  font-size: 12px !important;
+}
+
+.text-merge-view .merge-lines li {
+  min-height: 20px !important;
+}
+
+.text-merge-view .merge-lines code {
+  padding: 1px 6px !important;
+}
+
+.text-merge-view .output-editor {
+  padding: 4px 6px !important;
+  line-height: 20px !important;
+}
+
+.text-merge-view .conflict-panel {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border-radius: 0 !important;
+}

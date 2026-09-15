@@ -148,22 +148,22 @@ select {
 }
 
 .workbench-shell-single-session .bc-session-toolbar {
-  min-height: 56px;
+  min-height: 50px;
 }
 
 .workbench-shell-single-session .bc-toolbar-command {
-  min-width: 60px;
-  height: 56px;
-  padding: 2px 6px 3px;
+  min-width: 52px;
+  height: 50px;
+  padding: 1px 4px 2px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact {
-  min-height: 44px;
+  min-height: 40px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact .bc-toolbar-command {
-  min-width: 48px;
-  height: 44px;
+  min-width: 44px;
+  height: 40px;
 }
 
 .app-shell-single-session .tab-strip {
@@ -314,8 +314,8 @@ select {
   align-items: stretch;
   gap: 0;
   min-width: 0;
-  min-height: 58px;
-  padding: 0 4px;
+  min-height: 50px;
+  padding: 0 2px;
   overflow: auto hidden;
   border-bottom: 1px solid #bfc4cc;
   background: #eeeeee;
@@ -323,16 +323,16 @@ select {
 
 .bc-toolbar-command {
   display: grid;
-  grid-template-rows: 24px auto;
+  grid-template-rows: 22px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
   flex: 0 0 auto;
   width: auto;
-  min-width: 64px;
-  max-width: 112px;
-  height: 58px;
-  padding: 2px 6px 3px;
+  min-width: 56px;
+  max-width: 104px;
+  height: 50px;
+  padding: 1px 4px 2px;
   overflow: hidden;
   border: 0;
   border-right: 1px solid #c9cdd3;
@@ -368,33 +368,33 @@ select {
 }
 
 .bc-session-toolbar-compact {
-  min-height: 44px;
+  min-height: 40px;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-command {
-  grid-template-rows: 22px auto;
-  min-width: 52px;
-  max-width: 96px;
-  height: 44px;
-  padding: 2px 6px 3px;
-  font-size: 11px;
-  line-height: 12px;
+  grid-template-rows: 18px auto;
+  min-width: 44px;
+  max-width: 88px;
+  height: 40px;
+  padding: 1px 3px;
+  font-size: 10px;
+  line-height: 11px;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-glyph {
-  min-width: 20px;
-  height: 20px;
-  font-size: 16px;
+  min-width: 18px;
+  height: 18px;
+  font-size: 14px;
 }
 
 .bc-session-toolbar-glyphs-only .bc-toolbar-command {
-  min-width: 48px;
-  max-width: 64px;
+  min-width: 44px;
+  max-width: 56px;
 }
 
 .bc-session-toolbar-compact.bc-session-toolbar-glyphs-only .bc-toolbar-command {
-  min-width: 40px;
-  max-width: 48px;
+  min-width: 36px;
+  max-width: 44px;
 }
 
 .bc-toolbar-command:disabled {
@@ -404,10 +404,10 @@ select {
 
 .bc-toolbar-glyph {
   display: grid;
-  min-width: 24px;
-  height: 24px;
+  min-width: 22px;
+  height: 22px;
   color: #3a424c;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1;
   place-items: center;
@@ -415,13 +415,13 @@ select {
 
 .bc-toolbar-plate {
   display: grid;
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border: 1px solid #9aa3ad;
   border-radius: 3px;
   background: linear-gradient(180deg, #f7f8fa 0%, #e4e7eb 100%);
   color: #1f2933;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1;
   flex-shrink: 0;
@@ -430,9 +430,9 @@ select {
 }
 
 .bc-session-toolbar-compact .bc-toolbar-plate {
-  width: 20px;
-  height: 20px;
-  font-size: 13px;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
 }
 
 .bc-toolbar-plate[data-plate='refresh'],
@@ -483,11 +483,11 @@ select {
 }
 
 .bc-toolbar-command[data-has-plate='true'] {
-  min-width: 64px;
+  min-width: 56px;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-command[data-has-plate='true'] {
-  min-width: 48px;
+  min-width: 44px;
 }
 
 .bc-toolbar-icon {
@@ -497,28 +497,28 @@ select {
 }
 
 .bc-session-toolbar-compact .bc-toolbar-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .bc-toolbar-command[data-has-icon='true'] {
   /* Icon + optional label stays capture-dense without widening letter glyphs. */
-  min-width: 64px;
+  min-width: 56px;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-command[data-has-icon='true'] {
-  min-width: 48px;
+  min-width: 44px;
 }
 
 .bc-session-toolbar-glyphs-only .bc-toolbar-command[data-has-icon='true'] {
-  min-width: 44px;
-  max-width: 56px;
+  min-width: 40px;
+  max-width: 52px;
 }
 
 .bc-session-toolbar-compact.bc-session-toolbar-glyphs-only
   .bc-toolbar-command[data-has-icon='true'] {
-  min-width: 36px;
-  max-width: 44px;
+  min-width: 34px;
+  max-width: 42px;
 }
 
 .workbench-grid {
@@ -986,6 +986,64 @@ select {
   background: #ffffff !important;
   color: #111111 !important;
   font-size: 11px !important;
+}
+
+.folder-filter-strip-actions {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+  margin-left: 2px !important;
+}
+
+.folder-filter-strip-btn {
+  display: grid !important;
+  grid-template-rows: 16px auto !important;
+  align-content: center !important;
+  justify-items: center !important;
+  box-sizing: border-box !important;
+  min-width: 44px !important;
+  max-width: 56px !important;
+  height: 36px !important;
+  padding: 1px 4px !important;
+  border: 0 !important;
+  border-right: 1px solid #c9cdd3 !important;
+  background: transparent !important;
+  color: #1a1a1a !important;
+  font-size: 10px !important;
+  line-height: 11px !important;
+  cursor: default !important;
+}
+
+.folder-filter-strip-btn:first-child {
+  border-left: 1px solid #c9cdd3 !important;
+}
+
+.folder-filter-strip-btn:hover:not(:disabled) {
+  background: #dceeff !important;
+}
+
+.folder-filter-strip-btn-active {
+  background: #c8e4ff !important;
+  box-shadow: inset 0 0 0 1px #89bdea !important;
+}
+
+.folder-filter-strip-btn:disabled {
+  cursor: default !important;
+  opacity: 0.45 !important;
+}
+
+.folder-filter-strip-icon {
+  display: block !important;
+  color: #2a3038 !important;
+}
+
+.folder-filter-strip-btn > span {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
 
 .folder-toolbar input,

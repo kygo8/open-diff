@@ -413,7 +413,7 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
             v-else-if="toolbarItem.icon && settings.showToolbarIcons"
             class="bc-toolbar-icon"
             aria-hidden="true"
-            :size="settings.largeToolbarButtons ? 22 : 18"
+            :size="settings.largeToolbarButtons ? 20 : 16"
             :stroke-width="2.25"
             absolute-stroke-width
           />

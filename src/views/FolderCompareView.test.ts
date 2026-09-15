@@ -402,6 +402,8 @@ describe('FolderCompareView', () => {
 
     expect(strip.exists()).toBe(true)
     expect(pattern.exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-filter-strip-filters"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-filter-strip-peek"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
     ).not.toContain('display: none')
@@ -417,6 +419,37 @@ describe('FolderCompareView', () => {
     }
 
     expect(stored.include).toEqual(['*.ts', '*.vue'])
+  })
+
+  it('opens display filters and peek from the Filters strip glyph buttons', async () => {
+    const wrapper = mountFolderCompareView()
+
+    expect(
+      wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
+    ).not.toContain('display: none')
+    expect(wrapper.find('[data-testid="folder-peek-panel"]').attributes('style') ?? '').toContain(
+      'display: none',
+    )
+
+    await wrapper.find('[data-testid="folder-filter-strip-filters"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
+    ).toContain('display: none')
+    expect(wrapper.find('[data-testid="folder-filter-strip"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="folder-filter-strip-filters"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
+    ).not.toContain('display: none')
+
+    await wrapper.find('[data-testid="folder-filter-strip-peek"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="folder-peek-panel"]').attributes('style') ?? '',
+    ).not.toContain('display: none')
+    await wrapper.find('[data-testid="folder-filter-strip-peek"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-peek-panel"]').attributes('style') ?? '').toContain(
+      'display: none',
+    )
   })
 
   it('toggles rules and filters panels from the session toolbar', async () => {
@@ -1118,19 +1151,23 @@ describe('FolderCompareView', () => {
     expect(wrapper.find('[data-unimportant="true"]').text()).toContain('Minor')
   })
 
-  it('shows capture-style disk free space under folder roots', async () => {
+  it('keeps disk free space on the folder-pair status bar instead of path footers', async () => {
+    const { useStatusBarStore } = await import('@/stores/statusBar')
     const wrapper = mountFolderCompareView()
+    const statusBar = useStatusBarStore()
 
     await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/left')
     await wrapper.find('[data-testid="folder-right-root"]').setValue('D:/right')
     await flushPromises()
 
-    expect(wrapper.find('[data-testid="folder-left-path-footer"]').text()).toContain(
+    expect(wrapper.find('[data-testid="folder-left-path-footer"]').text()).not.toContain(
       '91.8 GB free on C:\\',
     )
-    expect(wrapper.find('[data-testid="folder-right-path-footer"]').text()).toContain(
+    expect(wrapper.find('[data-testid="folder-right-path-footer"]').text()).not.toContain(
       '91.8 GB free on C:\\',
     )
+    expect(statusBar.report.leftFreeSpace).toContain('91.8 GB free on C:\\')
+    expect(statusBar.report.rightFreeSpace).toContain('91.8 GB free on C:\\')
   })
 
   it('keeps muted path-footer placeholders before roots are set', () => {
@@ -1144,7 +1181,7 @@ describe('FolderCompareView', () => {
     )
   })
 
-  it('summarizes multi-select files with bytes beside free space', async () => {
+  it('summarizes multi-select files on the path footer without repeating free space', async () => {
     const wrapper = mountFolderCompareView()
 
     await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/left')
@@ -1159,6 +1196,6 @@ describe('FolderCompareView', () => {
     const leftFooter = wrapper.find('[data-testid="folder-left-path-footer"]').text()
 
     expect(leftFooter).toMatch(/file\(s\) selected|folder\(s\) selected|item\(s\) selected/)
-    expect(leftFooter).toContain('91.8 GB free on C:\\')
+    expect(leftFooter).not.toContain('91.8 GB free on C:\\')
   })
 })

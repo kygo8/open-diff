@@ -59,7 +59,9 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
     return [
       item('home', 'ui.home', 'H'),
       item('all', 'ui.all', '*'),
+      item('diffs', 'ui.diffs', '!='),
       item('same', 'ui.same', '='),
+      item('structure', 'ui.structure', 'S'),
       item('minor', 'ui.minor', '~'),
       item('same-ok', 'ui.sameOk', 'OK'),
       item('rules', 'ui.rules', 'R'),
@@ -97,7 +99,9 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
     return [
       item('home', 'ui.home', 'H'),
       item('all', 'ui.all', '*'),
+      item('diffs', 'ui.diffs', '!='),
       item('same', 'ui.same', '='),
+      item('structure', 'ui.structure', 'S'),
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
       item('copy', 'ui.copy', 'C'),
@@ -188,6 +192,7 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
       item('blend', 'ui.blend', 'B'),
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
+      item('format', 'ui.format', 'F'),
       item('swap', 'ui.swap', '<>'),
       item('reload', 'ui.reload', 'R'),
       item('meta', 'ui.meta', 'M'),

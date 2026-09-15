@@ -288,7 +288,9 @@ describe('FolderCompareView', () => {
     const ids = [
       'home',
       'all',
+      'diffs',
       'same',
+      'structure',
       'minor',
       'rules',
       'copy',

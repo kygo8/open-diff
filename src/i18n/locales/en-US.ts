@@ -152,6 +152,8 @@ export const enUS: LanguagePack = {
     'ui.differenceRatio': 'Difference Ratio',
     'ui.differencesOnly': 'Differences only',
     'ui.diffs': 'Diffs',
+    'ui.structure': 'Structure',
+    'ui.font': 'Font',
     'ui.different': 'Different',
     'ui.differentPixels': 'Different Pixels',
     'ui.dropbox': 'Dropbox',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { compareTable, readTextFile, saveTextFile } from '@/api/diff'
 import { buildTableReportText, defaultTableReportOutputPath } from '@/app/tableReport'
@@ -19,6 +19,8 @@ import {
 } from '@/app/tableSheets'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
+import { useStatusBarStore } from '@/stores/statusBar'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useI18n } from '@/i18n'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
@@ -95,6 +97,8 @@ const ignoredColumnKeys = ref<string[]>([...initialTableOptions.ignoredColumns])
 const tableSearchQuery = ref('')
 const activeDifferenceIndex = ref(0)
 const loading = ref(false)
+const loadTimeSeconds = ref<number | null>(null)
+const statusBar = useStatusBarStore()
 const error = ref('')
 const reportStatus = ref('')
 const tableDifferenceCells = ref<TableCellLocation[]>([])
@@ -510,7 +514,27 @@ function addManualMapping(): void {
   ]
 }
 
+watchEffect(() => {
+  let comparisonStatus = t('status.readyIdle')
+
+  if (loading.value) {
+    comparisonStatus = t('status.comparing')
+  } else if (comparedRows.value) {
+    comparisonStatus = t('status.compared')
+  }
+
+  statusBar.reportStatus({
+    comparisonStatus,
+    differenceCount: comparedRows.value ? tableDifferenceCells.value.length : null,
+    filterStatus: t('status.allRows'),
+    source: 'table-compare',
+    loadTimeSeconds: comparedRows.value ? loadTimeSeconds.value : null,
+  })
+})
+
 async function runTableCompare(): Promise<void> {
+  const startedAt = performance.now()
+
   loading.value = true
   error.value = ''
   try {
@@ -551,6 +575,7 @@ async function runTableCompare(): Promise<void> {
     virtualGridColumns.value = columns
     comparedRows.value = rowsFromResult(result, columns)
     tableDifferenceCells.value = changedCellsFromResult(result.changedCells, columns)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     reportStatus.value = ''
     activeDifferenceIndex.value = 0
     manualLeftColumn.value = result.leftColumns[0]?.name ?? ''

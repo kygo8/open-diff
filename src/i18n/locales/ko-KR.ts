@@ -671,6 +671,8 @@ export const koKR: LanguagePack = {
     'ui.autoSaved': 'Auto-saved',
     'ui.cut': 'Cut',
     'ui.diffs': 'Diffs',
+    'ui.structure': '구조',
+    'ui.font': '글꼴',
     'ui.dragFoldersOrFilesOntoSessionIcon': 'Drop two files or folders here',
     'ui.minor': 'Minor',
     'ui.orClickSessionIconToBegin': 'Or click a card below. Choose paths, then Compare.',

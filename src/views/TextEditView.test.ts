@@ -225,6 +225,23 @@ describe('TextEditView', () => {
     )
   })
 
+  it('opens the font menu and updates family/size from Options settings', async () => {
+    const wrapper = mountTextEditView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="text-edit-toolbar-font"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="text-edit-font-menu"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="text-edit-font-family"]').setValue('mono')
+    await wrapper.find('[data-testid="text-edit-font-size"]').setValue('18')
+    await wrapper.vm.$nextTick()
+
+    expect(settings.fontFamily).toBe('mono')
+    expect(settings.fontSize).toBe(18)
+  })
+
   it('starts wrap from Options default and toggles from the toolbar', async () => {
     localStorage.setItem('open-diff-wrap-text-default', '1')
     setActivePinia(createPinia())

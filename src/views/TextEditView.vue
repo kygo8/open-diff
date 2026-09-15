@@ -6,7 +6,7 @@ import { useI18n } from '@/i18n'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useTabsStore } from '@/stores/tabs'
-import { useSettingsStore } from '@/stores/settings'
+import { useSettingsStore, type FontFamilyId } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { formatPathModifiedAt } from '@/app/pathMetadata'
 import {
@@ -57,6 +57,14 @@ const findQuery = ref('')
 const replaceQuery = ref('')
 const currentFindIndex = ref(0)
 const syntaxMenuOpen = ref(false)
+const fontMenuOpen = ref(false)
+const fontFamilyOptionsList: { id: FontFamilyId; label: string }[] = [
+  { id: 'system', label: 'System UI' },
+  { id: 'segoe', label: 'Segoe UI' },
+  { id: 'inter', label: 'Inter' },
+  { id: 'noto', label: 'Noto Sans' },
+  { id: 'mono', label: 'Monospace' },
+]
 const syntaxLanguageId = ref('auto')
 const wordWrap = ref(settings.wrapTextDefault)
 const goToMenuOpen = ref(false)
@@ -386,6 +394,19 @@ function runTextEditCommand(commandId: string): void {
 
   if (commandId === 'syntax') {
     syntaxMenuOpen.value = !syntaxMenuOpen.value
+    if (syntaxMenuOpen.value) {
+      fontMenuOpen.value = false
+    }
+
+    return
+  }
+
+  if (commandId === 'font') {
+    fontMenuOpen.value = !fontMenuOpen.value
+    if (fontMenuOpen.value) {
+      syntaxMenuOpen.value = false
+      goToMenuOpen.value = false
+    }
 
     return
   }
@@ -393,6 +414,9 @@ function runTextEditCommand(commandId: string): void {
   if (commandId === 'goto') {
     goToMenuOpen.value = !goToMenuOpen.value
     goToLineStatus.value = ''
+    if (goToMenuOpen.value) {
+      fontMenuOpen.value = false
+    }
 
     if (goToMenuOpen.value && lineCount.value > 0) {
       goToLineInput.value = '1'
@@ -578,6 +602,32 @@ onUnmounted(() => {
   window.removeEventListener('keydown', onSessionInsertKeydown)
 })
 
+function onFontFamilyChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLSelectElement)) {
+    return
+  }
+
+  settings.setFontFamily(target.value)
+}
+
+function onFontSizeChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  const next = Number(target.value)
+
+  if (!Number.isFinite(next)) {
+    return
+  }
+
+  settings.setFontSize(Math.min(24, Math.max(12, Math.round(next))))
+}
+
 const textEditToolbarCommands = computed(() => [
   { id: 'home', glyph: 'H', labelKey: 'ui.home', enabled: true },
   { id: 'undo', glyph: 'U', labelKey: 'ui.undo', enabled: undoStack.value.length > 0 },
@@ -592,6 +642,7 @@ const textEditToolbarCommands = computed(() => [
   },
   { id: 'delete', glyph: 'D', labelKey: 'ui.delete', enabled: hasEditorContent.value },
   { id: 'syntax', glyph: 'S', labelKey: 'ui.syntax', enabled: true },
+  { id: 'font', glyph: 'A', labelKey: 'ui.font', enabled: true },
   { id: 'goto', glyph: '#', labelKey: 'ui.goToLine', enabled: hasEditorContent.value },
   { id: 'wrap', glyph: 'W', labelKey: 'ui.wrap', enabled: true },
 ])
@@ -606,11 +657,22 @@ const textEditToolbarCommands = computed(() => [
       type="button"
       :class="{
         'bc-toolbar-command-active':
-          (command.id === 'wrap' && wordWrap) || (command.id === 'goto' && goToMenuOpen),
+          (command.id === 'wrap' && wordWrap) ||
+          (command.id === 'goto' && goToMenuOpen) ||
+          (command.id === 'font' && fontMenuOpen) ||
+          (command.id === 'syntax' && syntaxMenuOpen),
       }"
       :disabled="!command.enabled"
       :aria-pressed="
-        command.id === 'wrap' ? wordWrap : command.id === 'goto' ? goToMenuOpen : undefined
+        command.id === 'wrap'
+          ? wordWrap
+          : command.id === 'goto'
+            ? goToMenuOpen
+            : command.id === 'font'
+              ? fontMenuOpen
+              : command.id === 'syntax'
+                ? syntaxMenuOpen
+                : undefined
       "
       :data-testid="`text-edit-toolbar-${command.id}`"
       @click="runTextEditCommand(command.id)"
@@ -640,6 +702,40 @@ const textEditToolbarCommands = computed(() => [
       </select>
     </label>
     <span data-testid="text-edit-syntax-grammar">{{ activeSyntaxGrammar.id }}</span>
+  </section>
+  <section
+    v-if="fontMenuOpen"
+    class="syntax-language-bar"
+    data-testid="text-edit-font-menu"
+  >
+    <label>
+      <span>{{ $t('ui.fontFamily') }}</span>
+      <select
+        :value="settings.fontFamily"
+        data-testid="text-edit-font-family"
+        @change="onFontFamilyChange"
+      >
+        <option
+          v-for="option in fontFamilyOptionsList"
+          :key="option.id"
+          :value="option.id"
+        >
+          {{ option.label }}
+        </option>
+      </select>
+    </label>
+    <label>
+      <span>{{ $t('ui.fontSize') }}</span>
+      <input
+        :value="settings.fontSize"
+        data-testid="text-edit-font-size"
+        type="number"
+        min="12"
+        max="24"
+        @change="onFontSizeChange"
+        @input="onFontSizeChange"
+      />
+    </label>
   </section>
   <section
     v-if="goToMenuOpen"

@@ -35,7 +35,9 @@ describe('sessionToolbars', () => {
     const toolbar = buildFolderCompareToolbar({
       home: true,
       all: true,
+      diffs: true,
       same: true,
+      structure: true,
       expand: true,
       collapse: true,
       refresh: true,
@@ -51,8 +53,11 @@ describe('sessionToolbars', () => {
     })
 
     expect(toolbar.map((item) => item.id)).toEqual([...folderCompareToolbarOrder])
+    expect(toolbar.map((item) => item.id)).toEqual(expect.arrayContaining(['diffs', 'structure']))
     expect(toolbar.find((item) => item.id === 'peek')?.enabled).toBe(false)
     expect(toolbar.find((item) => item.id === 'home')?.enabled).toBe(true)
+    expect(toolbar.find((item) => item.id === 'diffs')?.labelKey).toBe('ui.diffs')
+    expect(toolbar.find((item) => item.id === 'structure')?.labelKey).toBe('ui.structure')
   })
 
   it('keeps Text Compare toolbar in expected order', () => {
@@ -107,13 +112,17 @@ describe('sessionToolbars', () => {
       home: true,
       tol: true,
       range: true,
+      format: true,
       swap: true,
       reload: true,
     })
 
     expect(toolbar.map((item) => item.id)).toEqual([...pictureCompareToolbarOrder])
+    expect(toolbar.map((item) => item.id)).toContain('format')
     expect(toolbar.find((item) => item.id === 'tol')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'range')?.enabled).toBe(true)
+    expect(toolbar.find((item) => item.id === 'format')?.enabled).toBe(true)
+    expect(toolbar.find((item) => item.id === 'format')?.labelKey).toBe('ui.format')
     expect(toolbar.find((item) => item.id === 'blend')?.enabled).toBe(false)
     expect(toolbar.find((item) => item.id === 'meta')?.enabled).toBe(false)
     expect(toolbar.every((item) => !item.labelKey.includes('unimplemented'))).toBe(true)
@@ -233,6 +242,7 @@ describe('sessionToolbars', () => {
     })
 
     expect(toolbar.map((item) => item.id)).toEqual([...folderMergeToolbarOrder])
+    expect(toolbar.map((item) => item.id)).toEqual(expect.arrayContaining(['diffs', 'structure']))
     expect(toolbar.find((item) => item.id === 'merge')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'to-output')?.enabled).toBe(true)
     expect(toolbar.find((item) => item.id === 'same-ok')?.enabled).toBe(true)

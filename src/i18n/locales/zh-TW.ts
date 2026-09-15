@@ -660,6 +660,8 @@ export const zhTW: LanguagePack = {
     'ui.autoSaved': '自動儲存',
     'ui.cut': '剪下',
     'ui.diffs': '差異',
+    'ui.structure': '結構',
+    'ui.font': '字型',
     'ui.dragFoldersOrFilesOntoSessionIcon': '把兩個檔案或資料夾拖到這裡',
     'ui.minor': '次要',
     'ui.orClickSessionIconToBegin': '或點下面的卡片。',

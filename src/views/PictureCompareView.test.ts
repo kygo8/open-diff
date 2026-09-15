@@ -247,7 +247,18 @@ describe('PictureCompareView', () => {
 
   it('enables Tol and Range on the Picture session toolbar', () => {
     const wrapper = mount(PictureCompareView)
-    const ids = ['home', 'tol', 'range', 'blend', 'minor', 'rules', 'swap', 'reload', 'meta']
+    const ids = [
+      'home',
+      'tol',
+      'range',
+      'blend',
+      'minor',
+      'rules',
+      'format',
+      'swap',
+      'reload',
+      'meta',
+    ]
 
     expect(wrapper.find('[data-testid="picture-session-toolbar-bar"]').exists()).toBe(true)
     expect(
@@ -273,6 +284,9 @@ describe('PictureCompareView', () => {
     ).toBeUndefined()
     expect(
       wrapper.find('[data-testid="picture-session-toolbar-rules"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="picture-session-toolbar-format"]').attributes('disabled'),
     ).toBeUndefined()
     expect(
       wrapper.find('[data-testid="picture-session-toolbar-meta"]').attributes('data-active'),

@@ -89,6 +89,7 @@ import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import { useI18n } from '@/i18n'
 import { notifyCompareComplete } from '@/app/compareCompleteNotify'
 import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
+import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useSettingsStore } from '@/stores/settings'
@@ -176,6 +177,8 @@ const initialDisplayFilters = loadFolderDisplayFilters()
 const visibleStatuses = ref<Set<FolderStatus>>(new Set(initialDisplayFilters.statuses))
 const showSuppressedFilters = ref(initialDisplayFilters.showSuppressed)
 const filesOnlyFilter = ref(initialDisplayFilters.filesOnly)
+const flatStructure = ref(false)
+const loadTimeSeconds = ref<number | null>(null)
 const minorOnly = ref(false)
 const showFolderRules = ref(true)
 const showFolderFilters = ref(true)
@@ -395,7 +398,7 @@ const differenceRows = computed(() =>
 const visibleRows = computed(() =>
   rows.value.filter(
     (row) =>
-      (!row.parentId || expandedDirectoryIds.value.has(row.parentId)) &&
+      (flatStructure.value || !row.parentId || expandedDirectoryIds.value.has(row.parentId)) &&
       !excludedRowIds.value.has(row.id) &&
       (visibleStatuses.value.has(row.status) || showSuppressedFilters.value) &&
       (!filesOnlyFilter.value || row.kind === 'file') &&
@@ -757,6 +760,27 @@ function showSameFolderStatuses(): void {
   persistDisplayFilters()
 }
 
+function showDiffsFolderStatuses(): void {
+  minorOnly.value = false
+  visibleStatuses.value = new Set(['Different', 'Left only', 'Right only'])
+  persistDisplayFilters()
+}
+
+function isDiffsFolderFilterActive(): boolean {
+  return (
+    !minorOnly.value &&
+    visibleStatuses.value.size === 3 &&
+    visibleStatuses.value.has('Different') &&
+    visibleStatuses.value.has('Left only') &&
+    visibleStatuses.value.has('Right only')
+  )
+}
+
+function toggleFlatStructure(): void {
+  flatStructure.value = !flatStructure.value
+  scrollTop.value = 0
+}
+
 function showMinorFolderDifferences(): void {
   minorOnly.value = !minorOnly.value
   if (minorOnly.value) {
@@ -787,7 +811,9 @@ const folderSessionToolbar = computed(() =>
   buildFolderCompareToolbar({
     home: true,
     all: true,
+    diffs: true,
     same: true,
+    structure: true,
     minor: rows.value.length > 0,
     rules: true,
     copy: canCopyToRight.value,
@@ -804,10 +830,12 @@ const folderSessionToolbar = computed(() =>
     ...item,
     active:
       (item.id === 'all' && !minorOnly.value && visibleStatuses.value.size === 4) ||
+      (item.id === 'diffs' && isDiffsFolderFilterActive()) ||
       (item.id === 'same' &&
         !minorOnly.value &&
         visibleStatuses.value.size === 1 &&
         visibleStatuses.value.has('Same')) ||
+      (item.id === 'structure' && flatStructure.value) ||
       (item.id === 'minor' && minorOnly.value) ||
       (item.id === 'rules' && showFolderRules.value) ||
       (item.id === 'filters' && showFolderFilters.value) ||
@@ -825,8 +853,14 @@ function runFolderToolbarCommand(commandId: string): void {
     case 'all':
       showAllFolderStatuses()
       break
+    case 'diffs':
+      showDiffsFolderStatuses()
+      break
     case 'same':
       showSameFolderStatuses()
+      break
+    case 'structure':
+      toggleFlatStructure()
       break
     case 'minor':
       showMinorFolderDifferences()
@@ -974,6 +1008,7 @@ watchEffect(() => {
     filterStatus: t('status.allRows'),
     source: 'folder-compare',
     chromeKind: 'folder-pair',
+    loadTimeSeconds: rows.value.length > 0 ? loadTimeSeconds.value : null,
     leftSelection,
     leftFreeSpace: leftFreeSpaceLabel.value || null,
     rightSelection,
@@ -987,6 +1022,7 @@ function isExpanded(row: FolderTreeRow): boolean {
 
 async function runFolderCompare(): Promise<void> {
   const generation = ++folderCompareGeneration
+  const startedAt = performance.now()
 
   folderCompareLoading.value = true
   folderCompareError.value = undefined
@@ -1007,6 +1043,7 @@ async function runFolderCompare(): Promise<void> {
     }
 
     applyFolderCompareResponse(response)
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     lastCompare.recordFolderCompare({
       leftRoot: response.leftRoot,
       rightRoot: response.rightRoot,

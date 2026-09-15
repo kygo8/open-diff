@@ -22,6 +22,7 @@ import { collectExpandablePrefixes, isPathHiddenByCollapse } from '@/app/folderP
 import { buildFolderSyncToolbar, pathBaseName, syncPathPairTitle } from '@/app/sessionToolbars'
 import { useI18n } from '@/i18n'
 import { useTabsStore } from '@/stores/tabs'
+import { useSettingsStore } from '@/stores/settings'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
@@ -61,6 +62,7 @@ const strategyOptions: SyncStrategyOption[] = [
 const { t } = useI18n()
 const statusBar = useStatusBarStore()
 const tabs = useTabsStore()
+const settings = useSettingsStore()
 const router = useRouter()
 const sessionLaunch = useSessionLaunchStore()
 const viewActions = useViewActionsStore()
@@ -304,6 +306,7 @@ async function previewSync(): Promise<void> {
       leftRoot: leftPath.value,
       rightRoot: rightPath.value,
       strategy: selectedStrategy.value,
+      archiveExtensions: [...settings.archiveExtensions],
     })
 
     previewName.value = response.name
@@ -344,6 +347,7 @@ async function runSync(): Promise<void> {
       rightRoot: rightPath.value,
       strategy: selectedStrategy.value,
       overrides: currentOverrides(),
+      archiveExtensions: [...settings.archiveExtensions],
     })
 
     completedOperations.value = response.succeeded + response.failed + response.cancelled

@@ -59,8 +59,61 @@ describe('sync api', () => {
       leftRoot: 'D:/left',
       rightRoot: 'D:/right',
       strategy: 'mirrorRight',
+      archiveExtensions: undefined,
     })
     expect(result.rows[0]?.relativePath).toBe('package/app.exe')
+  })
+
+  it('forwards archiveExtensions on folder sync preview and execute', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      name: 'Mirror to Right',
+      leftRoot: 'D:/left.zip',
+      rightRoot: 'D:/right.zip',
+      strategy: 'mirrorRight',
+      rows: [],
+      summary: { total: 0, copy: 0, delete: 0, leave: 0, conflict: 0 },
+    })
+
+    await previewFolderSync({
+      leftRoot: 'D:/left.zip',
+      rightRoot: 'D:/right.zip',
+      strategy: 'mirrorRight',
+      archiveExtensions: ['.zip'],
+    })
+
+    expect(invoke).toHaveBeenCalledWith('preview_folder_sync', {
+      leftRoot: 'D:/left.zip',
+      rightRoot: 'D:/right.zip',
+      strategy: 'mirrorRight',
+      archiveExtensions: ['.zip'],
+    })
+
+    vi.mocked(invoke).mockResolvedValueOnce({
+      name: 'Mirror to Right',
+      leftRoot: 'D:/left.zip',
+      rightRoot: 'D:/right.zip',
+      strategy: 'mirrorRight',
+      total: 0,
+      succeeded: 0,
+      failed: 0,
+      cancelled: 0,
+      logs: [],
+    })
+
+    await executeFolderSync({
+      leftRoot: 'D:/left.zip',
+      rightRoot: 'D:/right.zip',
+      strategy: 'mirrorRight',
+      archiveExtensions: ['.zip'],
+    })
+
+    expect(invoke).toHaveBeenCalledWith('execute_folder_sync', {
+      leftRoot: 'D:/left.zip',
+      rightRoot: 'D:/right.zip',
+      strategy: 'mirrorRight',
+      overrides: [],
+      archiveExtensions: ['.zip'],
+    })
   })
 
   it('executes folder sync through the Tauri command contract', async () => {
@@ -96,6 +149,7 @@ describe('sync api', () => {
       rightRoot: 'D:/right',
       strategy: 'mirrorRight',
       overrides: [],
+      archiveExtensions: undefined,
     })
     expect(result.succeeded).toBe(2)
   })

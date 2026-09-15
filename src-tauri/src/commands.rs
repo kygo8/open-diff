@@ -1186,12 +1186,12 @@ pub fn preview_folder_sync(
     left_root: String,
     right_root: String,
     strategy: String,
+    archive_extensions: Option<Vec<String>>,
 ) -> Result<FolderSyncPreviewResponse, AppErrorPayload> {
-    let cancellation_token = job_core::CancellationToken::default();
-    let left_tree = folder_core::scan_local_folder(&left_root, &cancellation_token)
-        .map_err(|error| folder_scan_error(&left_root, error))?;
-    let right_tree = folder_core::scan_local_folder(&right_root, &cancellation_token)
-        .map_err(|error| folder_scan_error(&right_root, error))?;
+    let configured = archive_core::configured_archive_extensions();
+    let extensions = archive_extensions.as_deref().or(configured.as_deref());
+    let left_tree = scan_folder_root_with_archive_extensions(&left_root, extensions)?;
+    let right_tree = scan_folder_root_with_archive_extensions(&right_root, extensions)?;
     let alignment_rows = folder_core::align_folder_trees(&left_tree, &right_tree);
     let plan = folder_sync_plan(&left_root, &right_root, &strategy, &alignment_rows)?;
     let rows = plan
@@ -1224,12 +1224,12 @@ pub fn execute_folder_sync(
     right_root: String,
     strategy: String,
     overrides: Option<Vec<sync_core::SyncActionOverride>>,
+    archive_extensions: Option<Vec<String>>,
 ) -> Result<FolderSyncExecutionResponse, AppErrorPayload> {
-    let cancellation_token = job_core::CancellationToken::default();
-    let left_tree = folder_core::scan_local_folder(&left_root, &cancellation_token)
-        .map_err(|error| folder_scan_error(&left_root, error))?;
-    let right_tree = folder_core::scan_local_folder(&right_root, &cancellation_token)
-        .map_err(|error| folder_scan_error(&right_root, error))?;
+    let configured = archive_core::configured_archive_extensions();
+    let extensions = archive_extensions.as_deref().or(configured.as_deref());
+    let left_tree = scan_folder_root_with_archive_extensions(&left_root, extensions)?;
+    let right_tree = scan_folder_root_with_archive_extensions(&right_root, extensions)?;
     let alignment_rows = folder_core::align_folder_trees(&left_tree, &right_tree);
     let mut plan = folder_sync_plan(&left_root, &right_root, &strategy, &alignment_rows)?;
     if let Some(overrides) = overrides {
@@ -1256,8 +1256,15 @@ pub fn build_folder_merge_plan(
     base_root: String,
     right_root: String,
     output_root: String,
+    archive_extensions: Option<Vec<String>>,
 ) -> Result<FolderMergePlanResponse, AppErrorPayload> {
-    let document = folder_merge_document(&left_root, &base_root, &right_root, &output_root)?;
+    let document = folder_merge_document(
+        &left_root,
+        &base_root,
+        &right_root,
+        &output_root,
+        archive_extensions.as_deref(),
+    )?;
     let rows = folder_merge_rows(&document);
     let conflicts = rows.iter().filter(|row| row.conflict.is_some()).count();
 
@@ -1281,8 +1288,15 @@ pub fn execute_folder_merge_plan(
     base_root: String,
     right_root: String,
     output_root: String,
+    archive_extensions: Option<Vec<String>>,
 ) -> Result<FolderMergeExecutionResponse, AppErrorPayload> {
-    let document = folder_merge_document(&left_root, &base_root, &right_root, &output_root)?;
+    let document = folder_merge_document(
+        &left_root,
+        &base_root,
+        &right_root,
+        &output_root,
+        archive_extensions.as_deref(),
+    )?;
     let plan = folder_merge_core::build_folder_merge_plan(&document);
 
     fs::create_dir_all(&output_root).map_err(|error| file_io_error(&output_root, error))?;
@@ -3520,35 +3534,56 @@ fn delete_sync_target(target_path: &str) -> std::io::Result<()> {
     }
 }
 
+fn scan_folder_root_with_archive_extensions(
+    root: &str,
+    archive_extensions: Option<&[String]>,
+) -> Result<FolderScanNode, AppErrorPayload> {
+    let source = crate::sources::load_compare_source(root, archive_extensions)
+        .map_err(|error| compare_source_error(root, error))?;
+    crate::sources::scan_compare_source_with_options(&source, false, true)
+        .map_err(|error| compare_source_error(root, error))
+}
+
 fn folder_merge_document(
     left_root: &str,
     base_root: &str,
     right_root: &str,
     output_root: &str,
+    archive_extensions: Option<&[String]>,
 ) -> Result<folder_merge_core::FolderMergeDocument, AppErrorPayload> {
-    let cancellation_token = job_core::CancellationToken::default();
-    let base_tree = folder_core::scan_local_folder(base_root, &cancellation_token)
-        .map_err(|error| folder_scan_error(base_root, error))?;
-    let left_tree = folder_core::scan_local_folder(left_root, &cancellation_token)
-        .map_err(|error| folder_scan_error(left_root, error))?;
-    let right_tree = folder_core::scan_local_folder(right_root, &cancellation_token)
-        .map_err(|error| folder_scan_error(right_root, error))?;
+    let configured = archive_core::configured_archive_extensions();
+    let extensions = archive_extensions.or(configured.as_deref());
+    let base_source = crate::sources::load_compare_source(base_root, extensions)
+        .map_err(|error| compare_source_error(base_root, error))?;
+    let left_source = crate::sources::load_compare_source(left_root, extensions)
+        .map_err(|error| compare_source_error(left_root, error))?;
+    let right_source = crate::sources::load_compare_source(right_root, extensions)
+        .map_err(|error| compare_source_error(right_root, error))?;
+    let base_tree = crate::sources::scan_compare_source_with_options(&base_source, false, true)
+        .map_err(|error| compare_source_error(base_root, error))?;
+    let left_tree = crate::sources::scan_compare_source_with_options(&left_source, false, true)
+        .map_err(|error| compare_source_error(left_root, error))?;
+    let right_tree = crate::sources::scan_compare_source_with_options(&right_source, false, true)
+        .map_err(|error| compare_source_error(right_root, error))?;
 
     Ok(folder_merge_core::FolderMergeDocument::from_inputs(
         folder_merge_core::FolderMergeInput {
             base: folder_merge_side(
                 folder_merge_core::FolderMergeRole::Base,
                 base_root,
+                &base_source,
                 &base_tree,
             ),
             left: folder_merge_side(
                 folder_merge_core::FolderMergeRole::Left,
                 left_root,
+                &left_source,
                 &left_tree,
             ),
             right: folder_merge_side(
                 folder_merge_core::FolderMergeRole::Right,
                 right_root,
+                &right_source,
                 &right_tree,
             ),
             output_root: output_root.to_owned(),
@@ -3559,25 +3594,26 @@ fn folder_merge_document(
 fn folder_merge_side(
     role: folder_merge_core::FolderMergeRole,
     root_path: &str,
+    source: &crate::sources::CompareSource,
     tree: &FolderScanNode,
 ) -> folder_merge_core::FolderMergeSide {
     let mut side = folder_merge_core::FolderMergeSide::new(role, root_path);
 
-    collect_folder_merge_entries(tree, Path::new(root_path), &mut side.entries);
+    collect_folder_merge_entries(tree, source, &mut side.entries);
 
     side
 }
 
 fn collect_folder_merge_entries(
     node: &FolderScanNode,
-    root: &Path,
+    source: &crate::sources::CompareSource,
     entries: &mut Vec<folder_merge_core::FolderMergeEntry>,
 ) {
     for child in &node.children {
         let kind = folder_merge_entry_kind(&child.kind);
         let content_fingerprint = match kind {
             folder_merge_core::FolderMergeEntryKind::File => {
-                folder_merge_file_fingerprint(&root.join(&child.relative_path))
+                folder_merge_file_fingerprint(source, &child.relative_path)
             }
             folder_merge_core::FolderMergeEntryKind::Directory => None,
         };
@@ -3587,12 +3623,15 @@ fn collect_folder_merge_entries(
             kind,
             content_fingerprint,
         });
-        collect_folder_merge_entries(child, root, entries);
+        collect_folder_merge_entries(child, source, entries);
     }
 }
 
-fn folder_merge_file_fingerprint(path: &Path) -> Option<String> {
-    let bytes = fs::read(path).ok()?;
+fn folder_merge_file_fingerprint(
+    source: &crate::sources::CompareSource,
+    relative_path: &str,
+) -> Option<String> {
+    let bytes = crate::sources::read_compare_file(source, relative_path).ok()?;
     Some(stable_content_fingerprint(&bytes))
 }
 
@@ -5530,6 +5569,7 @@ mod tests {
             left.display().to_string(),
             right.display().to_string(),
             "mirrorRight".to_owned(),
+            None,
         )
         .expect("valid folders should build a sync preview");
 
@@ -5564,6 +5604,7 @@ mod tests {
             left.display().to_string(),
             right.display().to_string(),
             "mirrorRight".to_owned(),
+            None,
             None,
         )
         .expect("valid folders should execute a sync plan");
@@ -5607,6 +5648,7 @@ mod tests {
             base.display().to_string(),
             right.display().to_string(),
             output.display().to_string(),
+            None,
         )
         .expect("valid folders should build a merge plan");
 
@@ -5740,6 +5782,7 @@ mod tests {
             base.display().to_string(),
             right.display().to_string(),
             output.display().to_string(),
+            None,
         )
         .expect("valid folders should execute automatic merge actions");
 
@@ -5785,6 +5828,7 @@ mod tests {
             base.display().to_string(),
             right.display().to_string(),
             output.display().to_string(),
+            None,
         )
         .expect("valid folders should build a merge plan");
 
@@ -5801,6 +5845,7 @@ mod tests {
             base.display().to_string(),
             right.display().to_string(),
             output.display().to_string(),
+            None,
         )
         .expect("valid folders should execute automatic merge actions");
 
@@ -6230,6 +6275,103 @@ mod tests {
     }
 
     #[test]
+    fn preview_folder_sync_respects_configured_archive_extensions() {
+        let root = unique_temp_dir("sync-archive-ext-filter");
+        fs::create_dir_all(&root).expect("fixture directory should be created");
+        let left = root.join("left.zip");
+        let right = root.join("right.zip");
+        let left_doc =
+            archive_core::ArchiveDocument::new("left.zip").with_file("/a.txt", b"left".to_vec());
+        let right_doc =
+            archive_core::ArchiveDocument::new("right.zip").with_file("/a.txt", b"right".to_vec());
+        fs::write(&left, archive_core::write_zip_bytes(&left_doc).unwrap()).unwrap();
+        fs::write(&right, archive_core::write_zip_bytes(&right_doc).unwrap()).unwrap();
+
+        let excluded = preview_folder_sync(
+            left.display().to_string(),
+            right.display().to_string(),
+            "updateBoth".to_owned(),
+            Some(vec![".7z".into()]),
+        );
+        assert!(
+            excluded.is_err()
+                || excluded
+                    .as_ref()
+                    .map(|response| {
+                        response.rows.iter().all(|row| row.relative_path != "a.txt")
+                    })
+                    .unwrap_or(false),
+            "zip must not open as archive when extension list omits .zip: {excluded:?}"
+        );
+
+        let as_archives = preview_folder_sync(
+            left.display().to_string(),
+            right.display().to_string(),
+            "updateBoth".to_owned(),
+            Some(vec![".zip".into()]),
+        )
+        .expect("zip should sync-preview as archive when listed");
+        assert!(
+            as_archives
+                .rows
+                .iter()
+                .any(|row| row.relative_path == "a.txt"),
+            "expected archive entry in sync preview: {:?}",
+            as_archives.rows
+        );
+    }
+
+    #[test]
+    fn build_folder_merge_plan_respects_configured_archive_extensions() {
+        let root = unique_temp_dir("merge-archive-ext-filter");
+        fs::create_dir_all(&root).expect("fixture directory should be created");
+        let left = root.join("left.zip");
+        let base = root.join("base.zip");
+        let right = root.join("right.zip");
+        let output = root.join("output");
+        fs::create_dir_all(&output).expect("output directory should be created");
+        let left_doc =
+            archive_core::ArchiveDocument::new("left.zip").with_file("/a.txt", b"left".to_vec());
+        let base_doc =
+            archive_core::ArchiveDocument::new("base.zip").with_file("/a.txt", b"base".to_vec());
+        let right_doc =
+            archive_core::ArchiveDocument::new("right.zip").with_file("/a.txt", b"right".to_vec());
+        fs::write(&left, archive_core::write_zip_bytes(&left_doc).unwrap()).unwrap();
+        fs::write(&base, archive_core::write_zip_bytes(&base_doc).unwrap()).unwrap();
+        fs::write(&right, archive_core::write_zip_bytes(&right_doc).unwrap()).unwrap();
+
+        let excluded = build_folder_merge_plan(
+            left.display().to_string(),
+            base.display().to_string(),
+            right.display().to_string(),
+            output.display().to_string(),
+            Some(vec![".7z".into()]),
+        );
+        assert!(
+            excluded.is_err()
+                || excluded
+                    .as_ref()
+                    .map(|response| response.rows.iter().all(|row| row.path != "a.txt"))
+                    .unwrap_or(false),
+            "zip must not open as archive when extension list omits .zip: {excluded:?}"
+        );
+
+        let as_archives = build_folder_merge_plan(
+            left.display().to_string(),
+            base.display().to_string(),
+            right.display().to_string(),
+            output.display().to_string(),
+            Some(vec![".zip".into()]),
+        )
+        .expect("zip should merge-plan as archive when listed");
+        assert!(
+            as_archives.rows.iter().any(|row| row.path == "a.txt"),
+            "expected archive entry in merge plan: {:?}",
+            as_archives.rows
+        );
+    }
+
+    #[test]
     fn compare_folder_paths_compares_real_zip_archives() {
         let root = unique_temp_dir("zip-compare-command");
         fs::create_dir_all(&root).expect("fixture directory should be created");
@@ -6461,6 +6603,7 @@ mod tests {
                 relative_path: "leave.txt".to_owned(),
                 action: sync_core::SyncOverrideAction::Leave,
             }]),
+            None,
         )
         .expect("sync with overrides should run");
 

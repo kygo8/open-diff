@@ -3,6 +3,7 @@ export interface FolderMergePlanRequest {
   baseRoot: string
   rightRoot: string
   outputRoot: string
+  archiveExtensions?: string[]
 }
 
 export type FolderMergeRole = 'Base' | 'Left' | 'Right'

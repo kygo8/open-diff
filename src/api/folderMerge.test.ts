@@ -65,9 +65,62 @@ describe('folder merge api', () => {
       baseRoot: 'D:/merge/base',
       rightRoot: 'D:/merge/right',
       outputRoot: 'D:/merge/output',
+      archiveExtensions: undefined,
     })
     expect(result.rows[0]?.action).toBe('Mark conflict')
     expect(result.summary.conflicts).toBe(1)
+  })
+
+  it('forwards archiveExtensions on folder merge plan and execute', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      leftRoot: 'D:/merge/left.zip',
+      baseRoot: 'D:/merge/base.zip',
+      rightRoot: 'D:/merge/right.zip',
+      outputRoot: 'D:/merge/output',
+      rows: [],
+      summary: { actions: 0, automatic: 0, conflicts: 0 },
+    })
+
+    await buildFolderMergePlan({
+      leftRoot: 'D:/merge/left.zip',
+      baseRoot: 'D:/merge/base.zip',
+      rightRoot: 'D:/merge/right.zip',
+      outputRoot: 'D:/merge/output',
+      archiveExtensions: ['.zip'],
+    })
+
+    expect(invoke).toHaveBeenCalledWith('build_folder_merge_plan', {
+      leftRoot: 'D:/merge/left.zip',
+      baseRoot: 'D:/merge/base.zip',
+      rightRoot: 'D:/merge/right.zip',
+      outputRoot: 'D:/merge/output',
+      archiveExtensions: ['.zip'],
+    })
+
+    vi.mocked(invoke).mockResolvedValueOnce({
+      leftRoot: 'D:/merge/left.zip',
+      baseRoot: 'D:/merge/base.zip',
+      rightRoot: 'D:/merge/right.zip',
+      outputRoot: 'D:/merge/output',
+      rows: [],
+      summary: { total: 0, executed: 0, skipped: 0, conflicts: 0, failed: 0 },
+    })
+
+    await executeFolderMergePlan({
+      leftRoot: 'D:/merge/left.zip',
+      baseRoot: 'D:/merge/base.zip',
+      rightRoot: 'D:/merge/right.zip',
+      outputRoot: 'D:/merge/output',
+      archiveExtensions: ['.zip'],
+    })
+
+    expect(invoke).toHaveBeenCalledWith('execute_folder_merge_plan', {
+      leftRoot: 'D:/merge/left.zip',
+      baseRoot: 'D:/merge/base.zip',
+      rightRoot: 'D:/merge/right.zip',
+      outputRoot: 'D:/merge/output',
+      archiveExtensions: ['.zip'],
+    })
   })
 
   it('executes folder merge plan through the Tauri command contract', async () => {
@@ -105,6 +158,7 @@ describe('folder merge api', () => {
       baseRoot: 'D:/merge/base',
       rightRoot: 'D:/merge/right',
       outputRoot: 'D:/merge/output',
+      archiveExtensions: undefined,
     })
     expect(result.summary.executed).toBe(1)
   })

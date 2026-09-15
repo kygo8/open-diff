@@ -12,6 +12,7 @@ export function previewFolderSync(
     leftRoot: request.leftRoot,
     rightRoot: request.rightRoot,
     strategy: request.strategy,
+    archiveExtensions: request.archiveExtensions,
   })
 }
 
@@ -23,5 +24,6 @@ export function executeFolderSync(
     rightRoot: request.rightRoot,
     strategy: request.strategy,
     overrides: request.overrides ?? [],
+    archiveExtensions: request.archiveExtensions,
   })
 }

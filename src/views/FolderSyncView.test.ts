@@ -122,6 +122,7 @@ describe('FolderSyncView', () => {
       leftRoot: 'D:/deploy/package',
       rightRoot: 'D:/deploy/prod',
       strategy: 'mirrorRight',
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
     expect(wrapper.find('[data-testid="folder-sync-preview-panel"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('Mirror to Right')
@@ -151,6 +152,7 @@ describe('FolderSyncView', () => {
         { relativePath: 'package/app.exe', action: 'copyLeftToRight' },
         { relativePath: 'prod/old.dll', action: 'delete' },
       ],
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
     expect(wrapper.text()).toContain('Completed 2 / 2')
     expect(wrapper.text()).toContain('Copied package/app.exe')
@@ -221,6 +223,7 @@ describe('FolderSyncView', () => {
       leftRoot: 'D:/deploy/package',
       rightRoot: 'D:/deploy/prod',
       strategy: 'updateBoth',
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
   })
 

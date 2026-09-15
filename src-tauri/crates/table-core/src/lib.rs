@@ -235,6 +235,7 @@ pub enum TableParseError {
 pub struct DelimitedTableOptions {
     pub delimiter: char,
     pub sheet_name: String,
+    pub first_row_is_header: bool,
 }
 
 impl DelimitedTableOptions {
@@ -242,6 +243,7 @@ impl DelimitedTableOptions {
         Self {
             delimiter: ',',
             sheet_name: "Sheet1".to_owned(),
+            first_row_is_header: true,
         }
     }
 
@@ -249,6 +251,7 @@ impl DelimitedTableOptions {
         Self {
             delimiter: '\t',
             sheet_name: "Sheet1".to_owned(),
+            first_row_is_header: true,
         }
     }
 }
@@ -270,6 +273,22 @@ pub fn parse_delimited_table(
         &DelimitedTableOptions {
             delimiter,
             sheet_name: "Sheet1".to_owned(),
+            first_row_is_header: true,
+        },
+    )
+}
+
+pub fn parse_delimited_table_with_header_mode(
+    input: &str,
+    delimiter: char,
+    first_row_is_header: bool,
+) -> Result<TableWorkbook, TableParseError> {
+    parse_delimited_table_with_options(
+        input,
+        &DelimitedTableOptions {
+            delimiter,
+            sheet_name: "Sheet1".to_owned(),
+            first_row_is_header,
         },
     )
 }
@@ -279,22 +298,34 @@ pub fn parse_delimited_table_with_options(
     options: &DelimitedTableOptions,
 ) -> Result<TableWorkbook, TableParseError> {
     let raw_rows = parse_delimited_rows(input, options.delimiter)?;
-    let columns = raw_rows
-        .first()
-        .map(|headers| {
-            headers
-                .iter()
-                .enumerate()
-                .map(|(index, name)| TableColumn {
-                    index,
-                    name: name.clone(),
-                })
-                .collect::<Vec<_>>()
-        })
-        .unwrap_or_default();
-    let rows = raw_rows
+    let (columns, data_rows) = if options.first_row_is_header {
+        let columns = raw_rows
+            .first()
+            .map(|headers| {
+                headers
+                    .iter()
+                    .enumerate()
+                    .map(|(index, name)| TableColumn {
+                        index,
+                        name: name.clone(),
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+        let data_rows = raw_rows.into_iter().skip(1).collect::<Vec<_>>();
+        (columns, data_rows)
+    } else {
+        let width = raw_rows.first().map(|row| row.len()).unwrap_or(0);
+        let columns = (0..width)
+            .map(|index| TableColumn {
+                index,
+                name: format!("Column{}", index + 1),
+            })
+            .collect::<Vec<_>>();
+        (columns, raw_rows)
+    };
+    let rows = data_rows
         .into_iter()
-        .skip(1)
         .enumerate()
         .map(|(row_index, values)| TableRow {
             index: row_index,
@@ -1509,6 +1540,7 @@ mod tests {
             &DelimitedTableOptions {
                 delimiter: '|',
                 sheet_name: "Pipes".to_owned(),
+                first_row_is_header: true,
             },
         )
         .expect("custom delimiter should parse");

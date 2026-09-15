@@ -558,6 +558,26 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
     defaultFilter: 'minor',
     showRules: true,
   })
+
+  await wrapper.find('[data-testid="options-section-tableCompare"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-table-compare-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="table-key-columns-default"]').setValue('0,1')
+  await wrapper.find('[data-testid="table-key-columns-default"]').trigger('change')
+  await wrapper.find('[data-testid="table-delimiter-default"]').setValue(';')
+  await wrapper.find('[data-testid="table-delimiter-default"]').trigger('change')
+  await wrapper.find('[data-testid="table-ignored-columns-default"]').setValue('notes')
+  await wrapper.find('[data-testid="table-ignored-columns-default"]').trigger('change')
+  await wrapper.find('[data-testid="table-first-row-header-default"]').setValue(false)
+  await wrapper.find('[data-testid="table-ignore-case-default"]').setValue(false)
+  expect(
+    JSON.parse(localStorage.getItem('open-diff-table-compare-session-options') ?? '{}'),
+  ).toMatchObject({
+    keyColumns: '0,1',
+    delimiter: ';',
+    ignoredColumns: ['notes'],
+    firstRowIsHeader: false,
+    ignoreCase: false,
+  })
 })
 
 function mountSettingsView(): VueWrapper {

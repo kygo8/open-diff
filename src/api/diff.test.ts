@@ -101,6 +101,8 @@ describe('diff api', () => {
       ignoredColumns: undefined,
       manualMappings: undefined,
       delimiter: undefined,
+      ignoreCase: true,
+      firstRowIsHeader: true,
     })
     expect(result.columnMappings[0]?.leftColumn).toBe('SKU')
   })

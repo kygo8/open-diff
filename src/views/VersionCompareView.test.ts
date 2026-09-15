@@ -128,15 +128,17 @@ describe('VersionCompareView', () => {
   it('starts empty without demo version resources', () => {
     const wrapper = mount(VersionCompareView)
 
+    expect(wrapper.find('.workbench-shell').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="version-session-toolbar-bar"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('Version Compare')
     expect(wrapper.text()).not.toContain('left-app.exe')
     expect(wrapper.find('[data-testid="version-summary-modified"]').text()).toContain('0')
-    expect(wrapper.find('[data-testid="version-toolbar-home"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="version-session-toolbar-home"]').exists()).toBe(true)
     expect(
-      wrapper.find('[data-testid="version-toolbar-minor"]').attributes('disabled'),
+      wrapper.find('[data-testid="version-session-toolbar-minor"]').attributes('disabled'),
     ).toBeUndefined()
     expect(
-      wrapper.find('[data-testid="version-toolbar-rules"]').attributes('disabled'),
+      wrapper.find('[data-testid="version-session-toolbar-rules"]').attributes('disabled'),
     ).toBeUndefined()
   })
 
@@ -148,20 +150,20 @@ describe('VersionCompareView', () => {
     await wrapper.find('[data-testid="run-version-compare"]').trigger('click')
     await wrapper.vm.$nextTick()
 
-    await wrapper.find('[data-testid="version-toolbar-minor"]').trigger('click')
+    await wrapper.find('[data-testid="version-session-toolbar-minor"]').trigger('click')
     expect(wrapper.find('[data-testid="version-field-Comments"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="version-field-FileVersion"]').exists()).toBe(false)
 
-    await wrapper.find('[data-testid="version-toolbar-rules"]').trigger('click')
+    await wrapper.find('[data-testid="version-session-toolbar-rules"]').trigger('click')
     expect(wrapper.find('[data-testid="version-rules-panel"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="version-rule-FileVersion"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="version-rule-LegalCopyright"]').exists()).toBe(true)
     await wrapper.find('[data-testid="version-rule-Comments"] input').setValue(true)
-    await wrapper.find('[data-testid="version-toolbar-diffs"]').trigger('click')
+    await wrapper.find('[data-testid="version-session-toolbar-diffs"]').trigger('click')
     expect(wrapper.find('[data-testid="version-field-Comments"]').exists()).toBe(true)
 
     await wrapper.find('[data-testid="version-rules-reset"]').trigger('click')
-    await wrapper.find('[data-testid="version-toolbar-minor"]').trigger('click')
+    await wrapper.find('[data-testid="version-session-toolbar-minor"]').trigger('click')
     expect(wrapper.find('[data-testid="version-field-Comments"]').exists()).toBe(true)
   })
 
@@ -176,13 +178,13 @@ describe('VersionCompareView', () => {
     expect(wrapper.find('[data-testid="version-field-FileVersion"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="version-field-CompanyName"]').exists()).toBe(true)
 
-    await wrapper.find('[data-testid="version-toolbar-diffs"]').trigger('click')
+    await wrapper.find('[data-testid="version-session-toolbar-diffs"]').trigger('click')
 
     expect(wrapper.find('[data-testid="version-field-FileVersion"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="version-field-Comments"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="version-field-CompanyName"]').exists()).toBe(false)
 
-    await wrapper.find('[data-testid="version-toolbar-swap"]').trigger('click')
+    await wrapper.find('[data-testid="version-session-toolbar-swap"]').trigger('click')
 
     expect(
       (wrapper.find('[data-testid="version-left-path"]').element as HTMLInputElement).value,
@@ -217,7 +219,7 @@ describe('VersionCompareView', () => {
 
     expect(wrapper.find('[data-testid="version-summary-minor"]').text()).toContain('1')
 
-    await wrapper.find('[data-testid="version-toolbar-rules"]').trigger('click')
+    await wrapper.find('[data-testid="version-session-toolbar-rules"]').trigger('click')
     await wrapper.find('[data-testid="version-rule-Comments"] input').setValue(true)
     await wrapper.vm.$nextTick()
 
@@ -252,7 +254,7 @@ describe('VersionCompareView', () => {
 it('opens rules catalog before compare', async () => {
   const wrapper = mount(VersionCompareView)
 
-  await wrapper.find('[data-testid="version-toolbar-rules"]').trigger('click')
+  await wrapper.find('[data-testid="version-session-toolbar-rules"]').trigger('click')
 
   expect(wrapper.find('[data-testid="version-rules-panel"]').exists()).toBe(true)
   expect(wrapper.find('[data-testid="version-rule-FileVersion"]').exists()).toBe(true)

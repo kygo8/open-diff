@@ -12,6 +12,7 @@ import {
   isPictureSessionStatusSource,
   isTextSessionStatusSource,
   isVersionSessionStatusSource,
+  isTableSessionStatusSource,
   type StatusChromeKind,
   type StatusEditMode,
 } from '@/app/statusBarPhrases'
@@ -123,6 +124,10 @@ export const useStatusBarStore = defineStore('statusBar', () => {
 
     if (isVersionSessionStatusSource(report.value.source)) {
       return 'version-session'
+    }
+
+    if (isTableSessionStatusSource(report.value.source)) {
+      return 'table-session'
     }
 
     return 'standard'

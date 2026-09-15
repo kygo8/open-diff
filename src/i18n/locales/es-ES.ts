@@ -413,7 +413,9 @@ export const esES: LanguagePack = {
     'ui.type': 'Tipo',
     'ui.undo': 'Deshacer',
     'ui.values': 'Valores',
+    'ui.version': 'Versión',
     'ui.versionCompare': 'Comparación de versiones',
+    'ui.versionCompareInspector': 'Inspector de comparación de versiones',
     'ui.versionFieldReport': 'Informe de campo de versión',
     'ui.view': 'Vista',
     'ui.viewportWidth': 'Ancho de la ventana gráfica',
@@ -1174,6 +1176,10 @@ export const esES: LanguagePack = {
     'ui.versionShowRulesDefault': 'Mostrar reglas de importancia de forma predeterminada',
     'ui.versionCompareOptionsHint':
       'Opciones predeterminadas de filtro y reglas para nuevas sesiones de Version Compare.',
+    'ui.tableCompareOptionsHint':
+      'Columnas clave, delimitador y opciones de coincidencia predeterminadas para nuevas sesiones.',
+    'ui.tableFirstRowIsHeader': 'La primera fila contiene nombres de columna',
+    'ui.tableIgnoreCaseDefault': 'Ignorar mayúsculas/minúsculas al coincidir claves',
     'ui.startup': 'Inicio',
     'ui.loadLastWorkspaceOnStartup': 'Cargar el último espacio de trabajo al iniciar',
     'ui.startupHint':

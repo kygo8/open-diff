@@ -500,7 +500,9 @@ export const enUS: LanguagePack = {
     'ui.undo': 'Undo',
     'ui.unimportant': 'Unimportant',
     'ui.values': 'Values',
+    'ui.version': 'Version',
     'ui.versionCompare': 'Version Compare',
+    'ui.versionCompareInspector': 'Version compare inspector',
     'ui.versionFieldReport': 'Version Field Report',
     'ui.view': 'View',
     'ui.viewportWidth': 'Viewport width',
@@ -1155,6 +1157,10 @@ export const enUS: LanguagePack = {
     'ui.versionShowRulesDefault': 'Show Importance Rules by default',
     'ui.versionCompareOptionsHint':
       'Default Version Compare filter and rules options for new sessions.',
+    'ui.tableCompareOptionsHint':
+      'Default Table Compare key, delimiter, and matching options for new sessions.',
+    'ui.tableFirstRowIsHeader': 'First row contains column names',
+    'ui.tableIgnoreCaseDefault': 'Ignore character case when matching keys',
     'ui.startup': 'Startup',
     'ui.loadLastWorkspaceOnStartup': 'Load last workspace on startup',
     'ui.startupHint':

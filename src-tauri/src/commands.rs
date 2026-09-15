@@ -636,7 +636,7 @@ pub fn compare_table_csv(
     right: String,
 ) -> Result<TableCompareResponse, AppErrorPayload> {
     compare_table(
-        left, right, None, None, None, None, None, None, None, None, None,
+        left, right, None, None, None, None, None, None, None, None, None, None, None,
     )
 }
 
@@ -654,18 +654,24 @@ pub fn compare_table(
     ignored_columns: Option<Vec<String>>,
     manual_mappings: Option<Vec<TableManualColumnMapping>>,
     delimiter: Option<String>,
+    ignore_case: Option<bool>,
+    first_row_is_header: Option<bool>,
 ) -> Result<TableCompareResponse, AppErrorPayload> {
+    let ignore_case = ignore_case.unwrap_or(true);
+    let first_row_is_header = first_row_is_header.unwrap_or(true);
     let left_workbook = load_table_workbook(
         &left,
         left_path.as_deref(),
         format.as_deref(),
         delimiter.as_deref(),
+        first_row_is_header,
     )?;
     let right_workbook = load_table_workbook(
         &right,
         right_path.as_deref(),
         format.as_deref(),
         delimiter.as_deref(),
+        first_row_is_header,
     )?;
     let left_sheet_names = workbook_sheet_names(&left_workbook);
     let right_sheet_names = workbook_sheet_names(&right_workbook);
@@ -679,7 +685,7 @@ pub fn compare_table(
         left_sheet,
         right_sheet,
         &table_core::ColumnMappingOptions {
-            case_sensitive: false,
+            case_sensitive: !ignore_case,
             ignore_whitespace: true,
         },
     );
@@ -702,7 +708,7 @@ pub fn compare_table(
         &projected_right,
         &RowAlignmentOptions {
             key_column_indices: key_column_indices.unwrap_or_else(|| vec![0]),
-            case_sensitive: false,
+            case_sensitive: !ignore_case,
         },
     );
     let row_diffs =
@@ -4812,6 +4818,7 @@ fn load_table_workbook(
     path: Option<&str>,
     format: Option<&str>,
     delimiter: Option<&str>,
+    first_row_is_header: bool,
 ) -> Result<TableWorkbook, AppErrorPayload> {
     let inferred = path
         .and_then(|value| Path::new(value).extension())
@@ -4852,14 +4859,35 @@ fn load_table_workbook(
     }
 
     if let Some(delimiter) = delimiter.and_then(|value| value.chars().next()) {
-        return table_core::parse_delimited_table(&source, delimiter).map_err(table_parse_error);
+        return table_core::parse_delimited_table_with_header_mode(
+            &source,
+            delimiter,
+            first_row_is_header,
+        )
+        .map_err(table_parse_error);
     }
 
     if format == "tsv" || inferred == "tsv" || inferred == "tab" {
-        return table_core::parse_tsv(&source).map_err(table_parse_error);
+        return table_core::parse_delimited_table_with_options(
+            &source,
+            &table_core::DelimitedTableOptions {
+                delimiter: '\t',
+                sheet_name: "Sheet1".to_owned(),
+                first_row_is_header,
+            },
+        )
+        .map_err(table_parse_error);
     }
 
-    table_core::parse_csv(&source).map_err(table_parse_error)
+    table_core::parse_delimited_table_with_options(
+        &source,
+        &table_core::DelimitedTableOptions {
+            delimiter: ',',
+            sheet_name: "Sheet1".to_owned(),
+            first_row_is_header,
+        },
+    )
+    .map_err(table_parse_error)
 }
 
 fn workbook_sheet_names(workbook: &TableWorkbook) -> Vec<String> {
@@ -6368,6 +6396,8 @@ mod tests {
             Some(vec!["note".to_owned()]),
             None,
             None,
+            None,
+            None,
         )
         .expect("valid tsv inputs should compare");
 
@@ -6994,6 +7024,8 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
         )
         .expect("html tables should compare");
 
@@ -7026,6 +7058,8 @@ mod tests {
             None,
             None,
             Some(vec![0]),
+            None,
+            None,
             None,
             None,
             None,
@@ -7071,6 +7105,8 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
         )
         .expect("excel sheets should pair by name");
 
@@ -7097,6 +7133,8 @@ mod tests {
             Some("Flags".to_owned()),
             Some("Flags".to_owned()),
             Some(vec![0]),
+            None,
+            None,
             None,
             None,
             None,
@@ -7139,6 +7177,8 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
         )
         .expect("html tables should pair by name");
 
@@ -7160,6 +7200,8 @@ mod tests {
             Some("pets".to_owned()),
             Some("pets".to_owned()),
             Some(vec![0]),
+            None,
+            None,
             None,
             None,
             None,

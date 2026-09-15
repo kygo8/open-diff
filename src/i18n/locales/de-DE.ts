@@ -418,7 +418,9 @@ export const deDE: LanguagePack = {
     'ui.type': 'Typ',
     'ui.undo': 'Rückgängig machen',
     'ui.values': 'Werte',
+    'ui.version': 'Version',
     'ui.versionCompare': 'Versionsvergleich',
+    'ui.versionCompareInspector': 'Versionsvergleich-Inspektor',
     'ui.versionFieldReport': 'Versions-Erfahrungsbericht',
     'ui.view': 'Ansicht',
     'ui.viewportWidth': 'Breite des Ansichtsfensters',
@@ -1176,6 +1178,10 @@ export const deDE: LanguagePack = {
     'ui.versionShowRulesDefault': 'Wichtigkeitsregeln standardmäßig anzeigen',
     'ui.versionCompareOptionsHint':
       'Standardoptionen für Filter und Regeln neuer Versionsvergleiche.',
+    'ui.tableCompareOptionsHint':
+      'Standard-Schlüsselspalten, Trennzeichen und Abgleichoptionen für neue Tabellenvergleiche.',
+    'ui.tableFirstRowIsHeader': 'Erste Zeile enthält Spaltennamen',
+    'ui.tableIgnoreCaseDefault': 'Groß-/Kleinschreibung beim Schlüsselabgleich ignorieren',
     'ui.startup': 'Start',
     'ui.loadLastWorkspaceOnStartup': 'Letzten Arbeitsbereich beim Start laden',
     'ui.startupHint':

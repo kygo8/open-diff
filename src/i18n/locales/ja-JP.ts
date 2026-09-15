@@ -499,7 +499,9 @@ export const jaJP: LanguagePack = {
     'ui.undo': 'Undo',
     'ui.unimportant': 'Unimportant',
     'ui.values': 'Values',
+    'ui.version': 'Version',
     'ui.versionCompare': 'Version Compare',
+    'ui.versionCompareInspector': 'Version compare inspector',
     'ui.versionFieldReport': 'Version Field Report',
     'ui.view': 'View',
     'ui.viewportWidth': 'Viewport width',
@@ -1152,6 +1154,10 @@ export const jaJP: LanguagePack = {
     'ui.versionShowRulesDefault': '重要度ルールを既定で表示',
     'ui.versionCompareOptionsHint':
       '新しいバージョン比較セッションの既定のフィルターとルール設定。',
+    'ui.tableCompareOptionsHint':
+      'Default Table Compare key, delimiter, and matching options for new sessions.',
+    'ui.tableFirstRowIsHeader': 'First row contains column names',
+    'ui.tableIgnoreCaseDefault': 'Ignore character case when matching keys',
     'ui.startup': '起動',
     'ui.loadLastWorkspaceOnStartup': '起動時に前回のワークスペースを読み込む',
     'ui.startupHint':

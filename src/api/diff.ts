@@ -55,7 +55,7 @@ export function diffText(request: TextDiffRequest): Promise<TextDiffResponse> {
     right: request.right,
     algorithm: request.algorithm ?? 'myers',
     ignoreWhitespace: request.ignoreWhitespace ?? false,
-    ignoreCase: request.ignoreCase ?? false,
+    ignoreCase: request.ignoreCase !== false,
     ignoreLineEndings: request.ignoreLineEndings ?? false,
     ignoreRegexes: request.ignoreRegexes ?? [],
   })
@@ -110,6 +110,8 @@ export function compareTable(request: TableCompareRequest): Promise<TableCompare
     ignoredColumns: request.ignoredColumns,
     manualMappings: request.manualMappings,
     delimiter: request.delimiter,
+    ignoreCase: request.ignoreCase !== false,
+    firstRowIsHeader: request.firstRowIsHeader !== false,
   })
 }
 

@@ -120,6 +120,8 @@ export interface TableCompareRequest {
   ignoredColumns?: string[]
   manualMappings?: TableManualColumnMapping[]
   delimiter?: string
+  ignoreCase?: boolean
+  firstRowIsHeader?: boolean
 }
 
 export interface TableCompareColumn {

@@ -52,6 +52,14 @@ pub struct FileStamp {
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
+pub struct PathVolumeInfo {
+    pub path: String,
+    pub free_bytes: u64,
+    pub display_root: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct DiffLine {
     pub left_number: Option<usize>,
     pub right_number: Option<usize>,

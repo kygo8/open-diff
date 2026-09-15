@@ -58,6 +58,7 @@ pub fn run() {
             commands::merge_text_files,
             commands::move_folder_entry,
             commands::parse_text_patch,
+            commands::path_volume_info,
             commands::pick_path,
             commands::preview_folder_sync,
             commands::query_live_windows_registry,

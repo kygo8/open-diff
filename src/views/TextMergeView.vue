@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { mergeTextFiles, saveTextFile } from '@/api/diff'
 import { buildTextMergeReportText, defaultTextMergeReportOutputPath } from '@/app/textMergeReport'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
@@ -10,6 +10,13 @@ import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
+import {
+  applyOverwriteTyping,
+  isInsertToggleKey,
+  shouldHandleOverwriteKeydown,
+  toggleTextEditMode,
+  type TextEditMode,
+} from '@/app/textEditMode'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 
@@ -54,6 +61,7 @@ const leftText = ref('')
 const rightText = ref('')
 const centerText = ref('')
 const outputLines = ref<string[]>([])
+const editMode = ref<TextEditMode>('insert')
 const saveStatusKey = ref('ui.outputNotSaved')
 const saveStatusParams = ref<Record<string, string | number>>({})
 const saving = ref(false)
@@ -112,7 +120,7 @@ watchEffect(() => {
     filterStatus: t('status.allRows'),
     source: 'text-merge',
     loadTimeSeconds: loadTimeSeconds.value,
-    editMode: hasContent ? 'insert' : null,
+    editMode: hasContent ? editMode.value : null,
   })
 })
 const currentConflict = computed<MergeConflict | undefined>(() => {
@@ -155,7 +163,47 @@ const conflictStatus = computed(() => {
   return t(count === 1 ? 'status.conflictCount' : 'status.conflictCountPlural', { count })
 })
 
+function onOutputEditorKeydown(event: KeyboardEvent): void {
+  if (editMode.value !== 'overwrite' || !shouldHandleOverwriteKeydown(event)) {
+    return
+  }
+
+  const target = event.target
+
+  if (!(target instanceof HTMLTextAreaElement)) {
+    return
+  }
+
+  event.preventDefault()
+  const next = applyOverwriteTyping(
+    outputText.value,
+    target.selectionStart,
+    target.selectionEnd,
+    event.key,
+  )
+
+  outputText.value = next.text
+
+  void nextTick(() => {
+    target.setSelectionRange(next.caret, next.caret)
+  })
+}
+
+function onSessionInsertKeydown(event: KeyboardEvent): void {
+  if (!isInsertToggleKey(event)) {
+    return
+  }
+
+  event.preventDefault()
+  editMode.value = toggleTextEditMode(editMode.value)
+}
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onSessionInsertKeydown)
+})
+
 onMounted(() => {
+  window.addEventListener('keydown', onSessionInsertKeydown)
   const launch = sessionLaunch.consumeLaunch('/merge/text')
 
   if (!launch) {
@@ -856,6 +904,7 @@ watch(
             class="output-editor"
             data-testid="merge-output-editor"
             spellcheck="false"
+            @keydown="onOutputEditorKeydown"
             @scroll="onPaneScroll('output', $event)"
           />
         </section>

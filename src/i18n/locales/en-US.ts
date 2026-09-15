@@ -546,6 +546,7 @@ export const enUS: LanguagePack = {
     'status.differenceSection': '≠ {count} difference section',
     'status.insertMode': 'Insert',
     'status.overwriteMode': 'Overwrite',
+    'status.diskFreeOn': '{quantity} free on {root}',
     'status.pathFileMetadata': '{bytes} bytes, {modified}',
     'status.filesSelectedBytesWithDate': '{count} file(s) selected, {bytes} bytes, {modified}',
     'status.encoding': 'Encoding',

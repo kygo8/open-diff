@@ -78,6 +78,27 @@ vi.mock('@/app/filePicker', () => ({
   pickNativePath: vi.fn(),
 }))
 
+vi.mock('@/app/diskFreeSpace', () => ({
+  formatFreeSpaceQuantity: (bytes: number) => {
+    if (bytes >= 1024 ** 3) {
+      return `${(bytes / 1024 ** 3).toFixed(1)} GB`
+    }
+
+    return `${String(Math.round(bytes / 1024 ** 2))} MB`
+  },
+  fetchPathVolumeInfo: vi.fn((path: string) => {
+    if (!path) {
+      return Promise.resolve(null)
+    }
+
+    return Promise.resolve({
+      path,
+      freeBytes: 91.8 * 1024 ** 3,
+      displayRoot: 'C:\\',
+    })
+  }),
+}))
+
 vi.mock('@/api/diff', () => ({
   changeFolderEntryAttributes: vi.fn().mockResolvedValue({
     path: 'D:/left/README.md',
@@ -1052,5 +1073,20 @@ describe('FolderCompareView', () => {
 
     expect(wrapper.findAll('[data-testid="folder-row"]')).toHaveLength(1)
     expect(wrapper.find('[data-unimportant="true"]').text()).toContain('Minor')
+  })
+
+  it('shows capture-style disk free space under folder roots', async () => {
+    const wrapper = mountFolderCompareView()
+
+    await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/left')
+    await wrapper.find('[data-testid="folder-right-root"]').setValue('D:/right')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-left-path-footer"]').text()).toContain(
+      '91.8 GB free on C:\\',
+    )
+    expect(wrapper.find('[data-testid="folder-right-path-footer"]').text()).toContain(
+      '91.8 GB free on C:\\',
+    )
   })
 })

@@ -272,6 +272,12 @@ export function invokeResponse(command: string, args: Record<string, unknown> = 
       return { savePasswords: true, remoteProfiles: true, updateChecks: true }
     case 'app_runtime_info':
       return { os: 'linux', family: 'unix' }
+    case 'path_volume_info':
+      return {
+        path: args.path ?? '',
+        freeBytes: 91.8 * 1024 ** 3,
+        displayRoot: 'C:\\',
+      }
     case 'move_folder_entry':
     case 'rename_folder_entry':
     case 'delete_folder_entry':

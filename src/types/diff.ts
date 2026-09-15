@@ -68,6 +68,12 @@ export interface FileStamp {
   modifiedAtMs: number
 }
 
+export interface PathVolumeInfo {
+  path: string
+  freeBytes: number
+  displayRoot: string
+}
+
 export interface TextPatchResponse {
   files: PatchFile[]
 }

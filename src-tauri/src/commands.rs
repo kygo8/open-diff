@@ -11,8 +11,8 @@ use media_core::{
 };
 use serde::{Deserialize, Serialize};
 use shared_types::{
-    AppErrorCode, AppErrorPayload, FileStamp, ReadTextFileResponse, SaveTextFileResponse,
-    TextDiffRequest, TextDiffResponse, TextPatchResponse,
+    AppErrorCode, AppErrorPayload, FileStamp, PathVolumeInfo, ReadTextFileResponse,
+    SaveTextFileResponse, TextDiffRequest, TextDiffResponse, TextPatchResponse,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -2883,6 +2883,29 @@ pub fn classify_paths(paths: Vec<String>) -> Vec<ClassifiedPathEntry> {
             ClassifiedPathEntry { path, kind }
         })
         .collect()
+}
+
+#[tauri::command]
+pub fn path_volume_info(path: String) -> Result<PathVolumeInfo, AppErrorPayload> {
+    if path.trim().is_empty() {
+        return Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.file.readFailed.title",
+            "path is empty",
+        )
+        .with_param("path", &path));
+    }
+
+    if remote_core::is_remote_uri(&path) {
+        return Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.file.readFailed.title",
+            "disk free space is only available for local paths",
+        )
+        .with_param("path", &path));
+    }
+
+    file_core::path_volume_info(&path).map_err(|error| file_error("read", &path, error))
 }
 
 #[tauri::command]
@@ -6984,6 +7007,22 @@ mod tests {
             sheet.write_string(1, 1, *name).expect("name");
         }
         workbook.save(path).expect("xlsx should write");
+    }
+
+    #[test]
+    fn path_volume_info_returns_free_bytes_for_local_temp() {
+        let root = unique_temp_dir("volume-info-command");
+        let info = path_volume_info(root.display().to_string())
+            .expect("local temp volume should be readable");
+        assert!(info.free_bytes > 0);
+        assert!(!info.display_root.is_empty());
+    }
+
+    #[test]
+    fn path_volume_info_rejects_remote_uri() {
+        let error = path_volume_info("ftp://profile/docs".to_owned())
+            .expect_err("remote paths should not report free space");
+        assert!(error.debug_message.contains("local") || error.message_key.contains("readFailed"));
     }
 
     fn unique_temp_dir(label: &str) -> PathBuf {

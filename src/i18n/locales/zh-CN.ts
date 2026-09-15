@@ -434,6 +434,7 @@ export const zhCN: LanguagePack = {
     'status.differenceSection': '≠ {count} 个差异段',
     'status.insertMode': '插入',
     'status.overwriteMode': '改写',
+    'status.diskFreeOn': '{quantity} 可用空间于 {root}',
     'status.pathFileMetadata': '{bytes} 字节，{modified}',
     'status.filesSelectedBytesWithDate': '已选 {count} 个文件，{bytes} 字节，{modified}',
     'status.encoding': '编码',

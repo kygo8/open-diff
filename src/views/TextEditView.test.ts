@@ -6,6 +6,7 @@ import TextEditView from './TextEditView.vue'
 import { readTextFile, saveTextFile } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useSettingsStore } from '@/stores/settings'
+import { useStatusBarStore } from '@/stores/statusBar'
 
 vi.mock('@/api/diff', () => ({
   readTextFile: vi.fn().mockResolvedValue({
@@ -266,5 +267,30 @@ describe('TextEditView', () => {
     expect(editor.selectionStart).toBe(13)
     expect(editor.selectionEnd).toBe(24)
     expect(editor.value.slice(editor.selectionStart, editor.selectionEnd)).toBe('second line')
+  })
+
+  it('toggles Insert/Overwrite and replaces the next character while overwriting', async () => {
+    const wrapper = mountTextEditView()
+    const statusBar = useStatusBarStore()
+
+    await wrapper.find('[data-testid="text-edit-path"]').setValue('D:/workspace/notes.txt')
+    await wrapper.find('[data-testid="text-edit-open"]').trigger('click')
+    await flushPromises()
+
+    expect(statusBar.report.editMode).toBe('insert')
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Insert' }))
+    await wrapper.vm.$nextTick()
+    expect(statusBar.report.editMode).toBe('overwrite')
+
+    const editor = wrapper.find('[data-testid="text-edit-editor"]').element as HTMLTextAreaElement
+
+    editor.focus()
+    editor.setSelectionRange(0, 0)
+    await wrapper.find('[data-testid="text-edit-editor"]').trigger('keydown', { key: 'Z' })
+    await wrapper.vm.$nextTick()
+
+    expect(editor.value.startsWith('Z')).toBe(true)
+    expect(editor.value.slice(0, 2)).toBe('Ze')
   })
 })

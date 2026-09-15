@@ -750,4 +750,17 @@ describe('TextCompareView', () => {
       (wrapper.find('[data-testid="algorithm-select"]').element as HTMLSelectElement).value,
     ).toBe('histogram')
   })
+
+  it('toggles overwrite mode from the Insert key', async () => {
+    mountTextCompareView()
+    const statusBar = useStatusBarStore()
+
+    expect(statusBar.report.editMode).toBe('insert')
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Insert' }))
+    await Promise.resolve()
+    expect(statusBar.report.editMode).toBe('overwrite')
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Insert' }))
+    await Promise.resolve()
+    expect(statusBar.report.editMode).toBe('insert')
+  })
 })

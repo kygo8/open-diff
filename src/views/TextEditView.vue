@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { readTextFile, saveTextFile } from '@/api/diff'
 import { useRouter } from 'vue-router'
 import { useI18n } from '@/i18n'
@@ -9,6 +9,13 @@ import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { formatPathModifiedAt } from '@/app/pathMetadata'
+import {
+  applyOverwriteTyping,
+  isInsertToggleKey,
+  shouldHandleOverwriteKeydown,
+  toggleTextEditMode,
+  type TextEditMode,
+} from '@/app/textEditMode'
 import type { FileStamp } from '@/types/diff'
 import {
   resolveSyntaxGrammar,
@@ -56,6 +63,7 @@ const goToMenuOpen = ref(false)
 const goToLineInput = ref('1')
 const goToLineStatus = ref('')
 const editorHostRef = ref<HTMLElement | null>(null)
+const editMode = ref<TextEditMode>('insert')
 
 const fileTitle = computed(() => {
   if (!document.value) {
@@ -95,7 +103,7 @@ watchEffect(() => {
     filterStatus: t('status.allRows'),
     source: 'text-edit',
     loadTimeSeconds: null,
-    editMode: document.value ? 'insert' : null,
+    editMode: document.value ? editMode.value : null,
   })
 })
 const lineCount = computed(() =>
@@ -197,6 +205,41 @@ async function saveDocument(): Promise<void> {
   } finally {
     saving.value = false
   }
+}
+
+function onEditorKeydown(event: KeyboardEvent): void {
+  if (editMode.value !== 'overwrite' || !shouldHandleOverwriteKeydown(event)) {
+    return
+  }
+
+  const target = event.target
+
+  if (!(target instanceof HTMLTextAreaElement)) {
+    return
+  }
+
+  event.preventDefault()
+  const next = applyOverwriteTyping(
+    editorText.value,
+    target.selectionStart,
+    target.selectionEnd,
+    event.key,
+  )
+
+  updateEditorText(next.text)
+
+  void nextTick(() => {
+    target.setSelectionRange(next.caret, next.caret)
+  })
+}
+
+function onSessionInsertKeydown(event: KeyboardEvent): void {
+  if (!isInsertToggleKey(event)) {
+    return
+  }
+
+  event.preventDefault()
+  editMode.value = toggleTextEditMode(editMode.value)
 }
 
 function updateEditorText(value: string): void {
@@ -526,6 +569,15 @@ const highlightedLines = computed(() =>
 )
 const hasEditorContent = computed(() => editorText.value.length > 0)
 const canPaste = computed(() => localClipboard.value.length > 0)
+
+onMounted(() => {
+  window.addEventListener('keydown', onSessionInsertKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onSessionInsertKeydown)
+})
+
 const textEditToolbarCommands = computed(() => [
   { id: 'home', glyph: 'H', labelKey: 'ui.home', enabled: true },
   { id: 'undo', glyph: 'U', labelKey: 'ui.undo', enabled: undoStack.value.length > 0 },
@@ -737,6 +789,7 @@ const textEditToolbarCommands = computed(() => [
         data-testid="text-edit-editor"
         :class="{ 'editor-input-wrap': wordWrap, 'editor-input-nowrap': !wordWrap }"
         :placeholder="$t('ui.openATextFileToBeginEditing')"
+        @keydown="onEditorKeydown"
         @update:value="updateEditorText"
       />
     </div>

@@ -26,6 +26,7 @@ import {
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useI18n } from '@/i18n'
+import { formatCompareError } from '@/app/compareError'
 
 const mediaStatuses: MediaFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
 
@@ -158,7 +159,7 @@ async function exportMediaReport(): Promise<void> {
     })
     reportStatus.value = outputPath
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 
@@ -173,7 +174,7 @@ async function runMediaCompare(): Promise<void> {
 
     applyMediaResult(result)
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }

@@ -258,4 +258,28 @@ describe('MediaCompareView', () => {
       'C:/music/media-compare.txt',
     )
   })
+
+  it('shows a readable error when compare invoke rejects an AppErrorPayload', async () => {
+    vi.mocked(compareMediaFiles).mockRejectedValueOnce({
+      code: 'app.unknown',
+      messageKey: 'error.app.unknown.title',
+      params: {},
+      debugMessage: 'unsupported media container',
+    })
+
+    const wrapper = mount(MediaCompareView)
+
+    await wrapper.find('[data-testid="media-left-path"]').setValue('C:/music/fixture-left.mp3')
+    await wrapper.find('[data-testid="media-right-path"]').setValue('C:/music/fixture-right.mp3')
+    await wrapper.find('[data-testid="run-media-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+    await Promise.resolve()
+    await wrapper.vm.$nextTick()
+
+    const errorEl = wrapper.find('[data-testid="media-compare-error"]')
+
+    expect(errorEl.exists()).toBe(true)
+    expect(errorEl.text()).toContain('unsupported media container')
+    expect(errorEl.text()).not.toContain('[object Object]')
+  })
 })

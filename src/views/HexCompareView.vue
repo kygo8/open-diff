@@ -37,6 +37,7 @@ import {
   hexReportRowsFromDiffRanges,
 } from '@/app/hexReport'
 import { useI18n } from '@/i18n'
+import { formatCompareError } from '@/app/compareError'
 
 interface HexRow {
   offset: string
@@ -451,7 +452,7 @@ async function runHexCompare(options?: { preserveNavigationRanges?: boolean }): 
 
     applyHexResult(result, options?.preserveNavigationRanges === true)
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }
@@ -560,7 +561,7 @@ async function runHexFind(): Promise<void> {
 
     await jumpToFindMatch(0)
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 
@@ -626,7 +627,7 @@ async function copySelectedHexByte(): Promise<void> {
     await navigator.clipboard.writeText(payload)
     copyStatus.value = t('status.copiedPath', { path: payload })
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 
@@ -659,7 +660,7 @@ async function exportHexReport(): Promise<void> {
     })
     reportStatus.value = outputPath
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 
@@ -692,7 +693,7 @@ async function runHexSave(): Promise<void> {
     pendingEdits.value = []
     await runHexCompare()
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 </script>

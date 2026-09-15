@@ -14,6 +14,7 @@ import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchToolbar from '@/components/workbench/WorkbenchToolbar.vue'
 import { useI18n } from '@/i18n'
+import { formatCompareError } from '@/app/compareError'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useStatusBarStore } from '@/stores/statusBar'
@@ -165,7 +166,7 @@ async function loadAndParsePatchFile(path: string): Promise<void> {
     result.value = await parseTextPatch(file.text)
     selectedSectionIndex.value = 0
   } catch (event) {
-    error.value = event instanceof Error ? event.message : String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }
@@ -195,7 +196,7 @@ async function applyPatchToTargetFile(): Promise<void> {
     patchedText.value = response.text
     applyStatus.value = t('status.patchWritten', { path: outputPath })
   } catch (event) {
-    error.value = event instanceof Error ? event.message : String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }
@@ -251,7 +252,7 @@ async function applyCurrentPatch(): Promise<void> {
     patchedText.value = response.text
     applyStatus.value = t('status.patchApplied')
   } catch (event) {
-    error.value = event instanceof Error ? event.message : String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }
@@ -267,7 +268,7 @@ async function parseCurrentPatch(): Promise<void> {
     await nextTick()
     scrollToSelectedSection()
   } catch (event) {
-    error.value = event instanceof Error ? event.message : String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }

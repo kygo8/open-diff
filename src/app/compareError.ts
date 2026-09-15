@@ -1,5 +1,15 @@
 export type TranslateFn = (key: string, params?: Record<string, string | number>) => string
 
+function readStringField(value: object, key: string): string {
+  if (!(key in value)) {
+    return ''
+  }
+
+  const field = (value as Record<string, unknown>)[key]
+
+  return typeof field === 'string' ? field : ''
+}
+
 function rawCompareErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message
@@ -9,10 +19,20 @@ function rawCompareErrorMessage(error: unknown): string {
     return error
   }
 
-  if (error && typeof error === 'object' && 'message' in error) {
-    const message = error.message
+  if (error && typeof error === 'object') {
+    // Tauri/AppErrorPayload uses debugMessage (camelCase); keep snake_case fallback.
+    const debugMessage =
+      readStringField(error, 'debugMessage') || readStringField(error, 'debug_message')
 
-    return typeof message === 'string' ? message : ''
+    if (debugMessage) {
+      return debugMessage
+    }
+
+    const message = readStringField(error, 'message')
+
+    if (message) {
+      return message
+    }
   }
 
   return ''

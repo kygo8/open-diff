@@ -368,6 +368,46 @@ function onShowPathBarsChange(event: Event): void {
   settings.setShowPathBars(target.checked)
 }
 
+function onShowSidebarChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowSidebar(target.checked)
+}
+
+function onShowToolbarIconsChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowToolbarIcons(target.checked)
+}
+
+function onConfirmBeforeCloseDirtyTabChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setConfirmBeforeCloseDirtyTab(target.checked)
+}
+
+function onConfirmBeforeOverwriteSaveChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setConfirmBeforeOverwriteSave(target.checked)
+}
+
 function onLoadLastWorkspaceOnStartupChange(event: Event): void {
   const target = event.target
 
@@ -651,6 +691,15 @@ function parseShortcutText(value: string): string[] {
           />
           <span>{{ $t('ui.showPathBars') }}</span>
         </label>
+        <label class="tweak-row">
+          <input
+            data-testid="show-sidebar"
+            type="checkbox"
+            :checked="settings.showSidebar"
+            @change="onShowSidebarChange"
+          />
+          <span>{{ $t('ui.showSidebar') }}</span>
+        </label>
         <p class="options-hint">{{ $t('ui.appearanceChromeHint') }}</p>
       </NCard>
 
@@ -731,6 +780,15 @@ function parseShortcutText(value: string): string[] {
             @change="onLargeToolbarButtonsChange"
           />
           <span>{{ $t('ui.largeToolbarButtons') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="show-toolbar-icons"
+            type="checkbox"
+            :checked="settings.showToolbarIcons"
+            @change="onShowToolbarIconsChange"
+          />
+          <span>{{ $t('ui.showToolbarIcons') }}</span>
         </label>
         <p class="options-hint">{{ $t('ui.toolbarsHint') }}</p>
       </NCard>
@@ -930,6 +988,15 @@ function parseShortcutText(value: string): string[] {
           />
           <span>{{ $t('ui.createBackupOnSave') }}</span>
         </label>
+        <label class="tweak-row">
+          <input
+            data-testid="confirm-before-overwrite-save"
+            type="checkbox"
+            :checked="settings.confirmBeforeOverwriteSave"
+            @change="onConfirmBeforeOverwriteSaveChange"
+          />
+          <span>{{ $t('ui.confirmBeforeOverwriteSave') }}</span>
+        </label>
         <p class="options-hint">{{ $t('ui.backupHint') }}</p>
       </NCard>
 
@@ -1013,6 +1080,15 @@ function parseShortcutText(value: string): string[] {
           <span>{{ $t('ui.notifyOnCompareComplete') }}</span>
         </label>
         <p class="options-hint">{{ $t('ui.notifyOnCompareCompleteHint') }}</p>
+        <label class="tweak-row">
+          <input
+            data-testid="confirm-before-close-dirty-tab"
+            type="checkbox"
+            :checked="settings.confirmBeforeCloseDirtyTab"
+            @change="onConfirmBeforeCloseDirtyTabChange"
+          />
+          <span>{{ $t('ui.confirmBeforeCloseDirtyTab') }}</span>
+        </label>
         <NButton
           size="small"
           data-testid="restore-factory-defaults"

@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import PictureCompareView from './PictureCompareView.vue'
@@ -12,6 +12,10 @@ vi.mock('vue-router', () => ({
 }))
 
 vi.mock('@/api/diff', () => ({
+  pathFileStamp: vi.fn().mockResolvedValue({
+    size: 128,
+    modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30),
+  }),
   saveTextFile: vi.fn().mockResolvedValue({
     path: 'C:/images/picture-compare.txt',
     bytesWritten: 32,
@@ -465,5 +469,19 @@ describe('PictureCompareView', () => {
     expect(wrapper.find('[data-testid="picture-report-status"]').text()).toBe(
       'C:/images/picture-compare.txt',
     )
+  })
+  it('shows size/date path footers after compare', async () => {
+    const wrapper = mount(PictureCompareView, {
+      global: { stubs: { teleport: true } },
+    })
+
+    await wrapper.find('[data-testid="picture-left-path"]').setValue('C:/left.bin')
+    await wrapper.find('[data-testid="picture-right-path"]').setValue('C:/right.bin')
+    await wrapper.find('[data-testid="run-picture-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="picture-path-footers"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="picture-left-path-footer"]').text()).toMatch(/bytes/)
+    expect(wrapper.find('[data-testid="picture-right-path-footer"]').text()).toMatch(/bytes/)
   })
 })

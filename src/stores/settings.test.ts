@@ -287,4 +287,23 @@ describe('useSettingsStore', () => {
     expect(store.fontSize).toBe(18)
     expect(store.importSettingsPackage('{')).toBe(false)
   })
+  it('persists sidebar, toolbar icons, dirty-tab confirm, and overwrite-save confirm', () => {
+    const store = useSettingsStore()
+
+    expect(store.showSidebar).toBe(false)
+    expect(store.showToolbarIcons).toBe(true)
+    expect(store.confirmBeforeCloseDirtyTab).toBe(true)
+    expect(store.confirmBeforeOverwriteSave).toBe(false)
+
+    store.setShowSidebar(true)
+    store.setShowToolbarIcons(false)
+    store.setConfirmBeforeCloseDirtyTab(false)
+    store.setConfirmBeforeOverwriteSave(true)
+
+    expect(document.documentElement.dataset.showSidebar).toBe('1')
+    expect(localStorage.getItem('open-diff-show-sidebar')).toBe('1')
+    expect(localStorage.getItem('open-diff-show-toolbar-icons')).toBe('0')
+    expect(localStorage.getItem('open-diff-confirm-before-close-dirty-tab')).toBe('0')
+    expect(localStorage.getItem('open-diff-confirm-before-overwrite-save')).toBe('1')
+  })
 })

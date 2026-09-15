@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { compareVersionFiles, saveTextFile } from '@/api/diff'
+import { compareVersionFiles, pathFileStamp, saveTextFile } from '@/api/diff'
 import { buildVersionReportText, defaultVersionReportOutputPath } from '@/app/versionReport'
 import { useI18n } from '@/i18n'
 import { formatCompareError } from '@/app/compareError'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { formatPathModifiedAt } from '@/app/pathMetadata'
 import type {
+  FileStamp,
   VersionCompareResponse,
   VersionFieldRow,
   VersionFieldStatus,
@@ -40,6 +42,8 @@ const emptyVersionSide: VersionSideSummary = {
 const { t } = useI18n()
 const leftPath = ref('')
 const rightPath = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
 const sessionLaunch = useSessionLaunchStore()
 const tabs = useTabsStore()
 const router = useRouter()
@@ -201,6 +205,10 @@ function runVersionToolbarCommand(commandId: string): void {
 
     rightPath.value = leftPath.value
     leftPath.value = nextLeftPath
+    const nextLeftStamp = rightFileStamp.value
+
+    rightFileStamp.value = leftFileStamp.value
+    leftFileStamp.value = nextLeftStamp
     const nextLeft = rightVersion.value
 
     rightVersion.value = leftVersion.value
@@ -241,6 +249,40 @@ function statusLabel(status: VersionFieldStatus): string {
 
 function valueText(value?: string): string {
   return value ?? '--'
+}
+
+const leftPathFooterLabel = computed(() =>
+  formatVersionPathFooter(leftFileStamp.value, leftVersion.value.fileVersion),
+)
+const rightPathFooterLabel = computed(() =>
+  formatVersionPathFooter(rightFileStamp.value, rightVersion.value.fileVersion),
+)
+
+function formatVersionPathFooter(stamp: FileStamp | null, fileVersion: string): string {
+  if (!stamp) {
+    return ''
+  }
+
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+  const base = modified
+    ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
+    : t('status.bytes', { count: stamp.size })
+
+  if (!fileVersion) {
+    return base
+  }
+
+  return t('status.pathFileMetadataWithDetail', { metadata: base, detail: fileVersion })
+}
+
+async function refreshVersionPathStamps(): Promise<void> {
+  const [left, right] = await Promise.all([
+    leftPath.value ? pathFileStamp(leftPath.value).catch(() => null) : Promise.resolve(null),
+    rightPath.value ? pathFileStamp(rightPath.value).catch(() => null) : Promise.resolve(null),
+  ])
+
+  leftFileStamp.value = left
+  rightFileStamp.value = right
 }
 
 function applyVersionResult(result: VersionCompareResponse): void {
@@ -318,8 +360,10 @@ async function runVersionCompare(): Promise<void> {
 
     applyVersionResult(result)
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
+    await refreshVersionPathStamps()
   } catch (event) {
     error.value = formatCompareError(event, t)
+    await refreshVersionPathStamps()
   } finally {
     loading.value = false
   }
@@ -403,6 +447,23 @@ watch(
       >
         {{ $t('ui.runDiff') }}
       </button>
+      <div
+        class="bc-path-footers"
+        data-testid="version-path-footers"
+      >
+        <span
+          class="path-side-footer"
+          :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
+          data-testid="version-left-path-footer"
+          >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
+        >
+        <span
+          class="path-side-footer"
+          :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
+          data-testid="version-right-path-footer"
+          >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
+        >
+      </div>
     </section>
     <p
       v-if="error"
@@ -904,5 +965,27 @@ h1 {
   .version-side dl {
     grid-template-columns: 1fr;
   }
+}
+
+.bc-path-footers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column: 1 / -1;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.path-side-footer {
+  min-height: 18px;
+  overflow: hidden;
+  color: var(--app-text-muted, #6b7280);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 </style>

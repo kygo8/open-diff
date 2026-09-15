@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { compareMediaFiles, saveTextFile } from '@/api/diff'
+import { compareMediaFiles, pathFileStamp, saveTextFile } from '@/api/diff'
 import { buildMediaReportText, defaultMediaReportOutputPath } from '@/app/mediaReport'
 import type {
+  FileStamp,
   MediaCompareResponse,
   MediaFieldRow,
   MediaFieldStatus,
@@ -29,6 +30,7 @@ import { useI18n } from '@/i18n'
 import { formatCompareError } from '@/app/compareError'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { formatPathModifiedAt } from '@/app/pathMetadata'
 
 const mediaStatuses: MediaFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
 
@@ -48,6 +50,8 @@ const emptyMediaSide: MediaSideSummary = {
 }
 const leftPath = ref('')
 const rightPath = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
 const sessionLaunch = useSessionLaunchStore()
 const tabs = useTabsStore()
 const router = useRouter()
@@ -122,6 +126,40 @@ function valueText(value?: string): string {
   return value ?? '--'
 }
 
+const leftPathFooterLabel = computed(() =>
+  formatMediaPathFooter(leftFileStamp.value, leftMedia.value.duration),
+)
+const rightPathFooterLabel = computed(() =>
+  formatMediaPathFooter(rightFileStamp.value, rightMedia.value.duration),
+)
+
+function formatMediaPathFooter(stamp: FileStamp | null, duration: string): string {
+  if (!stamp) {
+    return ''
+  }
+
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+  const base = modified
+    ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
+    : t('status.bytes', { count: stamp.size })
+
+  if (!duration) {
+    return base
+  }
+
+  return t('status.pathFileMetadataWithDetail', { metadata: base, detail: duration })
+}
+
+async function refreshMediaPathStamps(): Promise<void> {
+  const [left, right] = await Promise.all([
+    leftPath.value ? pathFileStamp(leftPath.value).catch(() => null) : Promise.resolve(null),
+    rightPath.value ? pathFileStamp(rightPath.value).catch(() => null) : Promise.resolve(null),
+  ])
+
+  leftFileStamp.value = left
+  rightFileStamp.value = right
+}
+
 function applyMediaResult(result: MediaCompareResponse): void {
   leftMedia.value = result.left
   rightMedia.value = result.right
@@ -181,6 +219,7 @@ async function runMediaCompare(): Promise<void> {
 
     applyMediaResult(result)
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
+    await refreshMediaPathStamps()
   } catch (event) {
     error.value = formatCompareError(event, t)
   } finally {
@@ -429,6 +468,10 @@ function runMediaToolbarCommand(commandId: string): void {
 
     rightPath.value = leftPath.value
     leftPath.value = nextLeftPath
+    const nextLeftStamp = rightFileStamp.value
+
+    rightFileStamp.value = leftFileStamp.value
+    leftFileStamp.value = nextLeftStamp
     const nextLeft = rightMedia.value
 
     rightMedia.value = leftMedia.value
@@ -511,6 +554,24 @@ function runMediaToolbarCommand(commandId: string): void {
         >
           {{ $t('ui.runDiff') }}
         </button>
+
+        <div
+          class="bc-path-footers"
+          data-testid="media-path-footers"
+        >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
+            data-testid="media-left-path-footer"
+            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
+            data-testid="media-right-path-footer"
+            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+        </div>
       </section>
       <section
         v-if="canPreviewMedia"
@@ -1173,5 +1234,27 @@ h1 {
   margin: 0;
   color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.bc-path-footers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column: 1 / -1;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.path-side-footer {
+  min-height: 18px;
+  overflow: hidden;
+  color: var(--app-text-muted, #6b7280);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 </style>

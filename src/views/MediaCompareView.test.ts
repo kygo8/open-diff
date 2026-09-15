@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import MediaCompareView from './MediaCompareView.vue'
@@ -13,6 +13,10 @@ vi.mock('vue-router', () => ({
 }))
 
 vi.mock('@/api/diff', () => ({
+  pathFileStamp: vi.fn().mockResolvedValue({
+    size: 128,
+    modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30),
+  }),
   saveTextFile: vi.fn().mockResolvedValue({
     path: 'C:/music/media-compare.txt',
     bytesWritten: 64,
@@ -309,5 +313,19 @@ describe('MediaCompareView', () => {
     expect(wrapper.find('[data-testid="media-field-Comment"]').attributes('data-selected')).toBe(
       'true',
     )
+  })
+  it('shows size/date path footers after compare', async () => {
+    const wrapper = mount(MediaCompareView, {
+      global: { stubs: { teleport: true } },
+    })
+
+    await wrapper.find('[data-testid="media-left-path"]').setValue('C:/left.bin')
+    await wrapper.find('[data-testid="media-right-path"]').setValue('C:/right.bin')
+    await wrapper.find('[data-testid="run-media-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="media-path-footers"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="media-left-path-footer"]').text()).toMatch(/bytes/)
+    expect(wrapper.find('[data-testid="media-right-path-footer"]').text()).toMatch(/bytes/)
   })
 })

@@ -197,6 +197,17 @@ async function saveDocument(): Promise<void> {
   saving.value = true
   error.value = ''
 
+  if (settings.confirmBeforeOverwriteSave) {
+    // eslint-disable-next-line no-alert -- Options Backup overwrite confirmation
+    const accepted = window.confirm(t('ui.confirmOverwriteSavePrompt'))
+
+    if (!accepted) {
+      saving.value = false
+
+      return
+    }
+  }
+
   try {
     const result = await saveTextFile({
       path: document.value.path,

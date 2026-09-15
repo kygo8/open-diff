@@ -724,6 +724,15 @@ async function runHexSave(): Promise<void> {
     return
   }
 
+  if (settings.confirmBeforeOverwriteSave) {
+    // eslint-disable-next-line no-alert -- Options Backup overwrite confirmation
+    const accepted = window.confirm(t('ui.confirmOverwriteSavePrompt'))
+
+    if (!accepted) {
+      return
+    }
+  }
+
   try {
     const result = await saveHexEdits({
       path: leftPath.value,

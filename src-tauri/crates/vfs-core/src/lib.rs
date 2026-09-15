@@ -174,6 +174,16 @@ impl LocalVfs {
         bytes: &[u8],
         create_backup: bool,
     ) -> VfsResult<Option<VfsPath>> {
+        self.write_with_backup_retention(path, bytes, create_backup, 1)
+    }
+
+    pub fn write_with_backup_retention(
+        &mut self,
+        path: &VfsPath,
+        bytes: &[u8],
+        create_backup: bool,
+        backup_retention: u32,
+    ) -> VfsResult<Option<VfsPath>> {
         let target = path_buf(path);
 
         if let Some(parent) = target.parent() {
@@ -183,8 +193,8 @@ impl LocalVfs {
         ensure_writable(path, &target)?;
 
         let backup = if create_backup && target.exists() {
-            let backup_path = backup_path_for(&target);
-            fs::copy(&target, &backup_path).map_err(|error| fs_error(path, error))?;
+            let backup_path = rotate_and_create_backup(&target, backup_retention)
+                .map_err(|error| fs_error(path, error))?;
             Some(VfsPath::new(backup_path.display().to_string()))
         } else {
             None
@@ -279,13 +289,48 @@ fn path_buf(path: &VfsPath) -> PathBuf {
     Path::new(path.as_str()).to_path_buf()
 }
 
-fn backup_path_for(path: &Path) -> PathBuf {
+fn backup_path_for_index(path: &Path, index: u32) -> PathBuf {
     let backup_extension = path
         .extension()
-        .map(|extension| format!("{}.bak", extension.to_string_lossy()))
-        .unwrap_or_else(|| "bak".to_owned());
+        .map(|extension| {
+            if index <= 1 {
+                format!("{}.bak", extension.to_string_lossy())
+            } else {
+                format!("{}.bak{}", extension.to_string_lossy(), index)
+            }
+        })
+        .unwrap_or_else(|| {
+            if index <= 1 {
+                "bak".to_owned()
+            } else {
+                format!("bak{index}")
+            }
+        });
 
     path.with_extension(backup_extension)
+}
+
+fn rotate_and_create_backup(path: &Path, backup_retention: u32) -> Result<PathBuf, std::io::Error> {
+    let retention = backup_retention.clamp(1, 9);
+
+    for index in (1..retention).rev() {
+        let from = backup_path_for_index(path, index);
+        let to = backup_path_for_index(path, index + 1);
+
+        if from.exists() {
+            let _ = fs::remove_file(&to);
+            fs::rename(&from, &to)?;
+        }
+    }
+
+    for index in (retention + 1)..=9 {
+        let extra = backup_path_for_index(path, index);
+        let _ = fs::remove_file(extra);
+    }
+
+    let backup_path = backup_path_for_index(path, 1);
+    fs::copy(path, &backup_path)?;
+    Ok(backup_path)
 }
 
 fn ensure_writable(path: &VfsPath, path_buf: &Path) -> VfsResult<()> {
@@ -580,6 +625,35 @@ mod tests {
         assert_eq!(
             vfs.read(&backup).expect("backup should be readable"),
             b"old content"
+        );
+
+        let _ = std::fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn local_vfs_safe_write_retention_rotates_numbered_backups() {
+        let root = unique_temp_dir("safe-write-retention");
+        let mut vfs = LocalVfs::new();
+        let file = VfsPath::new(root.join("notes.txt").display().to_string());
+
+        vfs.write(&file, b"v1").expect("seed write should work");
+
+        vfs.write_with_backup_retention(&file, b"v2", true, 2)
+            .expect("first retained save should work");
+        assert_eq!(
+            std::fs::read(root.join("notes.txt.bak")).expect("bak should exist"),
+            b"v1"
+        );
+
+        vfs.write_with_backup_retention(&file, b"v3", true, 2)
+            .expect("second retained save should work");
+        assert_eq!(
+            std::fs::read(root.join("notes.txt.bak")).expect("bak should exist"),
+            b"v2"
+        );
+        assert_eq!(
+            std::fs::read(root.join("notes.txt.bak2")).expect("bak2 should exist"),
+            b"v1"
         );
 
         let _ = std::fs::remove_dir_all(root);

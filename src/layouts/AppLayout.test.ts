@@ -402,6 +402,25 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-command-open.textCompare"]').exists()).toBe(true)
   })
 
+  it('wires File menu Save/Export/Reload commands that session views already handle', async () => {
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-file"]').trigger('click')
+
+    expect(
+      wrapper.find('[data-testid="menu-command-session.save"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.saveAs"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.export"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.reload"]').attributes('disabled'),
+    ).toBeUndefined()
+  })
+
   it('closes an open application menu when clicking outside it', async () => {
     const wrapper = mountAppLayout()
 

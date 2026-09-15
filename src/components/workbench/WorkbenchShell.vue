@@ -54,6 +54,22 @@ const toolbarItems = computed(() => {
         return settings.showPrevDifferenceInToolbar
       }
 
+      if (command.id === 'sessions') {
+        return settings.showSessionsInToolbar
+      }
+
+      if (command.id === 'goto') {
+        return settings.showGotoInToolbar
+      }
+
+      if (command.id === 'wrap') {
+        return settings.showWrapInToolbar
+      }
+
+      if (command.id === 'sync-now') {
+        return settings.showSyncNowInToolbar
+      }
+
       return true
     })
     .map((command) => {

@@ -1057,9 +1057,17 @@ export const deDE: LanguagePack = {
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
     'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.backupRetentionCount': 'Nummerierte Sicherungen behalten',
+    'ui.commandsVisibility': 'Befehle',
+    'ui.commandsVisibilityHint':
+      'Optionale Sitzungs-Symbolleistenbefehle ein- oder ausblenden, die über den Kernsatz der Capture-MainBar hinausgehen.',
+    'ui.showSessionsInToolbar': 'Sitzungen in Sitzungs-Symbolleisten anzeigen',
+    'ui.showGotoInToolbar': 'Gehe zu Zeile in Text-Symbolleisten anzeigen',
+    'ui.showWrapInToolbar': 'Umbruch in Text-Symbolleisten anzeigen',
+    'ui.showSyncNowInToolbar': 'Jetzt synchronisieren in Ordner-Sync-Symbolleisten anzeigen',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
-      'Wenn aktiviert, erzeugen Überschreibspeicherungen eine .bak neben der Datei. Deaktivieren zum Speichern ohne Backup.',
+      'Wenn aktiviert, erzeugen Überschreibspeicherungen eine .bak neben der Datei und behalten die letzten N nummerierten Kopien (.bak, .bak2, …). Deaktivieren, um ohne Sicherung zu schreiben.',
     'ui.selectAll': 'Select All',
     'ui.selectAllFiles': 'Select All Files',
     'ui.selectSame': 'Select Same',

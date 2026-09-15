@@ -1029,9 +1029,17 @@ export const koKR: LanguagePack = {
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
     'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.backupRetentionCount': '번호 지정 백업 유지',
+    'ui.commandsVisibility': '명령',
+    'ui.commandsVisibilityHint':
+      '캡처 MainBar 핵심 집합을 넘는 선택적 세션 도구 모음 명령을 표시하거나 숨깁니다.',
+    'ui.showSessionsInToolbar': '세션 도구 모음에 세션 표시',
+    'ui.showGotoInToolbar': '텍스트 도구 모음에 줄로 이동 표시',
+    'ui.showWrapInToolbar': '텍스트 도구 모음에 줄 바꿈 표시',
+    'ui.showSyncNowInToolbar': '폴더 동기화 도구 모음에 지금 동기화 표시',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
-      '사용 시 덮어쓰기 저장은 파일 옆에 .bak을 만듭니다. 끄면 백업 없이 저장합니다.',
+      '사용 시 덮어쓰기 저장은 파일 옆에 .bak을 만들고 번호가 매겨진 백업을 최대 N개 유지합니다(.bak, .bak2…). 끄면 백업 없이 저장합니다.',
     'ui.selectAll': 'Select All',
     'ui.selectAllFiles': 'Select All Files',
     'ui.selectSame': 'Select Same',

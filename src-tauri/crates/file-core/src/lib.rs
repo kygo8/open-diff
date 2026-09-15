@@ -59,12 +59,26 @@ pub fn save_text_file_with_backup(
     text: impl AsRef<str>,
     create_backup: bool,
 ) -> Result<SaveTextFileResponse, FileReadError> {
+    save_text_file_with_backup_retention(path, text, create_backup, 1)
+}
+
+pub fn save_text_file_with_backup_retention(
+    path: impl AsRef<Path>,
+    text: impl AsRef<str>,
+    create_backup: bool,
+    backup_retention: u32,
+) -> Result<SaveTextFileResponse, FileReadError> {
     let path_ref = path.as_ref();
     let path_text = path_ref.display().to_string();
     let bytes = text.as_ref().as_bytes();
     let mut vfs = LocalVfs::new();
     let backup = vfs
-        .write_with_backup_option(&VfsPath::new(path_text.clone()), bytes, create_backup)
+        .write_with_backup_retention(
+            &VfsPath::new(path_text.clone()),
+            bytes,
+            create_backup,
+            backup_retention,
+        )
         .map_err(|error| FileReadError::Io(format!("{error:?}")))?;
     let file_stamp = file_stamp(path_ref)?;
 

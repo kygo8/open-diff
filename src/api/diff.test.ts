@@ -52,6 +52,7 @@ describe('diff api', () => {
       path: 'D:/workspace/output.txt',
       text: 'merged text',
       createBackup: true,
+      backupRetention: 1,
     })
     expect(result.bytesWritten).toBe(12)
   })

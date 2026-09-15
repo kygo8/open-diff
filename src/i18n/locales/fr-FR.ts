@@ -1057,9 +1057,17 @@ export const frFR: LanguagePack = {
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
     'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.backupRetentionCount': 'Conserver les sauvegardes numérotées',
+    'ui.commandsVisibility': 'Commandes',
+    'ui.commandsVisibilityHint':
+      'Afficher ou masquer les commandes optionnelles des barres de session au-delà du jeu principal de la barre Capture.',
+    'ui.showSessionsInToolbar': 'Afficher Sessions sur les barres de session',
+    'ui.showGotoInToolbar': 'Afficher Aller à la ligne sur les barres texte',
+    'ui.showWrapInToolbar': 'Afficher Retour à la ligne sur les barres texte',
+    'ui.showSyncNowInToolbar': 'Afficher Synchroniser maintenant sur les barres Sync dossier',
     'ui.createBackupOnSave': 'Prefer backup files when saving overwrites',
     'ui.backupHint':
-      "Lorsque c'est activé, les enregistrements par écrasement créent un .bak à côté du fichier. Désactivez pour écrire sans sauvegarde.",
+      "Lorsque c'est activé, les enregistrements par écrasement créent un .bak à côté du fichier et conservent les N dernières copies numérotées (.bak, .bak2, …). Désactivez pour écrire sans sauvegarde.",
     'ui.selectAll': 'Select All',
     'ui.selectAllFiles': 'Select All Files',
     'ui.selectSame': 'Select Same',

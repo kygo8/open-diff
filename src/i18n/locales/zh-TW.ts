@@ -1007,8 +1007,17 @@ export const zhTW: LanguagePack = {
     'ui.openWithHint': '啟用的應用程式會出現在資料夾比較的「開啟方式」操作中。',
     'ui.applicationName': '應用程式名稱',
     'ui.shellOptionsHint': '註冊 shell 整合，讓作業系統可用 OpenDiff 開啟路徑。',
+    'ui.backupRetentionCount': '保留編號備份數量',
+    'ui.commandsVisibility': '命令',
+    'ui.commandsVisibilityHint':
+      '顯示或隱藏工作階段工具列中可選的額外命令（相對參考主工具列的擴充項）。',
+    'ui.showSessionsInToolbar': '在工作階段工具列顯示「工作階段」',
+    'ui.showGotoInToolbar': '在文字工具列顯示「移至行」',
+    'ui.showWrapInToolbar': '在文字工具列顯示「換行」',
+    'ui.showSyncNowInToolbar': '在資料夾同步工具列顯示「立即同步」',
     'ui.createBackupOnSave': '覆寫儲存時優先建立備份檔',
-    'ui.backupHint': '啟用時，覆寫儲存會在檔案旁建立 .bak；關閉則直接覆寫寫入。',
+    'ui.backupHint':
+      '啟用時，覆寫儲存會在檔案旁建立 .bak，並保留最近 N 份編號備份（.bak、.bak2…）。關閉則不建立備份。',
     'ui.selectAll': '全選',
     'ui.selectAllFiles': '選取所有檔案',
     'ui.selectSame': '選取相同項目',

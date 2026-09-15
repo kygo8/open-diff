@@ -214,6 +214,7 @@ async function saveDocument(): Promise<void> {
       path: document.value.path,
       text: editorText.value,
       createBackup: settings.createBackupOnSave,
+      backupRetention: settings.backupRetentionCount,
     })
 
     document.value = {
@@ -594,6 +595,18 @@ watch(
       actionName === 'delete'
     ) {
       runTextEditCommand(actionName)
+
+      return
+    }
+
+    if (actionName === 'save' || actionName === 'save-as') {
+      void saveDocument()
+
+      return
+    }
+
+    if (actionName === 'reload') {
+      void openDocument()
     }
   },
 )

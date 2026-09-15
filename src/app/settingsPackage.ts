@@ -29,6 +29,11 @@ export interface SettingsPackage {
   showToolbarLabels: boolean
   largeToolbarButtons: boolean
   createBackupOnSave: boolean
+  backupRetentionCount?: number
+  showSessionsInToolbar?: boolean
+  showGotoInToolbar?: boolean
+  showWrapInToolbar?: boolean
+  showSyncNowInToolbar?: boolean
   showStatusBar?: boolean
   showPathBars?: boolean
   showSidebar?: boolean

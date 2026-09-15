@@ -514,6 +514,7 @@ async function saveOutput(): Promise<void> {
       path: outputPath.value,
       text: outputText.value,
       createBackup: settings.createBackupOnSave,
+      backupRetention: settings.backupRetentionCount,
     })
 
     setSaveStatus(result.backupPath ? 'status.savedBytesWithBackup' : 'status.savedBytes', {

@@ -25,6 +25,7 @@ import {
   type MediaCompareOptionsState,
 } from '@/app/mediaCompareOptions'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
+import { useViewActionsStore } from '@/stores/viewActions'
 import { useTabsStore } from '@/stores/tabs'
 import { useI18n } from '@/i18n'
 import { formatCompareError } from '@/app/compareError'
@@ -54,6 +55,7 @@ const leftFileStamp = ref<FileStamp | null>(null)
 const rightFileStamp = ref<FileStamp | null>(null)
 const sessionLaunch = useSessionLaunchStore()
 const tabs = useTabsStore()
+const viewActions = useViewActionsStore()
 const router = useRouter()
 const leftMedia = ref<MediaSideSummary>({ ...emptyMediaSide, stream: { ...emptyMediaSide.stream } })
 const rightMedia = ref<MediaSideSummary>({
@@ -334,6 +336,66 @@ function syncMediaTabTitle(): void {
 
   tabs.setTabTitle('/compare/media', pathPairTitle(leftPath.value, rightPath.value))
 }
+
+watch(
+  () => [viewActions.sequence, viewActions.name] as const,
+  ([, actionName]) => {
+    if (!actionName) {
+      return
+    }
+
+    switch (actionName) {
+      case 'compare':
+      case 'reload':
+        void runMediaCompare()
+        break
+      case 'swap':
+        runMediaToolbarCommand('swap')
+        break
+      case 'export':
+        void exportMediaReport()
+        break
+
+      case 'previous-difference':
+      case 'next-difference':
+      case 'copy-left':
+      case 'copy-right':
+      case 'undo':
+      case 'redo':
+      case 'cut':
+      case 'copy':
+      case 'paste':
+      case 'delete':
+      case 'save':
+      case 'save-as':
+      case 'show-all':
+      case 'show-differences':
+      case 'workspace-save':
+      case 'close-tab':
+      case 'about':
+      case 'check-for-updates':
+      case 'help-contents':
+      case 'help-support':
+      case 'session-settings':
+      case 'rules':
+      case 'filters':
+      case 'workspace-load':
+      case 'export-settings':
+      case 'import-settings':
+      case 'restore-factory-defaults':
+      case 'save-snapshot':
+      case 'previous-conflict':
+      case 'next-conflict':
+      case 'toggle-minor':
+      case 'expand-all':
+      case 'collapse-all':
+      case 'sync-now':
+      case 'run-script':
+      case 'save-report':
+        break
+    }
+  },
+)
 
 watch([leftPath, rightPath], () => {
   playbackPosition.value = 0

@@ -58,6 +58,7 @@ type OptionsSectionId =
   | 'backup'
   | 'confirmations'
   | 'tweaks'
+  | 'commands'
   | 'formats'
   | 'shortcuts'
   | 'integration'
@@ -90,6 +91,7 @@ const optionsTree = [
       { id: 'shell' as const, labelKey: 'ui.shell' },
       { id: 'confirmations' as const, labelKey: 'ui.confirmations' },
       { id: 'tweaks' as const, labelKey: 'ui.tweaks' },
+      { id: 'commands' as const, labelKey: 'ui.commandsVisibility' },
       { id: 'formats' as const, labelKey: 'ui.fileFormats' },
       { id: 'shortcuts' as const, labelKey: 'ui.shortcuts' },
       { id: 'integration' as const, labelKey: 'ui.integration' },
@@ -487,6 +489,56 @@ function onCreateBackupOnSaveChange(event: Event): void {
   }
 
   settings.setCreateBackupOnSave(target.checked)
+}
+
+function onBackupRetentionCountChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setBackupRetentionCount(Number(target.value))
+}
+
+function onShowSessionsInToolbarChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowSessionsInToolbar(target.checked)
+}
+
+function onShowGotoInToolbarChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowGotoInToolbar(target.checked)
+}
+
+function onShowWrapInToolbarChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowWrapInToolbar(target.checked)
+}
+
+function onShowSyncNowInToolbarChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowSyncNowInToolbar(target.checked)
 }
 
 function persistOpenWithApps(): void {
@@ -1098,6 +1150,17 @@ function parseShortcutText(value: string): string[] {
           />
           <span>{{ $t('ui.confirmBeforeOverwriteSave') }}</span>
         </label>
+        <label class="tweak-row">
+          <span>{{ $t('ui.backupRetentionCount') }}</span>
+          <input
+            data-testid="backup-retention-count"
+            type="number"
+            min="1"
+            max="9"
+            :value="settings.backupRetentionCount"
+            @change="onBackupRetentionCountChange"
+          />
+        </label>
         <p class="options-hint">{{ $t('ui.backupHint') }}</p>
       </NCard>
 
@@ -1203,6 +1266,51 @@ function parseShortcutText(value: string): string[] {
         >
           {{ optionsStatus }}
         </p>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'commands'"
+        :title="$t('ui.commandsVisibility')"
+        size="small"
+        data-testid="options-commands-card"
+      >
+        <label class="tweak-row">
+          <input
+            data-testid="show-sessions-in-toolbar"
+            type="checkbox"
+            :checked="settings.showSessionsInToolbar"
+            @change="onShowSessionsInToolbarChange"
+          />
+          <span>{{ $t('ui.showSessionsInToolbar') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="show-goto-in-toolbar"
+            type="checkbox"
+            :checked="settings.showGotoInToolbar"
+            @change="onShowGotoInToolbarChange"
+          />
+          <span>{{ $t('ui.showGotoInToolbar') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="show-wrap-in-toolbar"
+            type="checkbox"
+            :checked="settings.showWrapInToolbar"
+            @change="onShowWrapInToolbarChange"
+          />
+          <span>{{ $t('ui.showWrapInToolbar') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="show-sync-now-in-toolbar"
+            type="checkbox"
+            :checked="settings.showSyncNowInToolbar"
+            @change="onShowSyncNowInToolbarChange"
+          />
+          <span>{{ $t('ui.showSyncNowInToolbar') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.commandsVisibilityHint') }}</p>
       </NCard>
 
       <NCard

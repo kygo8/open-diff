@@ -23,6 +23,8 @@ describe('session toolbar icon presentation', () => {
     expect(css).toContain("data-plate='refresh'")
     expect(css).toContain("data-has-icon='true'")
     expect(icons).toContain('sessionToolbarPlates')
+    expect(icons).toContain('capture:')
+    expect(icons).toContain('compare:')
     expect(icons).toContain('tol:')
     expect(icons).toContain('range:')
     expect(icons).toContain('blend:')

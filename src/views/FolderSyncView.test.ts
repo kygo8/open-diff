@@ -330,6 +330,48 @@ describe('FolderSyncView', () => {
     expect(wrapper.find('[data-testid="folder-sync-peek-panel"]').exists()).toBe(false)
   })
 
+  it('exposes Filters and Peek glyph buttons on the Filters strip', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.find('[data-testid="folder-sync-filter-strip"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-sync-filter-strip-filters"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="folder-sync-filter-strip-filters"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').attributes('disabled'),
+    ).toBeDefined()
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+
+    expect(
+      wrapper.find('[data-testid="folder-sync-filter-strip-filters"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    await wrapper.find('[data-testid="folder-sync-filter-strip-filters"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-sync-filters-panel"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-sync-peek-panel"]').exists()).toBe(true)
+  })
+
   it('exports the folder sync report to clipboard and a sibling text file', async () => {
     const wrapper = mount(FolderSyncView, {
       global: {

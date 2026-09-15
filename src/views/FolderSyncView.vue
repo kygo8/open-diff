@@ -12,6 +12,7 @@ import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import { Eye, Funnel } from '@lucide/vue'
 import { createFolderSnapshot, saveTextFile } from '@/api/diff'
 import {
   buildFolderSyncReportText,
@@ -856,7 +857,7 @@ watch(
       </header>
 
       <section
-        class="display-filters"
+        class="display-filters folder-filter-chrome"
         data-testid="folder-sync-filter-strip"
       >
         <div class="folder-filter-strip">
@@ -872,6 +873,51 @@ watch(
             @change="onFolderFilterStripChange"
             @keydown.enter.prevent="onFolderFilterStripChange"
           />
+          <div
+            class="folder-filter-strip-actions"
+            data-testid="folder-sync-filter-strip-actions"
+          >
+            <button
+              type="button"
+              class="folder-filter-strip-btn"
+              :class="{ 'folder-filter-strip-btn-active': showSyncFilters }"
+              data-testid="folder-sync-filter-strip-filters"
+              :aria-label="$t('ui.filters')"
+              :aria-pressed="showSyncFilters ? 'true' : 'false'"
+              :title="$t('ui.filters')"
+              :disabled="previewRows.length === 0"
+              @click="showSyncFilters = !showSyncFilters"
+            >
+              <Funnel
+                class="folder-filter-strip-icon"
+                :size="16"
+                :stroke-width="2.25"
+                absolute-stroke-width
+                aria-hidden="true"
+              />
+              <span>{{ $t('ui.filters') }}</span>
+            </button>
+            <button
+              type="button"
+              class="folder-filter-strip-btn"
+              :class="{ 'folder-filter-strip-btn-active': showPeek }"
+              data-testid="folder-sync-filter-strip-peek"
+              :aria-label="$t('ui.peek')"
+              :aria-pressed="showPeek ? 'true' : 'false'"
+              :title="$t('ui.peek')"
+              :disabled="previewRows.length === 0"
+              @click="toggleSyncPeekPanel()"
+            >
+              <Eye
+                class="folder-filter-strip-icon"
+                :size="16"
+                :stroke-width="2.25"
+                absolute-stroke-width
+                aria-hidden="true"
+              />
+              <span>{{ $t('ui.peek') }}</span>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -1566,13 +1612,66 @@ h1 {
   font-size: 13px;
 }
 
+.folder-filter-chrome {
+  align-items: center;
+  min-height: 36px;
+}
+
 .folder-filter-strip {
   display: inline-flex;
   flex: 1 1 280px;
   align-items: center;
   gap: 6px;
   min-width: 220px;
-  max-width: 520px;
+  max-width: 640px;
+}
+
+.folder-filter-strip-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+  gap: 0;
+}
+
+.folder-filter-strip-btn {
+  display: grid;
+  grid-template-rows: 16px auto;
+  align-content: center;
+  justify-items: center;
+  box-sizing: border-box;
+  min-width: 44px;
+  max-width: 56px;
+  height: 36px;
+  padding: 1px 4px;
+  border: 0;
+  border-right: 1px solid #c9cdd3;
+  background: transparent;
+  color: #1a1a1a;
+  font-size: 10px;
+  line-height: 11px;
+  cursor: default;
+}
+
+.folder-filter-strip-btn:first-child {
+  border-left: 1px solid #c9cdd3;
+}
+
+.folder-filter-strip-btn:hover:not(:disabled) {
+  background: #dceeff;
+}
+
+.folder-filter-strip-btn-active {
+  background: #c8e4ff;
+  box-shadow: inset 0 0 0 1px #89bdea;
+}
+
+.folder-filter-strip-btn:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.folder-filter-strip-icon {
+  color: #2a3038;
 }
 
 .folder-filter-strip-label {

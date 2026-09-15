@@ -51,6 +51,7 @@ import {
 } from '@/app/folderSelectionStatus'
 import { useStatusBarStore } from '@/stores/statusBar'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
+import { Eye, Funnel } from '@lucide/vue'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useFolderPathNavStore } from '@/stores/folderPathNav'
 import {
@@ -2238,9 +2239,8 @@ onUnmounted(() => {
   >
     <section class="folder-compare-view">
       <section
-        v-show="showFolderFilters"
-        class="display-filters"
-        data-testid="folder-display-filters"
+        class="folder-filter-chrome"
+        data-testid="folder-filter-chrome"
       >
         <div
           class="folder-filter-strip"
@@ -2258,7 +2258,56 @@ onUnmounted(() => {
             @change="onFolderFilterStripChange"
             @keydown.enter.prevent="onFolderFilterStripChange"
           />
+          <div
+            class="folder-filter-strip-actions"
+            data-testid="folder-filter-strip-actions"
+          >
+            <button
+              type="button"
+              class="folder-filter-strip-btn"
+              :class="{ 'folder-filter-strip-btn-active': showFolderFilters }"
+              data-testid="folder-filter-strip-filters"
+              :aria-label="$t('ui.filters')"
+              :aria-pressed="showFolderFilters ? 'true' : 'false'"
+              :title="$t('ui.filters')"
+              @click="showFolderFilters = !showFolderFilters"
+            >
+              <Funnel
+                class="folder-filter-strip-icon"
+                :size="16"
+                :stroke-width="2.25"
+                absolute-stroke-width
+                aria-hidden="true"
+              />
+              <span>{{ $t('ui.filters') }}</span>
+            </button>
+            <button
+              type="button"
+              class="folder-filter-strip-btn"
+              :class="{ 'folder-filter-strip-btn-active': showPeekPanel }"
+              data-testid="folder-filter-strip-peek"
+              :aria-label="$t('ui.peek')"
+              :aria-pressed="showPeekPanel ? 'true' : 'false'"
+              :title="$t('ui.peek')"
+              @click="showPeekPanel = !showPeekPanel"
+            >
+              <Eye
+                class="folder-filter-strip-icon"
+                :size="16"
+                :stroke-width="2.25"
+                absolute-stroke-width
+                aria-hidden="true"
+              />
+              <span>{{ $t('ui.peek') }}</span>
+            </button>
+          </div>
         </div>
+      </section>
+      <section
+        v-show="showFolderFilters"
+        class="display-filters"
+        data-testid="folder-display-filters"
+      >
         <label
           v-for="option in displayStatusOptions"
           :key="option.testId"
@@ -2339,16 +2388,13 @@ onUnmounted(() => {
               :class="{
                 'path-side-footer-muted': !formatSelectionFooter(
                   folderSelectionSummary.leftSelectionLabel,
-                  leftFreeSpaceLabel,
                 ),
               }"
               data-testid="folder-left-path-footer"
             >
               {{
-                formatSelectionFooter(
-                  folderSelectionSummary.leftSelectionLabel,
-                  leftFreeSpaceLabel,
-                ) || $t('status.panePlaceholder')
+                formatSelectionFooter(folderSelectionSummary.leftSelectionLabel) ||
+                $t('status.panePlaceholder')
               }}
             </span>
           </label>
@@ -2401,16 +2447,13 @@ onUnmounted(() => {
               :class="{
                 'path-side-footer-muted': !formatSelectionFooter(
                   folderSelectionSummary.rightSelectionLabel,
-                  rightFreeSpaceLabel,
                 ),
               }"
               data-testid="folder-right-path-footer"
             >
               {{
-                formatSelectionFooter(
-                  folderSelectionSummary.rightSelectionLabel,
-                  rightFreeSpaceLabel,
-                ) || $t('status.panePlaceholder')
+                formatSelectionFooter(folderSelectionSummary.rightSelectionLabel) ||
+                $t('status.panePlaceholder')
               }}
             </span>
           </label>
@@ -3693,14 +3736,69 @@ onUnmounted(() => {
   font-size: 11px;
 }
 
+.folder-filter-chrome {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 1px 0;
+}
+
 .folder-filter-strip {
   display: inline-flex;
   flex: 1 1 280px;
   align-items: center;
   gap: 6px;
   min-width: 220px;
-  max-width: 520px;
+  max-width: 640px;
   margin-right: 8px;
+}
+
+.folder-filter-strip-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+  gap: 0;
+}
+
+.folder-filter-strip-btn {
+  display: grid;
+  grid-template-rows: 16px auto;
+  align-content: center;
+  justify-items: center;
+  box-sizing: border-box;
+  min-width: 44px;
+  max-width: 56px;
+  height: 36px;
+  padding: 1px 4px;
+  border: 0;
+  border-right: 1px solid #c9cdd3;
+  background: transparent;
+  color: #1a1a1a;
+  font-size: 10px;
+  line-height: 11px;
+  cursor: default;
+}
+
+.folder-filter-strip-btn:first-child {
+  border-left: 1px solid #c9cdd3;
+}
+
+.folder-filter-strip-btn:hover:not(:disabled) {
+  background: #dceeff;
+}
+
+.folder-filter-strip-btn-active {
+  background: #c8e4ff;
+  box-shadow: inset 0 0 0 1px #89bdea;
+}
+
+.folder-filter-strip-btn:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.folder-filter-strip-icon {
+  color: #2a3038;
 }
 
 .folder-filter-strip-label {

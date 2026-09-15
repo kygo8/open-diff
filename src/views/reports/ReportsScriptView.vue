@@ -4,8 +4,11 @@ import { exportFolderCompareReport, exportTextCompareReport } from '@/api/diff'
 import { runScript, stopScript } from '@/api/script'
 import {
   loadRecentReportExports,
+  loadReportPreferences,
   recordRecentReportExport,
   type RecentReportExport,
+  type ReportPreferenceFormat,
+  type ReportPreferenceKind,
 } from '@/app/reportExports'
 import {
   compareReportExampleScript,
@@ -22,16 +25,16 @@ import { useI18n } from '@/i18n'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useViewActionsStore } from '@/stores/viewActions'
 
-type ReportKind = 'text' | 'folder'
-type ReportFormat =
-  'html' | 'html-side-by-side' | 'text' | 'json' | 'csv' | 'markdown' | 'xml' | 'tsv' | 'yaml'
+type ReportKind = ReportPreferenceKind
+type ReportFormat = ReportPreferenceFormat | 'tsv' | 'yaml'
 
 type ReportJob = RecentReportExport
 
 const lastCompare = useLastCompareStore()
 const { t } = useI18n()
+const reportPreferences = loadReportPreferences()
 const reportKind = ref<ReportKind>(initialReportKind())
-const reportFormat = ref<ReportFormat>('html')
+const reportFormat = ref<ReportFormat>(reportPreferences.defaultFormat)
 const leftPath = ref(lastCompare.text?.leftSource ?? lastCompare.folder?.leftRoot ?? '')
 const rightPath = ref(lastCompare.text?.rightSource ?? lastCompare.folder?.rightRoot ?? '')
 const outputPath = ref('')
@@ -60,7 +63,7 @@ function initialReportKind(): ReportKind {
     return 'folder'
   }
 
-  return 'text'
+  return loadReportPreferences().defaultKind
 }
 
 const completedCount = computed(

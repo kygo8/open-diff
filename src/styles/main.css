@@ -1452,6 +1452,68 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 0 6px !important;
 }
 
+/* Picture Compare chrome densify toward capture path/status/toolbar/footer strips */
+.picture-compare-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.picture-compare-view .picture-path-panel {
+  gap: 3px !important;
+  min-height: 26px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.picture-compare-view .picture-path-panel input,
+.picture-compare-view .picture-path-panel button {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.picture-compare-view .bc-path-footers {
+  gap: 1px !important;
+  padding: 0 2px !important;
+  margin-top: 0 !important;
+}
+
+.picture-compare-view .path-side-footer {
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+}
+
+.picture-compare-view .picture-controls,
+.picture-compare-view .picture-options-panel,
+.picture-compare-view .picture-blend-panel,
+.picture-compare-view .picture-stat-grid {
+  gap: 4px 6px !important;
+  min-height: 26px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.picture-compare-view .picture-controls input,
+.picture-compare-view .picture-controls button,
+.picture-compare-view .picture-options-panel input,
+.picture-compare-view .picture-options-panel button,
+.picture-compare-view .picture-blend-panel input,
+.picture-compare-view .picture-blend-panel select,
+.picture-compare-view .picture-transform-tools button {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.picture-compare-view .picture-stat-grid strong {
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+
 /* Text Compare chrome densify toward capture path/status/editor strips */
 .text-compare-view {
   gap: 4px !important;

@@ -16,6 +16,7 @@ import {
   saveLocalRemoteProfiles,
   upsertLocalRemoteProfile,
   type LocalRemoteProfile,
+  loadRemoteProfileDefaults,
 } from '@/app/remoteProfilesLocal'
 import { useI18n } from '@/i18n'
 import { usePolicyStore } from '@/stores/policy'
@@ -474,7 +475,7 @@ function toDraft(profile: RemoteProfile): RemoteProfileDraft {
 }
 
 function fromDraft(source: RemoteProfileDraft): RemoteProfile {
-  const name = valueOrFallback(source.name, 'Untitled Profile')
+  const name = valueOrFallback(source.name, loadRemoteProfileDefaults().defaultName)
 
   return {
     id: source.id || slugify(name),
@@ -493,14 +494,23 @@ function fromDraft(source: RemoteProfileDraft): RemoteProfile {
 }
 
 function emptyProfile(): RemoteProfile {
+  const defaults = loadRemoteProfileDefaults()
+  let defaultPort: number | null = null
+
+  if (defaults.defaultProtocol === 'ftp' || defaults.defaultProtocol === 'ftps') {
+    defaultPort = 21
+  } else if (defaults.defaultProtocol === 'sftp') {
+    defaultPort = 22
+  }
+
   return {
     id: '',
-    name: '',
-    protocol: 'sftp',
+    name: defaults.defaultName,
+    protocol: defaults.defaultProtocol,
     endpoint: {
       host: '',
-      port: 22,
-      rootPath: '/',
+      port: defaultPort,
+      rootPath: defaults.defaultRootPath || '/',
     },
     credentialRef: {
       kind: 'system-keychain',

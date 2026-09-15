@@ -1118,6 +1118,32 @@ export const jaJP: LanguagePack = {
     'ui.fileFiltersIncludePlaceholder': '*.*;*.txt（空 = すべて）',
     'ui.fileFiltersHint':
       'フォルダ比較／同期／マージの既定の名前フィルタです。Filters バーとセッション設定で上書きできます。',
+    'ui.formatAssociations': '形式の関連付け',
+    'ui.formatAssociationsHint':
+      '拡張子で開くときに使う組み込み関連付けの有効／無効を切り替えます。',
+    'ui.profileDefaultName': '既定のプロファイル名',
+    'ui.profileDefaultProtocol': '既定のプロトコル',
+    'ui.profileDefaultRootPath': '既定のルートパス',
+    'ui.profileDefaultsHint':
+      '新しいリモートプロファイル作成時に適用されます。保存済みプロファイルはプロファイルウィンドウで管理します。',
+    'ui.reportDefaultFormat': '既定のレポート形式',
+    'ui.reportDefaultKind': '既定のレポート種類',
+    'ui.reportClearHistoryOnExit': '終了時に最近のレポート履歴を消去（デスクトップ）',
+    'ui.clearReportHistory': '最近のレポート履歴を消去',
+    'ui.openReportsScripts': 'レポート / スクリプトを開く',
+    'ui.reportPreferencesHint':
+      'レポート / スクリプト表示の既定値です。セッションのレポート操作は引き続き出力パスを選びます。',
+    'ui.reportHistoryCleared': '最近のレポート履歴を消去しました',
+    'ui.reportFormatHtml': 'HTML',
+    'ui.reportFormatHtmlSideBySide': 'HTML 並列',
+    'ui.reportFormatText': 'テキスト',
+    'ui.reportFormatJson': 'JSON',
+    'ui.reportFormatCsv': 'CSV',
+    'ui.reportFormatMarkdown': 'Markdown',
+    'ui.reportFormatXml': 'XML',
+    'ui.pictureCompareOptionsHint': '新しいピクチャ比較セッションの既定許容値とパネル表示です。',
+    'ui.pictureShowMetaDefault': '既定で Meta パネルを表示',
+    'ui.pictureShowMinorDefault': '既定で軽微な差異を表示',
     'ui.startup': '起動',
     'ui.loadLastWorkspaceOnStartup': '起動時に前回のワークスペースを読み込む',
     'ui.startupHint':

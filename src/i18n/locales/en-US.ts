@@ -1119,6 +1119,33 @@ export const enUS: LanguagePack = {
     'ui.fileFiltersIncludePlaceholder': '*.*;*.txt (empty = all)',
     'ui.fileFiltersHint':
       'Default Folder Compare / Sync / Merge name filters. The Filters strip and Session Settings can override them.',
+    'ui.formatAssociations': 'Format associations',
+    'ui.formatAssociationsHint':
+      'Enable or disable built-in associations used when opening files by extension.',
+    'ui.profileDefaultName': 'Default profile name',
+    'ui.profileDefaultProtocol': 'Default protocol',
+    'ui.profileDefaultRootPath': 'Default root path',
+    'ui.profileDefaultsHint':
+      'Applied when creating a new remote profile. Manage saved profiles from the Profiles window.',
+    'ui.reportDefaultFormat': 'Default report format',
+    'ui.reportDefaultKind': 'Default report kind',
+    'ui.reportClearHistoryOnExit': 'Clear recent report history on exit (desktop)',
+    'ui.clearReportHistory': 'Clear recent report history',
+    'ui.openReportsScripts': 'Open Reports / Scripts',
+    'ui.reportPreferencesHint':
+      'Defaults for the Reports / Scripts view. Session report actions still choose their own output path.',
+    'ui.reportHistoryCleared': 'Recent report history cleared',
+    'ui.reportFormatHtml': 'HTML',
+    'ui.reportFormatHtmlSideBySide': 'HTML side-by-side',
+    'ui.reportFormatText': 'Text',
+    'ui.reportFormatJson': 'JSON',
+    'ui.reportFormatCsv': 'CSV',
+    'ui.reportFormatMarkdown': 'Markdown',
+    'ui.reportFormatXml': 'XML',
+    'ui.pictureCompareOptionsHint':
+      'Default Picture Compare tolerance and panel visibility for new sessions.',
+    'ui.pictureShowMetaDefault': 'Show Meta panel by default',
+    'ui.pictureShowMinorDefault': 'Show minor differences by default',
     'ui.startup': 'Startup',
     'ui.loadLastWorkspaceOnStartup': 'Load last workspace on startup',
     'ui.startupHint':

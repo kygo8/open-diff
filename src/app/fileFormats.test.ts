@@ -5,6 +5,7 @@ import {
   matchFileFormat,
   saveFileFormats,
   sessionTypeForPath,
+  setFileFormatEnabled,
 } from './fileFormats'
 
 describe('fileFormats', () => {
@@ -30,9 +31,22 @@ describe('fileFormats', () => {
       rust.matcher.extensions.push('bin')
       rust.defaultView = 'text'
     }
+
     saveFileFormats(formats)
 
     expect(matchFileFormat('payload.bin')?.defaultView).toBe('text')
     expect(sessionTypeForPath('payload.bin')).toBe('text-compare')
+  })
+
+  it('skips disabled format associations when routing by extension', () => {
+    const formats = loadFileFormats()
+
+    setFileFormatEnabled(formats, 'images', false)
+
+    expect(matchFileFormat('photo.webp')).toBeUndefined()
+    expect(sessionTypeForPath('photo.webp')).toBe('hex-compare')
+
+    setFileFormatEnabled(loadFileFormats(), 'images', true)
+    expect(sessionTypeForPath('photo.webp')).toBe('picture-compare')
   })
 })

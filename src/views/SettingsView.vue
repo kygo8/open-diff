@@ -45,6 +45,35 @@ import {
   normalizeHexBytesPerRow,
   saveHexCompareSessionOptions,
 } from '@/app/hexCompareSessionOptions'
+import {
+  builtInFileFormats,
+  loadFileFormats,
+  optionsFormatAssociationIds,
+  saveFileFormats,
+  setFileFormatEnabled,
+  type FileFormatDefinition,
+} from '@/app/fileFormats'
+import {
+  clearRecentReportExports,
+  defaultReportPreferences,
+  loadReportPreferences,
+  saveReportPreferences,
+  type ReportPreferenceFormat,
+  type ReportPreferenceKind,
+  type ReportPreferences,
+} from '@/app/reportExports'
+import {
+  defaultRemoteProfileDefaults,
+  loadRemoteProfileDefaults,
+  saveRemoteProfileDefaults,
+  type RemoteProfileDefaults,
+} from '@/app/remoteProfilesLocal'
+import {
+  defaultPictureCompareOptions,
+  loadPictureCompareOptions,
+  savePictureCompareOptions,
+} from '@/app/pictureCompareOptions'
+import type { RemoteProtocol } from '@/api/remote'
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { loadExternalApplications, saveExternalApplications } from '@/app/externalApplications'
 import type { ExternalApplicationConfig } from '@/app/fileOpenActions'
@@ -79,6 +108,7 @@ type OptionsSectionId =
   | 'textEditing'
   | 'folderCompare'
   | 'hexCompare'
+  | 'pictureCompare'
   | 'fileFilters'
   | 'openWith'
   | 'shell'
@@ -87,6 +117,8 @@ type OptionsSectionId =
   | 'tweaks'
   | 'commands'
   | 'formats'
+  | 'profiles'
+  | 'reports'
   | 'shortcuts'
   | 'integration'
   | 'sessions'
@@ -103,6 +135,38 @@ const fileFiltersIncludeDraft = ref(
     : formatFolderNameFilterStripPattern(fileFiltersDraft.value),
 )
 const fileFiltersExcludeDraft = ref(formatFolderNameFilterDraft(fileFiltersDraft.value.exclude))
+const fileFormatsDraft = ref<FileFormatDefinition[]>(loadFileFormats())
+const reportPreferencesDraft = ref<ReportPreferences>(loadReportPreferences())
+const profileDefaultsDraft = ref<RemoteProfileDefaults>(loadRemoteProfileDefaults())
+const pictureCompareDefaultsDraft = ref(loadPictureCompareOptions())
+const reportFormatOptions: { value: ReportPreferenceFormat; labelKey: string }[] = [
+  { value: 'html', labelKey: 'ui.reportFormatHtml' },
+  { value: 'html-side-by-side', labelKey: 'ui.reportFormatHtmlSideBySide' },
+  { value: 'text', labelKey: 'ui.reportFormatText' },
+  { value: 'json', labelKey: 'ui.reportFormatJson' },
+  { value: 'csv', labelKey: 'ui.reportFormatCsv' },
+  { value: 'markdown', labelKey: 'ui.reportFormatMarkdown' },
+  { value: 'xml', labelKey: 'ui.reportFormatXml' },
+]
+const reportKindOptions: { value: ReportPreferenceKind; labelKey: string }[] = [
+  { value: 'text', labelKey: 'ui.textCompare' },
+  { value: 'folder', labelKey: 'ui.folderCompare' },
+]
+const profileProtocolOptions: { value: RemoteProtocol; label: string }[] = [
+  { value: 'sftp', label: 'SFTP' },
+  { value: 'ftp', label: 'FTP' },
+  { value: 'ftps', label: 'FTPS' },
+  { value: 'web-dav', label: 'WebDAV' },
+  { value: 's3', label: 'S3' },
+  { value: 'dropbox', label: 'Dropbox' },
+  { value: 'one-drive', label: 'OneDrive' },
+  { value: 'subversion', label: 'Subversion' },
+]
+const formatAssociationRows = computed(() =>
+  optionsFormatAssociationIds
+    .map((id) => fileFormatsDraft.value.find((format) => format.id === id))
+    .filter((format): format is FileFormatDefinition => Boolean(format)),
+)
 const optionsTree = [
   {
     groupKey: 'ui.optionsGroupDisplay',
@@ -127,6 +191,7 @@ const optionsTree = [
     items: [
       { id: 'folderCompare' as const, labelKey: 'ui.folderCompare' },
       { id: 'hexCompare' as const, labelKey: 'ui.hexCompare' },
+      { id: 'pictureCompare' as const, labelKey: 'ui.pictureCompare' },
       { id: 'fileFilters' as const, labelKey: 'ui.fileFilters' },
     ],
   },
@@ -138,6 +203,8 @@ const optionsTree = [
       { id: 'tweaks' as const, labelKey: 'ui.tweaks' },
       { id: 'commands' as const, labelKey: 'ui.commandsVisibility' },
       { id: 'formats' as const, labelKey: 'ui.fileFormats' },
+      { id: 'profiles' as const, labelKey: 'ui.profiles' },
+      { id: 'reports' as const, labelKey: 'ui.reportsScripts' },
       { id: 'shortcuts' as const, labelKey: 'ui.shortcuts' },
       { id: 'integration' as const, labelKey: 'ui.integration' },
       { id: 'sessions' as const, labelKey: 'ui.sessions' },
@@ -533,6 +600,23 @@ function restoreFactoryDefaultsFromOptions(): void {
   saveFolderNameFilters(fileFiltersDraft.value)
   fileFiltersIncludeDraft.value = ''
   fileFiltersExcludeDraft.value = ''
+  fileFormatsDraft.value = builtInFileFormats.map((format) => ({
+    ...format,
+    enabled: true,
+    matcher: {
+      extensions: [...format.matcher.extensions],
+      fileNames: [...format.matcher.fileNames],
+      globs: [...format.matcher.globs],
+    },
+    rules: { ...format.rules, ignore: [...format.rules.ignore] },
+  }))
+  saveFileFormats(fileFormatsDraft.value)
+  reportPreferencesDraft.value = defaultReportPreferences()
+  saveReportPreferences(reportPreferencesDraft.value)
+  profileDefaultsDraft.value = defaultRemoteProfileDefaults()
+  saveRemoteProfileDefaults(profileDefaultsDraft.value)
+  pictureCompareDefaultsDraft.value = defaultPictureCompareOptions()
+  savePictureCompareOptions(pictureCompareDefaultsDraft.value)
   optionsStatus.value = t('ui.restoreFactoryDefaults')
 }
 
@@ -562,6 +646,36 @@ function persistFileFiltersDraft(): void {
     caseSensitive: fileFiltersDraft.value.caseSensitive,
   }
   saveFolderNameFilters(fileFiltersDraft.value)
+}
+
+function onFormatAssociationToggle(id: string, event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+  fileFormatsDraft.value = setFileFormatEnabled(fileFormatsDraft.value, id, target.checked)
+}
+
+function persistReportPreferencesDraft(): void {
+  saveReportPreferences(reportPreferencesDraft.value)
+}
+
+function persistProfileDefaultsDraft(): void {
+  saveRemoteProfileDefaults(profileDefaultsDraft.value)
+}
+
+function persistPictureCompareDefaultsDraft(): void {
+  savePictureCompareOptions(pictureCompareDefaultsDraft.value)
+}
+
+function clearReportExportHistoryFromOptions(): void {
+  clearRecentReportExports()
+  optionsStatus.value = t('ui.reportHistoryCleared')
+}
+
+function openReportsScripts(): void {
+  void router.push('/reports/scripts')
 }
 
 function onCreateBackupOnSaveChange(event: Event): void {
@@ -1199,6 +1313,54 @@ function parseShortcutText(value: string): string[] {
       </NCard>
 
       <NCard
+        v-show="optionsSection === 'pictureCompare'"
+        :title="$t('ui.pictureCompare')"
+        size="small"
+        data-testid="options-picture-compare-card"
+      >
+        <label class="auto-save-limit-row">
+          <span>{{ $t('ui.rgbTolerance') }}</span>
+          <input
+            v-model.number="pictureCompareDefaultsDraft.rgbTolerance"
+            class="auto-save-limit-input"
+            data-testid="picture-rgb-tolerance-default"
+            type="number"
+            min="0"
+            max="255"
+            @change="persistPictureCompareDefaultsDraft"
+          />
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="pictureCompareDefaultsDraft.compareAlpha"
+            data-testid="picture-compare-alpha-default"
+            type="checkbox"
+            @change="persistPictureCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.compareAlpha') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="pictureCompareDefaultsDraft.showMeta"
+            data-testid="picture-show-meta-default"
+            type="checkbox"
+            @change="persistPictureCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.pictureShowMetaDefault') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            v-model="pictureCompareDefaultsDraft.showMinor"
+            data-testid="picture-show-minor-default"
+            type="checkbox"
+            @change="persistPictureCompareDefaultsDraft"
+          />
+          <span>{{ $t('ui.pictureShowMinorDefault') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.pictureCompareOptionsHint') }}</p>
+      </NCard>
+
+      <NCard
         v-show="optionsSection === 'fileFilters'"
         :title="$t('ui.fileFilters')"
         size="small"
@@ -1587,6 +1749,25 @@ function parseShortcutText(value: string): string[] {
         </div>
         <div class="settings-row archive-types-row">
           <div>
+            <strong>{{ $t('ui.formatAssociations') }}</strong>
+            <span>{{ $t('ui.formatAssociationsHint') }}</span>
+          </div>
+        </div>
+        <label
+          v-for="format in formatAssociationRows"
+          :key="format.id"
+          class="tweak-row"
+        >
+          <input
+            type="checkbox"
+            :data-testid="`format-association-${format.id}`"
+            :checked="format.enabled !== false"
+            @change="onFormatAssociationToggle(format.id, $event)"
+          />
+          <span>{{ format.name }}</span>
+        </label>
+        <div class="settings-row archive-types-row">
+          <div>
             <strong>{{ $t('ui.archiveTypes') }}</strong>
             <span>{{ $t('ui.archiveTypesHint') }}</span>
           </div>
@@ -1607,12 +1788,50 @@ function parseShortcutText(value: string): string[] {
       </NCard>
 
       <NCard
-        v-if="policy.remoteProfiles && optionsSection === 'formats'"
-        :title="$t('ui.remoteProfiles')"
+        v-show="optionsSection === 'profiles'"
+        :title="$t('ui.profiles')"
         size="small"
-        data-testid="options-remote-card"
+        data-testid="options-profiles-card"
       >
-        <div class="settings-row">
+        <label class="stack-row">
+          <span>{{ $t('ui.profileDefaultName') }}</span>
+          <input
+            v-model="profileDefaultsDraft.defaultName"
+            data-testid="profile-default-name"
+            type="text"
+            @change="persistProfileDefaultsDraft"
+          />
+        </label>
+        <label class="stack-row">
+          <span>{{ $t('ui.profileDefaultProtocol') }}</span>
+          <select
+            v-model="profileDefaultsDraft.defaultProtocol"
+            data-testid="profile-default-protocol"
+            @change="persistProfileDefaultsDraft"
+          >
+            <option
+              v-for="option in profileProtocolOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+        <label class="stack-row">
+          <span>{{ $t('ui.profileDefaultRootPath') }}</span>
+          <input
+            v-model="profileDefaultsDraft.defaultRootPath"
+            data-testid="profile-default-root-path"
+            type="text"
+            @change="persistProfileDefaultsDraft"
+          />
+        </label>
+        <p class="options-hint">{{ $t('ui.profileDefaultsHint') }}</p>
+        <div
+          v-if="policy.remoteProfiles"
+          class="settings-row"
+        >
           <div>
             <strong>{{ $t('ui.connectionProfiles') }}</strong>
             <span>{{ $t('ui.manageRemoteEndpointsAndCredentialReferences') }}</span>
@@ -1624,6 +1843,61 @@ function parseShortcutText(value: string): string[] {
             >{{ $t('ui.manage') }}</NButton
           >
         </div>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'reports'"
+        :title="$t('ui.reportsScripts')"
+        size="small"
+        data-testid="options-reports-card"
+      >
+        <label class="stack-row">
+          <span>{{ $t('ui.reportDefaultFormat') }}</span>
+          <select
+            v-model="reportPreferencesDraft.defaultFormat"
+            data-testid="report-default-format"
+            @change="persistReportPreferencesDraft"
+          >
+            <option
+              v-for="option in reportFormatOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ $t(option.labelKey) }}
+            </option>
+          </select>
+        </label>
+        <label class="stack-row">
+          <span>{{ $t('ui.reportDefaultKind') }}</span>
+          <select
+            v-model="reportPreferencesDraft.defaultKind"
+            data-testid="report-default-kind"
+            @change="persistReportPreferencesDraft"
+          >
+            <option
+              v-for="option in reportKindOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ $t(option.labelKey) }}
+            </option>
+          </select>
+        </label>
+        <div class="settings-row">
+          <NButton
+            size="small"
+            data-testid="clear-report-export-history"
+            @click="clearReportExportHistoryFromOptions"
+            >{{ $t('ui.clearReportHistory') }}</NButton
+          >
+          <NButton
+            size="small"
+            data-testid="open-reports-scripts"
+            @click="openReportsScripts"
+            >{{ $t('ui.openReportsScripts') }}</NButton
+          >
+        </div>
+        <p class="options-hint">{{ $t('ui.reportPreferencesHint') }}</p>
       </NCard>
 
       <NCard
@@ -2023,7 +2297,8 @@ function parseShortcutText(value: string): string[] {
   margin-bottom: 8px;
 }
 
-.stack-row input {
+.stack-row input,
+.stack-row select {
   min-width: 0;
   height: 32px;
   padding: 0 8px;

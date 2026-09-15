@@ -2,11 +2,13 @@
 
 const TEXT_SESSION_SOURCES = new Set(['text-compare', 'text-merge', 'text-patch'])
 const HEX_SESSION_SOURCES = new Set(['hex-compare'])
+const PICTURE_SESSION_SOURCES = new Set(['picture-compare'])
 const EDIT_MODE_SOURCES = new Set(['text-compare', 'text-merge', 'text-edit'])
 const FOLDER_PAIR_SOURCES = new Set(['folder-compare', 'folder-sync', 'folder-merge'])
 
 export type StatusEditMode = 'insert' | 'overwrite'
-export type StatusChromeKind = 'standard' | 'text-session' | 'folder-pair' | 'hex-session'
+export type StatusChromeKind =
+  'standard' | 'text-session' | 'folder-pair' | 'hex-session' | 'picture-session'
 
 export function isTextSessionStatusSource(source: string): boolean {
   return TEXT_SESSION_SOURCES.has(source)
@@ -24,6 +26,10 @@ export function isHexSessionStatusSource(source: string): boolean {
   return HEX_SESSION_SOURCES.has(source)
 }
 
+export function isPictureSessionStatusSource(source: string): boolean {
+  return PICTURE_SESSION_SOURCES.has(source)
+}
+
 export function formatDifferenceCountPhrase(
   differenceCount: number | null,
   source: string,
@@ -34,6 +40,22 @@ export function formatDifferenceCountPhrase(
     }
 
     return '≠ Binary differences'
+  }
+
+  if (isPictureSessionStatusSource(source)) {
+    if (differenceCount === null) {
+      return '≠ -'
+    }
+
+    if (differenceCount === 0) {
+      return '≠ Same'
+    }
+
+    if (differenceCount === 1) {
+      return '≠ 1 pixel'
+    }
+
+    return `≠ ${String(differenceCount)} pixels`
   }
 
   if (!isTextSessionStatusSource(source)) {

@@ -1,10 +1,14 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import {
+  clearRecentReportExports,
   loadRecentReportExports,
+  loadReportPreferences,
   recordRecentReportExport,
   reportExportsStorageKey,
   reportFileExtension,
+  reportPreferencesStorageKey,
   saveRecentReportExports,
+  saveReportPreferences,
 } from './reportExports'
 
 describe('reportExports', () => {
@@ -57,5 +61,36 @@ describe('reportExports', () => {
     expect(reportFileExtension('html')).toBe('html')
     expect(reportFileExtension('json')).toBe('json')
     expect(reportFileExtension('xml')).toBe('xml')
+  })
+})
+
+describe('reportPreferences', () => {
+  afterEach(() => {
+    localStorage.removeItem(reportPreferencesStorageKey)
+    localStorage.removeItem(reportExportsStorageKey)
+  })
+
+  it('persists default report format and kind', () => {
+    saveReportPreferences({
+      defaultFormat: 'markdown',
+      defaultKind: 'folder',
+    })
+
+    expect(loadReportPreferences()).toEqual({
+      defaultFormat: 'markdown',
+      defaultKind: 'folder',
+    })
+  })
+
+  it('clears recent report export history', () => {
+    recordRecentReportExport([], {
+      name: 'a.html',
+      type: 'HTML',
+      stateKey: 'ui.completed',
+      target: '/tmp/a.html',
+    })
+    expect(loadRecentReportExports()).toHaveLength(1)
+    clearRecentReportExports()
+    expect(loadRecentReportExports()).toEqual([])
   })
 })

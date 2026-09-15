@@ -1141,6 +1141,33 @@ export const frFR: LanguagePack = {
     'ui.fileFiltersIncludePlaceholder': '*.*;*.txt (vide = tous)',
     'ui.fileFiltersHint':
       'Filtres de noms par défaut pour Comparer/Synchroniser/Fusionner dossiers. La barre Filtres et les paramètres de session peuvent remplacer.',
+    'ui.formatAssociations': 'Associations de formats',
+    'ui.formatAssociationsHint':
+      'Activer ou désactiver les associations intégrées utilisées à l’ouverture par extension.',
+    'ui.profileDefaultName': 'Nom de profil par défaut',
+    'ui.profileDefaultProtocol': 'Protocole par défaut',
+    'ui.profileDefaultRootPath': 'Chemin racine par défaut',
+    'ui.profileDefaultsHint':
+      'Appliqué à la création d’un profil distant. Gérez les profils enregistrés dans la fenêtre Profils.',
+    'ui.reportDefaultFormat': 'Format de rapport par défaut',
+    'ui.reportDefaultKind': 'Type de rapport par défaut',
+    'ui.reportClearHistoryOnExit': 'Effacer l’historique des rapports à la sortie (bureau)',
+    'ui.clearReportHistory': 'Effacer l’historique des rapports',
+    'ui.openReportsScripts': 'Ouvrir Rapports / Scripts',
+    'ui.reportPreferencesHint':
+      'Valeurs par défaut de Rapports / Scripts. Les rapports de session choisissent encore leur chemin de sortie.',
+    'ui.reportHistoryCleared': 'Historique des rapports effacé',
+    'ui.reportFormatHtml': 'HTML',
+    'ui.reportFormatHtmlSideBySide': 'HTML côte à côte',
+    'ui.reportFormatText': 'Texte',
+    'ui.reportFormatJson': 'JSON',
+    'ui.reportFormatCsv': 'CSV',
+    'ui.reportFormatMarkdown': 'Markdown',
+    'ui.reportFormatXml': 'XML',
+    'ui.pictureCompareOptionsHint':
+      'Tolérance et panneaux par défaut pour les nouvelles sessions Image.',
+    'ui.pictureShowMetaDefault': 'Afficher le panneau Meta par défaut',
+    'ui.pictureShowMinorDefault': 'Afficher les différences mineures par défaut',
     'ui.startup': 'Démarrage',
     'ui.loadLastWorkspaceOnStartup': 'Charger le dernier espace de travail au démarrage',
     'ui.startupHint':

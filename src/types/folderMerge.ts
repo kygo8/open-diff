@@ -1,9 +1,12 @@
+import type { FolderNameFilters } from '@/types/diff'
+
 export interface FolderMergePlanRequest {
   leftRoot: string
   baseRoot: string
   rightRoot: string
   outputRoot: string
   archiveExtensions?: string[]
+  filters?: FolderNameFilters
 }
 
 export type FolderMergeRole = 'Base' | 'Left' | 'Right'

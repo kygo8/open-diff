@@ -66,6 +66,7 @@ describe('folder merge api', () => {
       rightRoot: 'D:/merge/right',
       outputRoot: 'D:/merge/output',
       archiveExtensions: undefined,
+      filters: undefined,
     })
     expect(result.rows[0]?.action).toBe('Mark conflict')
     expect(result.summary.conflicts).toBe(1)
@@ -95,6 +96,7 @@ describe('folder merge api', () => {
       rightRoot: 'D:/merge/right.zip',
       outputRoot: 'D:/merge/output',
       archiveExtensions: ['.zip'],
+      filters: undefined,
     })
 
     vi.mocked(invoke).mockResolvedValueOnce({
@@ -120,6 +122,34 @@ describe('folder merge api', () => {
       rightRoot: 'D:/merge/right.zip',
       outputRoot: 'D:/merge/output',
       archiveExtensions: ['.zip'],
+    })
+  })
+
+  it('forwards name filters on folder merge plan', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      leftRoot: 'D:/merge/left',
+      baseRoot: 'D:/merge/base',
+      rightRoot: 'D:/merge/right',
+      outputRoot: 'D:/merge/output',
+      rows: [],
+      summary: { actions: 0, automatic: 0, conflicts: 0 },
+    })
+
+    await buildFolderMergePlan({
+      leftRoot: 'D:/merge/left',
+      baseRoot: 'D:/merge/base',
+      rightRoot: 'D:/merge/right',
+      outputRoot: 'D:/merge/output',
+      filters: { include: ['*.txt'], exclude: ['*.log'], caseSensitive: false },
+    })
+
+    expect(invoke).toHaveBeenCalledWith('build_folder_merge_plan', {
+      leftRoot: 'D:/merge/left',
+      baseRoot: 'D:/merge/base',
+      rightRoot: 'D:/merge/right',
+      outputRoot: 'D:/merge/output',
+      archiveExtensions: undefined,
+      filters: { include: ['*.txt'], exclude: ['*.log'], caseSensitive: false },
     })
   })
 

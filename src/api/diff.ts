@@ -118,7 +118,12 @@ export function compareFolderPaths(request: FolderCompareRequest): Promise<Folde
     rightRoot: request.rightRoot,
     criteria: request.criteria,
     filters: request.filters,
+    archiveExtensions: request.archiveExtensions,
   })
+}
+
+export function setArchiveExtensions(extensions: string[]): Promise<string[]> {
+  return invoke<string[]>('set_archive_extensions', { extensions })
 }
 
 export function copyFolderCompareEntry(

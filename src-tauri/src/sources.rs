@@ -1,4 +1,4 @@
-use archive_core::{is_archive_path, ArchiveDocument, ArchiveReader, ArchiveVfs};
+use archive_core::{is_archive_path_with_extensions, ArchiveDocument, ArchiveReader, ArchiveVfs};
 use folder_core::{FolderNodeKind, FolderScanNode};
 use remote_core::{
     is_remote_uri, parse_remote_uri, RemoteFileProvider, RemoteProfileStore, RemoteUri,
@@ -27,13 +27,16 @@ pub fn default_config_dir() -> PathBuf {
     PathBuf::from(home).join(".config").join("open-diff")
 }
 
-pub fn load_compare_source(path: &str) -> Result<CompareSource, String> {
+pub fn load_compare_source(
+    path: &str,
+    archive_extensions: Option<&[String]>,
+) -> Result<CompareSource, String> {
     if is_remote_uri(path) {
         return materialize_remote_source(path);
     }
 
     let path_buf = PathBuf::from(path);
-    if is_archive_path(path) {
+    if is_archive_path_with_extensions(path, archive_extensions) {
         return Ok(CompareSource::Archive(
             ArchiveReader::open_path(&path_buf).map_err(|error| error.to_string())?,
         ));

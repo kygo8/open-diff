@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::{Cursor, Read, Write};
 use std::path::Path;
+use std::sync::RwLock;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -138,11 +139,84 @@ impl ArchiveFormat {
     }
 }
 
+static CONFIGURED_ARCHIVE_EXTENSIONS: RwLock<Option<Vec<String>>> = RwLock::new(None);
+
+pub fn normalize_archive_suffix(value: &str) -> Option<String> {
+    let trimmed = value.trim().to_ascii_lowercase();
+
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    Some(if trimmed.starts_with('.') {
+        trimmed
+    } else {
+        format!(".{trimmed}")
+    })
+}
+
+pub fn normalize_archive_suffix_list(values: &[String]) -> Vec<String> {
+    let mut seen = std::collections::BTreeSet::new();
+    let mut result = Vec::new();
+
+    for value in values {
+        let Some(suffix) = normalize_archive_suffix(value) else {
+            continue;
+        };
+
+        if !seen.insert(suffix.clone()) {
+            continue;
+        }
+
+        result.push(suffix);
+    }
+
+    result.sort_by(|left, right| right.len().cmp(&left.len()).then_with(|| left.cmp(right)));
+    result
+}
+
+pub fn set_configured_archive_extensions(extensions: Option<Vec<String>>) {
+    let normalized = extensions.map(|values| normalize_archive_suffix_list(&values));
+    *CONFIGURED_ARCHIVE_EXTENSIONS
+        .write()
+        .expect("archive extension lock") = normalized;
+}
+
+pub fn configured_archive_extensions() -> Option<Vec<String>> {
+    CONFIGURED_ARCHIVE_EXTENSIONS
+        .read()
+        .expect("archive extension lock")
+        .clone()
+}
+
+pub fn path_matches_archive_suffixes(path: &str, suffixes: &[String]) -> bool {
+    let lower = path.trim().replace('\\', "/").to_ascii_lowercase();
+
+    if lower.is_empty() || suffixes.is_empty() {
+        return false;
+    }
+
+    suffixes.iter().any(|suffix| lower.ends_with(suffix))
+}
+
+pub fn is_archive_path_with_extensions(
+    path: impl AsRef<str>,
+    extensions: Option<&[String]>,
+) -> bool {
+    let path = path.as_ref();
+
+    match extensions {
+        Some(suffixes) if !suffixes.is_empty() => path_matches_archive_suffixes(path, suffixes),
+        _ => matches!(
+            ArchiveFormat::detect(path),
+            Ok(format) if format.is_implemented()
+        ),
+    }
+}
+
 pub fn is_archive_path(path: impl AsRef<str>) -> bool {
-    matches!(
-        ArchiveFormat::detect(path.as_ref()),
-        Ok(format) if format.is_implemented()
-    )
+    let configured = configured_archive_extensions();
+    is_archive_path_with_extensions(path.as_ref(), configured.as_deref())
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1058,6 +1132,20 @@ mod tests {
         assert!(ArchiveFormat::SevenZip.is_implemented());
         assert!(is_archive_path("pkg.zip"));
         assert!(is_archive_path("pkg.7z"));
+
+        set_configured_archive_extensions(Some(vec![".zip".into(), ".tar.gz".into()]));
+        assert!(is_archive_path_with_extensions(
+            "pack.zip",
+            Some(&[String::from(".zip")])
+        ));
+        assert!(!is_archive_path_with_extensions(
+            "pack.7z",
+            Some(&[String::from(".zip")])
+        ));
+        assert!(is_archive_path("bundle.zip"));
+        assert!(!is_archive_path("bundle.7z"));
+        set_configured_archive_extensions(None);
+        assert!(is_archive_path("bundle.7z"));
     }
 
     #[test]

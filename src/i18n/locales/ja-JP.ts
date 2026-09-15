@@ -1016,6 +1016,9 @@ export const jaJP: LanguagePack = {
     'ui.tabs': 'タブ',
     'ui.alwaysShowTabBar': 'タブバーを常に表示',
     'ui.openSessionsInNewTab': 'セッションを新しいタブで開く',
+    'ui.archiveTypesSynced': 'アーカイブ種類をフォルダー比較に適用しました。',
+    'ui.archiveTypesLocalOnly':
+      'アーカイブ種類はローカルに保存されました。この環境では比較エンジンに同期できません。',
     'ui.tabsHint':
       'オフにするとホームだけのときタブバーを隠します。新しいタブで開くと、同じルートを再利用せず既存セッションタブを残します。',
     'ui.showNextDifferenceInToolbar': 'セッションツールバーに次の差分を表示',

@@ -802,13 +802,16 @@ pub fn compare_folder_paths(
     right_root: String,
     criteria: Option<FolderCompareCriteria>,
     filters: Option<FolderNameFilters>,
+    archive_extensions: Option<Vec<String>>,
 ) -> Result<FolderCompareResponse, AppErrorPayload> {
     let criteria = criteria.unwrap_or_default();
     let options = criteria.to_options();
     let name_filters = filters.unwrap_or_default();
-    let left_source = crate::sources::load_compare_source(&left_root)
+    let configured = archive_core::configured_archive_extensions();
+    let extensions = archive_extensions.as_deref().or(configured.as_deref());
+    let left_source = crate::sources::load_compare_source(&left_root, extensions)
         .map_err(|error| compare_source_error(&left_root, error))?;
-    let right_source = crate::sources::load_compare_source(&right_root)
+    let right_source = crate::sources::load_compare_source(&right_root, extensions)
         .map_err(|error| compare_source_error(&right_root, error))?;
     let left_tree = crate::sources::scan_compare_source_with_options(
         &left_source,
@@ -872,14 +875,17 @@ pub fn copy_folder_compare_entry(
     let left_path = side_path(&left_root, &relative_path);
     let right_path = side_path(&right_root, &relative_path);
 
-    let left_source = crate::sources::load_compare_source(&left_root).map_err(|error| {
-        AppErrorPayload::new(AppErrorCode::Unknown, "error.app.unknown.title", error)
-            .with_param("path", &left_root)
-    })?;
-    let right_source = crate::sources::load_compare_source(&right_root).map_err(|error| {
-        AppErrorPayload::new(AppErrorCode::Unknown, "error.app.unknown.title", error)
-            .with_param("path", &right_root)
-    })?;
+    let configured = archive_core::configured_archive_extensions();
+    let left_source = crate::sources::load_compare_source(&left_root, configured.as_deref())
+        .map_err(|error| {
+            AppErrorPayload::new(AppErrorCode::Unknown, "error.app.unknown.title", error)
+                .with_param("path", &left_root)
+        })?;
+    let right_source = crate::sources::load_compare_source(&right_root, configured.as_deref())
+        .map_err(|error| {
+            AppErrorPayload::new(AppErrorCode::Unknown, "error.app.unknown.title", error)
+                .with_param("path", &right_root)
+        })?;
 
     let (source, target, source_path, target_path) = match direction {
         folder_core::CopyDirection::ToLeft => (
@@ -1777,7 +1783,28 @@ pub struct ArchiveListResponse {
 }
 
 #[tauri::command]
-pub fn list_archive(path: String) -> Result<ArchiveListResponse, AppErrorPayload> {
+pub fn set_archive_extensions(extensions: Vec<String>) -> Result<Vec<String>, AppErrorPayload> {
+    let normalized = archive_core::normalize_archive_suffix_list(&extensions);
+    archive_core::set_configured_archive_extensions(Some(normalized.clone()));
+    Ok(normalized)
+}
+
+#[tauri::command]
+pub fn list_archive(
+    path: String,
+    archive_extensions: Option<Vec<String>>,
+) -> Result<ArchiveListResponse, AppErrorPayload> {
+    let configured = archive_core::configured_archive_extensions();
+    let extensions = archive_extensions.as_deref().or(configured.as_deref());
+    if !archive_core::is_archive_path_with_extensions(&path, extensions) {
+        return Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.app.unknown.title",
+            format!("path is not a configured archive type: {path}"),
+        )
+        .with_param("path", &path));
+    }
+
     let document = archive_core::ArchiveReader::open_path(&path).map_err(|error| {
         AppErrorPayload::new(
             AppErrorCode::Unknown,
@@ -5110,6 +5137,7 @@ mod tests {
             right.display().to_string(),
             None,
             None,
+            None,
         )
         .expect("valid folders should compare");
 
@@ -5149,6 +5177,7 @@ mod tests {
                 show_hidden_files: true,
             }),
             None,
+            None,
         )
         .expect("size-only compare");
         let contents = compare_folder_paths(
@@ -5167,6 +5196,7 @@ mod tests {
                 show_hidden_files: true,
             }),
             None,
+            None,
         )
         .expect("contents compare");
         let crc = compare_folder_paths(
@@ -5184,6 +5214,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
             }),
+            None,
             None,
         )
         .expect("crc compare");
@@ -5246,6 +5277,7 @@ mod tests {
                 show_hidden_files: true,
             }),
             None,
+            None,
         )
         .expect("strict timestamp compare");
         let tolerant = compare_folder_paths(
@@ -5263,6 +5295,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
             }),
+            None,
             None,
         )
         .expect("tolerant timestamp compare");
@@ -5322,6 +5355,7 @@ mod tests {
                 show_hidden_files: true,
             }),
             None,
+            None,
         )
         .expect("content+mtime compare");
 
@@ -5364,6 +5398,7 @@ mod tests {
                 show_hidden_files: true,
             }),
             None,
+            None,
         )
         .expect("attribute compare");
 
@@ -5386,6 +5421,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
             }),
+            None,
             None,
         )
         .expect("attributes off");
@@ -5443,6 +5479,7 @@ mod tests {
                 show_hidden_files: true,
             }),
             None,
+            None,
         )
         .expect("size-only minor");
 
@@ -5465,6 +5502,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
             }),
+            None,
             None,
         )
         .expect("size-only off");
@@ -6143,6 +6181,55 @@ mod tests {
     }
 
     #[test]
+    fn compare_folder_paths_respects_configured_archive_extensions() {
+        let root = unique_temp_dir("archive-ext-filter");
+        fs::create_dir_all(&root).expect("fixture directory should be created");
+        let left = root.join("left.zip");
+        let right = root.join("right.zip");
+        let left_doc =
+            archive_core::ArchiveDocument::new("left.zip").with_file("/a.txt", b"left".to_vec());
+        let right_doc =
+            archive_core::ArchiveDocument::new("right.zip").with_file("/a.txt", b"right".to_vec());
+        fs::write(&left, archive_core::write_zip_bytes(&left_doc).unwrap()).unwrap();
+        fs::write(&right, archive_core::write_zip_bytes(&right_doc).unwrap()).unwrap();
+
+        let excluded = compare_folder_paths(
+            left.display().to_string(),
+            right.display().to_string(),
+            None,
+            None,
+            Some(vec![".7z".into()]),
+        );
+        assert!(
+            excluded.is_err()
+                || excluded
+                    .as_ref()
+                    .map(|response| {
+                        response.rows.iter().all(|row| row.relative_path != "a.txt")
+                    })
+                    .unwrap_or(false),
+            "zip must not open as archive when extension list omits .zip: {excluded:?}"
+        );
+
+        let as_archives = compare_folder_paths(
+            left.display().to_string(),
+            right.display().to_string(),
+            None,
+            None,
+            Some(vec![".zip".into()]),
+        )
+        .expect("zip should compare as archive when listed");
+        assert!(
+            as_archives
+                .rows
+                .iter()
+                .any(|row| row.relative_path == "a.txt" && row.status == "Different"),
+            "expected archive entry diff: {:?}",
+            as_archives.rows
+        );
+    }
+
+    #[test]
     fn compare_folder_paths_compares_real_zip_archives() {
         let root = unique_temp_dir("zip-compare-command");
         fs::create_dir_all(&root).expect("fixture directory should be created");
@@ -6160,6 +6247,7 @@ mod tests {
         let response = compare_folder_paths(
             left.display().to_string(),
             right.display().to_string(),
+            None,
             None,
             None,
         )
@@ -6893,7 +6981,7 @@ mod tests {
         fs::write(&seven, seven_bytes).expect("7z fixture should be writable");
         fs::write(&hex_zip, b"/docs/readme.md\t6e6577\n").expect("hex zip should be writable");
 
-        let listed = list_archive(seven.display().to_string()).expect("7z should list");
+        let listed = list_archive(seven.display().to_string(), None).expect("7z should list");
         assert!(
             listed
                 .entries
@@ -6903,7 +6991,7 @@ mod tests {
             listed.entries
         );
 
-        let hex_error = list_archive(hex_zip.display().to_string())
+        let hex_error = list_archive(hex_zip.display().to_string(), None)
             .expect_err("hex-tab zip should not compare as a real archive");
         let hex_text = hex_error.debug_message;
         assert!(hex_text.contains("PK") || hex_text.to_ascii_lowercase().contains("zip"));

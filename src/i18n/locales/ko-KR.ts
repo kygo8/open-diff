@@ -1008,6 +1008,9 @@ export const koKR: LanguagePack = {
     'ui.tabs': '탭',
     'ui.alwaysShowTabBar': '항상 탭 표시줄 표시',
     'ui.openSessionsInNewTab': '새 탭에서 세션 열기',
+    'ui.archiveTypesSynced': '폴더 비교에 아카이브 형식이 적용되었습니다.',
+    'ui.archiveTypesLocalOnly':
+      '아카이브 형식이 로컬에 저장되었습니다. 이 환경에서는 비교 엔진에 동기화할 수 없습니다.',
     'ui.tabsHint':
       '끄면 홈만 열려 있을 때 탭 표시줄이 숨겨집니다. 새 탭에서 열면 같은 경로를 재사용하지 않고 기존 세션 탭을 유지합니다.',
     'ui.showNextDifferenceInToolbar': '세션 도구 모음에 다음 차이 표시',

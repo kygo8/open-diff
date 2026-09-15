@@ -90,7 +90,7 @@ describe('useTabsStore openTab forceNew', () => {
     const reused = store.openTab({ title: 'Hex again', route: '/compare/hex', dirty: false })
 
     expect(reused.id).toBe(first.id)
-    expect(store.tabs.filter((tab) => tab.route === '/compare/hex')).toHaveLength(1)
+    expect(store.tabs.filter((tab) => tab.route.startsWith('/compare/hex'))).toHaveLength(1)
 
     const forced = store.openTab({
       title: 'Hex copy',
@@ -100,6 +100,50 @@ describe('useTabsStore openTab forceNew', () => {
     })
 
     expect(forced.id).not.toBe(first.id)
-    expect(store.tabs.filter((tab) => tab.route === '/compare/hex')).toHaveLength(2)
+    expect(forced.route).toMatch(/^\/compare\/hex\?session=/)
+    expect(store.tabs.filter((tab) => tab.route.startsWith('/compare/hex'))).toHaveLength(2)
+  })
+})
+
+describe('useTabsStore openTab session isolation', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
+  it('assigns unique session query routes so forceNew tabs remount independently', () => {
+    const store = useTabsStore()
+
+    const first = store.openTab({
+      title: 'Hex',
+      route: '/compare/hex',
+      dirty: false,
+      forceNew: true,
+    })
+    const second = store.openTab({
+      title: 'Hex copy',
+      route: '/compare/hex',
+      dirty: false,
+      forceNew: true,
+    })
+
+    expect(first.route).toMatch(/^\/compare\/hex\?session=/)
+    expect(second.route).toMatch(/^\/compare\/hex\?session=/)
+    expect(first.route).not.toBe(second.route)
+    expect(store.tabs.filter((tab) => tab.route.startsWith('/compare/hex')).length).toBe(2)
+  })
+
+  it('reuses an existing tab by pathname when forceNew is false', () => {
+    const store = useTabsStore()
+
+    const first = store.openTab({
+      title: 'Hex',
+      route: '/compare/hex',
+      dirty: false,
+      forceNew: true,
+    })
+    const reused = store.openTab({ title: 'Hex again', route: '/compare/hex', dirty: false })
+
+    expect(reused.id).toBe(first.id)
+    expect(reused.route).toBe(first.route)
   })
 })

@@ -39,6 +39,8 @@ import { listenDesktopPathDrop } from '@/app/desktopDrop'
 import { openSessionWindow } from '@/app/sessionWindow'
 import { resolveDropLaunchFromPaths } from '@/app/dropLaunch'
 import { sessionCatalog } from '@/app/sessionCatalog'
+import { isSessionWorkbenchRoute, tabRoutePathname } from '@/app/sessionTabRoute'
+import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { useI18n } from '@/i18n'
 import { usePolicyStore } from '@/stores/policy'
 import { useSettingsStore } from '@/stores/settings'
@@ -100,6 +102,9 @@ const lastCompare = useLastCompareStore()
 let stopDesktopDrop: (() => void) | undefined
 
 onMounted(() => {
+  void syncArchiveExtensionsBackend([...settings.archiveExtensions]).catch(() => {
+    // ponytail: web/dev without Tauri keeps frontend-only archive detection
+  })
   void (async () => {
     try {
       const launch = await takeShellCompareLaunch()
@@ -136,13 +141,14 @@ onMounted(() => {
         autoRun: true,
         favor,
       })
-      tabs.openTab({
+      const opened = tabs.openTab({
         title,
         route: launch.route,
         dirty: false,
         forceNew: settings.openSessionsInNewTab,
       })
-      void router.push(launch.route)
+
+      void router.push(opened.route)
     } catch {
       // ponytail: ignore missing shell launch outside Windows Explorer flow
       maybeRestoreLastWorkspaceOnStartup()
@@ -163,14 +169,15 @@ onMounted(() => {
       }
 
       sessionLaunch.setPendingLaunch(result.payload)
-      tabs.openTab({
+      const opened = tabs.openTab({
         title: result.selection.title,
         titleKey: result.selection.titleKey,
         route: result.selection.route,
         dirty: false,
         forceNew: settings.openSessionsInNewTab,
       })
-      void router.push(result.selection.route)
+
+      void router.push(opened.route)
     },
     (phase) => {
       // Subtle status only for real drag activity (not a permanent "Listening" banner).
@@ -542,13 +549,9 @@ const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
     void router.push(nextRoute)
   },
   openTab: (tab) => {
-    const forceNew =
-      settings.openSessionsInNewTab &&
-      (tab.route.startsWith('/compare') ||
-        tab.route.startsWith('/merge') ||
-        tab.route.startsWith('/sync'))
+    const forceNew = settings.openSessionsInNewTab && isSessionWorkbenchRoute(tab.route)
 
-    tabs.openTab({ ...tab, forceNew })
+    return tabs.openTab({ ...tab, forceNew })
   },
   t,
   toggleTheme: settings.toggleTheme,
@@ -808,7 +811,7 @@ const windowTitle = computed(() => {
   const sessionName = entry ? t(entry.titleKey) : t('app.brand')
   const active = tabs.activeTab
   const pathAwareTitle =
-    active.route === route.path &&
+    tabRoutePathname(active.route) === route.path &&
     !active.titleKey &&
     (active.title.includes('<-->') || active.title.includes('→'))
       ? active.title
@@ -832,14 +835,21 @@ watch(
 )
 
 function navigate(nextRoute: string, title: string, titleKey?: string): void {
-  const forceNew =
-    settings.openSessionsInNewTab &&
-    (nextRoute.startsWith('/compare') ||
-      nextRoute.startsWith('/merge') ||
-      nextRoute.startsWith('/sync'))
+  const forceNew = settings.openSessionsInNewTab && isSessionWorkbenchRoute(nextRoute)
 
-  tabs.openTab({ route: nextRoute, title, titleKey, dirty: false, forceNew })
-  void router.push(nextRoute)
+  const opened = tabs.openTab({ route: nextRoute, title, titleKey, dirty: false, forceNew })
+
+  void router.push(opened.route)
+}
+
+function activateTab(tabId: string): void {
+  const tab = tabs.activateTab(tabId)
+
+  if (!tab) {
+    return
+  }
+
+  void router.push(tab.route)
 }
 
 const showTabStrip = computed(() => settings.alwaysShowTabBar || tabs.tabs.length > 1)
@@ -1064,7 +1074,7 @@ function sessionCount(type: SessionType): string {
     return '0'
   }
 
-  return String(tabs.tabs.filter((tab) => tab.route === route).length)
+  return String(tabs.tabs.filter((tab) => tabRoutePathname(tab.route) === route).length)
 }
 
 const sourceSessionTypes = new Set<SessionType>([
@@ -1314,7 +1324,7 @@ const sourceSessionTypes = new Set<SessionType>([
           >
             <button
               type="button"
-              @click="navigate(tab.route, displayTabTitle(tab), tab.titleKey)"
+              @click="activateTab(tab.id)"
             >
               {{ displayTabTitle(tab) }}
             </button>
@@ -1405,7 +1415,7 @@ const sourceSessionTypes = new Set<SessionType>([
           </span>
         </section>
         <section class="content">
-          <RouterView />
+          <RouterView :key="route.fullPath" />
         </section>
       </section>
     </main>

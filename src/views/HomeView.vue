@@ -218,14 +218,15 @@ function openSession(entry: SessionCatalogEntry): void {
     locations: {},
     autoRun: false,
   })
-  tabs.openTab({
+  const opened = tabs.openTab({
     title: entry.title,
     titleKey: entry.titleKey,
     route: entry.route,
     dirty: false,
     forceNew: settings.openSessionsInNewTab,
   })
-  void router.push(entry.route)
+
+  void router.push(opened.route)
 }
 
 function openSavedSession(session: SessionDocument): void {
@@ -250,13 +251,14 @@ function openSavedSession(session: SessionDocument): void {
     autoRun: true,
     session,
   })
-  tabs.openTab({
+  const opened = tabs.openTab({
     title: session.name,
     route: entry.route,
     dirty: session.metadata.dirty,
     forceNew: settings.openSessionsInNewTab,
   })
-  void router.push(entry.route)
+
+  void router.push(opened.route)
 }
 
 function handleDragOver(event: DragEvent): void {
@@ -307,14 +309,15 @@ function openSelectedDropSession(): void {
   }
 
   sessionLaunch.setPendingLaunch(buildDropLaunchPayload(selectedDropSession.value))
-  tabs.openTab({
+  const opened = tabs.openTab({
     title: selectedDropSession.value.title,
     titleKey: selectedDropSession.value.titleKey,
     route: selectedDropSession.value.route,
     dirty: false,
     forceNew: settings.openSessionsInNewTab,
   })
-  void router.push(selectedDropSession.value.route)
+
+  void router.push(opened.route)
 }
 
 function buildDropLaunchPayload(selection: SessionSelection): SessionLaunchPayload {
@@ -353,14 +356,15 @@ async function openClipboardText(): Promise<void> {
       },
       autoRun: false,
     })
-    tabs.openTab({
+    const opened = tabs.openTab({
       title,
       titleKey: source.title,
       route: '/compare/text',
       dirty: false,
       forceNew: settings.openSessionsInNewTab,
     })
-    void router.push('/compare/text')
+
+    void router.push(opened.route)
   } catch (error) {
     clipboardStatus.value =
       typeof error === 'object' && error !== null && 'message' in error
@@ -493,13 +497,14 @@ function restoreWorkspaceFromRecovery(): void {
     return
   }
 
-  tabs.openTab({
+  const opened = tabs.openTab({
     title: first.name,
     route: entry.route,
     dirty: first.metadata.dirty,
     forceNew: settings.openSessionsInNewTab,
   })
-  void router.push(entry.route)
+
+  void router.push(opened.route)
 }
 
 function restoreWorkspace(id: string): void {

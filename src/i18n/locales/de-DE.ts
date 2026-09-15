@@ -1036,6 +1036,9 @@ export const deDE: LanguagePack = {
     'ui.tabs': 'Registerkarten',
     'ui.alwaysShowTabBar': 'Registerleisten immer anzeigen',
     'ui.openSessionsInNewTab': 'Sitzungen in neuen Registerkarten öffnen',
+    'ui.archiveTypesSynced': 'Archivtypen auf Ordnervergleich angewendet.',
+    'ui.archiveTypesLocalOnly':
+      'Archivtypen lokal gespeichert; Vergleichs-Engine-Sync in dieser Umgebung nicht verfügbar.',
     'ui.tabsHint':
       'Wenn deaktiviert, wird die Registerleiste ausgeblendet, solange nur Start geöffnet ist. Neue Registerkarten behalten vorhandene Sitzungen statt dieselbe Route wiederzuverwenden.',
     'ui.showNextDifferenceInToolbar': '„Nächster Unterschied“ in Sitzungs-Symbolleisten anzeigen',

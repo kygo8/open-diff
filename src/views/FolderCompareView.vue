@@ -1046,6 +1046,7 @@ async function runFolderCompare(): Promise<void> {
         showHiddenFiles: settings.showHiddenFiles,
       },
       filters: { ...folderNameFilters.value },
+      archiveExtensions: [...settings.archiveExtensions],
     })
 
     if (generation !== folderCompareGeneration) {

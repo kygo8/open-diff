@@ -13,6 +13,7 @@ import {
 import { queryLiveWindowsRegistry } from '@/api/policy'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
+import { useStatusBarStore } from '@/stores/statusBar'
 
 const clipboardWriteText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined)
 
@@ -347,5 +348,45 @@ describe('RegistryCompareView', () => {
     expect(wrapper.find('[data-testid="registry-key-HKCU/Software/OpenDiff"]').classes()).toContain(
       'selected',
     )
+  })
+
+  it('reports Important Difference status when registry keys differ', async () => {
+    const wrapper = mount(RegistryCompareView)
+    const statusBar = useStatusBarStore()
+
+    await wrapper.find('[data-testid="registry-left-export"]').setValue('left export')
+    await wrapper.find('[data-testid="registry-right-export"]').setValue('right export')
+    await wrapper.find('[data-testid="run-registry-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(statusBar.report.importantDifferenceCount).toBe(1)
+    expect(statusBar.report.unimportantDifferenceCount).toBe(0)
+    expect(statusBar.report.chromeKind).toBe('text-session')
+    expect(statusBar.segments.some((segment) => segment.includes('Important Difference'))).toBe(
+      true,
+    )
+  })
+
+  it('shows path metadata footers after loading registry export files', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'launch-registry-meta',
+      source: 'drop',
+      sessionType: 'registry-compare',
+      title: 'left.reg vs right.reg',
+      route: '/compare/registry',
+      autoRun: true,
+      locations: {
+        left: { uri: 'C:/drop/left.reg', kind: 'file', readOnly: false },
+        right: { uri: 'C:/drop/right.reg', kind: 'file', readOnly: false },
+      },
+    })
+
+    const wrapper = mount(RegistryCompareView)
+
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="registry-path-footers"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="registry-left-path-footer"]').text()).toContain('24')
+    expect(wrapper.find('[data-testid="registry-right-path-footer"]').text()).toContain('24')
   })
 })

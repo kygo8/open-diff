@@ -933,6 +933,9 @@ export const koKR: LanguagePack = {
     'ui.meta': 'Meta',
     'ui.colors': '색상',
     'ui.tweaks': '세부 설정',
+
+    'ui.confirmations': '확인',
+    'ui.confirmationsHint': '파괴적인 폴더 및 동기화 작업 전에 확인합니다.',
     'ui.fontFamily': '글꼴',
     'ui.fontSize': '글꼴 크기',
     'ui.diffHighlightColors': '차이 강조 색상',

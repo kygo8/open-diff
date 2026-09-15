@@ -939,6 +939,9 @@ export const jaJP: LanguagePack = {
     'ui.meta': 'Meta',
     'ui.colors': '色',
     'ui.tweaks': '調整',
+
+    'ui.confirmations': '確認',
+    'ui.confirmationsHint': '破壊的なフォルダー／同期操作の前に確認します。',
     'ui.fontFamily': 'フォント',
     'ui.fontSize': 'フォントサイズ',
     'ui.diffHighlightColors': '差分ハイライト色',

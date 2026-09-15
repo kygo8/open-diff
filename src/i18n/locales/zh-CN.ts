@@ -913,6 +913,9 @@ export const zhCN: LanguagePack = {
     'ui.meta': '元数据',
     'ui.colors': '颜色',
     'ui.tweaks': '调整',
+
+    'ui.confirmations': '确认',
+    'ui.confirmationsHint': '在破坏性文件夹与同步操作前询问确认。',
     'ui.fontFamily': '字体',
     'ui.fontSize': '字号',
     'ui.diffHighlightColors': '差异高亮颜色',

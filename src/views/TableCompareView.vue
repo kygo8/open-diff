@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { compareTable, readTextFile, saveTextFile } from '@/api/diff'
 import { buildTableReportText, defaultTableReportOutputPath } from '@/app/tableReport'
 import type {
+  FileStamp,
   TableCompareChangedCell,
   TableCompareRequest,
   TableCompareResponse,
@@ -21,6 +22,7 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useI18n } from '@/i18n'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
@@ -68,6 +70,10 @@ const leftCsv = ref('')
 const rightCsv = ref('')
 const leftPath = ref('')
 const rightPath = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
+const leftEncoding = ref('')
+const rightEncoding = ref('')
 const tableFormat = ref<NonNullable<TableCompareRequest['format']>>('csv')
 const leftSheet = ref('')
 const rightSheet = ref('')
@@ -514,6 +520,35 @@ function addManualMapping(): void {
   ]
 }
 
+const leftPathFooterLabel = computed(() => formatTablePathFooter(leftFileStamp.value))
+const rightPathFooterLabel = computed(() => formatTablePathFooter(rightFileStamp.value))
+
+function formatTablePathFooter(stamp: FileStamp | null): string {
+  if (!stamp) {
+    return ''
+  }
+
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+
+  if (!modified) {
+    return t('status.bytes', { count: stamp.size })
+  }
+
+  return t('status.pathFileMetadata', { bytes: stamp.size, modified })
+}
+
+const tableStatusEncoding = computed(() => {
+  if (leftEncoding.value && rightEncoding.value) {
+    if (leftEncoding.value === rightEncoding.value) {
+      return leftEncoding.value
+    }
+
+    return `${leftEncoding.value} / ${rightEncoding.value}`
+  }
+
+  return leftEncoding.value || rightEncoding.value || 'UTF-8'
+})
+
 watchEffect(() => {
   let comparisonStatus = t('status.readyIdle')
 
@@ -526,6 +561,7 @@ watchEffect(() => {
   statusBar.reportStatus({
     comparisonStatus,
     differenceCount: comparedRows.value ? tableDifferenceCells.value.length : null,
+    encoding: tableStatusEncoding.value,
     filterStatus: t('status.allRows'),
     source: 'table-compare',
     loadTimeSeconds: comparedRows.value ? loadTimeSeconds.value : null,
@@ -613,6 +649,10 @@ async function loadLaunchTables(nextLeftPath: string, nextRightPath: string): Pr
 
     leftCsv.value = leftFile.text
     rightCsv.value = rightFile.text
+    leftFileStamp.value = leftFile.fileStamp
+    rightFileStamp.value = rightFile.fileStamp
+    leftEncoding.value = leftFile.encoding
+    rightEncoding.value = rightFile.encoding
     await runTableCompare()
   } catch (event) {
     error.value = String(event)
@@ -858,6 +898,23 @@ watch([leftPath, rightPath], () => {
             data-testid="table-right-path"
           />
         </label>
+        <div
+          class="bc-path-footers"
+          data-testid="table-path-footers"
+        >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
+            data-testid="table-left-path-footer"
+            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+          <span
+            class="path-side-footer"
+            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
+            data-testid="table-right-path-footer"
+            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
+          >
+        </div>
         <label>
           <span>{{ $t('ui.tableFormat') }}</span>
           <select
@@ -1601,5 +1658,26 @@ h2 {
   .table-summary {
     text-align: left;
   }
+}
+
+.bc-path-footers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column: 1 / -1;
+  gap: 8px;
+  width: 100%;
+}
+
+.path-side-footer {
+  min-height: 18px;
+  overflow: hidden;
+  color: var(--app-text-muted, #6b7280);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path-side-footer-muted {
+  color: #9ca3af;
 }
 </style>

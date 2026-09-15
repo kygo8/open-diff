@@ -53,6 +53,7 @@ type OptionsSectionId =
   | 'openWith'
   | 'shell'
   | 'backup'
+  | 'confirmations'
   | 'tweaks'
   | 'formats'
   | 'shortcuts'
@@ -82,6 +83,7 @@ const optionsTree = [
     groupKey: 'ui.optionsGroupSystem',
     items: [
       { id: 'shell' as const, labelKey: 'ui.shell' },
+      { id: 'confirmations' as const, labelKey: 'ui.confirmations' },
       { id: 'tweaks' as const, labelKey: 'ui.tweaks' },
       { id: 'formats' as const, labelKey: 'ui.fileFormats' },
       { id: 'shortcuts' as const, labelKey: 'ui.shortcuts' },
@@ -766,6 +768,15 @@ function parseShortcutText(value: string): string[] {
           />
           <span>{{ $t('ui.wrapTextDefault') }}</span>
         </label>
+        <label class="tweak-row">
+          <input
+            data-testid="auto-scroll-first-difference-editing"
+            type="checkbox"
+            :checked="settings.autoScrollToFirstDifference"
+            @change="onAutoScrollToFirstDifferenceChange"
+          />
+          <span>{{ $t('ui.autoScrollToFirstDifference') }}</span>
+        </label>
         <p class="options-hint">{{ $t('ui.textEditingHint') }}</p>
       </NCard>
 
@@ -923,10 +934,10 @@ function parseShortcutText(value: string): string[] {
       </NCard>
 
       <NCard
-        v-show="optionsSection === 'tweaks'"
-        :title="$t('ui.tweaks')"
+        v-show="optionsSection === 'confirmations'"
+        :title="$t('ui.confirmations')"
         size="small"
-        data-testid="options-tweaks-card"
+        data-testid="options-confirmations-card"
       >
         <label class="tweak-row">
           <input
@@ -939,21 +950,30 @@ function parseShortcutText(value: string): string[] {
         </label>
         <label class="tweak-row">
           <input
-            data-testid="wrap-text-default"
-            type="checkbox"
-            :checked="settings.wrapTextDefault"
-            @change="onWrapTextDefaultChange"
-          />
-          <span>{{ $t('ui.wrapTextDefault') }}</span>
-        </label>
-        <label class="tweak-row">
-          <input
             data-testid="confirm-before-sync-overwrite"
             type="checkbox"
             :checked="settings.confirmBeforeSyncOverwrite"
             @change="onConfirmBeforeSyncOverwriteChange"
           />
           <span>{{ $t('ui.confirmBeforeSyncOverwrite') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.confirmationsHint') }}</p>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'tweaks'"
+        :title="$t('ui.tweaks')"
+        size="small"
+        data-testid="options-tweaks-card"
+      >
+        <label class="tweak-row">
+          <input
+            data-testid="wrap-text-default"
+            type="checkbox"
+            :checked="settings.wrapTextDefault"
+            @change="onWrapTextDefaultChange"
+          />
+          <span>{{ $t('ui.wrapTextDefault') }}</span>
         </label>
         <label class="tweak-row">
           <input

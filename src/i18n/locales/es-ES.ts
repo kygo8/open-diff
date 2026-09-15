@@ -956,6 +956,10 @@ export const esES: LanguagePack = {
     'ui.meta': 'Meta',
     'ui.colors': 'Colores',
     'ui.tweaks': 'Ajustes',
+
+    'ui.confirmations': 'Confirmaciones',
+    'ui.confirmationsHint':
+      'Preguntar antes de operaciones destructivas de carpetas y sincronización.',
     'ui.fontFamily': 'Familia tipográfica',
     'ui.fontSize': 'Tamaño de fuente',
     'ui.diffHighlightColors': 'Colores de resaltado de diferencias',

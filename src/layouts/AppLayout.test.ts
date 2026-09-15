@@ -530,6 +530,30 @@ describe('AppLayout command palette', () => {
     expect(status.find('[data-testid="status-pane-left-selection"]').text()).toBe('—')
   })
 
+  it('keeps both free-space panes when folder importance is present', async () => {
+    const wrapper = mountAppLayout()
+    const statusBar = useStatusBarStore()
+
+    statusBar.reportStatus({
+      source: 'folder-compare',
+      chromeKind: 'folder-pair',
+      importantDifferenceCount: 3,
+      unimportantDifferenceCount: 1,
+      leftSelection: '1 file(s) selected, 22 bytes',
+      leftFreeSpace: '91.8 GB free on C:\\',
+      rightSelection: '1 file(s) selected, 23 bytes',
+      rightFreeSpace: '40.0 GB free on D:\\',
+    })
+    await wrapper.vm.$nextTick()
+
+    const status = wrapper.find('[data-testid="status-bar"]')
+
+    expect(status.find('[data-testid="status-pane-importance"]').text()).toContain('important')
+    expect(status.find('[data-testid="status-pane-left-free"]').text()).toContain('91.8 GB')
+    expect(status.find('[data-testid="status-pane-right-free"]').text()).toContain('40.0 GB')
+    expect(status.findAll('.status-bar-pane')).toHaveLength(5)
+  })
+
   it('launches a compare session from a global desktop path drop', async () => {
     mountAppLayout()
     const launchStore = useSessionLaunchStore()

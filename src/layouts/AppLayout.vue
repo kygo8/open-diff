@@ -136,7 +136,12 @@ onMounted(() => {
         autoRun: true,
         favor,
       })
-      tabs.openTab({ title, route: launch.route, dirty: false })
+      tabs.openTab({
+        title,
+        route: launch.route,
+        dirty: false,
+        forceNew: settings.openSessionsInNewTab,
+      })
       void router.push(launch.route)
     } catch {
       // ponytail: ignore missing shell launch outside Windows Explorer flow
@@ -163,6 +168,7 @@ onMounted(() => {
         titleKey: result.selection.titleKey,
         route: result.selection.route,
         dirty: false,
+        forceNew: settings.openSessionsInNewTab,
       })
       void router.push(result.selection.route)
     },
@@ -536,7 +542,13 @@ const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
     void router.push(nextRoute)
   },
   openTab: (tab) => {
-    tabs.openTab(tab)
+    const forceNew =
+      settings.openSessionsInNewTab &&
+      (tab.route.startsWith('/compare') ||
+        tab.route.startsWith('/merge') ||
+        tab.route.startsWith('/sync'))
+
+    tabs.openTab({ ...tab, forceNew })
   },
   t,
   toggleTheme: settings.toggleTheme,
@@ -820,9 +832,17 @@ watch(
 )
 
 function navigate(nextRoute: string, title: string, titleKey?: string): void {
-  tabs.openTab({ route: nextRoute, title, titleKey, dirty: false })
+  const forceNew =
+    settings.openSessionsInNewTab &&
+    (nextRoute.startsWith('/compare') ||
+      nextRoute.startsWith('/merge') ||
+      nextRoute.startsWith('/sync'))
+
+  tabs.openTab({ route: nextRoute, title, titleKey, dirty: false, forceNew })
   void router.push(nextRoute)
 }
+
+const showTabStrip = computed(() => settings.alwaysShowTabBar || tabs.tabs.length > 1)
 
 function openCommandPalette(): void {
   commandPaletteOpen.value = true
@@ -1280,6 +1300,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
       <section class="workspace">
         <section
+          v-show="showTabStrip"
           class="tab-strip"
           data-testid="tab-strip"
         >

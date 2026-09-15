@@ -32,6 +32,7 @@ import { useI18n } from '@/i18n'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
+import { useSettingsStore } from '@/stores/settings'
 import { useWorkspacesStore } from '@/stores/workspaces'
 import type { DropClassification, DropInput } from '@/app/dropInput'
 import type { SessionSelection } from '@/app/sessionAutoSelect'
@@ -108,6 +109,7 @@ const quickStartIcons: Record<HomeLaunchType, LucideIcon> = {
 const router = useRouter()
 const { t } = useI18n()
 const tabs = useTabsStore()
+const settings = useSettingsStore()
 const savedSessions = useSavedSessionsStore()
 const sessionLaunch = useSessionLaunchStore()
 const workspaces = useWorkspacesStore()
@@ -216,7 +218,13 @@ function openSession(entry: SessionCatalogEntry): void {
     locations: {},
     autoRun: false,
   })
-  tabs.openTab({ title: entry.title, titleKey: entry.titleKey, route: entry.route, dirty: false })
+  tabs.openTab({
+    title: entry.title,
+    titleKey: entry.titleKey,
+    route: entry.route,
+    dirty: false,
+    forceNew: settings.openSessionsInNewTab,
+  })
   void router.push(entry.route)
 }
 
@@ -242,7 +250,12 @@ function openSavedSession(session: SessionDocument): void {
     autoRun: true,
     session,
   })
-  tabs.openTab({ title: session.name, route: entry.route, dirty: session.metadata.dirty })
+  tabs.openTab({
+    title: session.name,
+    route: entry.route,
+    dirty: session.metadata.dirty,
+    forceNew: settings.openSessionsInNewTab,
+  })
   void router.push(entry.route)
 }
 
@@ -299,6 +312,7 @@ function openSelectedDropSession(): void {
     titleKey: selectedDropSession.value.titleKey,
     route: selectedDropSession.value.route,
     dirty: false,
+    forceNew: settings.openSessionsInNewTab,
   })
   void router.push(selectedDropSession.value.route)
 }
@@ -339,7 +353,13 @@ async function openClipboardText(): Promise<void> {
       },
       autoRun: false,
     })
-    tabs.openTab({ title, titleKey: source.title, route: '/compare/text', dirty: false })
+    tabs.openTab({
+      title,
+      titleKey: source.title,
+      route: '/compare/text',
+      dirty: false,
+      forceNew: settings.openSessionsInNewTab,
+    })
     void router.push('/compare/text')
   } catch (error) {
     clipboardStatus.value =
@@ -473,7 +493,12 @@ function restoreWorkspaceFromRecovery(): void {
     return
   }
 
-  tabs.openTab({ title: first.name, route: entry.route, dirty: first.metadata.dirty })
+  tabs.openTab({
+    title: first.name,
+    route: entry.route,
+    dirty: first.metadata.dirty,
+    forceNew: settings.openSessionsInNewTab,
+  })
   void router.push(entry.route)
 }
 

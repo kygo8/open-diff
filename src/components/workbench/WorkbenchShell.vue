@@ -32,10 +32,22 @@ const toolbarItems = computed(() => {
       active: false,
     }))
 
-  return commands.map((command) => ({
-    ...command,
-    icon: iconForSessionToolbarCommand(command.id),
-  }))
+  return commands
+    .filter((command) => {
+      if (command.id === 'next-diff') {
+        return settings.showNextDifferenceInToolbar
+      }
+
+      if (command.id === 'prev-diff') {
+        return settings.showPrevDifferenceInToolbar
+      }
+
+      return true
+    })
+    .map((command) => ({
+      ...command,
+      icon: iconForSessionToolbarCommand(command.id),
+    }))
 })
 const showSessionToolbar = computed(
   () => !props.compact && settings.showSessionToolbars && toolbarItems.value.length > 0,

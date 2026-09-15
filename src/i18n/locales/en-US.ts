@@ -1013,6 +1013,17 @@ export const enUS: LanguagePack = {
     'ui.showPathBars': 'Show path bars',
     'ui.showSidebar': 'Show workspace sidebar',
     'ui.showToolbarIcons': 'Show toolbar icons',
+    'ui.tabs': 'Tabs',
+    'ui.alwaysShowTabBar': 'Always show tab bar',
+    'ui.openSessionsInNewTab': 'Open sessions in new tabs',
+    'ui.tabsHint':
+      'When disabled, the tab bar hides while only Home is open. Opening sessions in new tabs keeps prior session tabs instead of reusing the same route.',
+    'ui.showNextDifferenceInToolbar': 'Show Next Difference on session toolbars',
+    'ui.showPrevDifferenceInToolbar': 'Show Previous Difference on session toolbars',
+    'ui.archiveTypes': 'Archive types',
+    'ui.archiveTypesHint':
+      'Extensions treated as archives in Folder Compare. Longer suffixes such as .tar.gz are matched first.',
+    'ui.archiveTypesPlaceholder': '.zip, .tar.gz, .7z',
     'ui.confirmBeforeCloseDirtyTab': 'Confirm before closing dirty tabs',
     'ui.confirmBeforeOverwriteSave': 'Confirm before overwrite saves',
     'ui.confirmOverwriteSavePrompt': 'Overwrite the existing file on disk?',

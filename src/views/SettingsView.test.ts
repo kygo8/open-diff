@@ -346,6 +346,29 @@ describe('SettingsView', () => {
     await wrapper.find('[data-testid="options-section-confirmations"]').trigger('click')
     expect(wrapper.find('[data-testid="options-confirmations-card"]').isVisible()).toBe(true)
   })
+  it('persists Tabs, Next/Prev Difference toolbar, and Archive Types options', async () => {
+    const wrapper = mountSettingsView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-tabs"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-tabs-card"]').isVisible()).toBe(true)
+    await wrapper.find('[data-testid="always-show-tab-bar"]').setValue(false)
+    expect(settings.alwaysShowTabBar).toBe(false)
+    await wrapper.find('[data-testid="open-sessions-in-new-tab"]').setValue(true)
+    expect(settings.openSessionsInNewTab).toBe(true)
+
+    await wrapper.find('[data-testid="options-section-toolbars"]').trigger('click')
+    await wrapper.find('[data-testid="show-next-difference-in-toolbar"]').setValue(false)
+    expect(settings.showNextDifferenceInToolbar).toBe(false)
+    await wrapper.find('[data-testid="show-prev-difference-in-toolbar"]').setValue(false)
+    expect(settings.showPrevDifferenceInToolbar).toBe(false)
+
+    await wrapper.find('[data-testid="options-section-formats"]').trigger('click')
+    await wrapper.find('[data-testid="archive-extensions-input"]').setValue('.zip, rar')
+    await wrapper.find('[data-testid="apply-archive-extensions"]').trigger('click')
+    expect(settings.archiveExtensions).toEqual(['.rar', '.zip'])
+  })
+
   it('persists Appearance sidebar, Toolbars icons, Backup overwrite confirm, and Tweaks dirty-tab confirm', async () => {
     const wrapper = mount(SettingsView)
     const settings = useSettingsStore()

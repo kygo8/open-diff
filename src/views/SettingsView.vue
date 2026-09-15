@@ -20,6 +20,7 @@ import {
 import { usePolicyStore } from '@/stores/policy'
 import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { type DiffHighlightColors, useSettingsStore } from '@/stores/settings'
+import { formatArchiveSuffixesInput, parseArchiveSuffixesInput } from '@/app/archivePath'
 import { loadExternalApplications, saveExternalApplications } from '@/app/externalApplications'
 import type { ExternalApplicationConfig } from '@/app/fileOpenActions'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
@@ -48,6 +49,7 @@ type OptionsSectionId =
   | 'appearance'
   | 'colors'
   | 'toolbars'
+  | 'tabs'
   | 'startup'
   | 'textEditing'
   | 'openWith'
@@ -61,6 +63,7 @@ type OptionsSectionId =
   | 'sessions'
 
 const optionsSection = ref<OptionsSectionId>('appearance')
+const archiveExtensionsDraft = ref(formatArchiveSuffixesInput(settings.archiveExtensions))
 const optionsTree = [
   {
     groupKey: 'ui.optionsGroupDisplay',
@@ -68,6 +71,7 @@ const optionsTree = [
       { id: 'appearance' as const, labelKey: 'ui.appearance' },
       { id: 'colors' as const, labelKey: 'ui.colors' },
       { id: 'toolbars' as const, labelKey: 'ui.toolbars' },
+      { id: 'tabs' as const, labelKey: 'ui.tabs' },
       { id: 'startup' as const, labelKey: 'ui.startup' },
     ],
   },
@@ -406,6 +410,51 @@ function onConfirmBeforeOverwriteSaveChange(event: Event): void {
   }
 
   settings.setConfirmBeforeOverwriteSave(target.checked)
+}
+
+function onAlwaysShowTabBarChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setAlwaysShowTabBar(target.checked)
+}
+
+function onOpenSessionsInNewTabChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setOpenSessionsInNewTab(target.checked)
+}
+
+function onShowNextDifferenceInToolbarChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowNextDifferenceInToolbar(target.checked)
+}
+
+function onShowPrevDifferenceInToolbarChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowPrevDifferenceInToolbar(target.checked)
+}
+
+function applyArchiveExtensionsFromOptions(): void {
+  settings.setArchiveExtensions(parseArchiveSuffixesInput(archiveExtensionsDraft.value))
+  archiveExtensionsDraft.value = formatArchiveSuffixesInput(settings.archiveExtensions)
 }
 
 function onLoadLastWorkspaceOnStartupChange(event: Event): void {
@@ -790,7 +839,52 @@ function parseShortcutText(value: string): string[] {
           />
           <span>{{ $t('ui.showToolbarIcons') }}</span>
         </label>
+        <label class="tweak-row">
+          <input
+            data-testid="show-next-difference-in-toolbar"
+            type="checkbox"
+            :checked="settings.showNextDifferenceInToolbar"
+            @change="onShowNextDifferenceInToolbarChange"
+          />
+          <span>{{ $t('ui.showNextDifferenceInToolbar') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="show-prev-difference-in-toolbar"
+            type="checkbox"
+            :checked="settings.showPrevDifferenceInToolbar"
+            @change="onShowPrevDifferenceInToolbarChange"
+          />
+          <span>{{ $t('ui.showPrevDifferenceInToolbar') }}</span>
+        </label>
         <p class="options-hint">{{ $t('ui.toolbarsHint') }}</p>
+      </NCard>
+
+      <NCard
+        v-show="optionsSection === 'tabs'"
+        :title="$t('ui.tabs')"
+        size="small"
+        data-testid="options-tabs-card"
+      >
+        <label class="tweak-row">
+          <input
+            data-testid="always-show-tab-bar"
+            type="checkbox"
+            :checked="settings.alwaysShowTabBar"
+            @change="onAlwaysShowTabBarChange"
+          />
+          <span>{{ $t('ui.alwaysShowTabBar') }}</span>
+        </label>
+        <label class="tweak-row">
+          <input
+            data-testid="open-sessions-in-new-tab"
+            type="checkbox"
+            :checked="settings.openSessionsInNewTab"
+            @change="onOpenSessionsInNewTabChange"
+          />
+          <span>{{ $t('ui.openSessionsInNewTab') }}</span>
+        </label>
+        <p class="options-hint">{{ $t('ui.tabsHint') }}</p>
       </NCard>
 
       <NCard
@@ -1120,6 +1214,25 @@ function parseShortcutText(value: string): string[] {
             data-testid="open-file-formats"
             @click="openFileFormats"
             >{{ $t('ui.manage') }}</NButton
+          >
+        </div>
+        <div class="settings-row archive-types-row">
+          <div>
+            <strong>{{ $t('ui.archiveTypes') }}</strong>
+            <span>{{ $t('ui.archiveTypesHint') }}</span>
+          </div>
+        </div>
+        <div class="shared-session-input">
+          <NInput
+            v-model:value="archiveExtensionsDraft"
+            data-testid="archive-extensions-input"
+            :placeholder="$t('ui.archiveTypesPlaceholder')"
+          />
+          <NButton
+            size="small"
+            data-testid="apply-archive-extensions"
+            @click="applyArchiveExtensionsFromOptions"
+            >{{ $t('ui.apply') }}</NButton
           >
         </div>
       </NCard>

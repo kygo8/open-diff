@@ -1,7 +1,20 @@
-import { describe, expect, it } from 'vitest'
-import { archiveSideLabel, isArchivePath } from './archivePath'
+import { beforeEach, describe, expect, it } from 'vitest'
+import {
+  archiveExtensionsStorageKey,
+  archiveSideLabel,
+  formatArchiveSuffixesInput,
+  isArchivePath,
+  parseArchiveSuffixesInput,
+  resetArchiveSuffixes,
+  setArchiveSuffixes,
+} from './archivePath'
 
 describe('archivePath', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    resetArchiveSuffixes()
+  })
+
   it('detects implemented ZIP/TAR/7z family paths', () => {
     expect(isArchivePath('/tmp/pkg.zip')).toBe(true)
     expect(isArchivePath('C:\\data\\bundle.TAR.GZ')).toBe(true)
@@ -16,5 +29,21 @@ describe('archivePath', () => {
   it('labels sides as archive or folder', () => {
     expect(archiveSideLabel('a.zip')).toBe('archive')
     expect(archiveSideLabel('/home/user/docs')).toBe('folder')
+  })
+
+  it('persists custom archive suffixes used by Folder Compare', () => {
+    expect(setArchiveSuffixes(['.zip', 'rar', '.ZIP', ''])).toEqual(['.rar', '.zip'])
+    expect(isArchivePath('pack.rar')).toBe(true)
+    expect(isArchivePath('pack.7z')).toBe(false)
+    expect(JSON.parse(localStorage.getItem(archiveExtensionsStorageKey) ?? '[]')).toEqual([
+      '.rar',
+      '.zip',
+    ])
+    expect(formatArchiveSuffixesInput()).toBe('.rar, .zip')
+    expect(parseArchiveSuffixesInput('.zip, tar.gz ; 7z')).toEqual(
+      expect.arrayContaining(['.tar.gz', '.zip', '.7z']),
+    )
+    expect(parseArchiveSuffixesInput('.zip, tar.gz ; 7z')[0]).toBe('.tar.gz')
+    expect(parseArchiveSuffixesInput('.zip, tar.gz ; 7z')).toHaveLength(3)
   })
 })

@@ -34,16 +34,20 @@ export const useTabsStore = defineStore('tabs', () => {
     () => tabs.value.find((tab) => tab.id === activeTabId.value) ?? tabs.value[0],
   )
 
-  function openTab(tab: Omit<AppTab, 'id'>): AppTab {
-    const existing = tabs.value.find((item) => item.route === tab.route)
+  function openTab(tab: Omit<AppTab, 'id'> & { forceNew?: boolean }): AppTab {
+    const { forceNew, ...tabFields } = tab
 
-    if (existing) {
-      activeTabId.value = existing.id
+    if (!forceNew) {
+      const existing = tabs.value.find((item) => item.route === tabFields.route)
 
-      return existing
+      if (existing) {
+        activeTabId.value = existing.id
+
+        return existing
+      }
     }
 
-    const next = normalizeTab({ ...tab, id: crypto.randomUUID() })
+    const next = normalizeTab({ ...tabFields, id: crypto.randomUUID() })
 
     tabs.value.push(next)
     activeTabId.value = next.id

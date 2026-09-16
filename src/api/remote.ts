@@ -180,3 +180,7 @@ export function testRemoteProfile(id: string): Promise<string> {
 export function listRemotePath(profileId: string, path: string): Promise<RemoteEntry[]> {
   return invoke<RemoteEntry[]>('list_remote_path', { profileId, path })
 }
+
+export function setPreferIpv6(preferIpv6: boolean): Promise<void> {
+  return invoke('set_prefer_ipv6', { preferIpv6 })
+}

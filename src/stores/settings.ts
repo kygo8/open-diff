@@ -21,6 +21,12 @@ import {
   resetArchiveSuffixes,
   setArchiveSuffixes,
 } from '@/app/archivePath'
+import { clampBinaryCompareBufferSize, type BinaryCompareBufferSize } from '@/app/diskChangeReload'
+import {
+  loadHexCompareSessionOptions,
+  saveHexCompareSessionOptions,
+} from '@/app/hexCompareSessionOptions'
+import { setPreferIpv6 } from '@/api/remote'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type FontFamilyId = 'system' | 'segoe' | 'inter' | 'noto' | 'mono'
@@ -109,6 +115,13 @@ const enableRarArchiveTypesStorageKey = 'open-diff-enable-rar-archive-types'
 const escClosesFileViewsStorageKey = 'open-diff-esc-closes-file-views'
 const beepWhenScriptFinishedStorageKey = 'open-diff-beep-when-script-finished'
 const closeWhenScriptFinishedStorageKey = 'open-diff-close-when-script-finished'
+const checkForFilesChangedOnDiskStorageKey = 'open-diff-check-for-files-changed-on-disk'
+const autoReloadUnlessChangesDiscardedStorageKey = 'open-diff-auto-reload-unless-changes-discarded'
+const stickyHomeSessionSelectionStorageKey = 'open-diff-sticky-home-session-selection'
+const stickyHomeSessionIdStorageKey = 'open-diff-sticky-home-session-id'
+const preferIpv6WhenAvailableStorageKey = 'open-diff-prefer-ipv6-when-available'
+const watchFoldersForChangesStorageKey = 'open-diff-watch-folders-for-changes'
+const binaryCompareBufferSizeStorageKey = 'open-diff-binary-compare-buffer-size'
 const fontFamilyIds = new Set<FontFamilyId>(['system', 'segoe', 'inter', 'noto', 'mono'])
 const shortcutScopes = new Set<ShortcutScope>(['global', 'text-compare'])
 const commandIds = new Set<string>(commandRegistry.map((command) => command.id))
@@ -174,6 +187,13 @@ export const useSettingsStore = defineStore('settings', () => {
   const escClosesFileViews = ref(loadEscClosesFileViews())
   const beepWhenScriptFinished = ref(loadBeepWhenScriptFinished())
   const closeWhenScriptFinished = ref(loadCloseWhenScriptFinished())
+  const checkForFilesChangedOnDisk = ref(loadCheckForFilesChangedOnDisk())
+  const autoReloadUnlessChangesDiscarded = ref(loadAutoReloadUnlessChangesDiscarded())
+  const stickyHomeSessionSelection = ref(loadStickyHomeSessionSelection())
+  const stickyHomeSessionId = ref(loadStickyHomeSessionId())
+  const preferIpv6WhenAvailable = ref(loadPreferIpv6WhenAvailable())
+  const watchFoldersForChanges = ref(loadWatchFoldersForChanges())
+  const binaryCompareBufferSize = ref(loadBinaryCompareBufferSize())
 
   bindSystemThemeListener((prefersDark) => {
     systemPrefersDark.value = prefersDark
@@ -586,6 +606,72 @@ export const useSettingsStore = defineStore('settings', () => {
     { immediate: true, flush: 'sync' },
   )
 
+  watch(
+    checkForFilesChangedOnDisk,
+    (value) => {
+      localStorage.setItem(checkForFilesChangedOnDiskStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    autoReloadUnlessChangesDiscarded,
+    (value) => {
+      localStorage.setItem(autoReloadUnlessChangesDiscardedStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    stickyHomeSessionSelection,
+    (value) => {
+      localStorage.setItem(stickyHomeSessionSelectionStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    stickyHomeSessionId,
+    (value) => {
+      if (value) {
+        localStorage.setItem(stickyHomeSessionIdStorageKey, value)
+      } else {
+        localStorage.removeItem(stickyHomeSessionIdStorageKey)
+      }
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    preferIpv6WhenAvailable,
+    (value) => {
+      localStorage.setItem(preferIpv6WhenAvailableStorageKey, value ? '1' : '0')
+      syncPreferIpv6Backend(value)
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    watchFoldersForChanges,
+    (value) => {
+      localStorage.setItem(watchFoldersForChangesStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    binaryCompareBufferSize,
+    (value) => {
+      localStorage.setItem(binaryCompareBufferSizeStorageKey, String(value))
+      const hexOptions = loadHexCompareSessionOptions()
+
+      if (hexOptions.windowLength !== value) {
+        saveHexCompareSessionOptions({ ...hexOptions, windowLength: value })
+      }
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
   function toggleTheme(): void {
     theme.value = resolvedTheme.value === 'dark' ? 'light' : 'dark'
   }
@@ -885,6 +971,34 @@ export const useSettingsStore = defineStore('settings', () => {
     closeWhenScriptFinished.value = value
   }
 
+  function setCheckForFilesChangedOnDisk(value: boolean): void {
+    checkForFilesChangedOnDisk.value = value
+  }
+
+  function setAutoReloadUnlessChangesDiscarded(value: boolean): void {
+    autoReloadUnlessChangesDiscarded.value = value
+  }
+
+  function setStickyHomeSessionSelection(value: boolean): void {
+    stickyHomeSessionSelection.value = value
+  }
+
+  function setStickyHomeSessionId(value: string | null): void {
+    stickyHomeSessionId.value = value?.trim() ? value.trim() : null
+  }
+
+  function setPreferIpv6WhenAvailable(value: boolean): void {
+    preferIpv6WhenAvailable.value = value
+  }
+
+  function setWatchFoldersForChanges(value: boolean): void {
+    watchFoldersForChanges.value = value
+  }
+
+  function setBinaryCompareBufferSize(value: number): void {
+    binaryCompareBufferSize.value = clampBinaryCompareBufferSize(value)
+  }
+
   function exportSettingsPackage(): SettingsPackage {
     return {
       kind: settingsPackageKind,
@@ -939,6 +1053,13 @@ export const useSettingsStore = defineStore('settings', () => {
       escClosesFileViews: escClosesFileViews.value,
       beepWhenScriptFinished: beepWhenScriptFinished.value,
       closeWhenScriptFinished: closeWhenScriptFinished.value,
+      checkForFilesChangedOnDisk: checkForFilesChangedOnDisk.value,
+      autoReloadUnlessChangesDiscarded: autoReloadUnlessChangesDiscarded.value,
+      stickyHomeSessionSelection: stickyHomeSessionSelection.value,
+      stickyHomeSessionId: stickyHomeSessionId.value,
+      preferIpv6WhenAvailable: preferIpv6WhenAvailable.value,
+      watchFoldersForChanges: watchFoldersForChanges.value,
+      binaryCompareBufferSize: binaryCompareBufferSize.value,
     }
   }
 
@@ -1125,6 +1246,42 @@ export const useSettingsStore = defineStore('settings', () => {
         ? packageValue.closeWhenScriptFinished
         : false,
     )
+    setCheckForFilesChangedOnDisk(
+      typeof packageValue.checkForFilesChangedOnDisk === 'boolean'
+        ? packageValue.checkForFilesChangedOnDisk
+        : false,
+    )
+    setAutoReloadUnlessChangesDiscarded(
+      typeof packageValue.autoReloadUnlessChangesDiscarded === 'boolean'
+        ? packageValue.autoReloadUnlessChangesDiscarded
+        : false,
+    )
+    setStickyHomeSessionSelection(
+      typeof packageValue.stickyHomeSessionSelection === 'boolean'
+        ? packageValue.stickyHomeSessionSelection
+        : false,
+    )
+    setStickyHomeSessionId(
+      typeof packageValue.stickyHomeSessionId === 'string' ||
+        packageValue.stickyHomeSessionId === null
+        ? packageValue.stickyHomeSessionId
+        : stickyHomeSessionId.value,
+    )
+    setPreferIpv6WhenAvailable(
+      typeof packageValue.preferIpv6WhenAvailable === 'boolean'
+        ? packageValue.preferIpv6WhenAvailable
+        : false,
+    )
+    setWatchFoldersForChanges(
+      typeof packageValue.watchFoldersForChanges === 'boolean'
+        ? packageValue.watchFoldersForChanges
+        : false,
+    )
+    setBinaryCompareBufferSize(
+      typeof packageValue.binaryCompareBufferSize === 'number'
+        ? packageValue.binaryCompareBufferSize
+        : binaryCompareBufferSize.value,
+    )
 
     return true
   }
@@ -1180,6 +1337,13 @@ export const useSettingsStore = defineStore('settings', () => {
     setEscClosesFileViews(false)
     setBeepWhenScriptFinished(false)
     setCloseWhenScriptFinished(false)
+    setCheckForFilesChangedOnDisk(false)
+    setAutoReloadUnlessChangesDiscarded(false)
+    setStickyHomeSessionSelection(false)
+    setStickyHomeSessionId(null)
+    setPreferIpv6WhenAvailable(false)
+    setWatchFoldersForChanges(false)
+    setBinaryCompareBufferSize(256)
   }
 
   return {
@@ -1234,6 +1398,13 @@ export const useSettingsStore = defineStore('settings', () => {
     escClosesFileViews,
     beepWhenScriptFinished,
     closeWhenScriptFinished,
+    checkForFilesChangedOnDisk,
+    autoReloadUnlessChangesDiscarded,
+    stickyHomeSessionSelection,
+    stickyHomeSessionId,
+    preferIpv6WhenAvailable,
+    watchFoldersForChanges,
+    binaryCompareBufferSize,
     toggleTheme,
     setTheme,
     setLocale,
@@ -1289,6 +1460,13 @@ export const useSettingsStore = defineStore('settings', () => {
     setEscClosesFileViews,
     setBeepWhenScriptFinished,
     setCloseWhenScriptFinished,
+    setCheckForFilesChangedOnDisk,
+    setAutoReloadUnlessChangesDiscarded,
+    setStickyHomeSessionSelection,
+    setStickyHomeSessionId,
+    setPreferIpv6WhenAvailable,
+    setWatchFoldersForChanges,
+    setBinaryCompareBufferSize,
     exportSettingsPackage,
     importSettingsPackage,
     restoreFactoryDefaults,
@@ -1908,4 +2086,84 @@ function loadCloseWhenScriptFinished(): boolean {
   }
 
   return stored === '1'
+}
+
+function loadCheckForFilesChangedOnDisk(): boolean {
+  const stored = localStorage.getItem(checkForFilesChangedOnDiskStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadAutoReloadUnlessChangesDiscarded(): boolean {
+  const stored = localStorage.getItem(autoReloadUnlessChangesDiscardedStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadStickyHomeSessionSelection(): boolean {
+  const stored = localStorage.getItem(stickyHomeSessionSelectionStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadStickyHomeSessionId(): string | null {
+  const stored = localStorage.getItem(stickyHomeSessionIdStorageKey)
+
+  if (!stored?.trim()) {
+    return null
+  }
+
+  return stored.trim()
+}
+
+function loadPreferIpv6WhenAvailable(): boolean {
+  const stored = localStorage.getItem(preferIpv6WhenAvailableStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadWatchFoldersForChanges(): boolean {
+  const stored = localStorage.getItem(watchFoldersForChangesStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadBinaryCompareBufferSize(): BinaryCompareBufferSize {
+  const stored = localStorage.getItem(binaryCompareBufferSizeStorageKey)
+
+  if (stored === null) {
+    return clampBinaryCompareBufferSize(loadHexCompareSessionOptions().windowLength)
+  }
+
+  return clampBinaryCompareBufferSize(Number(stored))
+}
+
+function syncPreferIpv6Backend(value: boolean): void {
+  if (typeof window === 'undefined' || !('__TAURI_INTERNALS__' in window)) {
+    return
+  }
+
+  void setPreferIpv6(value).catch(() => {
+    // ponytail: web/dev without Tauri keeps frontend-only preference
+  })
 }

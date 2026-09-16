@@ -1115,6 +1115,23 @@ export const koKR: LanguagePack = {
     'ui.closeWhenScriptFinished': '스크립트 완료 시 닫기',
     'ui.scriptFinishedTweaksHint':
       '도구 > 보고서/스크립트에 적용됩니다. 성공 후 닫고 홈으로 돌아갑니다.',
+    'ui.checkForFilesChangedOnDisk': '디스크에서 변경된 파일 확인',
+    'ui.checkForFilesChangedOnDiskHint':
+      '파일 보기가 다시 포커스를 받으면 타임스탬프를 비교하고 변경 시 다시 로드를 제안합니다.',
+    'ui.autoReloadUnlessChangesDiscarded': '변경이 버려지지 않으면 자동으로 다시 로드',
+    'ui.autoReloadUnlessChangesDiscardedHint':
+      '보기에 저장되지 않은 편집이 없을 때 확인 없이 변경된 파일을 다시 로드합니다.',
+    'ui.stickyHomeSessionSelection': '홈 세션 선택 고정',
+    'ui.stickyHomeSessionSelectionHint':
+      '최신 세션으로 돌아가지 않고 홈에서 마지막으로 고른 세션을 기억합니다.',
+    'ui.preferIpv6WhenAvailable': '사용 가능할 때 IPv6 사용',
+    'ui.preferIpv6WhenAvailableHint':
+      'DNS가 두 계열을 모두 반환하면 원격 연결에서 IPv6 주소를 우선합니다.',
+    'ui.watchFoldersForChanges': '폴더 변경 감시',
+    'ui.watchFoldersForChangesHint': '켜져 있는 동안 약 30초마다 폴더 비교를 자동 새로 고칩니다.',
+    'ui.binaryCompareBufferSize': '이진 비교 버퍼 크기',
+    'ui.binaryCompareBufferSizeHint': '새 이진 비교에 사용하는 Hex 비교 기본 창 길이입니다.',
+    'ui.fileChangedOnDiskReload': '디스크의 파일이 변경되었습니다. 다시 로드할까요?',
     'ui.confirmQuitMessage': 'Open Diff를 종료할까요?',
     'ui.toOutput': '출력으로',
     'ui.folderMergeRulesHint': '자동 복사는 출력으로 가고, 충돌은 텍스트 병합에서 엽니다.',

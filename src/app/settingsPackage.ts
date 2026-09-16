@@ -60,6 +60,13 @@ export interface SettingsPackage {
   escClosesFileViews?: boolean
   beepWhenScriptFinished?: boolean
   closeWhenScriptFinished?: boolean
+  checkForFilesChangedOnDisk?: boolean
+  autoReloadUnlessChangesDiscarded?: boolean
+  stickyHomeSessionSelection?: boolean
+  stickyHomeSessionId?: string | null
+  preferIpv6WhenAvailable?: boolean
+  watchFoldersForChanges?: boolean
+  binaryCompareBufferSize?: number
 }
 
 export function isSettingsPackage(value: unknown): value is SettingsPackage {

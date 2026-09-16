@@ -55,6 +55,7 @@ pub fn run() {
             commands::find_hex_in_file,
             commands::list_archive,
             commands::set_archive_extensions,
+            commands::set_prefer_ipv6,
             commands::list_remote_path,
             commands::list_remote_profiles,
             commands::load_admin_policy,

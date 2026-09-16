@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   Binary,
@@ -539,6 +539,9 @@ function lastOpenedLabel(session: SessionDocument): string {
 
 function selectSavedSession(session: SessionDocument): void {
   selectedSessionId.value = session.id
+  if (settings.stickyHomeSessionSelection) {
+    settings.setStickyHomeSessionId(session.id)
+  }
 }
 
 const canEditSelected = computed(() => {
@@ -606,6 +609,21 @@ function openSelectedPreview(): void {
 
   openSession(quickStartEntries.value[0])
 }
+
+onMounted(() => {
+  if (!settings.stickyHomeSessionSelection || !settings.stickyHomeSessionId) {
+    return
+  }
+
+  const stickyId = settings.stickyHomeSessionId
+  const exists =
+    savedSessions.sessions.some((session) => session.id === stickyId) ||
+    savedSessions.autoSavedSessions.some((session) => session.id === stickyId)
+
+  if (exists) {
+    selectedSessionId.value = stickyId
+  }
+})
 </script>
 
 <template>

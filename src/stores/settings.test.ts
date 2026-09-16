@@ -1,6 +1,10 @@
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useSettingsStore } from './settings'
+
+vi.mock('@/api/remote', () => ({
+  setPreferIpv6: vi.fn().mockResolvedValue(undefined),
+}))
 import { resetArchiveSuffixes } from '@/app/archivePath'
 import { commandRegistry } from '@/app/commandRegistry'
 
@@ -414,5 +418,37 @@ describe('useSettingsStore', () => {
 
     store.setEnableRarArchiveTypes(false)
     expect(store.archiveExtensions).not.toContain('.rar')
+  })
+  it('persists Tweaks leftovers for disk reload, sticky Home, IPv6, watch folders, and binary buffer', () => {
+    const store = useSettingsStore()
+
+    expect(store.checkForFilesChangedOnDisk).toBe(false)
+    expect(store.autoReloadUnlessChangesDiscarded).toBe(false)
+    expect(store.stickyHomeSessionSelection).toBe(false)
+    expect(store.preferIpv6WhenAvailable).toBe(false)
+    expect(store.watchFoldersForChanges).toBe(false)
+    expect(store.binaryCompareBufferSize).toBe(256)
+
+    store.setCheckForFilesChangedOnDisk(true)
+    store.setAutoReloadUnlessChangesDiscarded(true)
+    store.setStickyHomeSessionSelection(true)
+    store.setStickyHomeSessionId('session-1')
+    store.setPreferIpv6WhenAvailable(true)
+    store.setWatchFoldersForChanges(true)
+    store.setBinaryCompareBufferSize(1024)
+
+    expect(localStorage.getItem('open-diff-check-for-files-changed-on-disk')).toBe('1')
+    expect(localStorage.getItem('open-diff-auto-reload-unless-changes-discarded')).toBe('1')
+    expect(localStorage.getItem('open-diff-sticky-home-session-selection')).toBe('1')
+    expect(localStorage.getItem('open-diff-sticky-home-session-id')).toBe('session-1')
+    expect(localStorage.getItem('open-diff-prefer-ipv6-when-available')).toBe('1')
+    expect(localStorage.getItem('open-diff-watch-folders-for-changes')).toBe('1')
+    expect(localStorage.getItem('open-diff-binary-compare-buffer-size')).toBe('1024')
+    expect(
+      JSON.parse(localStorage.getItem('open-diff-hex-compare-session-options') ?? '{}'),
+    ).toMatchObject({ windowLength: 1024 })
+
+    store.setStickyHomeSessionId(null)
+    expect(localStorage.getItem('open-diff-sticky-home-session-id')).toBeNull()
   })
 })

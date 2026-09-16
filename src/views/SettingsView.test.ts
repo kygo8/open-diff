@@ -477,6 +477,26 @@ describe('SettingsView', () => {
     expect(settings.closeWhenScriptFinished).toBe(true)
     wrapper.unmount()
   })
+  it('persists Tweaks leftovers for disk reload, sticky Home, IPv6, watch folders, and binary buffer', async () => {
+    const wrapper = mountSettingsView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
+    await wrapper.find('[data-testid="check-for-files-changed-on-disk"]').setValue(true)
+    expect(settings.checkForFilesChangedOnDisk).toBe(true)
+    await wrapper.find('[data-testid="auto-reload-unless-changes-discarded"]').setValue(true)
+    expect(settings.autoReloadUnlessChangesDiscarded).toBe(true)
+    await wrapper.find('[data-testid="sticky-home-session-selection"]').setValue(true)
+    expect(settings.stickyHomeSessionSelection).toBe(true)
+    await wrapper.find('[data-testid="prefer-ipv6-when-available"]').setValue(true)
+    expect(settings.preferIpv6WhenAvailable).toBe(true)
+    await wrapper.find('[data-testid="watch-folders-for-changes"]').setValue(true)
+    expect(settings.watchFoldersForChanges).toBe(true)
+    await wrapper.find('[data-testid="binary-compare-buffer-size"]').setValue('2048')
+    await wrapper.find('[data-testid="binary-compare-buffer-size"]').trigger('change')
+    expect(settings.binaryCompareBufferSize).toBe(2048)
+    wrapper.unmount()
+  })
 })
 
 it('persists Folder/Hex/File Filters compare options and text ignore defaults', async () => {

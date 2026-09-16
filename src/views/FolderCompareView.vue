@@ -122,6 +122,7 @@ import type {
   FolderCompareSideEntry,
 } from '@/types/diff'
 import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
+import { FOLDER_WATCH_REFRESH_MS } from '@/app/diskChangeReload'
 import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import RemotePathBrowser from '@/components/remote/RemotePathBrowser.vue'
@@ -295,6 +296,7 @@ const showFolderSelect = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
 const selectNameFilter = ref('')
 let folderCompareGeneration = 0
+let folderWatchTimer: ReturnType<typeof setInterval> | undefined
 const rowHeight = 34
 const virtualViewportRows = 18
 const virtualOverscanRows = 4
@@ -2824,8 +2826,35 @@ function handleTreeScroll(event: Event): void {
   scrollTop.value = (event.currentTarget as HTMLElement).scrollTop
 }
 
+watch(
+  () => settings.watchFoldersForChanges,
+  (enabled) => {
+    if (folderWatchTimer !== undefined) {
+      clearInterval(folderWatchTimer)
+      folderWatchTimer = undefined
+    }
+
+    if (!enabled) {
+      return
+    }
+
+    folderWatchTimer = setInterval(() => {
+      if (!leftRoot.value || !rightRoot.value || folderCompareLoading.value) {
+        return
+      }
+
+      void runFolderCompare()
+    }, FOLDER_WATCH_REFRESH_MS)
+  },
+  { immediate: true },
+)
+
 onUnmounted(() => {
   window.removeEventListener('click', closeContextMenus)
+  if (folderWatchTimer !== undefined) {
+    clearInterval(folderWatchTimer)
+    folderWatchTimer = undefined
+  }
   folderPathNavStore.reset()
 })
 </script>

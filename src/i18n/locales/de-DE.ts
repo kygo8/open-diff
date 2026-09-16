@@ -1146,6 +1146,25 @@ export const deDE: LanguagePack = {
     'ui.closeWhenScriptFinished': 'Bei Skriptende schließen',
     'ui.scriptFinishedTweaksHint':
       'Gilt für Tools > Berichte / Skripte. Schließen kehrt nach erfolgreichem Lauf zur Startseite zurück.',
+    'ui.checkForFilesChangedOnDisk': 'Auf geänderte Dateien auf dem Datenträger prüfen',
+    'ui.checkForFilesChangedOnDiskHint':
+      'Beim erneuten Fokus einer Dateiansicht Zeitstempel vergleichen und bei Änderung neu laden anbieten.',
+    'ui.autoReloadUnlessChangesDiscarded':
+      'Automatisch neu laden, sofern Änderungen nicht verworfen werden',
+    'ui.autoReloadUnlessChangesDiscardedHint':
+      'Geänderte Dateien ohne Nachfrage neu laden, wenn die Ansicht keine ungespeicherten Änderungen hat.',
+    'ui.stickyHomeSessionSelection': 'Sticky-Auswahl der Home-Sitzung',
+    'ui.stickyHomeSessionSelectionHint':
+      'Die zuletzt auf Home gewählte Sitzung merken statt zur neuesten Sitzung zurückzufallen.',
+    'ui.preferIpv6WhenAvailable': 'IPv6 verwenden, wenn verfügbar',
+    'ui.preferIpv6WhenAvailableHint':
+      'IPv6-Adressen für Remote-Verbindungen bevorzugen, wenn DNS beide Familien liefert.',
+    'ui.watchFoldersForChanges': 'Ordner auf Änderungen überwachen',
+    'ui.watchFoldersForChangesHint':
+      'Ordnervergleich etwa alle 30 Sekunden automatisch aktualisieren, solange diese Option aktiv ist.',
+    'ui.binaryCompareBufferSize': 'Puffergröße für Binärvergleich',
+    'ui.binaryCompareBufferSizeHint': 'Standard-Fensterlänge für neue Hex-Vergleiche.',
+    'ui.fileChangedOnDiskReload': 'Datei auf dem Datenträger geändert. Neu laden?',
     'ui.confirmQuitMessage': 'Open Diff beenden?',
     'ui.toOutput': 'Zur Ausgabe',
     'ui.folderMergeRulesHint':

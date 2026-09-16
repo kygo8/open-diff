@@ -646,6 +646,66 @@ function onCloseWhenScriptFinishedChange(event: Event): void {
   settings.setCloseWhenScriptFinished(target.checked)
 }
 
+function onCheckForFilesChangedOnDiskChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setCheckForFilesChangedOnDisk(target.checked)
+}
+
+function onAutoReloadUnlessChangesDiscardedChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setAutoReloadUnlessChangesDiscarded(target.checked)
+}
+
+function onStickyHomeSessionSelectionChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setStickyHomeSessionSelection(target.checked)
+}
+
+function onPreferIpv6WhenAvailableChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setPreferIpv6WhenAvailable(target.checked)
+}
+
+function onWatchFoldersForChangesChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setWatchFoldersForChanges(target.checked)
+}
+
+function onBinaryCompareBufferSizeChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLSelectElement) && !(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setBinaryCompareBufferSize(Number(target.value))
+}
+
 function onConfirmBeforeMoveChange(event: Event): void {
   const target = event.target
 
@@ -809,6 +869,7 @@ function persistHexCompareDefaultsDraft(): void {
     bytesPerRow: normalizeHexBytesPerRow(hexCompareDefaultsDraft.value.bytesPerRow),
   }
   saveHexCompareSessionOptions(hexCompareDefaultsDraft.value)
+  settings.setBinaryCompareBufferSize(hexCompareDefaultsDraft.value.windowLength)
 }
 
 function persistFileFiltersDraft(): void {
@@ -2172,6 +2233,72 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.closeWhenScriptFinished') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.scriptFinishedTweaksHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="check-for-files-changed-on-disk"
+              type="checkbox"
+              :checked="settings.checkForFilesChangedOnDisk"
+              @change="onCheckForFilesChangedOnDiskChange"
+            />
+            <span>{{ $t('ui.checkForFilesChangedOnDisk') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.checkForFilesChangedOnDiskHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="auto-reload-unless-changes-discarded"
+              type="checkbox"
+              :checked="settings.autoReloadUnlessChangesDiscarded"
+              :disabled="!settings.checkForFilesChangedOnDisk"
+              @change="onAutoReloadUnlessChangesDiscardedChange"
+            />
+            <span>{{ $t('ui.autoReloadUnlessChangesDiscarded') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.autoReloadUnlessChangesDiscardedHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="sticky-home-session-selection"
+              type="checkbox"
+              :checked="settings.stickyHomeSessionSelection"
+              @change="onStickyHomeSessionSelectionChange"
+            />
+            <span>{{ $t('ui.stickyHomeSessionSelection') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.stickyHomeSessionSelectionHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="prefer-ipv6-when-available"
+              type="checkbox"
+              :checked="settings.preferIpv6WhenAvailable"
+              @change="onPreferIpv6WhenAvailableChange"
+            />
+            <span>{{ $t('ui.preferIpv6WhenAvailable') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.preferIpv6WhenAvailableHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="watch-folders-for-changes"
+              type="checkbox"
+              :checked="settings.watchFoldersForChanges"
+              @change="onWatchFoldersForChangesChange"
+            />
+            <span>{{ $t('ui.watchFoldersForChanges') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.watchFoldersForChangesHint') }}</p>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.binaryCompareBufferSize') }}</span>
+            <select
+              data-testid="binary-compare-buffer-size"
+              :value="settings.binaryCompareBufferSize"
+              @change="onBinaryCompareBufferSizeChange"
+            >
+              <option :value="256">256</option>
+              <option :value="512">512</option>
+              <option :value="1024">1024</option>
+              <option :value="2048">2048</option>
+              <option :value="4096">4096</option>
+            </select>
+          </label>
+          <p class="options-hint">{{ $t('ui.binaryCompareBufferSizeHint') }}</p>
           <NButton
             size="small"
             data-testid="restore-factory-defaults"

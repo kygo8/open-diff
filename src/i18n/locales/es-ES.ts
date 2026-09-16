@@ -176,6 +176,8 @@ export const esES: LanguagePack = {
     'ui.hexDetails': 'Detalles hexagonales',
     'ui.help': 'Ayuda',
     'ui.helpContents': 'Contenido',
+    'ui.contextHelp': 'Ayuda contextual',
+    'ui.contextHelpTopic': 'Ayuda: {topic}',
     'ui.about': 'Acerca de Open Diff',
     'ui.checkForUpdates': 'Buscar actualizaciones',
     'ui.support': 'Soporte',

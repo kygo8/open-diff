@@ -177,6 +177,8 @@ export const frFR: LanguagePack = {
     'ui.hexDetails': "Détails de l'hexagone",
     'ui.help': 'Aide',
     'ui.helpContents': 'Sommaire',
+    'ui.contextHelp': 'Aide contextuelle',
+    'ui.contextHelpTopic': 'Aide : {topic}',
     'ui.about': 'À propos d’Open Diff',
     'ui.checkForUpdates': 'Rechercher des mises à jour',
     'ui.support': 'Assistance',

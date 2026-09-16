@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
+  contextHelpTopic,
   isFolderCompareRoute,
   isFolderishSessionRoute,
   isSessionWorkbenchPath,
+  isTextishSessionRoute,
   isSingleSessionFrame,
   preferDenseAppChrome,
   shouldShowTabStrip,
@@ -116,5 +118,9 @@ describe('session route helpers', () => {
     expect(isFolderishSessionRoute('/sync/folder')).toBe(true)
     expect(isFolderCompareRoute('/compare/folder')).toBe(true)
     expect(isFolderCompareRoute('/sync/folder')).toBe(false)
+    expect(isTextishSessionRoute('/compare/text')).toBe(true)
+    expect(isTextishSessionRoute('/compare/folder')).toBe(false)
+    expect(contextHelpTopic('/compare/hex')).toBe('hex-compare')
+    expect(contextHelpTopic('/')).toBe('home')
   })
 })

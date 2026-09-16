@@ -95,6 +95,32 @@ it('enables Merge View Show Changes / Conflicts / Center Pane and Compare to Out
   expect(resolveMenuCommandEnabled('session.compareToOutput', true, baseCtx)).toBe(false)
 })
 
+it('enables Show All / Differences / Minor and Filters only where they run', () => {
+  expect(resolveMenuCommandEnabled('view.showAll', true, baseCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.showDifferences', true, baseCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.toggleMinor', true, baseCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.filters', true, baseCtx)).toBe(true)
+  expect(
+    resolveMenuCommandEnabled('view.showAll', true, {
+      ...baseCtx,
+      routePath: '/',
+    }),
+  ).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('view.filters', true, {
+      ...baseCtx,
+      routePath: '/compare/text',
+    }),
+  ).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('edit.copyLeft', true, {
+      ...baseCtx,
+      routePath: '/compare/text',
+    }),
+  ).toBe(true)
+  expect(resolveMenuCommandEnabled('edit.copyLeft', true, baseCtx)).toBe(false)
+})
+
 it('gates Compare Parent / Base Folders and keeps New Session global', () => {
   expect(resolveMenuCommandEnabled('session.compareParentFolders', true, baseCtx)).toBe(true)
   expect(

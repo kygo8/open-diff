@@ -172,6 +172,8 @@ export const koKR: LanguagePack = {
     'ui.hexDetails': '16진수 세부정보',
     'ui.help': '돕다',
     'ui.helpContents': '목차',
+    'ui.contextHelp': '상황별 도움말',
+    'ui.contextHelpTopic': '도움말: {topic}',
     'ui.about': 'Open Diff 정보',
     'ui.checkForUpdates': '업데이트 확인',
     'ui.support': '지원',

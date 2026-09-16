@@ -6,6 +6,7 @@ import {
   isFolderSyncRoute,
   isRegistrySessionRoute,
   isSessionWorkbenchPath,
+  isTextishSessionRoute,
 } from './shellChrome'
 
 /** Actions that need a checked row or focused selection to run honestly. */
@@ -180,6 +181,22 @@ export function resolveMenuCommandEnabled(
 
   if (commandId === 'view.toolbar') {
     return true
+  }
+
+  if (
+    commandId === 'view.showAll' ||
+    commandId === 'view.showDifferences' ||
+    commandId === 'view.toggleMinor'
+  ) {
+    return isSessionWorkbenchPath(path)
+  }
+
+  if (commandId === 'view.filters') {
+    return folderishOrRegistryRoute(path)
+  }
+
+  if (commandId === 'edit.copyLeft' || commandId === 'edit.copyRight') {
+    return isTextishSessionRoute(path)
   }
 
   if (commandId === 'actions.attributes' || commandId === 'actions.touch') {

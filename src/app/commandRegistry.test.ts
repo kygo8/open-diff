@@ -22,6 +22,7 @@ describe('commandRegistry', () => {
         'session.export',
         'session.newTab',
         'help.about',
+        'help.contextHelp',
         'help.checkForUpdates',
         'edit.copyLeft',
         'edit.copyRight',

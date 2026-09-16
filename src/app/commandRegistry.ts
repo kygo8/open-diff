@@ -46,6 +46,7 @@ export type CommandId =
   | 'tools.restoreFactoryDefaults'
   | 'tools.saveSnapshot'
   | 'help.contents'
+  | 'help.contextHelp'
   | 'help.about'
   | 'help.checkForUpdates'
   | 'help.support'
@@ -168,6 +169,7 @@ export type CommandAction =
         | 'about'
         | 'check-for-updates'
         | 'help-contents'
+        | 'help-context'
         | 'help-support'
         | 'session-settings'
         | 'compare'
@@ -761,6 +763,16 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['F1'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'help-contents' },
+  },
+  {
+    id: 'help.contextHelp',
+    titleKey: 'ui.contextHelp',
+    keywords: ['help', 'context', 'session'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'help-context' },
   },
   {
     id: 'help.about',

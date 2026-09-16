@@ -201,6 +201,8 @@ export const jaJP: LanguagePack = {
     'ui.hexDetails': 'Hex Details',
     'ui.help': 'Help',
     'ui.helpContents': '目次',
+    'ui.contextHelp': 'コンテキスト ヘルプ',
+    'ui.contextHelpTopic': 'ヘルプ: {topic}',
     'ui.about': 'Open Diff について',
     'ui.checkForUpdates': '更新を確認',
     'ui.support': 'サポート',

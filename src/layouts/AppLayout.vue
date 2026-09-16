@@ -47,6 +47,7 @@ import { sessionCatalog } from '@/app/sessionCatalog'
 import { createUntitledSession } from '@/app/sessionFactory'
 import { isSessionWorkbenchRoute, tabRoutePathname } from '@/app/sessionTabRoute'
 import {
+  contextHelpTopic,
   isSessionWorkbenchPath as isSessionWorkbenchPathHelper,
   isSingleSessionFrame,
   preferDenseAppChrome,
@@ -253,7 +254,13 @@ const appMenus: AppMenuDefinition[] = [
       'open.textCompare',
       'open.folderCompare',
       'open.folderSync',
+      'open.folderMerge',
       'open.textMerge',
+      'open.hexCompare',
+      'open.tableCompare',
+      'open.pictureCompare',
+      'open.mediaCompare',
+      'open.versionCompare',
       'open.registryCompare',
       'session.newTab',
       'session.newWindow',
@@ -456,7 +463,13 @@ const appMenus: AppMenuDefinition[] = [
   {
     id: 'help',
     titleKey: 'ui.help',
-    commandIds: ['help.contents', 'help.about', 'help.checkForUpdates', 'help.support'],
+    commandIds: [
+      'help.contents',
+      'help.contextHelp',
+      'help.about',
+      'help.checkForUpdates',
+      'help.support',
+    ],
   },
 ]
 const visibleAppMenus = computed(() => {
@@ -855,6 +868,10 @@ const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
       void openHelpLink(RELEASES_URL, 'updates')
     }
     if (name === 'help-contents') {
+      void openHelpLink(DOCS_URL, 'docs')
+    }
+    if (name === 'help-context') {
+      helpStatusMessage.value = t('ui.contextHelpTopic', { topic: contextHelpTopic(route.path) })
       void openHelpLink(DOCS_URL, 'docs')
     }
     if (name === 'help-support') {

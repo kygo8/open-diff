@@ -22,7 +22,9 @@ describe('session aux chrome density', () => {
     expect(confirmDialog).toMatch(/h2\s*\{[\s\S]*?font-size:\s*12px/)
     expect(confirmDialog).toMatch(/\.path-list\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(confirmDialog).toMatch(/\.path-list\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(confirmDialog).toMatch(/\.primary-action,\s*\.secondary-action\s*\{[\s\S]*?height:\s*18px/)
+    expect(confirmDialog).toMatch(
+      /\.primary-action,\s*\.secondary-action\s*\{[\s\S]*?height:\s*18px/,
+    )
     expect(confirmDialog).not.toMatch(/box-shadow:\s*0 18px 44px/)
     expect(confirmDialog).not.toMatch(/padding:\s*16px/)
   })

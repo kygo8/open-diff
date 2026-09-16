@@ -5,6 +5,10 @@ import { describe, expect, it } from 'vitest'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const homeView = readFileSync(resolve(root, 'src/views/HomeView.vue'), 'utf8')
+const workspaceManager = readFileSync(
+  resolve(root, 'src/components/session/WorkspaceManager.vue'),
+  'utf8',
+)
 
 describe('home chrome density', () => {
   it('keeps Home CTA/tree/header/footer chrome dense toward capture', () => {
@@ -26,5 +30,19 @@ describe('home chrome density', () => {
     expect(homeView).toMatch(/:size="10"/)
     expect(homeView).toMatch(/\.new-session-panel,\s*\.recent-session-panel\s*\{[\s\S]*?gap:\s*1px/)
     expect(homeView).toMatch(/\.home-title-count\s*\{[\s\S]*?font-size:\s*11px/)
+  })
+
+  it('keeps leftover workspace manager chrome dense toward Home session lists', () => {
+    expect(workspaceManager).toMatch(/\.workspace-manager\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(workspaceManager).toMatch(/\.workspace-manager\s*\{[\s\S]*?gap:\s*4px/)
+    expect(workspaceManager).toMatch(/\.workspace-save-row input\s*\{[\s\S]*?height:\s*20px/)
+    expect(workspaceManager).toMatch(/\.workspace-save-row input\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(workspaceManager).toMatch(
+      /\.workspace-save-row button,\s*\.workspace-row button\s*\{[\s\S]*?height:\s*18px/,
+    )
+    expect(workspaceManager).toMatch(
+      /\.workspace-save-row button,\s*\.workspace-row button\s*\{[\s\S]*?border-radius:\s*0/,
+    )
+    expect(workspaceManager).not.toMatch(/padding:\s*8px/)
   })
 })

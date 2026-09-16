@@ -74,8 +74,8 @@ function saveWorkspace(): void {
 <style scoped>
 .workspace-manager {
   display: grid;
-  gap: 8px;
-  padding: 8px;
+  gap: 4px;
+  padding: 2px 4px;
 }
 
 .workspace-save-row,
@@ -83,15 +83,15 @@ function saveWorkspace(): void {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .workspace-save-row input {
   min-width: 0;
-  height: 26px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-canvas);
   color: var(--app-text);
   font-size: 12px;
@@ -99,10 +99,10 @@ function saveWorkspace(): void {
 
 .workspace-save-row button,
 .workspace-row button {
-  height: 24px;
-  padding: 0 7px;
+  height: 18px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-canvas);
   color: var(--app-text-muted);
   font-size: 11px;

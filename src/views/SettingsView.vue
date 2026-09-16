@@ -191,8 +191,12 @@ function parseRgbaDraft(value: string): number[] | null {
 }
 
 const pictureCompareDefaultsDraft = ref(loadPictureCompareOptions())
-const pictureIgnoreColorFromDraft = ref(formatRgbaDraft(pictureCompareDefaultsDraft.value.ignoreColorFrom))
-const pictureIgnoreColorToDraft = ref(formatRgbaDraft(pictureCompareDefaultsDraft.value.ignoreColorTo))
+const pictureIgnoreColorFromDraft = ref(
+  formatRgbaDraft(pictureCompareDefaultsDraft.value.ignoreColorFrom),
+)
+const pictureIgnoreColorToDraft = ref(
+  formatRgbaDraft(pictureCompareDefaultsDraft.value.ignoreColorTo),
+)
 const mediaCompareDefaultsDraft = ref(loadMediaCompareOptions())
 const versionCompareDefaultsDraft = ref(loadVersionCompareOptions())
 const tableCompareDefaultsDraft = ref(loadTableCompareSessionOptions())

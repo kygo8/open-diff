@@ -636,7 +636,7 @@ onMounted(() => {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture-pass11"
+      data-home-density="capture-pass12"
       data-home-chrome="minimal"
     >
       <aside
@@ -833,7 +833,7 @@ onMounted(() => {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="18"
+                  :size="16"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1154,7 +1154,7 @@ onMounted(() => {
 
 .bc-session-tree {
   display: grid;
-  grid-template-rows: 10px minmax(0, 1fr) 11px;
+  grid-template-rows: 9px minmax(0, 1fr) 10px;
   min-width: 0;
   min-height: 0;
   border-right: 1px solid #a0a0a0;
@@ -1170,7 +1170,7 @@ onMounted(() => {
   border-bottom: 1px solid #a0a0a0;
   background: #eceff3;
   color: #111827;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   line-height: 1;
   text-overflow: ellipsis;
@@ -1185,11 +1185,11 @@ onMounted(() => {
 
 .bc-tree-row {
   display: grid;
-  grid-template-columns: 8px 9px minmax(0, 1fr);
+  grid-template-columns: 7px 8px minmax(0, 1fr);
   align-items: center;
   gap: 1px;
   width: 100%;
-  min-height: 9px;
+  min-height: 8px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -1225,7 +1225,7 @@ onMounted(() => {
 
 .bc-tree-footer {
   display: grid;
-  grid-template-columns: 9px 9px minmax(0, 1fr);
+  grid-template-columns: 8px 8px minmax(0, 1fr);
   align-items: center;
   gap: 1px;
   padding: 1px;
@@ -1234,7 +1234,7 @@ onMounted(() => {
 }
 
 .bc-tree-footer button {
-  height: 9px;
+  height: 8px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
@@ -1246,7 +1246,7 @@ onMounted(() => {
 .bc-tree-footer input {
   width: 100%;
   min-width: 0;
-  height: 9px;
+  height: 8px;
   padding: 0 1px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
@@ -1317,7 +1317,7 @@ onMounted(() => {
 .bc-selected-actions button {
   width: 48px;
   max-width: 100%;
-  height: 11px;
+  height: 10px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1385,7 +1385,7 @@ onMounted(() => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 32px;
+  min-height: 30px;
   padding: 0;
   overflow: hidden;
   border: 0;
@@ -1406,8 +1406,8 @@ onMounted(() => {
 
 .session-card-icon {
   display: inline-grid;
-  width: 24px;
-  height: 18px;
+  width: 22px;
+  height: 16px;
   color: #2f353d;
   place-items: center;
 }

@@ -1157,6 +1157,8 @@ export const zhCN: LanguagePack = {
     'status.compareContentsNoRoute': '当前选择没有可用的内容比较会话。',
     'status.synchronizeNeedsRoots': '同步前请先设置左右文件夹根路径。',
     'status.explorerRevealed': '已在文件管理器中显示 {path}',
+    'status.explorerOpenedParent': '已在文件管理器中打开父文件夹 {path}',
+    'status.selectionReportReady': '选择范围报告已就绪（{count} 项）',
     'status.ignoredMarked': '已将 {path} 标记为忽略',
     'status.ignoredUnmarked': '已取消 {path} 的忽略标记',
   },

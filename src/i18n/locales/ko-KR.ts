@@ -1186,6 +1186,8 @@ export const koKR: LanguagePack = {
     'status.compareContentsNoRoute': '이 선택에 사용할 내용 비교 세션이 없습니다.',
     'status.synchronizeNeedsRoots': '동기화하기 전에 양쪽 폴더 루트를 설정하세요.',
     'status.explorerRevealed': '파일 관리자에서 {path} 표시함',
+    'status.explorerOpenedParent': '파일 관리자에서 상위 폴더 {path} 열림',
+    'status.selectionReportReady': '선택 범위 보고서 준비됨 ({count}개 항목)',
     'status.ignoredMarked': '{path}을(를) 무시로 표시함',
     'status.ignoredUnmarked': '{path} 무시 표시를 해제함',
   },

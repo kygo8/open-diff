@@ -70,6 +70,7 @@ pub fn run() {
             commands::register_windows_shell_extension,
             commands::register_unix_shell_integration,
             commands::open_path_external,
+            commands::reveal_path_in_os,
             commands::take_shell_compare_launch,
             commands::unregister_windows_shell_extension,
             commands::unregister_unix_shell_integration,

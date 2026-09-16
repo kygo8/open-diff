@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   openPathExternal,
   registerUnixShellIntegration,
+  revealPathInOs,
   writeGitIntegration,
   writeSvnIntegration,
 } from './integration'
@@ -48,6 +49,19 @@ describe('integration api', () => {
     await registerUnixShellIntegration('/usr/bin/open-diff-app')
     expect(invoke).toHaveBeenCalledWith('register_unix_shell_integration', {
       executablePath: '/usr/bin/open-diff-app',
+    })
+  })
+
+  it('reveals paths in the OS file manager through Tauri', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      path: '/tmp/a.txt',
+      selected: true,
+      fallbackOpened: false,
+      launched: true,
+    })
+    await revealPathInOs('/tmp/a.txt')
+    expect(invoke).toHaveBeenCalledWith('reveal_path_in_os', {
+      path: '/tmp/a.txt',
     })
   })
 })

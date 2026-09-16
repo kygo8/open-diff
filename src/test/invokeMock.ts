@@ -266,6 +266,13 @@ export function invokeResponse(command: string, args: Record<string, unknown> = 
         executable: args.executable ?? null,
         launched: true,
       }
+    case 'reveal_path_in_os':
+      return {
+        path: args.path ?? '',
+        selected: true,
+        fallbackOpened: false,
+        launched: true,
+      }
     case 'take_shell_compare_launch':
       return null
     case 'load_admin_policy':

@@ -4,6 +4,15 @@ import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import type { SessionLaunchPayload } from '@/types/sessionLaunch'
 import type { SessionType } from '@/types/session'
 
+/** Absolute path to select/highlight in the OS file manager (the entry itself). */
+export function explorerSelectTargetPath(entryPath: string): string {
+  return entryPath.trim()
+}
+
+/**
+ * Fallback folder to open when OS select/highlight is unavailable.
+ * Files open their parent; directories open themselves.
+ */
 export function explorerRevealPath(
   entryPath: string,
   kind: 'file' | 'directory' | undefined,

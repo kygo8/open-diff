@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest'
 import {
   createFolderSyncHandoffLaunch,
   explorerRevealPath,
+  explorerSelectTargetPath,
   toggleIgnoredRowId,
 } from './folderCompareExtraActions'
 
 describe('folderCompareExtraActions', () => {
-  it('reveals parent folder for files and keeps directories', () => {
+  it('selects the entry itself and falls back to parent folder for files', () => {
+    expect(explorerSelectTargetPath(' /tmp/demo/a.txt ')).toBe('/tmp/demo/a.txt')
     expect(explorerRevealPath('/tmp/demo/a.txt', 'file')).toBe('/tmp/demo')
     expect(explorerRevealPath('/tmp/demo', 'directory')).toBe('/tmp/demo')
     expect(explorerRevealPath('D:\\left\\src\\main.ts', 'file')).toBe('D:\\left\\src')

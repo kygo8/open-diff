@@ -1159,6 +1159,8 @@ export const zhTW: LanguagePack = {
     'status.compareContentsNoRoute': '目前選取項目沒有可用的內容比較工作階段。',
     'status.synchronizeNeedsRoots': '同步前請先設定左右資料夾根路徑。',
     'status.explorerRevealed': '已在檔案管理員中顯示 {path}',
+    'status.explorerOpenedParent': '已在檔案管理員中開啟父資料夾 {path}',
+    'status.selectionReportReady': '選取範圍報告已就緒（{count} 項）',
     'status.ignoredMarked': '已將 {path} 標記為忽略',
     'status.ignoredUnmarked': '已取消 {path} 的忽略標記',
   },

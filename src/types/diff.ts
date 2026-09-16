@@ -262,8 +262,8 @@ export interface FolderCompareCopyResponse {
   refreshedStatus: 'unknown' | 'same' | 'different' | 'leftOnly' | 'rightOnly' | 'error'
 }
 
-export type FolderFileOperationKind = 'move' | 'delete' | 'rename' | 'createFolder'
-export type FolderFileOperationStatus = 'moved' | 'deleted' | 'renamed' | 'created'
+export type FolderFileOperationKind = 'move' | 'copy' | 'delete' | 'rename' | 'createFolder'
+export type FolderFileOperationStatus = 'moved' | 'copied' | 'deleted' | 'renamed' | 'created'
 
 export interface FolderFileOperationResponse {
   operation: FolderFileOperationKind
@@ -598,6 +598,11 @@ export interface HexSaveRequest {
 export interface HexSaveResult {
   bytesWritten: number
   backupPath?: string
+}
+
+export interface CopyFolderEntryRequest {
+  sourcePath: string
+  targetPath: string
 }
 
 export interface MoveFolderEntryRequest {

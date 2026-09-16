@@ -1188,5 +1188,10 @@ export const enUS: LanguagePack = {
     'ui.leaveAlone': 'Leave Alone',
     'ui.deleteLeft': 'Delete Left',
     'ui.deleteRight': 'Delete Right',
+    'ui.copyToSide': 'Copy to Side...',
+    'ui.moveToSide': 'Move to Side...',
+    'ui.copyToFolder': 'Copy to Folder...',
+    'ui.moveToFolder': 'Move to Folder...',
+    'ui.copyFilename': 'Copy Filename',
   },
 }

@@ -1146,5 +1146,10 @@ export const zhTW: LanguagePack = {
     'ui.leaveAlone': '保持不動',
     'ui.deleteLeft': '刪除左側',
     'ui.deleteRight': '刪除右側',
+    'ui.copyToSide': '複製到另一側...',
+    'ui.moveToSide': '移動到另一側...',
+    'ui.copyToFolder': '複製到資料夾...',
+    'ui.moveToFolder': '移動到資料夾...',
+    'ui.copyFilename': '複製檔名',
   },
 }

@@ -1193,6 +1193,12 @@ watch(
       case 'toggle-toolbar':
       case 'change-attributes':
       case 'touch-selected':
+      case 'copy-to-side':
+      case 'move-to-side':
+      case 'copy-to-folder':
+      case 'move-to-folder':
+      case 'rename-selected':
+      case 'copy-filename':
         break
     }
   },

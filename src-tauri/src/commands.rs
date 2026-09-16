@@ -1173,6 +1173,20 @@ pub fn create_folder_entry(
 }
 
 #[tauri::command]
+pub fn copy_folder_entry(
+    source_path: String,
+    target_path: String,
+) -> Result<folder_core::FileOperationResult, AppErrorPayload> {
+    let error_path = source_path.clone();
+
+    folder_core::perform_file_operation(folder_core::FileOperationRequest::Copy {
+        source_path,
+        target_path,
+    })
+    .map_err(|error| folder_scan_error(&error_path, error))
+}
+
+#[tauri::command]
 pub fn change_folder_entry_attributes(
     path: String,
     readonly: Option<bool>,

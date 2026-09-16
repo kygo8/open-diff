@@ -313,10 +313,17 @@ const appMenus: AppMenuDefinition[] = [
       'view.filters',
       'edit.copyLeft',
       'edit.copyRight',
+      'actions.copyToSide',
+      'actions.moveToSide',
+      'actions.copyToFolder',
+      'actions.moveToFolder',
+      'actions.delete',
+      'actions.rename',
       'actions.attributes',
       'actions.touch',
       'actions.newFolder',
       'actions.exclude',
+      'actions.copyFilename',
       'actions.refreshSelection',
       'report.save',
       'workspace.save',
@@ -1307,6 +1314,21 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     return {
       ...command,
       enabled: command.enabled && route.path.includes('/sync'),
+    }
+  }
+
+  if (
+    command.id === 'actions.copyToSide' ||
+    command.id === 'actions.moveToSide' ||
+    command.id === 'actions.copyToFolder' ||
+    command.id === 'actions.moveToFolder' ||
+    command.id === 'actions.rename' ||
+    command.id === 'actions.delete' ||
+    command.id === 'actions.copyFilename'
+  ) {
+    return {
+      ...command,
+      enabled: command.enabled && route.path.includes('/compare/folder'),
     }
   }
 

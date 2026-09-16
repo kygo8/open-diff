@@ -1014,8 +1014,19 @@ describe('global menu depth parity', () => {
     expect(wrapper.find('[data-testid="menu-command-actions.attributes"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.touch"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.newFolder"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.copyToSide"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.moveToFolder"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.rename"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.delete"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.copyFilename"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="menu-command-actions.newFolder"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.copyToSide"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.rename"]').attributes('disabled'),
     ).toBeUndefined()
     expect(
       wrapper.find('[data-testid="menu-command-actions.leaveAlone"]').attributes('disabled'),
@@ -1073,6 +1084,12 @@ describe('global menu depth parity', () => {
     expect(
       sync.find('[data-testid="menu-command-actions.copyLeftToRight"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(
+      sync.find('[data-testid="menu-command-actions.copyToSide"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      sync.find('[data-testid="menu-command-actions.rename"]').attributes('disabled'),
+    ).toBeDefined()
     expect(
       sync.find('[data-testid="menu-command-actions.deleteRight"]').attributes('disabled'),
     ).toBeUndefined()

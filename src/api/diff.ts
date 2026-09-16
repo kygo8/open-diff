@@ -4,6 +4,7 @@ import type {
   ApplyTextPatchToFileRequest,
   ApplyTextPatchResponse,
   ChangeFolderEntryAttributesRequest,
+  CopyFolderEntryRequest,
   CreateFolderEntryRequest,
   DeleteFolderEntryRequest,
   ExportFolderCompareReportRequest,
@@ -267,6 +268,15 @@ export function saveHexEdits(request: HexSaveRequest): Promise<HexSaveResult> {
     edits: request.edits,
     createBackup: request.createBackup ?? true,
     backupRetention: request.backupRetention ?? 1,
+  })
+}
+
+export function copyFolderEntry(
+  request: CopyFolderEntryRequest,
+): Promise<FolderFileOperationResponse> {
+  return invoke<FolderFileOperationResponse>('copy_folder_entry', {
+    sourcePath: request.sourcePath,
+    targetPath: request.targetPath,
   })
 }
 

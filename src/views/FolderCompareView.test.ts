@@ -7,12 +7,15 @@ import {
   changeFolderEntryAttributes,
   compareFolderPaths,
   copyFolderCompareEntry,
+  copyFolderEntry,
   deleteFolderEntry,
   exportFolderCompareReport,
   moveFolderEntry,
   renameFolderEntry,
   touchFolderEntry,
 } from '@/api/diff'
+import { pickNativePath } from '@/app/filePicker'
+import { useViewActionsStore } from '@/stores/viewActions'
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { openPathExternal } from '@/api/integration'
@@ -189,11 +192,17 @@ vi.mock('@/api/diff', () => ({
     outputPath: 'D:/left/folder-compare.html',
     bytesWritten: 13,
   }),
+  copyFolderEntry: vi.fn().mockResolvedValue({
+    operation: 'copy',
+    status: 'copied',
+    sourcePath: 'D:/left/notes.md',
+    targetPath: 'D:/backup/notes.md',
+  }),
   moveFolderEntry: vi.fn().mockResolvedValue({
     operation: 'move',
     status: 'moved',
     sourcePath: 'D:/left/notes.md',
-    targetPath: 'D:/left/archive/notes.md',
+    targetPath: 'D:/backup/notes.md',
   }),
   renameFolderEntry: vi.fn().mockResolvedValue({
     operation: 'rename',
@@ -679,7 +688,8 @@ describe('FolderCompareView', () => {
     expect(wrapper.find('[data-row-id="extra-right-md"]').exists()).toBe(false)
   })
 
-  it('moves the selected file through the Tauri command', async () => {
+  it('moves the selected file to a picked folder through the Tauri command', async () => {
+    vi.mocked(pickNativePath).mockResolvedValueOnce('D:/backup')
     const wrapper = mountFolderCompareView()
 
     await runCompare(wrapper)
@@ -687,11 +697,43 @@ describe('FolderCompareView', () => {
     await wrapper.find('[data-testid="move-selected-file"]').trigger('click')
     await flushPromises()
 
+    expect(pickNativePath).toHaveBeenCalledWith({ directory: true })
     expect(moveFolderEntry).toHaveBeenCalledWith({
       sourcePath: 'D:/left/notes.md',
-      targetPath: 'D:/left/archive/notes.md',
+      targetPath: 'D:/backup/notes.md',
     })
-    expect(wrapper.text()).toContain('Move -> D:/left/archive/notes.md')
+    expect(wrapper.text()).toContain('Move to Folder')
+    expect(wrapper.text()).toContain('D:/backup/notes.md')
+  })
+
+  it('copies to side and folder, and wires Actions rename/delete dispatch', async () => {
+    vi.mocked(pickNativePath).mockResolvedValueOnce('D:/backup')
+    const wrapper = mountFolderCompareView()
+
+    await runCompare(wrapper)
+    await wrapper.find('[data-row-id="notes-md"]').trigger('click')
+    await wrapper.find('[data-testid="copy-selected-to-side"]').trigger('click')
+    await wrapper.find('[data-testid="confirm-folder-copy"]').trigger('click')
+    await flushPromises()
+    expect(copyFolderCompareEntry).toHaveBeenCalled()
+
+    await wrapper.find('[data-row-id="notes-md"]').trigger('click')
+    await wrapper.find('[data-testid="copy-selected-to-folder"]').trigger('click')
+    await flushPromises()
+    expect(copyFolderEntry).toHaveBeenCalledWith({
+      sourcePath: 'D:/left/notes.md',
+      targetPath: 'D:/backup/notes.md',
+    })
+
+    await wrapper.find('[data-row-id="notes-md"]').trigger('click')
+    useViewActionsStore().dispatch('rename-selected')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-rename-panel"]').exists()).toBe(true)
+
+    await wrapper.find('[data-row-id="notes-md"]').trigger('click')
+    useViewActionsStore().dispatch('delete')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-dangerous-confirmation"]').exists()).toBe(true)
   })
 
   it('copies, renames, deletes, and touches selected files', async () => {
@@ -907,11 +949,12 @@ describe('FolderCompareView', () => {
       wrapper.find('[data-testid="copy-selected-to-right"]').attributes('disabled'),
     ).toBeDefined()
 
+    vi.mocked(pickNativePath).mockResolvedValueOnce('D:/backup')
     await wrapper.find('[data-testid="move-selected-file"]').trigger('click')
     await flushPromises()
     expect(moveFolderEntry).toHaveBeenCalledWith({
       sourcePath: 'D:/left/src',
-      targetPath: 'D:/left/archive/src',
+      targetPath: 'D:/backup/src',
     })
   })
 

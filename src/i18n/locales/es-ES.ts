@@ -1207,5 +1207,10 @@ export const esES: LanguagePack = {
     'ui.leaveAlone': 'Dejar en paz',
     'ui.deleteLeft': 'Eliminar izquierda',
     'ui.deleteRight': 'Eliminar derecha',
+    'ui.copyToSide': 'Copiar al otro lado...',
+    'ui.moveToSide': 'Mover al otro lado...',
+    'ui.copyToFolder': 'Copiar a carpeta...',
+    'ui.moveToFolder': 'Mover a carpeta...',
+    'ui.copyFilename': 'Copiar nombre de archivo',
   },
 }

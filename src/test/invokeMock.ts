@@ -287,6 +287,7 @@ export function invokeResponse(command: string, args: Record<string, unknown> = 
         displayRoot: 'C:\\',
       }
     case 'move_folder_entry':
+    case 'copy_folder_entry':
     case 'rename_folder_entry':
     case 'delete_folder_entry':
     case 'copy_folder_compare_entry':

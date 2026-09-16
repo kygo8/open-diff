@@ -1209,5 +1209,10 @@ export const deDE: LanguagePack = {
     'ui.leaveAlone': 'Unverändert lassen',
     'ui.deleteLeft': 'Links löschen',
     'ui.deleteRight': 'Rechts löschen',
+    'ui.copyToSide': 'Zur anderen Seite kopieren...',
+    'ui.moveToSide': 'Zur anderen Seite verschieben...',
+    'ui.copyToFolder': 'In Ordner kopieren...',
+    'ui.moveToFolder': 'In Ordner verschieben...',
+    'ui.copyFilename': 'Dateiname kopieren',
   },
 }

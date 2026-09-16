@@ -22,6 +22,7 @@ import {
   mergeTextFiles,
   createFolderSnapshot,
   moveFolderEntry,
+  copyFolderEntry,
   renameFolderEntry,
   saveHexEdits,
   saveTextFile,
@@ -541,6 +542,7 @@ describe('diff api', () => {
       .mockResolvedValueOnce([{ offset: 4, length: 2 }])
       .mockResolvedValueOnce({ bytesWritten: 1 })
       .mockResolvedValueOnce({ operation: 'move', status: 'moved' })
+      .mockResolvedValueOnce({ operation: 'copy', status: 'copied' })
       .mockResolvedValueOnce({ text: 'patched', appliedHunks: 1, files: 1 })
 
     await exportTextCompareReport({
@@ -559,6 +561,7 @@ describe('diff api', () => {
     await findHexInFile({ path: 'bin', queryKind: 'hex', query: '41' })
     await saveHexEdits({ path: 'bin', edits: [{ offset: 0, value: 1 }] })
     await moveFolderEntry({ sourcePath: 'a', targetPath: 'b' })
+    await copyFolderEntry({ sourcePath: 'D:/left/a.txt', targetPath: 'D:/backup/a.txt' })
     await applyTextPatch({ source: 'old', patch: 'diff' })
     await applyTextPatchToFile({
       sourcePath: 'C:/work/main.ts',
@@ -572,6 +575,7 @@ describe('diff api', () => {
     expect(invoke).toHaveBeenCalledWith('find_hex_in_file', expect.any(Object))
     expect(invoke).toHaveBeenCalledWith('save_hex_edits', expect.any(Object))
     expect(invoke).toHaveBeenCalledWith('move_folder_entry', expect.any(Object))
+    expect(invoke).toHaveBeenCalledWith('copy_folder_entry', expect.any(Object))
     expect(invoke).toHaveBeenCalledWith('apply_text_patch', { source: 'old', patch: 'diff' })
     expect(invoke).toHaveBeenCalledWith('apply_text_patch_to_file', {
       sourcePath: 'C:/work/main.ts',

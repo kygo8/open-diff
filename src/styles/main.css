@@ -1162,9 +1162,9 @@ select {
 .folder-merge-view .display-filters {
   flex-wrap: wrap !important;
   align-items: center !important;
-  gap: 3px 6px !important;
-  min-height: 22px !important;
-  padding: 1px 0 !important;
+  gap: 2px 4px !important;
+  min-height: 20px !important;
+  padding: 0 !important;
   font-size: 11px !important;
 }
 
@@ -1172,18 +1172,20 @@ select {
   display: inline-flex !important;
   flex: 1 1 280px !important;
   align-items: center !important;
-  gap: 4px !important;
+  gap: 3px !important;
   min-width: 220px !important;
   max-width: 560px !important;
 }
 
 .folder-filter-pattern {
-  height: 22px !important;
+  height: 20px !important;
+  padding: 0 5px !important;
   border: 1px solid #bfc4cc !important;
   border-radius: 2px !important;
   background: #ffffff !important;
   color: #111111 !important;
   font-size: 11px !important;
+  line-height: 18px !important;
 }
 
 .folder-filter-strip-actions {
@@ -1191,25 +1193,25 @@ select {
   flex: 0 0 auto !important;
   align-items: stretch !important;
   gap: 0 !important;
-  margin-left: 2px !important;
+  margin-left: 1px !important;
 }
 
 .folder-filter-strip-btn {
   display: grid !important;
-  grid-template-rows: 14px auto !important;
+  grid-template-rows: 12px auto !important;
   align-content: center !important;
   justify-items: center !important;
   box-sizing: border-box !important;
-  min-width: 40px !important;
-  max-width: 52px !important;
-  height: 32px !important;
-  padding: 0 3px !important;
+  min-width: 36px !important;
+  max-width: 48px !important;
+  height: 28px !important;
+  padding: 0 2px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
   background: transparent !important;
   color: #1a1a1a !important;
-  font-size: 10px !important;
-  line-height: 11px !important;
+  font-size: 9px !important;
+  line-height: 10px !important;
   cursor: default !important;
 }
 
@@ -1549,9 +1551,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-compare-view .folder-select-panel,
 .folder-sync-view .display-filters,
 .folder-merge-view .display-filters {
-  gap: 3px 6px !important;
-  min-height: 22px !important;
-  padding: 1px 2px !important;
+  gap: 2px 4px !important;
+  min-height: 20px !important;
+  padding: 0 2px !important;
   font-size: 11px !important;
 }
 
@@ -2611,7 +2613,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-compare-view .folder-filter-chrome,
 .folder-sync-view .folder-filter-chrome {
-  min-height: 32px !important;
+  min-height: 28px !important;
   padding: 0 !important;
 }
 
@@ -2675,7 +2677,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .folder-filter-chrome {
-  min-height: 32px !important;
+  min-height: 28px !important;
   padding: 0 !important;
 }
 
@@ -2686,24 +2688,24 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-view .folder-sync-peek-panel,
 .folder-merge-peek-panel,
 .folder-merge-view .folder-merge-peek-panel {
-  gap: 1px !important;
+  gap: 0 !important;
   min-height: 0 !important;
-  padding: 1px 3px 2px !important;
+  padding: 0 2px 1px !important;
   border: 1px solid #c9cdd3 !important;
   border-radius: 0 !important;
   background: #ffffff !important;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif !important;
   font-size: 11px !important;
-  line-height: 13px !important;
+  line-height: 12px !important;
 }
 
 .folder-peek-panel header,
 .folder-sync-peek-panel header,
 .folder-merge-peek-panel header {
-  gap: 3px !important;
-  min-height: 16px !important;
-  margin: 0 0 1px !important;
-  padding: 0 0 1px !important;
+  gap: 2px !important;
+  min-height: 14px !important;
+  margin: 0 !important;
+  padding: 0 !important;
   border-bottom: 1px solid #dfe3e8 !important;
 }
 
@@ -2713,7 +2715,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   color: #1a1a1a !important;
   font-size: 11px !important;
   font-weight: 600 !important;
-  line-height: 13px !important;
+  line-height: 12px !important;
 }
 
 .folder-peek-panel header button,
@@ -2722,15 +2724,15 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-peek-panel > button,
 .folder-sync-peek-panel > button,
 .folder-merge-peek-panel > button {
-  height: 16px !important;
-  min-height: 16px !important;
-  padding: 0 5px !important;
+  height: 14px !important;
+  min-height: 14px !important;
+  padding: 0 4px !important;
   border: 1px solid #c9cdd3 !important;
   border-radius: 0 !important;
   background: #f3f3f3 !important;
   color: #1a1a1a !important;
   font-size: 10px !important;
-  line-height: 14px !important;
+  line-height: 12px !important;
 }
 
 .folder-peek-panel header button:hover,
@@ -2746,22 +2748,22 @@ html[data-show-path-bars='0'] .path-pair-bar {
   display: inline-flex !important;
   align-items: stretch !important;
   gap: 0 !important;
-  min-height: 16px !important;
-  margin: 0 0 1px !important;
+  min-height: 14px !important;
+  margin: 0 !important;
   border-bottom: 1px solid #b8bec6 !important;
 }
 
 .peek-tab {
   box-sizing: border-box !important;
-  min-width: 40px !important;
-  height: 16px !important;
-  padding: 0 6px !important;
+  min-width: 36px !important;
+  height: 14px !important;
+  padding: 0 5px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
   background: #f3f3f3 !important;
   color: #1a1a1a !important;
-  font-size: 11px !important;
-  line-height: 14px !important;
+  font-size: 10px !important;
+  line-height: 12px !important;
   cursor: default !important;
 }
 
@@ -2784,13 +2786,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .peek-dual-columns {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-  gap: 2px !important;
+  gap: 1px !important;
   min-height: 0 !important;
 }
 
 .peek-column {
   min-width: 0 !important;
-  padding: 1px 2px !important;
+  padding: 0 2px !important;
   border: 1px solid #dfe3e8 !important;
   background: #fafafa !important;
 }
@@ -2802,15 +2804,15 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .peek-column > strong {
   display: block !important;
-  margin: 0 0 1px !important;
+  margin: 0 !important;
   color: #1a1a1a !important;
   font-size: 10px !important;
   font-weight: 600 !important;
-  line-height: 12px !important;
+  line-height: 11px !important;
 }
 
 .peek-status-block {
-  margin-top: 1px !important;
+  margin-top: 0 !important;
   padding: 1px 0 0 !important;
   border-top: 1px solid #dfe3e8 !important;
 }
@@ -2819,7 +2821,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-peek-panel dl,
 .folder-merge-peek-panel dl {
   display: grid !important;
-  gap: 1px !important;
+  gap: 0 !important;
   margin: 0 !important;
 }
 
@@ -2828,8 +2830,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-peek-panel dl > div {
   display: grid !important;
   gap: 0 !important;
-  min-height: 22px !important;
-  padding: 0 0 1px !important;
+  min-height: 18px !important;
+  padding: 0 !important;
 }
 
 .folder-peek-panel dt,
@@ -2837,8 +2839,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-peek-panel dt {
   margin: 0 !important;
   color: #5a6270 !important;
-  font-size: 10px !important;
-  line-height: 11px !important;
+  font-size: 9px !important;
+  line-height: 10px !important;
 }
 
 .folder-peek-panel dd,
@@ -2847,17 +2849,17 @@ html[data-show-path-bars='0'] .path-pair-bar {
   margin: 0 !important;
   color: #000000 !important;
   font-size: 11px !important;
-  line-height: 13px !important;
+  line-height: 12px !important;
   word-break: break-all !important;
 }
 
 .folder-peek-panel p,
 .folder-sync-peek-panel p,
 .folder-merge-peek-panel p {
-  margin: 1px 0 !important;
+  margin: 0 !important;
   color: #5a6270 !important;
   font-size: 11px !important;
-  line-height: 13px !important;
+  line-height: 12px !important;
 }
 
 /* Text Edit chrome densify toward capture path/toolbar/editor/status strips */

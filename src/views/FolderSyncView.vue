@@ -1399,7 +1399,7 @@ watch(
             >
               <Funnel
                 class="folder-filter-strip-icon"
-                :size="16"
+                :size="14"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -1419,7 +1419,7 @@ watch(
             >
               <Eye
                 class="folder-filter-strip-icon"
-                :size="16"
+                :size="14"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -2242,48 +2242,48 @@ h1 {
 
 .folder-sync-peek-panel {
   display: grid;
-  gap: 1px;
-  padding: 1px 3px 2px;
+  gap: 0;
+  padding: 0 2px 1px;
   border: 1px solid #c9cdd3;
   border-radius: 0;
   background: #ffffff;
   font-size: 11px;
-  line-height: 13px;
+  line-height: 12px;
 }
 
 .folder-sync-peek-panel header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 3px;
-  min-height: 16px;
-  margin: 0 0 1px;
-  padding: 0 0 1px;
+  gap: 2px;
+  min-height: 14px;
+  margin: 0;
+  padding: 0;
   border-bottom: 1px solid #dfe3e8;
 }
 
 .folder-sync-peek-panel dl {
   display: grid;
-  gap: 1px;
+  gap: 0;
   margin: 0;
 }
 
 .folder-sync-peek-panel dt {
   color: #5a6270;
-  font-size: 10px;
-  line-height: 11px;
+  font-size: 9px;
+  line-height: 10px;
 }
 
 .folder-sync-peek-panel dd {
   margin: 0;
   color: #000000;
   font-size: 11px;
-  line-height: 13px;
+  line-height: 12px;
 }
 
 .folder-filter-chrome {
   align-items: center;
-  min-height: 32px;
+  min-height: 28px;
   padding: 0;
 }
 
@@ -2291,7 +2291,7 @@ h1 {
   display: inline-flex;
   flex: 1 1 280px;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-width: 220px;
   max-width: 640px;
 }
@@ -2305,20 +2305,20 @@ h1 {
 
 .folder-filter-strip-btn {
   display: grid;
-  grid-template-rows: 14px auto;
+  grid-template-rows: 12px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
-  min-width: 40px;
-  max-width: 52px;
-  height: 32px;
-  padding: 0 3px;
+  min-width: 36px;
+  max-width: 48px;
+  height: 28px;
+  padding: 0 2px;
   border: 0;
   border-right: 1px solid #c9cdd3;
   background: transparent;
   color: #1a1a1a;
-  font-size: 10px;
-  line-height: 11px;
+  font-size: 9px;
+  line-height: 10px;
   cursor: default;
 }
 
@@ -2354,34 +2354,35 @@ h1 {
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 22px;
-  padding: 0 6px;
+  height: 20px;
+  padding: 0 5px;
   border: 1px solid #bfc4cc;
   border-radius: 2px;
   background: #ffffff;
   color: #111111;
   font-size: 11px;
+  line-height: 18px;
 }
 
 .peek-dual-columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 2px;
+  gap: 1px;
 }
 
 .peek-column {
   min-width: 0;
-  padding: 1px 2px;
+  padding: 0 2px;
   border: 1px solid #dfe3e8;
   background: #fafafa;
 }
 
 .peek-column > strong {
   display: block;
-  margin: 0 0 1px;
+  margin: 0;
   color: #1a1a1a;
   font-size: 10px;
   font-weight: 600;
-  line-height: 12px;
+  line-height: 11px;
 }
 </style>

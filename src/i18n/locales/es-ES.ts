@@ -1103,6 +1103,13 @@ export const esES: LanguagePack = {
     'ui.windowLength': 'Window length',
     'ui.accept': 'Aceptar',
     'ui.syncNow': 'Sincronizar ahora',
+    'ui.mergeBaseFolders': 'Combinar carpetas base',
+    'ui.syncBaseFolders': 'Sincronizar carpetas base',
+    'ui.showChromeUtilities': 'Mostrar utilidades de la barra de título',
+    'ui.showChromeUtilitiesHint':
+      'Botones de idioma y tema en la barra de título (ocultos en chrome denso de sesión única).',
+    'ui.confirmBeforeQuit': 'Confirmar antes de salir',
+    'ui.confirmQuitMessage': '¿Salir de Open Diff?',
     'ui.toOutput': 'A la salida',
     'ui.folderMergeRulesHint':
       'Las copias automáticas van a la salida; los conflictos se abren en la fusión de texto.',

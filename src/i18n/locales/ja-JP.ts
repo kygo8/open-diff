@@ -1085,6 +1085,13 @@ export const jaJP: LanguagePack = {
     'ui.windowLength': 'Window length',
     'ui.accept': '承認',
     'ui.syncNow': '今すぐ同期',
+    'ui.mergeBaseFolders': 'ベースフォルダーをマージ',
+    'ui.syncBaseFolders': 'ベースフォルダーを同期',
+    'ui.showChromeUtilities': 'タイトルバーのユーティリティを表示',
+    'ui.showChromeUtilitiesHint':
+      'タイトルバーの言語・テーマボタン（単一セッションの高密度枠では非表示）。',
+    'ui.confirmBeforeQuit': '終了前に確認',
+    'ui.confirmQuitMessage': 'Open Diff を終了しますか？',
     'ui.toOutput': '出力へ',
     'ui.folderMergeRulesHint': '自動コピーは出力へ。競合はテキストマージで開きます。',
     'ui.sameOk': '同一 OK',

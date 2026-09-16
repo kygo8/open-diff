@@ -96,6 +96,8 @@ const openSessionsInNewTabStorageKey = 'open-diff-open-sessions-in-new-tab'
 const showNextDifferenceInToolbarStorageKey = 'open-diff-show-next-difference-in-toolbar'
 const showPrevDifferenceInToolbarStorageKey = 'open-diff-show-prev-difference-in-toolbar'
 const loadLastWorkspaceOnStartupStorageKey = 'open-diff-load-last-workspace-on-startup'
+const showChromeUtilitiesStorageKey = 'open-diff-show-chrome-utilities'
+const confirmBeforeQuitStorageKey = 'open-diff-confirm-before-quit'
 const fontFamilyIds = new Set<FontFamilyId>(['system', 'segoe', 'inter', 'noto', 'mono'])
 const shortcutScopes = new Set<ShortcutScope>(['global', 'text-compare'])
 const commandIds = new Set<string>(commandRegistry.map((command) => command.id))
@@ -148,6 +150,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const showPrevDifferenceInToolbar = ref(loadShowPrevDifferenceInToolbar())
   const archiveExtensions = ref<string[]>(setArchiveSuffixes(loadArchiveSuffixes()))
   const loadLastWorkspaceOnStartup = ref(loadLoadLastWorkspaceOnStartup())
+  const showChromeUtilities = ref(loadShowChromeUtilities())
+  const confirmBeforeQuit = ref(loadConfirmBeforeQuit())
 
   bindSystemThemeListener((prefersDark) => {
     systemPrefersDark.value = prefersDark
@@ -456,6 +460,22 @@ export const useSettingsStore = defineStore('settings', () => {
     { immediate: true, flush: 'sync' },
   )
 
+  watch(
+    showChromeUtilities,
+    (value) => {
+      localStorage.setItem(showChromeUtilitiesStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    confirmBeforeQuit,
+    (value) => {
+      localStorage.setItem(confirmBeforeQuitStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
   function toggleTheme(): void {
     theme.value = resolvedTheme.value === 'dark' ? 'light' : 'dark'
   }
@@ -694,6 +714,14 @@ export const useSettingsStore = defineStore('settings', () => {
     loadLastWorkspaceOnStartup.value = value
   }
 
+  function setShowChromeUtilities(value: boolean): void {
+    showChromeUtilities.value = value
+  }
+
+  function setConfirmBeforeQuit(value: boolean): void {
+    confirmBeforeQuit.value = value
+  }
+
   function exportSettingsPackage(): SettingsPackage {
     return {
       kind: settingsPackageKind,
@@ -735,6 +763,8 @@ export const useSettingsStore = defineStore('settings', () => {
       showPrevDifferenceInToolbar: showPrevDifferenceInToolbar.value,
       archiveExtensions: [...archiveExtensions.value],
       loadLastWorkspaceOnStartup: loadLastWorkspaceOnStartup.value,
+      showChromeUtilities: showChromeUtilities.value,
+      confirmBeforeQuit: confirmBeforeQuit.value,
     }
   }
 
@@ -864,6 +894,14 @@ export const useSettingsStore = defineStore('settings', () => {
         ? packageValue.loadLastWorkspaceOnStartup
         : false,
     )
+    setShowChromeUtilities(
+      typeof packageValue.showChromeUtilities === 'boolean'
+        ? packageValue.showChromeUtilities
+        : true,
+    )
+    setConfirmBeforeQuit(
+      typeof packageValue.confirmBeforeQuit === 'boolean' ? packageValue.confirmBeforeQuit : false,
+    )
 
     return true
   }
@@ -906,6 +944,8 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowPrevDifferenceInToolbar(true)
     setArchiveExtensions(resetArchiveSuffixes())
     setLoadLastWorkspaceOnStartup(false)
+    setShowChromeUtilities(true)
+    setConfirmBeforeQuit(false)
   }
 
   return {
@@ -947,6 +987,8 @@ export const useSettingsStore = defineStore('settings', () => {
     showPrevDifferenceInToolbar,
     archiveExtensions,
     loadLastWorkspaceOnStartup,
+    showChromeUtilities,
+    confirmBeforeQuit,
     toggleTheme,
     setTheme,
     setLocale,
@@ -989,6 +1031,8 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowPrevDifferenceInToolbar,
     setArchiveExtensions,
     setLoadLastWorkspaceOnStartup,
+    setShowChromeUtilities,
+    setConfirmBeforeQuit,
     exportSettingsPackage,
     importSettingsPackage,
     restoreFactoryDefaults,
@@ -1478,4 +1522,24 @@ function isShortcutLike(value: unknown): value is CommandShortcut {
 
 function isPlainRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function loadShowChromeUtilities(): boolean {
+  const stored = localStorage.getItem(showChromeUtilitiesStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadConfirmBeforeQuit(): boolean {
+  const stored = localStorage.getItem(confirmBeforeQuitStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
 }

@@ -996,3 +996,56 @@ describe('AppLayout tab strip chrome', () => {
     wrapper.unmount()
   })
 })
+
+describe('global menu depth parity', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    setActivePinia(createPinia())
+    push.mockClear()
+    routePath = '/compare/folder'
+  })
+
+  it('wires Folder Actions Open/Exclude and Edit Select with honest Home disablement', async () => {
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-actions"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-actions.open"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.exclude"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.open"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    await wrapper.find('[data-testid="menu-edit"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-edit.selectAll"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-view.expandAll"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-edit.invertSelection"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="menu-view"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-view.showSame"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-session.mergeBaseFolders"]').exists()).toBe(
+      true,
+    )
+    expect(
+      wrapper.find('[data-testid="menu-command-session.mergeBaseFolders"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-sync.syncNow"]').attributes('disabled'),
+    ).toBeDefined()
+
+    wrapper.unmount()
+
+    routePath = '/'
+    const home = mountAppLayout()
+
+    await home.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      home.find('[data-testid="menu-command-view.expandAll"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      home.find('[data-testid="menu-command-view.showSame"]').attributes('disabled'),
+    ).toBeDefined()
+    home.unmount()
+  })
+})

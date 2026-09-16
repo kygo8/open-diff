@@ -823,6 +823,16 @@ watch(
       case 'previous-conflict':
       case 'sync-now':
       case 'workspace-save':
+      case 'select-all':
+      case 'select-all-files':
+      case 'select-orphans':
+      case 'invert-selection':
+      case 'open-selected':
+      case 'open-with':
+      case 'quick-compare':
+      case 'exclude-selected':
+      case 'refresh-selection':
+      case 'show-same':
       case 'run-script':
       case 'save-report':
         break

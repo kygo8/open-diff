@@ -49,6 +49,7 @@ const props = withDefaults(
       ignoreDaylightSavingHourOffset: false,
       caseSensitiveNames: true,
       ignoredTimezoneHourOffsets: [],
+      excludeJunctionPoints: false,
     }),
     folderFilters: () => ({
       include: [],
@@ -395,6 +396,14 @@ function applySettings(): void {
             data-testid="session-settings-case-sensitive-names"
           />
           <span>{{ $t('ui.caseSensitiveNames') }}</span>
+        </label>
+        <label>
+          <input
+            v-model="draftFolder.excludeJunctionPoints"
+            type="checkbox"
+            data-testid="session-settings-exclude-junctions"
+          />
+          <span>{{ $t('ui.excludeJunctionPoints') }}</span>
         </label>
         <label class="stack">
           <span>{{ $t('ui.ignoredTimezoneHourOffsets') }}</span>

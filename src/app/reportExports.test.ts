@@ -78,6 +78,7 @@ describe('reportPreferences', () => {
       clearHistoryOnExit: true,
       includeIdentical: false,
       includeOrphans: false,
+      includeUnimportant: false,
     })
 
     expect(loadReportPreferences()).toEqual({
@@ -87,6 +88,7 @@ describe('reportPreferences', () => {
       clearHistoryOnExit: true,
       includeIdentical: false,
       includeOrphans: false,
+      includeUnimportant: false,
     })
   })
 

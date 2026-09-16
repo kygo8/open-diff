@@ -1112,6 +1112,17 @@ export const zhTW: LanguagePack = {
     'ui.copyEmptyFoldersHint': '關閉後，資料夾比較複製到資料夾時會略過不含檔案的目錄。',
     'ui.keepFolderExpansionOnReload': '重新比較時保留展開狀態',
     'ui.keepFolderExpansionOnReloadHint': '同一對根路徑重新整理後，保留已展開的資料夾。',
+    'ui.skipNewerTargetsOnCopy': '複製時略過較新的目標檔案',
+    'ui.skipNewerTargetsOnCopyHint': '目標已存在且比來源更新時，保持目標不變。',
+    'ui.excludeJunctionPoints': '排除接點 / 符號連結子項',
+    'ui.excludeJunctionPointsHint': '資料夾比較掃描時省略符號連結子項，而不是把它們列成檔案。',
+    'ui.preferHexForNoExtension': '無副檔名檔案以十六進位開啟',
+    'ui.preferHexForNoExtensionHint':
+      '即使未知副檔名按文字開啟，沒有副檔名的檔案仍開啟十六進位比較。',
+    'ui.profileAnonymousLogin': '預設匿名登入',
+    'ui.profileAnonymousLoginHint': '新建遠端設定時使用者名稱為空，而不使用預設使用者名稱。',
+    'ui.reportIncludeUnimportant': '資料夾報告包含不重要差異',
+    'ui.reportIncludeUnimportantHint': '關閉後，資料夾比較報告匯出會省略僅大小不同的不重要差異列。',
     'ui.includeHiddenItemsInFileActions': '預設包含隱藏項目',
     'ui.includeHiddenItemsInFileActionsHint':
       '對選取的資料夾執行動作時，包含被顯示或名稱過濾隱藏的子項目。',

@@ -53,11 +53,14 @@ export const fileFormatPreferencesStorageKey = 'open-diff-file-format-preference
 
 export interface FileFormatPreferences {
   treatUnknownAsText: boolean
+  /** Files with no extension stay on Hex Compare even when unknown-as-text is on. */
+  preferHexForNoExtension: boolean
 }
 
 export function defaultFileFormatPreferences(): FileFormatPreferences {
   return {
     treatUnknownAsText: false,
+    preferHexForNoExtension: false,
   }
 }
 
@@ -75,6 +78,7 @@ export function loadFileFormatPreferences(
 
     return {
       treatUnknownAsText: Boolean(parsed.treatUnknownAsText),
+      preferHexForNoExtension: Boolean(parsed.preferHexForNoExtension),
     }
   } catch {
     return defaultFileFormatPreferences()
@@ -89,6 +93,7 @@ export function saveFileFormatPreferences(
     fileFormatPreferencesStorageKey,
     JSON.stringify({
       treatUnknownAsText: prefs.treatUnknownAsText,
+      preferHexForNoExtension: prefs.preferHexForNoExtension,
     }),
   )
 }
@@ -371,7 +376,13 @@ export function sessionTypeForPath(path: string): SessionType {
     return viewToSessionType[format.defaultView]
   }
 
-  return loadFileFormatPreferences().treatUnknownAsText ? 'text-compare' : 'hex-compare'
+  const prefs = loadFileFormatPreferences()
+
+  if (prefs.preferHexForNoExtension && !extensionOf(path)) {
+    return 'hex-compare'
+  }
+
+  return prefs.treatUnknownAsText ? 'text-compare' : 'hex-compare'
 }
 
 export function fileNameOf(path: string): string {

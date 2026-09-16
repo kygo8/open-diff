@@ -2313,6 +2313,7 @@ async function copySelectedToFolder(): Promise<void> {
         overwriteReadOnly: settings.overwriteReadOnlyFiles,
         sourceModifiedAtMs: plan.sourceModifiedAtMs,
         copyEmptyFolders: loadFileOperationPreferences().copyEmptyFolders,
+        skipNewerTargets: loadFileOperationPreferences().skipNewerTargetsOnCopy,
       })
     }
     lastFileOperationAction.value =
@@ -2711,6 +2712,7 @@ async function exportFolderReport(
     outputPath: fileCompareReportOutputPath(leftRoot.value, format, 'full'),
     includeIdentical: loadReportPreferences().includeIdentical,
     includeOrphans: loadReportPreferences().includeOrphans,
+    includeUnimportant: loadReportPreferences().includeUnimportant,
   })
 
   reportStatus.value = response.outputPath ?? format
@@ -3481,6 +3483,14 @@ onUnmounted(() => {
               type="checkbox"
             />
             <span>{{ $t('ui.caseSensitiveNames') }}</span>
+          </label>
+          <label>
+            <input
+              v-model="folderCriteria.excludeJunctionPoints"
+              data-testid="folder-criteria-exclude-junctions"
+              type="checkbox"
+            />
+            <span>{{ $t('ui.excludeJunctionPoints') }}</span>
           </label>
         </fieldset>
         <button

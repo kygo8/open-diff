@@ -1167,6 +1167,21 @@ export const frFR: LanguagePack = {
     'ui.keepFolderExpansionOnReload': 'Conserver le déploiement des dossiers au rechargement',
     'ui.keepFolderExpansionOnReloadHint':
       'Après un nouvel affichage des mêmes racines, conserver les dossiers ouverts.',
+    'ui.skipNewerTargetsOnCopy': 'Ignorer les destinations plus récentes à la copie',
+    'ui.skipNewerTargetsOnCopyHint':
+      'Laisser la destination inchangée si elle existe déjà et est plus récente que la source.',
+    'ui.excludeJunctionPoints': 'Exclure les enfants jonction / lien symbolique',
+    'ui.excludeJunctionPointsHint':
+      'Omettre les enfants liens symboliques des analyses de comparaison de dossiers.',
+    'ui.preferHexForNoExtension': 'Ouvrir les fichiers sans extension en hexadécimal',
+    'ui.preferHexForNoExtensionHint':
+      'Même si les extensions inconnues s’ouvrent en texte, les fichiers sans extension restent en hex.',
+    'ui.profileAnonymousLogin': 'Connexion anonyme par défaut',
+    'ui.profileAnonymousLoginHint':
+      'Les nouveaux profils distants laissent le nom d’utilisateur vide.',
+    'ui.reportIncludeUnimportant': 'Inclure les différences sans importance dans les rapports',
+    'ui.reportIncludeUnimportantHint':
+      'Si désactivé, les rapports de dossiers omettent les lignes dont seule la taille diffère.',
     'ui.fileOperationsHint':
       'Valeurs par défaut pour copier, déplacer et supprimer dans Comparer des dossiers.',
     'ui.includeHiddenItemsInFileActions': 'Inclure les éléments masqués par défaut',

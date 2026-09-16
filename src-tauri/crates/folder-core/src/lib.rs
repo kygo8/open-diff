@@ -73,6 +73,9 @@ pub struct FolderCompareOptions {
     /// When false, skip names that start with '.' during folder scans / filters.
     #[serde(default = "default_show_hidden_files")]
     pub show_hidden_files: bool,
+    /// When true, omit symbolic-link / junction children from folder scans.
+    #[serde(default)]
+    pub exclude_junction_points: bool,
 }
 
 fn default_show_hidden_files() -> bool {
@@ -94,6 +97,7 @@ impl Default for FolderCompareOptions {
             ignored_timezone_hour_offsets: Vec::new(),
             follow_symlinks: false,
             show_hidden_files: true,
+            exclude_junction_points: false,
         }
     }
 }
@@ -743,6 +747,41 @@ fn copy_path(source_path: &str, target_path: &str) -> Result<(), FolderScanError
     copy_path_with_options(source_path, target_path, true)
 }
 
+pub fn should_skip_newer_target(
+    source: &Path,
+    target: &Path,
+    source_modified_at_ms: Option<u128>,
+) -> bool {
+    if !target.exists() {
+        return false;
+    }
+
+    let dest_ms = match target.metadata().ok().and_then(|meta| meta.modified().ok()) {
+        Some(modified) => modified
+            .duration_since(UNIX_EPOCH)
+            .ok()
+            .map(|duration| duration.as_millis()),
+        None => None,
+    };
+    let source_ms = source_modified_at_ms.or_else(|| {
+        source
+            .metadata()
+            .ok()
+            .and_then(|meta| meta.modified().ok())
+            .and_then(|modified| {
+                modified
+                    .duration_since(UNIX_EPOCH)
+                    .ok()
+                    .map(|duration| duration.as_millis())
+            })
+    });
+
+    match (source_ms, dest_ms) {
+        (Some(source_ms), Some(dest_ms)) => dest_ms > source_ms,
+        _ => false,
+    }
+}
+
 pub fn copy_path_with_options(
     source_path: &str,
     target_path: &str,
@@ -1266,6 +1305,7 @@ pub fn scan_local_folder_with_options(
         cancel_token,
         options.follow_symlinks,
         options.show_hidden_files,
+        options.exclude_junction_points,
         &mut visiting,
     )
 }
@@ -1276,6 +1316,7 @@ fn scan_path_entry(
     cancel_token: &job_core::CancellationToken,
     follow_symlinks: bool,
     show_hidden_files: bool,
+    exclude_junction_points: bool,
     visiting: &mut HashSet<PathBuf>,
 ) -> Result<FolderScanNode, FolderScanError> {
     if cancel_token.is_cancelled() {
@@ -1303,6 +1344,7 @@ fn scan_path_entry(
             cancel_token,
             follow_symlinks,
             show_hidden_files,
+            exclude_junction_points,
             visiting,
         );
         visiting.remove(&canonical);
@@ -1315,6 +1357,7 @@ fn scan_path_entry(
         cancel_token,
         follow_symlinks,
         show_hidden_files,
+        exclude_junction_points,
         visiting,
     )
 }
@@ -1325,6 +1368,7 @@ fn scan_resolved_path(
     cancel_token: &job_core::CancellationToken,
     follow_symlinks: bool,
     show_hidden_files: bool,
+    exclude_junction_points: bool,
     visiting: &mut HashSet<PathBuf>,
 ) -> Result<FolderScanNode, FolderScanError> {
     if cancel_token.is_cancelled() {
@@ -1348,12 +1392,21 @@ fn scan_resolved_path(
             if !show_hidden_files && name.starts_with('.') && name != "." && name != ".." {
                 return None;
             }
+            let entry_path = entry.path();
+            if exclude_junction_points {
+                if let Ok(meta) = fs::symlink_metadata(&entry_path) {
+                    if meta.file_type().is_symlink() {
+                        return None;
+                    }
+                }
+            }
             Some(scan_path_entry(
                 root,
-                &entry.path(),
+                &entry_path,
                 cancel_token,
                 follow_symlinks,
                 show_hidden_files,
+                exclude_junction_points,
                 visiting,
             ))
         })
@@ -1593,6 +1646,17 @@ mod tests {
             .expect("link entry");
         assert_eq!(link.kind, FolderNodeKind::File);
         assert!(link.children.is_empty());
+
+        let excluded = scan_local_folder_with_options(
+            &root,
+            &CancellationToken::default(),
+            &FolderCompareOptions {
+                exclude_junction_points: true,
+                ..FolderCompareOptions::default()
+            },
+        )
+        .expect("exclude scan");
+        assert!(excluded.children.iter().all(|child| child.name != "link"));
 
         let followed = scan_local_folder_with_options(
             &root,
@@ -2244,6 +2308,26 @@ mod tests {
             Some(created.to_string_lossy().as_ref())
         );
         assert!(created.is_dir());
+
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn skips_newer_targets_when_destination_is_newer() {
+        let root = unique_temp_dir("folder-skip-newer");
+        let source = root.join("source.txt");
+        let target = root.join("target.txt");
+        fs::create_dir_all(&root).expect("root");
+        fs::write(&source, b"old").expect("source");
+        fs::write(&target, b"new").expect("target");
+
+        assert!(should_skip_newer_target(&source, &target, Some(1)));
+        assert!(!should_skip_newer_target(&source, &target, Some(u128::MAX)));
+        assert!(!should_skip_newer_target(
+            &source,
+            &root.join("missing.txt"),
+            None
+        ));
 
         let _ = fs::remove_dir_all(root);
     }

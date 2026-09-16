@@ -1135,6 +1135,20 @@ export const koKR: LanguagePack = {
     'ui.copyEmptyFoldersHint': '끄면 파일이 없는 디렉터리는 폴더로 복사하지 않습니다.',
     'ui.keepFolderExpansionOnReload': '다시 비교할 때 펼침 상태 유지',
     'ui.keepFolderExpansionOnReloadHint': '같은 루트를 다시 비교한 뒤 펼쳐 둔 폴더를 유지합니다.',
+    'ui.skipNewerTargetsOnCopy': '복사할 때 더 새로운 대상 건너뛰기',
+    'ui.skipNewerTargetsOnCopyHint': '대상이 이미 있고 원본보다 새로우면 대상을 그대로 둡니다.',
+    'ui.excludeJunctionPoints': '정션 / 심볼릭 링크 자식 제외',
+    'ui.excludeJunctionPointsHint':
+      '폴더 비교 스캔에서 심볼릭 링크 자식을 파일로 나열하지 않고 생략합니다.',
+    'ui.preferHexForNoExtension': '확장자 없는 파일은 16진으로 열기',
+    'ui.preferHexForNoExtensionHint':
+      '알 수 없는 확장자를 텍스트로 열더라도 확장자가 없으면 16진 비교를 엽니다.',
+    'ui.profileAnonymousLogin': '기본 익명 로그인',
+    'ui.profileAnonymousLoginHint':
+      '새 원격 프로필은 기본 사용자 이름 대신 사용자 이름을 비웁니다.',
+    'ui.reportIncludeUnimportant': '폴더 보고서에 중요하지 않은 차이 포함',
+    'ui.reportIncludeUnimportantHint':
+      '끄면 폴더 비교 보고서 내보내기에서 크기만 다른 중요하지 않은 행을 생략합니다.',
     'ui.fileOperationsHint': '폴더 비교 복사, 이동, 삭제 작업의 기본값입니다.',
     'ui.includeHiddenItemsInFileActions': '기본적으로 숨긴 항목 포함',
     'ui.includeHiddenItemsInFileActionsHint':

@@ -1146,6 +1146,20 @@ export const jaJP: LanguagePack = {
     'ui.keepFolderExpansionOnReload': '再比較時に展開状態を保持',
     'ui.keepFolderExpansionOnReloadHint':
       '同じルートを再比較したあと、開いていたフォルダーを保ちます。',
+    'ui.skipNewerTargetsOnCopy': 'コピー時に新しい宛先をスキップ',
+    'ui.skipNewerTargetsOnCopyHint': '宛先が既に存在し、ソースより新しい場合は宛先を変更しません。',
+    'ui.excludeJunctionPoints': 'ジャンクション / シンボリックリンクの子を除外',
+    'ui.excludeJunctionPointsHint':
+      'フォルダー比較のスキャンでシンボリックリンクの子をファイルとして列挙せず省略します。',
+    'ui.preferHexForNoExtension': '拡張子のないファイルは Hex で開く',
+    'ui.preferHexForNoExtensionHint':
+      '未知の拡張子をテキストとして開く場合でも、拡張子のないファイルは Hex 比較を開きます。',
+    'ui.profileAnonymousLogin': '既定で匿名ログイン',
+    'ui.profileAnonymousLoginHint':
+      '新しいリモートプロファイルは既定ユーザー名ではなくユーザー名を空にします。',
+    'ui.reportIncludeUnimportant': 'フォルダーレポートに重要でない差異を含める',
+    'ui.reportIncludeUnimportantHint':
+      'オフにすると、サイズのみが異なる重要でない行をフォルダー比較レポートから省きます。',
     'ui.fileOperationsHint': 'フォルダー比較のコピー、移動、削除の既定値。',
     'ui.includeHiddenItemsInFileActions': '非表示項目を既定で含める',
     'ui.includeHiddenItemsInFileActionsHint':

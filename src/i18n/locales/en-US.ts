@@ -1148,6 +1148,21 @@ export const enUS: LanguagePack = {
     'ui.keepFolderExpansionOnReload': 'Keep folder expansion on reload',
     'ui.keepFolderExpansionOnReloadHint':
       'Preserve which folders are expanded after a Folder Compare refresh of the same roots.',
+    'ui.skipNewerTargetsOnCopy': 'Skip newer destination files when copying',
+    'ui.skipNewerTargetsOnCopyHint':
+      'Leave the destination unchanged when it already exists and is newer than the source.',
+    'ui.excludeJunctionPoints': 'Exclude junction / symbolic-link children',
+    'ui.excludeJunctionPointsHint':
+      'Omit symbolic-link children from Folder Compare scans instead of listing them as files.',
+    'ui.preferHexForNoExtension': 'Open extensionless files as hex',
+    'ui.preferHexForNoExtensionHint':
+      'Even when unknown extensions open as text, files with no extension still open Hex Compare.',
+    'ui.profileAnonymousLogin': 'Anonymous login by default',
+    'ui.profileAnonymousLoginHint':
+      'New remote profiles leave the username empty instead of using the default username.',
+    'ui.reportIncludeUnimportant': 'Include unimportant differences in folder reports',
+    'ui.reportIncludeUnimportantHint':
+      'When off, Folder Compare report exports omit size-only / unimportant difference rows.',
     'ui.includeHiddenItemsInFileActions': 'Include hidden items by default',
     'ui.includeHiddenItemsInFileActionsHint':
       'When acting on a selected folder, include descendants hidden by display or name filters.',

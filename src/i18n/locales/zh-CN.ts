@@ -1110,6 +1110,17 @@ export const zhCN: LanguagePack = {
     'ui.copyEmptyFoldersHint': '关闭后，文件夹比较复制到文件夹时会跳过不含文件的目录。',
     'ui.keepFolderExpansionOnReload': '重新比较时保留展开状态',
     'ui.keepFolderExpansionOnReloadHint': '同一对根路径刷新后，保留已展开的文件夹。',
+    'ui.skipNewerTargetsOnCopy': '复制时跳过较新的目标文件',
+    'ui.skipNewerTargetsOnCopyHint': '目标已存在且比源更新时，保持目标不变。',
+    'ui.excludeJunctionPoints': '排除联接点 / 符号链接子项',
+    'ui.excludeJunctionPointsHint': '文件夹比较扫描时省略符号链接子项，而不是把它们列成文件。',
+    'ui.preferHexForNoExtension': '无扩展名文件以十六进制打开',
+    'ui.preferHexForNoExtensionHint':
+      '即使未知扩展名按文本打开，没有扩展名的文件仍打开十六进制比较。',
+    'ui.profileAnonymousLogin': '默认匿名登录',
+    'ui.profileAnonymousLoginHint': '新建远程配置时用户名为空，而不使用默认用户名。',
+    'ui.reportIncludeUnimportant': '文件夹报告包含不重要差异',
+    'ui.reportIncludeUnimportantHint': '关闭后，文件夹比较报告导出会省略仅大小不同的不重要差异行。',
     'ui.includeHiddenItemsInFileActions': '默认包含隐藏项',
     'ui.includeHiddenItemsInFileActionsHint':
       '对选中文件夹执行操作时，包含被显示或名称过滤隐藏的子项。',

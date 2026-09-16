@@ -212,6 +212,7 @@ impl ScriptFolderCriteria {
             ignored_timezone_hour_offsets: self.ignored_timezone_hour_offsets.clone(),
             follow_symlinks: self.follow_symlinks,
             show_hidden_files: true,
+            exclude_junction_points: false,
         }
     }
 }

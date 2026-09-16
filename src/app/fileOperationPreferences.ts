@@ -3,12 +3,15 @@ export const fileOperationPreferencesStorageKey = 'open-diff-file-operation-pref
 export interface FileOperationPreferences {
   copyEmptyFolders: boolean
   keepFolderExpansionOnReload: boolean
+  /** Skip copy when the destination exists and is newer than the source. */
+  skipNewerTargetsOnCopy: boolean
 }
 
 export function defaultFileOperationPreferences(): FileOperationPreferences {
   return {
     copyEmptyFolders: true,
     keepFolderExpansionOnReload: false,
+    skipNewerTargetsOnCopy: false,
   }
 }
 
@@ -27,6 +30,7 @@ export function loadFileOperationPreferences(
     return {
       copyEmptyFolders: parsed.copyEmptyFolders !== false,
       keepFolderExpansionOnReload: Boolean(parsed.keepFolderExpansionOnReload),
+      skipNewerTargetsOnCopy: Boolean(parsed.skipNewerTargetsOnCopy),
     }
   } catch {
     return defaultFileOperationPreferences()
@@ -42,6 +46,7 @@ export function saveFileOperationPreferences(
     JSON.stringify({
       copyEmptyFolders: prefs.copyEmptyFolders,
       keepFolderExpansionOnReload: prefs.keepFolderExpansionOnReload,
+      skipNewerTargetsOnCopy: prefs.skipNewerTargetsOnCopy,
     }),
   )
 }

@@ -1765,6 +1765,16 @@ function parseShortcutText(value: string): string[] {
             />
           </label>
           <p class="options-hint">{{ $t('ui.ignoredTimezoneHourOffsetsHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="folderCriteriaDraft.excludeJunctionPoints"
+              data-testid="folder-compare-exclude-junctions"
+              type="checkbox"
+              @change="persistFolderCriteriaDraft"
+            />
+            <span>{{ $t('ui.excludeJunctionPoints') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.excludeJunctionPointsHint') }}</p>
           <p class="options-hint">{{ $t('ui.folderCompareOptionsHint') }}</p>
         </NCard>
 
@@ -2296,6 +2306,16 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.keepFolderExpansionOnReload') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.keepFolderExpansionOnReloadHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="fileOperationPreferencesDraft.skipNewerTargetsOnCopy"
+              data-testid="skip-newer-targets-on-copy"
+              type="checkbox"
+              @change="persistFileOperationPreferencesDraft"
+            />
+            <span>{{ $t('ui.skipNewerTargetsOnCopy') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.skipNewerTargetsOnCopyHint') }}</p>
           <p class="options-hint">{{ $t('ui.fileOperationsHint') }}</p>
         </NCard>
 
@@ -2685,6 +2705,16 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.treatUnknownAsText') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.treatUnknownAsTextHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="fileFormatPreferencesDraft.preferHexForNoExtension"
+              data-testid="prefer-hex-for-no-extension"
+              type="checkbox"
+              @change="persistFileFormatPreferencesDraft"
+            />
+            <span>{{ $t('ui.preferHexForNoExtension') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.preferHexForNoExtensionHint') }}</p>
         </NCard>
 
         <NCard
@@ -2781,6 +2811,16 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.profilePassiveFtp') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.profilePassiveFtpHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="profileDefaultsDraft.anonymousLogin"
+              data-testid="profile-anonymous-login"
+              type="checkbox"
+              @change="persistProfileDefaultsDraft"
+            />
+            <span>{{ $t('ui.profileAnonymousLogin') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.profileAnonymousLoginHint') }}</p>
           <p class="options-hint">
             {{ $t('ui.profileSavedCount', { count: savedRemoteProfilesCount }) }}
           </p>
@@ -2879,6 +2919,16 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.reportIncludeOrphans') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.reportIncludeOrphansHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="reportPreferencesDraft.includeUnimportant"
+              data-testid="report-include-unimportant"
+              type="checkbox"
+              @change="persistReportPreferencesDraft"
+            />
+            <span>{{ $t('ui.reportIncludeUnimportant') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.reportIncludeUnimportantHint') }}</p>
           <div class="settings-row">
             <NButton
               size="small"

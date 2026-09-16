@@ -25,6 +25,7 @@ export function defaultFolderCompareCriteria(): FolderCompareCriteria {
     ignoreDaylightSavingHourOffset: false,
     caseSensitiveNames: true,
     ignoredTimezoneHourOffsets: [],
+    excludeJunctionPoints: false,
   }
 }
 
@@ -80,6 +81,7 @@ export function loadFolderCompareCriteria(
       ignoredTimezoneHourOffsets: normalizeIgnoredTimezoneHourOffsets(
         parsed.ignoredTimezoneHourOffsets,
       ),
+      excludeJunctionPoints: Boolean(parsed.excludeJunctionPoints),
     }
   } catch {
     return defaultFolderCompareCriteria()
@@ -106,6 +108,7 @@ export function saveFolderCompareCriteria(
       ignoredTimezoneHourOffsets: normalizeIgnoredTimezoneHourOffsets(
         state.ignoredTimezoneHourOffsets,
       ),
+      excludeJunctionPoints: Boolean(state.excludeJunctionPoints),
     }),
   )
 }

@@ -31,7 +31,7 @@ describe('registry compare chrome density', () => {
       /\.registry-compare-view \.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*11px/,
     )
     expect(css).toMatch(/\.registry-compare-view \.registry-key-pane[\s\S]*?padding:\s*1px 4px/)
-    expect(css).toMatch(/\.registry-compare-view \.registry-key-row\s*\{[\s\S]*?min-height:\s*24px/)
+    expect(css).toMatch(/\.registry-compare-view \.registry-key-row\s*\{[\s\S]*?min-height:\s*22px/)
     expect(css).toMatch(
       /\.registry-compare-view \.registry-value-row\s*\{[\s\S]*?min-height:\s*20px/,
     )
@@ -42,7 +42,7 @@ describe('registry compare chrome density', () => {
     expect(registryView).toMatch(/\.registry-summary-item\s*\{[\s\S]*?padding:\s*1px 4px/)
     expect(registryView).toMatch(/\.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*11px/)
     expect(registryView).toMatch(/\.registry-key-pane[\s\S]*?padding:\s*1px 4px/)
-    expect(registryView).toMatch(/\.registry-key-row\s*\{[\s\S]*?min-height:\s*24px/)
+    expect(registryView).toMatch(/\.registry-key-row\s*\{[\s\S]*?min-height:\s*22px/)
     expect(registryView).toMatch(/\.registry-value-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(registryView).toMatch(/\.registry-value-row > \*\s*\{[\s\S]*?padding:\s*1px 4px/)
   })

@@ -1989,7 +1989,7 @@ watch(
   display: grid;
   gap: 4px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: auto;
 }
 

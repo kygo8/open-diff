@@ -12,20 +12,20 @@ const mergeView = readFileSync(resolve(root, 'src/views/FolderMergeView.vue'), '
 describe('folder chrome density', () => {
   it('keeps Folder/Sync/Merge session bodies and strips dense toward capture', () => {
     expect(css).toMatch(
-      /\.folder-compare-view,\s*\.folder-sync-view,\s*\.folder-merge-view\s*\{[\s\S]*?padding:\s*4px 6px/,
+      /\.folder-compare-view,\s*\.folder-sync-view,\s*\.folder-merge-view\s*\{[\s\S]*?padding:\s*2px 4px/,
     )
     expect(css).toMatch(/\.folder-toolbar\s*\{[\s\S]*?gap:\s*4px\s*!important/)
     expect(css).toMatch(/\.folder-toolbar \.folder-criteria\s*\{[\s\S]*?gap:\s*2px 6px/)
     expect(css).toMatch(/\.folder-toolbar \.folder-actions\s*\{[\s\S]*?gap:\s*4px/)
-    expect(folderView).toMatch(/\.folder-compare-view\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(folderView).toMatch(/\.folder-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(folderView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
     expect(folderView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*10px/)
     expect(folderView).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*10px/)
     expect(folderView).toMatch(/\.path-pair input\s*\{[\s\S]*?height:\s*18px/)
     expect(folderView).toMatch(/\.folder-criteria\s*\{[\s\S]*?gap:\s*2px 6px/)
-    expect(syncView).toMatch(/\.folder-sync-view\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(syncView).toMatch(/\.folder-sync-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
-    expect(mergeView).toMatch(/\.folder-merge-view\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(mergeView).toMatch(/\.folder-merge-view\s*\{[\s\S]*?padding:\s*2px 4px/)
   })
 })
 

@@ -1323,7 +1323,7 @@ select {
   display: inline-flex !important;
   flex: 1 1 280px !important;
   align-items: center !important;
-  gap: 2px !important;
+  gap: 1px !important;
   min-width: 220px !important;
   max-width: 560px !important;
 }
@@ -1332,7 +1332,7 @@ select {
   height: 11px !important;
   padding: 0 4px !important;
   border: 1px solid #bfc4cc !important;
-  border-radius: 2px !important;
+  border-radius: 0 !important;
   background: #ffffff !important;
   color: #111111 !important;
   font-size: 11px !important;
@@ -1414,7 +1414,7 @@ select {
 .format-detail-panel input,
 .profile-detail-panel input {
   border: 1px solid #bfc4cc !important;
-  border-radius: 2px !important;
+  border-radius: 0 !important;
   background: #ffffff !important;
   color: #111111 !important;
 }

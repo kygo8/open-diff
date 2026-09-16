@@ -19,6 +19,7 @@ describe('path/status strip density', () => {
 
   it('fuses path row corners and borders into the shell frame', () => {
     expect(css).toMatch(/\.bc-path-row input\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(css).toMatch(/\.path-pair input,[\s\S]*?border-radius:\s*0/)
     expect(css).toMatch(/\.bc-path-row button\s*\{[\s\S]*?border-radius:\s*0/)
     expect(css).toMatch(/\.bc-path-row button\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
     expect(css).toMatch(/\.path-pair-bar input\s*\{[\s\S]*?border-radius:\s*0/)

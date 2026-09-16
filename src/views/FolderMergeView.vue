@@ -1531,7 +1531,7 @@ watch(
 
       <section
         class="display-filters folder-filter-chrome"
-        data-filters-density="capture-pass10"
+        data-filters-density="capture-pass11"
         data-testid="folder-merge-filter-strip"
       >
         <div class="folder-filter-strip">
@@ -1976,7 +1976,7 @@ watch(
       <section
         v-if="showPeek"
         class="folder-merge-peek-panel"
-        data-peek-density="capture-pass10"
+        data-peek-density="capture-pass11"
         data-testid="folder-merge-peek-panel"
       >
         <header>
@@ -2531,7 +2531,7 @@ h1 {
   display: inline-flex;
   flex: 1 1 280px;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   min-width: 220px;
   max-width: 640px;
 }
@@ -2597,7 +2597,7 @@ h1 {
   height: 11px;
   padding: 0 4px;
   border: 1px solid #bfc4cc;
-  border-radius: 2px;
+  border-radius: 0;
   background: #ffffff;
   color: #111111;
   font-size: 11px;

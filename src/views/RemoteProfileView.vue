@@ -11,6 +11,7 @@ import {
 } from '@/app/remoteOAuth'
 import { openPathExternal } from '@/api/integration'
 import {
+  applyRemoteProfileConnectionDefaults,
   deleteLocalRemoteProfile,
   loadLocalRemoteProfiles,
   saveLocalRemoteProfiles,
@@ -211,14 +212,18 @@ async function saveProfile(): Promise<void> {
       const existing = mirrored.find((profile) => profile.id === nextProfile.id)
 
       upsertLocalRemoteProfile(mirrored, {
-        id: nextProfile.id,
-        name: nextProfile.name,
-        protocol: nextProfile.protocol,
-        host: nextProfile.endpoint.host,
-        port: nextProfile.endpoint.port,
-        rootPath: nextProfile.endpoint.rootPath,
-        username: draft.value.username.trim() || existing?.username,
-        oauthClientId: draft.value.oauthClientId.trim(),
+        ...applyRemoteProfileConnectionDefaults({
+          id: nextProfile.id,
+          name: nextProfile.name,
+          protocol: nextProfile.protocol,
+          host: nextProfile.endpoint.host,
+          port: nextProfile.endpoint.port,
+          rootPath: nextProfile.endpoint.rootPath,
+          username: draft.value.username.trim() || existing?.username,
+          oauthClientId: draft.value.oauthClientId.trim(),
+          connectionTimeoutSeconds: existing?.connectionTimeoutSeconds,
+          passiveFtp: existing?.passiveFtp,
+        }),
       })
     }
     draft.value.password = ''
@@ -415,14 +420,16 @@ function applyLocalProfiles(
 
 function persistLocalProfile(nextProfile: RemoteProfile, username?: string): void {
   const local = upsertLocalRemoteProfile(profiles.value.map(toLocalProfile), {
-    id: nextProfile.id,
-    name: nextProfile.name,
-    protocol: nextProfile.protocol,
-    host: nextProfile.endpoint.host,
-    port: nextProfile.endpoint.port,
-    rootPath: nextProfile.endpoint.rootPath,
-    username,
-    oauthClientId: draft.value.oauthClientId.trim() || undefined,
+    ...applyRemoteProfileConnectionDefaults({
+      id: nextProfile.id,
+      name: nextProfile.name,
+      protocol: nextProfile.protocol,
+      host: nextProfile.endpoint.host,
+      port: nextProfile.endpoint.port,
+      rootPath: nextProfile.endpoint.rootPath,
+      username,
+      oauthClientId: draft.value.oauthClientId.trim() || undefined,
+    }),
   })
 
   applyLocalProfiles(local, nextProfile.id)
@@ -443,14 +450,18 @@ function mirrorViewsToLocal(views: RemoteProfileView[]): void {
 }
 
 function toLocalProfile(profile: RemoteProfile): LocalRemoteProfile {
-  return {
+  const existing = loadLocalRemoteProfiles().find((item) => item.id === profile.id)
+
+  return applyRemoteProfileConnectionDefaults({
     id: profile.id,
     name: profile.name,
     protocol: profile.protocol,
     host: profile.endpoint.host,
     port: profile.endpoint.port,
     rootPath: profile.endpoint.rootPath,
-  }
+    connectionTimeoutSeconds: existing?.connectionTimeoutSeconds,
+    passiveFtp: existing?.passiveFtp,
+  })
 }
 
 function toDraft(profile: RemoteProfile): RemoteProfileDraft {

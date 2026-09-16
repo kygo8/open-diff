@@ -95,6 +95,8 @@ export interface ReportPreferences {
   clearHistoryOnExit: boolean
   /** Include identical rows in folder report exports. */
   includeIdentical: boolean
+  /** Include left-only / right-only rows in folder report exports. */
+  includeOrphans: boolean
 }
 
 const reportPreferenceFormats: readonly ReportPreferenceFormat[] = [
@@ -114,6 +116,7 @@ export function defaultReportPreferences(): ReportPreferences {
     openAfterExport: false,
     clearHistoryOnExit: false,
     includeIdentical: true,
+    includeOrphans: true,
   }
 }
 
@@ -147,6 +150,7 @@ export function loadReportPreferences(
       openAfterExport: Boolean(parsed.openAfterExport),
       clearHistoryOnExit: Boolean(parsed.clearHistoryOnExit),
       includeIdentical: parsed.includeIdentical !== false,
+      includeOrphans: parsed.includeOrphans !== false,
     }
   } catch {
     return defaultReportPreferences()

@@ -1003,6 +1003,9 @@ export const jaJP: LanguagePack = {
     'ui.includePatterns': '名前を含める',
     'ui.excludePatterns': '名前を除外',
     'ui.caseSensitiveNames': '名前の大文字小文字を区別',
+    'ui.ignoredTimezoneHourOffsets': '無視するタイムゾーン時差（時間）',
+    'ui.ignoredTimezoneHourOffsetsHint':
+      'コンマ区切りの整数時間。更新日時の比較で等しいと見なします（例: 8, -5）。',
     'ui.sessionSettingsFiltersHint':
       '名前の含め/除外パターンは次回のスキャン/比較で適用され、この端末に保持されます。表示ステータスフィルタはフィルタツールバーパネルに残ります。',
     'ui.goTo': '移動',
@@ -1129,6 +1132,12 @@ export const jaJP: LanguagePack = {
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.fileOperations': 'ファイル操作',
+    'ui.copyEmptyFolders': '空のフォルダーをコピー',
+    'ui.copyEmptyFoldersHint':
+      'オフにすると、ファイルを含まないディレクトリのコピーをスキップします。',
+    'ui.keepFolderExpansionOnReload': '再比較時に展開状態を保持',
+    'ui.keepFolderExpansionOnReloadHint':
+      '同じルートを再比較したあと、開いていたフォルダーを保ちます。',
     'ui.fileOperationsHint': 'フォルダー比較のコピー、移動、削除の既定値。',
     'ui.includeHiddenItemsInFileActions': '非表示項目を既定で含める',
     'ui.includeHiddenItemsInFileActionsHint':
@@ -1202,6 +1211,9 @@ export const jaJP: LanguagePack = {
     'ui.formatAssociations': '形式の関連付け',
     'ui.formatAssociationsHint':
       '拡張子で開くときに使う組み込み関連付けの有効／無効を切り替えます。',
+    'ui.treatUnknownAsText': '未知の拡張子をテキストとして扱う',
+    'ui.treatUnknownAsTextHint':
+      '形式の関連付けがないファイルを Hex 比較ではなくテキスト比較で開きます。',
     'ui.profileDefaultName': '既定のプロファイル名',
     'ui.profileDefaultProtocol': '既定のプロトコル',
     'ui.profileDefaultRootPath': '既定のルートパス',
@@ -1215,9 +1227,17 @@ export const jaJP: LanguagePack = {
     'ui.overwriteReadOnlyFilesHint': '上書き前に宛先の読み取り専用属性を解除します。',
     'ui.profileDefaultUsername': '既定のユーザー名',
     'ui.profileDefaultPort': '既定のポート',
+    'ui.profileConnectionTimeoutSeconds': '接続タイムアウト（秒）',
+    'ui.profileConnectionTimeoutHint':
+      '新しいリモートプロファイル作成時に適用し、ローカルに保存します。',
+    'ui.profilePassiveFtp': '既定でパッシブ FTP を使う',
+    'ui.profilePassiveFtpHint': 'この端末に保存する新しい FTP / FTPS プロファイルに適用します。',
     'ui.reportIncludeIdentical': 'フォルダーレポートに同一項目を含める',
     'ui.reportIncludeIdenticalHint':
       'オフにすると、同一の行をフォルダー比較レポートから省略します。',
+    'ui.reportIncludeOrphans': 'フォルダーレポートに孤立項目を含める',
+    'ui.reportIncludeOrphansHint':
+      'オフにすると、左のみ／右のみの行をフォルダー比較レポートから省略します。',
     'ui.showMillisecondsInTimestamps': 'タイムスタンプにミリ秒を表示',
     'ui.showMillisecondsInTimestampsHint': 'パスフッタとフォルダー更新日時に秒とミリ秒を含めます。',
     'ui.profileSavedCount': '保存済みプロファイル: {count}',

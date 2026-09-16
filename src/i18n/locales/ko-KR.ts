@@ -995,6 +995,9 @@ export const koKR: LanguagePack = {
     'ui.includePatterns': '이름 포함',
     'ui.excludePatterns': '이름 제외',
     'ui.caseSensitiveNames': '이름 대소문자 구분',
+    'ui.ignoredTimezoneHourOffsets': '무시할 시간대 시차(시간)',
+    'ui.ignoredTimezoneHourOffsetsHint':
+      '쉼표로 구분한 정수 시간. 수정 시각 비교 시 같은 것으로 봅니다(예: 8, -5).',
     'ui.sessionSettingsFiltersHint':
       '이름 포함/제외 패턴은 다음 스캔/비교 때 적용되며 이 워크스테이션에 유지됩니다. 표시 상태 필터는 필터 도구 모음 패널에 그대로 있습니다.',
     'ui.goTo': '이동',
@@ -1120,6 +1123,10 @@ export const koKR: LanguagePack = {
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.fileOperations': '파일 작업',
+    'ui.copyEmptyFolders': '빈 폴더 복사',
+    'ui.copyEmptyFoldersHint': '끄면 파일이 없는 디렉터리는 폴더로 복사하지 않습니다.',
+    'ui.keepFolderExpansionOnReload': '다시 비교할 때 펼침 상태 유지',
+    'ui.keepFolderExpansionOnReloadHint': '같은 루트를 다시 비교한 뒤 펼쳐 둔 폴더를 유지합니다.',
     'ui.fileOperationsHint': '폴더 비교 복사, 이동, 삭제 작업의 기본값입니다.',
     'ui.includeHiddenItemsInFileActions': '기본적으로 숨긴 항목 포함',
     'ui.includeHiddenItemsInFileActionsHint':
@@ -1192,6 +1199,8 @@ export const koKR: LanguagePack = {
       '폴더 비교/동기화/병합의 기본 이름 필터입니다. 필터 줄과 세션 설정에서 덮어쓸 수 있습니다.',
     'ui.formatAssociations': '형식 연결',
     'ui.formatAssociationsHint': '확장자로 파일을 열 때 사용하는 기본 연결을 켜거나 끕니다.',
+    'ui.treatUnknownAsText': '알 수 없는 확장자를 텍스트로 취급',
+    'ui.treatUnknownAsTextHint': '형식 연결이 없는 파일은 16진 비교가 아니라 텍스트 비교로 엽니다.',
     'ui.profileDefaultName': '기본 프로필 이름',
     'ui.profileDefaultProtocol': '기본 프로토콜',
     'ui.profileDefaultRootPath': '기본 루트 경로',
@@ -1205,8 +1214,16 @@ export const koKR: LanguagePack = {
     'ui.overwriteReadOnlyFilesHint': '덮어쓰기 전에 대상의 읽기 전용 특성을 해제합니다.',
     'ui.profileDefaultUsername': '기본 사용자 이름',
     'ui.profileDefaultPort': '기본 포트',
+    'ui.profileConnectionTimeoutSeconds': '연결 제한 시간(초)',
+    'ui.profileConnectionTimeoutHint':
+      '새 원격 프로필을 만들 때 적용되며 이 워크스테이션에 저장됩니다.',
+    'ui.profilePassiveFtp': '기본적으로 수동 FTP 사용',
+    'ui.profilePassiveFtpHint': '여기에 저장하는 새 FTP / FTPS 프로필에 적용됩니다.',
     'ui.reportIncludeIdentical': '폴더 보고서에 동일 항목 포함',
     'ui.reportIncludeIdenticalHint': '끄면 폴더 비교 보고서에서 동일 행을 생략합니다.',
+    'ui.reportIncludeOrphans': '폴더 보고서에 고아 항목 포함',
+    'ui.reportIncludeOrphansHint':
+      '끄면 폴더 비교 보고서에서 왼쪽 전용/오른쪽 전용 행을 생략합니다.',
     'ui.showMillisecondsInTimestamps': '타임스탬프에 밀리초 표시',
     'ui.showMillisecondsInTimestampsHint':
       '경로 바닥글과 폴더 수정 시각에 초와 밀리초를 포함합니다.',

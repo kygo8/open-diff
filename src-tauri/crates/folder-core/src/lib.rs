@@ -740,11 +740,19 @@ fn move_path(source_path: &str, target_path: &str) -> Result<(), FolderScanError
 }
 
 fn copy_path(source_path: &str, target_path: &str) -> Result<(), FolderScanError> {
+    copy_path_with_options(source_path, target_path, true)
+}
+
+pub fn copy_path_with_options(
+    source_path: &str,
+    target_path: &str,
+    copy_empty_folders: bool,
+) -> Result<(), FolderScanError> {
     let source = Path::new(source_path);
     let target = Path::new(target_path);
 
     if source.is_dir() {
-        copy_dir_recursive(source, target)
+        copy_dir_recursive(source, target, copy_empty_folders)
     } else {
         if let Some(parent) = target.parent() {
             fs::create_dir_all(parent).map_err(|error| FolderScanError::Vfs(error.to_string()))?;
@@ -755,7 +763,35 @@ fn copy_path(source_path: &str, target_path: &str) -> Result<(), FolderScanError
     }
 }
 
-fn copy_dir_recursive(source: &Path, target: &Path) -> Result<(), FolderScanError> {
+fn directory_contains_files(path: &Path) -> bool {
+    let Ok(entries) = fs::read_dir(path) else {
+        return false;
+    };
+
+    for entry in entries.flatten() {
+        let entry_path = entry.path();
+
+        if entry_path.is_dir() {
+            if directory_contains_files(&entry_path) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn copy_dir_recursive(
+    source: &Path,
+    target: &Path,
+    copy_empty_folders: bool,
+) -> Result<(), FolderScanError> {
+    if !copy_empty_folders && !directory_contains_files(source) {
+        return Ok(());
+    }
+
     fs::create_dir_all(target).map_err(|error| FolderScanError::Vfs(error.to_string()))?;
 
     for entry in fs::read_dir(source).map_err(|error| FolderScanError::Vfs(error.to_string()))? {
@@ -764,7 +800,7 @@ fn copy_dir_recursive(source: &Path, target: &Path) -> Result<(), FolderScanErro
         let dest = target.join(entry.file_name());
 
         if entry_path.is_dir() {
-            copy_dir_recursive(&entry_path, &dest)?;
+            copy_dir_recursive(&entry_path, &dest, copy_empty_folders)?;
         } else {
             if let Some(parent) = dest.parent() {
                 fs::create_dir_all(parent)
@@ -2248,6 +2284,17 @@ mod tests {
             fs::read(target_dir.join("nested.txt")).expect("nested copied"),
             b"nested bytes"
         );
+
+        let empty_source = root.join("empty-src");
+        let empty_target = root.join("empty-dest");
+        fs::create_dir_all(&empty_source).expect("empty source");
+        copy_path_with_options(
+            &empty_source.display().to_string(),
+            &empty_target.display().to_string(),
+            false,
+        )
+        .expect("skip empty folder");
+        assert!(!empty_target.exists());
 
         let _ = fs::remove_dir_all(root);
     }

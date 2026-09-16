@@ -24,7 +24,34 @@ export function defaultFolderCompareCriteria(): FolderCompareCriteria {
     timestampToleranceMs: 0,
     ignoreDaylightSavingHourOffset: false,
     caseSensitiveNames: true,
+    ignoredTimezoneHourOffsets: [],
   }
+}
+
+export function normalizeIgnoredTimezoneHourOffsets(value: unknown): number[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  const hours = value
+    .map((item) => (typeof item === 'number' ? item : Number(item)))
+    .filter((item) => Number.isFinite(item) && item !== 0)
+    .map((item) => Math.trunc(item))
+
+  return [...new Set(hours)]
+}
+
+export function parseIgnoredTimezoneHourOffsetsInput(value: string): number[] {
+  return normalizeIgnoredTimezoneHourOffsets(
+    value
+      .split(/[,\s]+/u)
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0),
+  )
+}
+
+export function formatIgnoredTimezoneHourOffsetsInput(hours: readonly number[]): string {
+  return normalizeIgnoredTimezoneHourOffsets(hours).join(', ')
 }
 
 export function loadFolderCompareCriteria(
@@ -50,6 +77,9 @@ export function loadFolderCompareCriteria(
       timestampToleranceMs: clampNonNegativeInt(parsed.timestampToleranceMs, 0),
       ignoreDaylightSavingHourOffset: Boolean(parsed.ignoreDaylightSavingHourOffset),
       caseSensitiveNames: parsed.caseSensitiveNames !== false,
+      ignoredTimezoneHourOffsets: normalizeIgnoredTimezoneHourOffsets(
+        parsed.ignoredTimezoneHourOffsets,
+      ),
     }
   } catch {
     return defaultFolderCompareCriteria()
@@ -73,6 +103,9 @@ export function saveFolderCompareCriteria(
       timestampToleranceMs: clampNonNegativeInt(state.timestampToleranceMs, 0),
       ignoreDaylightSavingHourOffset: Boolean(state.ignoreDaylightSavingHourOffset),
       caseSensitiveNames: state.caseSensitiveNames !== false,
+      ignoredTimezoneHourOffsets: normalizeIgnoredTimezoneHourOffsets(
+        state.ignoredTimezoneHourOffsets,
+      ),
     }),
   )
 }

@@ -12,6 +12,8 @@ export interface LocalRemoteProfile {
   username?: string
   /** User-configured OAuth app client id for Dropbox/OneDrive browser helper. */
   oauthClientId?: string
+  connectionTimeoutSeconds?: number
+  passiveFtp?: boolean
 }
 
 export function loadLocalRemoteProfiles(): LocalRemoteProfile[] {
@@ -87,6 +89,8 @@ export interface RemoteProfileDefaults {
   defaultRootPath: string
   defaultUsername: string
   defaultPort: number | null
+  connectionTimeoutSeconds: number
+  passiveFtp: boolean
 }
 
 const remoteProfileProtocols: readonly RemoteProtocol[] = [
@@ -108,6 +112,8 @@ export function defaultRemoteProfileDefaults(): RemoteProfileDefaults {
     defaultRootPath: '/',
     defaultUsername: '',
     defaultPort: null,
+    connectionTimeoutSeconds: 30,
+    passiveFtp: true,
   }
 }
 
@@ -146,6 +152,11 @@ export function loadRemoteProfileDefaults(
       typeof parsed.defaultPort === 'number' && Number.isFinite(parsed.defaultPort)
         ? Math.max(0, Math.round(parsed.defaultPort))
         : null
+    const timeout =
+      typeof parsed.connectionTimeoutSeconds === 'number' &&
+      Number.isFinite(parsed.connectionTimeoutSeconds)
+        ? Math.max(1, Math.round(parsed.connectionTimeoutSeconds))
+        : defaults.connectionTimeoutSeconds
 
     return {
       defaultName: name,
@@ -154,9 +165,26 @@ export function loadRemoteProfileDefaults(
       defaultRootPath: rootPath,
       defaultUsername: username,
       defaultPort: port,
+      connectionTimeoutSeconds: timeout,
+      passiveFtp: parsed.passiveFtp !== false,
     }
   } catch {
     return defaultRemoteProfileDefaults()
+  }
+}
+
+export function applyRemoteProfileConnectionDefaults(
+  profile: LocalRemoteProfile,
+  defaults: RemoteProfileDefaults = loadRemoteProfileDefaults(),
+): LocalRemoteProfile {
+  return {
+    ...profile,
+    connectionTimeoutSeconds:
+      typeof profile.connectionTimeoutSeconds === 'number' &&
+      Number.isFinite(profile.connectionTimeoutSeconds)
+        ? Math.max(1, Math.round(profile.connectionTimeoutSeconds))
+        : defaults.connectionTimeoutSeconds,
+    passiveFtp: profile.passiveFtp ?? defaults.passiveFtp,
   }
 }
 
@@ -176,6 +204,12 @@ export function saveRemoteProfileDefaults(
         typeof prefs.defaultPort === 'number' && Number.isFinite(prefs.defaultPort)
           ? Math.max(0, Math.round(prefs.defaultPort))
           : null,
+      connectionTimeoutSeconds:
+        typeof prefs.connectionTimeoutSeconds === 'number' &&
+        Number.isFinite(prefs.connectionTimeoutSeconds)
+          ? Math.max(1, Math.round(prefs.connectionTimeoutSeconds))
+          : defaultRemoteProfileDefaults().connectionTimeoutSeconds,
+      passiveFtp: prefs.passiveFtp,
     }),
   )
 }

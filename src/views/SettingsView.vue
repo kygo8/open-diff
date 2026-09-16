@@ -22,7 +22,9 @@ import { useSavedSessionsStore } from '@/stores/savedSessions'
 import { type DiffHighlightColors, useSettingsStore } from '@/stores/settings'
 import { formatArchiveSuffixesInput, parseArchiveSuffixesInput } from '@/app/archivePath'
 import {
+  formatIgnoredTimezoneHourOffsetsInput,
   loadFolderCompareCriteria,
+  parseIgnoredTimezoneHourOffsetsInput,
   saveFolderCompareCriteria,
   defaultFolderCompareCriteria,
 } from '@/app/folderCompareCriteria'
@@ -47,12 +49,20 @@ import {
 } from '@/app/hexCompareSessionOptions'
 import {
   builtInFileFormats,
+  defaultFileFormatPreferences,
+  loadFileFormatPreferences,
   loadFileFormats,
   optionsFormatAssociationIds,
+  saveFileFormatPreferences,
   saveFileFormats,
   setFileFormatEnabled,
   type FileFormatDefinition,
 } from '@/app/fileFormats'
+import {
+  defaultFileOperationPreferences,
+  loadFileOperationPreferences,
+  saveFileOperationPreferences,
+} from '@/app/fileOperationPreferences'
 import {
   clearRecentReportExports,
   defaultReportPreferences,
@@ -159,6 +169,8 @@ const fileFiltersIncludeDraft = ref(
 )
 const fileFiltersExcludeDraft = ref(formatFolderNameFilterDraft(fileFiltersDraft.value.exclude))
 const fileFormatsDraft = ref<FileFormatDefinition[]>(loadFileFormats())
+const fileFormatPreferencesDraft = ref(loadFileFormatPreferences())
+const fileOperationPreferencesDraft = ref(loadFileOperationPreferences())
 const reportPreferencesDraft = ref<ReportPreferences>(loadReportPreferences())
 const profileDefaultsDraft = ref<RemoteProfileDefaults>(loadRemoteProfileDefaults())
 const savedRemoteProfilesCount = computed(() => loadLocalRemoteProfiles().length)
@@ -896,6 +908,10 @@ function restoreFactoryDefaultsFromOptions(): void {
     rules: { ...format.rules, ignore: [...format.rules.ignore] },
   }))
   saveFileFormats(fileFormatsDraft.value)
+  fileFormatPreferencesDraft.value = defaultFileFormatPreferences()
+  saveFileFormatPreferences(fileFormatPreferencesDraft.value)
+  fileOperationPreferencesDraft.value = defaultFileOperationPreferences()
+  saveFileOperationPreferences(fileOperationPreferencesDraft.value)
   reportPreferencesDraft.value = defaultReportPreferences()
   saveReportPreferences(reportPreferencesDraft.value)
   profileDefaultsDraft.value = defaultRemoteProfileDefaults()
@@ -913,6 +929,41 @@ function restoreFactoryDefaultsFromOptions(): void {
 
 function persistFolderCriteriaDraft(): void {
   saveFolderCompareCriteria(folderCriteriaDraft.value)
+}
+
+function onIgnoredTimezoneOffsetsChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  folderCriteriaDraft.value.ignoredTimezoneHourOffsets = parseIgnoredTimezoneHourOffsetsInput(
+    target.value,
+  )
+  persistFolderCriteriaDraft()
+}
+
+function persistFileFormatPreferencesDraft(): void {
+  saveFileFormatPreferences(fileFormatPreferencesDraft.value)
+}
+
+function persistFileOperationPreferencesDraft(): void {
+  saveFileOperationPreferences(fileOperationPreferencesDraft.value)
+}
+
+function onProfileConnectionTimeoutChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  profileDefaultsDraft.value.connectionTimeoutSeconds = Math.max(
+    1,
+    Math.round(Number(target.value) || 30),
+  )
+  persistProfileDefaultsDraft()
 }
 
 function onFolderTimestampToleranceChange(event: Event): void {
@@ -1699,6 +1750,21 @@ function parseShortcutText(value: string): string[] {
             />
             <span>{{ $t('ui.caseSensitiveNames') }}</span>
           </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.ignoredTimezoneHourOffsets') }}</span>
+            <input
+              class="auto-save-limit-input"
+              data-testid="folder-compare-ignored-timezone-offsets"
+              type="text"
+              :value="
+                formatIgnoredTimezoneHourOffsetsInput(
+                  folderCriteriaDraft.ignoredTimezoneHourOffsets ?? [],
+                )
+              "
+              @change="onIgnoredTimezoneOffsetsChange"
+            />
+          </label>
+          <p class="options-hint">{{ $t('ui.ignoredTimezoneHourOffsetsHint') }}</p>
           <p class="options-hint">{{ $t('ui.folderCompareOptionsHint') }}</p>
         </NCard>
 
@@ -2210,6 +2276,26 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.overwriteReadOnlyFiles') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.overwriteReadOnlyFilesHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="fileOperationPreferencesDraft.copyEmptyFolders"
+              data-testid="copy-empty-folders"
+              type="checkbox"
+              @change="persistFileOperationPreferencesDraft"
+            />
+            <span>{{ $t('ui.copyEmptyFolders') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.copyEmptyFoldersHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="fileOperationPreferencesDraft.keepFolderExpansionOnReload"
+              data-testid="keep-folder-expansion-on-reload"
+              type="checkbox"
+              @change="persistFileOperationPreferencesDraft"
+            />
+            <span>{{ $t('ui.keepFolderExpansionOnReload') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.keepFolderExpansionOnReloadHint') }}</p>
           <p class="options-hint">{{ $t('ui.fileOperationsHint') }}</p>
         </NCard>
 
@@ -2589,6 +2675,16 @@ function parseShortcutText(value: string): string[] {
             />
             <span>{{ format.name }}</span>
           </label>
+          <label class="tweak-row">
+            <input
+              v-model="fileFormatPreferencesDraft.treatUnknownAsText"
+              data-testid="treat-unknown-as-text"
+              type="checkbox"
+              @change="persistFileFormatPreferencesDraft"
+            />
+            <span>{{ $t('ui.treatUnknownAsText') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.treatUnknownAsTextHint') }}</p>
         </NCard>
 
         <NCard
@@ -2661,6 +2757,30 @@ function parseShortcutText(value: string): string[] {
               @change="persistProfileDefaultsDraft"
             />
           </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.profileConnectionTimeoutSeconds') }}</span>
+            <input
+              class="auto-save-limit-input"
+              data-testid="profile-connection-timeout"
+              type="number"
+              min="1"
+              max="600"
+              step="1"
+              :value="profileDefaultsDraft.connectionTimeoutSeconds"
+              @change="onProfileConnectionTimeoutChange"
+            />
+          </label>
+          <p class="options-hint">{{ $t('ui.profileConnectionTimeoutHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="profileDefaultsDraft.passiveFtp"
+              data-testid="profile-passive-ftp"
+              type="checkbox"
+              @change="persistProfileDefaultsDraft"
+            />
+            <span>{{ $t('ui.profilePassiveFtp') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.profilePassiveFtpHint') }}</p>
           <p class="options-hint">
             {{ $t('ui.profileSavedCount', { count: savedRemoteProfilesCount }) }}
           </p>
@@ -2749,6 +2869,16 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.reportIncludeIdentical') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.reportIncludeIdenticalHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="reportPreferencesDraft.includeOrphans"
+              data-testid="report-include-orphans"
+              type="checkbox"
+              @change="persistReportPreferencesDraft"
+            />
+            <span>{{ $t('ui.reportIncludeOrphans') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.reportIncludeOrphansHint') }}</p>
           <div class="settings-row">
             <NButton
               size="small"

@@ -49,6 +49,49 @@ export function isFileFormatEnabled(format: FileFormatDefinition): boolean {
 }
 
 export const fileFormatsStorageKey = 'open-diff-file-formats'
+export const fileFormatPreferencesStorageKey = 'open-diff-file-format-preferences'
+
+export interface FileFormatPreferences {
+  treatUnknownAsText: boolean
+}
+
+export function defaultFileFormatPreferences(): FileFormatPreferences {
+  return {
+    treatUnknownAsText: false,
+  }
+}
+
+export function loadFileFormatPreferences(
+  storage: Pick<Storage, 'getItem'> = localStorage,
+): FileFormatPreferences {
+  try {
+    const raw = storage.getItem(fileFormatPreferencesStorageKey)
+
+    if (!raw) {
+      return defaultFileFormatPreferences()
+    }
+
+    const parsed = JSON.parse(raw) as Partial<FileFormatPreferences>
+
+    return {
+      treatUnknownAsText: Boolean(parsed.treatUnknownAsText),
+    }
+  } catch {
+    return defaultFileFormatPreferences()
+  }
+}
+
+export function saveFileFormatPreferences(
+  prefs: FileFormatPreferences,
+  storage: Pick<Storage, 'setItem'> = localStorage,
+): void {
+  storage.setItem(
+    fileFormatPreferencesStorageKey,
+    JSON.stringify({
+      treatUnknownAsText: prefs.treatUnknownAsText,
+    }),
+  )
+}
 
 export const builtInFileFormats: FileFormatDefinition[] = [
   {
@@ -328,7 +371,7 @@ export function sessionTypeForPath(path: string): SessionType {
     return viewToSessionType[format.defaultView]
   }
 
-  return 'hex-compare'
+  return loadFileFormatPreferences().treatUnknownAsText ? 'text-compare' : 'hex-compare'
 }
 
 export function fileNameOf(path: string): string {

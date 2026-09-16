@@ -102,6 +102,7 @@ async function runExport(): Promise<void> {
             format: reportFormat.value,
             outputPath: target,
             includeIdentical: loadReportPreferences().includeIdentical,
+            includeOrphans: loadReportPreferences().includeOrphans,
           })
         : await exportTextCompareReport({
             left: leftText.value ? leftText.value : (lastCompare.text?.left ?? ''),

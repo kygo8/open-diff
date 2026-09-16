@@ -252,6 +252,7 @@ export function exportFolderCompareReport(
     format: request.format,
     outputPath: request.outputPath,
     includeIdentical: request.includeIdentical,
+    includeOrphans: request.includeOrphans,
   })
 }
 
@@ -281,6 +282,7 @@ export function copyFolderEntry(
     preserveTimestamps: request.preserveTimestamps,
     overwriteReadOnly: request.overwriteReadOnly,
     sourceModifiedAtMs: request.sourceModifiedAtMs,
+    copyEmptyFolders: request.copyEmptyFolders,
   })
 }
 

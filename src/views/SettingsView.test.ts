@@ -462,6 +462,14 @@ describe('SettingsView', () => {
     expect(settings.includeHiddenItemsInFileActions).toBe(true)
     await wrapper.find('[data-testid="beep-after-long-file-operations"]').setValue(true)
     expect(settings.beepAfterLongFileOperations).toBe(true)
+    await wrapper.find('[data-testid="copy-empty-folders"]').setValue(false)
+    await wrapper.find('[data-testid="keep-folder-expansion-on-reload"]').setValue(true)
+    expect(
+      JSON.parse(localStorage.getItem('open-diff-file-operation-preferences') ?? '{}'),
+    ).toMatchObject({
+      copyEmptyFolders: false,
+      keepFolderExpansionOnReload: true,
+    })
 
     await wrapper.find('[data-testid="options-section-archiveTypes"]').trigger('click')
     await wrapper.find('[data-testid="enable-rar-archive-types"]').setValue(true)
@@ -528,6 +536,8 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
   await wrapper.find('[data-testid="folder-compare-case-sensitive-names"]').setValue(false)
   await wrapper.find('[data-testid="folder-compare-timestamp-tolerance"]').setValue('3')
   await wrapper.find('[data-testid="folder-compare-timestamp-tolerance"]').trigger('change')
+  await wrapper.find('[data-testid="folder-compare-ignored-timezone-offsets"]').setValue('8, -5')
+  await wrapper.find('[data-testid="folder-compare-ignored-timezone-offsets"]').trigger('change')
   expect(
     JSON.parse(localStorage.getItem('open-diff-folder-compare-criteria') ?? '{}'),
   ).toMatchObject({
@@ -539,6 +549,7 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
     ignoreDaylightSavingHourOffset: true,
     timestampToleranceMs: 3000,
     caseSensitiveNames: false,
+    ignoredTimezoneHourOffsets: [8, -5],
   })
 
   await wrapper.find('[data-testid="options-section-hexCompare"]').trigger('click')
@@ -589,6 +600,10 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   expect(formats.find((item) => item.id === 'plain-text')).toMatchObject({ enabled: false })
   expect(formats.find((item) => item.id === 'zip-archive')).toMatchObject({ enabled: false })
   expect(formats.find((item) => item.id === 'hex-binary')).toMatchObject({ enabled: false })
+  await wrapper.find('[data-testid="treat-unknown-as-text"]').setValue(true)
+  expect(
+    JSON.parse(localStorage.getItem('open-diff-file-format-preferences') ?? '{}'),
+  ).toMatchObject({ treatUnknownAsText: true })
 
   await wrapper.find('[data-testid="options-section-profiles"]').trigger('click')
   expect(wrapper.find('[data-testid="options-profiles-card"]').isVisible()).toBe(true)
@@ -604,6 +619,9 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="profile-default-port"]').trigger('change')
   await wrapper.find('[data-testid="profile-default-root-path"]').setValue('/data')
   await wrapper.find('[data-testid="profile-default-root-path"]').trigger('change')
+  await wrapper.find('[data-testid="profile-connection-timeout"]').setValue('45')
+  await wrapper.find('[data-testid="profile-connection-timeout"]').trigger('change')
+  await wrapper.find('[data-testid="profile-passive-ftp"]').setValue(false)
   expect(
     JSON.parse(localStorage.getItem('open-diff-remote-profile-defaults') ?? '{}'),
   ).toMatchObject({
@@ -613,6 +631,8 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
     defaultUsername: 'deploy',
     defaultPort: 990,
     defaultRootPath: '/data',
+    connectionTimeoutSeconds: 45,
+    passiveFtp: false,
   })
 
   await wrapper.find('[data-testid="options-section-reports"]').trigger('click')
@@ -624,12 +644,14 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="report-open-after-export"]').setValue(true)
   await wrapper.find('[data-testid="report-clear-history-on-exit"]').setValue(true)
   await wrapper.find('[data-testid="report-include-identical"]').setValue(false)
+  await wrapper.find('[data-testid="report-include-orphans"]').setValue(false)
   expect(JSON.parse(localStorage.getItem('open-diff-report-preferences') ?? '{}')).toMatchObject({
     defaultFormat: 'markdown',
     defaultKind: 'folder',
     openAfterExport: true,
     clearHistoryOnExit: true,
     includeIdentical: false,
+    includeOrphans: false,
   })
   await wrapper.find('[data-testid="open-reports-scripts"]').trigger('click')
   expect(push).toHaveBeenCalledWith('/reports/scripts')

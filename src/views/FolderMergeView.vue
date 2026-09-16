@@ -12,6 +12,8 @@ import {
 } from '@/api/folderMerge'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import type {
+  FolderMergeActionKind,
+  FolderMergeActionOverride,
   FolderMergeConflict,
   FolderMergeEntryKind,
   FolderMergeExecutionResponse,
@@ -57,10 +59,7 @@ import { pickNativePath } from '@/app/filePicker'
 import { createChildCompareLaunch } from '@/app/childSession'
 import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { explorerRevealPath, explorerSelectTargetPath } from '@/app/folderCompareExtraActions'
-import {
-  buildCopyToOutputOverrides,
-  type FolderMergeCopyToOutputOverride,
-} from '@/app/folderMergeCopyToOutput'
+import { buildCopyToOutputOverrides } from '@/app/folderMergeCopyToOutput'
 import {
   loadFolderMergeDisplay,
   mergeRowMatchesViewPreset,
@@ -162,7 +161,15 @@ const showPeek = ref(false)
 const peekTab = ref<'path' | 'sides' | 'action'>('path')
 const showMergeRules = ref(false)
 const selectedPlanRowId = ref('')
-const mergeActionOverrides = ref<FolderMergeCopyToOutputOverride[]>([])
+const mergeActionOptions: FolderMergeActionKind[] = [
+  'Keep output',
+  'Copy left to output',
+  'Copy right to output',
+  'Delete output',
+  'Mark conflict',
+]
+const mergeActionOverrides = ref<FolderMergeActionOverride[]>([])
+const pendingMergeSafetyRows = ref<FolderMergePlanRow[]>([])
 const collapsedPrefixes = ref<Set<string>>(new Set())
 const showMergeFilters = ref(false)
 const folderNameFilters = ref<FolderNameFilters>(loadFolderNameFilters())
@@ -916,6 +923,7 @@ async function buildFolderMergePlan(): Promise<void> {
   checkedRowIds.value = new Set()
   excludedRowIds.value = new Set()
   mergeActionOverrides.value = []
+  pendingMergeSafetyRows.value = []
   lastSelectionAction.value = ''
   mergeOpenError.value = ''
   if (plan.value.rows.length > 0) {
@@ -985,9 +993,87 @@ function applyCopyToOutputToSelection(): void {
     action: folderMergeActionLabel(sampleAction),
     count: overrides.length,
   })
+  pendingMergeSafetyRows.value = []
+}
+
+function applyMergeRowAction(row: FolderMergePlanRow, action: FolderMergeActionKind): void {
+  if (!plan.value) {
+    return
+  }
+
+  plan.value = {
+    ...plan.value,
+    rows: plan.value.rows.map((item) => {
+      if (item.id !== row.id) {
+        return item
+      }
+
+      return {
+        ...item,
+        action,
+        conflict: action === 'Mark conflict' ? item.conflict : undefined,
+        detail: action,
+      }
+    }),
+  }
+
+  const existing = new Map(
+    mergeActionOverrides.value.map((item) => [item.relativePath, item] as const),
+  )
+
+  existing.set(row.path, { relativePath: row.path, action })
+  mergeActionOverrides.value = [...existing.values()]
+  pendingMergeSafetyRows.value = []
+}
+
+function onMergeRowActionChange(row: FolderMergePlanRow, event: Event): void {
+  applyMergeRowAction(row, (event.target as HTMLSelectElement).value as FolderMergeActionKind)
+}
+
+function isWriteMergeAction(action: FolderMergeActionKind): boolean {
+  return (
+    action === 'Copy left to output' ||
+    action === 'Copy right to output' ||
+    action === 'Delete output'
+  )
+}
+
+function collectMergeSafetyRows(): FolderMergePlanRow[] {
+  return planRows.value.filter((row) => {
+    if (row.action === 'Mark conflict') {
+      return true
+    }
+
+    return isWriteMergeAction(row.action) && settings.confirmBeforeCopy
+  })
 }
 
 async function runFolderMerge(): Promise<void> {
+  if (!hasPlan.value || mergeExecuting.value) {
+    return
+  }
+
+  const riskyRows = collectMergeSafetyRows()
+
+  if (riskyRows.length > 0) {
+    pendingMergeSafetyRows.value = riskyRows
+
+    return
+  }
+
+  await executeMergeNow()
+}
+
+function confirmMergeSafety(): void {
+  pendingMergeSafetyRows.value = []
+  void executeMergeNow()
+}
+
+function cancelMergeSafety(): void {
+  pendingMergeSafetyRows.value = []
+}
+
+async function executeMergeNow(): Promise<void> {
   mergeExecuting.value = true
   mergeExecutionError.value = undefined
   mergeChromeMessage.value = ''
@@ -1931,6 +2017,45 @@ watch(
             {{ $t('ui.explorer') }}
           </button>
         </header>
+        <section
+          v-if="pendingMergeSafetyRows.length > 0"
+          class="merge-safety-confirmation"
+          data-testid="folder-merge-safety-confirmation"
+        >
+          <div>
+            <strong>{{ $t('ui.mergePlan') }}</strong>
+            <span>{{
+              $t('status.overwriteDeleteOperationsNeedReview', {
+                count: pendingMergeSafetyRows.length,
+              })
+            }}</span>
+          </div>
+          <ul>
+            <li
+              v-for="row in pendingMergeSafetyRows"
+              :key="row.id"
+            >
+              <strong>{{ folderMergeActionLabel(row.action) }}</strong>
+              <span>{{ row.path }}</span>
+            </li>
+          </ul>
+          <div class="merge-safety-actions">
+            <NButton
+              size="small"
+              secondary
+              data-testid="folder-merge-cancel-safety"
+              @click="cancelMergeSafety"
+              >{{ $t('ui.cancel') }}</NButton
+            >
+            <NButton
+              size="small"
+              type="primary"
+              data-testid="folder-merge-confirm-safety"
+              @click="confirmMergeSafety"
+              >{{ $t('ui.merge') }}</NButton
+            >
+          </div>
+        </section>
         <div class="merge-plan-table">
           <div class="merge-plan-row merge-plan-head">
             <span>{{ $t('ui.select') }}</span>
@@ -1967,7 +2092,25 @@ watch(
             <span>{{ sideLabel(row.base) }}</span>
             <span>{{ sideLabel(row.left) }}</span>
             <span>{{ sideLabel(row.right) }}</span>
-            <strong>{{ folderMergeActionLabel(row.action) }}</strong>
+            <label
+              class="merge-action-cell"
+              @click.stop
+            >
+              <span class="sr-only">{{ $t('ui.action') }}</span>
+              <select
+                :value="row.action"
+                :data-testid="`folder-merge-action-${row.id}`"
+                @change="onMergeRowActionChange(row, $event)"
+              >
+                <option
+                  v-for="action in mergeActionOptions"
+                  :key="action"
+                  :value="action"
+                >
+                  {{ folderMergeActionLabel(action) }}
+                </option>
+              </select>
+            </label>
             <span>{{ row.detail }}</span>
           </div>
         </div>
@@ -2344,11 +2487,63 @@ h1 {
   border-radius: 0;
 }
 
+.merge-safety-confirmation {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  border: 1px solid var(--diff-deleted-fg);
+  border-radius: 0;
+  background: var(--app-surface-muted);
+}
+
+.merge-safety-confirmation div {
+  display: grid;
+  gap: 2px;
+}
+
+.merge-safety-confirmation strong {
+  font-size: 12px;
+}
+
+.merge-safety-confirmation span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.merge-safety-confirmation ul {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.merge-safety-confirmation li {
+  display: grid;
+  grid-template-columns: minmax(90px, auto) minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+}
+
+.merge-safety-confirmation li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.merge-safety-actions {
+  display: inline-flex;
+  gap: 4px;
+}
+
 .merge-plan-row {
   display: grid;
   grid-template-columns:
     44px minmax(150px, 0.75fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(170px, 1fr)
-    140px minmax(220px, 1fr);
+    minmax(180px, 0.8fr) minmax(220px, 1fr);
   min-width: 1124px;
   border-bottom: 1px solid var(--app-border);
   color: var(--app-text);
@@ -2384,6 +2579,32 @@ h1 {
 
 .merge-plan-row.conflict strong {
   color: var(--diff-deleted-fg);
+}
+
+.merge-action-cell {
+  display: grid;
+  min-width: 0;
+  padding: 1px 4px;
+  border-right: 1px solid var(--app-border);
+}
+
+.merge-action-cell select {
+  width: 100%;
+  min-height: 18px;
+  padding: 0 2px;
+  border: 1px solid var(--app-border);
+  border-radius: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-size: 11px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 
 .conflict-panel ul {

@@ -779,7 +779,7 @@ describe('FolderMergeView', () => {
     expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(5)
   })
 
-  it('selects the next and previous conflict rows from Search', async () => {
+  it('steps Next / Previous Conflict through plan conflict rows', async () => {
     const wrapper = mountFolderMergeView()
 
     await fillMergePaths(wrapper)
@@ -788,24 +788,16 @@ describe('FolderMergeView', () => {
 
     useViewActionsStore().dispatch('next-conflict')
     await flushPromises()
-    expect(
-      (wrapper.find('[data-testid="folder-merge-check-notes-txt"]').element as HTMLInputElement)
-        .checked,
-    ).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-peek-path"]').text()).toBe('notes.txt')
+    expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(2)
 
     useViewActionsStore().dispatch('next-conflict')
     await flushPromises()
-    expect(
-      (wrapper.find('[data-testid="folder-merge-check-config"]').element as HTMLInputElement)
-        .checked,
-    ).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-peek-path"]').text()).toBe('config')
 
     useViewActionsStore().dispatch('previous-conflict')
     await flushPromises()
-    expect(
-      (wrapper.find('[data-testid="folder-merge-check-notes-txt"]').element as HTMLInputElement)
-        .checked,
-    ).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-peek-path"]').text()).toBe('notes.txt')
   })
 
   it('swaps left and right folder paths from Session', async () => {

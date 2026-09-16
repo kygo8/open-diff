@@ -683,38 +683,6 @@ function stepSessionFindFilename(direction: 1 | -1): void {
   })
 }
 
-function goToMergeConflict(direction: 1 | -1): void {
-  const matches = visiblePlanRows.value.filter((row) => Boolean(row.conflict))
-
-  if (matches.length === 0) {
-    return
-  }
-
-  const currentId = selectedPlanRowId.value
-  const index = currentId ? matches.findIndex((row) => row.id === currentId) : -1
-  let nextIndex: number
-
-  if (index === -1) {
-    nextIndex = direction === 1 ? 0 : matches.length - 1
-  } else {
-    nextIndex = index + direction
-    if (nextIndex < 0) {
-      nextIndex = matches.length - 1
-    } else if (nextIndex >= matches.length) {
-      nextIndex = 0
-    }
-  }
-
-  const next = matches[nextIndex]
-
-  checkedRowIds.value = new Set([next.id])
-  selectedPlanRowId.value = next.id
-  lastSelectionAction.value = t('status.selectedRowCount', {
-    count: 1,
-    action: t('ui.nextConflict'),
-  })
-}
-
 function openMergeFindFilename(): void {
   showMergeSelect.value = true
   selectMergeRowsByName()
@@ -1294,6 +1262,48 @@ function applyMergeViewPreset(preset: FolderMergeViewPreset): void {
   persistMergeDisplay()
 }
 
+function mergeConflictRows(): FolderMergePlanRow[] {
+  return planRows.value.filter(
+    (row) =>
+      !excludedRowIds.value.has(row.id) &&
+      (row.action === 'Mark conflict' || Boolean(row.conflict)),
+  )
+}
+
+function stepMergeConflict(direction: 1 | -1): void {
+  const matches = mergeConflictRows()
+
+  if (matches.length === 0) {
+    return
+  }
+
+  applyMergeViewPreset('conflicts')
+
+  const currentId = selectedPlanRowId.value
+  const index = currentId ? matches.findIndex((row) => row.id === currentId) : -1
+  let nextIndex: number
+
+  if (index === -1) {
+    nextIndex = direction === 1 ? 0 : matches.length - 1
+  } else {
+    nextIndex = index + direction
+    if (nextIndex < 0) {
+      nextIndex = matches.length - 1
+    } else if (nextIndex >= matches.length) {
+      nextIndex = 0
+    }
+  }
+
+  const next = matches[nextIndex]
+
+  checkedRowIds.value = new Set([next.id])
+  selectPlanRow(next)
+  lastSelectionAction.value = t('status.selectedRowCount', {
+    count: 1,
+    action: t('ui.conflicts'),
+  })
+}
+
 function toggleCompareToOutput(): void {
   compareToOutput.value = !compareToOutput.value
   mergeViewPreset.value = compareToOutput.value ? 'changes' : 'all'
@@ -1665,10 +1675,10 @@ watch(
         swapMergeSides()
         break
       case 'next-conflict':
-        goToMergeConflict(1)
+        stepMergeConflict(1)
         break
       case 'previous-conflict':
-        goToMergeConflict(-1)
+        stepMergeConflict(-1)
         break
       case 'undo':
       case 'workspace-load':

@@ -804,23 +804,23 @@ function lineNumber(value: number | null): string {
 }
 
 .patch-toolbar {
-  gap: 6px;
-  min-height: 26px;
+  gap: 4px;
+  min-height: 22px;
 }
 
 .patch-workbench-main {
   display: grid;
   grid-template-rows: minmax(96px, 0.28fr) auto minmax(140px, 0.42fr) minmax(0, 1fr);
-  gap: 4px;
+  gap: 2px;
   height: 100%;
   min-height: 0;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: hidden;
 }
 
 .patch-input-pane {
   display: grid;
-  grid-template-rows: 22px minmax(0, 1fr);
+  grid-template-rows: 20px minmax(0, 1fr);
   min-height: 0;
   overflow: hidden;
   border: 1px solid var(--app-border);
@@ -832,8 +832,8 @@ function lineNumber(value: number | null): string {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 0 6px;
+  gap: 4px;
+  padding: 0 4px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-low);
   color: var(--app-text-muted);
@@ -850,21 +850,21 @@ function lineNumber(value: number | null): string {
 }
 
 .patch-input-pane :deep(textarea) {
-  padding: 4px 6px;
-  font-size: 12px;
-  line-height: 20px;
+  padding: 2px 4px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .patch-result {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   min-height: 0;
   overflow: auto;
 }
 
 .patch-file {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
   border: 1px solid var(--app-border);
   border-radius: 0;
@@ -874,9 +874,9 @@ function lineNumber(value: number | null): string {
 .patch-file > header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  min-height: 22px;
-  padding: 2px 6px;
+  gap: 4px;
+  min-height: 20px;
+  padding: 2px 4px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-low);
   font-family: var(--font-mono);
@@ -897,8 +897,8 @@ function lineNumber(value: number | null): string {
 
 .patch-open-file {
   margin-left: auto;
-  height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border, #334155);
   border-radius: 2px;
   background: transparent;
@@ -915,19 +915,19 @@ function lineNumber(value: number | null): string {
 .patch-hunk {
   display: grid;
   gap: 0;
-  padding: 0 6px 6px;
+  padding: 0 4px 4px;
   cursor: pointer;
 }
 
 .patch-hunk > header {
-  padding: 2px 6px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-bottom: 0;
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
   font-family: var(--font-mono);
   font-size: 11px;
-  line-height: 18px;
+  line-height: 16px;
 }
 
 .patch-lines {
@@ -938,12 +938,12 @@ function lineNumber(value: number | null): string {
 
 .patch-line {
   display: grid;
-  grid-template-columns: 44px 44px 22px minmax(0, 1fr);
+  grid-template-columns: 36px 36px 18px minmax(0, 1fr);
   min-width: 520px;
   border-bottom: 1px solid var(--app-border-soft);
   font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .patch-line:last-child {
@@ -952,7 +952,7 @@ function lineNumber(value: number | null): string {
 
 .patch-line-number,
 .patch-line-prefix {
-  padding: 0 6px;
+  padding: 0 4px;
   border-right: 1px solid var(--app-border-soft);
   color: var(--app-text-muted);
   text-align: right;
@@ -964,7 +964,7 @@ function lineNumber(value: number | null): string {
 
 .patch-line code {
   min-width: 0;
-  padding: 0 6px;
+  padding: 0 4px;
   overflow: hidden;
   color: var(--app-text);
   text-overflow: ellipsis;
@@ -990,7 +990,7 @@ function lineNumber(value: number | null): string {
 
 .patch-section-preview {
   display: grid;
-  grid-template-rows: 22px minmax(0, 1fr);
+  grid-template-rows: 20px minmax(0, 1fr);
   min-height: 0;
   overflow: hidden;
   border: 1px solid var(--app-border);
@@ -1002,8 +1002,8 @@ function lineNumber(value: number | null): string {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 0 6px;
+  gap: 4px;
+  padding: 0 4px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-low);
   color: var(--app-text-muted);
@@ -1023,7 +1023,7 @@ function lineNumber(value: number | null): string {
 
 .patch-section-pane {
   display: grid;
-  grid-template-rows: 22px minmax(0, 1fr);
+  grid-template-rows: 20px minmax(0, 1fr);
   min-width: 0;
   min-height: 0;
   border-right: 1px solid var(--app-border);
@@ -1036,7 +1036,7 @@ function lineNumber(value: number | null): string {
 .patch-section-pane > header {
   display: flex;
   align-items: center;
-  padding: 0 6px;
+  padding: 0 4px;
   overflow: hidden;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-low);
@@ -1051,16 +1051,16 @@ function lineNumber(value: number | null): string {
   min-height: 0;
   overflow: auto;
   font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .patch-preview-row {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
-  gap: 6px;
-  min-height: 20px;
-  padding: 0 6px;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 4px;
+  min-height: 18px;
+  padding: 0 4px;
 }
 
 .patch-preview-line-number {
@@ -1102,11 +1102,11 @@ function lineNumber(value: number | null): string {
 }
 
 .path-side-footer {
-  min-height: 10px;
+  min-height: 9px;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 10px;
-  line-height: 10px;
+  font-size: 9px;
+  line-height: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1116,13 +1116,13 @@ function lineNumber(value: number | null): string {
 }
 
 :deep(.patch-toolbar .n-button) {
-  --n-height: 22px;
-  --n-padding: 0 6px;
+  --n-height: 20px;
+  --n-padding: 0 5px;
   --n-font-size: 11px;
 
-  height: 22px;
-  min-height: 22px;
-  padding: 0 6px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 5px;
   font-size: 11px;
 }
 </style>

@@ -1036,9 +1036,9 @@ const textEditToolbarCommands = computed(() =>
 .syntax-language-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
-  min-height: 26px;
-  padding: 2px 6px;
+  gap: 4px;
+  min-height: 22px;
+  padding: 2px 4px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface);
 }
@@ -1052,14 +1052,14 @@ const textEditToolbarCommands = computed(() =>
 
 .syntax-preview {
   margin: 0;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: auto;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 11px;
+  line-height: 18px;
   white-space: pre-wrap;
 }
 
@@ -1085,9 +1085,9 @@ const textEditToolbarCommands = computed(() =>
 .text-edit-view {
   display: grid;
   grid-template-rows: auto auto auto auto auto minmax(0, 1fr) auto;
-  gap: 4px;
+  gap: 2px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: hidden;
 }
 
@@ -1095,7 +1095,7 @@ const textEditToolbarCommands = computed(() =>
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
 }
 
 .eyebrow {
@@ -1115,7 +1115,7 @@ h1 {
 
 .document-stats {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   color: var(--app-text-muted);
   font-size: 11px;
 }
@@ -1125,16 +1125,16 @@ h1 {
 .metadata-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
-  min-height: 26px;
+  min-height: 22px;
 }
 
 .path-input,
 .find-input {
   min-width: 0;
-  height: 20px;
-  padding: 0 5px;
+  height: 18px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface);
@@ -1153,7 +1153,7 @@ h1 {
 
 .metadata-row {
   justify-content: space-between;
-  min-height: 22px;
+  min-height: 20px;
   color: var(--app-text-muted);
   font-size: 11px;
 }
@@ -1164,8 +1164,8 @@ h1 {
 }
 
 .toolbar-button {
-  height: 22px;
-  padding: 0 6px;
+  height: 20px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface);
@@ -1202,22 +1202,22 @@ h1 {
 
 :deep(textarea) {
   min-height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 11px;
+  line-height: 18px;
   resize: none;
 }
 
 :deep(.path-toolbar .n-button),
 :deep(.find-toolbar .n-button) {
-  --n-height: 22px;
-  --n-padding: 0 6px;
+  --n-height: 20px;
+  --n-padding: 0 5px;
   --n-font-size: 11px;
 
-  height: 22px;
-  min-height: 22px;
-  padding: 0 6px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 5px;
   font-size: 11px;
 }
 

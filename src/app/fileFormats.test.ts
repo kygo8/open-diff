@@ -81,7 +81,13 @@ describe('fileFormats', () => {
 
   it('routes unknown extensions as text when the Formats leftover is on', () => {
     expect(sessionTypeForPath('notes.unknownfmt')).toBe('hex-compare')
-    saveFileFormatPreferences({ treatUnknownAsText: true })
+    saveFileFormatPreferences({ treatUnknownAsText: true, preferHexForNoExtension: false })
+    expect(sessionTypeForPath('notes.unknownfmt')).toBe('text-compare')
+  })
+
+  it('keeps extensionless files on Hex when the Formats leftover is on', () => {
+    saveFileFormatPreferences({ treatUnknownAsText: true, preferHexForNoExtension: true })
+    expect(sessionTypeForPath('Makefile')).toBe('hex-compare')
     expect(sessionTypeForPath('notes.unknownfmt')).toBe('text-compare')
   })
 })

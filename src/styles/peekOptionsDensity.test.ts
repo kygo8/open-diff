@@ -92,6 +92,11 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="profile-default-username"/)
     expect(settingsView).toMatch(/data-testid="report-include-identical"/)
     expect(settingsView).toMatch(/data-testid="show-milliseconds-in-timestamps"/)
+    expect(settingsView).toMatch(/data-testid="skip-newer-targets-on-copy"/)
+    expect(settingsView).toMatch(/data-testid="prefer-hex-for-no-extension"/)
+    expect(settingsView).toMatch(/data-testid="profile-anonymous-login"/)
+    expect(settingsView).toMatch(/data-testid="report-include-unimportant"/)
+    expect(settingsView).toMatch(/data-testid="folder-compare-exclude-junctions"/)
   })
 })
 

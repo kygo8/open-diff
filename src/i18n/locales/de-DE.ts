@@ -1165,6 +1165,21 @@ export const deDE: LanguagePack = {
     'ui.keepFolderExpansionOnReload': 'Ordnererweiterung beim Neuvergleich behalten',
     'ui.keepFolderExpansionOnReloadHint':
       'Nach einem erneuten Vergleich derselben Wurzeln geöffnete Ordner beibehalten.',
+    'ui.skipNewerTargetsOnCopy': 'Neuere Zieldateien beim Kopieren überspringen',
+    'ui.skipNewerTargetsOnCopyHint':
+      'Das Ziel unverändert lassen, wenn es existiert und neuer als die Quelle ist.',
+    'ui.excludeJunctionPoints': 'Junction-/Symboliklink-Kinder ausschließen',
+    'ui.excludeJunctionPointsHint':
+      'Symbolische Links beim Ordnervergleich nicht als Dateien auflisten, sondern weglassen.',
+    'ui.preferHexForNoExtension': 'Dateiname ohne Erweiterung als Hex öffnen',
+    'ui.preferHexForNoExtensionHint':
+      'Auch wenn unbekannte Erweiterungen als Text öffnen, bleiben dateien ohne Erweiterung Hex.',
+    'ui.profileAnonymousLogin': 'Standardmäßig anonym anmelden',
+    'ui.profileAnonymousLoginHint':
+      'Neue Remote-Profile lassen den Benutzernamen leer statt den Standardnamen zu setzen.',
+    'ui.reportIncludeUnimportant': 'Unwichtige Unterschiede in Ordnerberichten einschließen',
+    'ui.reportIncludeUnimportantHint':
+      'Wenn aus, lässt der Ordnerbericht nur größenbedingte unwichtige Differenzzeilen weg.',
     'ui.fileOperationsHint':
       'Standardwerte für Kopieren, Verschieben und Löschen im Ordnervergleich.',
     'ui.includeHiddenItemsInFileActions': 'Ausgeblendete Elemente standardmäßig einbeziehen',

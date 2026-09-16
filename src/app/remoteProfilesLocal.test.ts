@@ -81,6 +81,7 @@ describe('remoteProfileDefaults', () => {
       defaultPort: 990,
       connectionTimeoutSeconds: 45,
       passiveFtp: false,
+      anonymousLogin: true,
     })
 
     expect(loadRemoteProfileDefaults()).toEqual({
@@ -92,6 +93,7 @@ describe('remoteProfileDefaults', () => {
       defaultPort: 990,
       connectionTimeoutSeconds: 45,
       passiveFtp: false,
+      anonymousLogin: true,
     })
   })
 

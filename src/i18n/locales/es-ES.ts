@@ -1162,6 +1162,21 @@ export const esES: LanguagePack = {
     'ui.keepFolderExpansionOnReload': 'Conservar la expansión de carpetas al recargar',
     'ui.keepFolderExpansionOnReloadHint':
       'Tras volver a comparar las mismas raíces, conservar las carpetas abiertas.',
+    'ui.skipNewerTargetsOnCopy': 'Omitir destinos más recientes al copiar',
+    'ui.skipNewerTargetsOnCopyHint':
+      'Dejar el destino sin cambios si ya existe y es más reciente que el origen.',
+    'ui.excludeJunctionPoints': 'Excluir hijos de unión / enlace simbólico',
+    'ui.excludeJunctionPointsHint':
+      'Omitir hijos de enlace simbólico en el análisis de Comparar carpetas.',
+    'ui.preferHexForNoExtension': 'Abrir archivos sin extensión en hexadecimal',
+    'ui.preferHexForNoExtensionHint':
+      'Aunque las extensiones desconocidas se abran como texto, sin extensión se abre Hex.',
+    'ui.profileAnonymousLogin': 'Inicio de sesión anónimo de forma predeterminada',
+    'ui.profileAnonymousLoginHint':
+      'Los perfiles remotos nuevos dejan el usuario vacío en lugar del usuario predeterminado.',
+    'ui.reportIncludeUnimportant': 'Incluir diferencias no importantes en informes de carpeta',
+    'ui.reportIncludeUnimportantHint':
+      'Si está desactivado, el informe omite filas cuya única diferencia es el tamaño.',
     'ui.fileOperationsHint':
       'Valores predeterminados para copiar, mover y eliminar en Comparar carpetas.',
     'ui.includeHiddenItemsInFileActions': 'Incluir elementos ocultos de forma predeterminada',

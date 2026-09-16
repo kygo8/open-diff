@@ -541,6 +541,7 @@ describe('FolderCompareView', () => {
         showHiddenFiles: false,
         caseSensitiveNames: true,
         ignoredTimezoneHourOffsets: [],
+        excludeJunctionPoints: false,
       },
       filters: { include: ['*.ts'], exclude: [], caseSensitive: false },
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
@@ -657,6 +658,7 @@ describe('FolderCompareView', () => {
         showHiddenFiles: false,
         caseSensitiveNames: true,
         ignoredTimezoneHourOffsets: [],
+        excludeJunctionPoints: false,
       },
       filters: {
         include: [],
@@ -918,6 +920,7 @@ describe('FolderCompareView', () => {
       overwriteReadOnly: false,
       sourceModifiedAtMs: undefined,
       copyEmptyFolders: true,
+      skipNewerTargets: false,
     })
 
     await wrapper.find('[data-row-id="notes-md"]').trigger('click')

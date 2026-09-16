@@ -373,6 +373,9 @@ pub struct FolderCompareCriteria {
     /// Extra whole-hour modified-time offsets treated as equal (timezone skew).
     #[serde(default)]
     pub ignored_timezone_hour_offsets: Vec<i32>,
+    /// Omit symbolic-link / junction children from Folder Compare scans.
+    #[serde(default)]
+    pub exclude_junction_points: bool,
 }
 
 fn default_show_hidden_files_criteria() -> bool {
@@ -398,6 +401,7 @@ impl Default for FolderCompareCriteria {
             show_hidden_files: true,
             case_sensitive_names: true,
             ignored_timezone_hour_offsets: Vec::new(),
+            exclude_junction_points: false,
         }
     }
 }
@@ -417,6 +421,7 @@ impl FolderCompareCriteria {
             ignore_daylight_saving_hour_offset: self.ignore_daylight_saving_hour_offset,
             show_hidden_files: self.show_hidden_files,
             ignored_timezone_hour_offsets: self.ignored_timezone_hour_offsets.clone(),
+            exclude_junction_points: self.exclude_junction_points,
         }
     }
 }
@@ -1192,9 +1197,25 @@ pub fn copy_folder_entry(
     overwrite_read_only: Option<bool>,
     source_modified_at_ms: Option<u128>,
     copy_empty_folders: Option<bool>,
+    skip_newer_targets: Option<bool>,
 ) -> Result<folder_core::FileOperationResult, AppErrorPayload> {
     let error_path = source_path.clone();
     let target_for_meta = target_path.clone();
+
+    if skip_newer_targets.unwrap_or(false)
+        && folder_core::should_skip_newer_target(
+            std::path::Path::new(&source_path),
+            std::path::Path::new(&target_path),
+            source_modified_at_ms,
+        )
+    {
+        return Ok(folder_core::FileOperationResult {
+            operation: folder_core::FileOperationKind::Copy,
+            status: folder_core::FileOperationStatus::Copied,
+            source_path,
+            target_path: Some(target_path),
+        });
+    }
 
     if overwrite_read_only.unwrap_or(false) {
         let target = std::path::Path::new(&target_path);
@@ -1819,6 +1840,7 @@ pub fn export_folder_compare_report(
     output_path: Option<String>,
     include_identical: Option<bool>,
     include_orphans: Option<bool>,
+    include_unimportant: Option<bool>,
 ) -> Result<ExportReportResponse, AppErrorPayload> {
     let cancellation_token = job_core::CancellationToken::default();
     let left_tree = folder_core::scan_local_folder(&left_root, &cancellation_token)
@@ -1838,6 +1860,27 @@ pub fn export_folder_compare_report(
                 folder_core::FolderCompareStatus::LeftOnly
                     | folder_core::FolderCompareStatus::RightOnly
             )
+        });
+    }
+    if !include_unimportant.unwrap_or(true) {
+        let relaxed = folder_core::FolderCompareOptions {
+            size_only_unimportant: true,
+            ..folder_core::FolderCompareOptions::default()
+        };
+        model.rows.retain(|row| {
+            let Some(aligned) = alignment_rows
+                .iter()
+                .find(|item| item.relative_path == row.relative_path)
+            else {
+                return true;
+            };
+            let loose = folder_core::classify_folder_alignment_with_options(
+                aligned.left.as_ref(),
+                aligned.right.as_ref(),
+                &relaxed,
+            );
+            !(row.status == folder_core::FolderCompareStatus::Different
+                && loose == folder_core::FolderCompareStatus::Same)
         });
     }
     let content = match format.to_ascii_lowercase().as_str() {

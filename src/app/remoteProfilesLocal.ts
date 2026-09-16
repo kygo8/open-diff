@@ -91,6 +91,8 @@ export interface RemoteProfileDefaults {
   defaultPort: number | null
   connectionTimeoutSeconds: number
   passiveFtp: boolean
+  /** New profiles leave username empty even when a default username is stored. */
+  anonymousLogin: boolean
 }
 
 const remoteProfileProtocols: readonly RemoteProtocol[] = [
@@ -114,6 +116,7 @@ export function defaultRemoteProfileDefaults(): RemoteProfileDefaults {
     defaultPort: null,
     connectionTimeoutSeconds: 30,
     passiveFtp: true,
+    anonymousLogin: false,
   }
 }
 
@@ -167,6 +170,7 @@ export function loadRemoteProfileDefaults(
       defaultPort: port,
       connectionTimeoutSeconds: timeout,
       passiveFtp: parsed.passiveFtp !== false,
+      anonymousLogin: Boolean(parsed.anonymousLogin),
     }
   } catch {
     return defaultRemoteProfileDefaults()
@@ -210,6 +214,7 @@ export function saveRemoteProfileDefaults(
           ? Math.max(1, Math.round(prefs.connectionTimeoutSeconds))
           : defaultRemoteProfileDefaults().connectionTimeoutSeconds,
       passiveFtp: prefs.passiveFtp,
+      anonymousLogin: prefs.anonymousLogin,
     }),
   )
 }

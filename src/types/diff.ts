@@ -187,6 +187,8 @@ export interface FolderCompareCriteria {
   caseSensitiveNames?: boolean
   /** Extra whole-hour modified-time offsets treated as equal (timezone skew). */
   ignoredTimezoneHourOffsets?: number[]
+  /** Omit directory junctions / symbolic-link children from Folder Compare scans. */
+  excludeJunctionPoints?: boolean
 }
 
 export interface FolderNameFilters {
@@ -571,6 +573,8 @@ export interface ExportFolderCompareReportRequest extends ExportReportRequest {
   includeIdentical?: boolean
   /** When false, left-only / right-only rows are omitted from the exported report. */
   includeOrphans?: boolean
+  /** When false, size-only / unimportant difference rows are omitted from the export. */
+  includeUnimportant?: boolean
 }
 
 export interface ExportReportResponse {
@@ -615,6 +619,7 @@ export interface CopyFolderEntryRequest {
   overwriteReadOnly?: boolean
   sourceModifiedAtMs?: number
   copyEmptyFolders?: boolean
+  skipNewerTargets?: boolean
 }
 
 export interface MoveFolderEntryRequest {

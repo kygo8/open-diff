@@ -221,6 +221,12 @@ it('enables Show All / Differences / Minor and Filters only where they run', () 
       ...baseCtx,
       routePath: '/compare/text',
     }),
+  ).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('edit.paste', true, {
+      ...baseCtx,
+      routePath: '/edit/text',
+    }),
   ).toBe(true)
   expect(resolveMenuCommandEnabled('edit.paste', true, baseCtx)).toBe(false)
   expect(

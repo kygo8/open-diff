@@ -126,9 +126,9 @@ export function isTextEditRoute(path: string): boolean {
   return path.includes('/edit/text')
 }
 
-/** Text Compare / Merge / Edit routes that implement clipboard edit verbs. */
+/** Text Edit route that implements clipboard edit verbs. */
 export function isTextEditVerbRoute(path: string): boolean {
-  return path.includes('/compare/text') || path.includes('/merge/text') || isTextEditRoute(path)
+  return isTextEditRoute(path)
 }
 
 /** Text Compare / Merge routes that copy a side into the other pane. */

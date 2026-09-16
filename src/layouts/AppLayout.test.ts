@@ -548,6 +548,9 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-command-edit.undo"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="menu-command-edit.paste"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-edit.copyLeft"]').attributes('disabled'),
     ).toBeUndefined()
     expect(wrapper.find('[data-testid="menu-command-open.textCompare"]').exists()).toBe(false)
 
@@ -1591,6 +1594,9 @@ describe('global menu depth parity', () => {
     await textMerge.find('[data-testid="menu-edit"]').trigger('click')
     expect(
       textMerge.find('[data-testid="menu-command-edit.paste"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      textMerge.find('[data-testid="menu-command-edit.copyLeft"]').attributes('disabled'),
     ).toBeUndefined()
     await textMerge.find('[data-testid="menu-view"]').trigger('click')
     expect(

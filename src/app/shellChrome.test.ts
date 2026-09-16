@@ -148,6 +148,8 @@ describe('session route helpers', () => {
     expect(isTextPatchRoute('/patch/text')).toBe(true)
     expect(isTextEditRoute('/edit/text')).toBe(true)
     expect(isTextEditVerbRoute('/edit/text')).toBe(true)
+    expect(isTextEditVerbRoute('/compare/text')).toBe(false)
+    expect(isTextEditVerbRoute('/merge/text')).toBe(false)
     expect(isTextEditVerbRoute('/compare/clipboard')).toBe(false)
     expect(isTextSideCopyRoute('/compare/text')).toBe(true)
     expect(isTextSideCopyRoute('/edit/text')).toBe(false)

@@ -98,7 +98,7 @@ export const sessionToolbarPlates: Readonly<Record<string, SessionToolbarPlate>>
   structure: { kind: 'plate', plate: 'structure', symbol: '▤' },
   minor: { kind: 'plate', plate: 'minor', symbol: '~' },
   files: { kind: 'plate', plate: 'files', symbol: '▤' },
-  // Pass 2: fill remaining Lucide-only / letter-glyph slots with OpenDiff plates
+  // Pass 2+3: OpenDiff plates for capture MainBar slots (no proprietary bitmaps)
   context: { kind: 'plate', plate: 'context', symbol: '☰' },
   format: { kind: 'plate', plate: 'format', symbol: '¶' },
   font: { kind: 'plate', plate: 'font', symbol: 'A' },
@@ -244,19 +244,34 @@ export function sessionToolbarHasSeparatorBefore(
     return true
   }
 
-  // Capture text MainBar keeps Context+Minor adjacent (0px gap).
-  if (id === 'minor' && previousId === 'context') {
-    return false
-  }
+  // Pass 3: measured capture MainBar 0px-gap clusters (ui-capture.json rects).
+  const adjacentPairs: readonly (readonly [string, string])[] = [
+    ['minor', 'context'],
+    ['format', 'rules'],
+    ['range', 'tol'],
+    ['blend', 'range'],
+    ['same-ok', 'minor'],
+    ['favor-left', 'same-ok'],
+    ['favor-right', 'favor-left'],
+    ['to-output', 'merge'],
+    ['peek', 'filters'],
+    ['reload', 'swap'],
+    ['play2', 'reload'],
+    ['left', 'conflict'],
+    ['center', 'left'],
+    ['right', 'center'],
+    ['font', 'syntax'],
+    ['copy', 'cut'],
+    ['paste', 'copy'],
+    ['delete', 'paste'],
+    ['redo', 'undo'],
+    ['cut', 'redo'],
+  ]
 
-  // Capture text MainBar keeps Rules+Format adjacent (0px gap).
-  if (id === 'format' && previousId === 'rules') {
-    return false
-  }
-
-  // Capture picture MainBar keeps Tol+Range+Blend adjacent.
-  if ((id === 'range' && previousId === 'tol') || (id === 'blend' && previousId === 'range')) {
-    return false
+  for (const [next, prev] of adjacentPairs) {
+    if (id === next && previousId === prev) {
+      return false
+    }
   }
 
   return sessionToolbarSeparatorBeforeIds.has(id)

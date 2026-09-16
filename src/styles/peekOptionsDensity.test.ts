@@ -110,6 +110,8 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="folder-compare-always-show-folders"/)
     expect(settingsView).toMatch(/data-testid="folder-compare-files-only-default"/)
     expect(settingsView).toMatch(/data-testid="folder-compare-show-suppressed-default"/)
+    expect(settingsView).toMatch(/folder-compare-status-\$\{option\.testId\}-default/)
+    expect(settingsView).toMatch(/toggleFolderDisplayStatuses/)
     expect(settingsView).toMatch(/data-testid="folder-merge-view-preset-default"/)
     expect(settingsView).toMatch(/data-testid="folder-merge-always-show-folders"/)
     expect(settingsView).toMatch(/data-testid="folder-merge-show-center-pane"/)

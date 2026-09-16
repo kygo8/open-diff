@@ -32,6 +32,7 @@ import {
   defaultFolderDisplayFilters,
   loadFolderDisplayFilters,
   saveFolderDisplayFilters,
+  type FolderDisplayStatus,
 } from '@/app/folderDisplayFilters'
 import {
   defaultFolderMergeDisplay,
@@ -179,6 +180,15 @@ const folderMergeViewPresetOptions: { value: FolderMergeViewPreset; labelKey: st
   { value: 'all', labelKey: 'ui.showAll' },
   { value: 'changes', labelKey: 'ui.showChanges' },
   { value: 'conflicts', labelKey: 'ui.showConflicts' },
+]
+const folderDisplayStatusOptions: {
+  statuses: FolderDisplayStatus[]
+  labelKey: string
+  testId: string
+}[] = [
+  { statuses: ['Same'], labelKey: 'ui.same', testId: 'same' },
+  { statuses: ['Different'], labelKey: 'ui.different', testId: 'different' },
+  { statuses: ['Left only', 'Right only'], labelKey: 'ui.orphans', testId: 'orphans' },
 ]
 const textCompareDefaultsDraft = ref(loadTextCompareSessionOptions())
 const hexCompareDefaultsDraft = ref(loadHexCompareSessionOptions())
@@ -990,6 +1000,28 @@ function persistFolderDisplayFiltersDraft(): void {
 
 function persistFolderMergeDisplayDraft(): void {
   saveFolderMergeDisplay(folderMergeDisplayDraft.value)
+}
+
+function folderDisplayStatusChecked(statuses: FolderDisplayStatus[]): boolean {
+  return statuses.every((status) => folderDisplayFiltersDraft.value.statuses.includes(status))
+}
+
+function toggleFolderDisplayStatuses(statuses: FolderDisplayStatus[], selected: boolean): void {
+  const next = new Set(folderDisplayFiltersDraft.value.statuses)
+
+  for (const status of statuses) {
+    if (selected) {
+      next.add(status)
+    } else {
+      next.delete(status)
+    }
+  }
+
+  folderDisplayFiltersDraft.value = {
+    ...folderDisplayFiltersDraft.value,
+    statuses: [...next],
+  }
+  persistFolderDisplayFiltersDraft()
 }
 
 function onIgnoredTimezoneOffsetsChange(event: Event): void {
@@ -1930,6 +1962,24 @@ function parseShortcutText(value: string): string[] {
               @change="persistFolderDisplayFiltersDraft"
             />
             <span>{{ $t('ui.suppressed') }}</span>
+          </label>
+          <label
+            v-for="option in folderDisplayStatusOptions"
+            :key="option.testId"
+            class="tweak-row"
+          >
+            <input
+              :checked="folderDisplayStatusChecked(option.statuses)"
+              :data-testid="`folder-compare-status-${option.testId}-default`"
+              type="checkbox"
+              @change="
+                toggleFolderDisplayStatuses(
+                  option.statuses,
+                  ($event.target as HTMLInputElement).checked,
+                )
+              "
+            />
+            <span>{{ $t(option.labelKey) }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.folderCompareOptionsHint') }}</p>
         </NCard>

@@ -10,6 +10,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { useFolderPathNavStore } from '@/stores/folderPathNav'
+import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 
 const push = vi.fn()
@@ -887,6 +888,34 @@ describe('AppLayout command palette', () => {
       wrapper.find('[data-testid="menu-command-view.legend"]').attributes('disabled'),
     ).toBeUndefined()
 
+    await wrapper.find('[data-testid="menu-actions"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.rename"]').attributes('data-shortcut'),
+    ).toBe('F2')
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.newFolder"]').attributes('data-shortcut'),
+    ).toBe('Ins')
+    expect(
+      wrapper
+        .find('[data-testid="menu-command-actions.refreshSelection"]')
+        .attributes('data-shortcut'),
+    ).toBe('Shift+F5')
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.info"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+I')
+    expect(wrapper.find('[data-testid="menu-command-report.save"]').text()).toContain(
+      'Folder Compare Report...',
+    )
+
+    await wrapper.find('[data-testid="menu-edit"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-edit.selectNewer"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="menu-view"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-view.showOrphans"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-view.suppressFilters"]').exists()).toBe(true)
+
     wrapper.unmount()
   })
 
@@ -929,6 +958,38 @@ describe('AppLayout command palette', () => {
     home.unmount()
   })
 
+  it('disables selection Actions until a folder row is selected', async () => {
+    routePath = '/compare/folder'
+    const folderMenuSelection = useFolderMenuSelectionStore()
+
+    folderMenuSelection.setHasSelection(false)
+
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-actions"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.rename"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.open"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.newFolder"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    wrapper.unmount()
+
+    folderMenuSelection.setHasSelection(true)
+
+    const enabled = mountAppLayout()
+
+    await enabled.find('[data-testid="menu-actions"]').trigger('click')
+    expect(
+      enabled.find('[data-testid="menu-command-actions.rename"]').attributes('disabled'),
+    ).toBeUndefined()
+    enabled.unmount()
+  })
+
   it('dispatches niche toggle-minor and sync-now shortcuts from chrome keydown', async () => {
     routePath = '/sync/folder'
     const wrapper = mountAppLayout()
@@ -960,6 +1021,8 @@ describe('AppLayout command palette', () => {
     await wrapper.vm.$nextTick()
     expect(viewActions.name).toBe('run-script')
 
+    routePath = '/compare/folder'
+    await wrapper.vm.$nextTick()
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'p', ctrlKey: true, shiftKey: true }))
     await wrapper.vm.$nextTick()
     expect(viewActions.name).toBe('save-report')
@@ -1119,6 +1182,10 @@ describe('global menu depth parity', () => {
   })
 
   it('wires Folder Actions Open/Exclude and Edit Select with honest Home disablement', async () => {
+    const folderMenuSelection = useFolderMenuSelectionStore()
+
+    folderMenuSelection.setHasSelection(true)
+
     const wrapper = mountAppLayout()
 
     await wrapper.find('[data-testid="menu-actions"]').trigger('click')
@@ -1207,6 +1274,8 @@ describe('global menu depth parity', () => {
     wrapper.unmount()
 
     routePath = '/sync/folder'
+    folderMenuSelection.setHasSelection(true)
+
     const sync = mountAppLayout()
 
     await sync.find('[data-testid="menu-actions"]').trigger('click')

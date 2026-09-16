@@ -42,6 +42,7 @@ import {
   selectAllRowIds,
   stepRowIdByNameFilter,
   selectFileRowIds,
+  selectNewerRowIds,
   selectRowIdsByNameFilter,
   selectRowIdsByStatuses,
 } from '@/app/folderRowSelection'
@@ -82,6 +83,7 @@ import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vu
 import { Eye, Funnel } from '@lucide/vue'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useFolderPathNavStore } from '@/stores/folderPathNav'
+import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
 import {
   createFolderPathNavStack,
   folderPathNavBack,
@@ -163,6 +165,8 @@ interface FolderTreeRow {
   rightByteSize?: number
   leftModified?: string
   rightModified?: string
+  leftModifiedAtMs?: number
+  rightModifiedAtMs?: number
   leftPath?: string
   rightPath?: string
   status: FolderStatus
@@ -212,6 +216,7 @@ const showPeekPanel = ref(false)
 const peekTab = ref<'left' | 'right' | 'status'>('left')
 const viewActions = useViewActionsStore()
 const folderPathNavStore = useFolderPathNavStore()
+const folderMenuSelection = useFolderMenuSelectionStore()
 const folderPathNavStack = ref(createFolderPathNavStack<FolderPathPair>())
 let applyingFolderPathHistory = false
 
@@ -471,6 +476,16 @@ const summary = computed(() => ({
 }))
 const directoryRows = computed(() => rows.value.filter((row) => row.kind === 'directory'))
 const selectedRow = computed(() => rows.value.find((row) => row.id === selectedRowId.value))
+
+watch(
+  [checkedRowIds, selectedRowId],
+  () => {
+    folderMenuSelection.setHasSelection(
+      checkedRowIds.value.size > 0 || Boolean(selectedRowId.value),
+    )
+  },
+  { immediate: true },
+)
 const selectedFilePath = computed(() => {
   const row = selectedRow.value
 
@@ -562,6 +577,7 @@ const virtualOffset = computed(() => {
 })
 const visibleColumnIds = ref<Set<FolderColumnId>>(new Set(['size', 'modified']))
 const showColumnConfig = ref(true)
+const showSessionInfo = ref(false)
 const gridTemplateColumns = computed(() => {
   const columns = ['minmax(180px, 1.2fr)']
 
@@ -918,6 +934,9 @@ watch(
       case 'select-orphans':
         selectVisibleByStatuses(['Left only', 'Right only'], 'ui.orphans')
         break
+      case 'select-newer':
+        selectVisibleNewer()
+        break
       case 'invert-selection':
         invertVisibleSelection()
         break
@@ -939,6 +958,20 @@ watch(
       case 'show-same':
         showSameFolderStatuses()
         break
+      case 'show-orphans':
+        visibleStatuses.value = new Set(['Left only', 'Right only'])
+        persistDisplayFilters()
+        break
+      case 'show-no-orphans':
+        visibleStatuses.value = new Set(['Same', 'Different'])
+        persistDisplayFilters()
+        break
+      case 'only-compare-files':
+        toggleFilesOnlyFilter()
+        break
+      case 'suppress-filters':
+        showSuppressedFilters.value = !showSuppressedFilters.value
+        break
       case 'find-filename':
         showFolderSelect.value = true
         selectVisibleByName()
@@ -957,6 +990,9 @@ watch(
         break
       case 'toggle-columns':
         showColumnConfig.value = !showColumnConfig.value
+        break
+      case 'session-info':
+        showSessionInfo.value = !showSessionInfo.value
         break
       case 'change-attributes':
         void toggleSelectedReadonly(!selectedReadonly.value)
@@ -1244,6 +1280,10 @@ function selectVisibleByStatuses(statuses: FolderStatus[], labelKey: string): vo
   applyCheckedRowIds(selectRowIdsByStatuses(visibleRows.value, statuses), t(labelKey))
 }
 
+function selectVisibleNewer(): void {
+  applyCheckedRowIds(selectNewerRowIds(visibleRows.value), t('ui.selectNewer'))
+}
+
 function stepFindFilename(direction: 1 | -1): void {
   if (!selectNameFilter.value.trim()) {
     showFolderSelect.value = true
@@ -1309,6 +1349,24 @@ const selectionFooterLabels = {
   foldersSelected: (count: number) => t('status.foldersSelected', { count }),
   itemsSelected: (count: number) => t('status.itemsSelected', { count }),
 }
+
+const sessionInfoStats = computed(() => {
+  const counts = { total: rows.value.length, same: 0, different: 0, leftOnly: 0, rightOnly: 0 }
+
+  for (const row of rows.value) {
+    if (row.status === 'Same') {
+      counts.same += 1
+    } else if (row.status === 'Different') {
+      counts.different += 1
+    } else if (row.status === 'Left only') {
+      counts.leftOnly += 1
+    } else {
+      counts.rightOnly += 1
+    }
+  }
+
+  return counts
+})
 
 const folderSelectionSummary = computed(() => {
   const aggregate = aggregateFolderSelection(rows.value, checkedRowIds.value, selectedRowId.value)
@@ -1513,6 +1571,8 @@ function folderCompareResponseRowToTreeRow(row: FolderCompareResponseRow): Folde
     rightByteSize: row.right?.kind === 'file' ? row.right.size : undefined,
     leftModified: formatFolderModified(row.left?.modifiedAtMs),
     rightModified: formatFolderModified(row.right?.modifiedAtMs),
+    leftModifiedAtMs: row.left?.modifiedAtMs,
+    rightModifiedAtMs: row.right?.modifiedAtMs,
     leftPath: row.left?.path,
     rightPath: row.right?.path,
     status: row.status,
@@ -2909,6 +2969,7 @@ onUnmounted(() => {
     folderWatchTimer = undefined
   }
   folderPathNavStore.reset()
+  folderMenuSelection.reset()
 })
 </script>
 
@@ -3592,6 +3653,47 @@ onUnmounted(() => {
         v-if="settings.showFolderLegend"
         class="folder-status-legend-slot"
       />
+
+      <section
+        v-show="showSessionInfo"
+        class="folder-session-info-panel display-filters"
+        data-testid="folder-session-info"
+      >
+        <h3>{{ $t('ui.folderCompareInfo') }}</h3>
+        <dl class="folder-session-info-grid">
+          <div>
+            <dt>{{ $t('ui.left') }}</dt>
+            <dd data-testid="folder-session-info-left">{{ leftRoot || '—' }}</dd>
+          </div>
+          <div>
+            <dt>{{ $t('ui.right') }}</dt>
+            <dd data-testid="folder-session-info-right">{{ rightRoot || '—' }}</dd>
+          </div>
+          <div>
+            <dt>{{ $t('ui.sessionInfoTotal') }}</dt>
+            <dd data-testid="folder-session-info-total">{{ sessionInfoStats.total }}</dd>
+          </div>
+          <div>
+            <dt>{{ $t('ui.same') }}</dt>
+            <dd>{{ sessionInfoStats.same }}</dd>
+          </div>
+          <div>
+            <dt>{{ $t('ui.different') }}</dt>
+            <dd>{{ sessionInfoStats.different }}</dd>
+          </div>
+          <div>
+            <dt>{{ $t('ui.orphans') }}</dt>
+            <dd>{{ sessionInfoStats.leftOnly + sessionInfoStats.rightOnly }}</dd>
+          </div>
+        </dl>
+        <button
+          type="button"
+          data-testid="folder-session-info-close"
+          @click="showSessionInfo = false"
+        >
+          {{ $t('ui.close') }}
+        </button>
+      </section>
 
       <section
         v-show="showColumnConfig"

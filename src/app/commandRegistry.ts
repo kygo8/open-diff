@@ -68,6 +68,7 @@ export type CommandId =
   | 'edit.selectAll'
   | 'edit.selectAllFiles'
   | 'edit.selectOrphans'
+  | 'edit.selectNewer'
   | 'edit.invertSelection'
   | 'actions.open'
   | 'actions.openWith'
@@ -75,6 +76,10 @@ export type CommandId =
   | 'actions.exclude'
   | 'actions.refreshSelection'
   | 'view.showSame'
+  | 'view.showOrphans'
+  | 'view.showNoOrphans'
+  | 'view.onlyCompareFiles'
+  | 'view.suppressFilters'
   | 'search.findFilename'
   | 'search.findNextFilename'
   | 'search.findPreviousFilename'
@@ -109,6 +114,7 @@ export type CommandId =
   | 'actions.fileCompareReport'
   | 'session.mergeBaseFolders'
   | 'session.syncBaseFolders'
+  | 'session.info'
   | 'script.run'
   | 'report.save'
 
@@ -173,6 +179,7 @@ export type CommandAction =
         | 'select-all'
         | 'select-all-files'
         | 'select-orphans'
+        | 'select-newer'
         | 'invert-selection'
         | 'open-selected'
         | 'open-with'
@@ -180,6 +187,10 @@ export type CommandAction =
         | 'exclude-selected'
         | 'refresh-selection'
         | 'show-same'
+        | 'show-orphans'
+        | 'show-no-orphans'
+        | 'only-compare-files'
+        | 'suppress-filters'
         | 'find-filename'
         | 'find-next-filename'
         | 'find-previous-filename'
@@ -211,6 +222,7 @@ export type CommandAction =
         | 'align-with'
         | 'break-alignment'
         | 'file-compare-report'
+        | 'session-info'
     }
 
 export interface CommandShortcut {
@@ -939,6 +951,16 @@ export const commandRegistry: AppCommand[] = [
     action: { type: 'view-action', name: 'select-orphans' },
   },
   {
+    id: 'edit.selectNewer',
+    titleKey: 'ui.selectNewer',
+    keywords: ['select', 'newer', 'timestamp', 'modified'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Alt', 'Shift', 'N'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'select-newer' },
+  },
+  {
     id: 'edit.invertSelection',
     titleKey: 'ui.invertSelection',
     keywords: ['invert', 'selection', 'edit'],
@@ -1009,6 +1031,46 @@ export const commandRegistry: AppCommand[] = [
     action: { type: 'view-action', name: 'show-same' },
   },
   {
+    id: 'view.showOrphans',
+    titleKey: 'ui.showOrphans',
+    keywords: ['show', 'orphans', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'F6'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-orphans' },
+  },
+  {
+    id: 'view.showNoOrphans',
+    titleKey: 'ui.showNoOrphans',
+    keywords: ['show', 'no', 'orphans', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'F7'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-no-orphans' },
+  },
+  {
+    id: 'view.onlyCompareFiles',
+    titleKey: 'ui.onlyCompareFiles',
+    keywords: ['only', 'compare', 'files', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'F9'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'only-compare-files' },
+  },
+  {
+    id: 'view.suppressFilters',
+    titleKey: 'ui.suppressFilters',
+    keywords: ['suppress', 'filters', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'F10'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'suppress-filters' },
+  },
+  {
     id: 'session.mergeBaseFolders',
     titleKey: 'ui.mergeBaseFolders',
     keywords: ['merge', 'base', 'folders', 'session'],
@@ -1029,6 +1091,16 @@ export const commandRegistry: AppCommand[] = [
     action: { type: 'navigate', route: '/sync/folder', titleKey: 'ui.folderSync' },
   },
   {
+    id: 'session.info',
+    titleKey: 'ui.sessionInfo',
+    keywords: ['session', 'info', 'statistics', 'ctrl+i'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'I'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'session-info' },
+  },
+  {
     id: 'script.run',
     titleKey: 'ui.runScript',
     keywords: ['script', 'run', 'automation'],
@@ -1040,7 +1112,7 @@ export const commandRegistry: AppCommand[] = [
   },
   {
     id: 'report.save',
-    titleKey: 'ui.saveReport',
+    titleKey: 'ui.folderCompareReport',
     keywords: ['report', 'save', 'export'],
     enabled: true,
     visibility: 'view',

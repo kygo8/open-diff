@@ -9,6 +9,7 @@ import {
   stepRowIdByNameFilter,
   selectFileRowIds,
   selectRowIdsByNameFilter,
+  selectNewerRowIds,
   selectRowIdsByStatuses,
 } from './folderRowSelection'
 
@@ -157,4 +158,15 @@ it('steps through name-filter matches for Find Next/Previous Filename', () => {
   expect(stepRowIdByNameFilter(rows, 'alpha', 'c', 1)).toBe('a')
   expect(stepRowIdByNameFilter(rows, 'alpha', 'a', -1)).toBe('c')
   expect(stepRowIdByNameFilter(rows, 'missing', 'a', 1)).toBeUndefined()
+})
+
+it('selects rows where both sides exist and timestamps differ', () => {
+  expect(
+    selectNewerRowIds([
+      { id: 'a', leftModifiedAtMs: 100, rightModifiedAtMs: 100 },
+      { id: 'b', leftModifiedAtMs: 200, rightModifiedAtMs: 100 },
+      { id: 'c', leftModifiedAtMs: 100 },
+      { id: 'd', rightModifiedAtMs: 100 },
+    ]),
+  ).toEqual(['b'])
 })

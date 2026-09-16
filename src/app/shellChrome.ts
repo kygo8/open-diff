@@ -63,3 +63,29 @@ export function supportsFolderStatusLegend(routePath: string): boolean {
     routePath.includes('/merge')
   )
 }
+
+/** True for any open session workbench (not Home or Settings). */
+export function isSessionWorkbenchPath(path: string): boolean {
+  return path !== '/' && path !== '/settings' && !path.startsWith('/settings/')
+}
+
+/** Folder Compare / Sync / Merge routes that share folder-tree menus. */
+export function isFolderishSessionRoute(path: string): boolean {
+  return path.includes('/folder') || path.includes('/sync') || path.includes('/merge')
+}
+
+export function isFolderCompareRoute(path: string): boolean {
+  return path.includes('/compare/folder')
+}
+
+export function isFolderSyncRoute(path: string): boolean {
+  return path.includes('/sync')
+}
+
+export function isFolderMergeRoute(path: string): boolean {
+  return path.includes('/merge')
+}
+
+export function isRegistrySessionRoute(path: string): boolean {
+  return path.includes('/registry')
+}

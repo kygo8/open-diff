@@ -183,3 +183,25 @@ export function stepRowIdByNameFilter(
 
   return matches[nextIndex]
 }
+
+export interface FolderTimestampRow {
+  id: string
+  leftModifiedAtMs?: number
+  rightModifiedAtMs?: number
+}
+
+/** Rows where both sides exist and timestamps differ (either side newer). */
+export function selectNewerRowIds(rows: FolderTimestampRow[]): string[] {
+  return rows
+    .filter((row) => {
+      const left = row.leftModifiedAtMs
+      const right = row.rightModifiedAtMs
+
+      if (left === undefined || right === undefined) {
+        return false
+      }
+
+      return left !== right
+    })
+    .map((row) => row.id)
+}

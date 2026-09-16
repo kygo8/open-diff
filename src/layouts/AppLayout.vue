@@ -39,6 +39,7 @@ import {
   formatShortcutLabel,
   isEditableKeyboardTarget,
 } from '@/app/keyboardShortcuts'
+import { applySelectionEnablement, resolveMenuCommandEnabled } from '@/app/menuTables'
 import { listenDesktopPathDrop } from '@/app/desktopDrop'
 import { openSessionWindow } from '@/app/sessionWindow'
 import { resolveDropLaunchFromPaths } from '@/app/dropLaunch'
@@ -46,10 +47,10 @@ import { sessionCatalog } from '@/app/sessionCatalog'
 import { createUntitledSession } from '@/app/sessionFactory'
 import { isSessionWorkbenchRoute, tabRoutePathname } from '@/app/sessionTabRoute'
 import {
+  isSessionWorkbenchPath as isSessionWorkbenchPathHelper,
   isSingleSessionFrame,
   preferDenseAppChrome,
   shouldShowTabStrip,
-  supportsFolderStatusLegend,
 } from '@/app/shellChrome'
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { useI18n } from '@/i18n'
@@ -69,6 +70,7 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useFolderPathNavStore } from '@/stores/folderPathNav'
+import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useWorkspacesStore } from '@/stores/workspaces'
 import { createFolderSnapshot } from '@/api/diff'
@@ -110,6 +112,7 @@ const statusBar = useStatusBarStore()
 const tabs = useTabsStore()
 const viewActions = useViewActionsStore()
 const folderPathNav = useFolderPathNavStore()
+const folderMenuSelection = useFolderMenuSelectionStore()
 const sessionLaunch = useSessionLaunchStore()
 const savedSessions = useSavedSessionsStore()
 const workspaces = useWorkspacesStore()
@@ -273,6 +276,7 @@ const appMenus: AppMenuDefinition[] = [
       'actions.newFolder',
       'session.mergeBaseFolders',
       'session.syncBaseFolders',
+      'session.info',
       'sync.syncNow',
       'session.closeTab',
       'report.save',
@@ -358,6 +362,7 @@ const appMenus: AppMenuDefinition[] = [
       'edit.selectAll',
       'edit.selectAllFiles',
       'edit.selectOrphans',
+      'edit.selectNewer',
       'edit.invertSelection',
       'session.reload',
       'edit.fullRefresh',
@@ -391,6 +396,10 @@ const appMenus: AppMenuDefinition[] = [
       'view.showAll',
       'view.showDifferences',
       'view.showSame',
+      'view.showOrphans',
+      'view.showNoOrphans',
+      'view.onlyCompareFiles',
+      'view.suppressFilters',
       'view.toggleMinor',
       'view.expandAll',
       'view.collapseAll',
@@ -1199,221 +1208,24 @@ function localizeStatusValue(value: string): string {
 }
 
 function isSessionWorkbenchPath(path: string): boolean {
-  return path !== '/' && path !== '/settings' && !path.startsWith('/settings/')
+  return isSessionWorkbenchPathHelper(path)
 }
 
 function resolveMenuCommand(command: AppCommand): AppCommand {
-  if (command.id === 'session.closeTab') {
-    return { ...command, enabled: tabs.canCloseTab(tabs.activeTab.id) }
-  }
+  const enabled = applySelectionEnablement(
+    command.id,
+    resolveMenuCommandEnabled(command.id, command.enabled, {
+      routePath: route.path,
+      hasSelection: folderMenuSelection.hasSelection,
+      canGoBack: folderPathNav.canGoBack,
+      canGoForward: folderPathNav.canGoForward,
+      canCloseTab: tabs.canCloseTab(tabs.activeTab.id),
+      hasLockableSession: Boolean(resolveLockableSessionId()),
+    }),
+    folderMenuSelection.hasSelection,
+  )
 
-  if (
-    command.id === 'session.save' ||
-    command.id === 'session.saveAs' ||
-    command.id === 'session.clear' ||
-    command.id === 'session.export' ||
-    command.id === 'session.compare' ||
-    command.id === 'session.swap' ||
-    command.id === 'session.reload' ||
-    command.id === 'session.rules' ||
-    command.id === 'session.settings' ||
-    command.id === 'report.save' ||
-    command.id === 'diff.next' ||
-    command.id === 'diff.previous'
-  ) {
-    return { ...command, enabled: command.enabled && isSessionWorkbenchPath(route.path) }
-  }
-
-  if (command.id === 'session.locked') {
-    return {
-      ...command,
-      enabled:
-        command.enabled &&
-        isSessionWorkbenchPath(route.path) &&
-        Boolean(resolveLockableSessionId()),
-    }
-  }
-
-  if (command.id === 'session.browseFolder' || command.id === 'session.upOneLevel') {
-    const folderish =
-      route.path.includes('/folder') ||
-      route.path.includes('/sync') ||
-      route.path.includes('/merge')
-
-    return { ...command, enabled: command.enabled && folderish }
-  }
-
-  if (command.id === 'session.back' || command.id === 'session.forward') {
-    const folderish =
-      route.path.includes('/folder') ||
-      route.path.includes('/sync') ||
-      route.path.includes('/merge')
-    const historyReady =
-      command.id === 'session.back' ? folderPathNav.canGoBack : folderPathNav.canGoForward
-
-    return { ...command, enabled: command.enabled && folderish && historyReady }
-  }
-
-  if (command.id === 'edit.selectAll' || command.id === 'edit.invertSelection') {
-    const folderish =
-      route.path.includes('/folder') ||
-      route.path.includes('/sync') ||
-      route.path.includes('/merge') ||
-      route.path.includes('/registry')
-
-    return { ...command, enabled: command.enabled && folderish }
-  }
-
-  if (command.id === 'edit.selectAllFiles' || command.id === 'edit.selectOrphans') {
-    const supported =
-      route.path.includes('/compare/folder') ||
-      route.path.includes('/merge') ||
-      route.path.includes('/registry')
-
-    return { ...command, enabled: command.enabled && supported }
-  }
-
-  if (
-    command.id === 'actions.open' ||
-    command.id === 'actions.openWith' ||
-    command.id === 'actions.quickCompare' ||
-    command.id === 'actions.exclude' ||
-    command.id === 'actions.refreshSelection' ||
-    command.id === 'view.showSame' ||
-    command.id === 'view.expandAll' ||
-    command.id === 'view.collapseAll' ||
-    command.id === 'search.findFilename' ||
-    command.id === 'search.findNextFilename' ||
-    command.id === 'search.findPreviousFilename' ||
-    command.id === 'edit.fullRefresh'
-  ) {
-    const folderish =
-      route.path.includes('/folder') ||
-      route.path.includes('/sync') ||
-      route.path.includes('/merge') ||
-      route.path.includes('/registry')
-
-    return { ...command, enabled: command.enabled && folderish }
-  }
-
-  if (command.id === 'view.columns') {
-    return {
-      ...command,
-      enabled: command.enabled && route.path.includes('/compare/folder'),
-    }
-  }
-
-  if (command.id === 'view.legend') {
-    return {
-      ...command,
-      enabled: command.enabled && supportsFolderStatusLegend(route.path),
-    }
-  }
-
-  if (command.id === 'view.log') {
-    const supported = route.path.includes('/sync') || route.path.includes('/merge')
-
-    return { ...command, enabled: command.enabled && supported }
-  }
-
-  if (command.id === 'view.toolbar') {
-    return { ...command, enabled: command.enabled }
-  }
-
-  if (command.id === 'actions.attributes' || command.id === 'actions.touch') {
-    return {
-      ...command,
-      enabled: command.enabled && route.path.includes('/compare/folder'),
-    }
-  }
-
-  if (command.id === 'actions.copyToOutput' || command.id === 'actions.merge') {
-    return {
-      ...command,
-      enabled: command.enabled && route.path.includes('/merge'),
-    }
-  }
-
-  if (command.id === 'actions.newFolder') {
-    const folderish =
-      route.path.includes('/compare/folder') ||
-      route.path.includes('/sync') ||
-      route.path.includes('/merge')
-
-    return { ...command, enabled: command.enabled && folderish }
-  }
-
-  if (
-    command.id === 'actions.leaveAlone' ||
-    command.id === 'actions.copyLeftToRight' ||
-    command.id === 'actions.copyRightToLeft' ||
-    command.id === 'actions.deleteLeft' ||
-    command.id === 'actions.deleteRight'
-  ) {
-    return {
-      ...command,
-      enabled: command.enabled && route.path.includes('/sync'),
-    }
-  }
-
-  if (command.id === 'actions.explorer') {
-    const folderish =
-      route.path.includes('/compare/folder') ||
-      route.path.includes('/sync') ||
-      route.path.includes('/merge')
-
-    return { ...command, enabled: command.enabled && folderish }
-  }
-
-  if (command.id === 'actions.compareContents') {
-    const supported = route.path.includes('/compare/folder') || route.path.includes('/merge')
-
-    return { ...command, enabled: command.enabled && supported }
-  }
-
-  if (
-    command.id === 'actions.copyToSide' ||
-    command.id === 'actions.moveToSide' ||
-    command.id === 'actions.copyToFolder' ||
-    command.id === 'actions.moveToFolder' ||
-    command.id === 'actions.rename' ||
-    command.id === 'actions.delete' ||
-    command.id === 'actions.copyFilename' ||
-    command.id === 'actions.synchronize' ||
-    command.id === 'actions.ignored' ||
-    command.id === 'actions.alignWith' ||
-    command.id === 'actions.breakAlignment' ||
-    command.id === 'actions.fileCompareReport'
-  ) {
-    return {
-      ...command,
-      enabled: command.enabled && route.path.includes('/compare/folder'),
-    }
-  }
-
-  if (command.id === 'session.mergeBaseFolders' || command.id === 'session.syncBaseFolders') {
-    const onFolderCompare = route.path.includes('/compare/folder')
-
-    return { ...command, enabled: command.enabled && onFolderCompare }
-  }
-
-  if (command.id === 'sync.syncNow') {
-    const onSync = route.path.includes('/sync')
-
-    return { ...command, enabled: command.enabled && onSync }
-  }
-
-  if (command.id === 'script.run') {
-    return { ...command, enabled: command.enabled && isSessionWorkbenchPath(route.path) }
-  }
-
-  if (command.id === 'merge.previousConflict' || command.id === 'merge.nextConflict') {
-    const onMerge = route.path.includes('/merge')
-
-    return { ...command, enabled: command.enabled && onMerge }
-  }
-
-  return command
+  return { ...command, enabled }
 }
 
 function menuShortcutLabel(command: AppCommand): string {

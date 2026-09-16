@@ -1379,7 +1379,7 @@ watch([leftPath, rightPath], () => {
   display: grid;
   gap: 4px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: auto;
 }
 
@@ -1445,8 +1445,8 @@ h2 {
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
   align-items: end;
   gap: 4px 6px;
-  min-height: 26px;
-  padding: 2px 6px;
+  min-height: 22px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1464,8 +1464,8 @@ h2 {
 .table-source-controls input,
 .table-source-controls select {
   width: 100%;
-  height: 20px;
-  min-height: 20px;
+  height: 18px;
+  min-height: 18px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -1488,8 +1488,8 @@ h2 {
 
 .column-map-controls select {
   width: 100%;
-  height: 20px;
-  min-height: 20px;
+  height: 18px;
+  min-height: 18px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -1554,8 +1554,8 @@ h2 {
   grid-template-columns: minmax(180px, 1fr) auto auto auto auto;
   align-items: end;
   gap: 4px 6px;
-  min-height: 26px;
-  padding: 2px 6px;
+  min-height: 22px;
+  padding: 1px 4px;
 }
 
 .table-navigation-bar label {
@@ -1572,8 +1572,8 @@ h2 {
 
 .table-navigation-bar input {
   width: 100%;
-  height: 20px;
-  min-height: 20px;
+  height: 18px;
+  min-height: 18px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -1583,8 +1583,8 @@ h2 {
 }
 
 .table-navigation-bar button {
-  height: 20px;
-  min-height: 20px;
+  height: 18px;
+  min-height: 18px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -1595,13 +1595,13 @@ h2 {
 
 .table-navigation-bar > strong {
   min-width: 72px;
-  min-height: 20px;
-  padding: 0 6px;
+  min-height: 18px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);
   font-size: 11px;
-  line-height: 20px;
+  line-height: 18px;
   text-align: center;
 }
 
@@ -1674,14 +1674,14 @@ h2 {
 
 .table-virtual-grid {
   display: grid;
-  grid-template-rows: repeat(var(--visible-rows), 22px);
+  grid-template-rows: repeat(var(--visible-rows), 20px);
   min-width: calc(var(--visible-columns) * 132px);
 }
 
 .table-grid-row {
   display: grid;
   grid-template-columns: repeat(var(--visible-columns), minmax(132px, 1fr));
-  min-height: 22px;
+  min-height: 20px;
   border-bottom: 1px solid var(--app-border);
 }
 
@@ -1782,12 +1782,12 @@ h2 {
 }
 
 .path-side-footer {
-  min-height: 10px;
+  min-height: 9px;
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 10px;
-  line-height: 10px;
+  font-size: 9px;
+  line-height: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

@@ -1376,7 +1376,7 @@ async function runHexSave(): Promise<void> {
   display: grid;
   gap: 4px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: auto;
 }
 
@@ -1414,8 +1414,8 @@ h2 {
   display: grid;
   gap: 2px 6px;
   min-width: 118px;
-  min-height: 22px;
-  padding: 2px 6px;
+  min-height: 20px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1439,8 +1439,8 @@ h2 {
   align-items: end;
   gap: 2px 6px;
   min-width: 0;
-  min-height: 22px;
-  padding: 2px 6px;
+  min-height: 20px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1462,11 +1462,11 @@ h2 {
 .hex-wrap-controls button {
   width: 100%;
   min-width: 0;
-  height: 18px;
-  min-height: 18px;
-  padding: 0 5px;
+  height: 16px;
+  min-height: 16px;
+  padding: 0 4px;
   font-size: 11px;
-  line-height: 18px;
+  line-height: 16px;
 }
 
 .hex-wrap-controls button {
@@ -1476,15 +1476,15 @@ h2 {
 .hex-wrap-controls strong {
   min-width: 0;
   max-width: 100%;
-  height: 18px;
-  min-height: 18px;
-  padding: 0 5px;
+  height: 16px;
+  min-height: 16px;
+  padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);
   font-size: 11px;
-  line-height: 18px;
+  line-height: 16px;
   text-align: center;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1566,9 +1566,9 @@ h2 {
 .hex-report-panel {
   display: grid;
   gap: 2px 6px;
-  min-height: 22px;
+  min-height: 20px;
   margin: 0;
-  padding: 2px 6px;
+  padding: 1px 4px;
   border: 1px solid var(--border, #d0d7de);
   border-radius: 0;
 }
@@ -1654,11 +1654,11 @@ h2 {
 }
 
 .path-side-footer {
-  min-height: 10px;
+  min-height: 9px;
   margin-top: 0;
   color: var(--app-text-muted);
-  font-size: 10px;
-  line-height: 10px;
+  font-size: 9px;
+  line-height: 9px;
 }
 
 .path-side-footer-muted {

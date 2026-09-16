@@ -1772,25 +1772,25 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Hex Compare chrome densify toward capture path/status/toolbar/footer strips */
 .hex-compare-view {
-  gap: 4px !important;
-  padding: 4px 6px !important;
+  gap: 2px !important;
+  padding: 2px 4px !important;
 }
 
 .hex-compare-view .bc-path-row {
-  gap: 3px !important;
-  min-height: 26px !important;
-  padding: 1px 6px !important;
+  gap: 2px !important;
+  min-height: 22px !important;
+  padding: 1px 4px !important;
 }
 
 .hex-compare-view .bc-path-row input {
-  height: 20px !important;
-  padding: 0 5px !important;
+  height: 18px !important;
+  padding: 0 4px !important;
   font-size: 11px !important;
 }
 
 .hex-compare-view .bc-path-row button {
-  height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  padding: 0 4px !important;
   font-size: 11px !important;
 }
 
@@ -1800,16 +1800,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .path-side-footer {
-  min-height: 10px !important;
+  min-height: 9px !important;
   margin-top: 0 !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+  font-size: 9px !important;
+  line-height: 9px !important;
 }
 
 .hex-compare-view .hex-wrap-controls {
-  gap: 2px 6px !important;
-  min-height: 22px !important;
-  padding: 2px 6px !important;
+  gap: 2px 4px !important;
+  min-height: 20px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -1817,11 +1817,11 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .hex-compare-view .hex-wrap-controls select,
 .hex-compare-view .hex-wrap-controls button,
 .hex-compare-view .hex-wrap-controls strong {
-  height: 18px !important;
-  min-height: 18px !important;
-  padding: 0 5px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  padding: 0 4px !important;
   font-size: 11px !important;
-  line-height: 18px !important;
+  line-height: 16px !important;
 }
 
 .hex-compare-view .hex-row {
@@ -1839,10 +1839,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 /* Hex summary/report/pane densify one more notch toward capture */
 .hex-compare-view .hex-summary,
 .hex-compare-view .hex-report-panel {
-  gap: 2px 6px !important;
-  min-height: 22px !important;
+  gap: 2px 4px !important;
+  min-height: 20px !important;
   margin: 0 !important;
-  padding: 2px 6px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2545,17 +2545,17 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Table Compare chrome densify toward capture path/status/controls/grid strips */
 .table-compare-view {
-  gap: 4px !important;
-  padding: 4px 6px !important;
+  gap: 2px !important;
+  padding: 2px 4px !important;
 }
 
 .table-compare-view .table-source-controls,
 .table-compare-view .table-controls,
 .table-compare-view .column-map-controls,
 .table-compare-view .table-navigation-bar {
-  gap: 4px 6px !important;
-  min-height: 26px !important;
-  padding: 2px 6px !important;
+  gap: 2px 4px !important;
+  min-height: 22px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2580,19 +2580,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .table-compare-view .column-map-controls select,
 .table-compare-view .table-navigation-bar input,
 .table-compare-view .table-navigation-bar button {
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 4px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
 
 .table-compare-view .table-navigation-bar > strong {
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  min-height: 18px !important;
+  padding: 0 4px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
-  line-height: 20px !important;
+  line-height: 18px !important;
 }
 
 .table-compare-view .bc-path-footers {
@@ -2601,10 +2601,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .table-compare-view .path-side-footer {
-  min-height: 10px !important;
+  min-height: 9px !important;
   margin-top: 0 !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+  font-size: 9px !important;
+  line-height: 9px !important;
 }
 
 .table-compare-view .column-source-grid,
@@ -2639,11 +2639,11 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .table-compare-view .table-virtual-grid {
-  grid-template-rows: repeat(var(--visible-rows), 22px) !important;
+  grid-template-rows: repeat(var(--visible-rows), 20px) !important;
 }
 
 .table-compare-view .table-grid-row {
-  min-height: 22px !important;
+  min-height: 20px !important;
 }
 
 .table-compare-view .table-grid-cell,

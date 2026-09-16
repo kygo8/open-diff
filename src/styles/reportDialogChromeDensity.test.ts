@@ -1,0 +1,46 @@
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { describe, expect, it } from 'vitest'
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
+const css = readFileSync(resolve(root, 'src/styles/main.css'), 'utf8')
+const folderView = readFileSync(resolve(root, 'src/views/FolderCompareView.vue'), 'utf8')
+const reportsView = readFileSync(resolve(root, 'src/views/reports/ReportsScriptView.vue'), 'utf8')
+
+describe('report dialog chrome density', () => {
+  it('keeps File Compare Report dialog dense toward native Report UI spacing', () => {
+    expect(folderView).toMatch(/data-testid="file-compare-report-panel"/)
+    expect(folderView).toMatch(/data-testid="file-compare-report-backdrop"/)
+    expect(folderView).toMatch(/aria-modal="true"/)
+    expect(folderView).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?padding:\s*8px 10px/)
+    expect(folderView).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?gap:\s*6px/)
+    expect(folderView).toMatch(/\.file-compare-report-header\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(folderView).toMatch(/\.file-compare-report-row select\s*\{[\s\S]*?height:\s*20px/)
+    expect(folderView).toMatch(/\.file-compare-report-scope label\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(folderView).toMatch(/\.file-compare-report-scope label\s*\{[\s\S]*?gap:\s*4px/)
+    expect(folderView).toMatch(/\.file-compare-report-footer\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(folderView).toMatch(/\.file-compare-report-footer\s*\{[\s\S]*?gap:\s*4px/)
+    expect(folderView).not.toMatch(/class="folder-operation-panel file-compare-report-panel"/)
+
+    expect(css).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?display:\s*grid\s*!important/)
+    expect(css).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?padding:\s*8px 10px\s*!important/)
+    expect(css).toMatch(/\.file-compare-report-row select\s*\{[\s\S]*?height:\s*20px\s*!important/)
+    expect(css).toMatch(
+      /\.file-compare-report-scope label\s*\{[\s\S]*?min-height:\s*18px\s*!important/,
+    )
+    expect(css).toMatch(/\.file-compare-report-footer\s*\{[\s\S]*?min-height:\s*22px\s*!important/)
+  })
+
+  it('keeps Reports / Scripts export form chrome dense one more notch', () => {
+    expect(reportsView).toMatch(/\.report-export-form\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(reportsView).toMatch(
+      /\.report-export-form input,\s*\.report-export-form select\s*\{[\s\S]*?height:\s*20px/,
+    )
+    expect(reportsView).toMatch(/\.report-row\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(/\.reports-script-view \.report-export-form\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(css).toMatch(
+      /\.reports-script-view \.report-export-form input,\s*\.reports-script-view \.report-export-form select\s*\{[\s\S]*?height:\s*20px/,
+    )
+  })
+})

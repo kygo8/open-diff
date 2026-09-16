@@ -606,7 +606,7 @@ function fillFromLastCompare(): void {
 .report-panel,
 .script-panel {
   display: grid;
-  grid-template-rows: 28px auto minmax(0, 1fr) auto;
+  grid-template-rows: 22px auto minmax(0, 1fr) auto;
   min-height: 0;
   overflow: hidden;
   border: 1px solid var(--app-border);
@@ -616,28 +616,30 @@ function fillFromLastCompare(): void {
 .report-export-form {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  padding: 8px;
+  gap: 4px 6px;
+  padding: 4px 6px;
 }
 
 .report-export-form label {
   display: grid;
-  gap: 4px;
+  gap: 2px;
 }
 
 .report-export-form span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 12px;
 }
 
 .report-export-form input,
 .report-export-form select {
-  height: 30px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
+  font-size: 11px;
 }
 
 .report-error,
@@ -654,15 +656,15 @@ function fillFromLastCompare(): void {
 .report-row {
   display: grid;
   grid-template-columns: minmax(220px, 1.4fr) 110px 110px minmax(180px, 1fr);
-  min-height: 30px;
+  min-height: 22px;
   border-bottom: 1px solid var(--app-border);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .report-row > * {
   min-width: 0;
   margin: 0;
-  padding: 6px 8px;
+  padding: 2px 6px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   text-overflow: ellipsis;

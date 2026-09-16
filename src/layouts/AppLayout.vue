@@ -2114,9 +2114,9 @@ const sourceSessionTypes = new Set<SessionType>([
   display: grid;
   width: 100px;
   max-width: calc(100vw - 24px);
-  padding: 6px;
+  padding: 2px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-canvas);
   box-shadow: 0 8px 22px rgb(25 28 30 / 0.18);
 }
@@ -2124,10 +2124,10 @@ const sourceSessionTypes = new Set<SessionType>([
 .language-option {
   display: grid;
   align-items: center;
-  min-height: 28px;
-  padding: 4px 7px;
+  min-height: 20px;
+  padding: 2px 4px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 0;
   background: transparent;
   color: var(--app-text);
   text-align: left;
@@ -2530,11 +2530,11 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .command-palette {
   display: grid;
-  gap: 8px;
+  gap: 4px;
   width: min(640px, calc(100vw - 40px));
-  padding: 10px;
+  padding: 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-canvas);
   box-shadow: 0 10px 28px rgb(25 28 30 / 0.2);
 }
@@ -2542,11 +2542,11 @@ const sourceSessionTypes = new Set<SessionType>([
 .command-palette header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 9px;
+  gap: 4px;
+  height: 22px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-surface-low);
   color: var(--app-text-muted);
 }
@@ -2569,10 +2569,10 @@ const sourceSessionTypes = new Set<SessionType>([
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 30px;
-  padding: 0 8px;
+  min-height: 20px;
+  padding: 0 4px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 0;
   background: transparent;
   color: var(--app-text);
   text-align: left;

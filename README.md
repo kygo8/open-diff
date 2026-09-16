@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/opendiff-wordmark.png" alt="Open Diff" width="420" />
+</p>
+
 # Open Diff — Open-Source File Compare & Beyond Compare Alternative
 
 Open Diff is an open-source Beyond Compare alternative focused on practical daily file comparison, folder comparison, and three-way merge workflows for people who need to trust every highlighted change before they act on them. It supports text, table, image, hex, and binary comparison on Windows, macOS, and Linux so you can stay in one lightweight desktop tool across formats and platforms. Side-by-side views, folder synchronization, session restore, HTML reports, and command-line helpers help developers, reviewers, content editors, and operators inspect differences clearly before they safely copy, merge, synchronize, or ship.

@@ -48,6 +48,7 @@ import { usePolicyStore } from '@/stores/policy'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import {
+  buildFolderPairStatusPanes,
   isEditModeStatusSource,
   isHexSessionStatusSource,
   isTextSessionStatusSource,
@@ -983,24 +984,15 @@ const statusChromePanes = computed((): StatusChromePane[] => {
   const kind = statusBar.chromeKind
 
   if (kind === 'folder-pair') {
-    const importance = localizedImportanceSegment(
-      statusBar.report.importantDifferenceCount,
-      statusBar.report.unimportantDifferenceCount,
-    )
-    const panes: StatusChromePane[] = []
-
-    if (importance) {
-      panes.push(statusPane(importance, 'status-pane-importance'))
-    }
-
-    panes.push(
-      statusPane(statusBar.report.leftSelection, 'status-pane-left-selection'),
-      statusPane(statusBar.report.leftFreeSpace, 'status-pane-left-free'),
-      statusPane(statusBar.report.rightSelection, 'status-pane-right-selection'),
-      statusPane(statusBar.report.rightFreeSpace, 'status-pane-right-free'),
-    )
-
-    return panes
+    // Capture folder-pair strip is always 4 panes. Importance would be a 5th —
+    // hide it from the strip until Peek (or another toggle) surfaces it.
+    return buildFolderPairStatusPanes({
+      leftSelection: statusBar.report.leftSelection,
+      leftFreeSpace: statusBar.report.leftFreeSpace,
+      rightSelection: statusBar.report.rightSelection,
+      rightFreeSpace: statusBar.report.rightFreeSpace,
+      placeholder: t('status.panePlaceholder'),
+    })
   }
 
   if (kind === 'text-session' || kind === 'hex-session' || kind === 'registry-session') {
@@ -2537,8 +2529,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 /* Capture folder-pair strip: stronger center divider between left/right pairs */
-.status-bar[data-chrome-kind='folder-pair'][data-pane-count='4'] .status-bar-pane:nth-child(2),
-.status-bar[data-chrome-kind='folder-pair'][data-pane-count='5'] .status-bar-pane:nth-child(3) {
+.status-bar[data-chrome-kind='folder-pair'][data-pane-count='4'] .status-bar-pane:nth-child(2) {
   border-right-color: #8e8e8e;
 }
 

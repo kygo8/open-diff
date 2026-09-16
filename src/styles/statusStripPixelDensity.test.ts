@@ -22,6 +22,8 @@ describe('status strip pixel density', () => {
     expect(layout).toMatch(
       /gridTemplateColumns: `repeat\(\$\{statusChromePanes\.length\}, minmax\(0, 1fr\)\)`/,
     )
+    expect(layout).toMatch(/buildFolderPairStatusPanes/)
+    expect(layout).not.toMatch(/data-pane-count='5'/)
   })
 
   it('keeps session status bars at 22px with shared typography', () => {

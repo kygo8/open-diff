@@ -2282,6 +2282,40 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-weight: 600 !important;
 }
 
+.peek-dual-columns {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 4px !important;
+  min-height: 0 !important;
+}
+
+.peek-column {
+  min-width: 0 !important;
+  padding: 1px 3px 2px !important;
+  border: 1px solid #dfe3e8 !important;
+  background: #fafafa !important;
+}
+
+.peek-column-focus {
+  border-color: #89bdea !important;
+  background: #ffffff !important;
+}
+
+.peek-column > strong {
+  display: block !important;
+  margin: 0 0 1px !important;
+  color: #1a1a1a !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  line-height: 12px !important;
+}
+
+.peek-status-block {
+  margin-top: 1px !important;
+  padding: 1px 0 0 !important;
+  border-top: 1px solid #dfe3e8 !important;
+}
+
 .folder-peek-panel dl,
 .folder-sync-peek-panel dl,
 .folder-merge-peek-panel dl {

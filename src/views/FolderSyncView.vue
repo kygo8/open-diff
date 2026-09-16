@@ -1700,16 +1700,44 @@ watch(
               {{ $t('ui.detail') }}
             </button>
           </div>
-          <dl>
-            <div v-show="peekTab === 'path'">
-              <dt>{{ $t('ui.path') }}</dt>
-              <dd data-testid="folder-sync-peek-path">{{ selectedPeekRow.relativePath }}</dd>
-              <dt>{{ $t('ui.source') }}</dt>
-              <dd>{{ selectedPeekRow.sourcePath ?? '--' }}</dd>
-              <dt>{{ $t('ui.target') }}</dt>
-              <dd>{{ selectedPeekRow.targetPath ?? '--' }}</dd>
-            </div>
-            <div v-show="peekTab === 'action'">
+          <div
+            v-show="peekTab === 'path'"
+            class="peek-dual-columns"
+            data-testid="folder-sync-peek-dual"
+          >
+            <article class="peek-column">
+              <strong>{{ $t('ui.source') }}</strong>
+              <dl>
+                <div>
+                  <dt>{{ $t('ui.path') }}</dt>
+                  <dd data-testid="folder-sync-peek-path">{{ selectedPeekRow.relativePath }}</dd>
+                </div>
+                <div>
+                  <dt>{{ $t('ui.source') }}</dt>
+                  <dd data-testid="folder-sync-peek-source">
+                    {{ selectedPeekRow.sourcePath ?? '—' }}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+            <article class="peek-column">
+              <strong>{{ $t('ui.target') }}</strong>
+              <dl>
+                <div>
+                  <dt>{{ $t('ui.path') }}</dt>
+                  <dd>{{ selectedPeekRow.relativePath }}</dd>
+                </div>
+                <div>
+                  <dt>{{ $t('ui.target') }}</dt>
+                  <dd data-testid="folder-sync-peek-target">
+                    {{ selectedPeekRow.targetPath ?? '—' }}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+          <dl v-show="peekTab === 'action'">
+            <div>
               <dt>{{ $t('ui.plannedAction') }}</dt>
               <dd data-testid="folder-sync-peek-planned">
                 {{
@@ -1731,7 +1759,9 @@ watch(
                 }}
               </dd>
             </div>
-            <div v-show="peekTab === 'detail'">
+          </dl>
+          <dl v-show="peekTab === 'detail'">
+            <div>
               <dt>{{ $t('ui.detail') }}</dt>
               <dd data-testid="folder-sync-peek-detail">{{ selectedPeekRow.detail }}</dd>
             </div>
@@ -2230,5 +2260,27 @@ h1 {
   background: #ffffff;
   color: #111111;
   font-size: 11px;
+}
+
+.peek-dual-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+}
+
+.peek-column {
+  min-width: 0;
+  padding: 1px 3px 2px;
+  border: 1px solid #dfe3e8;
+  background: #fafafa;
+}
+
+.peek-column > strong {
+  display: block;
+  margin: 0 0 1px;
+  color: #1a1a1a;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 12px;
 }
 </style>

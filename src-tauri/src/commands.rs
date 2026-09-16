@@ -2636,18 +2636,18 @@ fn try_reveal_path_selected(path: &str) -> std::io::Result<bool> {
     #[cfg(target_os = "windows")]
     {
         // explorer /select,<path> — no space after the comma.
-        return Ok(std::process::Command::new("explorer")
+        Ok(std::process::Command::new("explorer")
             .arg(format!("/select,{path}"))
             .spawn()
-            .is_ok());
+            .is_ok())
     }
 
     #[cfg(target_os = "macos")]
     {
-        return Ok(std::process::Command::new("open")
+        Ok(std::process::Command::new("open")
             .args(["-R", path])
             .spawn()
-            .is_ok());
+            .is_ok())
     }
 
     #[cfg(all(unix, not(target_os = "macos")))]

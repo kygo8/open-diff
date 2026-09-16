@@ -169,3 +169,43 @@ export function padStatusChromePanes(
 
   return next
 }
+
+/** Capture folder-pair status strip always uses four panes. */
+export const FOLDER_PAIR_STATUS_PANE_COUNT = 4
+
+export interface FolderPairStatusPaneDraft {
+  text: string
+  muted: boolean
+  testId: string
+}
+
+/**
+ * Build the capture-aligned folder-pair status panes (left select/free, right select/free).
+ * Importance is intentionally omitted here: a 5th pane would break the 4-pane strip, so
+ * callers should hide Importance until Peek (or another toggle) surfaces it.
+ */
+export function buildFolderPairStatusPanes(input: {
+  leftSelection: string | null | undefined
+  leftFreeSpace: string | null | undefined
+  rightSelection: string | null | undefined
+  rightFreeSpace: string | null | undefined
+  placeholder?: string
+}): FolderPairStatusPaneDraft[] {
+  const placeholder = input.placeholder ?? '—'
+  const asPane = (value: string | null | undefined, testId: string): FolderPairStatusPaneDraft => {
+    const text = value?.trim() ?? ''
+
+    return {
+      text: text || placeholder,
+      muted: !text,
+      testId,
+    }
+  }
+
+  return [
+    asPane(input.leftSelection, 'status-pane-left-selection'),
+    asPane(input.leftFreeSpace, 'status-pane-left-free'),
+    asPane(input.rightSelection, 'status-pane-right-selection'),
+    asPane(input.rightFreeSpace, 'status-pane-right-free'),
+  ].slice(0, FOLDER_PAIR_STATUS_PANE_COUNT)
+}

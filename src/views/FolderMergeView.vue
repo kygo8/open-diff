@@ -1770,20 +1770,52 @@ watch(
               {{ $t('ui.action') }}
             </button>
           </div>
-          <dl>
-            <div v-show="peekTab === 'path'">
+          <dl v-show="peekTab === 'path'">
+            <div>
               <dt>{{ $t('ui.path') }}</dt>
               <dd data-testid="folder-merge-peek-path">{{ selectedPlanRow.path }}</dd>
             </div>
-            <div v-show="peekTab === 'sides'">
-              <dt>{{ $t('ui.base') }}</dt>
-              <dd>{{ sideLabel(selectedPlanRow.base) }}</dd>
-              <dt>{{ $t('ui.left') }}</dt>
-              <dd>{{ sideLabel(selectedPlanRow.left) }}</dd>
-              <dt>{{ $t('ui.right') }}</dt>
-              <dd>{{ sideLabel(selectedPlanRow.right) }}</dd>
-            </div>
-            <div v-show="peekTab === 'action'">
+          </dl>
+          <div
+            v-show="peekTab === 'sides'"
+            class="peek-dual-columns"
+            data-testid="folder-merge-peek-dual"
+          >
+            <article class="peek-column">
+              <strong>{{ $t('ui.left') }}</strong>
+              <dl>
+                <div>
+                  <dt>{{ $t('ui.left') }}</dt>
+                  <dd data-testid="folder-merge-peek-left">
+                    {{ sideLabel(selectedPlanRow.left) }}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ $t('ui.base') }}</dt>
+                  <dd data-testid="folder-merge-peek-base">
+                    {{ sideLabel(selectedPlanRow.base) }}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+            <article class="peek-column">
+              <strong>{{ $t('ui.right') }}</strong>
+              <dl>
+                <div>
+                  <dt>{{ $t('ui.right') }}</dt>
+                  <dd data-testid="folder-merge-peek-right">
+                    {{ sideLabel(selectedPlanRow.right) }}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ $t('ui.base') }}</dt>
+                  <dd>{{ sideLabel(selectedPlanRow.base) }}</dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+          <dl v-show="peekTab === 'action'">
+            <div>
               <dt>{{ $t('ui.action') }}</dt>
               <dd data-testid="folder-merge-peek-action">
                 {{ folderMergeActionLabel(selectedPlanRow.action) }}
@@ -2301,5 +2333,27 @@ h1 {
   background: #ffffff;
   color: #111111;
   font-size: 11px;
+}
+
+.peek-dual-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+}
+
+.peek-column {
+  min-width: 0;
+  padding: 1px 3px 2px;
+  border: 1px solid #dfe3e8;
+  background: #fafafa;
+}
+
+.peek-column > strong {
+  display: block;
+  margin: 0 0 1px;
+  color: #1a1a1a;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 12px;
 }
 </style>

@@ -129,7 +129,7 @@ import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import { useI18n } from '@/i18n'
 import { notifyCompareComplete } from '@/app/compareCompleteNotify'
 import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
-import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { elapsedSecondsSince, formatImportancePhrase } from '@/app/statusBarPhrases'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useSettingsStore } from '@/stores/settings'
@@ -267,6 +267,13 @@ const lastCompare = useLastCompareStore()
 const tabs = useTabsStore()
 const settings = useSettingsStore()
 const statusBar = useStatusBarStore()
+const peekImportancePhrase = computed(() =>
+  formatImportancePhrase(
+    statusBar.report.importantDifferenceCount,
+    statusBar.report.unimportantDifferenceCount,
+  ),
+)
+
 const router = useRouter()
 const syncRunning = ref(false)
 const reportStatus = ref('')
@@ -3583,20 +3590,72 @@ onUnmounted(() => {
               {{ $t('ui.status') }}
             </button>
           </div>
-          <dl>
-            <div v-show="peekTab === 'left'">
-              <dt>{{ $t('ui.left') }}</dt>
-              <dd data-testid="folder-peek-left">{{ selectedRow.leftPath || '—' }}</dd>
-            </div>
-            <div v-show="peekTab === 'right'">
-              <dt>{{ $t('ui.right') }}</dt>
-              <dd data-testid="folder-peek-right">{{ selectedRow.rightPath || '—' }}</dd>
-            </div>
-            <div v-show="peekTab === 'status'">
-              <dt>{{ $t('ui.status') }}</dt>
-              <dd data-testid="folder-peek-status">{{ selectedRow.status }}</dd>
-            </div>
-          </dl>
+          <div
+            class="peek-dual-columns"
+            data-testid="folder-peek-dual"
+          >
+            <article
+              class="peek-column"
+              :class="{ 'peek-column-focus': peekTab === 'left' }"
+              data-testid="folder-peek-left-col"
+            >
+              <strong>{{ $t('ui.left') }}</strong>
+              <dl>
+                <div>
+                  <dt>{{ $t('ui.path') }}</dt>
+                  <dd data-testid="folder-peek-left">{{ selectedRow.leftPath || '—' }}</dd>
+                </div>
+                <div>
+                  <dt>{{ $t('ui.size') }}</dt>
+                  <dd data-testid="folder-peek-left-size">{{ selectedRow.leftSize || '—' }}</dd>
+                </div>
+                <div>
+                  <dt>{{ $t('ui.modified') }}</dt>
+                  <dd data-testid="folder-peek-left-modified">
+                    {{ selectedRow.leftModified || '—' }}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+            <article
+              class="peek-column"
+              :class="{ 'peek-column-focus': peekTab === 'right' }"
+              data-testid="folder-peek-right-col"
+            >
+              <strong>{{ $t('ui.right') }}</strong>
+              <dl>
+                <div>
+                  <dt>{{ $t('ui.path') }}</dt>
+                  <dd data-testid="folder-peek-right">{{ selectedRow.rightPath || '—' }}</dd>
+                </div>
+                <div>
+                  <dt>{{ $t('ui.size') }}</dt>
+                  <dd data-testid="folder-peek-right-size">{{ selectedRow.rightSize || '—' }}</dd>
+                </div>
+                <div>
+                  <dt>{{ $t('ui.modified') }}</dt>
+                  <dd data-testid="folder-peek-right-modified">
+                    {{ selectedRow.rightModified || '—' }}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+          <div
+            v-show="peekTab === 'status'"
+            class="peek-status-block"
+            data-testid="folder-peek-status-block"
+          >
+            <dl>
+              <div>
+                <dt>{{ $t('ui.status') }}</dt>
+                <dd data-testid="folder-peek-status">{{ selectedRow.status }}</dd>
+              </div>
+              <div v-if="peekImportancePhrase">
+                <dd data-testid="folder-peek-importance">{{ peekImportancePhrase }}</dd>
+              </div>
+            </dl>
+          </div>
           <button
             type="button"
             data-testid="folder-peek-open-compare"
@@ -5014,6 +5073,40 @@ onUnmounted(() => {
   font-size: 11px;
   line-height: 13px;
   word-break: break-all;
+}
+
+.peek-dual-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+  min-height: 0;
+}
+
+.peek-column {
+  min-width: 0;
+  padding: 1px 3px 2px;
+  border: 1px solid #dfe3e8;
+  background: #fafafa;
+}
+
+.peek-column-focus {
+  border-color: #89bdea;
+  background: #ffffff;
+}
+
+.peek-column > strong {
+  display: block;
+  margin: 0 0 1px;
+  color: #1a1a1a;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 12px;
+}
+
+.peek-status-block {
+  margin-top: 1px;
+  padding: 1px 0 0;
+  border-top: 1px solid #dfe3e8;
 }
 
 .folder-select-panel {

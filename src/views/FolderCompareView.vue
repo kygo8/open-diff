@@ -1750,6 +1750,10 @@ function copySelectedTo(direction: 'Left' | 'Right'): void {
     operation: 'copy',
     paths: targets.map((target) => target.targetPath),
   })
+
+  if (!settings.confirmBeforeCopy) {
+    void confirmFolderCopy()
+  }
 }
 
 function renameSelectedFile(): void {
@@ -1981,6 +1985,17 @@ async function executeMoveToSide(direction: FolderTransferSide): Promise<void> {
     return
   }
 
+  if (settings.confirmBeforeMove) {
+    // eslint-disable-next-line no-alert -- Options Confirmations move gate
+    const accepted = window.confirm(
+      `${t('ui.confirmBeforeMoveHint')}\n${plans.map((plan) => plan.targetPath).join('\n')}`,
+    )
+
+    if (!accepted) {
+      return
+    }
+  }
+
   const targetWritable =
     direction === 'Left'
       ? !leftSideIsArchive.value && !leftSideIsSnapshot.value
@@ -2056,6 +2071,17 @@ async function moveSelectedToFolder(): Promise<void> {
 
   if (plans.length === 0) {
     return
+  }
+
+  if (settings.confirmBeforeMove) {
+    // eslint-disable-next-line no-alert -- Options Confirmations move gate
+    const accepted = window.confirm(
+      `${t('ui.confirmBeforeMoveHint')}\n${plans.map((plan) => plan.targetPath).join('\n')}`,
+    )
+
+    if (!accepted) {
+      return
+    }
   }
 
   try {

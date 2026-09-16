@@ -362,4 +362,28 @@ describe('useSettingsStore', () => {
     expect(store.showFolderLegend).toBe(false)
     expect(localStorage.getItem('open-diff-show-folder-legend')).toBe('0')
   })
+
+  it('persists Confirmations copy/move/sync-delete and Backup report-export defaults', () => {
+    const store = useSettingsStore()
+
+    expect(store.confirmBeforeCopy).toBe(true)
+    expect(store.confirmBeforeMove).toBe(false)
+    expect(store.confirmBeforeSyncDelete).toBe(true)
+    expect(store.createBackupOnReportExport).toBe(false)
+
+    store.setConfirmBeforeCopy(false)
+    store.setConfirmBeforeMove(true)
+    store.setConfirmBeforeSyncDelete(false)
+    store.setCreateBackupOnReportExport(true)
+
+    expect(localStorage.getItem('open-diff-confirm-before-copy')).toBe('0')
+    expect(localStorage.getItem('open-diff-confirm-before-move')).toBe('1')
+    expect(localStorage.getItem('open-diff-confirm-before-sync-delete')).toBe('0')
+    expect(localStorage.getItem('open-diff-create-backup-on-report-export')).toBe('1')
+
+    store.setConfirmBeforeCopy(true)
+    store.setConfirmBeforeMove(false)
+    store.setConfirmBeforeSyncDelete(true)
+    store.setCreateBackupOnReportExport(false)
+  })
 })

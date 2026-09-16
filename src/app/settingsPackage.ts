@@ -50,6 +50,10 @@ export interface SettingsPackage {
   loadLastWorkspaceOnStartup?: boolean
   showChromeUtilities?: boolean
   confirmBeforeQuit?: boolean
+  confirmBeforeCopy?: boolean
+  confirmBeforeMove?: boolean
+  confirmBeforeSyncDelete?: boolean
+  createBackupOnReportExport?: boolean
 }
 
 export function isSettingsPackage(value: unknown): value is SettingsPackage {

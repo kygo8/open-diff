@@ -933,7 +933,8 @@ async function exportFolderMergeReport(): Promise<void> {
     await saveTextFile({
       path: reportPath,
       text: payload,
-      createBackup: false,
+      createBackup: settings.createBackupOnReportExport,
+      backupRetention: settings.backupRetentionCount,
     })
     reportStatus.value = reportPath
     reportError.value = ''

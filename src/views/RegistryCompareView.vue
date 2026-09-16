@@ -35,12 +35,14 @@ import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
 
 interface FlatRegistryKeyNode extends RegistryKeyNode {
   depth: number
 }
 
+const settings = useSettingsStore()
 const registryStatuses: RegistryDiffStatus[] = ['added', 'removed', 'modified', 'unchanged']
 const leftExport = ref('')
 const rightExport = ref('')
@@ -529,7 +531,8 @@ async function exportRegistryReport(): Promise<void> {
     await saveTextFile({
       path: outputPath,
       text: payload,
-      createBackup: false,
+      createBackup: settings.createBackupOnReportExport,
+      backupRetention: settings.backupRetentionCount,
     })
     reportStatus.value = outputPath
   } catch (event) {

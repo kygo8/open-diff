@@ -41,11 +41,11 @@ describe('peek panel densify', () => {
 
 describe('options dialog densify', () => {
   it('uses a dense tree/content Options layout and keeps wired section ids', () => {
-    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*196px/)
-    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*8px/)
-    expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*180px/)
+    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*6px/)
+    expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*20px/)
     expect(settingsView).toMatch(
-      /\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?height:\s*22px/,
+      /\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?height:\s*20px/,
     )
     expect(settingsView).toMatch(/data-testid="options-content"/)
     expect(settingsView).toMatch(/data-testid="options-section-nav"/)
@@ -59,6 +59,11 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/'formats'/)
     expect(settingsView).toMatch(/'profiles'/)
     expect(settingsView).toMatch(/'reports'/)
+    expect(settingsView).toMatch(/data-testid="show-folder-legend"/)
+    expect(settingsView).toMatch(/data-testid="confirm-before-copy"/)
+    expect(settingsView).toMatch(/data-testid="confirm-before-move"/)
+    expect(settingsView).toMatch(/data-testid="confirm-before-sync-delete"/)
+    expect(settingsView).toMatch(/data-testid="create-backup-on-report-export"/)
   })
 })
 

@@ -1112,6 +1112,17 @@ export const esES: LanguagePack = {
     'ui.showChromeUtilitiesHint':
       'Botones de idioma y tema en la barra de título (ocultos en chrome denso de sesión única).',
     'ui.confirmBeforeQuit': 'Confirmar antes de salir',
+    'ui.showFolderLegendHint':
+      'Show the folder status legend under Folder Compare, Sync, and Merge.',
+    'ui.confirmBeforeCopy': 'Confirmar antes de copiar carpetas',
+    'ui.confirmBeforeMove': 'Confirmar antes de mover carpetas',
+    'ui.confirmBeforeSyncDelete': 'Confirmar antes de borrar en sync',
+    'ui.confirmBeforeSyncDeleteHint': 'Ask before Sync Now when the plan includes delete actions.',
+    'ui.createBackupOnReportExport': 'Create backup files when exporting reports',
+    'ui.createBackupOnReportExportHint':
+      'When a report path already exists, keep numbered .bak copies using Backup retention.',
+    'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
+    'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.confirmQuitMessage': '¿Salir de Open Diff?',
     'ui.toOutput': 'A la salida',
     'ui.folderMergeRulesHint':

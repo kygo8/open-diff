@@ -707,6 +707,19 @@ async function runSync(): Promise<void> {
     acceptSyncPlan()
   }
 
+  const deleteCount = previewRows.value.filter(
+    (row) => row.overrideAction === 'deleteLeft' || row.overrideAction === 'deleteRight',
+  ).length
+
+  if (deleteCount > 0 && settings.confirmBeforeSyncDelete) {
+    // eslint-disable-next-line no-alert -- Options Confirmations sync-delete gate
+    const accepted = window.confirm(t('ui.confirmBeforeSyncDeleteHint'))
+
+    if (!accepted) {
+      return
+    }
+  }
+
   syncRunning.value = true
   syncRunError.value = undefined
 
@@ -1021,7 +1034,8 @@ async function exportFolderSyncReport(): Promise<void> {
     await saveTextFile({
       path: reportPath,
       text: payload,
-      createBackup: false,
+      createBackup: settings.createBackupOnReportExport,
+      backupRetention: settings.backupRetentionCount,
     })
     reportStatus.value = reportPath
     reportError.value = ''

@@ -398,7 +398,7 @@ describe('SettingsView', () => {
     expect(settings.archiveExtensions).toEqual(['.rar', '.zip'])
   })
 
-  it('persists Appearance sidebar, Toolbars icons, Backup overwrite confirm, and Tweaks dirty-tab confirm', async () => {
+  it('persists Appearance sidebar, Toolbars icons, Backup overwrite confirm, and Confirmations dirty-tab confirm', async () => {
     const wrapper = mount(SettingsView)
     const settings = useSettingsStore()
 
@@ -415,12 +415,12 @@ describe('SettingsView', () => {
     await wrapper.find('[data-testid="confirm-before-overwrite-save"]').setValue(true)
     expect(settings.confirmBeforeOverwriteSave).toBe(true)
 
-    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
+    await wrapper.find('[data-testid="options-section-confirmations"]').trigger('click')
     await wrapper.find('[data-testid="confirm-before-close-dirty-tab"]').setValue(false)
     expect(settings.confirmBeforeCloseDirtyTab).toBe(false)
   })
 
-  it('persists Appearance chrome utilities and Tweaks confirm-before-quit', async () => {
+  it('persists Appearance chrome utilities/legend and Confirmations quit/copy/move leftovers', async () => {
     const wrapper = mountSettingsView()
     const settings = useSettingsStore()
 
@@ -428,11 +428,25 @@ describe('SettingsView', () => {
     expect(wrapper.find('[data-testid="show-chrome-utilities"]').exists()).toBe(true)
     await wrapper.find('[data-testid="show-chrome-utilities"]').setValue(false)
     expect(settings.showChromeUtilities).toBe(false)
+    expect(wrapper.find('[data-testid="show-folder-legend"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="show-folder-legend"]').setValue(true)
+    expect(settings.showFolderLegend).toBe(true)
 
-    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
+    await wrapper.find('[data-testid="options-section-backup"]').trigger('click')
+    expect(wrapper.find('[data-testid="create-backup-on-report-export"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="create-backup-on-report-export"]').setValue(true)
+    expect(settings.createBackupOnReportExport).toBe(true)
+
+    await wrapper.find('[data-testid="options-section-confirmations"]').trigger('click')
     expect(wrapper.find('[data-testid="confirm-before-quit"]').exists()).toBe(true)
     await wrapper.find('[data-testid="confirm-before-quit"]').setValue(true)
     expect(settings.confirmBeforeQuit).toBe(true)
+    await wrapper.find('[data-testid="confirm-before-copy"]').setValue(false)
+    expect(settings.confirmBeforeCopy).toBe(false)
+    await wrapper.find('[data-testid="confirm-before-move"]').setValue(true)
+    expect(settings.confirmBeforeMove).toBe(true)
+    await wrapper.find('[data-testid="confirm-before-sync-delete"]').setValue(false)
+    expect(settings.confirmBeforeSyncDelete).toBe(false)
     wrapper.unmount()
   })
 })

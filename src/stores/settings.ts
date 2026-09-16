@@ -99,6 +99,10 @@ const showPrevDifferenceInToolbarStorageKey = 'open-diff-show-prev-difference-in
 const loadLastWorkspaceOnStartupStorageKey = 'open-diff-load-last-workspace-on-startup'
 const showChromeUtilitiesStorageKey = 'open-diff-show-chrome-utilities'
 const confirmBeforeQuitStorageKey = 'open-diff-confirm-before-quit'
+const confirmBeforeCopyStorageKey = 'open-diff-confirm-before-copy'
+const confirmBeforeMoveStorageKey = 'open-diff-confirm-before-move'
+const confirmBeforeSyncDeleteStorageKey = 'open-diff-confirm-before-sync-delete'
+const createBackupOnReportExportStorageKey = 'open-diff-create-backup-on-report-export'
 const fontFamilyIds = new Set<FontFamilyId>(['system', 'segoe', 'inter', 'noto', 'mono'])
 const shortcutScopes = new Set<ShortcutScope>(['global', 'text-compare'])
 const commandIds = new Set<string>(commandRegistry.map((command) => command.id))
@@ -154,6 +158,10 @@ export const useSettingsStore = defineStore('settings', () => {
   const loadLastWorkspaceOnStartup = ref(loadLoadLastWorkspaceOnStartup())
   const showChromeUtilities = ref(loadShowChromeUtilities())
   const confirmBeforeQuit = ref(loadConfirmBeforeQuit())
+  const confirmBeforeCopy = ref(loadConfirmBeforeCopy())
+  const confirmBeforeMove = ref(loadConfirmBeforeMove())
+  const confirmBeforeSyncDelete = ref(loadConfirmBeforeSyncDelete())
+  const createBackupOnReportExport = ref(loadCreateBackupOnReportExport())
 
   bindSystemThemeListener((prefersDark) => {
     systemPrefersDark.value = prefersDark
@@ -486,6 +494,38 @@ export const useSettingsStore = defineStore('settings', () => {
     { immediate: true, flush: 'sync' },
   )
 
+  watch(
+    confirmBeforeCopy,
+    (value) => {
+      localStorage.setItem(confirmBeforeCopyStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    confirmBeforeMove,
+    (value) => {
+      localStorage.setItem(confirmBeforeMoveStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    confirmBeforeSyncDelete,
+    (value) => {
+      localStorage.setItem(confirmBeforeSyncDeleteStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    createBackupOnReportExport,
+    (value) => {
+      localStorage.setItem(createBackupOnReportExportStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
   function toggleTheme(): void {
     theme.value = resolvedTheme.value === 'dark' ? 'light' : 'dark'
   }
@@ -736,6 +776,22 @@ export const useSettingsStore = defineStore('settings', () => {
     confirmBeforeQuit.value = value
   }
 
+  function setConfirmBeforeCopy(value: boolean): void {
+    confirmBeforeCopy.value = value
+  }
+
+  function setConfirmBeforeMove(value: boolean): void {
+    confirmBeforeMove.value = value
+  }
+
+  function setConfirmBeforeSyncDelete(value: boolean): void {
+    confirmBeforeSyncDelete.value = value
+  }
+
+  function setCreateBackupOnReportExport(value: boolean): void {
+    createBackupOnReportExport.value = value
+  }
+
   function exportSettingsPackage(): SettingsPackage {
     return {
       kind: settingsPackageKind,
@@ -780,6 +836,10 @@ export const useSettingsStore = defineStore('settings', () => {
       loadLastWorkspaceOnStartup: loadLastWorkspaceOnStartup.value,
       showChromeUtilities: showChromeUtilities.value,
       confirmBeforeQuit: confirmBeforeQuit.value,
+      confirmBeforeCopy: confirmBeforeCopy.value,
+      confirmBeforeMove: confirmBeforeMove.value,
+      confirmBeforeSyncDelete: confirmBeforeSyncDelete.value,
+      createBackupOnReportExport: createBackupOnReportExport.value,
     }
   }
 
@@ -920,6 +980,22 @@ export const useSettingsStore = defineStore('settings', () => {
     setConfirmBeforeQuit(
       typeof packageValue.confirmBeforeQuit === 'boolean' ? packageValue.confirmBeforeQuit : false,
     )
+    setConfirmBeforeCopy(
+      typeof packageValue.confirmBeforeCopy === 'boolean' ? packageValue.confirmBeforeCopy : true,
+    )
+    setConfirmBeforeMove(
+      typeof packageValue.confirmBeforeMove === 'boolean' ? packageValue.confirmBeforeMove : false,
+    )
+    setConfirmBeforeSyncDelete(
+      typeof packageValue.confirmBeforeSyncDelete === 'boolean'
+        ? packageValue.confirmBeforeSyncDelete
+        : true,
+    )
+    setCreateBackupOnReportExport(
+      typeof packageValue.createBackupOnReportExport === 'boolean'
+        ? packageValue.createBackupOnReportExport
+        : false,
+    )
 
     return true
   }
@@ -965,6 +1041,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setLoadLastWorkspaceOnStartup(false)
     setShowChromeUtilities(true)
     setConfirmBeforeQuit(false)
+    setConfirmBeforeCopy(true)
+    setConfirmBeforeMove(false)
+    setConfirmBeforeSyncDelete(true)
+    setCreateBackupOnReportExport(false)
   }
 
   return {
@@ -1009,6 +1089,10 @@ export const useSettingsStore = defineStore('settings', () => {
     loadLastWorkspaceOnStartup,
     showChromeUtilities,
     confirmBeforeQuit,
+    confirmBeforeCopy,
+    confirmBeforeMove,
+    confirmBeforeSyncDelete,
+    createBackupOnReportExport,
     toggleTheme,
     setTheme,
     setLocale,
@@ -1054,6 +1138,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setLoadLastWorkspaceOnStartup,
     setShowChromeUtilities,
     setConfirmBeforeQuit,
+    setConfirmBeforeCopy,
+    setConfirmBeforeMove,
+    setConfirmBeforeSyncDelete,
+    setCreateBackupOnReportExport,
     exportSettingsPackage,
     importSettingsPackage,
     restoreFactoryDefaults,
@@ -1567,6 +1655,46 @@ function loadShowChromeUtilities(): boolean {
 
 function loadConfirmBeforeQuit(): boolean {
   const stored = localStorage.getItem(confirmBeforeQuitStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadConfirmBeforeCopy(): boolean {
+  const stored = localStorage.getItem(confirmBeforeCopyStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadConfirmBeforeMove(): boolean {
+  const stored = localStorage.getItem(confirmBeforeMoveStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadConfirmBeforeSyncDelete(): boolean {
+  const stored = localStorage.getItem(confirmBeforeSyncDeleteStorageKey)
+
+  if (stored === null) {
+    return true
+  }
+
+  return stored === '1'
+}
+
+function loadCreateBackupOnReportExport(): boolean {
+  const stored = localStorage.getItem(createBackupOnReportExportStorageKey)
 
   if (stored === null) {
     return false

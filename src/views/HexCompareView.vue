@@ -782,7 +782,8 @@ async function exportHexReport(): Promise<void> {
     await saveTextFile({
       path: outputPath,
       text: payload,
-      createBackup: false,
+      createBackup: settings.createBackupOnReportExport,
+      backupRetention: settings.backupRetentionCount,
     })
     reportStatus.value = outputPath
   } catch (event) {

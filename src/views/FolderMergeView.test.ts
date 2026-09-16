@@ -430,6 +430,7 @@ describe('FolderMergeView', () => {
       path: 'D:/workspace/merge/folder-merge.txt',
       text: payload,
       createBackup: false,
+      backupRetention: 1,
     })
     expect(wrapper.find('[data-testid="folder-merge-report-status"]').text()).toBe(
       'D:/workspace/merge/folder-merge.txt',

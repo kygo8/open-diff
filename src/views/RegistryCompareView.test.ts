@@ -269,6 +269,7 @@ describe('RegistryCompareView', () => {
       path: 'C:/drop/registry-compare.txt',
       text: payload,
       createBackup: false,
+      backupRetention: 1,
     })
     expect(wrapper.find('[data-testid="registry-report-status"]').text()).toBe(
       'C:/drop/registry-compare.txt',

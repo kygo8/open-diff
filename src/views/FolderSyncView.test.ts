@@ -940,4 +940,64 @@ describe('FolderSyncView', () => {
     expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').exists()).toBe(false)
     expect(executeFolderSync).toHaveBeenCalled()
   })
+
+  it('shows per-row execute status on the preview table', async () => {
+    vi.mocked(executeFolderSync).mockResolvedValueOnce({
+      name: 'Mirror to Right',
+      leftRoot: 'D:/deploy/package',
+      rightRoot: 'D:/deploy/prod',
+      strategy: 'mirrorRight',
+      total: 2,
+      succeeded: 1,
+      failed: 1,
+      cancelled: 0,
+      logs: [
+        {
+          relativePath: 'package/app.exe',
+          action: 'copyLeftToRight',
+          sourcePath: 'D:/deploy/package/package/app.exe',
+          targetPath: 'D:/deploy/prod/package/app.exe',
+          status: 'succeeded',
+        },
+        {
+          relativePath: 'prod/old.dll',
+          action: 'delete',
+          targetPath: 'D:/deploy/prod/prod/old.dll',
+          status: 'failed',
+          error: 'target locked',
+        },
+      ],
+    })
+
+    const settings = useSettingsStore()
+
+    settings.setConfirmBeforeSyncOverwrite(false)
+    settings.setConfirmBeforeSyncDelete(false)
+
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="sync-row-status-copy-app"]').text()).toBe('—')
+    expect(wrapper.find('[data-testid="sync-row-status-delete-old"]').text()).toBe('—')
+
+    await wrapper.find('[data-testid="folder-sync-run"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="sync-row-status-copy-app"]').text()).toBe('succeeded')
+    expect(wrapper.find('[data-testid="sync-row-status-delete-old"]').text()).toBe('failed')
+  })
 })

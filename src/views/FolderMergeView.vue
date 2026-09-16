@@ -1184,6 +1184,10 @@ function folderMergeEntryKindLabel(kind: FolderMergeSide['kind']): string {
   return t(keys[kind])
 }
 
+function mergeRowExecutionStatus(row: FolderMergePlanRow): string {
+  return execution.value?.rows.find((item) => item.path === row.path)?.status ?? '—'
+}
+
 function folderMergeActionLabel(action: FolderMergePlanRow['action']): string {
   const keys: Record<FolderMergePlanRow['action'], string> = {
     'Copy left to output': 'merge.action.copyLeftToOutput',
@@ -2214,6 +2218,7 @@ watch(
             <span>{{ $t('ui.right') }}</span>
             <span>{{ $t('ui.action') }}</span>
             <span>{{ $t('ui.detail') }}</span>
+            <span>{{ $t('ui.status') }}</span>
           </div>
           <div
             v-for="row in visiblePlanRows"
@@ -2261,6 +2266,9 @@ watch(
               </select>
             </label>
             <span>{{ row.detail }}</span>
+            <span :data-testid="`folder-merge-row-status-${row.id}`">{{
+              mergeRowExecutionStatus(row)
+            }}</span>
           </div>
         </div>
       </section>
@@ -2697,8 +2705,8 @@ h1 {
   display: grid;
   grid-template-columns:
     44px minmax(150px, 0.75fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(170px, 1fr)
-    minmax(180px, 0.8fr) minmax(220px, 1fr);
-  min-width: 1124px;
+    minmax(180px, 0.8fr) minmax(220px, 1fr) 88px;
+  min-width: 1212px;
   border-bottom: 1px solid var(--app-border);
   color: var(--app-text);
   font-size: 11px;

@@ -1381,13 +1381,13 @@ async function runPictureCompare(): Promise<void> {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 8px;
 }
 
 .eyebrow {
-  margin: 0 0 6px;
+  margin: 0 0 2px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -1399,41 +1399,43 @@ h2 {
 }
 
 h1 {
-  font-size: 22px;
-  line-height: 1.2;
+  font-size: 13px;
+  line-height: 16px;
 }
 
 h2 {
-  font-size: 13px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .picture-summary {
   display: grid;
-  min-width: 112px;
-  padding: 10px 12px;
+  min-width: 72px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   text-align: right;
 }
 
 .picture-summary strong {
-  font-size: 18px;
-  line-height: 1;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .picture-summary span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .picture-path-panel,
 .picture-stat-grid {
   display: grid;
-  gap: 4px;
-  padding: 4px 6px;
+  gap: 2px 4px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1457,25 +1459,25 @@ h2 {
 }
 
 .picture-path-panel input {
-  min-height: 32px;
-  padding: 0 8px;
+  min-height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .picture-path-panel button {
-  min-height: 32px;
-  padding: 0 12px;
+  min-height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .picture-path-panel button:hover {
@@ -1827,34 +1829,25 @@ h2 {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 360px;
+  min-height: 0;
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: 0;
-  background:
-    linear-gradient(45deg, rgb(148 163 184 / 0.16) 25%, transparent 25%),
-    linear-gradient(-45deg, rgb(148 163 184 / 0.16) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgb(148 163 184 / 0.16) 75%),
-    linear-gradient(-45deg, transparent 75%, rgb(148 163 184 / 0.16) 75%), var(--app-bg);
-  background-position:
-    0 0,
-    0 12px,
-    12px -12px,
-    -12px 0;
-  background-size: 24px 24px;
+  background: var(--app-bg);
 }
 
 .picture-image {
   position: relative;
   isolation: isolate;
-  width: min(78%, 420px);
-  aspect-ratio: 4 / 3;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
   overflow: hidden;
   transform-origin: center;
-  border: 1px solid rgb(15 23 42 / 0.18);
-  border-radius: 6px;
-  box-shadow: 0 16px 42px rgb(15 23 42 / 0.16);
-  background: rgb(15 23 42 / 0.06);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--app-bg);
 }
 
 .picture-image img {
@@ -1862,33 +1855,6 @@ h2 {
   width: 100%;
   height: 100%;
   object-fit: contain;
-}
-
-.picture-marker {
-  position: absolute;
-  display: block;
-  border: 2px solid rgb(255 255 255 / 0.78);
-  border-radius: 999px;
-  box-shadow: 0 0 0 1px rgb(15 23 42 / 0.18);
-}
-
-.marker-a {
-  top: 18%;
-  left: 18%;
-  width: 24%;
-  height: 24%;
-}
-
-.marker-b {
-  right: 18%;
-  bottom: 20%;
-  width: 18%;
-  height: 18%;
-}
-
-.marker-shifted {
-  right: 12%;
-  bottom: 24%;
 }
 
 .picture-diff-overlay {
@@ -1899,12 +1865,10 @@ h2 {
 
 .picture-diff-region {
   position: absolute;
-  border: 2px solid rgb(255 255 255 / 0.9);
-  border-radius: 6px;
-  background: rgb(217 70 70 / 0.34);
-  box-shadow:
-    0 0 0 1px rgb(127 29 29 / 0.5),
-    0 0 22px rgb(217 70 70 / 0.42);
+  border: 1px solid rgb(217 70 70 / 0.9);
+  border-radius: 0;
+  background: rgb(217 70 70 / 0.28);
+  box-shadow: none;
 }
 
 @media (width <= 860px) {
@@ -1916,7 +1880,7 @@ h2 {
   }
 
   .picture-canvas-frame {
-    min-height: 260px;
+    min-height: 0;
   }
 }
 

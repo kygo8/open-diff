@@ -66,4 +66,22 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/\.picture-options-panel\s*\{[\s\S]*?min-height:\s*20px/)
     expect(pictureView).toMatch(/\.picture-report-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
   })
+
+  it('keeps Picture canvas and summary chrome flat toward the pane rhythm', () => {
+    expect(css).toMatch(/\.picture-compare-view \.picture-summary\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-summary\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-canvas-frame\s*\{[\s\S]*?min-height:\s*0/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-image\s*\{[\s\S]*?box-shadow:\s*none/)
+    expect(css).toMatch(
+      /\.picture-compare-view \.picture-diff-region\s*\{[\s\S]*?border-radius:\s*0/,
+    )
+
+    expect(pictureView).toMatch(/\.picture-summary\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(pictureView).toMatch(/\.picture-summary\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(pictureView).toMatch(/\.picture-image\s*\{[\s\S]*?box-shadow:\s*none/)
+    expect(pictureView).toMatch(/\.picture-image\s*\{[\s\S]*?width:\s*100%/)
+    expect(pictureView).toMatch(/\.picture-diff-region\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(pictureView).not.toMatch(/min\(78%, 420px\)/)
+    expect(pictureView).not.toMatch(/box-shadow:\s*0 16px 42px/)
+  })
 })

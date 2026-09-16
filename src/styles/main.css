@@ -2067,8 +2067,34 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
-.picture-compare-view .picture-canvas-frame {
+.picture-compare-view .picture-summary {
+  min-width: 72px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
+}
+
+.picture-compare-view .picture-summary strong {
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+
+.picture-compare-view .picture-canvas-frame {
+  min-height: 0 !important;
+  border-radius: 0 !important;
+  background: var(--app-bg) !important;
+}
+
+.picture-compare-view .picture-image {
+  width: 100% !important;
+  min-height: 180px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.picture-compare-view .picture-diff-region {
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .picture-compare-view .picture-report-row {

@@ -1284,6 +1284,10 @@ export const deDE: LanguagePack = {
     'ui.synchronize': 'Synchronisieren',
     'ui.explorer': 'Explorer',
     'ui.fileCompareReport': 'Dateivergleichsbericht…',
+    'ui.reportFormat': 'Berichtsformat',
+    'ui.reportScope': 'Berichtsumfang',
+    'ui.reportScopeFull': 'Vollständiger Vergleich',
+    'ui.reportScopeSelection': 'Auswahl',
     'status.compareContentsNeedsFile': 'Wählen Sie eine Datei zum Inhaltsvergleich.',
     'status.compareContentsNoRoute':
       'Für diese Auswahl ist keine Inhaltsvergleichssitzung verfügbar.',
@@ -1291,6 +1295,8 @@ export const deDE: LanguagePack = {
     'status.explorerRevealed': '{path} im Dateimanager angezeigt',
     'status.explorerOpenedParent': 'Übergeordneten Ordner {path} im Dateimanager geöffnet',
     'status.selectionReportReady': 'Auswahlbericht bereit ({count} Einträge)',
+    'status.fileCompareReportNeedsCompare':
+      'Führen Sie zuerst einen Ordnervergleich aus, bevor Sie einen Dateivergleichsbericht erstellen.',
     'status.ignoredMarked': '{path} als ignoriert markiert',
     'status.ignoredUnmarked': 'Ignoriert-Markierung für {path} entfernt',
   },

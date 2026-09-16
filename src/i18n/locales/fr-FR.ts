@@ -1285,6 +1285,10 @@ export const frFR: LanguagePack = {
     'ui.synchronize': 'Synchroniser',
     'ui.explorer': 'Explorateur',
     'ui.fileCompareReport': 'Rapport de comparaison de fichiers…',
+    'ui.reportFormat': 'Format du rapport',
+    'ui.reportScope': 'Portée du rapport',
+    'ui.reportScopeFull': 'Comparaison complète',
+    'ui.reportScopeSelection': 'Sélection',
     'status.compareContentsNeedsFile': 'Sélectionnez un fichier pour comparer le contenu.',
     'status.compareContentsNoRoute':
       'Aucune session de comparaison de contenu pour cette sélection.',
@@ -1292,6 +1296,8 @@ export const frFR: LanguagePack = {
     'status.explorerRevealed': '{path} affiché dans le gestionnaire de fichiers',
     'status.explorerOpenedParent': 'Dossier parent {path} ouvert dans le gestionnaire de fichiers',
     'status.selectionReportReady': 'Rapport de sélection prêt ({count} éléments)',
+    'status.fileCompareReportNeedsCompare':
+      'Exécutez une comparaison de dossiers avant de générer un rapport de comparaison de fichiers.',
     'status.ignoredMarked': '{path} marqué comme ignoré',
     'status.ignoredUnmarked': 'Marque ignorée effacée pour {path}',
   },

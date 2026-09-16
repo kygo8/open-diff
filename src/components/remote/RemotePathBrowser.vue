@@ -234,20 +234,19 @@ function normalizeBrowsePath(path: string | undefined): string {
   z-index: 40;
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: 4px;
   background: rgb(15 23 42 / 0.45);
 }
 
 .remote-path-browser {
   display: grid;
-  gap: 10px;
+  gap: 4px;
   width: min(640px, 100%);
   max-height: min(80vh, 720px);
-  padding: 14px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--app-surface);
-  box-shadow: 0 18px 44px rgb(15 23 42 / 0.2);
 }
 
 .browser-header,
@@ -256,7 +255,8 @@ function normalizeBrowsePath(path: string | undefined): string {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 4px;
+  min-height: 20px;
 }
 
 .browser-actions,
@@ -266,16 +266,16 @@ function normalizeBrowsePath(path: string | undefined): string {
 }
 
 .eyebrow {
-  margin: 0 0 4px;
+  margin: 0 0 2px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 12px;
   line-height: 1.25;
 }
 
@@ -283,9 +283,9 @@ h2 {
 .browser-status,
 .empty-state {
   margin: 0;
-  padding: 8px 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text-muted);
   font-size: 12px;
@@ -293,25 +293,26 @@ h2 {
 
 .entry-list {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   min-height: 180px;
   max-height: 360px;
-  padding: 4px;
+  padding: 2px;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-bg);
 }
 
 .entry-row {
   display: grid;
   justify-items: start;
-  gap: 2px;
+  gap: 0;
   width: 100%;
-  min-height: 44px;
-  padding: 8px 10px;
+  height: auto;
+  min-height: 20px;
+  padding: 2px 4px;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 0;
   background: transparent;
   color: var(--app-text);
   font: inherit;
@@ -331,10 +332,11 @@ h2 {
 }
 
 button {
-  min-height: 30px;
-  padding: 0 10px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;

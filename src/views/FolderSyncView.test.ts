@@ -10,7 +10,7 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
 }))
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
-import { openPathExternal } from '@/api/integration'
+import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { createFolderEntry, saveTextFile } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
@@ -28,6 +28,12 @@ vi.mock('@/api/integration', () => ({
   openPathExternal: vi
     .fn()
     .mockResolvedValue({ path: 'D:/deploy/package/package/app.exe', launched: true }),
+  revealPathInOs: vi.fn().mockResolvedValue({
+    path: 'D:/deploy/package/package/app.exe',
+    selected: true,
+    fallbackOpened: false,
+    launched: true,
+  }),
 }))
 
 vi.mock('@/api/sync', () => ({
@@ -555,6 +561,46 @@ describe('FolderSyncView', () => {
 
     useViewActionsStore().dispatch('toggle-log')
     await flushPromises()
+  })
+
+  it('wires Explorer reveal_path_in_os for the selected sync row', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+
+    const explorer = wrapper.find('[data-testid="reveal-sync-selected-in-explorer"]')
+
+    expect(explorer.exists()).toBe(true)
+    expect(explorer.attributes('disabled')).toBeDefined()
+
+    await wrapper.find('[data-testid="sync-row-copy-app"]').trigger('click')
+    expect(explorer.attributes('disabled')).toBeUndefined()
+
+    vi.mocked(revealPathInOs).mockClear()
+    await explorer.trigger('click')
+    await flushPromises()
+    expect(revealPathInOs).toHaveBeenCalledWith('D:/deploy/package/package/app.exe')
+
+    vi.mocked(revealPathInOs).mockClear()
+    useViewActionsStore().dispatch('select-all')
+    await flushPromises()
+    useViewActionsStore().dispatch('explorer')
+    await flushPromises()
+    expect(revealPathInOs).toHaveBeenCalledWith('D:/deploy/package/package/app.exe')
+    expect(wrapper.text()).toMatch(/Revealed|file manager/i)
   })
 
   it('wires Sync Actions Leave Alone / Copy / Delete overrides for selection', async () => {

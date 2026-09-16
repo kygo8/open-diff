@@ -1324,6 +1324,15 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     }
   }
 
+  if (command.id === 'actions.explorer') {
+    const folderish =
+      route.path.includes('/compare/folder') ||
+      route.path.includes('/sync') ||
+      route.path.includes('/merge')
+
+    return { ...command, enabled: command.enabled && folderish }
+  }
+
   if (
     command.id === 'actions.copyToSide' ||
     command.id === 'actions.moveToSide' ||
@@ -1334,7 +1343,6 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     command.id === 'actions.copyFilename' ||
     command.id === 'actions.compareContents' ||
     command.id === 'actions.synchronize' ||
-    command.id === 'actions.explorer' ||
     command.id === 'actions.ignored' ||
     command.id === 'actions.alignWith' ||
     command.id === 'actions.breakAlignment' ||

@@ -12,6 +12,7 @@ import {
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import type {
   FolderMergeConflict,
+  FolderMergeEntryKind,
   FolderMergeExecutionResponse,
   FolderMergePlanResponse,
   FolderMergePlanRow,
@@ -52,7 +53,8 @@ import {
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
 import { createChildCompareLaunch } from '@/app/childSession'
-import { openPathExternal } from '@/api/integration'
+import { openPathExternal, revealPathInOs } from '@/api/integration'
+import { explorerRevealPath, explorerSelectTargetPath } from '@/app/folderCompareExtraActions'
 
 const leftPath = ref('')
 const newFolderPanelOpen = ref(false)
@@ -400,6 +402,35 @@ function openMergeChildCompare(kind: 'open' | 'quick'): void {
   void router.push(launch.route)
 }
 
+function mergeExplorerTarget(
+  row: FolderMergePlanRow,
+): { path: string; kind: 'file' | 'directory' } | undefined {
+  let path: string | undefined
+  let entryKind: FolderMergeEntryKind | undefined
+
+  if (row.left.kind !== 'Missing' && leftPath.value) {
+    path = joinMergeSidePath(leftPath.value, row.path)
+    entryKind = row.left.kind
+  } else if (row.right.kind !== 'Missing' && rightPath.value) {
+    path = joinMergeSidePath(rightPath.value, row.path)
+    entryKind = row.right.kind
+  } else if (row.base.kind !== 'Missing' && basePath.value) {
+    path = joinMergeSidePath(basePath.value, row.path)
+    entryKind = row.base.kind
+  } else if (basePath.value) {
+    path = joinMergeSidePath(basePath.value, row.path)
+    entryKind = row.base.kind === 'Missing' ? undefined : row.base.kind
+  }
+
+  if (!path) {
+    return undefined
+  }
+
+  const kind: 'file' | 'directory' = entryKind === 'Directory' ? 'directory' : 'file'
+
+  return { path, kind }
+}
+
 async function openMergeSelectedWithAssociatedApplication(): Promise<void> {
   const row = mergeSelectedRow()
 
@@ -407,15 +438,8 @@ async function openMergeSelectedWithAssociatedApplication(): Promise<void> {
     return
   }
 
-  let path: string | undefined
-
-  if (row.left.kind !== 'Missing' && leftPath.value) {
-    path = joinMergeSidePath(leftPath.value, row.path)
-  } else if (row.right.kind !== 'Missing' && rightPath.value) {
-    path = joinMergeSidePath(rightPath.value, row.path)
-  } else if (basePath.value) {
-    path = joinMergeSidePath(basePath.value, row.path)
-  }
+  const target = mergeExplorerTarget(row)
+  const path = target?.path
 
   if (!path) {
     return
@@ -426,6 +450,41 @@ async function openMergeSelectedWithAssociatedApplication(): Promise<void> {
     lastSelectionAction.value = `${t('ui.openWith')} -> ${path}`
   } catch (error) {
     mergeOpenError.value = error instanceof Error ? error.message : String(error)
+  }
+}
+
+const mergeExplorerEntryPath = computed(() => {
+  const row = mergeSelectedRow()
+
+  return row ? mergeExplorerTarget(row)?.path : undefined
+})
+
+async function revealMergeSelectedInExplorer(): Promise<void> {
+  const row = mergeSelectedRow()
+  const target = row ? mergeExplorerTarget(row) : undefined
+
+  if (!target) {
+    return
+  }
+
+  const selectPath = explorerSelectTargetPath(target.path)
+  const fallbackPath = explorerRevealPath(target.path, target.kind)
+
+  try {
+    const result = await revealPathInOs(selectPath)
+    const revealedPath = result.selected ? selectPath : result.path || fallbackPath
+
+    lastSelectionAction.value = result.selected
+      ? t('status.explorerRevealed', { path: selectPath })
+      : t('status.explorerOpenedParent', { path: revealedPath })
+  } catch {
+    try {
+      await openPathExternal(fallbackPath)
+      lastSelectionAction.value = t('status.explorerOpenedParent', { path: fallbackPath })
+    } catch (fallbackError) {
+      mergeOpenError.value =
+        fallbackError instanceof Error ? fallbackError.message : String(fallbackError)
+    }
   }
 }
 
@@ -1081,6 +1140,9 @@ watch(
       case 'open-with':
         void openMergeSelectedWithAssociatedApplication()
         break
+      case 'explorer':
+        void revealMergeSelectedInExplorer()
+        break
       case 'quick-compare':
         openMergeChildCompare('quick')
         break
@@ -1111,7 +1173,6 @@ watch(
       case 'rename-selected':
       case 'compare-contents':
       case 'synchronize':
-      case 'explorer':
       case 'ignored':
       case 'align-with':
       case 'break-alignment':
@@ -1521,6 +1582,14 @@ watch(
         <header>
           <strong>{{ $t('ui.mergePlan') }}</strong>
           <span>{{ outputPath }}</span>
+          <button
+            type="button"
+            data-testid="reveal-merge-selected-in-explorer"
+            :disabled="!mergeExplorerEntryPath"
+            @click="revealMergeSelectedInExplorer"
+          >
+            {{ $t('ui.explorer') }}
+          </button>
         </header>
         <div class="merge-plan-table">
           <div class="merge-plan-row merge-plan-head">

@@ -1891,7 +1891,9 @@ watch(
             <span>{{ row.sourcePath ?? '--' }}</span>
             <span>{{ row.targetPath ?? '--' }}</span>
             <span>{{ row.detail }}</span>
-            <span :data-testid="`sync-row-status-${row.id}`">{{ syncRowExecutionStatus(row) }}</span>
+            <span :data-testid="`sync-row-status-${row.id}`">{{
+              syncRowExecutionStatus(row)
+            }}</span>
           </div>
         </div>
       </section>

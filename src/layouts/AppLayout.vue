@@ -2630,38 +2630,60 @@ html[data-show-sidebar='1'] .sidebar {
   z-index: 80;
   display: grid;
   place-items: center;
+  padding: 4px;
   background: rgb(15 23 42 / 0.45);
 }
 
 .about-dialog {
+  display: grid;
+  gap: 4px;
   min-width: min(420px, 92vw);
-  padding: 1rem 1.25rem;
-  border-radius: 10px;
+  padding: 4px 6px;
+  border: 1px solid var(--app-border);
+  border-radius: 0;
   background: var(--panel, #ffffff);
   color: var(--text, #0f172a);
-  box-shadow: 0 18px 50px rgb(15 23 42 / 0.25);
+}
+
+.about-dialog header,
+.about-dialog footer {
+  display: flex;
+  align-items: center;
+  min-height: 20px;
 }
 
 .about-dialog header {
-  margin-bottom: 0.75rem;
+  margin: 0;
 }
 
 .about-dialog footer {
-  margin-top: 1rem;
-  display: flex;
   justify-content: flex-end;
+}
+
+.about-dialog p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.about-dialog button {
+  height: 18px;
+  padding: 0 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 0;
 }
 
 .help-status {
   position: fixed;
-  right: 1rem;
-  bottom: 2.5rem;
+  right: 8px;
+  bottom: 28px;
   z-index: 70;
   max-width: min(420px, 90vw);
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
+  margin: 0;
+  padding: 2px 4px;
+  border: 1px solid var(--app-border);
+  border-radius: 0;
   background: var(--panel, #ffffff);
-  box-shadow: 0 8px 24px rgb(15 23 42 / 0.18);
+  font-size: 11px;
 }
 
 .app-shell-dense-chrome {

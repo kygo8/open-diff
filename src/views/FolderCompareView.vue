@@ -52,6 +52,11 @@ import {
   type FolderTransferSide,
 } from '@/app/folderSideTransfer'
 import {
+  createFolderSyncHandoffLaunch,
+  explorerRevealPath,
+  toggleIgnoredRowId,
+} from '@/app/folderCompareExtraActions'
+import {
   aggregateFolderSelection,
   formatFolderSelectionLabel,
   joinStatusFooterParts,
@@ -295,6 +300,7 @@ const lastFileOperationAction = ref<string>()
 const selectedReadonly = ref(false)
 const lastMetadataAction = ref<string>()
 const excludedRowIds = ref<Set<string>>(new Set())
+const ignoredRelativePaths = ref<Set<string>>(new Set())
 const lastSelectionAction = ref<string>()
 const lastAlignmentAction = ref<string>()
 const currentDifferenceIndex = ref(-1)
@@ -424,7 +430,7 @@ async function refreshRootFreeSpace(): Promise<void> {
 const summary = computed(() => ({
   total: rows.value.length,
   different: rows.value.filter((row) => row.status === 'Different').length,
-  minor: rows.value.filter((row) => row.unimportant === true).length,
+  minor: rows.value.filter((row) => rowLooksUnimportant(row)).length,
   orphans: rows.value.filter((row) => row.status === 'Left only' || row.status === 'Right only')
     .length,
 }))
@@ -494,7 +500,7 @@ const visibleRows = computed(() =>
       !excludedRowIds.value.has(row.id) &&
       (visibleStatuses.value.has(row.status) || showSuppressedFilters.value) &&
       (!filesOnlyFilter.value || row.kind === 'file') &&
-      (!minorOnly.value || row.unimportant === true),
+      (!minorOnly.value || rowLooksUnimportant(row)),
   ),
 )
 const virtualStartIndex = computed(() =>
@@ -585,9 +591,17 @@ function folderStatusLabel(status: FolderStatus): string {
   return t(keys[status])
 }
 
+function rowLooksUnimportant(row: FolderTreeRow): boolean {
+  return row.unimportant === true || ignoredRelativePaths.value.has(row.relativePath)
+}
+
 function folderRowStatusLabel(row: FolderTreeRow): string {
-  if (row.unimportant && row.status === 'Different') {
+  if (rowLooksUnimportant(row) && row.status === 'Different') {
     return t('ui.minor')
+  }
+
+  if (ignoredRelativePaths.value.has(row.relativePath)) {
+    return t('ui.ignored')
   }
 
   return folderStatusLabel(row.status)
@@ -793,6 +807,27 @@ watch(
         break
       case 'copy-filename':
         void copyRowPath()
+        break
+      case 'compare-contents':
+        compareContentsSelected()
+        break
+      case 'synchronize':
+        synchronizeFromFolderCompare()
+        break
+      case 'explorer':
+        void revealSelectedInExplorer()
+        break
+      case 'ignored':
+        toggleIgnoredSelected()
+        break
+      case 'align-with':
+        alignWithFromAction()
+        break
+      case 'break-alignment':
+        breakSelectedAlignment()
+        break
+      case 'file-compare-report':
+        void exportFolderReport('html')
         break
       case 'toggle-minor':
         showMinorFolderDifferences()
@@ -1237,10 +1272,10 @@ watchEffect(() => {
   const hasRows = rows.value.length > 0
   const differentRows = rows.value.filter((row) => row.status === 'Different')
   const importantDifferenceCount = hasRows
-    ? differentRows.filter((row) => row.unimportant !== true).length
+    ? differentRows.filter((row) => !rowLooksUnimportant(row)).length
     : null
   const unimportantDifferenceCount = hasRows
-    ? differentRows.filter((row) => row.unimportant === true).length
+    ? differentRows.filter((row) => rowLooksUnimportant(row)).length
     : null
 
   statusBar.reportStatus({
@@ -2115,6 +2150,102 @@ function excludeSelectedRow(): void {
   excludedRowIds.value = new Set([...excludedRowIds.value, row.id])
   selectedRowId.value = undefined
   lastSelectionAction.value = t('status.excludedPath', { path: displayName(row) })
+}
+
+function compareContentsSelected(): void {
+  const row = selectedRow.value
+
+  if (row?.kind !== 'file') {
+    lastCompareAction.value = t('status.compareContentsNeedsFile')
+
+    return
+  }
+
+  const leftPath = row.leftPath ?? folderSidePath(leftRoot.value, row.relativePath)
+  const rightPath = row.rightPath ?? folderSidePath(rightRoot.value, row.relativePath)
+  const launch = createChildCompareLaunch(leftPath, rightPath)
+
+  if (!launch) {
+    lastCompareAction.value = t('status.compareContentsNoRoute')
+
+    return
+  }
+
+  if (selectedFilePath.value) {
+    recordOpenAction(createDefaultOpenAction(selectedFilePath.value))
+  }
+
+  lastCompareAction.value = `${t('ui.compareContents')} -> ${launch.route}`
+  sessionLaunch.setPendingLaunch(launch)
+  tabs.openTab({ title: launch.title, route: launch.route, dirty: false })
+  void router.push(launch.route)
+}
+
+function synchronizeFromFolderCompare(): void {
+  const launch = createFolderSyncHandoffLaunch(leftRoot.value, rightRoot.value, t('ui.folderSync'))
+
+  if (!launch) {
+    lastCompareAction.value = t('status.synchronizeNeedsRoots')
+
+    return
+  }
+
+  lastCompareAction.value = `${t('ui.synchronize')} -> ${launch.route}`
+  sessionLaunch.setPendingLaunch(launch)
+  tabs.openTab({ title: launch.title, route: launch.route, dirty: false })
+  void router.push(launch.route)
+}
+
+async function revealSelectedInExplorer(): Promise<void> {
+  const row = selectedRow.value
+  const entryPath = selectedEntryPath.value
+
+  if (!row || !entryPath) {
+    return
+  }
+
+  const revealPath = explorerRevealPath(entryPath, row.kind)
+
+  try {
+    await openPathExternal(revealPath)
+    lastOpenAction.value = createDefaultOpenAction(revealPath)
+    lastSelectionAction.value = t('status.explorerRevealed', { path: revealPath })
+  } catch (error) {
+    folderCompareError.value = formatCompareError(error, t)
+  }
+}
+
+function toggleIgnoredSelected(): void {
+  const row = selectedRow.value
+
+  if (!row) {
+    return
+  }
+
+  const result = toggleIgnoredRowId(ignoredRelativePaths.value, row.relativePath)
+
+  ignoredRelativePaths.value = result.next
+  lastSelectionAction.value = result.marked
+    ? t('status.ignoredMarked', { path: displayName(row) })
+    : t('status.ignoredUnmarked', { path: displayName(row) })
+}
+
+function alignWithFromAction(): void {
+  const selected = selectedRow.value
+
+  if (!alignWithTargetId.value && selected) {
+    const candidate = alignWithCandidates.value.find(
+      (row) =>
+        (selected.status === 'Left only' && row.status === 'Right only') ||
+        (selected.status === 'Right only' && row.status === 'Left only'),
+    )
+
+    if (candidate) {
+      alignWithTargetId.value = candidate.id
+    }
+  }
+
+  alignSelectedWithTarget()
 }
 
 async function refreshSelectedRow(): Promise<void> {
@@ -3111,6 +3242,46 @@ onUnmounted(() => {
           <NButton
             size="small"
             secondary
+            data-testid="compare-contents-selected"
+            :disabled="!selectedFilePath"
+            @click="compareContentsSelected"
+            >{{ $t('ui.compareContents') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="synchronize-from-folder"
+            :disabled="!leftRoot || !rightRoot"
+            @click="synchronizeFromFolderCompare"
+            >{{ $t('ui.synchronize') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="reveal-selected-in-explorer"
+            :disabled="!selectedEntryPath"
+            @click="revealSelectedInExplorer"
+            >{{ $t('ui.explorer') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="toggle-ignored-selected"
+            :disabled="!selectedRowId"
+            @click="toggleIgnoredSelected"
+            >{{ $t('ui.ignored') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="file-compare-report"
+            :disabled="!leftRoot || !rightRoot"
+            @click="exportFolderReport('html')"
+            >{{ $t('ui.fileCompareReport') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
             data-testid="previous-folder-difference"
             :disabled="differenceRows.length === 0"
             @click="navigateFolderDifference('previous')"
@@ -3776,10 +3947,10 @@ onUnmounted(() => {
                   selected: selectedRowId === row.id,
                   checked: isRowChecked(row.id),
                   suppressed: isSuppressed(row),
-                  'status-unimportant': row.unimportant === true,
+                  'status-unimportant': rowLooksUnimportant(row),
                 },
               ]"
-              :data-unimportant="row.unimportant ? 'true' : undefined"
+              :data-unimportant="rowLooksUnimportant(row) ? 'true' : undefined"
               :style="{ gridTemplateColumns }"
               :data-row-id="row.id"
               data-testid="folder-row"

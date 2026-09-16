@@ -305,6 +305,7 @@ const appMenus: AppMenuDefinition[] = [
       'actions.open',
       'actions.openWith',
       'actions.quickCompare',
+      'actions.compareContents',
       'session.compare',
       'session.swap',
       'session.reload',
@@ -324,7 +325,13 @@ const appMenus: AppMenuDefinition[] = [
       'actions.newFolder',
       'actions.exclude',
       'actions.copyFilename',
+      'actions.ignored',
       'actions.refreshSelection',
+      'actions.fileCompareReport',
+      'actions.synchronize',
+      'actions.explorer',
+      'actions.alignWith',
+      'actions.breakAlignment',
       'report.save',
       'workspace.save',
     ],
@@ -1324,7 +1331,14 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     command.id === 'actions.moveToFolder' ||
     command.id === 'actions.rename' ||
     command.id === 'actions.delete' ||
-    command.id === 'actions.copyFilename'
+    command.id === 'actions.copyFilename' ||
+    command.id === 'actions.compareContents' ||
+    command.id === 'actions.synchronize' ||
+    command.id === 'actions.explorer' ||
+    command.id === 'actions.ignored' ||
+    command.id === 'actions.alignWith' ||
+    command.id === 'actions.breakAlignment' ||
+    command.id === 'actions.fileCompareReport'
   ) {
     return {
       ...command,

@@ -1109,6 +1109,13 @@ watch(
       case 'copy-to-folder':
       case 'move-to-folder':
       case 'rename-selected':
+      case 'compare-contents':
+      case 'synchronize':
+      case 'explorer':
+      case 'ignored':
+      case 'align-with':
+      case 'break-alignment':
+      case 'file-compare-report':
       case 'copy-filename':
         break
       case 'swap':

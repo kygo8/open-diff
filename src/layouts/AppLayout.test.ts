@@ -1019,6 +1019,15 @@ describe('global menu depth parity', () => {
     expect(wrapper.find('[data-testid="menu-command-actions.rename"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.delete"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.copyFilename"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.compareContents"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.synchronize"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.explorer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.ignored"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.alignWith"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.breakAlignment"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.fileCompareReport"]').exists()).toBe(
+      true,
+    )
     expect(
       wrapper.find('[data-testid="menu-command-actions.newFolder"]').attributes('disabled'),
     ).toBeUndefined()

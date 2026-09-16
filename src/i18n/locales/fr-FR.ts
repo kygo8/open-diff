@@ -1215,5 +1215,16 @@ export const frFR: LanguagePack = {
     'ui.copyToFolder': 'Copier vers un dossier...',
     'ui.moveToFolder': 'Déplacer vers un dossier...',
     'ui.copyFilename': 'Copier le nom de fichier',
+    'ui.compareContents': 'Comparer le contenu…',
+    'ui.synchronize': 'Synchroniser',
+    'ui.explorer': 'Explorateur',
+    'ui.fileCompareReport': 'Rapport de comparaison de fichiers…',
+    'status.compareContentsNeedsFile': 'Sélectionnez un fichier pour comparer le contenu.',
+    'status.compareContentsNoRoute':
+      'Aucune session de comparaison de contenu pour cette sélection.',
+    'status.synchronizeNeedsRoots': 'Définissez les deux racines avant de synchroniser.',
+    'status.explorerRevealed': '{path} affiché dans le gestionnaire de fichiers',
+    'status.ignoredMarked': '{path} marqué comme ignoré',
+    'status.ignoredUnmarked': 'Marque ignorée effacée pour {path}',
   },
 }

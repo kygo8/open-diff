@@ -2031,9 +2031,9 @@ h1 {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 180px auto;
   align-items: end;
-  gap: 3px;
-  min-height: 26px;
-  padding: 3px 6px;
+  gap: 2px;
+  min-height: 22px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -2054,7 +2054,7 @@ h1 {
 .sync-settings select {
   width: 100%;
   height: 18px;
-  padding: 0 6px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);
@@ -2064,14 +2064,14 @@ h1 {
 
 .sync-setting-actions {
   display: flex;
-  gap: 4px;
+  gap: 3px;
 }
 
 .sync-preview,
 .sync-run-status {
   display: grid;
-  gap: 4px;
-  padding: 4px 6px;
+  gap: 2px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -2084,12 +2084,14 @@ h1 {
 
 .sync-preview header strong,
 .sync-run-status strong {
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .sync-preview header span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .sync-preview-table {
@@ -2106,7 +2108,7 @@ h1 {
     minmax(140px, 0.9fr);
   min-width: 960px;
   border-bottom: 1px solid var(--app-border);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .sync-row-overridden {
@@ -2117,15 +2119,15 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
-  padding: 4px 8px;
+  padding: 2px 6px;
   border-right: 1px solid var(--app-border);
 }
 
 .sync-reset-override {
-  height: 22px;
-  min-height: 22px;
+  height: 20px;
+  min-height: 20px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -2142,14 +2144,14 @@ h1 {
 .sync-preview-row label {
   display: grid;
   min-width: 0;
-  padding: 4px 8px;
+  padding: 2px 6px;
   border-right: 1px solid var(--app-border);
 }
 
 .sync-preview-row select {
   width: 100%;
-  height: 22px;
-  min-height: 22px;
+  height: 20px;
+  min-height: 20px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);
@@ -2172,9 +2174,11 @@ h1 {
 .sync-preview-row span,
 .sync-preview-row strong {
   min-width: 0;
-  padding: 4px 8px;
+  padding: 2px 6px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2191,11 +2195,11 @@ h1 {
 
 .sync-run-status ul {
   display: grid;
-  gap: 5px;
+  gap: 3px;
   margin: 0;
   padding-left: 18px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 @media (width <= 860px) {
@@ -2217,9 +2221,9 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 8px;
-  min-height: 22px;
-  padding: 2px 6px;
+  gap: 3px 6px;
+  min-height: 20px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface);
@@ -2228,13 +2232,13 @@ h1 {
 .sync-chrome-panel label {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   font-size: 11px;
 }
 
 .sync-chrome-panel button {
-  height: 22px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);

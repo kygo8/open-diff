@@ -43,6 +43,7 @@ import { applySelectionEnablement, resolveMenuCommandEnabled } from '@/app/menuT
 import { listenDesktopPathDrop } from '@/app/desktopDrop'
 import { openSessionWindow } from '@/app/sessionWindow'
 import { resolveDropLaunchFromPaths } from '@/app/dropLaunch'
+import { filterSavedSessions } from '@/app/savedSessions'
 import { sessionCatalog } from '@/app/sessionCatalog'
 import { createUntitledSession } from '@/app/sessionFactory'
 import { isSessionWorkbenchRoute, tabRoutePathname } from '@/app/sessionTabRoute'
@@ -81,7 +82,8 @@ import { openPathExternal, takeShellCompareLaunch } from '@/api/integration'
 import { pickNativePath } from '@/app/filePicker'
 import { pathBaseName } from '@/app/sessionToolbars'
 import { APP_VERSION, DOCS_URL, RELEASES_URL, SUPPORT_URL } from '@/app/appMeta'
-import type { SessionType } from '@/types/session'
+import type { SessionDocument, SessionType } from '@/types/session'
+import type { SessionLaunchLocation } from '@/types/sessionLaunch'
 import type { AppCommand, CommandId } from '@/app/commandRegistry'
 import type { ViewActionName } from '@/app/commandSystem'
 import type { SessionCatalogEntry } from '@/app/sessionCatalog'
@@ -235,6 +237,7 @@ onUnmounted(() => {
 
 const commandPaletteOpen = ref(false)
 const commandQuery = ref('')
+const sidebarSearch = ref('')
 const languageMenuOpen = ref(false)
 const activeMenu = ref<AppMenuId>()
 const lastViewAction = ref<ViewActionName>()
@@ -944,6 +947,40 @@ const navigationItems = computed<NavigationItem[]>(() =>
       group: sourceSessionTypes.has(entry.type) ? 'sources' : 'compare',
     })),
 )
+
+const sidebarQuery = computed(() => sidebarSearch.value.trim().toLowerCase())
+
+function matchesSidebarQuery(label: string): boolean {
+  return sidebarQuery.value.length === 0 || label.toLowerCase().includes(sidebarQuery.value)
+}
+
+const visibleCompareItems = computed(() =>
+  navigationItems.value.filter(
+    (item) => item.group === 'compare' && matchesSidebarQuery(t(item.titleKey)),
+  ),
+)
+
+const visibleSourceItems = computed(() =>
+  navigationItems.value.filter(
+    (item) => item.group === 'sources' && matchesSidebarQuery(t(item.titleKey)),
+  ),
+)
+
+const showSidebarHome = computed(() => matchesSidebarQuery(t('ui.home')))
+const showSidebarRemoteProfiles = computed(() => matchesSidebarQuery(t('ui.remoteProfiles')))
+const showSidebarFileFormats = computed(() => matchesSidebarQuery(t('ui.fileFormats')))
+const showSidebarSettings = computed(() => matchesSidebarQuery(t('ui.settings')))
+
+const sidebarSavedSessions = computed(() => {
+  if (sidebarQuery.value.length === 0) {
+    return []
+  }
+
+  return filterSavedSessions(savedSessions.sessions, {
+    query: sidebarSearch.value,
+    types: new Set(),
+  })
+})
 const statusSegments = computed(() => statusBar.segments)
 
 interface StatusChromePane {
@@ -1236,6 +1273,60 @@ function commandIcon(commandId: CommandId): LucideIcon {
 
 function openNavigationItem(item: NavigationItem): void {
   navigate(item.route, t(item.titleKey), item.titleKey)
+}
+
+function sessionLocationToLaunchLocation(
+  location: SessionDocument['locations']['left'],
+  kind: SessionLaunchLocation['kind'],
+): SessionLaunchLocation | undefined {
+  if (!location) {
+    return undefined
+  }
+
+  return {
+    uri: location.uri,
+    displayName: location.displayName,
+    kind,
+    readOnly: location.readOnly,
+  }
+}
+
+function openSidebarSavedSession(session: SessionDocument): void {
+  const entry = sessionCatalog.find((item) => item.type === session.sessionType)
+
+  if (!entry?.route) {
+    return
+  }
+
+  const folderish =
+    session.sessionType === 'folder-compare' ||
+    session.sessionType === 'folder-sync' ||
+    session.sessionType === 'folder-merge'
+  const kind = folderish ? 'directory' : 'file'
+
+  sessionLaunch.setPendingLaunch({
+    id: crypto.randomUUID(),
+    source: 'saved-session',
+    sessionType: session.sessionType,
+    title: session.name,
+    route: entry.route,
+    locations: {
+      left: sessionLocationToLaunchLocation(session.locations.left, kind),
+      right: sessionLocationToLaunchLocation(session.locations.right, kind),
+      center: sessionLocationToLaunchLocation(session.locations.center, kind),
+      output: sessionLocationToLaunchLocation(session.locations.output, kind),
+    },
+    autoRun: true,
+    session,
+  })
+  const opened = tabs.openTab({
+    title: session.name,
+    route: entry.route,
+    dirty: session.metadata.dirty,
+    forceNew: settings.openSessionsInNewTab,
+  })
+
+  void router.push(opened.route)
 }
 
 function displayTabTitle(tab: { title: string; titleKey?: string }): string {
@@ -1614,7 +1705,9 @@ const sourceSessionTypes = new Set<SessionType>([
         <button
           class="chrome-button"
           type="button"
+          data-testid="top-command-help.contents"
           :title="t('ui.help')"
+          @click="executeCommand('help.contents')"
         >
           <HelpCircle :size="15" />
         </button>
@@ -1632,17 +1725,26 @@ const sourceSessionTypes = new Set<SessionType>([
           <span>{{ t('app.workspaceStatus') }}</span>
         </div>
         <label class="session-search">
-          <Search :size="14" />
+          <Search :size="12" />
           <input
+            v-model="sidebarSearch"
+            data-testid="sidebar-session-search"
             type="search"
             :placeholder="t('ui.searchSessions')"
           />
         </label>
         <nav class="session-nav">
-          <p class="nav-section">{{ t('ui.compare') }}</p>
+          <p
+            v-if="showSidebarHome || visibleCompareItems.length > 0"
+            class="nav-section"
+          >
+            {{ t('ui.compare') }}
+          </p>
           <button
+            v-if="showSidebarHome"
             class="nav-item"
             type="button"
+            data-testid="sidebar-nav-home"
             :class="{ active: route.path === '/' }"
             @click="navigate('/', t('ui.home'), 'ui.home')"
           >
@@ -1651,10 +1753,11 @@ const sourceSessionTypes = new Set<SessionType>([
             <b data-testid="home-session-count">{{ savedSessions.sessions.length }}</b>
           </button>
           <button
-            v-for="item in navigationItems.filter((entry) => entry.group === 'compare')"
+            v-for="item in visibleCompareItems"
             :key="item.route"
             class="nav-item"
             type="button"
+            :data-testid="`sidebar-nav-${item.type}`"
             :class="{ active: route.path === item.route }"
             @click="openNavigationItem(item)"
           >
@@ -1665,12 +1768,18 @@ const sourceSessionTypes = new Set<SessionType>([
             <span>{{ t(item.titleKey) }}</span>
             <b>{{ item.count }}</b>
           </button>
-          <p class="nav-section">{{ t('ui.sources') }}</p>
+          <p
+            v-if="visibleSourceItems.length > 0"
+            class="nav-section"
+          >
+            {{ t('ui.sources') }}
+          </p>
           <button
-            v-for="item in navigationItems.filter((entry) => entry.group === 'sources')"
+            v-for="item in visibleSourceItems"
             :key="item.route"
             class="nav-item"
             type="button"
+            :data-testid="`sidebar-nav-${item.type}`"
             :class="{ active: route.path === item.route }"
             @click="openNavigationItem(item)"
           >
@@ -1681,10 +1790,28 @@ const sourceSessionTypes = new Set<SessionType>([
             <span>{{ t(item.titleKey) }}</span>
             <b>{{ item.count }}</b>
           </button>
+          <p
+            v-if="sidebarSavedSessions.length > 0"
+            class="nav-section"
+          >
+            {{ t('ui.savedSessions') }}
+          </p>
           <button
-            v-if="policy.remoteProfiles"
+            v-for="session in sidebarSavedSessions"
+            :key="session.id"
             class="nav-item"
             type="button"
+            :data-testid="`sidebar-saved-session-${session.id}`"
+            @click="openSidebarSavedSession(session)"
+          >
+            <FileText :size="15" />
+            <span>{{ session.name }}</span>
+          </button>
+          <button
+            v-if="policy.remoteProfiles && showSidebarRemoteProfiles"
+            class="nav-item"
+            type="button"
+            data-testid="sidebar-nav-remote-profiles"
             :class="{ active: route.path === '/settings/remote-profiles' }"
             @click="
               navigate('/settings/remote-profiles', t('ui.remoteProfiles'), 'ui.remoteProfiles')
@@ -1694,8 +1821,10 @@ const sourceSessionTypes = new Set<SessionType>([
             <span>{{ t('ui.remoteProfiles') }}</span>
           </button>
           <button
+            v-if="showSidebarFileFormats"
             class="nav-item"
             type="button"
+            data-testid="sidebar-nav-file-formats"
             :class="{ active: route.path === '/settings/file-formats' }"
             @click="navigate('/settings/file-formats', t('ui.fileFormats'), 'ui.fileFormats')"
           >
@@ -1703,8 +1832,10 @@ const sourceSessionTypes = new Set<SessionType>([
             <span>{{ t('ui.fileFormats') }}</span>
           </button>
           <button
+            v-if="showSidebarSettings"
             class="nav-item"
             type="button"
+            data-testid="sidebar-nav-settings"
             :class="{ active: route.path === '/settings' }"
             @click="navigate('/settings', t('ui.settings'), 'ui.settings')"
           >
@@ -2185,12 +2316,12 @@ const sourceSessionTypes = new Set<SessionType>([
 .session-search {
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: 28px;
-  margin: 0 10px 8px;
-  padding: 0 8px;
+  gap: 4px;
+  height: 20px;
+  margin: 0 6px 4px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-canvas);
   color: var(--app-text-muted);
 }

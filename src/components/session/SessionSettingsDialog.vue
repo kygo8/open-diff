@@ -664,19 +664,18 @@ function applySettings(): void {
   z-index: 40;
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: 4px;
   background: rgb(15 23 42 / 0.45);
 }
 
 .session-settings-dialog {
   display: grid;
-  gap: 12px;
+  gap: 4px;
   width: min(520px, 100%);
-  padding: 16px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
-  box-shadow: 0 18px 44px rgb(15 23 42 / 0.18);
 }
 
 header,
@@ -684,18 +683,25 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 4px;
+  min-height: 20px;
 }
 
 h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 12px;
 }
 
 .settings-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
+}
+
+.settings-tabs button {
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 0;
 }
 
 .settings-tabs button.active {
@@ -705,26 +711,34 @@ h2 {
 
 .settings-body {
   display: grid;
-  gap: 10px;
+  gap: 4px;
 }
 
 .settings-body label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  min-height: 18px;
 }
 
 .settings-body label.stack {
   display: grid;
-  gap: 4px;
+  gap: 2px;
+}
+
+.settings-body input:not([type='checkbox']),
+.settings-body select {
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 0;
 }
 
 .settings-body textarea {
   width: 100%;
-  min-height: 84px;
-  padding: 8px;
+  min-height: 64px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-surface-low, #ffffff);
   color: var(--app-text);
   font: inherit;
@@ -733,6 +747,12 @@ h2 {
 
 footer {
   justify-content: flex-end;
+}
+
+footer button {
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 0;
 }
 
 button.primary {

@@ -59,3 +59,30 @@ it('surfaces display-filters instead of CSS-hiding the Filters strip', () => {
   expect(mergeView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*28px/)
   expect(mergeView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*28px/)
 })
+
+describe('folder compare tree chrome density', () => {
+  it('keeps Folder Compare tree/header/expander chrome dense toward capture list height', () => {
+    expect(css).toMatch(
+      /\.folder-compare-view \.tree-head,\s*\.folder-compare-view \.tree-row\s*\{[\s\S]*?min-height:\s*22px/,
+    )
+    expect(css).toMatch(/\.folder-compare-view \.tree-head span,[\s\S]*?padding:\s*2px 6px/)
+    expect(css).toMatch(/\.folder-compare-view \.tree-head span,[\s\S]*?font-size:\s*11px/)
+    expect(css).toMatch(/\.folder-compare-view \.tree-head span,[\s\S]*?line-height:\s*16px/)
+    expect(css).toMatch(/\.folder-compare-view \.folder-toggle\s*\{[\s\S]*?width:\s*14px/)
+    expect(css).toMatch(/\.folder-compare-view \.folder-row-check\s*\{[\s\S]*?width:\s*12px/)
+    expect(css).toMatch(/\.folder-compare-view \.folder-tree-table\s*\{[\s\S]*?border-radius:\s*0/)
+
+    expect(folderView).toMatch(/const rowHeight = 22/)
+    expect(folderView).toMatch(/row\.depth \* 14/)
+    expect(folderView).toMatch(/\.tree-head,\s*\.tree-row\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(folderView).toMatch(/\.tree-head span,[\s\S]*?padding:\s*2px 6px/)
+    expect(folderView).toMatch(/\.tree-head span,[\s\S]*?font-size:\s*11px/)
+    expect(folderView).toMatch(/\.tree-head span,[\s\S]*?line-height:\s*16px/)
+    expect(folderView).toMatch(/\.folder-toggle\s*\{[\s\S]*?width:\s*14px/)
+    expect(folderView).toMatch(/\.folder-row-check\s*\{[\s\S]*?width:\s*12px/)
+    expect(folderView).toMatch(/\.tree-row \.name-cell\s*\{[\s\S]*?gap:\s*2px/)
+    expect(folderView).toMatch(/columns\.push\('96px', 'minmax\(180px, 1\.2fr\)'/)
+    expect(folderView).not.toMatch(/const rowHeight = 34/)
+    expect(folderView).not.toMatch(/padding:\s*3px 8px/)
+  })
+})

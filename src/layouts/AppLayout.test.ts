@@ -1020,7 +1020,16 @@ describe('global menu depth parity', () => {
     expect(wrapper.find('[data-testid="menu-command-actions.copyToSide"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.moveToFolder"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.rename"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.rename"]').text()).toContain(
+      'Rename...',
+    )
     expect(wrapper.find('[data-testid="menu-command-actions.delete"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.delete"]').text()).toContain(
+      'Delete...',
+    )
+    expect(wrapper.find('[data-testid="menu-command-actions.exclude"]').text()).toContain(
+      'Exclude...',
+    )
     expect(wrapper.find('[data-testid="menu-command-actions.copyFilename"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.compareContents"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.synchronize"]').exists()).toBe(true)
@@ -1150,6 +1159,14 @@ describe('global menu depth parity', () => {
     expect(merge.find('[data-testid="menu-command-actions.copyToOutput"]').exists()).toBe(true)
     expect(
       merge.find('[data-testid="menu-command-actions.copyToOutput"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(merge.find('[data-testid="menu-command-actions.merge"]').exists()).toBe(true)
+    expect(merge.find('[data-testid="menu-command-actions.merge"]').text()).toContain('Merge...')
+    expect(
+      merge.find('[data-testid="menu-command-actions.merge"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      merge.find('[data-testid="menu-command-actions.compareContents"]').attributes('disabled'),
     ).toBeUndefined()
     expect(
       merge.find('[data-testid="menu-command-actions.attributes"]').attributes('disabled'),

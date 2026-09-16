@@ -1247,6 +1247,7 @@ watch(
       case 'toggle-columns':
       case 'toggle-toolbar':
       case 'change-attributes':
+      case 'merge-execute':
       case 'copy-to-output':
       case 'touch-selected':
       case 'copy-to-side':

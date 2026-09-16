@@ -936,6 +936,7 @@ watch(
       case 'touch-selected':
         void touchSelectedFile()
         break
+      case 'merge-execute':
       case 'copy-to-output':
         break
       case 'new-folder':
@@ -3304,7 +3305,7 @@ onUnmounted(() => {
             data-testid="delete-selected-file"
             :disabled="!selectedEntryPath"
             @click="deleteSelectedFile"
-            >{{ $t('ui.delete') }}</NButton
+            >{{ $t('ui.deleteAction') }}</NButton
           >
           <NButton
             size="small"
@@ -3312,7 +3313,7 @@ onUnmounted(() => {
             data-testid="rename-selected-file"
             :disabled="!selectedEntryPath"
             @click="renameSelectedFile"
-            >{{ $t('ui.rename') }}</NButton
+            >{{ $t('ui.renameAction') }}</NButton
           >
           <NButton
             size="small"

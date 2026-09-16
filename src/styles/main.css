@@ -148,23 +148,23 @@ select {
 }
 
 .workbench-shell-single-session .bc-session-toolbar {
-  min-height: 36px;
+  min-height: 34px;
   border-bottom: 1px solid #a0a0a0;
 }
 
 .workbench-shell-single-session .bc-toolbar-command {
   min-width: 48px;
-  height: 36px;
+  height: 34px;
   padding: 1px 2px 2px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact {
-  min-height: 34px;
+  min-height: 32px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact .bc-toolbar-command {
   min-width: 40px;
-  height: 34px;
+  height: 32px;
 }
 
 .app-shell-single-session .tab-strip {
@@ -319,7 +319,7 @@ select {
   align-items: stretch;
   gap: 0;
   min-width: 0;
-  min-height: 36px;
+  min-height: 34px;
   padding: 0 1px;
   overflow: auto hidden;
   border-bottom: 1px solid #a0a0a0;
@@ -338,7 +338,7 @@ select {
   width: auto;
   min-width: 48px;
   max-width: 96px;
-  height: 36px;
+  height: 34px;
   padding: 1px 2px 2px;
   overflow: hidden;
   border: 0;

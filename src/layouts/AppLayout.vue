@@ -34,7 +34,11 @@ import {
 } from '@lucide/vue'
 import { commandRegistry, filterCommands } from '@/app/commandRegistry'
 import { createCommandExecutor, getCommandsForPlacement } from '@/app/commandSystem'
-import { findCommandIdForKeyboardEvent, isEditableKeyboardTarget } from '@/app/keyboardShortcuts'
+import {
+  findCommandIdForKeyboardEvent,
+  formatShortcutLabel,
+  isEditableKeyboardTarget,
+} from '@/app/keyboardShortcuts'
 import { listenDesktopPathDrop } from '@/app/desktopDrop'
 import { openSessionWindow } from '@/app/sessionWindow'
 import { resolveDropLaunchFromPaths } from '@/app/dropLaunch'
@@ -350,6 +354,7 @@ const appMenus: AppMenuDefinition[] = [
       'edit.selectOrphans',
       'edit.invertSelection',
       'session.reload',
+      'edit.fullRefresh',
       'edit.undo',
       'edit.redo',
       'edit.cut',
@@ -369,6 +374,8 @@ const appMenus: AppMenuDefinition[] = [
       'merge.previousConflict',
       'merge.nextConflict',
       'search.findFilename',
+      'search.findNextFilename',
+      'search.findPreviousFilename',
     ],
   },
   {
@@ -1265,7 +1272,10 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     command.id === 'view.showSame' ||
     command.id === 'view.expandAll' ||
     command.id === 'view.collapseAll' ||
-    command.id === 'search.findFilename'
+    command.id === 'search.findFilename' ||
+    command.id === 'search.findNextFilename' ||
+    command.id === 'search.findPreviousFilename' ||
+    command.id === 'edit.fullRefresh'
   ) {
     const folderish =
       route.path.includes('/folder') ||
@@ -1389,7 +1399,17 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     return { ...command, enabled: command.enabled && isSessionWorkbenchPath(route.path) }
   }
 
+  if (command.id === 'merge.previousConflict' || command.id === 'merge.nextConflict') {
+    const onMerge = route.path.includes('/merge')
+
+    return { ...command, enabled: command.enabled && onMerge }
+  }
+
   return command
+}
+
+function menuShortcutLabel(command: AppCommand): string {
+  return formatShortcutLabel(settings.getEffectiveShortcut(command))
 }
 
 function commandsForMenu(menu: AppMenuDefinition): AppCommand[] {
@@ -1643,11 +1663,19 @@ const sourceSessionTypes = new Set<SessionType>([
               v-for="command in commandsForMenu(menu)"
               :key="command.id"
               type="button"
+              class="menu-command"
               :disabled="!command.enabled"
               :data-testid="`menu-command-${command.id}`"
+              :data-shortcut="menuShortcutLabel(command)"
               @click="executeCommand(command.id)"
             >
-              {{ t(command.titleKey) }}
+              <span class="menu-command-label">{{ t(command.titleKey) }}</span>
+              <span
+                v-if="menuShortcutLabel(command)"
+                class="menu-command-shortcut"
+                data-testid="menu-command-shortcut"
+                >{{ menuShortcutLabel(command) }}</span
+              >
             </button>
           </section>
         </div>
@@ -2069,7 +2097,7 @@ const sourceSessionTypes = new Set<SessionType>([
   left: 0;
   z-index: 90;
   display: grid;
-  width: 210px;
+  width: 280px;
   max-height: calc(100vh - 72px);
   padding: 6px;
   overflow: auto;
@@ -2079,7 +2107,12 @@ const sourceSessionTypes = new Set<SessionType>([
   box-shadow: 0 8px 22px rgb(25 28 30 / 0.18);
 }
 
-.menu-panel button {
+.menu-panel button,
+.menu-panel .menu-command {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
   min-width: 0;
   min-height: 28px;
   padding: 0 8px;
@@ -2090,9 +2123,21 @@ const sourceSessionTypes = new Set<SessionType>([
   color: var(--app-text);
   font-size: 12px;
   text-align: left;
-  text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.menu-command-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-command-shortcut {
+  color: var(--app-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.02em;
 }
 
 .menu-panel button:hover {

@@ -152,3 +152,34 @@ export function expandHiddenDescendantsForFileActions<
 
   return [...selected.values()]
 }
+
+export function stepRowIdByNameFilter(
+  rows: FolderSelectableRow[],
+  query: string,
+  currentId: string | undefined,
+  direction: 1 | -1,
+): string | undefined {
+  const matches = selectRowIdsByNameFilter(rows, query)
+
+  if (matches.length === 0) {
+    return undefined
+  }
+
+  const index = currentId ? matches.indexOf(currentId) : -1
+
+  if (index === -1) {
+    return direction === 1 ? matches[0] : matches[matches.length - 1]
+  }
+
+  const nextIndex = index + direction
+
+  if (nextIndex < 0) {
+    return matches[matches.length - 1]
+  }
+
+  if (nextIndex >= matches.length) {
+    return matches[0]
+  }
+
+  return matches[nextIndex]
+}

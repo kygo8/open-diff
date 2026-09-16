@@ -41,6 +41,7 @@ import {
   expandHiddenDescendantsForFileActions,
   resolveOperationRows,
   selectAllRowIds,
+  stepRowIdByNameFilter,
   selectFileRowIds,
   selectRowIdsByNameFilter,
   selectRowIdsByStatuses,
@@ -928,6 +929,18 @@ watch(
         showFolderSelect.value = true
         selectVisibleByName()
         break
+      case 'find-next-filename':
+        stepFindFilename(1)
+        break
+      case 'find-previous-filename':
+        stepFindFilename(-1)
+        break
+      case 'full-refresh':
+        excludedRowIds.value = new Set()
+        if (leftRoot.value && rightRoot.value) {
+          void runFolderCompare()
+        }
+        break
       case 'toggle-columns':
         showColumnConfig.value = !showColumnConfig.value
         break
@@ -1215,6 +1228,30 @@ function selectVisibleFiles(): void {
 
 function selectVisibleByStatuses(statuses: FolderStatus[], labelKey: string): void {
   applyCheckedRowIds(selectRowIdsByStatuses(visibleRows.value, statuses), t(labelKey))
+}
+
+function stepFindFilename(direction: 1 | -1): void {
+  if (!selectNameFilter.value.trim()) {
+    showFolderSelect.value = true
+
+    return
+  }
+
+  const nextId = stepRowIdByNameFilter(
+    visibleRows.value,
+    selectNameFilter.value,
+    selectedRowId.value,
+    direction,
+  )
+
+  if (!nextId) {
+    showFolderSelect.value = true
+
+    return
+  }
+
+  selectedRowId.value = nextId
+  applyCheckedRowIds([nextId], t('ui.findFilename'))
 }
 
 function selectVisibleByName(): void {

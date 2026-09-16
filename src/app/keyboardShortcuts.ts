@@ -146,3 +146,7 @@ export function findCommandIdForKeyboardEvent(
 
   return matches[0]?.command.id
 }
+
+export function formatShortcutLabel(shortcut: CommandShortcut): string {
+  return shortcut.keys.map(normalizeShortcutKey).filter(Boolean).join('+')
+}

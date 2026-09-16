@@ -4,6 +4,7 @@ import {
   eventMatchesShortcut,
   findCommandIdForKeyboardEvent,
   isEditableKeyboardTarget,
+  formatShortcutLabel,
   keyboardEventToShortcutParts,
 } from './keyboardShortcuts'
 
@@ -69,20 +70,27 @@ describe('keyboardShortcuts', () => {
     ).toBe('session.reload')
   })
 
-  it('keeps text-compare scoped shortcuts off unrelated routes', () => {
+  it('dispatches capture-like next/previous difference chords globally', () => {
     expect(
-      findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F7'), {
+      findCommandIdForKeyboardEvent(commandRegistry, keyEvent('n', { ctrlKey: true }), {
         getEffectiveShortcut: (command) => command.defaultShortcut,
         routePath: '/compare/folder',
       }),
-    ).toBeUndefined()
+    ).toBe('diff.next')
 
     expect(
-      findCommandIdForKeyboardEvent(commandRegistry, keyEvent('F7'), {
+      findCommandIdForKeyboardEvent(commandRegistry, keyEvent('p', { ctrlKey: true }), {
         getEffectiveShortcut: (command) => command.defaultShortcut,
         routePath: '/compare/text',
       }),
-    ).toBe('diff.next')
+    ).toBe('diff.previous')
+  })
+
+  it('formats shortcut labels for menu accelerator tables', () => {
+    expect(formatShortcutLabel({ keys: ['Ctrl', 'Shift', 'O'], scope: 'global' })).toBe(
+      'Ctrl+Shift+O',
+    )
+    expect(formatShortcutLabel({ keys: ['F3'], scope: 'global' })).toBe('F3')
   })
 
   it('detects editable keyboard targets', () => {

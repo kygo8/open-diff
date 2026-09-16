@@ -76,6 +76,9 @@ export type CommandId =
   | 'actions.refreshSelection'
   | 'view.showSame'
   | 'search.findFilename'
+  | 'search.findNextFilename'
+  | 'search.findPreviousFilename'
+  | 'edit.fullRefresh'
   | 'view.columns'
   | 'view.log'
   | 'view.legend'
@@ -178,6 +181,9 @@ export type CommandAction =
         | 'refresh-selection'
         | 'show-same'
         | 'find-filename'
+        | 'find-next-filename'
+        | 'find-previous-filename'
+        | 'full-refresh'
         | 'toggle-columns'
         | 'toggle-log'
         | 'toggle-legend'
@@ -292,7 +298,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['save', 'session'],
     enabled: true,
     visibility: 'view',
-    defaultShortcut: { keys: ['Ctrl', 'S'], scope: 'global' },
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'S'], scope: 'global' },
     placements: ['command-palette', 'toolbar', 'menu'],
     action: { type: 'view-action', name: 'save' },
   },
@@ -302,7 +308,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['save', 'as', 'session'],
     enabled: true,
     visibility: 'view',
-    defaultShortcut: { keys: ['Ctrl', 'Shift', 'S'], scope: 'global' },
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', '9'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'save-as' },
   },
@@ -412,7 +418,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['previous', 'diff', 'difference', 'navigation'],
     enabled: true,
     visibility: 'view',
-    defaultShortcut: { keys: ['Shift', 'F7'], scope: 'text-compare' },
+    defaultShortcut: { keys: ['Ctrl', 'P'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'previous-difference' },
   },
@@ -422,7 +428,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['next', 'diff', 'difference', 'navigation'],
     enabled: true,
     visibility: 'view',
-    defaultShortcut: { keys: ['F7'], scope: 'text-compare' },
+    defaultShortcut: { keys: ['Ctrl', 'N'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'next-difference' },
   },
@@ -518,7 +524,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['session', 'open', 'home'],
     enabled: true,
     visibility: 'global',
-    defaultShortcut: { keys: ['Ctrl', 'O'], scope: 'global' },
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'O'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'navigate', route: '/', titleKey: 'ui.home' },
   },
@@ -608,7 +614,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['exit', 'quit'],
     enabled: true,
     visibility: 'global',
-    defaultShortcut: { keys: ['Alt', 'F4'], scope: 'global' },
+    defaultShortcut: { keys: ['Ctrl', 'Q'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'quit' },
   },
@@ -634,7 +640,7 @@ export const commandRegistry: AppCommand[] = [
   },
   {
     id: 'session.reload',
-    titleKey: 'ui.reload',
+    titleKey: 'ui.refresh',
     keywords: ['session', 'reload', 'refresh'],
     enabled: true,
     visibility: 'view',
@@ -718,7 +724,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['help', 'about'],
     enabled: true,
     visibility: 'global',
-    defaultShortcut: { keys: ['Ctrl', 'Shift', 'A'], scope: 'global' },
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'B'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'about' },
   },
@@ -918,7 +924,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['select', 'files', 'all', 'edit'],
     enabled: true,
     visibility: 'view',
-    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'A'], scope: 'global' },
+    defaultShortcut: { keys: ['Ctrl', 'Shift', 'A'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'select-all-files' },
   },
@@ -1051,6 +1057,36 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'F'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'find-filename' },
+  },
+  {
+    id: 'search.findNextFilename',
+    titleKey: 'ui.findNextFilename',
+    keywords: ['find', 'next', 'filename', 'search'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['F3'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'find-next-filename' },
+  },
+  {
+    id: 'search.findPreviousFilename',
+    titleKey: 'ui.findPreviousFilename',
+    keywords: ['find', 'previous', 'filename', 'search'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Shift', 'F3'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'find-previous-filename' },
+  },
+  {
+    id: 'edit.fullRefresh',
+    titleKey: 'ui.fullRefresh',
+    keywords: ['full', 'refresh', 'reload', 'edit'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'F5'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'full-refresh' },
   },
   {
     id: 'view.columns',

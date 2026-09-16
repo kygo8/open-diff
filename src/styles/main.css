@@ -1301,8 +1301,8 @@ select {
 .folder-merge-view .display-filters {
   flex-wrap: wrap !important;
   align-items: center !important;
-  gap: 2px 4px !important;
-  min-height: 20px !important;
+  gap: 1px 3px !important;
+  min-height: 18px !important;
   padding: 0 !important;
   font-size: 11px !important;
 }
@@ -1311,20 +1311,20 @@ select {
   display: inline-flex !important;
   flex: 1 1 280px !important;
   align-items: center !important;
-  gap: 3px !important;
+  gap: 2px !important;
   min-width: 220px !important;
   max-width: 560px !important;
 }
 
 .folder-filter-pattern {
-  height: 20px !important;
-  padding: 0 5px !important;
+  height: 18px !important;
+  padding: 0 4px !important;
   border: 1px solid #bfc4cc !important;
   border-radius: 2px !important;
   background: #ffffff !important;
   color: #111111 !important;
   font-size: 11px !important;
-  line-height: 18px !important;
+  line-height: 16px !important;
 }
 
 .folder-filter-strip-actions {
@@ -1343,7 +1343,7 @@ select {
   box-sizing: border-box !important;
   min-width: 36px !important;
   max-width: 48px !important;
-  height: 28px !important;
+  height: 26px !important;
   padding: 0 2px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
@@ -1690,8 +1690,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-compare-view .folder-select-panel,
 .folder-sync-view .display-filters,
 .folder-merge-view .display-filters {
-  gap: 2px 4px !important;
-  min-height: 20px !important;
+  gap: 1px 3px !important;
+  min-height: 18px !important;
   padding: 0 2px !important;
   font-size: 11px !important;
 }
@@ -2945,7 +2945,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-compare-view .folder-filter-chrome,
 .folder-sync-view .folder-filter-chrome {
-  min-height: 28px !important;
+  min-height: 26px !important;
   padding: 0 !important;
 }
 
@@ -3040,7 +3040,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .folder-filter-chrome {
-  min-height: 28px !important;
+  min-height: 26px !important;
   padding: 0 !important;
 }
 
@@ -3053,7 +3053,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-view .folder-merge-peek-panel {
   gap: 0 !important;
   min-height: 0 !important;
-  padding: 0 2px 1px !important;
+  padding: 0 1px !important;
   border: 1px solid #c9cdd3 !important;
   border-radius: 0 !important;
   background: #ffffff !important;
@@ -3066,7 +3066,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-peek-panel header,
 .folder-merge-peek-panel header {
   gap: 2px !important;
-  min-height: 14px !important;
+  min-height: 13px !important;
   margin: 0 !important;
   padding: 0 !important;
   border-bottom: 1px solid #dfe3e8 !important;
@@ -3087,8 +3087,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-peek-panel > button,
 .folder-sync-peek-panel > button,
 .folder-merge-peek-panel > button {
-  height: 14px !important;
-  min-height: 14px !important;
+  height: 13px !important;
+  min-height: 13px !important;
   padding: 0 4px !important;
   border: 1px solid #c9cdd3 !important;
   border-radius: 0 !important;
@@ -3111,7 +3111,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   display: inline-flex !important;
   align-items: stretch !important;
   gap: 0 !important;
-  min-height: 14px !important;
+  min-height: 13px !important;
   margin: 0 !important;
   border-bottom: 1px solid #b8bec6 !important;
 }
@@ -3119,7 +3119,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .peek-tab {
   box-sizing: border-box !important;
   min-width: 36px !important;
-  height: 14px !important;
+  height: 13px !important;
   padding: 0 5px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
@@ -3149,13 +3149,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .peek-dual-columns {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-  gap: 1px !important;
+  gap: 0 !important;
   min-height: 0 !important;
 }
 
 .peek-column {
   min-width: 0 !important;
-  padding: 0 2px !important;
+  padding: 0 1px !important;
   border: 1px solid #dfe3e8 !important;
   background: #fafafa !important;
 }
@@ -3171,7 +3171,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   color: #1a1a1a !important;
   font-size: 10px !important;
   font-weight: 600 !important;
-  line-height: 11px !important;
+  line-height: 10px !important;
 }
 
 .peek-status-block {
@@ -3193,7 +3193,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-peek-panel dl > div {
   display: grid !important;
   gap: 0 !important;
-  min-height: 18px !important;
+  min-height: 16px !important;
   padding: 0 !important;
 }
 

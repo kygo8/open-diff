@@ -3070,6 +3070,7 @@ onUnmounted(() => {
     <section class="folder-compare-view">
       <section
         class="folder-filter-chrome"
+        data-filters-density="capture-pass4"
         data-testid="folder-filter-chrome"
       >
         <div
@@ -3104,7 +3105,7 @@ onUnmounted(() => {
             >
               <Funnel
                 class="folder-filter-strip-icon"
-                :size="14"
+                :size="12"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -3123,7 +3124,7 @@ onUnmounted(() => {
             >
               <Eye
                 class="folder-filter-strip-icon"
-                :size="14"
+                :size="12"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -3886,6 +3887,7 @@ onUnmounted(() => {
       <section
         v-show="showPeekPanel"
         class="folder-peek-panel"
+        data-peek-density="capture-pass4"
         data-testid="folder-peek-panel"
       >
         <header>
@@ -4906,8 +4908,8 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 2px 4px;
-  min-height: 20px;
+  gap: 1px 3px;
+  min-height: 18px;
   padding: 0;
   font-size: 11px;
 }
@@ -4915,7 +4917,7 @@ onUnmounted(() => {
 .folder-filter-chrome {
   display: flex;
   align-items: center;
-  min-height: 28px;
+  min-height: 26px;
   padding: 0;
 }
 
@@ -4923,7 +4925,7 @@ onUnmounted(() => {
   display: inline-flex;
   flex: 1 1 280px;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   min-width: 220px;
   max-width: 640px;
   margin-right: 4px;
@@ -4944,7 +4946,7 @@ onUnmounted(() => {
   box-sizing: border-box;
   min-width: 36px;
   max-width: 48px;
-  height: 28px;
+  height: 26px;
   padding: 0 2px;
   border: 0;
   border-right: 1px solid #c9cdd3;
@@ -4987,8 +4989,8 @@ onUnmounted(() => {
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 20px;
-  padding: 0 5px;
+  height: 18px;
+  padding: 0 4px;
   border: 1px solid #bfc4cc;
   border-radius: 2px;
   background: #ffffff;
@@ -5622,7 +5624,7 @@ onUnmounted(() => {
 .folder-peek-panel {
   display: grid;
   gap: 0;
-  padding: 0 2px 1px;
+  padding: 0 1px;
   border: 1px solid #c9cdd3;
   border-radius: 0;
   background: #ffffff;
@@ -5635,7 +5637,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 2px;
-  min-height: 14px;
+  min-height: 13px;
   margin: 0;
   padding: 0;
   border-bottom: 1px solid #dfe3e8;
@@ -5664,13 +5666,13 @@ onUnmounted(() => {
 .peek-dual-columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 1px;
+  gap: 0;
   min-height: 0;
 }
 
 .peek-column {
   min-width: 0;
-  padding: 0 2px;
+  padding: 0 1px;
   border: 1px solid #dfe3e8;
   background: #fafafa;
 }

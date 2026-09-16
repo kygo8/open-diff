@@ -160,6 +160,7 @@ describe('FolderMergeView', () => {
 
     await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
     await flushPromises()
+    expect(wrapper.find('[data-testid="folder-merge-row-status-same-txt"]').text()).toBe('—')
     await wrapper.find('[data-testid="folder-merge-execute-plan"]').trigger('click')
     expect(executeFolderMergePlan).not.toHaveBeenCalled()
     expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').exists()).toBe(true)
@@ -185,6 +186,10 @@ describe('FolderMergeView', () => {
     expect(wrapper.find('[data-testid="folder-merge-execution-row-config"]').text()).toContain(
       'conflict',
     )
+    expect(wrapper.find('[data-testid="folder-merge-row-status-same-txt"]').text()).toBe('executed')
+    expect(wrapper.find('[data-testid="folder-merge-row-status-left-add"]').text()).toBe('executed')
+    expect(wrapper.find('[data-testid="folder-merge-row-status-config"]').text()).toBe('conflict')
+    expect(wrapper.find('[data-testid="folder-merge-row-status-notes-txt"]').text()).toBe('—')
   })
 
   it('keeps excluded merge rows out of confirm and execute writes', async () => {

@@ -3,6 +3,7 @@ import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import type {
   FolderSyncActionOverride,
   FolderSyncExecutionLog,
+  FolderSyncExecutionStatus,
   FolderSyncOverrideAction,
   FolderSyncPreviewAction,
   FolderSyncPreviewRow,
@@ -170,6 +171,7 @@ const syncRunError = ref<string>()
 const previewRows = ref<SyncPreviewRow[]>([])
 const completedOperations = ref(0)
 const syncLogs = ref<string[]>([])
+const syncExecutionStatusByPath = ref<Map<string, FolderSyncExecutionStatus>>(new Map())
 const planAccepted = ref(false)
 const pendingSyncSafetyRows = ref<SyncPreviewRow[]>([])
 const syncChromeMessage = ref('')
@@ -737,6 +739,7 @@ async function previewSync(): Promise<void> {
     rightPath.value = response.rightRoot
     completedOperations.value = 0
     syncLogs.value = []
+    syncExecutionStatusByPath.value = new Map()
     syncRunError.value = undefined
     planAccepted.value = false
     pendingSyncSafetyRows.value = []
@@ -832,6 +835,9 @@ async function executeSyncNow(): Promise<void> {
 
     completedOperations.value = response.succeeded + response.failed + response.cancelled
     syncLogs.value = response.logs.map(folderSyncExecutionLogLabel)
+    syncExecutionStatusByPath.value = new Map(
+      response.logs.map((log) => [log.relativePath, log.status]),
+    )
   } catch (error) {
     syncRunError.value = error instanceof Error ? error.message : String(error)
   } finally {
@@ -1023,6 +1029,10 @@ async function confirmNewFolder(): Promise<void> {
   } catch (error) {
     syncRunError.value = error instanceof Error ? error.message : String(error)
   }
+}
+
+function syncRowExecutionStatus(row: SyncPreviewRow): string {
+  return syncExecutionStatusByPath.value.get(row.relativePath) ?? '—'
 }
 
 function folderSyncExecutionLogLabel(log: FolderSyncExecutionLog): string {
@@ -1824,6 +1834,7 @@ watch(
             <span>{{ $t('ui.source') }}</span>
             <span>{{ $t('ui.target') }}</span>
             <span>{{ $t('ui.detail') }}</span>
+            <span>{{ $t('ui.status') }}</span>
           </div>
           <div
             v-for="row in visiblePreviewRows"
@@ -1880,6 +1891,7 @@ watch(
             <span>{{ row.sourcePath ?? '--' }}</span>
             <span>{{ row.targetPath ?? '--' }}</span>
             <span>{{ row.detail }}</span>
+            <span :data-testid="`sync-row-status-${row.id}`">{{ syncRowExecutionStatus(row) }}</span>
           </div>
         </div>
       </section>
@@ -2284,8 +2296,8 @@ h1 {
   display: grid;
   grid-template-columns:
     44px 120px minmax(200px, 1fr) minmax(160px, 1.1fr) minmax(160px, 1.1fr)
-    minmax(140px, 0.9fr);
-  min-width: 960px;
+    minmax(140px, 0.9fr) 88px;
+  min-width: 1048px;
   border-bottom: 1px solid var(--app-border);
   font-size: 11px;
 }

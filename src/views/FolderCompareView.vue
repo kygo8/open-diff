@@ -16,7 +16,6 @@ import { isArchivePath } from '@/app/archivePath'
 import { folderSnapshotOutputPath, isSnapshotPath } from '@/app/snapshotPath'
 import { pickNativePath } from '@/app/filePicker'
 import { formatCompareError } from '@/app/compareError'
-import { reportFileExtension } from '@/app/reportExports'
 import { loadFolderDisplayFilters, saveFolderDisplayFilters } from '@/app/folderDisplayFilters'
 import { loadFolderCompareCriteria, saveFolderCompareCriteria } from '@/app/folderCompareCriteria'
 import {
@@ -63,10 +62,16 @@ import {
   loadIgnoredRelativePathsForRoots,
   saveIgnoredRelativePathsForRoots,
 } from '@/app/folderIgnoredPaths'
+import { buildFolderCompareSelectionReportContent } from '@/app/folderCompareSelectionReport'
 import {
-  buildFolderCompareSelectionReportText,
-  defaultFolderCompareSelectionReportOutputPath,
-} from '@/app/folderCompareSelectionReport'
+  canOpenFileCompareReport,
+  defaultFileCompareReportDialogState,
+  fileCompareReportFormatLabelKey,
+  fileCompareReportFormats,
+  fileCompareReportOutputPath,
+  type FileCompareReportFormat,
+  type FileCompareReportScope,
+} from '@/app/fileCompareReportDialog'
 import {
   aggregateFolderSelection,
   formatFolderSelectionLabel,
@@ -318,6 +323,13 @@ const sideTransferMode = ref<'copy' | 'move'>('copy')
 const sideTransferDirection = ref<FolderTransferSide>('Right')
 const newFolderPanelOpen = ref(false)
 const newFolderName = ref('New Folder')
+const fileCompareReportPanelOpen = ref(false)
+const fileCompareReportFormat = ref<FileCompareReportFormat>(
+  defaultFileCompareReportDialogState().format,
+)
+const fileCompareReportScope = ref<FileCompareReportScope>(
+  defaultFileCompareReportDialogState().scope,
+)
 const lastFileOperationAction = ref<string>()
 const selectedReadonly = ref(false)
 const lastMetadataAction = ref<string>()
@@ -850,7 +862,7 @@ watch(
         breakSelectedAlignment()
         break
       case 'file-compare-report':
-        void exportFolderReport('html')
+        openFileCompareReportPanel()
         break
       case 'toggle-minor':
         showMinorFolderDifferences()
@@ -2434,28 +2446,56 @@ function mapSyncPreviewAction(action: string): SyncPreviewAction {
   return action === 'Overwrite' ? 'Overwrite' : 'Copy'
 }
 
+const canFileCompareReport = computed(() =>
+  canOpenFileCompareReport(
+    rows.value.length > 0 && Boolean(leftRoot.value) && Boolean(rightRoot.value),
+  ),
+)
+
+function openFileCompareReportPanel(): void {
+  if (!canFileCompareReport.value) {
+    reportStatus.value = t('status.fileCompareReportNeedsCompare')
+    lastCompareAction.value = t('status.fileCompareReportNeedsCompare')
+
+    return
+  }
+
+  renamePanelOpen.value = false
+  sideTransferPanelOpen.value = false
+  newFolderPanelOpen.value = false
+  fileCompareReportPanelOpen.value = true
+}
+
+function closeFileCompareReportPanel(): void {
+  fileCompareReportPanelOpen.value = false
+}
+
+async function confirmFileCompareReport(): Promise<void> {
+  if (!canFileCompareReport.value || !leftRoot.value || !rightRoot.value) {
+    reportStatus.value = t('status.fileCompareReportNeedsCompare')
+
+    return
+  }
+
+  await exportFolderReport(fileCompareReportFormat.value, fileCompareReportScope.value)
+  fileCompareReportPanelOpen.value = false
+}
+
 async function exportFolderReport(
   format: 'html' | 'text' | 'json' | 'xml' | 'csv' | 'markdown',
+  scope: FileCompareReportScope = 'full',
 ): Promise<void> {
   if (!leftRoot.value || !rightRoot.value) {
     return
   }
 
-  const response = await exportFolderCompareReport({
-    leftRoot: leftRoot.value,
-    rightRoot: rightRoot.value,
-    format,
-    outputPath: `${leftRoot.value}/folder-compare.${reportFileExtension(format)}`,
-  })
-
-  const selectionRows = resolveOperationRows(rows.value, checkedRowIds.value, selectedRowId.value)
-  let status = response.outputPath ?? format
-
-  if (selectionRows.length > 0) {
-    const selectionText = buildFolderCompareSelectionReportText({
+  if (scope === 'selection') {
+    const selectionRows = resolveOperationRows(rows.value, checkedRowIds.value, selectedRowId.value)
+    const scopeLabel = checkedRowIds.value.size > 0 ? 'checked' : 'selection'
+    const selectionInput = {
       leftRoot: leftRoot.value,
       rightRoot: rightRoot.value,
-      scopeLabel: checkedRowIds.value.size > 0 ? 'checked' : 'selection',
+      scopeLabel,
       rows: selectionRows.map((row) => ({
         relativePath: row.relativePath,
         status: row.status,
@@ -2464,18 +2504,31 @@ async function exportFolderReport(
         rightPath: row.rightPath,
         ignored: ignoredRelativePaths.value.has(row.relativePath),
       })),
-    })
-    const selectionPath = defaultFolderCompareSelectionReportOutputPath(leftRoot.value)
+    }
+    const selectionPath = fileCompareReportOutputPath(leftRoot.value, format, 'selection')
+    const selectionText = buildFolderCompareSelectionReportContent(format, selectionInput)
 
     try {
       await saveTextFile({ path: selectionPath, text: selectionText })
-      status = `${status} + ${selectionPath}`
+      reportStatus.value = selectionPath
+      lastCompareAction.value = selectionPath
     } catch {
-      status = `${status} | ${t('status.selectionReportReady', { count: selectionRows.length })}`
+      reportStatus.value = t('status.selectionReportReady', { count: selectionRows.length })
+      lastCompareAction.value = reportStatus.value
     }
+
+    return
   }
 
-  reportStatus.value = status
+  const response = await exportFolderCompareReport({
+    leftRoot: leftRoot.value,
+    rightRoot: rightRoot.value,
+    format,
+    outputPath: fileCompareReportOutputPath(leftRoot.value, format, 'full'),
+  })
+
+  reportStatus.value = response.outputPath ?? format
+  lastCompareAction.value = reportStatus.value
 }
 
 function markSyncPreviewItemAsLeave(itemId: string): void {
@@ -3467,8 +3520,8 @@ onUnmounted(() => {
             size="small"
             secondary
             data-testid="file-compare-report"
-            :disabled="!leftRoot || !rightRoot"
-            @click="exportFolderReport('html')"
+            :disabled="!canFileCompareReport"
+            @click="openFileCompareReportPanel"
             >{{ $t('ui.fileCompareReport') }}</NButton
           >
           <NButton
@@ -3961,6 +4014,66 @@ onUnmounted(() => {
       </section>
 
       <section
+        v-if="fileCompareReportPanelOpen"
+        class="folder-operation-panel file-compare-report-panel"
+        data-testid="file-compare-report-panel"
+        role="dialog"
+        :aria-label="$t('ui.fileCompareReport')"
+      >
+        <strong>{{ $t('ui.fileCompareReport') }}</strong>
+        <label>
+          <span>{{ $t('ui.reportFormat') }}</span>
+          <select
+            v-model="fileCompareReportFormat"
+            data-testid="file-compare-report-format"
+          >
+            <option
+              v-for="format in fileCompareReportFormats"
+              :key="format"
+              :value="format"
+            >
+              {{ $t(fileCompareReportFormatLabelKey(format)) }}
+            </option>
+          </select>
+        </label>
+        <fieldset class="file-compare-report-scope">
+          <legend>{{ $t('ui.reportScope') }}</legend>
+          <label>
+            <input
+              v-model="fileCompareReportScope"
+              type="radio"
+              value="full"
+              data-testid="file-compare-report-scope-full"
+            />
+            {{ $t('ui.reportScopeFull') }}
+          </label>
+          <label>
+            <input
+              v-model="fileCompareReportScope"
+              type="radio"
+              value="selection"
+              data-testid="file-compare-report-scope-selection"
+            />
+            {{ $t('ui.reportScopeSelection') }}
+          </label>
+        </fieldset>
+        <NButton
+          size="small"
+          secondary
+          data-testid="file-compare-report-cancel"
+          @click="closeFileCompareReportPanel"
+          >{{ $t('ui.cancel') }}</NButton
+        >
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="file-compare-report-save"
+          @click="confirmFileCompareReport"
+          >{{ $t('ui.saveReport') }}</NButton
+        >
+      </section>
+
+      <section
         v-if="pendingDangerousOperation"
         class="folder-copy-confirmation"
         data-testid="folder-dangerous-confirmation"
@@ -4075,6 +4188,13 @@ onUnmounted(() => {
         data-testid="folder-compare-action-status"
       >
         {{ lastCompareAction }}
+      </section>
+      <section
+        v-if="reportStatus"
+        class="folder-action-status"
+        data-testid="folder-report-status"
+      >
+        {{ reportStatus }}
       </section>
       <section
         v-if="lastCopyAction"
@@ -4715,6 +4835,25 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.file-compare-report-panel {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.file-compare-report-scope {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.file-compare-report-scope legend {
+  padding: 0;
+  margin-right: 8px;
+  font-weight: 600;
 }
 
 .folder-operation-panel input {

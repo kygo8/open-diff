@@ -13,6 +13,7 @@ import {
   moveFolderEntry,
   renameFolderEntry,
   touchFolderEntry,
+  saveTextFile,
 } from '@/api/diff'
 import { pickNativePath } from '@/app/filePicker'
 import { useViewActionsStore } from '@/stores/viewActions'
@@ -654,9 +655,24 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).toMatch(/Marked|ignored/i)
 
     vi.mocked(exportFolderCompareReport).mockClear()
+    expect(
+      wrapper.find('[data-testid="file-compare-report"]').attributes('disabled'),
+    ).toBeUndefined()
     await wrapper.find('[data-testid="file-compare-report"]').trigger('click')
     await flushPromises()
-    expect(exportFolderCompareReport).toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="file-compare-report-panel"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="file-compare-report-format"]').setValue('csv')
+    await wrapper.find('[data-testid="file-compare-report-scope-full"]').setValue()
+    await wrapper.find('[data-testid="file-compare-report-save"]').trigger('click')
+    await flushPromises()
+    expect(exportFolderCompareReport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        leftRoot: 'D:/left',
+        rightRoot: 'D:/right',
+        format: 'csv',
+      }),
+    )
 
     const viewActions = useViewActionsStore()
 
@@ -667,6 +683,37 @@ describe('FolderCompareView', () => {
     expect(wrapper.find('[data-testid="compare-contents-selected"]').text()).not.toContain(
       'unimplemented',
     )
+  })
+
+  it('disables File Compare Report until a compare has run', () => {
+    const wrapper = mountFolderCompareView()
+
+    expect(wrapper.find('[data-testid="file-compare-report"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('exports a selection-scoped File Compare Report from the dialog', async () => {
+    const wrapper = mountFolderCompareView()
+
+    await runCompare(wrapper)
+    await wrapper.find('[data-row-id="src-main-ts"]').trigger('click')
+    await wrapper.find('[data-testid="file-compare-report"]').trigger('click')
+    await wrapper.find('[data-testid="file-compare-report-scope-selection"]').setValue()
+    await wrapper.find('[data-testid="file-compare-report-format"]').setValue('text')
+    vi.mocked(saveTextFile).mockClear()
+    vi.mocked(exportFolderCompareReport).mockClear()
+    await wrapper.find('[data-testid="file-compare-report-save"]').trigger('click')
+    await flushPromises()
+
+    expect(exportFolderCompareReport).not.toHaveBeenCalled()
+    expect(saveTextFile).toHaveBeenCalledTimes(1)
+    const savedCall = vi.mocked(saveTextFile).mock.calls[0]
+
+    expect(savedCall).toBeDefined()
+    const saved = savedCall[0]
+
+    expect(saved.path).toContain('folder-compare-selection.txt')
+    expect(saved.text).toContain('FOLDER-COMPARE-SELECTION-REPORT')
+    expect(wrapper.find('[data-testid="file-compare-report-panel"]').exists()).toBe(false)
   })
 
   it('persists ignored marks across remount for the same folder roots', async () => {

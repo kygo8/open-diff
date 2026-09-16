@@ -1283,6 +1283,10 @@ export const esES: LanguagePack = {
     'ui.synchronize': 'Sincronizar',
     'ui.explorer': 'Explorador',
     'ui.fileCompareReport': 'Informe de comparación de archivos…',
+    'ui.reportFormat': 'Formato del informe',
+    'ui.reportScope': 'Alcance del informe',
+    'ui.reportScopeFull': 'Comparación completa',
+    'ui.reportScopeSelection': 'Selección',
     'status.compareContentsNeedsFile': 'Seleccione un archivo para comparar el contenido.',
     'status.compareContentsNoRoute':
       'No hay sesión de comparación de contenido para esta selección.',
@@ -1291,6 +1295,8 @@ export const esES: LanguagePack = {
     'status.explorerOpenedParent':
       'Se abrió la carpeta principal {path} en el administrador de archivos',
     'status.selectionReportReady': 'Informe de selección listo ({count} elementos)',
+    'status.fileCompareReportNeedsCompare':
+      'Ejecute una comparación de carpetas antes de generar un informe de comparación de archivos.',
     'status.ignoredMarked': 'Se marcó {path} como ignorado',
     'status.ignoredUnmarked': 'Se quitó la marca de ignorado de {path}',
   },

@@ -194,6 +194,19 @@ it('enables Merge View Show Changes / Conflicts / Center Pane and Compare to Out
   expect(resolveMenuCommandEnabled('session.swap', true, textMergeCtx)).toBe(false)
   expect(resolveMenuCommandEnabled('session.settings', true, textMergeCtx)).toBe(false)
   expect(resolveMenuCommandEnabled('merge.nextConflict', true, baseCtx)).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('merge.nextConflict', true, {
+      ...baseCtx,
+      routePath: '/sync/folder',
+    }),
+  ).toBe(true)
+  expect(
+    resolveMenuCommandEnabled('view.showConflicts', true, {
+      ...baseCtx,
+      routePath: '/sync/folder',
+    }),
+  ).toBe(true)
+  expect(resolveMenuCommandEnabled('view.showConflicts', true, baseCtx)).toBe(false)
 })
 
 it('enables Run Script only on the reports session', () => {

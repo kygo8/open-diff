@@ -723,6 +723,87 @@ describe('FolderSyncView', () => {
     ).toBe('leave')
   })
 
+  it('steps Next / Previous Conflict through preview conflict rows', async () => {
+    vi.mocked(previewFolderSync).mockResolvedValueOnce({
+      name: 'Update Both',
+      leftRoot: 'D:/deploy/package',
+      rightRoot: 'D:/deploy/prod',
+      strategy: 'updateBoth',
+      rows: [
+        {
+          id: 'copy-app',
+          relativePath: 'package/app.exe',
+          action: 'Copy',
+          sourcePath: 'D:/deploy/package/package/app.exe',
+          targetPath: 'D:/deploy/prod/package/app.exe',
+          detail: 'Left item only exists',
+        },
+        {
+          id: 'conflict-notes',
+          relativePath: 'notes.txt',
+          action: 'Conflict',
+          sourcePath: 'D:/deploy/package/notes.txt',
+          targetPath: 'D:/deploy/prod/notes.txt',
+          detail: 'Both sides changed',
+        },
+        {
+          id: 'conflict-config',
+          relativePath: 'config',
+          action: 'Conflict',
+          sourcePath: 'D:/deploy/package/config',
+          targetPath: 'D:/deploy/prod/config',
+          detail: 'Type mismatch',
+        },
+      ],
+      summary: {
+        total: 3,
+        copy: 1,
+        delete: 0,
+        leave: 0,
+        conflict: 2,
+      },
+    })
+
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.findAll('[data-testid^="sync-row-"]')).toHaveLength(3)
+
+    useViewActionsStore().dispatch('next-conflict')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-sync-peek-path"]').text()).toBe('notes.txt')
+    expect(wrapper.findAll('[data-testid^="sync-row-"]')).toHaveLength(2)
+
+    useViewActionsStore().dispatch('next-conflict')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-sync-peek-path"]').text()).toBe('config')
+
+    useViewActionsStore().dispatch('previous-conflict')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-sync-peek-path"]').text()).toBe('notes.txt')
+
+    useViewActionsStore().dispatch('show-all')
+    await flushPromises()
+    useViewActionsStore().dispatch('show-conflicts')
+    await flushPromises()
+    expect(wrapper.findAll('[data-testid^="sync-row-"]')).toHaveLength(2)
+    expect(wrapper.find('[data-testid="sync-row-copy-app"]').exists()).toBe(false)
+  })
+
   it('creates a new folder under Sync path roots', async () => {
     vi.mocked(createFolderEntry).mockResolvedValue({
       operation: 'createFolder',

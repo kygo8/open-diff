@@ -614,10 +614,10 @@ function fillFromLastCompare(): void {
 .reports-script-view {
   display: grid;
   grid-template-rows: minmax(0, 1fr) minmax(220px, 0.7fr);
-  gap: 8px;
+  gap: 4px;
   height: 100%;
   min-height: 0;
-  padding: 8px;
+  padding: 2px 4px;
   overflow: hidden;
 }
 
@@ -662,7 +662,7 @@ function fillFromLastCompare(): void {
 
 .report-error,
 .report-empty {
-  padding: 8px;
+  padding: 2px 4px;
   color: var(--app-text-muted);
   font-size: 12px;
 }

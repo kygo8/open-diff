@@ -38,6 +38,12 @@ describe('folder chrome density', () => {
     expect(folderView).toMatch(/\.folder-copy-confirmation\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(folderView).toMatch(/\.sync-preview-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(folderView).toMatch(/\.sync-safety-confirmation\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(folderView).toMatch(/\.sync-preview-row span,[\s\S]*?padding:\s*1px 4px/)
+    expect(folderView).toMatch(/\.folder-select-name input\s*\{[\s\S]*?height:\s*16px/)
+    expect(folderView).toMatch(/\.folder-select-name input\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(folderView).toMatch(/\.folder-compare-progress button\s*\{[\s\S]*?height:\s*18px/)
+    expect(folderView).toMatch(/\.in-app-context-menu\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(folderView).toMatch(/\.file-compare-report-backdrop\s*\{[\s\S]*?padding:\s*4px/)
   })
 })
 

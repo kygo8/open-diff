@@ -54,5 +54,8 @@ describe('report dialog chrome density', () => {
     expect(reportsView).toMatch(/\.script-command-lists\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(reportsView).toMatch(/\.script-command-lists\s*\{[\s\S]*?border-radius:\s*0/)
     expect(css).toMatch(/\.reports-script-view \.script-path\s*\{[\s\S]*?padding:\s*2px 4px 0/)
+    expect(reportsView).toMatch(/\.reports-script-view\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(reportsView).toMatch(/\.reports-script-view\s*\{[\s\S]*?gap:\s*4px/)
+    expect(reportsView).toMatch(/\.report-error,\s*\.report-empty\s*\{[\s\S]*?padding:\s*2px 4px/)
   })
 })

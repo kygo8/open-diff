@@ -1040,12 +1040,30 @@ function isWriteMergeAction(action: FolderMergeActionKind): boolean {
 
 function collectMergeSafetyRows(): FolderMergePlanRow[] {
   return planRows.value.filter((row) => {
+    if (excludedRowIds.value.has(row.id)) {
+      return false
+    }
+
     if (row.action === 'Mark conflict') {
       return true
     }
 
     return isWriteMergeAction(row.action) && settings.confirmBeforeCopy
   })
+}
+
+function currentMergeOverrides(): FolderMergeActionOverride[] {
+  const overrides = new Map(
+    mergeActionOverrides.value.map((item) => [item.relativePath, item] as const),
+  )
+
+  for (const row of planRows.value) {
+    if (excludedRowIds.value.has(row.id)) {
+      overrides.set(row.path, { relativePath: row.path, action: 'Keep output' })
+    }
+  }
+
+  return [...overrides.values()]
 }
 
 async function runFolderMerge(): Promise<void> {
@@ -1086,7 +1104,7 @@ async function executeMergeNow(): Promise<void> {
       outputRoot: outputPath.value,
       archiveExtensions: [...settings.archiveExtensions],
       filters: { ...folderNameFilters.value },
-      overrides: [...mergeActionOverrides.value],
+      overrides: currentMergeOverrides(),
     })
   } catch (error) {
     mergeExecutionError.value = error instanceof Error ? error.message : String(error)
@@ -1866,6 +1884,20 @@ watch(
           {{ $t('ui.actions') }}: {{ executionSummary.executed }} / {{ $t('ui.conflicts') }}:
           {{ executionSummary.conflicts }} / {{ $t('ui.errors') }}: {{ executionSummary.failed }}
         </span>
+        <ul
+          v-if="execution?.rows.length"
+          data-testid="folder-merge-execution-rows"
+        >
+          <li
+            v-for="row in execution.rows"
+            :key="row.path"
+            :data-testid="`folder-merge-execution-row-${row.path}`"
+          >
+            <strong>{{ row.status }}</strong>
+            <span>{{ row.path }}</span>
+            <span>{{ row.detail }}</span>
+          </li>
+        </ul>
       </section>
 
       <section
@@ -2453,6 +2485,11 @@ h1 {
   color: var(--app-text-muted);
   font-size: 11px;
   line-height: 14px;
+}
+
+.merge-open-status ul {
+  margin: 2px 0 0;
+  padding-left: 14px;
 }
 
 .merge-plan header,

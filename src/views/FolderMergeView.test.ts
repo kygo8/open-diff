@@ -178,6 +178,55 @@ describe('FolderMergeView', () => {
     expect(wrapper.find('[data-testid="folder-merge-execution-status"]').text()).toContain(
       'Completed 4 / 4',
     )
+    expect(wrapper.find('[data-testid="folder-merge-execution-rows"]').text()).toContain('same.txt')
+    expect(
+      wrapper.find('[data-testid="folder-merge-execution-row-left-add.txt"]').text(),
+    ).toContain('executed')
+    expect(wrapper.find('[data-testid="folder-merge-execution-row-config"]').text()).toContain(
+      'conflict',
+    )
+  })
+
+  it('keeps excluded merge rows out of confirm and execute writes', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+    const rows = wrapper.findAll('[data-testid="folder-merge-row"]')
+    const leftAdd = rows.find((row) => row.text().includes('left-add.txt'))
+
+    expect(leftAdd).toBeTruthy()
+
+    if (!leftAdd) {
+      throw new Error('expected left-add.txt plan row')
+    }
+
+    await leftAdd.trigger('click')
+    useViewActionsStore().dispatch('exclude-selected')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="folder-merge-execute-plan"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').text()).not.toContain(
+      'left-add.txt',
+    )
+    expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').text()).toContain(
+      'right-add.txt',
+    )
+    await wrapper.find('[data-testid="folder-merge-confirm-safety"]').trigger('click')
+    await flushPromises()
+
+    expect(vi.mocked(executeFolderMergePlan).mock.calls.at(-1)?.[0]).toEqual(
+      expect.objectContaining({
+        overrides: [
+          {
+            relativePath: 'left-add.txt',
+            action: 'Keep output',
+          },
+        ],
+      }),
+    )
   })
 
   it('shows conflict details with three-way context', async () => {

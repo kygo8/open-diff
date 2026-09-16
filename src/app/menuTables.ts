@@ -83,17 +83,41 @@ export function resolveMenuCommandEnabled(
   }
 
   if (
-    commandId === 'session.save' ||
-    commandId === 'session.saveAs' ||
     commandId === 'session.clear' ||
-    commandId === 'session.export' ||
-    commandId === 'session.compare' ||
-    commandId === 'session.swap' ||
     commandId === 'session.reload' ||
-    commandId === 'session.rules' ||
-    commandId === 'session.settings'
+    commandId === 'session.save'
   ) {
     return isSessionWorkbenchPath(path)
+  }
+
+  if (commandId === 'session.export') {
+    return isSessionWorkbenchPath(path) && !isTextEditRoute(path) && !isTextPatchRoute(path)
+  }
+
+  if (commandId === 'session.saveAs') {
+    return isSessionWorkbenchPath(path) && !isTextMergeRoute(path) && !isTextPatchRoute(path)
+  }
+
+  if (commandId === 'session.compare') {
+    return isSessionWorkbenchPath(path) && !isTextEditRoute(path)
+  }
+
+  if (commandId === 'session.swap') {
+    return (
+      isSessionWorkbenchPath(path) &&
+      !isTextMergeRoute(path) &&
+      !isTextEditRoute(path) &&
+      !isTextPatchRoute(path)
+    )
+  }
+
+  if (commandId === 'session.rules' || commandId === 'session.settings') {
+    return (
+      isSessionWorkbenchPath(path) &&
+      !isTextMergeRoute(path) &&
+      !isTextEditRoute(path) &&
+      !isTextPatchRoute(path)
+    )
   }
 
   if (commandId === 'diff.next' || commandId === 'diff.previous') {
@@ -101,8 +125,8 @@ export function resolveMenuCommandEnabled(
       isSessionWorkbenchPath(path) &&
       !isPictureCompareRoute(path) &&
       !isClipboardCompareRoute(path) &&
-      !isTextPatchRoute(path) &&
-      !isTextEditRoute(path)
+      !isTextEditRoute(path) &&
+      !isTextMergeRoute(path)
     )
   }
 
@@ -212,7 +236,8 @@ export function resolveMenuCommandEnabled(
       !isTableCompareRoute(path) &&
       !isClipboardCompareRoute(path) &&
       !isTextPatchRoute(path) &&
-      !isTextEditRoute(path)
+      !isTextEditRoute(path) &&
+      !isTextMergeRoute(path)
     )
   }
 
@@ -224,7 +249,8 @@ export function resolveMenuCommandEnabled(
       !isRegistrySessionRoute(path) &&
       !isClipboardCompareRoute(path) &&
       !isTextPatchRoute(path) &&
-      !isTextEditRoute(path)
+      !isTextEditRoute(path) &&
+      !isTextMergeRoute(path)
     )
   }
 
@@ -319,7 +345,7 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'script.run') {
-    return isSessionWorkbenchPath(path)
+    return path.includes('/reports')
   }
 
   if (commandId === 'merge.previousConflict' || commandId === 'merge.nextConflict') {

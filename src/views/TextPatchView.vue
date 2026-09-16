@@ -21,6 +21,7 @@ import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useTabsStore } from '@/stores/tabs'
+import { useViewActionsStore } from '@/stores/viewActions'
 import type { FileStamp, PatchFile, PatchLineKind, TextPatchResponse } from '@/types/diff'
 
 const patchInput = ref('')
@@ -39,6 +40,7 @@ const statusBar = useStatusBarStore()
 const sessionLaunch = useSessionLaunchStore()
 const lastCompare = useLastCompareStore()
 const tabs = useTabsStore()
+const viewActions = useViewActionsStore()
 const router = useRouter()
 const { t } = useI18n()
 const selectedSectionIndex = ref(0)
@@ -437,6 +439,33 @@ function runPatchToolbarCommand(commandId: string): void {
       break
   }
 }
+
+watch(
+  () => [viewActions.sequence, viewActions.name] as const,
+  ([, actionName]) => {
+    if (actionName === 'compare' || actionName === 'reload') {
+      void parseCurrentPatch()
+
+      return
+    }
+
+    if (actionName === 'save') {
+      void applyPatchToTargetFile()
+
+      return
+    }
+
+    if (actionName === 'next-difference') {
+      goToSection(1)
+
+      return
+    }
+
+    if (actionName === 'previous-difference') {
+      goToSection(-1)
+    }
+  },
+)
 
 watch(patchSections, (sections) => {
   if (sections.length === 0) {

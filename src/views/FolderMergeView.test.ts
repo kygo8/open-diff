@@ -734,6 +734,50 @@ describe('FolderMergeView', () => {
     expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(5)
   })
 
+  it('selects the next and previous conflict rows from Search', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    useViewActionsStore().dispatch('next-conflict')
+    await flushPromises()
+    expect(
+      (wrapper.find('[data-testid="folder-merge-check-notes-txt"]').element as HTMLInputElement)
+        .checked,
+    ).toBe(true)
+
+    useViewActionsStore().dispatch('next-conflict')
+    await flushPromises()
+    expect(
+      (wrapper.find('[data-testid="folder-merge-check-config"]').element as HTMLInputElement)
+        .checked,
+    ).toBe(true)
+
+    useViewActionsStore().dispatch('previous-conflict')
+    await flushPromises()
+    expect(
+      (wrapper.find('[data-testid="folder-merge-check-notes-txt"]').element as HTMLInputElement)
+        .checked,
+    ).toBe(true)
+  })
+
+  it('swaps left and right folder paths from Session', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    useViewActionsStore().dispatch('swap')
+    await flushPromises()
+
+    expect(
+      (wrapper.find('[data-testid="folder-merge-left-path"]').element as HTMLInputElement).value,
+    ).toBe('D:/workspace/merge/right')
+    expect(
+      (wrapper.find('[data-testid="folder-merge-right-path"]').element as HTMLInputElement).value,
+    ).toBe('D:/workspace/merge/left')
+  })
+
   it('toggles Center Pane and Compare to Output with persisted hooks', async () => {
     const wrapper = mountFolderMergeView()
 

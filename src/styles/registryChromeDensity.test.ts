@@ -22,4 +22,28 @@ describe('registry compare chrome density', () => {
 
     expect(layout).toMatch(/data-chrome-kind='registry-session'[\s\S]*?height:\s*22px/)
   })
+
+  it('keeps Registry summary/pane/row chrome dense one more notch toward capture', () => {
+    expect(css).toMatch(
+      /\.registry-compare-view \.registry-summary-item\s*\{[\s\S]*?padding:\s*2px 6px/,
+    )
+    expect(css).toMatch(
+      /\.registry-compare-view \.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/,
+    )
+    expect(css).toMatch(/\.registry-compare-view \.registry-key-pane[\s\S]*?padding:\s*2px 6px/)
+    expect(css).toMatch(/\.registry-compare-view \.registry-key-row\s*\{[\s\S]*?min-height:\s*28px/)
+    expect(css).toMatch(
+      /\.registry-compare-view \.registry-value-row\s*\{[\s\S]*?min-height:\s*22px/,
+    )
+    expect(css).toMatch(
+      /\.registry-compare-view \.registry-value-row > \*\s*\{[\s\S]*?padding:\s*2px 6px/,
+    )
+
+    expect(registryView).toMatch(/\.registry-summary-item\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(registryView).toMatch(/\.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/)
+    expect(registryView).toMatch(/\.registry-key-pane[\s\S]*?padding:\s*2px 6px/)
+    expect(registryView).toMatch(/\.registry-key-row\s*\{[\s\S]*?min-height:\s*28px/)
+    expect(registryView).toMatch(/\.registry-value-row\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(registryView).toMatch(/\.registry-value-row > \*\s*\{[\s\S]*?padding:\s*2px 6px/)
+  })
 })

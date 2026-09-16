@@ -262,6 +262,13 @@ const canRunSync = computed(() => previewRows.value.length > 0 && !syncRunning.v
 const overriddenRowCount = computed(
   () => previewRows.value.filter((row) => row.overrideAction !== row.plannedAction).length,
 )
+const includedSyncRows = computed(() =>
+  previewRows.value.filter((row) => !excludedRowIds.value.has(row.id)),
+)
+const includedSyncRowCount = computed(() => includedSyncRows.value.length)
+const excludedSyncRowCount = computed(() => excludedRowIds.value.size)
+const lastIncludedSyncTotal = ref<number | null>(null)
+const syncProgressTotal = computed(() => lastIncludedSyncTotal.value ?? includedSyncRowCount.value)
 const syncSessionTitle = computed(() => {
   if (leftPath.value && rightPath.value) {
     return syncPathPairTitle(leftPath.value, rightPath.value)
@@ -757,6 +764,7 @@ async function previewSync(options?: { keepRunStatus?: boolean }): Promise<void>
       syncRunError.value = undefined
       planAccepted.value = false
       syncChromeMessage.value = ''
+      lastIncludedSyncTotal.value = null
     }
   } catch (error) {
     previewError.value = error instanceof Error ? error.message : String(error)
@@ -837,10 +845,18 @@ async function executeSyncNow(): Promise<void> {
       archiveExtensions: [...settings.archiveExtensions],
     })
 
-    completedOperations.value = response.succeeded + response.failed + response.cancelled
-    syncLogs.value = response.logs.map(folderSyncExecutionLogLabel)
+    const excludedPaths = new Set(
+      previewRows.value
+        .filter((row) => excludedRowIds.value.has(row.id))
+        .map((row) => row.relativePath),
+    )
+    const includedLogs = response.logs.filter((log) => !excludedPaths.has(log.relativePath))
+
+    completedOperations.value = includedLogs.length
+    lastIncludedSyncTotal.value = includedSyncRowCount.value
+    syncLogs.value = includedLogs.map(folderSyncExecutionLogLabel)
     syncExecutionStatusByPath.value = new Map(
-      response.logs.map((log) => [log.relativePath, log.status]),
+      includedLogs.map((log) => [log.relativePath, log.status]),
     )
     syncChromeMessage.value = t('status.syncCompleted', {
       succeeded: response.succeeded,
@@ -1152,7 +1168,7 @@ const rightSyncPathFooter = computed(() => syncSelectionLabel.value)
 watchEffect(() => {
   statusBar.reportStatus({
     comparisonStatus: previewRows.value.length > 0 ? t('status.compared') : t('status.readyIdle'),
-    differenceCount: previewRows.value.length > 0 ? previewRows.value.length : null,
+    differenceCount: includedSyncRowCount.value > 0 ? includedSyncRowCount.value : null,
     filterStatus: t('status.allRows'),
     source: 'folder-sync',
     chromeKind: 'folder-pair',
@@ -1506,8 +1522,11 @@ watch(
           <p class="eyebrow">{{ $t('ui.folderSync') }}</p>
           <h1 data-testid="folder-sync-title">{{ syncSessionTitle }}</h1>
         </div>
-        <div class="sync-progress">
-          <strong>{{ completedOperations }} / {{ previewRows.length }}</strong>
+        <div
+          class="sync-progress"
+          data-testid="folder-sync-progress"
+        >
+          <strong>{{ completedOperations }} / {{ syncProgressTotal }}</strong>
           <span>{{ $t('ui.completed') }}</span>
         </div>
       </header>
@@ -1760,7 +1779,7 @@ watch(
           </div>
           <div>
             <dt>{{ $t('ui.sessionInfoTotal') }}</dt>
-            <dd>{{ previewRows.length }}</dd>
+            <dd>{{ includedSyncRowCount }}</dd>
           </div>
         </dl>
         <button
@@ -1854,6 +1873,12 @@ watch(
                 count: pendingSyncSafetyRows.length,
               })
             }}</span>
+            <span
+              v-if="excludedSyncRowCount > 0"
+              data-testid="folder-sync-excluded-count"
+            >
+              {{ $t('ui.suppressed') }}: {{ excludedSyncRowCount }}
+            </span>
           </div>
           <ul>
             <li
@@ -2098,7 +2123,7 @@ watch(
         data-testid="folder-sync-run-status"
       >
         <strong>{{
-          $t('status.completedCount', { count: completedOperations, total: previewRows.length })
+          $t('status.completedCount', { count: completedOperations, total: syncProgressTotal })
         }}</strong>
         <ul>
           <li
@@ -2141,7 +2166,7 @@ watch(
             </div>
             <div>
               <dt>{{ $t('ui.items') }}</dt>
-              <dd>{{ previewRows.length }}</dd>
+              <dd>{{ includedSyncRowCount }}</dd>
             </div>
             <div>
               <dt>{{ $t('ui.completed') }}</dt>

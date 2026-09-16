@@ -815,17 +815,33 @@ function openOutputFolderCompare(): void {
 const selectedPlanRow = computed(
   () => planRows.value.find((row) => row.id === selectedPlanRowId.value) ?? null,
 )
+const includedMergeRows = computed(() =>
+  planRows.value.filter((row) => !excludedRowIds.value.has(row.id)),
+)
+const excludedMergeRowCount = computed(() => excludedRowIds.value.size)
 const sameOkCount = computed(
-  () => planRows.value.filter((row) => row.action === 'Keep output').length,
+  () => includedMergeRows.value.filter((row) => row.action === 'Keep output').length,
 )
 const conflicts = computed(() =>
   planRows.value.flatMap((row) => (row.conflict ? [row.conflict] : [])),
 )
-const summary = computed(() => ({
-  actions: plan.value?.summary.actions ?? 0,
-  automatic: plan.value?.summary.automatic ?? 0,
-  conflicts: plan.value?.summary.conflicts ?? 0,
-}))
+const summary = computed(() => {
+  if (excludedRowIds.value.size === 0) {
+    return {
+      actions: plan.value?.summary.actions ?? 0,
+      automatic: plan.value?.summary.automatic ?? 0,
+      conflicts: plan.value?.summary.conflicts ?? 0,
+    }
+  }
+
+  const conflictCount = includedMergeRows.value.filter((row) => Boolean(row.conflict)).length
+
+  return {
+    actions: includedMergeRows.value.length,
+    automatic: includedMergeRows.value.length - conflictCount,
+    conflicts: conflictCount,
+  }
+})
 const executionSummary = computed(() => execution.value?.summary)
 
 onMounted(() => {
@@ -2183,6 +2199,12 @@ watch(
                 count: pendingMergeSafetyRows.length,
               })
             }}</span>
+            <span
+              v-if="excludedMergeRowCount > 0"
+              data-testid="folder-merge-excluded-count"
+            >
+              {{ $t('ui.suppressed') }}: {{ excludedMergeRowCount }}
+            </span>
           </div>
           <ul>
             <li

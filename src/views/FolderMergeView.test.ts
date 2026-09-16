@@ -219,6 +219,10 @@ describe('FolderMergeView', () => {
     expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').text()).toContain(
       'right-add.txt',
     )
+    expect(wrapper.find('[data-testid="folder-merge-excluded-count"]').text()).toContain(
+      'Suppressed: 1',
+    )
+    expect(wrapper.find('[data-testid="folder-merge-summary"]').text()).toContain('4')
     await wrapper.find('[data-testid="folder-merge-confirm-safety"]').trigger('click')
     await flushPromises()
 

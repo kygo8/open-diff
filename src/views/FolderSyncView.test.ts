@@ -935,6 +935,10 @@ describe('FolderSyncView', () => {
     expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').text()).toContain(
       'prod/old.dll',
     )
+    expect(wrapper.find('[data-testid="folder-sync-excluded-count"]').text()).toContain(
+      'Suppressed: 1',
+    )
+    expect(wrapper.find('[data-testid="folder-sync-progress"]').text()).toContain('0 / 1')
     await wrapper.find('[data-testid="folder-sync-confirm-safety"]').trigger('click')
     await flushPromises()
 
@@ -947,6 +951,10 @@ describe('FolderSyncView', () => {
           { relativePath: 'prod/old.dll', action: 'deleteRight' },
         ],
       }),
+    )
+    expect(wrapper.find('[data-testid="folder-sync-progress"]').text()).toContain('1 / 1')
+    expect(wrapper.find('[data-testid="folder-sync-run-status"]').text()).toContain(
+      'Completed 1 / 1',
     )
   })
 

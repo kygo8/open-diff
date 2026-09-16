@@ -1248,7 +1248,7 @@ h1 {
 .registry-input-panel textarea,
 .registry-input-panel button {
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -1307,7 +1307,7 @@ h1 {
   min-height: 20px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -1369,7 +1369,7 @@ h1 {
   min-height: 20px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font-size: 11px;

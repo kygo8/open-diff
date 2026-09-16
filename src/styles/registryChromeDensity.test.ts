@@ -53,5 +53,11 @@ describe('registry compare chrome density', () => {
     expect(registryView).toMatch(/\.registry-value-row > \*\s*\{[\s\S]*?padding:\s*1px 4px/)
     expect(registryView).toMatch(/\.registry-input-panel textarea\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(registryView).toMatch(/\.registry-input-panel textarea\s*\{[\s\S]*?min-height:\s*64px/)
+    expect(registryView).toMatch(
+      /\.registry-input-panel textarea,\s*\.registry-input-panel button\s*\{[\s\S]*?border-radius:\s*0/,
+    )
+    expect(registryView).toMatch(
+      /\.registry-filter-bar button,\s*\.registry-live-row button,\s*\.registry-live-row input\s*\{[\s\S]*?border-radius:\s*0/,
+    )
   })
 })

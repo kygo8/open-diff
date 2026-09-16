@@ -38,6 +38,8 @@ describe('text compare chrome density', () => {
     expect(textView).toMatch(/\.text-rules-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(textView).toMatch(/\.text-context-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(textView).toMatch(/\.compare-toolbar\s*\{[\s\S]*?gap:\s*2px/)
+    expect(textView).toMatch(/\.text-compare-progress\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(textView).toMatch(/\.text-compare-progress button\s*\{[\s\S]*?border-radius:\s*0/)
 
     expect(diffPanel).toMatch(/grid-template-columns:\s*36px minmax\(0, 1fr\) 36px/)
     expect(diffPanel).toMatch(/\.diff-tools\s*\{[\s\S]*?gap:\s*4px/)

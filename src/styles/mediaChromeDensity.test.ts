@@ -56,5 +56,10 @@ describe('media compare chrome density', () => {
     expect(mediaView).toMatch(/\.media-side dl div\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mediaView).toMatch(/\.media-rule-row\s*\{[\s\S]*?min-height:\s*18px/)
     expect(mediaView).toMatch(/\.media-players\s*\{[\s\S]*?gap:\s*6px/)
+    expect(mediaView).toMatch(/\.media-source-pair\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(mediaView).toMatch(/\.media-source-pair\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(mediaView).toMatch(
+      /\.media-path-panel input,\s*\.media-path-panel button\s*\{[\s\S]*?border-radius:\s*0/,
+    )
   })
 })

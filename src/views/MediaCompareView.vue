@@ -1081,7 +1081,7 @@ function runMediaToolbarCommand(commandId: string): void {
   min-height: 16px;
   padding: 0 3px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -1112,14 +1112,14 @@ h1 {
 
 .media-source-pair {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   min-width: 220px;
-  padding: 10px 12px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
   text-align: right;
 }
 

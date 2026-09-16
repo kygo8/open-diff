@@ -1992,8 +1992,8 @@ function onVisibilityForDiskChange(): void {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 3px 8px;
+  gap: 4px;
+  padding: 2px 4px;
   border-bottom: 1px solid var(--app-border-soft, #d7dbe3);
   background: var(--app-surface-low, #f3f3f3);
   color: var(--app-text-muted);
@@ -2007,10 +2007,10 @@ function onVisibilityForDiskChange(): void {
 }
 
 .text-compare-progress button {
-  height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  padding: 0 4px;
   border: 1px solid var(--app-border, #c7cdd6);
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--app-canvas, #ffffff);
   color: var(--app-text, #111111);
   font-size: 11px;

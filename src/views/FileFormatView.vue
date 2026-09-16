@@ -518,9 +518,9 @@ function setImportStatus(key: string, params: Record<string, string | number> = 
 <style scoped>
 .file-format-view {
   display: grid;
-  gap: 14px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 2px 4px;
   overflow: auto;
 }
 
@@ -528,13 +528,13 @@ function setImportStatus(key: string, params: Record<string, string | number> = 
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 4px;
 }
 
 .eyebrow {
-  margin: 0 0 6px;
+  margin: 0;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -546,38 +546,38 @@ h2 {
 }
 
 h1 {
-  font-size: 22px;
+  font-size: 12px;
   line-height: 1.2;
 }
 
 h2 {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .format-count {
   display: grid;
-  min-width: 96px;
-  padding: 10px 12px;
+  min-width: 64px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   text-align: right;
 }
 
 .format-count strong {
-  font-size: 18px;
+  font-size: 12px;
   line-height: 1;
 }
 
 .format-count span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .format-workspace {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
-  gap: 12px;
+  gap: 4px;
   min-height: 360px;
 }
 
@@ -585,9 +585,9 @@ h2 {
 .format-detail-panel,
 .format-io-panel {
   min-width: 0;
-  padding: 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -595,21 +595,21 @@ h2 {
 .format-detail-panel {
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: 4px;
 }
 
 .panel-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 4px;
 }
 
 button {
-  min-height: 30px;
-  padding: 0 10px;
+  min-height: 18px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -628,10 +628,10 @@ button:hover {
 .format-row {
   display: grid;
   justify-items: start;
-  gap: 3px;
+  gap: 1px;
   width: 100%;
-  min-height: 54px;
-  padding: 8px 10px;
+  min-height: 22px;
+  padding: 1px 4px;
   text-align: left;
 }
 
@@ -654,9 +654,9 @@ button:hover {
 .selected-summary,
 .rule-summary {
   margin: 0;
-  padding: 9px 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   font-size: 12px;
 }
@@ -664,12 +664,12 @@ button:hover {
 .format-form {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 4px;
 }
 
 label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -684,7 +684,7 @@ textarea {
   width: 100%;
   min-width: 0;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -692,13 +692,13 @@ textarea {
 
 input,
 select {
-  height: 32px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 4px;
 }
 
 textarea {
-  min-height: 136px;
-  padding: 8px;
+  min-height: 64px;
+  padding: 2px 4px;
   resize: vertical;
   font-family: var(--font-mono);
   font-size: 12px;
@@ -712,12 +712,12 @@ textarea {
 .format-import-export {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 4px;
 }
 
 .format-io-panel {
   display: grid;
-  gap: 10px;
+  gap: 4px;
 }
 
 @media (width <= 820px) {

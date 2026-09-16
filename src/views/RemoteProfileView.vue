@@ -975,9 +975,9 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
 <style scoped>
 .remote-unavailable {
   margin: 0;
-  padding: 8px 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
   font-size: 12px;
@@ -985,9 +985,9 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
 
 .remote-profile-view {
   display: grid;
-  gap: 14px;
+  gap: 4px;
   height: 100%;
-  padding: 16px;
+  padding: 2px 4px;
   overflow: auto;
 }
 
@@ -995,13 +995,13 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 4px;
 }
 
 .eyebrow {
-  margin: 0 0 6px;
+  margin: 0;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -1013,38 +1013,38 @@ h2 {
 }
 
 h1 {
-  font-size: 22px;
+  font-size: 12px;
   line-height: 1.2;
 }
 
 h2 {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .profile-count {
   display: grid;
-  min-width: 96px;
-  padding: 10px 12px;
+  min-width: 64px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   text-align: right;
 }
 
 .profile-count strong {
-  font-size: 18px;
+  font-size: 12px;
   line-height: 1;
 }
 
 .profile-count span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .profile-workspace {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
-  gap: 12px;
+  gap: 4px;
   min-height: 380px;
 }
 
@@ -1052,11 +1052,11 @@ h2 {
 .profile-detail-panel {
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: 4px;
   min-width: 0;
-  padding: 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1064,20 +1064,20 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 4px;
 }
 
 .profile-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
 }
 
 button {
-  min-height: 30px;
-  padding: 0 10px;
+  min-height: 18px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -1101,10 +1101,10 @@ button:hover:not(:disabled) {
 .profile-row {
   display: grid;
   justify-items: start;
-  gap: 3px;
+  gap: 1px;
   width: 100%;
-  min-height: 54px;
-  padding: 8px 10px;
+  min-height: 22px;
+  padding: 1px 4px;
   text-align: left;
 }
 
@@ -1129,9 +1129,9 @@ button:hover:not(:disabled) {
 .credential-summary,
 .test-status {
   margin: 0;
-  padding: 9px 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   font-size: 12px;
 }
@@ -1139,12 +1139,12 @@ button:hover:not(:disabled) {
 .profile-form {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 4px;
 }
 
 label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -1172,10 +1172,10 @@ input,
 select {
   width: 100%;
   min-width: 0;
-  height: 32px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -1203,13 +1203,13 @@ select {
 
 .oauth-helper {
   display: grid;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  gap: 4px;
+  margin-top: 4px;
 }
 
 .oauth-helper-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 4px;
 }
 </style>

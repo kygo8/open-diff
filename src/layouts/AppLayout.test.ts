@@ -1105,6 +1105,9 @@ describe('global menu depth parity', () => {
     expect(
       sync.find('[data-testid="menu-command-actions.newFolder"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(
+      sync.find('[data-testid="menu-command-actions.explorer"]').attributes('disabled'),
+    ).toBeUndefined()
     await sync.find('[data-testid="menu-edit"]').trigger('click')
     expect(
       sync.find('[data-testid="menu-command-edit.selectAll"]').attributes('disabled'),
@@ -1127,6 +1130,9 @@ describe('global menu depth parity', () => {
     await merge.find('[data-testid="menu-actions"]').trigger('click')
     expect(
       merge.find('[data-testid="menu-command-actions.exclude"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      merge.find('[data-testid="menu-command-actions.explorer"]').attributes('disabled'),
     ).toBeUndefined()
     await merge.find('[data-testid="menu-edit"]').trigger('click')
     expect(

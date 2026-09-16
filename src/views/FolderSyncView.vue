@@ -51,7 +51,8 @@ import { joinStatusFooterParts } from '@/app/folderSelectionStatus'
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
 import { createChildCompareLaunch } from '@/app/childSession'
-import { openPathExternal } from '@/api/integration'
+import { openPathExternal, revealPathInOs } from '@/api/integration'
+import { explorerRevealPath, explorerSelectTargetPath } from '@/app/folderCompareExtraActions'
 
 interface SyncStrategyOption {
   value: FolderSyncStrategy
@@ -453,6 +454,40 @@ async function openSyncSelectedWithAssociatedApplication(): Promise<void> {
     lastSelectionAction.value = `${t('ui.openWith')} -> ${path}`
   } catch (error) {
     syncOpenError.value = error instanceof Error ? error.message : String(error)
+  }
+}
+
+const syncExplorerEntryPath = computed(() => {
+  const row = syncSelectedRow()
+
+  return row ? syncOpenPathForRow(row) : undefined
+})
+
+async function revealSyncSelectedInExplorer(): Promise<void> {
+  const entryPath = syncExplorerEntryPath.value
+
+  if (!entryPath) {
+    return
+  }
+
+  const selectPath = explorerSelectTargetPath(entryPath)
+  const fallbackPath = explorerRevealPath(entryPath, 'file')
+
+  try {
+    const result = await revealPathInOs(selectPath)
+    const revealedPath = result.selected ? selectPath : result.path || fallbackPath
+
+    lastSelectionAction.value = result.selected
+      ? t('status.explorerRevealed', { path: selectPath })
+      : t('status.explorerOpenedParent', { path: revealedPath })
+  } catch {
+    try {
+      await openPathExternal(fallbackPath)
+      lastSelectionAction.value = t('status.explorerOpenedParent', { path: fallbackPath })
+    } catch (fallbackError) {
+      syncOpenError.value =
+        fallbackError instanceof Error ? fallbackError.message : String(fallbackError)
+    }
   }
 }
 
@@ -1148,6 +1183,9 @@ watch(
       case 'open-with':
         void openSyncSelectedWithAssociatedApplication()
         break
+      case 'explorer':
+        void revealSyncSelectedInExplorer()
+        break
       case 'quick-compare':
         openSyncChildCompare('quick')
         break
@@ -1200,7 +1238,6 @@ watch(
       case 'rename-selected':
       case 'compare-contents':
       case 'synchronize':
-      case 'explorer':
       case 'ignored':
       case 'align-with':
       case 'break-alignment':
@@ -1506,6 +1543,14 @@ watch(
         <header>
           <strong>{{ previewName || selectedStrategyLabel }}</strong>
           <span>{{ leftPath }} -> {{ rightPath }}</span>
+          <button
+            type="button"
+            data-testid="reveal-sync-selected-in-explorer"
+            :disabled="!syncExplorerEntryPath"
+            @click="revealSyncSelectedInExplorer"
+          >
+            {{ $t('ui.explorer') }}
+          </button>
           <em data-testid="folder-sync-accept-state">{{
             planAccepted ? $t('status.syncPlanAccepted') : $t('status.syncPlanPending')
           }}</em>

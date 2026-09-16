@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { openPathExternal } from '@/api/integration'
+import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { useSettingsStore } from '@/stores/settings'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
@@ -28,6 +28,12 @@ vi.mock('@/api/integration', () => ({
   openPathExternal: vi
     .fn()
     .mockResolvedValue({ path: 'D:/workspace/merge/left/same.txt', launched: true }),
+  revealPathInOs: vi.fn().mockResolvedValue({
+    path: 'D:/workspace/merge/left/same.txt',
+    selected: true,
+    fallbackOpened: false,
+    launched: true,
+  }),
 }))
 
 vi.mock('@/api/folderMerge', () => ({
@@ -496,6 +502,35 @@ describe('FolderMergeView', () => {
     useViewActionsStore().dispatch('refresh-selection')
     await flushPromises()
     expect(buildFolderMergePlan).toHaveBeenCalled()
+  })
+
+  it('wires Explorer reveal_path_in_os for the selected merge row', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    const explorer = wrapper.find('[data-testid="reveal-merge-selected-in-explorer"]')
+
+    expect(explorer.exists()).toBe(true)
+    // Plan build auto-selects the first row.
+    expect(explorer.attributes('disabled')).toBeUndefined()
+
+    vi.mocked(revealPathInOs).mockClear()
+    await explorer.trigger('click')
+    await flushPromises()
+    expect(revealPathInOs).toHaveBeenCalledWith('D:/workspace/merge/left/same.txt')
+
+    vi.mocked(revealPathInOs).mockClear()
+    useViewActionsStore().dispatch('select-all')
+    await flushPromises()
+    useViewActionsStore().dispatch('explorer')
+    await flushPromises()
+    expect(revealPathInOs).toHaveBeenCalledWith('D:/workspace/merge/left/same.txt')
+    expect(wrapper.find('[data-testid="folder-merge-selection-status"]').text()).toMatch(
+      /Revealed|file manager/i,
+    )
   })
 })
 

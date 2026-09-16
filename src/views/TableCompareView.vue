@@ -1417,7 +1417,7 @@ h2 {
 .table-summary {
   display: grid;
   min-width: 132px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1510,7 +1510,7 @@ h2 {
 .table-grid-panel {
   display: grid;
   gap: 4px 6px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1525,7 +1525,7 @@ h2 {
 }
 
 .column-source-grid li {
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);
@@ -1617,9 +1617,9 @@ h2 {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 2px 6px;
+  gap: 2px 4px;
   min-width: 128px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);
@@ -1692,7 +1692,7 @@ h2 {
 
 .table-grid-cell {
   min-width: 0;
-  padding: 2px 6px;
+  padding: 2px 4px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-size: 11px;
@@ -1727,7 +1727,7 @@ h2 {
 .column-map-row span,
 .column-map-row strong {
   min-width: 0;
-  padding: 2px 6px;
+  padding: 2px 4px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-size: 11px;

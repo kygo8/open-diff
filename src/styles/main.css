@@ -2069,9 +2069,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .media-compare-view .media-side,
 .media-compare-view .media-report-panel,
 .media-compare-view .media-rules-panel {
-  gap: 2px 6px !important;
-  min-height: 22px !important;
-  padding: 2px 6px !important;
+  gap: 2px 4px !important;
+  min-height: 20px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2089,7 +2089,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .media-compare-view .media-field-row > * {
-  padding: 2px 6px !important;
+  padding: 2px 4px !important;
   line-height: 16px !important;
 }
 
@@ -2181,7 +2181,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .media-compare-view .media-side dl div {
   gap: 2px !important;
   min-height: 18px !important;
-  padding: 2px 6px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2251,9 +2251,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .version-compare-view .version-side,
 .version-compare-view .version-report-panel,
 .version-compare-view .version-rules-panel {
-  gap: 2px 6px !important;
-  min-height: 22px !important;
-  padding: 2px 6px !important;
+  gap: 2px 4px !important;
+  min-height: 20px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2271,7 +2271,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .version-compare-view .version-field-row > * {
-  padding: 2px 6px !important;
+  padding: 2px 4px !important;
   line-height: 16px !important;
 }
 
@@ -2313,7 +2313,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .version-compare-view .version-side dl div {
   gap: 2px !important;
   min-height: 18px !important;
-  padding: 2px 6px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2339,7 +2339,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .version-compare-view .version-error {
   min-height: 18px !important;
-  padding: 2px 6px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
   line-height: 14px !important;
@@ -2347,8 +2347,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .version-compare-view .version-source-pair {
   gap: 2px !important;
-  min-height: 22px !important;
-  padding: 2px 6px !important;
+  min-height: 20px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
   line-height: 14px !important;
@@ -2503,7 +2503,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .clipboard-compare-view .clipboard-toolbar {
   gap: 2px 4px !important;
-  min-height: 22px !important;
+  min-height: 20px !important;
   padding: 1px 4px !important;
   border-radius: 0 !important;
 }
@@ -2610,21 +2610,21 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .table-compare-view .column-source-grid,
 .table-compare-view .column-mapping-list,
 .table-compare-view .table-grid-panel {
-  gap: 4px 6px !important;
-  padding: 2px 6px !important;
+  gap: 4px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
 .table-compare-view .column-source-grid li {
-  padding: 2px 6px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
   line-height: 14px !important;
 }
 
 .table-compare-view .table-column-rule {
-  gap: 2px 6px !important;
-  padding: 2px 6px !important;
+  gap: 2px 4px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
 }

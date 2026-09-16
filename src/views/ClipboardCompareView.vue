@@ -348,7 +348,7 @@ function runClipboardToolbarCommand(commandId: string): void {
   flex-wrap: wrap;
   align-items: center;
   gap: 2px 4px;
-  min-height: 22px;
+  min-height: 20px;
   padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;

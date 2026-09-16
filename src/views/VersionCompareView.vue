@@ -837,8 +837,8 @@ h1 {
   display: grid;
   gap: 2px;
   min-width: 180px;
-  min-height: 22px;
-  padding: 2px 6px;
+  min-height: 20px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -907,7 +907,7 @@ h1 {
 .version-error {
   min-height: 18px;
   margin: 0;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-danger);
   border-radius: 0;
   background: var(--diff-deleted-bg);
@@ -934,9 +934,9 @@ h1 {
 .version-side,
 .version-report-panel {
   display: grid;
-  gap: 2px 6px;
-  min-height: 22px;
-  padding: 2px 6px;
+  gap: 2px 4px;
+  min-height: 20px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -989,7 +989,7 @@ h1 {
   gap: 2px;
   min-width: 0;
   min-height: 18px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);
@@ -1037,9 +1037,9 @@ h1 {
 
 .version-rules-panel {
   display: grid;
-  gap: 2px 6px;
-  min-height: 22px;
-  padding: 2px 6px;
+  gap: 2px 4px;
+  min-height: 20px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1098,7 +1098,7 @@ h1 {
 .version-field-row > * {
   min-width: 0;
   margin: 0;
-  padding: 2px 6px;
+  padding: 2px 4px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-style: normal;

@@ -1141,9 +1141,9 @@ h1 {
 .media-side,
 .media-report-panel {
   display: grid;
-  gap: 2px 6px;
-  min-height: 22px;
-  padding: 2px 6px;
+  gap: 2px 4px;
+  min-height: 20px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1196,7 +1196,7 @@ h1 {
   gap: 2px;
   min-width: 0;
   min-height: 18px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);
@@ -1247,9 +1247,9 @@ h1 {
 
 .media-rules-panel {
   display: grid;
-  gap: 2px 6px;
-  min-height: 22px;
-  padding: 2px 6px;
+  gap: 2px 4px;
+  min-height: 20px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1307,7 +1307,7 @@ h1 {
 .media-field-row > * {
   min-width: 0;
   margin: 0;
-  padding: 2px 6px;
+  padding: 2px 4px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-style: normal;
@@ -1395,7 +1395,7 @@ h1 {
 .media-playback-panel {
   display: grid;
   gap: 4px 6px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);

@@ -171,6 +171,7 @@ const previewRows = ref<SyncPreviewRow[]>([])
 const completedOperations = ref(0)
 const syncLogs = ref<string[]>([])
 const planAccepted = ref(false)
+const pendingSyncSafetyRows = ref<SyncPreviewRow[]>([])
 const syncChromeMessage = ref('')
 const collapsedPrefixes = ref<Set<string>>(new Set())
 const showSyncFilters = ref(false)
@@ -738,6 +739,7 @@ async function previewSync(): Promise<void> {
     syncLogs.value = []
     syncRunError.value = undefined
     planAccepted.value = false
+    pendingSyncSafetyRows.value = []
     syncChromeMessage.value = ''
     collapsedPrefixes.value = new Set()
     checkedRowIds.value = new Set()
@@ -756,6 +758,32 @@ async function previewSync(): Promise<void> {
   }
 }
 
+function isDeleteOverride(action: FolderSyncOverrideAction): boolean {
+  return action === 'deleteLeft' || action === 'deleteRight'
+}
+
+function isCopyOverride(action: FolderSyncOverrideAction): boolean {
+  return action === 'copyLeftToRight' || action === 'copyRightToLeft'
+}
+
+function collectRiskySyncRows(): SyncPreviewRow[] {
+  return previewRows.value.filter((row) => {
+    if (row.overrideAction === 'leave') {
+      return false
+    }
+
+    if (isDeleteOverride(row.overrideAction) && settings.confirmBeforeSyncDelete) {
+      return true
+    }
+
+    return isCopyOverride(row.overrideAction) && settings.confirmBeforeSyncOverwrite
+  })
+}
+
+function syncOverrideActionLabel(action: FolderSyncOverrideAction): string {
+  return t(overrideOptions.find((option) => option.value === action)?.labelKey ?? 'ui.leaveAlone')
+}
+
 async function runSync(): Promise<void> {
   if (!canRunSync.value) {
     return
@@ -765,17 +793,29 @@ async function runSync(): Promise<void> {
     acceptSyncPlan()
   }
 
-  const deleteCount = previewRows.value.filter(
-    (row) => row.overrideAction === 'deleteLeft' || row.overrideAction === 'deleteRight',
-  ).length
+  const riskyRows = collectRiskySyncRows()
 
-  if (deleteCount > 0 && settings.confirmBeforeSyncDelete) {
-    // eslint-disable-next-line no-alert -- Options Confirmations sync-delete gate
-    const accepted = window.confirm(t('ui.confirmBeforeSyncDeleteHint'))
+  if (riskyRows.length > 0) {
+    pendingSyncSafetyRows.value = riskyRows
 
-    if (!accepted) {
-      return
-    }
+    return
+  }
+
+  await executeSyncNow()
+}
+
+function confirmSyncSafety(): void {
+  pendingSyncSafetyRows.value = []
+  void executeSyncNow()
+}
+
+function cancelSyncSafety(): void {
+  pendingSyncSafetyRows.value = []
+}
+
+async function executeSyncNow(): Promise<void> {
+  if (!canRunSync.value) {
+    return
   }
 
   syncRunning.value = true
@@ -875,6 +915,7 @@ function acceptSyncPlan(): void {
     row.overrideAction = row.plannedAction
   }
   planAccepted.value = true
+  pendingSyncSafetyRows.value = []
   syncChromeMessage.value = t('status.syncPlanAccepted')
 }
 
@@ -883,11 +924,18 @@ function cancelSyncOverrides(): void {
     row.overrideAction = 'leave'
   }
   planAccepted.value = false
+  pendingSyncSafetyRows.value = []
   syncChromeMessage.value = t('status.syncPlanCancelled')
 }
 
 function resetRowOverride(row: SyncPreviewRow): void {
   row.overrideAction = row.plannedAction
+  pendingSyncSafetyRows.value = []
+}
+
+function onRowOverrideChange(): void {
+  planAccepted.value = false
+  pendingSyncSafetyRows.value = []
 }
 
 function syncOverrideTargetRows(): SyncPreviewRow[] {
@@ -912,6 +960,7 @@ function applySyncOverrideAction(action: FolderSyncOverrideAction): void {
   for (const row of targets) {
     row.overrideAction = action
   }
+  pendingSyncSafetyRows.value = []
 
   const label =
     overrideOptions.find((option) => option.value === action)?.labelKey ?? 'ui.leaveAlone'
@@ -1698,6 +1747,45 @@ watch(
             planAccepted ? $t('status.syncPlanAccepted') : $t('status.syncPlanPending')
           }}</em>
         </header>
+        <section
+          v-if="pendingSyncSafetyRows.length > 0"
+          class="sync-safety-confirmation"
+          data-testid="folder-sync-safety-confirmation"
+        >
+          <div>
+            <strong>{{ $t('ui.confirmRiskySyncActions') }}</strong>
+            <span>{{
+              $t('status.overwriteDeleteOperationsNeedReview', {
+                count: pendingSyncSafetyRows.length,
+              })
+            }}</span>
+          </div>
+          <ul>
+            <li
+              v-for="row in pendingSyncSafetyRows"
+              :key="row.id"
+            >
+              <strong>{{ syncOverrideActionLabel(row.overrideAction) }}</strong>
+              <span>{{ row.targetPath ?? row.relativePath }}</span>
+            </li>
+          </ul>
+          <div class="sync-safety-actions">
+            <NButton
+              size="small"
+              secondary
+              data-testid="folder-sync-cancel-safety"
+              @click="cancelSyncSafety"
+              >{{ $t('ui.cancel') }}</NButton
+            >
+            <NButton
+              size="small"
+              type="primary"
+              data-testid="folder-sync-confirm-safety"
+              @click="confirmSyncSafety"
+              >{{ $t('ui.confirmSync') }}</NButton
+            >
+          </div>
+        </section>
         <div class="sync-preview-table">
           <div class="sync-preview-row sync-preview-head">
             <span>{{ $t('ui.select') }}</span>
@@ -1739,7 +1827,7 @@ watch(
                 v-model="row.overrideAction"
                 :data-testid="`sync-override-${row.id}`"
                 @click.stop
-                @change="planAccepted = false"
+                @change="onRowOverrideChange"
               >
                 <option
                   v-for="option in overrideOptions"
@@ -2084,6 +2172,58 @@ h1 {
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+}
+
+.sync-safety-confirmation {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  border: 1px solid var(--diff-deleted-fg);
+  border-radius: 0;
+  background: var(--app-surface-muted);
+}
+
+.sync-safety-confirmation div {
+  display: grid;
+  gap: 2px;
+}
+
+.sync-safety-confirmation strong {
+  font-size: 12px;
+}
+
+.sync-safety-confirmation span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.sync-safety-confirmation ul {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sync-safety-confirmation li {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+}
+
+.sync-safety-confirmation li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sync-safety-actions {
+  display: inline-flex;
+  gap: 4px;
 }
 
 .sync-preview header {

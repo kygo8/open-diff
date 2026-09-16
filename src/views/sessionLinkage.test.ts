@@ -252,6 +252,8 @@ describe('session UI to command linkage', () => {
 
     await wrapper.find('[data-testid="folder-sync-accept"]').trigger('click')
     await wrapper.find('[data-testid="folder-sync-run"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="folder-sync-confirm-safety"]').trigger('click')
     await flushPromises()
 
     expectCommand('execute_folder_sync', {

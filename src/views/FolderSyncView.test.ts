@@ -170,6 +170,15 @@ describe('FolderSyncView', () => {
     expect(wrapper.find('[data-testid="folder-sync-run"]').attributes('disabled')).toBeUndefined()
     await wrapper.find('[data-testid="folder-sync-accept"]').trigger('click')
     await wrapper.find('[data-testid="folder-sync-run"]').trigger('click')
+    expect(executeFolderSync).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').text()).toContain(
+      'package/app.exe',
+    )
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').text()).toContain(
+      'prod/old.dll',
+    )
+    await wrapper.find('[data-testid="folder-sync-confirm-safety"]').trigger('click')
     await flushPromises()
 
     expect(executeFolderSync).toHaveBeenCalledWith({
@@ -708,5 +717,61 @@ describe('FolderSyncView', () => {
     expect(createFolderEntry).toHaveBeenCalledWith({ path: 'D:/deploy/package/Fresh' })
     expect(createFolderEntry).toHaveBeenCalledWith({ path: 'D:/deploy/prod/Fresh' })
     expect(previewFolderSync).toHaveBeenCalled()
+  })
+
+  it('cancels overwrite/delete confirmation without executing', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-testid="folder-sync-run"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="folder-sync-cancel-safety"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').exists()).toBe(false)
+    expect(executeFolderSync).not.toHaveBeenCalled()
+  })
+
+  it('skips the safety panel when overwrite and delete confirms are off', async () => {
+    const settings = useSettingsStore()
+
+    settings.setConfirmBeforeSyncOverwrite(false)
+    settings.setConfirmBeforeSyncDelete(false)
+
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-testid="folder-sync-run"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').exists()).toBe(false)
+    expect(executeFolderSync).toHaveBeenCalled()
   })
 })

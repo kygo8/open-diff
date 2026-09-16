@@ -1062,6 +1062,59 @@ function onMergeRowActionChange(row: FolderMergePlanRow, event: Event): void {
   applyMergeRowAction(row, (event.target as HTMLSelectElement).value as FolderMergeActionKind)
 }
 
+function applyMergeActionToRows(rows: FolderMergePlanRow[], action: FolderMergeActionKind): void {
+  if (!plan.value || rows.length === 0) {
+    return
+  }
+
+  const ids = new Set(rows.map((row) => row.id))
+
+  plan.value = {
+    ...plan.value,
+    rows: plan.value.rows.map((item) => {
+      if (!ids.has(item.id)) {
+        return item
+      }
+
+      return {
+        ...item,
+        action,
+        conflict: action === 'Mark conflict' ? item.conflict : undefined,
+        detail: action,
+      }
+    }),
+  }
+
+  const existing = new Map(
+    mergeActionOverrides.value.map((item) => [item.relativePath, item] as const),
+  )
+
+  for (const row of rows) {
+    existing.set(row.path, { relativePath: row.path, action })
+  }
+
+  mergeActionOverrides.value = [...existing.values()]
+  pendingMergeSafetyRows.value = []
+  lastSelectionAction.value = t('status.mergeCopyToOutputApplied', {
+    action: folderMergeActionLabel(action),
+    count: rows.length,
+  })
+}
+
+function applyMergeActionToAll(): void {
+  const selected = selectedPlanRow.value
+
+  if (!selected) {
+    return
+  }
+
+  applyMergeActionToRows(visiblePlanRows.value, selected.action)
+}
+
+function skipRemainingMergeRows(): void {
+  applyMergeActionToRows(visiblePlanRows.value, 'Keep output')
+}
+
 function isWriteMergeAction(action: FolderMergeActionKind): boolean {
   return (
     action === 'Copy left to output' ||
@@ -1844,6 +1897,22 @@ watch(
             :loading="mergeExecuting"
             @click="runFolderMerge"
             >{{ $t('ui.merge') }} -> {{ $t('ui.output') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="folder-merge-apply-to-all"
+            :disabled="!selectedPlanRow || mergeExecuting"
+            @click="applyMergeActionToAll"
+            >{{ $t('ui.apply') }} {{ $t('ui.all') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="folder-merge-skip-remaining"
+            :disabled="!hasPlan || mergeExecuting"
+            @click="skipRemainingMergeRows"
+            >{{ $t('ui.leaveAlone') }}</NButton
           >
         </div>
       </section>

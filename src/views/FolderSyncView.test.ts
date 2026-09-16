@@ -683,6 +683,46 @@ describe('FolderSyncView', () => {
     ).toBe('deleteRight')
   })
 
+  it('applies the selected override to all visible rows and can skip the rest', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="sync-row-copy-app"]').trigger('click')
+    await wrapper.find('[data-testid="sync-override-copy-app"]').setValue('copyRightToLeft')
+    await wrapper.find('[data-testid="folder-sync-apply-to-all"]').trigger('click')
+    await flushPromises()
+
+    expect(
+      (wrapper.find('[data-testid="sync-override-copy-app"]').element as HTMLSelectElement).value,
+    ).toBe('copyRightToLeft')
+    expect(
+      (wrapper.find('[data-testid="sync-override-delete-old"]').element as HTMLSelectElement).value,
+    ).toBe('copyRightToLeft')
+
+    await wrapper.find('[data-testid="folder-sync-skip-remaining"]').trigger('click')
+    await flushPromises()
+    expect(
+      (wrapper.find('[data-testid="sync-override-copy-app"]').element as HTMLSelectElement).value,
+    ).toBe('leave')
+    expect(
+      (wrapper.find('[data-testid="sync-override-delete-old"]').element as HTMLSelectElement).value,
+    ).toBe('leave')
+  })
+
   it('creates a new folder under Sync path roots', async () => {
     vi.mocked(createFolderEntry).mockResolvedValue({
       operation: 'createFolder',

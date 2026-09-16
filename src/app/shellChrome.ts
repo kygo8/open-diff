@@ -54,3 +54,12 @@ export function isSingleSessionFrame(input: SingleSessionFrameInput): boolean {
 export function preferDenseAppChrome(input: { showTabStrip: boolean }): boolean {
   return !input.showTabStrip
 }
+
+/** Folder Compare / Sync / Merge routes that can show the status legend. */
+export function supportsFolderStatusLegend(routePath: string): boolean {
+  return (
+    routePath.includes('/compare/folder') ||
+    routePath.includes('/sync') ||
+    routePath.includes('/merge')
+  )
+}

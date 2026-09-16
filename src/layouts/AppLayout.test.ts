@@ -878,7 +878,55 @@ describe('AppLayout command palette', () => {
       wrapper.find('[data-testid="menu-command-merge.nextConflict"]').attributes('disabled'),
     ).toBeDefined()
 
+    await wrapper.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-view.legend"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+Alt+L')
+    expect(wrapper.find('[data-testid="menu-command-view.legend"]').text()).toContain('Ctrl+Alt+L')
+    expect(
+      wrapper.find('[data-testid="menu-command-view.legend"]').attributes('disabled'),
+    ).toBeUndefined()
+
     wrapper.unmount()
+  })
+
+  it('toggles folder legend with Ctrl+Alt+L and disables off folder sessions', async () => {
+    routePath = '/sync/folder'
+    const wrapper = mountAppLayout()
+    const settings = useSettingsStore()
+
+    expect(settings.showFolderLegend).toBe(false)
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'l', ctrlKey: true, altKey: true }))
+    await wrapper.vm.$nextTick()
+    expect(settings.showFolderLegend).toBe(true)
+
+    await wrapper.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-view.legend"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+Alt+L')
+    wrapper.unmount()
+
+    routePath = '/compare/text'
+    const textSession = mountAppLayout()
+
+    settings.setShowFolderLegend(false)
+    await textSession.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      textSession.find('[data-testid="menu-command-view.legend"]').attributes('disabled'),
+    ).toBeDefined()
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'l', ctrlKey: true, altKey: true }))
+    await textSession.vm.$nextTick()
+    expect(settings.showFolderLegend).toBe(false)
+    textSession.unmount()
+
+    routePath = '/'
+    const home = mountAppLayout()
+
+    await home.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      home.find('[data-testid="menu-command-view.legend"]').attributes('disabled'),
+    ).toBeDefined()
+    home.unmount()
   })
 
   it('dispatches niche toggle-minor and sync-now shortcuts from chrome keydown', async () => {
@@ -1248,6 +1296,9 @@ describe('global menu depth parity', () => {
     ).toBeDefined()
     expect(
       home.find('[data-testid="menu-command-view.showSame"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      home.find('[data-testid="menu-command-view.legend"]').attributes('disabled'),
     ).toBeDefined()
     home.unmount()
   })

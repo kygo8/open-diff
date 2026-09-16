@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { isSingleSessionFrame, preferDenseAppChrome, shouldShowTabStrip } from './shellChrome'
+import {
+  isSingleSessionFrame,
+  preferDenseAppChrome,
+  shouldShowTabStrip,
+  supportsFolderStatusLegend,
+} from './shellChrome'
 
 describe('shouldShowTabStrip', () => {
   it('shows when more than one tab is open', () => {
@@ -83,5 +88,19 @@ describe('preferDenseAppChrome', () => {
 
   it('is false when the tab strip is visible', () => {
     expect(preferDenseAppChrome({ showTabStrip: true })).toBe(false)
+  })
+})
+
+describe('supportsFolderStatusLegend', () => {
+  it('is true on Folder Compare, Sync, and Merge routes', () => {
+    expect(supportsFolderStatusLegend('/compare/folder')).toBe(true)
+    expect(supportsFolderStatusLegend('/sync/folder')).toBe(true)
+    expect(supportsFolderStatusLegend('/merge/folder')).toBe(true)
+  })
+
+  it('is false on Home and non-folder sessions', () => {
+    expect(supportsFolderStatusLegend('/')).toBe(false)
+    expect(supportsFolderStatusLegend('/compare/text')).toBe(false)
+    expect(supportsFolderStatusLegend('/settings')).toBe(false)
   })
 })

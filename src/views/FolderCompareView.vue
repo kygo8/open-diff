@@ -38,6 +38,7 @@ import {
   folderCopyTargetsForDirection,
   folderEntryPaths,
   invertRowIds,
+  expandHiddenDescendantsForFileActions,
   resolveOperationRows,
   selectAllRowIds,
   selectFileRowIds,
@@ -127,7 +128,7 @@ import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import { useI18n } from '@/i18n'
-import { notifyCompareComplete } from '@/app/compareCompleteNotify'
+import { notifyCompareComplete, playCompareCompleteBeep } from '@/app/compareCompleteNotify'
 import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
 import { elapsedSecondsSince, formatImportancePhrase } from '@/app/statusBarPhrases'
 import { useLastCompareStore } from '@/stores/lastCompare'
@@ -1700,7 +1701,25 @@ function openChildCompareForSelected(kind: 'open' | 'quick' | 'compare'): void {
 }
 
 function operationTargetRows(): FolderTreeRow[] {
-  return resolveOperationRows(rows.value, checkedRowIds.value, selectedRowId.value)
+  const selected = resolveOperationRows(rows.value, checkedRowIds.value, selectedRowId.value)
+
+  if (!settings.includeHiddenItemsInFileActions) {
+    return selected
+  }
+
+  return expandHiddenDescendantsForFileActions(rows.value, selected)
+}
+
+function maybeBeepAfterLongFileOperation(startedAt: number): void {
+  if (!settings.beepAfterLongFileOperations) {
+    return
+  }
+
+  if (Date.now() - startedAt < 3000) {
+    return
+  }
+
+  playCompareCompleteBeep()
 }
 
 function operationEntryPaths(): string[] {
@@ -1809,6 +1828,8 @@ async function confirmFolderCopy(): Promise<void> {
     return
   }
 
+  const startedAt = Date.now()
+
   try {
     for (const row of copyRows) {
       await copyFolderCompareEntry({
@@ -1832,6 +1853,7 @@ async function confirmFolderCopy(): Promise<void> {
     pendingCopyDirection.value = undefined
     pendingCopyRows.value = []
     checkedRowIds.value = new Set()
+    maybeBeepAfterLongFileOperation(startedAt)
     await runFolderCompare()
   } catch (error) {
     folderCompareError.value = formatCompareError(error, t)
@@ -1995,6 +2017,8 @@ async function executeMoveToSide(direction: FolderTransferSide): Promise<void> {
     return
   }
 
+  const startedAt = Date.now()
+
   if (settings.confirmBeforeMove) {
     // eslint-disable-next-line no-alert -- Options Confirmations move gate
     const accepted = window.confirm(
@@ -2024,6 +2048,7 @@ async function executeMoveToSide(direction: FolderTransferSide): Promise<void> {
         ? `${t('ui.moveToSide')} -> ${plans[0].targetPath}`
         : t('status.movedBulkPaths', { count: plans.length })
     checkedRowIds.value = new Set()
+    maybeBeepAfterLongFileOperation(startedAt)
     await runFolderCompare()
   } catch (error) {
     folderCompareError.value = formatCompareError(error, t)
@@ -2049,6 +2074,8 @@ async function copySelectedToFolder(): Promise<void> {
     return
   }
 
+  const startedAt = Date.now()
+
   try {
     for (const plan of plans) {
       await copyFolderEntry({ sourcePath: plan.sourcePath, targetPath: plan.targetPath })
@@ -2058,6 +2085,7 @@ async function copySelectedToFolder(): Promise<void> {
         ? t('status.copiedPath', { path: plans[0].targetPath })
         : t('status.copiedBulkToSide', { count: plans.length, side: destination })
     checkedRowIds.value = new Set()
+    maybeBeepAfterLongFileOperation(startedAt)
     await runFolderCompare()
   } catch (error) {
     folderCompareError.value = formatCompareError(error, t)
@@ -2094,6 +2122,8 @@ async function moveSelectedToFolder(): Promise<void> {
     }
   }
 
+  const startedAt = Date.now()
+
   try {
     for (const plan of plans) {
       await moveFolderEntry({ sourcePath: plan.sourcePath, targetPath: plan.targetPath })
@@ -2103,6 +2133,7 @@ async function moveSelectedToFolder(): Promise<void> {
         ? `${t('ui.moveToFolder')} -> ${plans[0].targetPath}`
         : t('status.movedBulkPaths', { count: plans.length })
     checkedRowIds.value = new Set()
+    maybeBeepAfterLongFileOperation(startedAt)
     await runFolderCompare()
   } catch (error) {
     folderCompareError.value = formatCompareError(error, t)
@@ -2135,6 +2166,8 @@ async function confirmDangerousFileOperation(): Promise<void> {
     return
   }
 
+  const startedAt = Date.now()
+
   try {
     await Promise.all(
       pendingDangerousOperation.value.paths.map((path) => deleteFolderEntry({ path })),
@@ -2143,6 +2176,7 @@ async function confirmDangerousFileOperation(): Promise<void> {
     pendingDangerousOperation.value = undefined
     pendingDangerousOperationLabel.value = ''
     checkedRowIds.value = new Set()
+    maybeBeepAfterLongFileOperation(startedAt)
     await runFolderCompare()
   } catch (error) {
     folderCompareError.value = formatCompareError(error, t)

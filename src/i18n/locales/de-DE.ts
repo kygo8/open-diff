@@ -1127,6 +1127,25 @@ export const deDE: LanguagePack = {
       'When a report path already exists, keep numbered .bak copies using Backup retention.',
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
+    'ui.fileOperations': 'Dateioperationen',
+    'ui.fileOperationsHint':
+      'Standardwerte für Kopieren, Verschieben und Löschen im Ordnervergleich.',
+    'ui.includeHiddenItemsInFileActions': 'Ausgeblendete Elemente standardmäßig einbeziehen',
+    'ui.includeHiddenItemsInFileActionsHint':
+      'Beim Bearbeiten eines ausgewählten Ordners auch durch Anzeige- oder Namensfilter ausgeblendete Nachfahren einbeziehen.',
+    'ui.beepAfterLongFileOperations': 'Signalton nach langen Dateioperationen',
+    'ui.beepAfterLongFileOperationsHint':
+      'Kurzen Signalton abspielen, wenn Kopieren, Verschieben oder Löschen länger als drei Sekunden dauert.',
+    'ui.enableRarArchiveTypes': 'RAR-Archivtypen aktivieren',
+    'ui.enableRarArchiveTypesHint':
+      '.rar-Pfade in Ordnervergleich, Sync und Merge als Archivseite behandeln.',
+    'ui.escClosesFileViews': 'ESC schließt Dateiansichten',
+    'ui.escClosesFileViewsHint':
+      'Aktiven Datei-Sitzungs-Tab schließen, wenn Escape gedrückt wird (Ordneransichten unverändert).',
+    'ui.beepWhenScriptFinished': 'Signalton bei Skriptende',
+    'ui.closeWhenScriptFinished': 'Bei Skriptende schließen',
+    'ui.scriptFinishedTweaksHint':
+      'Gilt für Tools > Berichte / Skripte. Schließen kehrt nach erfolgreichem Lauf zur Startseite zurück.',
     'ui.confirmQuitMessage': 'Open Diff beenden?',
     'ui.toOutput': 'Zur Ausgabe',
     'ui.folderMergeRulesHint':

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  expandHiddenDescendantsForFileActions,
   folderCopyTargetsForDirection,
   folderEntryPaths,
   invertRowIds,
@@ -101,5 +102,26 @@ describe('folderRowSelection', () => {
       },
     ])
     expect(folderEntryPaths(withPaths)).toEqual(['/L/a.txt', '/R/only-right.log'])
+  })
+
+  it('expands directory selections to hidden descendants for file actions', () => {
+    const allRows = [
+      { id: 'dir', kind: 'directory' as const, relativePath: 'pkg', status: 'Different' as const },
+      { id: 'a', kind: 'file' as const, relativePath: 'pkg/a.txt', status: 'Different' as const },
+      { id: 'b', kind: 'file' as const, relativePath: 'pkg/b.txt', status: 'Same' as const },
+      {
+        id: 'other',
+        kind: 'file' as const,
+        relativePath: 'other.txt',
+        status: 'Different' as const,
+      },
+    ]
+    const operationRows = [allRows[0]]
+
+    expect(
+      expandHiddenDescendantsForFileActions(allRows, operationRows)
+        .map((row) => row.id)
+        .sort(),
+    ).toEqual(['a', 'b', 'dir'])
   })
 })

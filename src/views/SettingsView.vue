@@ -133,6 +133,8 @@ type OptionsSectionId =
   | 'openWith'
   | 'shell'
   | 'backup'
+  | 'fileOperations'
+  | 'archiveTypes'
   | 'confirmations'
   | 'tweaks'
   | 'commands'
@@ -233,6 +235,8 @@ const optionsTree = [
     groupKey: 'ui.optionsGroupSystem',
     items: [
       { id: 'shell' as const, labelKey: 'ui.shell' },
+      { id: 'fileOperations' as const, labelKey: 'ui.fileOperations' },
+      { id: 'archiveTypes' as const, labelKey: 'ui.archiveTypes' },
       { id: 'confirmations' as const, labelKey: 'ui.confirmations' },
       { id: 'tweaks' as const, labelKey: 'ui.tweaks' },
       { id: 'commands' as const, labelKey: 'ui.commandsVisibility' },
@@ -579,6 +583,67 @@ function onConfirmBeforeCopyChange(event: Event): void {
   }
 
   settings.setConfirmBeforeCopy(target.checked)
+}
+
+function onIncludeHiddenItemsInFileActionsChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setIncludeHiddenItemsInFileActions(target.checked)
+}
+
+function onBeepAfterLongFileOperationsChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setBeepAfterLongFileOperations(target.checked)
+}
+
+function onEnableRarArchiveTypesChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setEnableRarArchiveTypes(target.checked)
+  archiveExtensionsDraft.value = formatArchiveSuffixesInput(settings.archiveExtensions)
+}
+
+function onEscClosesFileViewsChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setEscClosesFileViews(target.checked)
+}
+
+function onBeepWhenScriptFinishedChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setBeepWhenScriptFinished(target.checked)
+}
+
+function onCloseWhenScriptFinishedChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setCloseWhenScriptFinished(target.checked)
 }
 
 function onConfirmBeforeMoveChange(event: Event): void {
@@ -1885,6 +1950,72 @@ function parseShortcutText(value: string): string[] {
         </NCard>
 
         <NCard
+          v-show="optionsSection === 'fileOperations'"
+          :title="$t('ui.fileOperations')"
+          size="small"
+          data-testid="options-file-operations-card"
+        >
+          <label class="tweak-row">
+            <input
+              data-testid="include-hidden-items-in-file-actions"
+              type="checkbox"
+              :checked="settings.includeHiddenItemsInFileActions"
+              @change="onIncludeHiddenItemsInFileActionsChange"
+            />
+            <span>{{ $t('ui.includeHiddenItemsInFileActions') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.includeHiddenItemsInFileActionsHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="beep-after-long-file-operations"
+              type="checkbox"
+              :checked="settings.beepAfterLongFileOperations"
+              @change="onBeepAfterLongFileOperationsChange"
+            />
+            <span>{{ $t('ui.beepAfterLongFileOperations') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.beepAfterLongFileOperationsHint') }}</p>
+          <p class="options-hint">{{ $t('ui.fileOperationsHint') }}</p>
+        </NCard>
+
+        <NCard
+          v-show="optionsSection === 'archiveTypes'"
+          :title="$t('ui.archiveTypes')"
+          size="small"
+          data-testid="options-archive-types-card"
+        >
+          <div class="settings-row archive-types-row">
+            <div>
+              <strong>{{ $t('ui.archiveTypes') }}</strong>
+              <span>{{ $t('ui.archiveTypesHint') }}</span>
+            </div>
+          </div>
+          <div class="shared-session-input">
+            <NInput
+              v-model:value="archiveExtensionsDraft"
+              data-testid="archive-extensions-input"
+              :placeholder="$t('ui.archiveTypesPlaceholder')"
+            />
+            <NButton
+              size="small"
+              data-testid="apply-archive-extensions"
+              @click="applyArchiveExtensionsFromOptions"
+              >{{ $t('ui.apply') }}</NButton
+            >
+          </div>
+          <label class="tweak-row">
+            <input
+              data-testid="enable-rar-archive-types"
+              type="checkbox"
+              :checked="settings.enableRarArchiveTypes"
+              @change="onEnableRarArchiveTypesChange"
+            />
+            <span>{{ $t('ui.enableRarArchiveTypes') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.enableRarArchiveTypesHint') }}</p>
+        </NCard>
+
+        <NCard
           v-show="optionsSection === 'confirmations'"
           :title="$t('ui.confirmations')"
           size="small"
@@ -2012,6 +2143,35 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.notifyOnCompareComplete') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.notifyOnCompareCompleteHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="esc-closes-file-views"
+              type="checkbox"
+              :checked="settings.escClosesFileViews"
+              @change="onEscClosesFileViewsChange"
+            />
+            <span>{{ $t('ui.escClosesFileViews') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.escClosesFileViewsHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="beep-when-script-finished"
+              type="checkbox"
+              :checked="settings.beepWhenScriptFinished"
+              @change="onBeepWhenScriptFinishedChange"
+            />
+            <span>{{ $t('ui.beepWhenScriptFinished') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              data-testid="close-when-script-finished"
+              type="checkbox"
+              :checked="settings.closeWhenScriptFinished"
+              @change="onCloseWhenScriptFinishedChange"
+            />
+            <span>{{ $t('ui.closeWhenScriptFinished') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.scriptFinishedTweaksHint') }}</p>
           <NButton
             size="small"
             data-testid="restore-factory-defaults"
@@ -2118,25 +2278,6 @@ function parseShortcutText(value: string): string[] {
             />
             <span>{{ format.name }}</span>
           </label>
-          <div class="settings-row archive-types-row">
-            <div>
-              <strong>{{ $t('ui.archiveTypes') }}</strong>
-              <span>{{ $t('ui.archiveTypesHint') }}</span>
-            </div>
-          </div>
-          <div class="shared-session-input">
-            <NInput
-              v-model:value="archiveExtensionsDraft"
-              data-testid="archive-extensions-input"
-              :placeholder="$t('ui.archiveTypesPlaceholder')"
-            />
-            <NButton
-              size="small"
-              data-testid="apply-archive-extensions"
-              @click="applyArchiveExtensionsFromOptions"
-              >{{ $t('ui.apply') }}</NButton
-            >
-          </div>
         </NCard>
 
         <NCard
@@ -2539,7 +2680,7 @@ function parseShortcutText(value: string): string[] {
 <style scoped>
 .settings-view {
   display: grid;
-  grid-template-columns: 180px minmax(0, 1fr);
+  grid-template-columns: 172px minmax(0, 1fr);
   align-content: start;
   align-items: start;
   gap: 6px;
@@ -2679,8 +2820,8 @@ function parseShortcutText(value: string): string[] {
 .tweak-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  min-height: 20px;
+  gap: 5px;
+  min-height: 18px;
   margin-bottom: 2px;
   font-size: 11px;
 }

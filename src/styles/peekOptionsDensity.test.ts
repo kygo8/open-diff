@@ -49,7 +49,7 @@ describe('peek panel densify', () => {
 
 describe('options dialog densify', () => {
   it('uses a dense tree/content Options layout and keeps wired section ids', () => {
-    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*180px/)
+    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*172px/)
     expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*6px/)
     expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*20px/)
     expect(settingsView).toMatch(

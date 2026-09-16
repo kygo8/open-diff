@@ -1106,6 +1106,24 @@ export const jaJP: LanguagePack = {
       'When a report path already exists, keep numbered .bak copies using Backup retention.',
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
+    'ui.fileOperations': 'ファイル操作',
+    'ui.fileOperationsHint': 'フォルダー比較のコピー、移動、削除の既定値。',
+    'ui.includeHiddenItemsInFileActions': '非表示項目を既定で含める',
+    'ui.includeHiddenItemsInFileActionsHint':
+      '選択したフォルダーに対する操作で、表示または名前フィルターで隠された子孫も含めます。',
+    'ui.beepAfterLongFileOperations': '長いファイル操作の後にビープ',
+    'ui.beepAfterLongFileOperationsHint':
+      'コピー、移動、削除が 3 秒を超えたときに短いビープを鳴らします。',
+    'ui.enableRarArchiveTypes': 'RAR アーカイブ種類を有効化',
+    'ui.enableRarArchiveTypesHint':
+      'フォルダー比較 / 同期 / マージで .rar パスをアーカイブ側として扱います。',
+    'ui.escClosesFileViews': 'ESC でファイルビューを閉じる',
+    'ui.escClosesFileViewsHint':
+      'Escape 押下時にアクティブなファイルセッションタブを閉じます（フォルダービューは変更しません）。',
+    'ui.beepWhenScriptFinished': 'スクリプト終了時にビープ',
+    'ui.closeWhenScriptFinished': 'スクリプト終了時に閉じる',
+    'ui.scriptFinishedTweaksHint':
+      'ツール > レポート / スクリプトに適用。成功後に閉じてホームへ戻ります。',
     'ui.confirmQuitMessage': 'Open Diff を終了しますか？',
     'ui.toOutput': '出力へ',
     'ui.folderMergeRulesHint': '自動コピーは出力へ。競合はテキストマージで開きます。',

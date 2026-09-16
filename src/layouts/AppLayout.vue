@@ -1410,6 +1410,17 @@ function closeChromeMenus(): void {
   tabContextMenu.value = undefined
 }
 
+function isEscCloseableFileViewPath(path: string): boolean {
+  const pathname = tabRoutePathname(path)
+
+  return (
+    (pathname.startsWith('/compare/') && !pathname.startsWith('/compare/folder')) ||
+    pathname.startsWith('/edit/') ||
+    pathname.startsWith('/patch/') ||
+    pathname === '/merge/text'
+  )
+}
+
 function onChromeKeydown(event: KeyboardEvent): void {
   if (event.key === 'Escape') {
     if (
@@ -1421,6 +1432,17 @@ function onChromeKeydown(event: KeyboardEvent): void {
       event.preventDefault()
       closeChromeMenus()
       commandPaletteOpen.value = false
+
+      return
+    }
+
+    if (settings.escClosesFileViews && isEscCloseableFileViewPath(route.path)) {
+      const active = tabs.activeTab
+
+      if (tabs.canCloseTab(active.id)) {
+        event.preventDefault()
+        requestCloseTab({ id: active.id, title: displayTabTitle(active), dirty: active.dirty })
+      }
     }
 
     return

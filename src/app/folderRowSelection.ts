@@ -124,3 +124,31 @@ export function folderEntryPaths(rows: FolderPathRow[]): string[] {
 
   return paths
 }
+
+/** Expand selected directories to descendant rows (including filter-hidden) for file actions. */
+export function expandHiddenDescendantsForFileActions<
+  T extends { id: string; kind?: string; relativePath?: string },
+>(allRows: T[], operationRows: T[]): T[] {
+  const selected = new Map(operationRows.map((row) => [row.id, row]))
+  const prefixes = operationRows
+    .filter((row) => row.kind === 'directory' && row.relativePath)
+    .map((row) => `${String(row.relativePath).replaceAll('\\', '/').replace(/\/$/u, '')}/`)
+
+  if (prefixes.length === 0) {
+    return operationRows
+  }
+
+  for (const row of allRows) {
+    if (selected.has(row.id) || !row.relativePath) {
+      continue
+    }
+
+    const relativePath = row.relativePath.replaceAll('\\', '/')
+
+    if (prefixes.some((prefix) => relativePath.startsWith(prefix))) {
+      selected.set(row.id, row)
+    }
+  }
+
+  return [...selected.values()]
+}

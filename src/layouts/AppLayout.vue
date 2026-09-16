@@ -2077,7 +2077,7 @@ const sourceSessionTypes = new Set<SessionType>([
 <style scoped>
 .app-shell {
   display: grid;
-  grid-template-rows: 50px minmax(0, 1fr) 24px;
+  grid-template-rows: 48px minmax(0, 1fr) 24px;
   height: 100vh;
   overflow: hidden;
   background: #ffffff;
@@ -2089,7 +2089,7 @@ const sourceSessionTypes = new Set<SessionType>([
   z-index: 80;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: 25px 25px;
+  grid-template-rows: 24px 24px;
   align-items: center;
   gap: 0;
   min-width: 0;
@@ -2165,13 +2165,13 @@ const sourceSessionTypes = new Set<SessionType>([
   gap: 5px;
   min-width: 0;
   max-width: 100%;
-  height: 25px;
-  padding: 0 5px;
+  height: 24px;
+  padding: 0 4px;
   overflow: hidden;
   border: 0;
   background: #f0f3f9;
   color: #111827;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2183,10 +2183,10 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-column: 1 / -1;
   grid-row: 2;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
-  height: 25px;
-  padding: 0 3px;
+  height: 24px;
+  padding: 0 2px;
   overflow: visible;
   border-top: 1px solid #e0e0e0;
   background: #ffffff;
@@ -2215,8 +2215,8 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button {
   max-width: 9em;
-  height: 20px;
-  padding: 0 3px;
+  height: 18px;
+  padding: 0 2px;
   overflow: hidden;
   font-size: 11px;
   text-overflow: ellipsis;
@@ -2424,7 +2424,7 @@ const sourceSessionTypes = new Set<SessionType>([
   display: flex;
   gap: 1px;
   min-width: 0;
-  padding: 0 2px;
+  padding: 0 1px;
   overflow: auto hidden;
   border-bottom: 1px solid #a0a0a0;
   background: var(--app-panel, var(--app-canvas));
@@ -2483,8 +2483,8 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-chip button {
   min-width: 0;
-  height: 15px;
-  padding: 0 3px;
+  height: 14px;
+  padding: 0 2px;
   border: 0;
   background: transparent;
   color: var(--app-text);
@@ -2820,7 +2820,7 @@ html[data-show-sidebar='1'] .sidebar {
 
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind$='-session']) {
-  grid-template-rows: 50px minmax(0, 1fr) 22px;
+  grid-template-rows: 48px minmax(0, 1fr) 22px;
 }
 
 .app-shell-dense-chrome .menu-bar {

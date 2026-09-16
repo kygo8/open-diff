@@ -11,11 +11,12 @@ vi.mock('vue-router', () => ({
 }))
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import { openPathExternal } from '@/api/integration'
-import { saveTextFile } from '@/api/diff'
+import { createFolderEntry, saveTextFile } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 
 vi.mock('@/api/diff', () => ({
+  createFolderEntry: vi.fn(),
   createFolderSnapshot: vi.fn(),
   saveTextFile: vi.fn().mockResolvedValue({
     path: 'D:/deploy/folder-sync.txt',
@@ -167,7 +168,7 @@ describe('FolderSyncView', () => {
       strategy: 'mirrorRight',
       overrides: [
         { relativePath: 'package/app.exe', action: 'copyLeftToRight' },
-        { relativePath: 'prod/old.dll', action: 'delete' },
+        { relativePath: 'prod/old.dll', action: 'deleteRight' },
       ],
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
     })
@@ -554,5 +555,85 @@ describe('FolderSyncView', () => {
 
     useViewActionsStore().dispatch('toggle-log')
     await flushPromises()
+  })
+
+  it('wires Sync Actions Leave Alone / Copy / Delete overrides for selection', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="sync-row-copy-app"]').trigger('click')
+    useViewActionsStore().dispatch('leave-alone')
+    await flushPromises()
+    expect(
+      (wrapper.find('[data-testid="sync-override-copy-app"]').element as HTMLSelectElement).value,
+    ).toBe('leave')
+
+    useViewActionsStore().dispatch('sync-copy-right-to-left')
+    await flushPromises()
+    expect(
+      (wrapper.find('[data-testid="sync-override-copy-app"]').element as HTMLSelectElement).value,
+    ).toBe('copyRightToLeft')
+
+    useViewActionsStore().dispatch('sync-delete-left')
+    await flushPromises()
+    expect(
+      (wrapper.find('[data-testid="sync-override-copy-app"]').element as HTMLSelectElement).value,
+    ).toBe('deleteLeft')
+
+    useViewActionsStore().dispatch('sync-delete-right')
+    await flushPromises()
+    expect(
+      (wrapper.find('[data-testid="sync-override-copy-app"]').element as HTMLSelectElement).value,
+    ).toBe('deleteRight')
+  })
+
+  it('creates a new folder under Sync path roots', async () => {
+    vi.mocked(createFolderEntry).mockResolvedValue({
+      operation: 'createFolder',
+      status: 'created',
+      sourcePath: 'D:/deploy/package/New Folder',
+      targetPath: 'D:/deploy/package/New Folder',
+    })
+
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+
+    useViewActionsStore().dispatch('new-folder')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-sync-new-folder-panel"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="folder-sync-new-folder-name"]').setValue('Fresh')
+    await wrapper.find('[data-testid="folder-sync-confirm-new-folder"]').trigger('click')
+    await flushPromises()
+
+    expect(createFolderEntry).toHaveBeenCalledWith({ path: 'D:/deploy/package/Fresh' })
+    expect(createFolderEntry).toHaveBeenCalledWith({ path: 'D:/deploy/prod/Fresh' })
+    expect(previewFolderSync).toHaveBeenCalled()
   })
 })

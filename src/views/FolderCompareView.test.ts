@@ -171,6 +171,12 @@ vi.mock('@/api/diff', () => ({
     targetPath: 'D:/right/src/main.ts',
     refreshedStatus: 'same',
   }),
+  createFolderEntry: vi.fn().mockResolvedValue({
+    operation: 'createFolder',
+    status: 'created',
+    sourcePath: 'D:/right/New Folder',
+    targetPath: 'D:/right/New Folder',
+  }),
   deleteFolderEntry: vi.fn().mockResolvedValue({
     operation: 'delete',
     status: 'deleted',

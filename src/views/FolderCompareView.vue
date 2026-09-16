@@ -71,6 +71,7 @@ import {
   changeFolderEntryAttributes,
   compareFolderPaths,
   copyFolderCompareEntry,
+  createFolderEntry,
   createFolderSnapshot,
   deleteFolderEntry,
   exportFolderCompareReport,
@@ -78,6 +79,7 @@ import {
   renameFolderEntry,
   touchFolderEntry,
 } from '@/api/diff'
+import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
 import { openPathExternal } from '@/api/integration'
 import {
   formatRemoteUri,
@@ -275,6 +277,8 @@ const pendingDangerousOperation = ref<FileOperationConfirmation>()
 const pendingDangerousOperationLabel = ref('')
 const renamePanelOpen = ref(false)
 const renameTargetName = ref('')
+const newFolderPanelOpen = ref(false)
+const newFolderName = ref('New Folder')
 const lastFileOperationAction = ref<string>()
 const selectedReadonly = ref(false)
 const lastMetadataAction = ref<string>()
@@ -848,6 +852,15 @@ watch(
         break
       case 'touch-selected':
         void touchSelectedFile()
+        break
+      case 'new-folder':
+        openNewFolderPanel()
+        break
+      case 'leave-alone':
+      case 'sync-copy-left-to-right':
+      case 'sync-copy-right-to-left':
+      case 'sync-delete-left':
+      case 'sync-delete-right':
         break
       case 'run-script':
       case 'save-report':
@@ -1746,6 +1759,61 @@ async function confirmRenameFile(): Promise<void> {
             path: renameTargetName.value,
           })
     renamePanelOpen.value = false
+    checkedRowIds.value = new Set()
+    await runFolderCompare()
+  } catch (error) {
+    folderCompareError.value = formatCompareError(error, t)
+  }
+}
+
+function openNewFolderPanel(): void {
+  if (!leftRoot.value && !rightRoot.value) {
+    return
+  }
+
+  if (leftSideIsArchive.value && rightSideIsArchive.value) {
+    return
+  }
+
+  newFolderName.value = 'New Folder'
+  newFolderPanelOpen.value = true
+}
+
+async function confirmNewFolder(): Promise<void> {
+  const selected = operationTargetRows().at(0)
+  const parentRelative = newFolderParentRelativePath({
+    selectedRelativePath: selected?.relativePath,
+    selectedKind: selected?.kind,
+  })
+  const roots: string[] = []
+
+  if (leftRoot.value && !leftSideIsArchive.value && !leftSideIsSnapshot.value) {
+    roots.push(leftRoot.value)
+  }
+
+  if (rightRoot.value && !rightSideIsArchive.value && !rightSideIsSnapshot.value) {
+    roots.push(rightRoot.value)
+  }
+
+  const paths = resolveNewFolderPaths({
+    roots,
+    folderName: newFolderName.value,
+    parentRelativePath: parentRelative,
+  })
+
+  if (paths.length === 0) {
+    return
+  }
+
+  try {
+    for (const path of paths) {
+      await createFolderEntry({ path })
+    }
+    lastFileOperationAction.value =
+      paths.length === 1
+        ? t('status.createdFolder', { path: paths[0] })
+        : t('status.createdFolders', { count: paths.length })
+    newFolderPanelOpen.value = false
     checkedRowIds.value = new Set()
     await runFolderCompare()
   } catch (error) {
@@ -3228,6 +3296,24 @@ onUnmounted(() => {
           data-testid="confirm-rename-file"
           @click="confirmRenameFile"
           >{{ $t('ui.rename') }}</NButton
+        >
+      </section>
+
+      <section
+        v-if="newFolderPanelOpen"
+        class="folder-operation-panel"
+        data-testid="folder-compare-new-folder-panel"
+      >
+        <input
+          v-model="newFolderName"
+          data-testid="folder-compare-new-folder-name"
+        />
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="folder-compare-confirm-new-folder"
+          @click="confirmNewFolder"
+          >{{ $t('ui.newFolder') }}</NButton
         >
       </section>
 

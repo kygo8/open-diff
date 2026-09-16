@@ -186,6 +186,9 @@ pub enum FileOperationRequest {
         path: String,
         new_name: String,
     },
+    CreateFolder {
+        path: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -194,6 +197,7 @@ pub enum FileOperationKind {
     Move,
     Delete,
     Rename,
+    CreateFolder,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -202,6 +206,7 @@ pub enum FileOperationStatus {
     Moved,
     Deleted,
     Renamed,
+    Created,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -690,6 +695,16 @@ pub fn perform_file_operation(
                 status: FileOperationStatus::Renamed,
                 source_path: path,
                 target_path: Some(target_path),
+            })
+        }
+        FileOperationRequest::CreateFolder { path } => {
+            fs::create_dir(&path).map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+
+            Ok(FileOperationResult {
+                operation: FileOperationKind::CreateFolder,
+                status: FileOperationStatus::Created,
+                source_path: path.clone(),
+                target_path: Some(path),
             })
         }
     }
@@ -2111,6 +2126,29 @@ mod tests {
         assert_eq!(delete_result.operation, FileOperationKind::Delete);
         assert_eq!(delete_result.status, FileOperationStatus::Deleted);
         assert!(!moved.exists());
+
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn creates_a_new_folder_with_diagnostic_result() {
+        let root = unique_temp_dir("folder-create");
+        let created = root.join("fresh-folder");
+
+        fs::create_dir_all(&root).expect("root dir");
+
+        let result = perform_file_operation(FileOperationRequest::CreateFolder {
+            path: created.display().to_string(),
+        })
+        .expect("create folder works");
+
+        assert_eq!(result.operation, FileOperationKind::CreateFolder);
+        assert_eq!(result.status, FileOperationStatus::Created);
+        assert_eq!(
+            result.target_path.as_deref(),
+            Some(created.to_string_lossy().as_ref())
+        );
+        assert!(created.is_dir());
 
         let _ = fs::remove_dir_all(root);
     }

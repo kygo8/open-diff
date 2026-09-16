@@ -13,7 +13,8 @@ import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { Eye, Funnel } from '@lucide/vue'
-import { createFolderSnapshot, saveTextFile } from '@/api/diff'
+import { createFolderEntry, createFolderSnapshot, saveTextFile } from '@/api/diff'
+import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
 import {
   buildFolderSyncReportText,
   defaultFolderSyncReportOutputPath,
@@ -69,9 +70,11 @@ interface SyncPreviewRow {
 }
 
 const overrideOptions: { value: FolderSyncOverrideAction; labelKey: string }[] = [
-  { value: 'leave', labelKey: 'ui.leave' },
+  { value: 'leave', labelKey: 'ui.leaveAlone' },
   { value: 'copyLeftToRight', labelKey: 'ui.copyLeftToRight' },
   { value: 'copyRightToLeft', labelKey: 'ui.copyRightToLeft' },
+  { value: 'deleteLeft', labelKey: 'ui.deleteLeft' },
+  { value: 'deleteRight', labelKey: 'ui.deleteRight' },
   { value: 'delete', labelKey: 'ui.delete' },
 ]
 
@@ -91,6 +94,8 @@ const sessionLaunch = useSessionLaunchStore()
 const viewActions = useViewActionsStore()
 const leftPath = ref('')
 const rightPath = ref('')
+const newFolderPanelOpen = ref(false)
+const newFolderName = ref('New Folder')
 
 const folderPathNavStore = useFolderPathNavStore()
 const folderPathNavStack = ref(createFolderPathNavStack<FolderPathPair>())
@@ -700,7 +705,19 @@ function plannedOverride(
   rightRoot: string,
 ): FolderSyncOverrideAction {
   if (row.action === 'Delete') {
-    return 'delete'
+    const target = (row.targetPath ?? '').replaceAll('\\', '/')
+    const normalizedLeft = leftRoot.replaceAll('\\', '/')
+    const normalizedRight = rightRoot.replaceAll('\\', '/')
+
+    if (leftRoot && target.startsWith(normalizedLeft)) {
+      return 'deleteLeft'
+    }
+
+    if (rightRoot && target.startsWith(normalizedRight)) {
+      return 'deleteRight'
+    }
+
+    return 'deleteRight'
   }
 
   if (row.action === 'Leave' || row.action === 'Conflict') {
@@ -764,6 +781,78 @@ function cancelSyncOverrides(): void {
 
 function resetRowOverride(row: SyncPreviewRow): void {
   row.overrideAction = row.plannedAction
+}
+
+function syncOverrideTargetRows(): SyncPreviewRow[] {
+  const checked = visiblePreviewRows.value.filter((row) => checkedRowIds.value.has(row.id))
+
+  if (checked.length > 0) {
+    return checked
+  }
+
+  const selected = syncSelectedRow()
+
+  return selected ? [selected] : []
+}
+
+function applySyncOverrideAction(action: FolderSyncOverrideAction): void {
+  const targets = syncOverrideTargetRows()
+
+  if (targets.length === 0 || previewRows.value.length === 0) {
+    return
+  }
+
+  for (const row of targets) {
+    row.overrideAction = action
+  }
+
+  const label =
+    overrideOptions.find((option) => option.value === action)?.labelKey ?? 'ui.leaveAlone'
+
+  lastSelectionAction.value = t('status.syncOverrideApplied', {
+    action: t(label),
+    count: targets.length,
+  })
+}
+
+function openNewFolderPanel(): void {
+  if (!leftPath.value && !rightPath.value) {
+    return
+  }
+
+  newFolderName.value = 'New Folder'
+  newFolderPanelOpen.value = true
+}
+
+async function confirmNewFolder(): Promise<void> {
+  const selected = syncSelectedRow()
+  const parentRelative = newFolderParentRelativePath({
+    selectedRelativePath: selected?.relativePath,
+    selectedKind: 'file',
+  })
+  const paths = resolveNewFolderPaths({
+    roots: [leftPath.value, rightPath.value],
+    folderName: newFolderName.value,
+    parentRelativePath: parentRelative,
+  })
+
+  if (paths.length === 0) {
+    return
+  }
+
+  try {
+    for (const path of paths) {
+      await createFolderEntry({ path })
+    }
+    lastSelectionAction.value =
+      paths.length === 1
+        ? t('status.createdFolder', { path: paths[0] })
+        : t('status.createdFolders', { count: paths.length })
+    newFolderPanelOpen.value = false
+    await previewSync()
+  } catch (error) {
+    syncRunError.value = error instanceof Error ? error.message : String(error)
+  }
 }
 
 function folderSyncExecutionLogLabel(log: FolderSyncExecutionLog): string {
@@ -1073,6 +1162,24 @@ watch(
         break
       case 'toggle-log':
         toggleSyncLogPanel()
+        break
+      case 'leave-alone':
+        applySyncOverrideAction('leave')
+        break
+      case 'sync-copy-left-to-right':
+        applySyncOverrideAction('copyLeftToRight')
+        break
+      case 'sync-copy-right-to-left':
+        applySyncOverrideAction('copyRightToLeft')
+        break
+      case 'sync-delete-left':
+        applySyncOverrideAction('deleteLeft')
+        break
+      case 'sync-delete-right':
+        applySyncOverrideAction('deleteRight')
+        break
+      case 'new-folder':
+        openNewFolderPanel()
         break
       case 'undo':
       case 'workspace-load':
@@ -1586,6 +1693,25 @@ watch(
     </section>
 
     <template #inspector>
+      <section
+        v-if="newFolderPanelOpen"
+        class="folder-operation-panel"
+        data-testid="folder-sync-new-folder-panel"
+      >
+        <input
+          v-model="newFolderName"
+          data-testid="folder-sync-new-folder-name"
+        />
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="folder-sync-confirm-new-folder"
+          @click="confirmNewFolder"
+        >
+          {{ $t('ui.newFolder') }}
+        </NButton>
+      </section>
+
       <WorkbenchInspector>
         <section class="workbench-inspector-section">
           <h2>{{ $t('ui.syncPreview') }}</h2>

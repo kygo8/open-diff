@@ -58,7 +58,10 @@ pub enum SyncOverrideAction {
     Leave,
     CopyLeftToRight,
     CopyRightToLeft,
+    /// Legacy alias: deletes the right-side path.
     Delete,
+    DeleteLeft,
+    DeleteRight,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -114,8 +117,11 @@ fn override_action(
             source_path: join_sync_path(right_root, relative_path),
             target_path: join_sync_path(left_root, relative_path),
         },
-        SyncOverrideAction::Delete => SyncAction::Delete {
+        SyncOverrideAction::Delete | SyncOverrideAction::DeleteRight => SyncAction::Delete {
             target_path: join_sync_path(right_root, relative_path),
+        },
+        SyncOverrideAction::DeleteLeft => SyncAction::Delete {
+            target_path: join_sync_path(left_root, relative_path),
         },
     }
 }
@@ -1311,6 +1317,50 @@ mod tests {
                 ..
             }
         ));
+    }
+
+    #[test]
+    fn apply_sync_overrides_supports_delete_left_and_delete_right() {
+        let mut plan = SyncPlan::new("Override deletes");
+        plan.add_item(SyncPlanItem {
+            relative_path: "left-only.txt".to_owned(),
+            action: SyncAction::Leave,
+            reason: "leave".to_owned(),
+        });
+        plan.add_item(SyncPlanItem {
+            relative_path: "right-only.txt".to_owned(),
+            action: SyncAction::Leave,
+            reason: "leave".to_owned(),
+        });
+
+        let plan = apply_sync_overrides(
+            plan,
+            "/left",
+            "/right",
+            &[
+                SyncActionOverride {
+                    relative_path: "left-only.txt".to_owned(),
+                    action: SyncOverrideAction::DeleteLeft,
+                },
+                SyncActionOverride {
+                    relative_path: "right-only.txt".to_owned(),
+                    action: SyncOverrideAction::DeleteRight,
+                },
+            ],
+        );
+
+        assert_eq!(
+            plan.items[0].action,
+            SyncAction::Delete {
+                target_path: "/left/left-only.txt".to_owned(),
+            }
+        );
+        assert_eq!(
+            plan.items[1].action,
+            SyncAction::Delete {
+                target_path: "/right/right-only.txt".to_owned(),
+            }
+        );
     }
 
     fn file_row(

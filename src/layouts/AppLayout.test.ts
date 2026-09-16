@@ -1013,6 +1013,13 @@ describe('global menu depth parity', () => {
     expect(wrapper.find('[data-testid="menu-command-actions.exclude"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.attributes"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.touch"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.newFolder"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.newFolder"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.leaveAlone"]').attributes('disabled'),
+    ).toBeDefined()
     expect(
       wrapper.find('[data-testid="menu-command-actions.open"]').attributes('disabled'),
     ).toBeUndefined()
@@ -1037,6 +1044,7 @@ describe('global menu depth parity', () => {
     ).toBeUndefined()
 
     await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-actions.newFolder"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-session.mergeBaseFolders"]').exists()).toBe(
       true,
     )
@@ -1059,6 +1067,18 @@ describe('global menu depth parity', () => {
     expect(
       sync.find('[data-testid="menu-command-actions.attributes"]').attributes('disabled'),
     ).toBeDefined()
+    expect(
+      sync.find('[data-testid="menu-command-actions.leaveAlone"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      sync.find('[data-testid="menu-command-actions.copyLeftToRight"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      sync.find('[data-testid="menu-command-actions.deleteRight"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      sync.find('[data-testid="menu-command-actions.newFolder"]').attributes('disabled'),
+    ).toBeUndefined()
     await sync.find('[data-testid="menu-edit"]').trigger('click')
     expect(
       sync.find('[data-testid="menu-command-edit.selectAll"]').attributes('disabled'),

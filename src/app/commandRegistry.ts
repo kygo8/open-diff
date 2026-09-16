@@ -81,6 +81,12 @@ export type CommandId =
   | 'view.toolbar'
   | 'actions.attributes'
   | 'actions.touch'
+  | 'actions.newFolder'
+  | 'actions.leaveAlone'
+  | 'actions.copyLeftToRight'
+  | 'actions.copyRightToLeft'
+  | 'actions.deleteLeft'
+  | 'actions.deleteRight'
   | 'session.mergeBaseFolders'
   | 'session.syncBaseFolders'
   | 'script.run'
@@ -160,6 +166,12 @@ export type CommandAction =
         | 'toggle-toolbar'
         | 'change-attributes'
         | 'touch-selected'
+        | 'new-folder'
+        | 'leave-alone'
+        | 'sync-copy-left-to-right'
+        | 'sync-copy-right-to-left'
+        | 'sync-delete-left'
+        | 'sync-delete-right'
     }
 
 export interface CommandShortcut {
@@ -1056,6 +1068,66 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'U'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'touch-selected' },
+  },
+  {
+    id: 'actions.newFolder',
+    titleKey: 'ui.newFolder',
+    keywords: ['new', 'folder', 'mkdir', 'actions', 'insert'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ins'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'new-folder' },
+  },
+  {
+    id: 'actions.leaveAlone',
+    titleKey: 'ui.leaveAlone',
+    keywords: ['leave', 'alone', 'sync', 'override', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'L'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'leave-alone' },
+  },
+  {
+    id: 'actions.copyRightToLeft',
+    titleKey: 'ui.copyRightToLeft',
+    keywords: ['copy', 'right', 'left', 'sync', 'override', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'H'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'sync-copy-right-to-left' },
+  },
+  {
+    id: 'actions.copyLeftToRight',
+    titleKey: 'ui.copyLeftToRight',
+    keywords: ['copy', 'left', 'right', 'sync', 'override', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'J'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'sync-copy-left-to-right' },
+  },
+  {
+    id: 'actions.deleteLeft',
+    titleKey: 'ui.deleteLeft',
+    keywords: ['delete', 'left', 'sync', 'override', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'D'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'sync-delete-left' },
+  },
+  {
+    id: 'actions.deleteRight',
+    titleKey: 'ui.deleteRight',
+    keywords: ['delete', 'right', 'sync', 'override', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'E'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'sync-delete-right' },
   },
 ]
 

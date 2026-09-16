@@ -43,6 +43,7 @@ pub fn run() {
             commands::compare_version_files,
             commands::copy_folder_compare_entry,
             commands::create_folder_snapshot,
+            commands::create_folder_entry,
             commands::delete_folder_entry,
             commands::delete_remote_profile,
             commands::diff_text,

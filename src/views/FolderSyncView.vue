@@ -2018,9 +2018,9 @@ h1 {
 .sync-progress {
   display: grid;
   min-width: 112px;
-  padding: 10px 12px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   text-align: right;
 }

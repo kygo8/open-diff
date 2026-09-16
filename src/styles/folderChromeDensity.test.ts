@@ -26,6 +26,11 @@ describe('folder chrome density', () => {
     expect(syncView).toMatch(/\.folder-sync-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*8px/)
     expect(mergeView).toMatch(/\.folder-merge-view\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(folderView).toMatch(/\.folder-summary div\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(folderView).toMatch(/\.folder-summary div\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(folderView).toMatch(/\.folder-copy-confirmation\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(folderView).toMatch(/\.sync-preview-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(folderView).toMatch(/\.sync-safety-confirmation\s*\{[\s\S]*?border-radius:\s*0/)
   })
 })
 

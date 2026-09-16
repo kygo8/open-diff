@@ -5079,13 +5079,13 @@ onUnmounted(() => {
 .folder-copy-confirmation {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .folder-copy-confirmation strong {
@@ -5223,13 +5223,13 @@ onUnmounted(() => {
 
 .folder-operation-panel input {
   width: 260px;
-  height: 28px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .folder-operation-panel .metadata-option {
@@ -5256,10 +5256,10 @@ onUnmounted(() => {
   display: grid;
   gap: 2px;
   min-width: 0;
-  padding: 9px 10px;
+  padding: 2px 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -5272,31 +5272,31 @@ onUnmounted(() => {
 }
 
 .folder-summary strong {
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1;
 }
 
 .folder-summary span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .folder-action-status {
-  padding: 8px 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .sync-preview-panel {
   display: grid;
-  gap: 8px;
-  padding: 10px;
+  gap: 4px;
+  padding: 2px 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -5326,17 +5326,17 @@ onUnmounted(() => {
   display: grid;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .sync-safety-confirmation {
   display: grid;
   grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1fr) auto;
   align-items: center;
-  gap: 10px;
-  padding: 9px 10px;
+  gap: 6px;
+  padding: 2px 4px;
   border: 1px solid var(--diff-deleted-fg);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-surface-muted);
 }
 

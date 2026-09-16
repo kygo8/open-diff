@@ -2223,9 +2223,9 @@ h1 {
 .merge-summary div {
   display: grid;
   gap: 2px;
-  padding: 9px 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   text-align: right;
 }

@@ -22,8 +22,8 @@ describe('folder sync/merge chrome density', () => {
 
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*8px/)
-    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*8px/)
+    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*6px/)
+    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*6px/)
     expect(syncView).not.toMatch(
       /joinStatusFooterParts\(syncSelectionLabel\.value, leftFreeSpaceLabel\.value\)/,
     )

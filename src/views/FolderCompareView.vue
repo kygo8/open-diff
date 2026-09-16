@@ -3116,7 +3116,7 @@ onUnmounted(() => {
     <section class="folder-compare-view">
       <section
         class="folder-filter-chrome"
-        data-filters-density="capture-pass10"
+        data-filters-density="capture-pass11"
         data-testid="folder-filter-chrome"
       >
         <div
@@ -3941,7 +3941,7 @@ onUnmounted(() => {
       <section
         v-show="showPeekPanel"
         class="folder-peek-panel"
-        data-peek-density="capture-pass10"
+        data-peek-density="capture-pass11"
         data-testid="folder-peek-panel"
       >
         <header>
@@ -4852,11 +4852,11 @@ onUnmounted(() => {
 
 .path-side-footer {
   display: block;
-  min-height: 8px;
+  min-height: 6px;
   margin-top: 0;
   color: var(--od-muted, #6b7280);
-  font-size: 8px;
-  line-height: 8px;
+  font-size: 6px;
+  line-height: 6px;
 }
 
 .path-side-footer-muted {
@@ -4866,10 +4866,10 @@ onUnmounted(() => {
 .archive-side-chip {
   display: inline-flex;
   align-items: center;
-  height: 24px;
-  padding: 0 8px;
+  height: 16px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
   font-size: 11px;
@@ -4877,13 +4877,13 @@ onUnmounted(() => {
 }
 
 .archive-session-status {
-  margin: 0.35rem 0;
-  padding: 0.35rem 0.55rem;
-  border-radius: 0.35rem;
+  margin: 4px 0;
+  padding: 2px 4px;
+  border-radius: 0;
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .archive-path-hint {
@@ -4923,11 +4923,11 @@ onUnmounted(() => {
 .path-pair input {
   width: 100%;
   min-width: 0;
-  height: 18px;
+  height: 16px;
   padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text);
   font-size: 11px;
@@ -4979,10 +4979,10 @@ onUnmounted(() => {
   display: inline-flex;
   flex: 1 1 280px;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   min-width: 220px;
   max-width: 640px;
-  margin-right: 4px;
+  margin-right: 1px;
 }
 
 .folder-filter-strip-actions {
@@ -5046,7 +5046,7 @@ onUnmounted(() => {
   height: 11px;
   padding: 0 4px;
   border: 1px solid #bfc4cc;
-  border-radius: 2px;
+  border-radius: 0;
   background: #ffffff;
   color: #111111;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
@@ -5069,13 +5069,13 @@ onUnmounted(() => {
 
 .manual-alignment-tools select {
   min-width: 220px;
-  height: 28px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .folder-copy-confirmation {

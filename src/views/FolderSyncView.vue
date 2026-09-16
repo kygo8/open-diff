@@ -950,8 +950,8 @@ function syncOverrideTargetRows(): SyncPreviewRow[] {
   return selected ? [selected] : []
 }
 
-function applySyncOverrideAction(action: FolderSyncOverrideAction): void {
-  const targets = syncOverrideTargetRows()
+function applySyncOverrideAction(action: FolderSyncOverrideAction, rows?: SyncPreviewRow[]): void {
+  const targets = rows ?? syncOverrideTargetRows()
 
   if (targets.length === 0 || previewRows.value.length === 0) {
     return
@@ -969,6 +969,20 @@ function applySyncOverrideAction(action: FolderSyncOverrideAction): void {
     action: t(label),
     count: targets.length,
   })
+}
+
+function applySyncOverrideToAll(): void {
+  const selected = syncSelectedRow()
+
+  if (!selected) {
+    return
+  }
+
+  applySyncOverrideAction(selected.overrideAction, visiblePreviewRows.value)
+}
+
+function skipRemainingSyncRows(): void {
+  applySyncOverrideAction('leave', visiblePreviewRows.value)
 }
 
 function openNewFolderPanel(): void {
@@ -1570,6 +1584,22 @@ watch(
             :disabled="previewRows.length === 0 || syncRunning"
             @click="cancelSyncOverrides"
             >{{ $t('ui.cancel') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="folder-sync-apply-to-all"
+            :disabled="!syncSelectedRow() || syncRunning"
+            @click="applySyncOverrideToAll"
+            >{{ $t('ui.apply') }} {{ $t('ui.all') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="folder-sync-skip-remaining"
+            :disabled="previewRows.length === 0 || syncRunning"
+            @click="skipRemainingSyncRows"
+            >{{ $t('ui.leaveAlone') }}</NButton
           >
           <NButton
             size="small"

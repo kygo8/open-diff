@@ -668,6 +668,51 @@ describe('FolderMergeView', () => {
     )
   })
 
+  it('applies the selected merge action to all visible rows and can skip the rest', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    const rows = wrapper.findAll('[data-testid="folder-merge-row"]')
+    const leftAdd = rows.find((row) => row.text().includes('left-add.txt'))
+
+    expect(leftAdd).toBeTruthy()
+
+    if (!leftAdd) {
+      throw new Error('expected left-add.txt plan row')
+    }
+
+    await leftAdd.trigger('click')
+    await wrapper.find('[data-testid="folder-merge-apply-to-all"]').trigger('click')
+    await flushPromises()
+
+    expect(
+      (wrapper.find('[data-testid="folder-merge-action-same-txt"]').element as HTMLSelectElement)
+        .value,
+    ).toBe('Copy left to output')
+    expect(
+      (wrapper.find('[data-testid="folder-merge-action-notes-txt"]').element as HTMLSelectElement)
+        .value,
+    ).toBe('Copy left to output')
+
+    await wrapper.find('[data-testid="folder-merge-skip-remaining"]').trigger('click')
+    await flushPromises()
+    expect(
+      (wrapper.find('[data-testid="folder-merge-action-same-txt"]').element as HTMLSelectElement)
+        .value,
+    ).toBe('Keep output')
+    expect(
+      (wrapper.find('[data-testid="folder-merge-action-left-add"]').element as HTMLSelectElement)
+        .value,
+    ).toBe('Keep output')
+    expect(
+      (wrapper.find('[data-testid="folder-merge-action-notes-txt"]').element as HTMLSelectElement)
+        .value,
+    ).toBe('Keep output')
+  })
+
   it('cancels merge execution confirmation without writing', async () => {
     const wrapper = mountFolderMergeView()
 

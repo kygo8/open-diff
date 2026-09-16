@@ -37,4 +37,13 @@ describe('hex compare chrome density', () => {
     expect(hexView).toMatch(/\.hex-wrap-controls strong\s*\{[\s\S]*?height:\s*16px/)
     expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?font-size:\s*11px/)
   })
+
+  it('keeps Hex rules strip chrome dense toward the session-panel band', () => {
+    expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?gap:\s*4px/)
+    expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?margin:\s*0/)
+    expect(hexView).toMatch(/\.hex-rules-row input\[type='number'\]\s*\{[\s\S]*?height:\s*16px/)
+    expect(hexView).toMatch(/\.hex-rules-row ~ button\s*\{[\s\S]*?height:\s*18px/)
+    expect(hexView).not.toMatch(/\.hex-rules-row\s*\{[\s\S]*?margin:\s*8px 0/)
+  })
 })

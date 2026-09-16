@@ -26,4 +26,9 @@ describe('table compare chrome density', () => {
 
     expect(layout).toMatch(/data-chrome-kind='table-session'[\s\S]*?height:\s*22px/)
   })
+
+  it('keeps Table report-action chrome dense toward the session-panel band', () => {
+    expect(tableView).toMatch(/\.table-report-actions\s*\{[\s\S]*?gap:\s*4px/)
+    expect(tableView).not.toMatch(/\.table-report-actions\s*\{[\s\S]*?gap:\s*0\.5rem/)
+  })
 })

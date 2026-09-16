@@ -1871,21 +1871,21 @@ html[data-show-path-bars='0'] .path-pair-bar {
 /* Picture Compare chrome densify toward capture path/status/toolbar/footer strips */
 .picture-compare-view {
   gap: 4px !important;
-  padding: 4px 6px !important;
+  padding: 2px 4px !important;
 }
 
 .picture-compare-view .picture-path-panel {
   gap: 3px !important;
-  min-height: 26px !important;
-  padding: 2px 6px !important;
+  min-height: 22px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
 .picture-compare-view .picture-path-panel input,
 .picture-compare-view .picture-path-panel button {
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 4px !important;
   font-size: 11px !important;
 }
 
@@ -1896,10 +1896,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .path-side-footer {
-  min-height: 10px !important;
+  min-height: 9px !important;
   margin-top: 0 !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+  font-size: 9px !important;
+  line-height: 9px !important;
 }
 
 .picture-compare-view .picture-controls,
@@ -2031,21 +2031,21 @@ html[data-show-path-bars='0'] .path-pair-bar {
 /* Media Compare chrome densify toward capture path/status/toolbar/footer strips */
 .media-compare-view {
   gap: 4px !important;
-  padding: 4px 6px !important;
+  padding: 2px 4px !important;
 }
 
 .media-compare-view .media-path-panel {
   gap: 3px !important;
-  min-height: 26px !important;
-  padding: 2px 6px !important;
+  min-height: 22px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
 .media-compare-view .media-path-panel input,
 .media-compare-view .media-path-panel button {
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 4px !important;
   font-size: 11px !important;
 }
 
@@ -2208,21 +2208,21 @@ html[data-show-path-bars='0'] .path-pair-bar {
 /* Version Compare chrome densify toward capture path/status/toolbar/footer strips */
 .version-compare-view {
   gap: 4px !important;
-  padding: 4px 6px !important;
+  padding: 2px 4px !important;
 }
 
 .version-compare-view .version-path-panel {
   gap: 3px !important;
-  min-height: 26px !important;
-  padding: 2px 6px !important;
+  min-height: 22px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
 .version-compare-view .version-path-panel input,
 .version-compare-view .version-path-panel button {
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 4px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
@@ -2239,10 +2239,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .version-compare-view .path-side-footer {
-  min-height: 10px !important;
+  min-height: 9px !important;
   margin-top: 0 !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+  font-size: 9px !important;
+  line-height: 9px !important;
 }
 
 .version-compare-view .version-summary-grid,

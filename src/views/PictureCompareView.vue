@@ -1373,7 +1373,7 @@ async function runPictureCompare(): Promise<void> {
   display: grid;
   gap: 4px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: auto;
 }
 
@@ -2004,12 +2004,12 @@ h2 {
 }
 
 .path-side-footer {
-  min-height: 10px;
+  min-height: 9px;
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 10px;
-  line-height: 10px;
+  font-size: 9px;
+  line-height: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

@@ -10,14 +10,14 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 
 describe('media compare chrome density', () => {
   it('keeps Media Compare path/status/toolbar/footer chrome dense toward capture', () => {
-    expect(css).toMatch(/\.media-compare-view\s*\{[\s\S]*?padding:\s*4px 6px/)
-    expect(css).toMatch(/\.media-compare-view \.media-path-panel\s*\{[\s\S]*?min-height:\s*26px/)
+    expect(css).toMatch(/\.media-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(css).toMatch(/\.media-compare-view \.media-path-panel\s*\{[\s\S]*?min-height:\s*22px/)
     expect(css).toMatch(
-      /\.media-compare-view \.media-path-panel input,\s*\.media-compare-view \.media-path-panel button\s*\{[\s\S]*?height:\s*20px/,
+      /\.media-compare-view \.media-path-panel input,\s*\.media-compare-view \.media-path-panel button\s*\{[\s\S]*?height:\s*18px/,
     )
     expect(css).toMatch(/\.media-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
 
-    expect(mediaView).toMatch(/\.media-compare-view\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(mediaView).toMatch(/\.media-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mediaView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
     expect(mediaView).toMatch(/chromeKind:\s*'media-session'/)
 

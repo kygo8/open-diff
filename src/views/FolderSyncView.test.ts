@@ -194,6 +194,10 @@ describe('FolderSyncView', () => {
     expect(wrapper.text()).toContain('Completed 2 / 2')
     expect(wrapper.text()).toContain('Copied package/app.exe')
     expect(wrapper.text()).toContain('Deleted prod/old.dll')
+    expect(wrapper.find('[data-testid="folder-sync-chrome-status"]').text()).toContain(
+      'Sync finished',
+    )
+    expect(previewFolderSync).toHaveBeenCalledTimes(2)
   })
 
   it('loads the Options Folder Sync strategy default', () => {
@@ -781,12 +785,16 @@ describe('FolderSyncView', () => {
     await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
     await flushPromises()
 
-    expect(wrapper.findAll('[data-testid^="sync-row-"]')).toHaveLength(3)
+    expect(wrapper.find('[data-testid="sync-row-copy-app"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="sync-row-conflict-notes"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="sync-row-conflict-config"]').exists()).toBe(true)
 
     useViewActionsStore().dispatch('next-conflict')
     await flushPromises()
     expect(wrapper.find('[data-testid="folder-sync-peek-path"]').text()).toBe('notes.txt')
-    expect(wrapper.findAll('[data-testid^="sync-row-"]')).toHaveLength(2)
+    expect(wrapper.find('[data-testid="sync-row-copy-app"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="sync-row-conflict-notes"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="sync-row-conflict-config"]').exists()).toBe(true)
 
     useViewActionsStore().dispatch('next-conflict')
     await flushPromises()
@@ -800,8 +808,38 @@ describe('FolderSyncView', () => {
     await flushPromises()
     useViewActionsStore().dispatch('show-conflicts')
     await flushPromises()
-    expect(wrapper.findAll('[data-testid^="sync-row-"]')).toHaveLength(2)
     expect(wrapper.find('[data-testid="sync-row-copy-app"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="sync-row-conflict-notes"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="sync-row-conflict-config"]').exists()).toBe(true)
+  })
+
+  it('moves peek to the checked Sync row', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="folder-sync-peek-path"]').text()).toContain(
+      'package/app.exe',
+    )
+
+    await wrapper.find('[data-testid="sync-check-delete-old"]').setValue(true)
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-sync-peek-path"]').text()).toContain('prod/old.dll')
   })
 
   it('creates a new folder under Sync path roots', async () => {

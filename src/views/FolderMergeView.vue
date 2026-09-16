@@ -699,6 +699,7 @@ function toggleMergeRowChecked(rowId: string): void {
     next.delete(rowId)
   } else {
     next.add(rowId)
+    selectedPlanRowId.value = rowId
   }
 
   checkedRowIds.value = next
@@ -1070,7 +1071,7 @@ function applyMergeActionToRows(rows: FolderMergePlanRow[], action: FolderMergeA
 }
 
 function applyMergeActionToAll(): void {
-  const selected = selectedPlanRow.value
+  const selected = mergeSelectedRow()
 
   if (!selected) {
     return

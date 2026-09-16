@@ -13,7 +13,7 @@ describe('status strip pixel density', () => {
       /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?line-height:\s*20px/,
     )
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-pair'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 2px/,
+      /\.status-bar\[data-chrome-kind='folder-pair'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 1px/,
     )
     expect(layout).toMatch(/\.status-bar-pane\s*\{[\s\S]*?border-right:\s*1px solid #c0c0c0/)
     expect(layout).toMatch(
@@ -32,7 +32,7 @@ describe('status strip pixel density', () => {
     expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?font-size:\s*11px/)
     expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*22px/)
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='text-session'\] \.status-bar-pane[\s\S]*?padding:\s*0 2px/,
+      /\.status-bar\[data-chrome-kind='text-session'\] \.status-bar-pane[\s\S]*?padding:\s*0 1px/,
     )
     expect(layout).toMatch(
       /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?22px/,

@@ -269,6 +269,68 @@ describe('AppLayout command palette', () => {
     text.unmount()
   })
 
+  it('disables leftover Clipboard/Patch/Edit/Registry View and Edit verbs', async () => {
+    routePath = '/compare/clipboard'
+    const clipboard = mountAppLayout()
+
+    await clipboard.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      clipboard.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      clipboard.find('[data-testid="menu-command-view.toggleMinor"]').attributes('disabled'),
+    ).toBeDefined()
+    await clipboard.find('[data-testid="menu-edit"]').trigger('click')
+    expect(
+      clipboard.find('[data-testid="menu-command-edit.paste"]').attributes('disabled'),
+    ).toBeDefined()
+    clipboard.unmount()
+
+    routePath = '/edit/text'
+    const textEdit = mountAppLayout()
+
+    await textEdit.find('[data-testid="menu-edit"]').trigger('click')
+    expect(
+      textEdit.find('[data-testid="menu-command-edit.paste"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      textEdit.find('[data-testid="menu-command-edit.copyLeft"]').attributes('disabled'),
+    ).toBeDefined()
+    await textEdit.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      textEdit.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
+    ).toBeDefined()
+    textEdit.unmount()
+
+    routePath = '/compare/registry'
+    const registry = mountAppLayout()
+
+    await registry.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      registry.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      registry.find('[data-testid="menu-command-view.toggleMinor"]').attributes('disabled'),
+    ).toBeDefined()
+    await registry.find('[data-testid="menu-edit"]').trigger('click')
+    expect(
+      registry.find('[data-testid="menu-command-edit.selectAll"]').attributes('disabled'),
+    ).toBeDefined()
+    registry.unmount()
+
+    routePath = '/compare/media'
+    const media = mountAppLayout()
+
+    await media.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      media.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      media.find('[data-testid="menu-command-view.toggleMinor"]').attributes('disabled'),
+    ).toBeUndefined()
+    media.unmount()
+  })
+
   it('shows Session File Edit Search View Tools Help on Text Compare', () => {
     routePath = '/compare/text'
     const wrapper = mountAppLayout()

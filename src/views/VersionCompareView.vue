@@ -207,7 +207,20 @@ watch(
         break
 
       case 'previous-difference':
+        runVersionToolbarCommand('prev-diff')
+        break
       case 'next-difference':
+        runVersionToolbarCommand('next-diff')
+        break
+      case 'show-all':
+        runVersionToolbarCommand('all')
+        break
+      case 'show-differences':
+        runVersionToolbarCommand('diffs')
+        break
+      case 'toggle-minor':
+        runVersionToolbarCommand(fieldFilter.value === 'minor' ? 'all' : 'minor')
+        break
       case 'copy-left':
       case 'copy-right':
       case 'undo':
@@ -218,8 +231,6 @@ watch(
       case 'delete':
       case 'save':
       case 'save-as':
-      case 'show-all':
-      case 'show-differences':
       case 'workspace-save':
       case 'close-tab':
       case 'clear-session':
@@ -238,7 +249,6 @@ watch(
       case 'save-snapshot':
       case 'previous-conflict':
       case 'next-conflict':
-      case 'toggle-minor':
       case 'expand-all':
       case 'collapse-all':
       case 'sync-now':

@@ -1,15 +1,21 @@
 import { describe, expect, it } from 'vitest'
 import {
   contextHelpTopic,
+  isClipboardCompareRoute,
   isFolderCompareRoute,
   isFolderishSessionRoute,
   isFolderMergeRoute,
   isHexCompareRoute,
+  isMediaCompareRoute,
   isPictureCompareRoute,
   isSessionWorkbenchPath,
   isTableCompareRoute,
+  isTextEditRoute,
+  isTextEditVerbRoute,
   isTextishSessionRoute,
   isTextMergeRoute,
+  isTextPatchRoute,
+  isTextSideCopyRoute,
   isSingleSessionFrame,
   preferDenseAppChrome,
   sessionSupportsReportSave,
@@ -137,6 +143,14 @@ describe('session route helpers', () => {
     expect(isPictureCompareRoute('/compare/picture')).toBe(true)
     expect(isHexCompareRoute('/compare/hex')).toBe(true)
     expect(isTableCompareRoute('/compare/table')).toBe(true)
+    expect(isMediaCompareRoute('/compare/media')).toBe(true)
+    expect(isClipboardCompareRoute('/compare/clipboard')).toBe(true)
+    expect(isTextPatchRoute('/patch/text')).toBe(true)
+    expect(isTextEditRoute('/edit/text')).toBe(true)
+    expect(isTextEditVerbRoute('/edit/text')).toBe(true)
+    expect(isTextEditVerbRoute('/compare/clipboard')).toBe(false)
+    expect(isTextSideCopyRoute('/compare/text')).toBe(true)
+    expect(isTextSideCopyRoute('/edit/text')).toBe(false)
     expect(sessionSupportsReportSave('/compare/folder')).toBe(true)
     expect(sessionSupportsReportSave('/sync/folder')).toBe(true)
     expect(sessionSupportsReportSave('/compare/text')).toBe(true)

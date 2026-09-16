@@ -5,6 +5,7 @@ import MediaCompareView from './MediaCompareView.vue'
 import { compareMediaFiles, saveTextFile } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
+import { useViewActionsStore } from '@/stores/viewActions'
 
 const clipboardWriteText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined)
 
@@ -311,6 +312,41 @@ describe('MediaCompareView', () => {
     )
 
     await wrapper.find('[data-testid="media-session-toolbar-next-diff"]').trigger('click')
+    expect(wrapper.find('[data-testid="media-field-Comment"]').attributes('data-selected')).toBe(
+      'true',
+    )
+  })
+
+  it('applies View filter and next-diff commands from the menu action bus', async () => {
+    const wrapper = mount(MediaCompareView)
+
+    await wrapper.find('[data-testid="media-left-path"]').setValue('C:/music/fixture-left.mp3')
+    await wrapper.find('[data-testid="media-right-path"]').setValue('C:/music/fixture-right.mp3')
+    await wrapper.find('[data-testid="run-media-compare"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    const viewActions = useViewActionsStore()
+
+    viewActions.dispatch('show-differences')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="media-field-Title"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="media-field-Artist"]').exists()).toBe(false)
+
+    viewActions.dispatch('toggle-minor')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="media-field-Comment"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="media-field-Title"]').exists()).toBe(false)
+
+    viewActions.dispatch('show-all')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="media-field-Title"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="media-field-Artist"]').exists()).toBe(true)
+
+    expect(wrapper.find('[data-testid="media-field-Title"]').attributes('data-selected')).toBe(
+      'true',
+    )
+    viewActions.dispatch('next-difference')
+    await wrapper.vm.$nextTick()
     expect(wrapper.find('[data-testid="media-field-Comment"]').attributes('data-selected')).toBe(
       'true',
     )

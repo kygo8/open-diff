@@ -1,5 +1,6 @@
 import type { CommandId } from './commandRegistry'
 import {
+  isClipboardCompareRoute,
   isFolderCompareRoute,
   isFolderishSessionRoute,
   isFolderMergeRoute,
@@ -9,8 +10,11 @@ import {
   isRegistrySessionRoute,
   isSessionWorkbenchPath,
   isTableCompareRoute,
+  isTextEditRoute,
+  isTextEditVerbRoute,
   isTextMergeRoute,
-  isTextishSessionRoute,
+  isTextPatchRoute,
+  isTextSideCopyRoute,
   sessionSupportsReportSave,
 } from './shellChrome'
 
@@ -93,7 +97,13 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'diff.next' || commandId === 'diff.previous') {
-    return isSessionWorkbenchPath(path) && !isPictureCompareRoute(path)
+    return (
+      isSessionWorkbenchPath(path) &&
+      !isPictureCompareRoute(path) &&
+      !isClipboardCompareRoute(path) &&
+      !isTextPatchRoute(path) &&
+      !isTextEditRoute(path)
+    )
   }
 
   if (commandId === 'session.locked') {
@@ -113,7 +123,7 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'edit.selectAll' || commandId === 'edit.invertSelection') {
-    return folderishOrRegistryRoute(path)
+    return isFolderishSessionRoute(path)
   }
 
   if (
@@ -121,7 +131,7 @@ export function resolveMenuCommandEnabled(
     commandId === 'edit.selectOrphans' ||
     commandId === 'edit.selectNewer'
   ) {
-    return isFolderCompareRoute(path) || isFolderMergeRoute(path) || isRegistrySessionRoute(path)
+    return isFolderCompareRoute(path) || isFolderMergeRoute(path)
   }
 
   if (
@@ -130,15 +140,20 @@ export function resolveMenuCommandEnabled(
     commandId === 'actions.quickCompare' ||
     commandId === 'actions.exclude' ||
     commandId === 'actions.refreshSelection' ||
-    commandId === 'view.showSame' ||
     commandId === 'view.expandAll' ||
-    commandId === 'view.collapseAll' ||
+    commandId === 'view.collapseAll'
+  ) {
+    return folderishOrRegistryRoute(path)
+  }
+
+  if (
+    commandId === 'view.showSame' ||
     commandId === 'search.findFilename' ||
     commandId === 'search.findNextFilename' ||
     commandId === 'search.findPreviousFilename' ||
     commandId === 'edit.fullRefresh'
   ) {
-    return folderishOrRegistryRoute(path)
+    return isFolderishSessionRoute(path)
   }
 
   if (
@@ -192,12 +207,25 @@ export function resolveMenuCommandEnabled(
 
   if (commandId === 'view.showAll' || commandId === 'view.showDifferences') {
     return (
-      isSessionWorkbenchPath(path) && !isPictureCompareRoute(path) && !isTableCompareRoute(path)
+      isSessionWorkbenchPath(path) &&
+      !isPictureCompareRoute(path) &&
+      !isTableCompareRoute(path) &&
+      !isClipboardCompareRoute(path) &&
+      !isTextPatchRoute(path) &&
+      !isTextEditRoute(path)
     )
   }
 
   if (commandId === 'view.toggleMinor') {
-    return isSessionWorkbenchPath(path) && !isHexCompareRoute(path) && !isTableCompareRoute(path)
+    return (
+      isSessionWorkbenchPath(path) &&
+      !isHexCompareRoute(path) &&
+      !isTableCompareRoute(path) &&
+      !isRegistrySessionRoute(path) &&
+      !isClipboardCompareRoute(path) &&
+      !isTextPatchRoute(path) &&
+      !isTextEditRoute(path)
+    )
   }
 
   if (commandId === 'view.filters') {
@@ -205,7 +233,7 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'edit.copyLeft' || commandId === 'edit.copyRight') {
-    return isTextishSessionRoute(path)
+    return isTextSideCopyRoute(path)
   }
 
   if (
@@ -216,7 +244,7 @@ export function resolveMenuCommandEnabled(
     commandId === 'edit.paste' ||
     commandId === 'edit.delete'
   ) {
-    return isTextishSessionRoute(path)
+    return isTextEditVerbRoute(path)
   }
 
   if (commandId === 'actions.attributes' || commandId === 'actions.touch') {

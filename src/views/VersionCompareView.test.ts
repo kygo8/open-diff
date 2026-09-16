@@ -5,6 +5,7 @@ import VersionCompareView from './VersionCompareView.vue'
 import { compareVersionFiles, saveTextFile } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
+import { useViewActionsStore } from '@/stores/viewActions'
 
 const clipboardWriteText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined)
 
@@ -301,4 +302,31 @@ it('shows size/date path footers after compare', async () => {
   expect(wrapper.find('[data-testid="version-path-footers"]').exists()).toBe(true)
   expect(wrapper.find('[data-testid="version-left-path-footer"]').text()).toMatch(/bytes/)
   expect(wrapper.find('[data-testid="version-right-path-footer"]').text()).toMatch(/bytes/)
+})
+
+it('applies View filter commands from the menu action bus', async () => {
+  const wrapper = mount(VersionCompareView)
+
+  await wrapper.find('[data-testid="version-left-path"]').setValue('C:/apps/fixture-left.exe')
+  await wrapper.find('[data-testid="version-right-path"]').setValue('C:/apps/fixture-right.exe')
+  await wrapper.find('[data-testid="run-version-compare"]').trigger('click')
+  await wrapper.vm.$nextTick()
+
+  const viewActions = useViewActionsStore()
+
+  viewActions.dispatch('show-differences')
+  await wrapper.vm.$nextTick()
+  expect(wrapper.find('[data-testid="version-field-FileVersion"]').exists()).toBe(true)
+  expect(wrapper.find('[data-testid="version-field-CompanyName"]').exists()).toBe(false)
+  expect(wrapper.find('[data-testid="version-field-Comments"]').exists()).toBe(false)
+
+  viewActions.dispatch('toggle-minor')
+  await wrapper.vm.$nextTick()
+  expect(wrapper.find('[data-testid="version-field-Comments"]').exists()).toBe(true)
+  expect(wrapper.find('[data-testid="version-field-FileVersion"]').exists()).toBe(false)
+
+  viewActions.dispatch('show-all')
+  await wrapper.vm.$nextTick()
+  expect(wrapper.find('[data-testid="version-field-FileVersion"]').exists()).toBe(true)
+  expect(wrapper.find('[data-testid="version-field-CompanyName"]').exists()).toBe(true)
 })

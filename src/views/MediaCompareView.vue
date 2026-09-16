@@ -375,7 +375,20 @@ watch(
         break
 
       case 'previous-difference':
+        navigateMediaDifference(-1)
+        break
       case 'next-difference':
+        navigateMediaDifference(1)
+        break
+      case 'show-all':
+        runMediaToolbarCommand('all')
+        break
+      case 'show-differences':
+        runMediaToolbarCommand('diffs')
+        break
+      case 'toggle-minor':
+        runMediaToolbarCommand(fieldFilter.value === 'minor' ? 'all' : 'minor')
+        break
       case 'copy-left':
       case 'copy-right':
       case 'undo':
@@ -386,8 +399,6 @@ watch(
       case 'delete':
       case 'save':
       case 'save-as':
-      case 'show-all':
-      case 'show-differences':
       case 'workspace-save':
       case 'close-tab':
       case 'clear-session':
@@ -406,7 +417,6 @@ watch(
       case 'save-snapshot':
       case 'previous-conflict':
       case 'next-conflict':
-      case 'toggle-minor':
       case 'expand-all':
       case 'collapse-all':
       case 'sync-now':

@@ -1460,7 +1460,7 @@ const sourceSessionTypes = new Set<SessionType>([
         type="button"
         @click="navigate('/', t('ui.home'), 'ui.home')"
       >
-        <Rows3 :size="13" />
+        <Rows3 :size="12" />
         <span>{{ windowTitle }}</span>
       </button>
       <nav
@@ -1986,11 +1986,11 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-column: 1;
   grid-row: 1;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
   max-width: 100%;
   height: 24px;
-  padding: 0 3px;
+  padding: 0 2px;
   overflow: hidden;
   border: 0;
   background: #f0f3f9;
@@ -2007,10 +2007,10 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-column: 1 / -1;
   grid-row: 2;
   align-items: center;
-  gap: 1px;
+  gap: 0;
   min-width: 0;
   height: 24px;
-  padding: 0 1px;
+  padding: 0;
   overflow: visible;
   border-top: 1px solid #e0e0e0;
   background: #ffffff;
@@ -2039,7 +2039,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button {
   max-width: 9em;
-  height: 16px;
+  height: 15px;
   padding: 0 2px;
   overflow: hidden;
   font-size: 11px;
@@ -2307,7 +2307,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-chip button {
   min-width: 0;
-  height: 13px;
+  height: 12px;
   padding: 0 2px;
   border: 0;
   background: transparent;
@@ -2653,23 +2653,23 @@ html[data-show-sidebar='1'] .sidebar {
 
 .app-shell-dense-chrome .brand {
   height: 24px;
-  padding: 0 3px;
+  padding: 0 2px;
   font-size: 12px;
 }
 
 .app-shell-dense-chrome .brand :deep(svg) {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
 }
 
 .app-shell-dense-chrome .menus {
-  gap: 1px;
+  gap: 0;
   height: 24px;
-  padding: 0 2px;
+  padding: 0 1px;
 }
 
 .app-shell-dense-chrome .menus button {
-  height: 16px;
+  height: 15px;
   padding: 0 2px;
   font-size: 11px;
 }

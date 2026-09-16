@@ -1575,13 +1575,14 @@ tr:hover .row-actions,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 4px;
   min-width: 0;
-  padding: 8px 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-primary);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-primary-soft);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .recovery-entry > span,
@@ -1594,7 +1595,16 @@ tr:hover .row-actions,
 }
 
 .recovery-entry button,
-.save-prompt button,
+.save-prompt button {
+  height: 18px;
+  padding: 0 5px;
+  border: 1px solid var(--app-border);
+  border-radius: 0;
+  background: var(--app-canvas);
+  color: var(--app-text);
+  cursor: pointer;
+}
+
 .quick-input-zone button {
   height: 24px;
   padding: 0 8px;

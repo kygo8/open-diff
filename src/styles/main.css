@@ -1682,7 +1682,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-view,
 .folder-merge-view {
   gap: 4px !important;
-  padding: 4px 6px !important;
+  padding: 2px 4px !important;
 }
 
 .folder-compare-view .column-config,
@@ -1906,9 +1906,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .picture-compare-view .picture-options-panel,
 .picture-compare-view .picture-blend-panel,
 .picture-compare-view .picture-stat-grid {
-  gap: 2px 6px !important;
-  min-height: 22px !important;
-  padding: 2px 6px !important;
+  gap: 2px 4px !important;
+  min-height: 20px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -1942,9 +1942,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .picture-compare-view .picture-blend-panel,
 .picture-compare-view .picture-metadata-panel,
 .picture-compare-view .picture-report-panel {
-  gap: 2px 6px !important;
+  gap: 2px 4px !important;
   min-height: 20px !important;
-  padding: 2px 6px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2478,7 +2478,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .registry-compare-view .registry-key-row {
   gap: 0 4px !important;
-  min-height: 24px !important;
+  min-height: 22px !important;
   padding-top: 1px !important;
   padding-right: 4px !important;
   padding-bottom: 1px !important;

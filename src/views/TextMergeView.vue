@@ -1461,7 +1461,7 @@ watch(
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 4px;
-  padding: 4px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface-muted);

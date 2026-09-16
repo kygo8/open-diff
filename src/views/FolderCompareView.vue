@@ -4801,7 +4801,7 @@ onUnmounted(() => {
   grid-template-rows: max-content max-content max-content max-content max-content minmax(0, 1fr);
   gap: 4px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: hidden;
 }
 

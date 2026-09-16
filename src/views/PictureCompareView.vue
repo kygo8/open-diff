@@ -1513,9 +1513,9 @@ h2 {
   grid-template-columns:
     repeat(3, minmax(140px, 1fr)) auto minmax(260px, auto) minmax(180px, auto)
     minmax(180px, auto);
-  gap: 2px 6px;
-  min-height: 22px;
-  padding: 2px 6px;
+  gap: 2px 4px;
+  min-height: 20px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1548,9 +1548,9 @@ h2 {
 
 .picture-options-panel {
   display: grid;
-  gap: 2px 6px;
+  gap: 2px 4px;
   min-height: 20px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1699,9 +1699,9 @@ h2 {
 
 .picture-report-panel {
   display: grid;
-  gap: 2px 6px;
+  gap: 2px 4px;
   min-height: 20px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1749,9 +1749,9 @@ h2 {
 
 .picture-metadata-panel {
   display: grid;
-  gap: 2px 6px;
+  gap: 2px 4px;
   min-height: 20px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1922,9 +1922,9 @@ h2 {
 
 .picture-blend-panel {
   display: grid;
-  gap: 2px 6px;
+  gap: 2px 4px;
   min-height: 20px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);

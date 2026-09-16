@@ -2188,7 +2188,7 @@ watch(
   grid-template-rows: auto auto auto minmax(0, auto);
   gap: 4px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: auto;
 }
 
@@ -2400,7 +2400,7 @@ h1 {
     minmax(120px, 0.5fr) minmax(200px, 1fr) repeat(3, minmax(120px, 0.7fr))
     130px;
   gap: 4px;
-  padding: 4px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--diff-deleted-fg);
   border-radius: 0;
   background: var(--app-surface-muted);

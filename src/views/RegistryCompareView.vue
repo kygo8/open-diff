@@ -1451,7 +1451,7 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0 6px;
-  min-height: 24px;
+  min-height: 22px;
   padding: 1px 4px 1px calc(8px + var(--key-depth, 0) * 14px);
   border: 0;
   border-bottom: 1px solid var(--app-border);

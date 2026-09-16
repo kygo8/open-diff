@@ -24,5 +24,6 @@ describe('home chrome density', () => {
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*28px/)
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?border-radius:\s*0/)
     expect(homeView).toMatch(/:size="14"/)
+    expect(homeView).toMatch(/\.new-session-panel,\s*\.recent-session-panel\s*\{[\s\S]*?gap:\s*2px/)
   })
 })

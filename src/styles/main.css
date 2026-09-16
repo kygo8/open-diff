@@ -2154,25 +2154,25 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Text Compare chrome densify toward capture path/status/editor strips */
 .text-compare-view {
-  gap: 4px !important;
-  padding: 4px 6px !important;
+  gap: 2px !important;
+  padding: 2px 4px !important;
 }
 
 .text-compare-view .bc-path-row {
-  gap: 3px !important;
-  min-height: 26px !important;
-  padding: 1px 6px !important;
+  gap: 2px !important;
+  min-height: 22px !important;
+  padding: 1px 4px !important;
 }
 
 .text-compare-view .bc-path-row input {
-  height: 20px !important;
-  padding: 0 5px !important;
+  height: 18px !important;
+  padding: 0 4px !important;
   font-size: 11px !important;
 }
 
 .text-compare-view .bc-path-row button {
-  height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  padding: 0 5px !important;
   font-size: 11px !important;
 }
 
@@ -2182,15 +2182,40 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-compare-view .path-side-footer {
-  min-height: 10px !important;
+  min-height: 9px !important;
   margin-top: 0 !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+  font-size: 9px !important;
+  line-height: 9px !important;
 }
 
 .text-compare-view .text-workbench-main {
+  gap: 2px !important;
+  padding: 2px 4px !important;
+}
+
+.text-compare-view .compare-toolbar {
+  gap: 3px !important;
+}
+
+.text-compare-view .toolbar-button {
+  height: 20px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.text-compare-view .text-rules-panel,
+.text-compare-view .text-context-panel {
   gap: 4px !important;
-  padding: 4px 6px !important;
+  padding: 2px 4px !important;
+}
+
+.text-compare-view .text-context-lines input,
+.text-compare-view .algorithm-select,
+.text-compare-view .find-input {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 4px !important;
+  font-size: 11px !important;
 }
 
 .text-compare-view .diff-panel {
@@ -2198,54 +2223,84 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-compare-view .diff-header {
-  height: 22px !important;
-  padding-right: 14px !important;
-  padding-left: 44px !important;
+  gap: 3px !important;
+  height: 20px !important;
+  padding-right: 12px !important;
+  padding-left: 36px !important;
+  font-size: 11px !important;
+}
+
+.text-compare-view .diff-tools {
+  gap: 4px !important;
+}
+
+.text-compare-view .diff-filter-button,
+.text-compare-view .diff-option-button,
+.text-compare-view .diff-navigation-button {
+  height: 16px !important;
+  padding: 0 5px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.text-compare-view .diff-context-input {
+  width: 40px !important;
+  height: 16px !important;
+  padding: 0 3px !important;
+  border-radius: 2px !important;
   font-size: 11px !important;
 }
 
 .text-compare-view .diff-body {
-  height: calc(100% - 22px) !important;
-  font-size: 12px !important;
+  height: calc(100% - 20px) !important;
+  font-size: 11px !important;
+}
+
+.text-compare-view .diff-row {
+  grid-template-columns: 36px minmax(0, 1fr) 36px minmax(0, 1fr) !important;
 }
 
 .text-compare-view .gutter,
 .text-compare-view .cell {
-  padding: 1px 6px !important;
-  line-height: 18px !important;
+  padding: 0 4px !important;
+  line-height: 16px !important;
+}
+
+.text-compare-view .gutter {
+  font-size: 10px !important;
 }
 
 /* Text Merge chrome densify toward capture path/toolbar/editor/status strips */
 .text-merge-view {
-  gap: 4px !important;
-  padding: 4px 6px !important;
+  gap: 2px !important;
+  padding: 2px 4px !important;
 }
 
 .text-merge-view .merge-toolbar {
-  gap: 6px !important;
-  min-height: 26px !important;
+  gap: 4px !important;
+  min-height: 22px !important;
 }
 
 .text-merge-view .output-path-input {
+  height: 18px !important;
+  padding: 0 4px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.text-merge-view .toolbar-button {
   height: 20px !important;
   padding: 0 5px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
 
-.text-merge-view .toolbar-button {
-  height: 22px !important;
-  padding: 0 6px !important;
-  border-radius: 2px !important;
-  font-size: 11px !important;
-}
-
 .text-merge-view .toolbar-button-dense {
-  width: 22px !important;
+  width: 20px !important;
 }
 
 .text-merge-view .merge-grid {
-  gap: 4px !important;
+  gap: 2px !important;
 }
 
 .text-merge-view .merge-pane {
@@ -2253,30 +2308,39 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-merge-view .pane-header {
-  min-height: 28px !important;
-  padding: 3px 6px !important;
+  gap: 4px !important;
+  min-height: 22px !important;
+  padding: 2px 4px !important;
 }
 
 .text-merge-view .pane-header h2 {
-  font-size: 12px !important;
+  font-size: 11px !important;
+}
+
+.text-merge-view .merge-lines {
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .text-merge-view .merge-lines li {
-  min-height: 20px !important;
+  grid-template-columns: 36px minmax(0, 1fr) !important;
+  min-height: 18px !important;
 }
 
 .text-merge-view .merge-lines code {
-  padding: 1px 6px !important;
+  padding: 0 4px !important;
+  line-height: 16px !important;
 }
 
 .text-merge-view .output-editor {
-  padding: 4px 6px !important;
-  line-height: 20px !important;
+  padding: 2px 4px !important;
+  font-size: 11px !important;
+  line-height: 18px !important;
 }
 
 .text-merge-view .conflict-panel {
-  gap: 4px !important;
-  padding: 4px 6px !important;
+  gap: 2px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 

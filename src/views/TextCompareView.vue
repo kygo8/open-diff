@@ -1989,8 +1989,8 @@ function onVisibilityForDiskChange(): void {
 }
 
 .text-compare-progress button {
-  height: 22px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border, #c7cdd6);
   border-radius: 2px;
   background: var(--app-canvas, #ffffff);
@@ -2001,7 +2001,7 @@ function onVisibilityForDiskChange(): void {
 
 .compare-toolbar {
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 3px;
   height: auto;
   overflow: visible;
 }
@@ -2020,9 +2020,9 @@ function onVisibilityForDiskChange(): void {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   margin: 0;
-  padding: 3px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--od-border, #d0d7de);
   border-radius: 2px;
 }
@@ -2036,9 +2036,9 @@ function onVisibilityForDiskChange(): void {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   margin: 0;
-  padding: 3px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--od-border, #d0d7de);
   border-radius: 2px;
 }
@@ -2062,9 +2062,9 @@ function onVisibilityForDiskChange(): void {
 }
 
 .text-context-lines input {
-  width: 56px;
-  height: 20px;
-  padding: 0 4px;
+  width: 48px;
+  height: 18px;
+  padding: 0 3px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-canvas);
@@ -2073,8 +2073,8 @@ function onVisibilityForDiskChange(): void {
 }
 
 .algorithm-select {
-  height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-canvas);
@@ -2086,8 +2086,8 @@ function onVisibilityForDiskChange(): void {
   flex: 0 0 auto;
   width: auto;
   max-width: 12em;
-  height: 22px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 6px;
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -2119,11 +2119,11 @@ function onVisibilityForDiskChange(): void {
 }
 
 .path-side-footer {
-  min-height: 10px;
+  min-height: 9px;
   margin-top: 0;
   color: var(--od-muted, #6b7280);
-  font-size: 10px;
-  line-height: 10px;
+  font-size: 9px;
+  line-height: 9px;
 }
 
 .path-side-footer-muted {
@@ -2136,8 +2136,8 @@ function onVisibilityForDiskChange(): void {
 
 .find-input {
   width: 200px;
-  height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-canvas);
@@ -2156,10 +2156,10 @@ function onVisibilityForDiskChange(): void {
 .text-workbench-main {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   height: 100%;
   min-height: 0;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: hidden;
 }
 

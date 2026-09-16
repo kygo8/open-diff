@@ -2,6 +2,10 @@
 import { computed, ref, watch } from 'vue'
 import type { FolderCompareCriteria } from '@/types/diff'
 import {
+  formatIgnoredTimezoneHourOffsetsInput,
+  parseIgnoredTimezoneHourOffsetsInput,
+} from '@/app/folderCompareCriteria'
+import {
   formatFolderNameFilterDraft,
   normalizeFolderNameFilters,
   parseFolderNameFilterDraft,
@@ -44,6 +48,7 @@ const props = withDefaults(
       timestampToleranceMs: 0,
       ignoreDaylightSavingHourOffset: false,
       caseSensitiveNames: true,
+      ignoredTimezoneHourOffsets: [],
     }),
     folderFilters: () => ({
       include: [],
@@ -390,6 +395,21 @@ function applySettings(): void {
             data-testid="session-settings-case-sensitive-names"
           />
           <span>{{ $t('ui.caseSensitiveNames') }}</span>
+        </label>
+        <label class="stack">
+          <span>{{ $t('ui.ignoredTimezoneHourOffsets') }}</span>
+          <input
+            :value="
+              formatIgnoredTimezoneHourOffsetsInput(draftFolder.ignoredTimezoneHourOffsets ?? [])
+            "
+            type="text"
+            data-testid="session-settings-ignored-timezone-offsets"
+            @change="
+              draftFolder.ignoredTimezoneHourOffsets = parseIgnoredTimezoneHourOffsetsInput(
+                ($event.target as HTMLInputElement).value,
+              )
+            "
+          />
         </label>
       </div>
 

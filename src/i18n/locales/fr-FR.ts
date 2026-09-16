@@ -1021,6 +1021,9 @@ export const frFR: LanguagePack = {
     'ui.includePatterns': 'Inclure les noms',
     'ui.excludePatterns': 'Exclure les noms',
     'ui.caseSensitiveNames': 'Noms sensibles à la casse',
+    'ui.ignoredTimezoneHourOffsets': 'Décalages horaires de fuseau ignorés',
+    'ui.ignoredTimezoneHourOffsetsHint':
+      'Heures entières séparées par des virgules, traitées comme égales (par ex. 8, -5).',
     'ui.sessionSettingsFiltersHint':
       'Les motifs d’inclusion/exclusion de noms s’appliquent au prochain scan/comparaison et sont conservés sur ce poste. Les filtres d’état d’affichage restent dans le panneau Filtres de la barre d’outils.',
     'ui.goTo': 'Aller à',
@@ -1156,6 +1159,12 @@ export const frFR: LanguagePack = {
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.fileOperations': 'Opérations sur les fichiers',
+    'ui.copyEmptyFolders': 'Copier les dossiers vides',
+    'ui.copyEmptyFoldersHint':
+      'Si désactivé, la copie vers un dossier ignore les répertoires sans fichiers.',
+    'ui.keepFolderExpansionOnReload': 'Conserver le déploiement des dossiers au rechargement',
+    'ui.keepFolderExpansionOnReloadHint':
+      'Après un nouvel affichage des mêmes racines, conserver les dossiers ouverts.',
     'ui.fileOperationsHint':
       'Valeurs par défaut pour copier, déplacer et supprimer dans Comparer des dossiers.',
     'ui.includeHiddenItemsInFileActions': 'Inclure les éléments masqués par défaut',
@@ -1235,6 +1244,9 @@ export const frFR: LanguagePack = {
     'ui.formatAssociations': 'Associations de formats',
     'ui.formatAssociationsHint':
       'Activer ou désactiver les associations intégrées utilisées à l’ouverture par extension.',
+    'ui.treatUnknownAsText': 'Traiter les extensions inconnues comme du texte',
+    'ui.treatUnknownAsTextHint':
+      'Ouvrir les fichiers sans association dans Comparer le texte plutôt que Comparer en hexadécimal.',
     'ui.profileDefaultName': 'Nom de profil par défaut',
     'ui.profileDefaultProtocol': 'Protocole par défaut',
     'ui.profileDefaultRootPath': 'Chemin racine par défaut',
@@ -1251,9 +1263,17 @@ export const frFR: LanguagePack = {
       "Retirer l'attribut lecture seule de la destination avant écrasement.",
     'ui.profileDefaultUsername': "Nom d'utilisateur par défaut",
     'ui.profileDefaultPort': 'Port par défaut',
+    'ui.profileConnectionTimeoutSeconds': 'Délai de connexion (secondes)',
+    'ui.profileConnectionTimeoutHint':
+      'Appliqué à la création d’un profil distant et enregistré localement.',
+    'ui.profilePassiveFtp': 'FTP passif par défaut',
+    'ui.profilePassiveFtpHint': 'Appliqué aux nouveaux profils FTP / FTPS enregistrés ici.',
     'ui.reportIncludeIdentical': 'Inclure les éléments identiques dans les rapports de dossier',
     'ui.reportIncludeIdenticalHint':
       'Si désactivé, les exports de rapport omettent les lignes Identique.',
+    'ui.reportIncludeOrphans': 'Inclure les orphelins dans les rapports de dossier',
+    'ui.reportIncludeOrphansHint':
+      'Si désactivé, les exports omettent les lignes gauche seulement et droite seulement.',
     'ui.showMillisecondsInTimestamps': 'Afficher les millisecondes dans les horodatages',
     'ui.showMillisecondsInTimestampsHint':
       'Inclure secondes et millisecondes dans les pieds de chemin et dates de dossier.',

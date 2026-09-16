@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   defaultFolderCompareCriteria,
   folderCompareCriteriaStorageKey,
+  formatIgnoredTimezoneHourOffsetsInput,
   loadFolderCompareCriteria,
+  parseIgnoredTimezoneHourOffsetsInput,
   saveFolderCompareCriteria,
 } from './folderCompareCriteria'
 
@@ -27,6 +29,7 @@ describe('folderCompareCriteria', () => {
       timestampToleranceMs: 2000,
       ignoreDaylightSavingHourOffset: true,
       caseSensitiveNames: false,
+      ignoredTimezoneHourOffsets: [8, -5],
     })
 
     expect(localStorage.getItem(folderCompareCriteriaStorageKey)).toContain('followSymlinks')
@@ -41,6 +44,7 @@ describe('folderCompareCriteria', () => {
       timestampToleranceMs: 2000,
       ignoreDaylightSavingHourOffset: true,
       caseSensitiveNames: false,
+      ignoredTimezoneHourOffsets: [8, -5],
     })
   })
 
@@ -67,6 +71,12 @@ describe('folderCompareCriteria', () => {
       timestampToleranceMs: 0,
       ignoreDaylightSavingHourOffset: false,
       caseSensitiveNames: true,
+      ignoredTimezoneHourOffsets: [],
     })
+  })
+
+  it('parses comma-separated timezone hour leftovers', () => {
+    expect(parseIgnoredTimezoneHourOffsetsInput('8, -5, 0, 8')).toEqual([8, -5])
+    expect(formatIgnoredTimezoneHourOffsetsInput([8, -5])).toBe('8, -5')
   })
 })

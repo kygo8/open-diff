@@ -7,11 +7,14 @@ import {
   saveFileFormats,
   sessionTypeForPath,
   setFileFormatEnabled,
+  fileFormatPreferencesStorageKey,
+  saveFileFormatPreferences,
 } from './fileFormats'
 
 describe('fileFormats', () => {
   afterEach(() => {
     localStorage.removeItem(fileFormatsStorageKey)
+    localStorage.removeItem(fileFormatPreferencesStorageKey)
   })
 
   it('routes csv, registry, image, and patch paths from persisted formats', () => {
@@ -74,5 +77,11 @@ describe('fileFormats', () => {
 
     expect(formats.some((format) => format.id === 'hex-binary')).toBe(true)
     expect(sessionTypeForPath('firmware.bin')).toBe('hex-compare')
+  })
+
+  it('routes unknown extensions as text when the Formats leftover is on', () => {
+    expect(sessionTypeForPath('notes.unknownfmt')).toBe('hex-compare')
+    saveFileFormatPreferences({ treatUnknownAsText: true })
+    expect(sessionTypeForPath('notes.unknownfmt')).toBe('text-compare')
   })
 })

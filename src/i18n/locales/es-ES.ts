@@ -1020,6 +1020,9 @@ export const esES: LanguagePack = {
     'ui.includePatterns': 'Incluir nombres',
     'ui.excludePatterns': 'Excluir nombres',
     'ui.caseSensitiveNames': 'Nombres sensibles a mayúsculas',
+    'ui.ignoredTimezoneHourOffsets': 'Desplazamientos horarios de zona ignorados',
+    'ui.ignoredTimezoneHourOffsetsHint':
+      'Horas enteras separadas por comas que se tratan como iguales (por ejemplo 8, -5).',
     'ui.sessionSettingsFiltersHint':
       'Los patrones de inclusión/exclusión de nombres se aplican en el próximo análisis/comparación y se conservan en este equipo. Los filtros de estado de visualización permanecen en el panel Filtros de la barra de herramientas.',
     'ui.goTo': 'Ir a',
@@ -1153,6 +1156,12 @@ export const esES: LanguagePack = {
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.fileOperations': 'Operaciones de archivo',
+    'ui.copyEmptyFolders': 'Copiar carpetas vacías',
+    'ui.copyEmptyFoldersHint':
+      'Si está desactivado, copiar a carpeta omite directorios sin archivos.',
+    'ui.keepFolderExpansionOnReload': 'Conservar la expansión de carpetas al recargar',
+    'ui.keepFolderExpansionOnReloadHint':
+      'Tras volver a comparar las mismas raíces, conservar las carpetas abiertas.',
     'ui.fileOperationsHint':
       'Valores predeterminados para copiar, mover y eliminar en Comparar carpetas.',
     'ui.includeHiddenItemsInFileActions': 'Incluir elementos ocultos de forma predeterminada',
@@ -1232,6 +1241,9 @@ export const esES: LanguagePack = {
     'ui.formatAssociations': 'Asociaciones de formato',
     'ui.formatAssociationsHint':
       'Activar o desactivar asociaciones integradas al abrir por extensión.',
+    'ui.treatUnknownAsText': 'Tratar extensiones desconocidas como texto',
+    'ui.treatUnknownAsTextHint':
+      'Abrir archivos sin asociación en Comparar texto en lugar de Comparar hexadecimal.',
     'ui.profileDefaultName': 'Nombre de perfil predeterminado',
     'ui.profileDefaultProtocol': 'Protocolo predeterminado',
     'ui.profileDefaultRootPath': 'Ruta raíz predeterminada',
@@ -1248,9 +1260,17 @@ export const esES: LanguagePack = {
       'Quitar el atributo de solo lectura del destino antes de sobrescribir.',
     'ui.profileDefaultUsername': 'Nombre de usuario predeterminado',
     'ui.profileDefaultPort': 'Puerto predeterminado',
+    'ui.profileConnectionTimeoutSeconds': 'Tiempo de espera de conexión (segundos)',
+    'ui.profileConnectionTimeoutHint':
+      'Se aplica al crear un perfil remoto y se guarda en este equipo.',
+    'ui.profilePassiveFtp': 'FTP pasivo de forma predeterminada',
+    'ui.profilePassiveFtpHint': 'Se aplica a los perfiles FTP / FTPS nuevos guardados aquí.',
     'ui.reportIncludeIdentical': 'Incluir elementos idénticos en informes de carpeta',
     'ui.reportIncludeIdenticalHint':
       'Si está desactivado, el informe omite filas con estado Igual.',
+    'ui.reportIncludeOrphans': 'Incluir huérfanos en informes de carpeta',
+    'ui.reportIncludeOrphansHint':
+      'Si está desactivado, el informe omite filas solo izquierda y solo derecha.',
     'ui.showMillisecondsInTimestamps': 'Mostrar milisegundos en marcas de tiempo',
     'ui.showMillisecondsInTimestampsHint':
       'Incluir segundos y milisegundos en pies de ruta y fechas de carpeta.',

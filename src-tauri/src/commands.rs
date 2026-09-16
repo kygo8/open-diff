@@ -370,6 +370,9 @@ pub struct FolderCompareCriteria {
     /// Align folder names with case sensitivity (default true).
     #[serde(default = "default_case_sensitive_names_criteria")]
     pub case_sensitive_names: bool,
+    /// Extra whole-hour modified-time offsets treated as equal (timezone skew).
+    #[serde(default)]
+    pub ignored_timezone_hour_offsets: Vec<i32>,
 }
 
 fn default_show_hidden_files_criteria() -> bool {
@@ -394,6 +397,7 @@ impl Default for FolderCompareCriteria {
             ignore_daylight_saving_hour_offset: false,
             show_hidden_files: true,
             case_sensitive_names: true,
+            ignored_timezone_hour_offsets: Vec::new(),
         }
     }
 }
@@ -412,7 +416,7 @@ impl FolderCompareCriteria {
             timestamp_tolerance_ms: self.timestamp_tolerance_ms,
             ignore_daylight_saving_hour_offset: self.ignore_daylight_saving_hour_offset,
             show_hidden_files: self.show_hidden_files,
-            ..Default::default()
+            ignored_timezone_hour_offsets: self.ignored_timezone_hour_offsets.clone(),
         }
     }
 }
@@ -1187,6 +1191,7 @@ pub fn copy_folder_entry(
     preserve_timestamps: Option<bool>,
     overwrite_read_only: Option<bool>,
     source_modified_at_ms: Option<u128>,
+    copy_empty_folders: Option<bool>,
 ) -> Result<folder_core::FileOperationResult, AppErrorPayload> {
     let error_path = source_path.clone();
     let target_for_meta = target_path.clone();
@@ -1205,10 +1210,11 @@ pub fn copy_folder_entry(
         }
     }
 
-    let result = folder_core::perform_file_operation(folder_core::FileOperationRequest::Copy {
-        source_path,
-        target_path,
-    })
+    folder_core::copy_path_with_options(
+        &source_path,
+        &target_path,
+        copy_empty_folders.unwrap_or(true),
+    )
     .map_err(|error| folder_scan_error(&error_path, error))?;
 
     if preserve_timestamps.unwrap_or(false) {
@@ -1232,7 +1238,12 @@ pub fn copy_folder_entry(
         }
     }
 
-    Ok(result)
+    Ok(folder_core::FileOperationResult {
+        operation: folder_core::FileOperationKind::Copy,
+        status: folder_core::FileOperationStatus::Copied,
+        source_path,
+        target_path: Some(target_path),
+    })
 }
 
 #[tauri::command]
@@ -1807,6 +1818,7 @@ pub fn export_folder_compare_report(
     format: String,
     output_path: Option<String>,
     include_identical: Option<bool>,
+    include_orphans: Option<bool>,
 ) -> Result<ExportReportResponse, AppErrorPayload> {
     let cancellation_token = job_core::CancellationToken::default();
     let left_tree = folder_core::scan_local_folder(&left_root, &cancellation_token)
@@ -1814,11 +1826,20 @@ pub fn export_folder_compare_report(
     let right_tree = folder_core::scan_local_folder(&right_root, &cancellation_token)
         .map_err(|error| folder_scan_error(&right_root, error))?;
     let alignment_rows = folder_core::align_folder_trees(&left_tree, &right_tree);
-    let model = folder_core::build_folder_report_model(
+    let mut model = folder_core::build_folder_report_model(
         &alignment_rows,
         &folder_core::FolderCompareOptions::default(),
         include_identical.unwrap_or(true),
     );
+    if !include_orphans.unwrap_or(true) {
+        model.rows.retain(|row| {
+            !matches!(
+                row.status,
+                folder_core::FolderCompareStatus::LeftOnly
+                    | folder_core::FolderCompareStatus::RightOnly
+            )
+        });
+    }
     let content = match format.to_ascii_lowercase().as_str() {
         "text" | "txt" => folder_core::render_folder_report_text(&model, "Folder Compare"),
         "xml" => folder_core::render_folder_report_xml(&model),
@@ -5642,6 +5663,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,
@@ -5662,6 +5684,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,
@@ -5682,6 +5705,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,
@@ -5745,6 +5769,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,
@@ -5765,6 +5790,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,
@@ -5825,6 +5851,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,
@@ -5869,6 +5896,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,
@@ -5894,6 +5922,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,
@@ -5952,6 +5981,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,
@@ -5977,6 +6007,7 @@ mod tests {
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
                 case_sensitive_names: true,
+                ignored_timezone_hour_offsets: Vec::new(),
             }),
             None,
             None,

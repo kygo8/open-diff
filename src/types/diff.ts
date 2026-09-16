@@ -185,6 +185,8 @@ export interface FolderCompareCriteria {
   showHiddenFiles?: boolean
   /** Align folder names with case sensitivity (off = case-insensitive match). */
   caseSensitiveNames?: boolean
+  /** Extra whole-hour modified-time offsets treated as equal (timezone skew). */
+  ignoredTimezoneHourOffsets?: number[]
 }
 
 export interface FolderNameFilters {
@@ -567,6 +569,8 @@ export interface ExportFolderCompareReportRequest extends ExportReportRequest {
   rightRoot: string
   /** When false, identical rows are omitted from the exported report. */
   includeIdentical?: boolean
+  /** When false, left-only / right-only rows are omitted from the exported report. */
+  includeOrphans?: boolean
 }
 
 export interface ExportReportResponse {
@@ -610,6 +614,7 @@ export interface CopyFolderEntryRequest {
   preserveTimestamps?: boolean
   overwriteReadOnly?: boolean
   sourceModifiedAtMs?: number
+  copyEmptyFolders?: boolean
 }
 
 export interface MoveFolderEntryRequest {

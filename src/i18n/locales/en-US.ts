@@ -1003,6 +1003,9 @@ export const enUS: LanguagePack = {
     'ui.includePatterns': 'Include names',
     'ui.excludePatterns': 'Exclude names',
     'ui.caseSensitiveNames': 'Case-sensitive names',
+    'ui.ignoredTimezoneHourOffsets': 'Ignored timezone hour offsets',
+    'ui.ignoredTimezoneHourOffsetsHint':
+      'Comma-separated whole hours treated as equal when comparing modified times (for example 8, -5).',
     'ui.sessionSettingsFiltersHint':
       'Name include/exclude patterns apply on the next scan/compare and persist for this workstation. Display status filters stay on the Filters toolbar panel.',
     'ui.goTo': 'Go To',
@@ -1137,6 +1140,12 @@ export const enUS: LanguagePack = {
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.fileOperations': 'File Operations',
     'ui.fileOperationsHint': 'Defaults for Folder Compare copy, move, and delete actions.',
+    'ui.copyEmptyFolders': 'Copy empty folders',
+    'ui.copyEmptyFoldersHint':
+      'When off, Folder Compare copy-to-folder skips directories that contain no files.',
+    'ui.keepFolderExpansionOnReload': 'Keep folder expansion on reload',
+    'ui.keepFolderExpansionOnReloadHint':
+      'Preserve which folders are expanded after a Folder Compare refresh of the same roots.',
     'ui.includeHiddenItemsInFileActions': 'Include hidden items by default',
     'ui.includeHiddenItemsInFileActionsHint':
       'When acting on a selected folder, include descendants hidden by display or name filters.',
@@ -1211,6 +1220,9 @@ export const enUS: LanguagePack = {
     'ui.formatAssociations': 'Format associations',
     'ui.formatAssociationsHint':
       'Enable or disable built-in associations used when opening files by extension.',
+    'ui.treatUnknownAsText': 'Treat unknown extensions as text',
+    'ui.treatUnknownAsTextHint':
+      'Open files that match no format association in Text Compare instead of Hex Compare.',
     'ui.profileDefaultName': 'Default profile name',
     'ui.profileDefaultProtocol': 'Default protocol',
     'ui.profileDefaultRootPath': 'Default root path',
@@ -1227,9 +1239,17 @@ export const enUS: LanguagePack = {
       'Clear the read-only attribute on the destination before overwriting.',
     'ui.profileDefaultUsername': 'Default username',
     'ui.profileDefaultPort': 'Default port',
+    'ui.profileConnectionTimeoutSeconds': 'Connection timeout (seconds)',
+    'ui.profileConnectionTimeoutHint':
+      'Applied when creating a new remote profile. Stored with the local profile.',
+    'ui.profilePassiveFtp': 'Use passive FTP by default',
+    'ui.profilePassiveFtpHint': 'Applied to new FTP / FTPS profiles saved on this workstation.',
     'ui.reportIncludeIdentical': 'Include identical items in folder reports',
     'ui.reportIncludeIdenticalHint':
       'When off, Folder Compare report exports omit rows that compare as Same.',
+    'ui.reportIncludeOrphans': 'Include orphans in folder reports',
+    'ui.reportIncludeOrphansHint':
+      'When off, Folder Compare report exports omit left-only and right-only rows.',
     'ui.showMillisecondsInTimestamps': 'Show milliseconds in timestamps',
     'ui.showMillisecondsInTimestampsHint':
       'Include seconds and milliseconds in path footer and folder modified times.',

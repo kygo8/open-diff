@@ -1023,6 +1023,9 @@ export const deDE: LanguagePack = {
     'ui.includePatterns': 'Namen einschließen',
     'ui.excludePatterns': 'Namen ausschließen',
     'ui.caseSensitiveNames': 'Groß-/Kleinschreibung beachten',
+    'ui.ignoredTimezoneHourOffsets': 'Ignorierte Zeitzonen-Stundenoffsets',
+    'ui.ignoredTimezoneHourOffsetsHint':
+      'Kommagetrennte ganze Stunden, die beim Zeitvergleich als gleich gelten (z. B. 8, -5).',
     'ui.sessionSettingsFiltersHint':
       'Einschluss-/Ausschlussmuster für Namen gelten beim nächsten Scan/Vergleich und bleiben auf diesem Gerät erhalten. Anzeigestatusfilter bleiben im Filter-Werkzeugleistenbereich.',
     'ui.goTo': 'Gehe zu',
@@ -1156,6 +1159,12 @@ export const deDE: LanguagePack = {
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.fileOperations': 'Dateioperationen',
+    'ui.copyEmptyFolders': 'Leere Ordner kopieren',
+    'ui.copyEmptyFoldersHint':
+      'Wenn aus, überspringt das Kopieren in einen Ordner Verzeichnisse ohne Dateien.',
+    'ui.keepFolderExpansionOnReload': 'Ordnererweiterung beim Neuvergleich behalten',
+    'ui.keepFolderExpansionOnReloadHint':
+      'Nach einem erneuten Vergleich derselben Wurzeln geöffnete Ordner beibehalten.',
     'ui.fileOperationsHint':
       'Standardwerte für Kopieren, Verschieben und Löschen im Ordnervergleich.',
     'ui.includeHiddenItemsInFileActions': 'Ausgeblendete Elemente standardmäßig einbeziehen',
@@ -1231,6 +1240,9 @@ export const deDE: LanguagePack = {
     'ui.fileFiltersHint':
       'Standard-Namensfilter für Ordnervergleich/-sync/-merge. Filterleiste und Sitzungseinstellungen können überschreiben.',
     'ui.formatAssociations': 'Formatzuordnungen',
+    'ui.treatUnknownAsText': 'Unbekannte Erweiterungen als Text behandeln',
+    'ui.treatUnknownAsTextHint':
+      'Dateien ohne Format-Zuordnung in Textvergleich statt Hex-Vergleich öffnen.',
     'ui.formatAssociationsHint':
       'Integrierte Zuordnungen beim Öffnen nach Dateierweiterung aktivieren oder deaktivieren.',
     'ui.profileDefaultName': 'Standard-Profilname',
@@ -1248,9 +1260,17 @@ export const deDE: LanguagePack = {
     'ui.overwriteReadOnlyFilesHint': 'Schreibschutz am Ziel vor dem Überschreiben entfernen.',
     'ui.profileDefaultUsername': 'Standard-Benutzername',
     'ui.profileDefaultPort': 'Standard-Port',
+    'ui.profileConnectionTimeoutSeconds': 'Verbindungs-Timeout (Sekunden)',
+    'ui.profileConnectionTimeoutHint':
+      'Gilt beim Erstellen eines neuen Remote-Profils und wird lokal gespeichert.',
+    'ui.profilePassiveFtp': 'Passives FTP standardmäßig',
+    'ui.profilePassiveFtpHint': 'Gilt für neue lokal gespeicherte FTP-/FTPS-Profile.',
     'ui.reportIncludeIdentical': 'Identische Einträge in Ordnerberichten',
     'ui.reportIncludeIdenticalHint':
       'Wenn aus, lässt der Ordnervergleichsbericht Zeilen mit Status Gleich weg.',
+    'ui.reportIncludeOrphans': 'Verwaiste Einträge in Ordnerberichten',
+    'ui.reportIncludeOrphansHint':
+      'Wenn aus, lässt der Ordnervergleichsbericht nur-links- und nur-rechts-Zeilen weg.',
     'ui.showMillisecondsInTimestamps': 'Millisekunden in Zeitstempeln anzeigen',
     'ui.showMillisecondsInTimestampsHint':
       'Sekunden und Millisekunden in Pfadleisten und Ordnerzeiten anzeigen.',

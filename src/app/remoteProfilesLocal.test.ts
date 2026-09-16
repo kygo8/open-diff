@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import {
+  applyRemoteProfileConnectionDefaults,
   deleteLocalRemoteProfile,
   loadLocalRemoteProfiles,
   loadRemoteProfileDefaults,
@@ -78,6 +79,8 @@ describe('remoteProfileDefaults', () => {
       defaultRootPath: '/srv',
       defaultUsername: 'labuser',
       defaultPort: 990,
+      connectionTimeoutSeconds: 45,
+      passiveFtp: false,
     })
 
     expect(loadRemoteProfileDefaults()).toEqual({
@@ -87,6 +90,30 @@ describe('remoteProfileDefaults', () => {
       defaultRootPath: '/srv',
       defaultUsername: 'labuser',
       defaultPort: 990,
+      connectionTimeoutSeconds: 45,
+      passiveFtp: false,
+    })
+  })
+
+  it('stamps connection leftovers onto new local profiles', () => {
+    saveRemoteProfileDefaults({
+      ...loadRemoteProfileDefaults(),
+      connectionTimeoutSeconds: 12,
+      passiveFtp: false,
+    })
+
+    expect(
+      applyRemoteProfileConnectionDefaults({
+        id: 'lab',
+        name: 'Lab',
+        protocol: 'ftp',
+        host: 'ftp.example.com',
+        port: 21,
+        rootPath: '/',
+      }),
+    ).toMatchObject({
+      connectionTimeoutSeconds: 12,
+      passiveFtp: false,
     })
   })
 })

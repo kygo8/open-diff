@@ -118,6 +118,7 @@ import {
   touchFolderEntry,
 } from '@/api/diff'
 import { loadReportPreferences } from '@/app/reportExports'
+import { loadFileOperationPreferences } from '@/app/fileOperationPreferences'
 import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
 import { openPathExternal, revealPathInOs } from '@/api/integration'
 import {
@@ -1594,6 +1595,11 @@ function applyFolderCompareResponse(response: FolderCompareResponse): void {
     manualAlignments.value = []
   }
 
+  const previousExpanded = expandedDirectoryIds.value
+  const keepExpansion =
+    loadFileOperationPreferences().keepFolderExpansionOnReload &&
+    alignmentRootKey.value === nextRootKey
+
   alignmentRootKey.value = nextRootKey
   rows.value = applyManualAlignments(normalized, manualAlignments.value)
   leftRoot.value = response.leftRoot
@@ -1602,9 +1608,17 @@ function applyFolderCompareResponse(response: FolderCompareResponse): void {
     response.leftRoot,
     response.rightRoot,
   )
-  expandedDirectoryIds.value = settings.collapseIdenticalFoldersDefault
-    ? directoryIdsWithDifferences(rows.value)
-    : new Set(rows.value.filter((row) => row.kind === 'directory').map((row) => row.id))
+  const directoryIds = new Set(
+    rows.value.filter((row) => row.kind === 'directory').map((row) => row.id),
+  )
+
+  if (keepExpansion) {
+    expandedDirectoryIds.value = new Set([...previousExpanded].filter((id) => directoryIds.has(id)))
+  } else {
+    expandedDirectoryIds.value = settings.collapseIdenticalFoldersDefault
+      ? directoryIdsWithDifferences(rows.value)
+      : directoryIds
+  }
   selectedRowId.value = undefined
   excludedRowIds.value = new Set()
   alignWithTargetId.value = ''
@@ -2297,6 +2311,7 @@ async function copySelectedToFolder(): Promise<void> {
         preserveTimestamps: settings.preserveTimestampsOnCopy,
         overwriteReadOnly: settings.overwriteReadOnlyFiles,
         sourceModifiedAtMs: plan.sourceModifiedAtMs,
+        copyEmptyFolders: loadFileOperationPreferences().copyEmptyFolders,
       })
     }
     lastFileOperationAction.value =
@@ -2694,6 +2709,7 @@ async function exportFolderReport(
     format,
     outputPath: fileCompareReportOutputPath(leftRoot.value, format, 'full'),
     includeIdentical: loadReportPreferences().includeIdentical,
+    includeOrphans: loadReportPreferences().includeOrphans,
   })
 
   reportStatus.value = response.outputPath ?? format

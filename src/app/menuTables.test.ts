@@ -103,6 +103,9 @@ describe('menuTables', () => {
     expect(resolveMenuCommandEnabled('diff.next', true, clipboardCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('edit.paste', true, clipboardCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('edit.copyLeft', true, clipboardCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.compare', true, clipboardCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.swap', true, clipboardCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.reload', true, clipboardCtx)).toBe(true)
 
     expect(resolveMenuCommandEnabled('view.showDifferences', true, patchCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('edit.cut', true, patchCtx)).toBe(false)

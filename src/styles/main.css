@@ -183,9 +183,9 @@ select {
 }
 
 .app-shell-single-session .folder-toolbar .path-pair {
-  gap: 1px !important;
-  min-height: 20px !important;
-  padding: 0 2px !important;
+  gap: 0 !important;
+  min-height: 18px !important;
+  padding: 0 1px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   background: #f3f3f3 !important;
 }
@@ -200,36 +200,36 @@ select {
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row {
-  gap: 2px !important;
+  gap: 1px !important;
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > input,
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > .path-input {
-  height: 14px !important;
-  min-height: 14px !important;
+  height: 13px !important;
+  min-height: 13px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > button {
-  height: 14px !important;
-  min-height: 14px !important;
-  padding: 0 3px !important;
+  height: 13px !important;
+  min-height: 13px !important;
+  padding: 0 2px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
 }
 
 .app-shell-single-session .path-side-footer {
-  min-height: 8px !important;
+  min-height: 7px !important;
   margin-top: 0 !important;
-  font-size: 8px !important;
-  line-height: 8px !important;
+  font-size: 7px !important;
+  line-height: 7px !important;
 }
 
 .app-shell-single-session .folder-toolbar .folder-criteria,
 .app-shell-single-session .folder-toolbar .folder-actions,
 .app-shell-single-session .folder-toolbar .archive-path-hint {
-  padding: 0 2px !important;
+  padding: 0 1px !important;
 }
 
 .app-shell-single-session .workbench-shell-single-session .bc-session-toolbar {
@@ -260,8 +260,8 @@ select {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-width: 0;
-  height: 18px;
-  padding: 0 1px;
+  height: 16px;
+  padding: 0;
   border-bottom: 1px solid #a0a0a0;
   background: var(--app-surface-low);
 }
@@ -735,8 +735,8 @@ select {
   gap: 0;
   min-width: 0;
   height: auto;
-  min-height: 22px;
-  padding: 0 1px;
+  min-height: 20px;
+  padding: 0;
   overflow: visible;
   border-bottom: 1px solid #a0a0a0;
   background: #f3f3f3;
@@ -745,7 +745,7 @@ select {
 .workbench-toolbar select,
 .workbench-toolbar input,
 .path-pair-bar input {
-  height: 14px;
+  height: 13px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-canvas);
@@ -764,8 +764,8 @@ select {
   min-width: 0;
   max-width: 12em;
   height: auto;
-  min-height: 14px;
-  padding: 1px 3px;
+  min-height: 13px;
+  padding: 1px 2px;
   overflow: hidden;
   border: 1px solid transparent;
   border-radius: 0;
@@ -811,15 +811,15 @@ select {
 
 .path-pair-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr) auto;
-  min-height: 22px;
-  padding: 1px 2px;
+  grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr) auto;
+  min-height: 20px;
+  padding: 0 1px;
   background: #f3f3f3;
 }
 
 .path-pair-field {
   display: grid;
-  grid-template-columns: auto 9px minmax(0, 1fr) auto;
+  grid-template-columns: auto 8px minmax(0, 1fr) auto;
   align-items: center;
   gap: 1px;
   min-width: 0;
@@ -840,9 +840,9 @@ select {
 }
 
 .path-pair-swap {
-  width: 18px;
-  min-width: 18px;
-  height: 14px;
+  width: 16px;
+  min-width: 16px;
+  height: 13px;
   padding: 0;
 }
 
@@ -851,8 +851,8 @@ select {
   grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 1px;
-  min-height: 20px;
-  padding: 0 2px;
+  min-height: 18px;
+  padding: 0 1px;
   border-bottom: 1px solid #a0a0a0;
   background: #f3f3f3;
 }
@@ -860,7 +860,7 @@ select {
 .bc-path-row input {
   width: 100%;
   min-width: 0;
-  height: 14px;
+  height: 13px;
   padding: 0 2px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
@@ -877,8 +877,8 @@ select {
   width: auto;
   min-width: max-content;
   max-width: none;
-  height: 14px;
-  padding: 0 3px;
+  height: 13px;
+  padding: 0 2px;
   overflow: visible;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1671,10 +1671,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .path-side-footer {
-  min-height: 8px !important;
+  min-height: 7px !important;
   margin-top: 0 !important;
-  font-size: 8px !important;
-  line-height: 8px !important;
+  font-size: 7px !important;
+  line-height: 7px !important;
 }
 
 /* Folder/Sync/Merge session body: cut leftover web page margins */

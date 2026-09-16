@@ -785,14 +785,14 @@ function runMediaToolbarCommand(commandId: string): void {
             <Pause
               v-if="isPlaying"
               class="media-scrub-icon"
-              :size="14"
+              :size="12"
               :stroke-width="2"
               aria-hidden="true"
             />
             <Play
               v-else
               class="media-scrub-icon"
-              :size="14"
+              :size="12"
               :stroke-width="2"
               aria-hidden="true"
             />
@@ -1108,7 +1108,7 @@ h1 {
 .media-summary-grid,
 .media-side-grid {
   display: grid;
-  gap: 10px;
+  gap: 6px;
 }
 
 .media-summary-grid {
@@ -1123,27 +1123,29 @@ h1 {
 .media-side,
 .media-report-panel {
   display: grid;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 2px 6px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .media-summary-item {
-  gap: 4px;
+  gap: 2px;
 }
 
 .media-summary-item strong {
-  font-size: 18px;
-  line-height: 1;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .media-summary-item span,
 .media-side header span,
 .media-report-panel header span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .media-side header,
@@ -1151,41 +1153,50 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
+  min-height: 18px;
 }
 
 .media-report-panel header button {
   margin-left: auto;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .media-side dl {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+  gap: 4px;
   margin: 0;
 }
 
 .media-side dl div {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
-  padding: 8px;
+  min-height: 18px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
 }
 
 .media-side dt {
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 14px;
 }
 
 .media-side dd {
   min-width: 0;
   margin: 0;
   overflow: hidden;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
+  line-height: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1194,7 +1205,7 @@ h1 {
   display: grid;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
 }
 
@@ -1207,8 +1218,9 @@ h1 {
   display: grid;
   grid-template-columns: 140px minmax(160px, 1fr) minmax(160px, 1fr) 98px 98px;
   min-width: 760px;
+  min-height: 16px;
   border-bottom: 1px solid var(--app-border);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .media-field-minor {
@@ -1217,10 +1229,11 @@ h1 {
 
 .media-rules-panel {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 2px 6px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1228,21 +1241,28 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  min-height: 18px;
 }
 
 .media-rules-panel header button {
   margin-left: auto;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .media-rules-panel header span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .media-rules-list {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   max-height: 220px;
   overflow: auto;
 }
@@ -1251,8 +1271,10 @@ h1 {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 10px;
-  font-size: 12px;
+  gap: 4px;
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .media-rule-row em {
@@ -1267,11 +1289,11 @@ h1 {
 .media-field-row > * {
   min-width: 0;
   margin: 0;
-  padding: 8px 10px;
+  padding: 2px 6px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-style: normal;
-  line-height: 18px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1365,8 +1387,8 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  min-height: 18px;
+  gap: 4px;
+  min-height: 16px;
   font-size: 11px;
   line-height: 14px;
 }
@@ -1381,12 +1403,12 @@ h1 {
 .media-players {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 6px;
 }
 
 .media-player-card {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 }
 
@@ -1406,8 +1428,8 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  min-height: 22px;
+  gap: 4px;
+  min-height: 20px;
   padding: 0 2px;
 }
 
@@ -1415,9 +1437,9 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  height: 20px;
-  min-height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);
@@ -1435,8 +1457,8 @@ h1 {
 .media-scrub {
   flex: 1;
   min-width: 160px;
-  height: 18px;
-  min-height: 18px;
+  height: 16px;
+  min-height: 16px;
 }
 
 .media-scrub-row span {

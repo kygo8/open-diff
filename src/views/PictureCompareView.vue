@@ -777,7 +777,7 @@ async function runPictureCompare(): Promise<void> {
           <h2 class="picture-panel-title">
             <CircleGauge
               class="picture-panel-icon"
-              :size="14"
+              :size="12"
               :stroke-width="2"
               aria-hidden="true"
             />
@@ -1059,7 +1059,7 @@ async function runPictureCompare(): Promise<void> {
           <strong class="picture-panel-title">
             <Blend
               class="picture-panel-icon"
-              :size="14"
+              :size="12"
               :stroke-width="2"
               aria-hidden="true"
             />
@@ -1194,7 +1194,7 @@ async function runPictureCompare(): Promise<void> {
           <h2 class="picture-panel-title">
             <Tag
               class="picture-panel-icon"
-              :size="14"
+              :size="12"
               :stroke-width="2"
               aria-hidden="true"
             />
@@ -1427,14 +1427,15 @@ h2 {
 .picture-path-panel label,
 .picture-stat-grid article {
   display: grid;
-  gap: 5px;
+  gap: 2px;
   min-width: 0;
 }
 
 .picture-path-panel span,
 .picture-stat-grid span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .picture-path-panel input {
@@ -1483,8 +1484,8 @@ h2 {
 
 .picture-stat-grid strong {
   overflow: hidden;
-  font-size: 16px;
-  line-height: 1.2;
+  font-size: 12px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1494,8 +1495,8 @@ h2 {
   grid-template-columns:
     repeat(3, minmax(140px, 1fr)) auto minmax(260px, auto) minmax(180px, auto)
     minmax(180px, auto);
-  gap: 4px 6px;
-  min-height: 26px;
+  gap: 2px 6px;
+  min-height: 22px;
   padding: 2px 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
@@ -1504,12 +1505,13 @@ h2 {
 
 .picture-controls label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
 }
 
 .picture-controls span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .picture-controls input {
@@ -1529,7 +1531,7 @@ h2 {
 .picture-options-panel {
   display: grid;
   gap: 2px 6px;
-  min-height: 22px;
+  min-height: 20px;
   padding: 2px 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
@@ -1541,8 +1543,8 @@ h2 {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  min-height: 18px;
+  gap: 4px;
+  min-height: 16px;
   font-size: 11px;
   line-height: 14px;
 }
@@ -1568,7 +1570,7 @@ h2 {
   display: grid;
   grid-template-columns: minmax(88px, auto) repeat(4, minmax(56px, 72px));
   align-items: center;
-  gap: 4px 6px;
+  gap: 2px 6px;
 }
 
 .picture-options-panel input[type='number'] {
@@ -1600,19 +1602,21 @@ h2 {
 .picture-transform-tools {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
+  gap: 4px;
   align-content: end;
 }
 
 .picture-transform-tools button {
-  min-height: 32px;
-  padding: 0 8px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .picture-transform-tools button:hover {
@@ -1622,18 +1626,20 @@ h2 {
 .picture-alignment-controls {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 4px;
 }
 
 .picture-alignment-controls input {
-  min-height: 32px;
-  padding: 0 8px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .picture-pixel-preview {
@@ -1641,10 +1647,10 @@ h2 {
   grid-template-columns: minmax(0, auto) minmax(0, auto) 18px minmax(0, 1fr);
   align-items: center;
   align-content: end;
-  gap: 8px;
+  gap: 4px;
   min-width: 0;
-  min-height: 32px;
-  padding: 0 8px;
+  min-height: 18px;
+  padding: 0 5px;
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: 6px;
@@ -1670,15 +1676,16 @@ h2 {
 .picture-pane-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 6px;
 }
 
 .picture-report-panel {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 2px 6px;
+  min-height: 20px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1686,34 +1693,46 @@ h2 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
+  min-height: 16px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .picture-report-panel header button {
   margin-left: auto;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .picture-report-table {
   display: grid;
-  gap: 6px;
+  gap: 2px;
+  border-radius: 0;
 }
 
 .picture-report-row {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  min-height: 16px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .picture-report-head {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .picture-metadata-panel {
   display: grid;
   gap: 2px 6px;
-  min-height: 22px;
+  min-height: 20px;
   padding: 2px 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
@@ -1724,8 +1743,8 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  min-height: 18px;
+  gap: 4px;
+  min-height: 16px;
   font-size: 11px;
   line-height: 14px;
 }
@@ -1751,7 +1770,7 @@ h2 {
 .metadata-grid-heading,
 .metadata-cell {
   min-width: 0;
-  padding: 2px 6px;
+  padding: 1px 5px;
   border-bottom: 1px solid var(--app-border);
   font-size: 11px;
   line-height: 14px;
@@ -1778,11 +1797,11 @@ h2 {
 
 .picture-side {
   display: grid;
-  gap: 8px;
+  gap: 2px;
   min-width: 0;
-  padding: 10px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1793,7 +1812,7 @@ h2 {
   min-height: 360px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background:
     linear-gradient(45deg, rgb(148 163 184 / 0.16) 25%, transparent 25%),
     linear-gradient(-45deg, rgb(148 163 184 / 0.16) 25%, transparent 25%),
@@ -1886,7 +1905,7 @@ h2 {
 .picture-blend-panel {
   display: grid;
   gap: 2px 6px;
-  min-height: 22px;
+  min-height: 20px;
   padding: 2px 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
@@ -1897,8 +1916,8 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  min-height: 18px;
+  gap: 4px;
+  min-height: 16px;
   font-size: 11px;
   line-height: 14px;
 }
@@ -1924,8 +1943,8 @@ h2 {
 }
 
 .picture-blend-panel input[type='range'] {
-  height: 18px;
-  min-height: 18px;
+  height: 16px;
+  min-height: 16px;
 }
 
 .picture-blend-overlay {

@@ -175,6 +175,7 @@ const folderCriteria = ref<FolderCompareCriteria>(loadFolderCompareCriteria())
 const folderNameFilters = ref<FolderNameFilters>(loadFolderNameFilters())
 const showSessionSettings = ref(false)
 const showPeekPanel = ref(false)
+const peekTab = ref<'left' | 'right' | 'status'>('left')
 const viewActions = useViewActionsStore()
 const folderPathNavStore = useFolderPathNavStore()
 const folderPathNavStack = ref(createFolderPathNavStack<FolderPathPair>())
@@ -2975,16 +2976,55 @@ onUnmounted(() => {
           </button>
         </header>
         <template v-if="selectedRow && selectedRow.kind === 'file'">
+          <div
+            class="peek-tabs"
+            role="tablist"
+            data-testid="folder-peek-tabs"
+          >
+            <button
+              type="button"
+              class="peek-tab"
+              :class="{ 'peek-tab-active': peekTab === 'left' }"
+              role="tab"
+              data-testid="folder-peek-tab-left"
+              :aria-selected="peekTab === 'left' ? 'true' : 'false'"
+              @click="peekTab = 'left'"
+            >
+              {{ $t('ui.left') }}
+            </button>
+            <button
+              type="button"
+              class="peek-tab"
+              :class="{ 'peek-tab-active': peekTab === 'right' }"
+              role="tab"
+              data-testid="folder-peek-tab-right"
+              :aria-selected="peekTab === 'right' ? 'true' : 'false'"
+              @click="peekTab = 'right'"
+            >
+              {{ $t('ui.right') }}
+            </button>
+            <button
+              type="button"
+              class="peek-tab"
+              :class="{ 'peek-tab-active': peekTab === 'status' }"
+              role="tab"
+              data-testid="folder-peek-tab-status"
+              :aria-selected="peekTab === 'status' ? 'true' : 'false'"
+              @click="peekTab = 'status'"
+            >
+              {{ $t('ui.status') }}
+            </button>
+          </div>
           <dl>
-            <div>
+            <div v-show="peekTab === 'left'">
               <dt>{{ $t('ui.left') }}</dt>
               <dd data-testid="folder-peek-left">{{ selectedRow.leftPath || '—' }}</dd>
             </div>
-            <div>
+            <div v-show="peekTab === 'right'">
               <dt>{{ $t('ui.right') }}</dt>
               <dd data-testid="folder-peek-right">{{ selectedRow.rightPath || '—' }}</dd>
             </div>
-            <div>
+            <div v-show="peekTab === 'status'">
               <dt>{{ $t('ui.status') }}</dt>
               <dd data-testid="folder-peek-status">{{ selectedRow.status }}</dd>
             </div>
@@ -4317,33 +4357,38 @@ onUnmounted(() => {
 
 .folder-peek-panel {
   display: grid;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 2px;
+  padding: 2px 6px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
+  font-size: 11px;
 }
 
 .folder-peek-panel header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 4px;
+  min-height: 20px;
 }
 
 .folder-peek-panel dl {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   margin: 0;
 }
 
 .folder-peek-panel dt {
-  font-size: 12px;
-  opacity: 0.75;
+  color: var(--app-text-muted);
+  font-size: 10px;
+  line-height: 12px;
 }
 
 .folder-peek-panel dd {
   margin: 0;
+  font-size: 11px;
+  line-height: 14px;
   word-break: break-all;
 }
 

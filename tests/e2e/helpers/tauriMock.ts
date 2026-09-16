@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { ensureAnimationFrames } from './ensureAnimationFrames'
 
 export interface InvokeCall {
   command: string
@@ -13,6 +14,7 @@ type WindowWithInvokeLog = Window & {
 }
 
 export async function installTauriInvokeMock(page: Page): Promise<void> {
+  await ensureAnimationFrames(page)
   await page.addInitScript(() => {
     const tauriWindow = window as WindowWithInvokeLog
     const log: InvokeCall[] = []

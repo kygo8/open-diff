@@ -555,6 +555,50 @@ function selectSyncRowsByName(): void {
   })
 }
 
+function stepSessionFindFilename(direction: 1 | -1): void {
+  const query = selectNameFilter.value.trim().toLowerCase()
+
+  if (!query) {
+    openSyncFindFilename()
+
+    return
+  }
+
+  const matches = visiblePreviewRows.value.filter((row) =>
+    row.relativePath.toLowerCase().includes(query),
+  )
+
+  if (matches.length === 0) {
+    openSyncFindFilename()
+
+    return
+  }
+
+  const currentId = selectedPeekRowId.value
+  const index = currentId ? matches.findIndex((row) => row.id === currentId) : -1
+  let nextIndex: number
+
+  if (index === -1) {
+    nextIndex = direction === 1 ? 0 : matches.length - 1
+  } else {
+    nextIndex = index + direction
+    if (nextIndex < 0) {
+      nextIndex = matches.length - 1
+    } else if (nextIndex >= matches.length) {
+      nextIndex = 0
+    }
+  }
+
+  const next = matches[nextIndex]
+
+  checkedRowIds.value = new Set([next.id])
+  selectedPeekRowId.value = next.id
+  lastSelectionAction.value = t('status.selectedRowCount', {
+    count: 1,
+    action: t('ui.findFilename'),
+  })
+}
+
 function openSyncFindFilename(): void {
   showSyncSelect.value = true
   selectSyncRowsByName()
@@ -1212,6 +1256,15 @@ watch(
         break
       case 'find-filename':
         openSyncFindFilename()
+        break
+      case 'find-next-filename':
+        stepSessionFindFilename(1)
+        break
+      case 'find-previous-filename':
+        stepSessionFindFilename(-1)
+        break
+      case 'full-refresh':
+        void previewSync()
         break
       case 'toggle-log':
         toggleSyncLogPanel()

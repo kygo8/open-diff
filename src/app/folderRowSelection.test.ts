@@ -6,6 +6,7 @@ import {
   invertRowIds,
   resolveOperationRows,
   selectAllRowIds,
+  stepRowIdByNameFilter,
   selectFileRowIds,
   selectRowIdsByNameFilter,
   selectRowIdsByStatuses,
@@ -124,4 +125,36 @@ describe('folderRowSelection', () => {
         .sort(),
     ).toEqual(['a', 'b', 'dir'])
   })
+})
+
+it('steps through name-filter matches for Find Next/Previous Filename', () => {
+  const rows = [
+    {
+      id: 'a',
+      kind: 'file' as const,
+      status: 'Same' as const,
+      relativePath: 'alpha.txt',
+      leftName: 'alpha.txt',
+    },
+    {
+      id: 'b',
+      kind: 'file' as const,
+      status: 'Same' as const,
+      relativePath: 'beta.txt',
+      leftName: 'beta.txt',
+    },
+    {
+      id: 'c',
+      kind: 'file' as const,
+      status: 'Same' as const,
+      relativePath: 'alpha-2.txt',
+      leftName: 'alpha-2.txt',
+    },
+  ]
+
+  expect(stepRowIdByNameFilter(rows, 'alpha', undefined, 1)).toBe('a')
+  expect(stepRowIdByNameFilter(rows, 'alpha', 'a', 1)).toBe('c')
+  expect(stepRowIdByNameFilter(rows, 'alpha', 'c', 1)).toBe('a')
+  expect(stepRowIdByNameFilter(rows, 'alpha', 'a', -1)).toBe('c')
+  expect(stepRowIdByNameFilter(rows, 'missing', 'a', 1)).toBeUndefined()
 })

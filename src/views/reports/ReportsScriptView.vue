@@ -289,6 +289,9 @@ watch(
       case 'refresh-selection':
       case 'show-same':
       case 'find-filename':
+      case 'find-next-filename':
+      case 'find-previous-filename':
+      case 'full-refresh':
       case 'toggle-columns':
       case 'toggle-log':
       case 'toggle-legend':

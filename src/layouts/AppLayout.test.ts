@@ -381,12 +381,12 @@ describe('AppLayout command palette', () => {
     wrapper.unmount()
   })
 
-  it('honors text-compare scoped next-difference shortcuts on text routes', async () => {
+  it('honors capture-like next-difference shortcuts on text routes', async () => {
     routePath = '/compare/text'
     const wrapper = mountAppLayout()
     const viewActions = (await import('@/stores/viewActions')).useViewActionsStore()
 
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F7' }))
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'n', ctrlKey: true }))
     await wrapper.vm.$nextTick()
 
     expect(viewActions.name).toBe('next-difference')
@@ -817,6 +817,68 @@ describe('AppLayout command palette', () => {
 
     await wrapper.find('[data-testid="tab-ctx-close-others"]').trigger('click')
     expect(tabs.tabs.map((tab) => tab.route)).toEqual(['/', '/compare/folder'])
+  })
+
+  it('shows capture-like accelerators on Session/Edit/Search menu commands', async () => {
+    routePath = '/compare/folder'
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.openSession"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+Shift+O')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.exit"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+Q')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.save"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+Shift+S')
+    expect(wrapper.find('[data-testid="menu-command-session.openSession"]').text()).toContain(
+      'Ctrl+Shift+O',
+    )
+
+    await wrapper.find('[data-testid="menu-edit"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-edit.selectAll"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+A')
+    expect(
+      wrapper.find('[data-testid="menu-command-edit.selectAllFiles"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+Shift+A')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.reload"]').attributes('data-shortcut'),
+    ).toBe('F5')
+    expect(
+      wrapper.find('[data-testid="menu-command-edit.fullRefresh"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+F5')
+    expect(
+      wrapper.find('[data-testid="menu-command-edit.fullRefresh"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    await wrapper.find('[data-testid="menu-search"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-diff.next"]').attributes('data-shortcut')).toBe(
+      'Ctrl+N',
+    )
+    expect(
+      wrapper.find('[data-testid="menu-command-diff.previous"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+P')
+    expect(
+      wrapper.find('[data-testid="menu-command-search.findFilename"]').attributes('data-shortcut'),
+    ).toBe('Ctrl+F')
+    expect(
+      wrapper
+        .find('[data-testid="menu-command-search.findNextFilename"]')
+        .attributes('data-shortcut'),
+    ).toBe('F3')
+    expect(
+      wrapper
+        .find('[data-testid="menu-command-search.findPreviousFilename"]')
+        .attributes('data-shortcut'),
+    ).toBe('Shift+F3')
+    expect(
+      wrapper.find('[data-testid="menu-command-merge.nextConflict"]').attributes('disabled'),
+    ).toBeDefined()
+
+    wrapper.unmount()
   })
 
   it('dispatches niche toggle-minor and sync-now shortcuts from chrome keydown', async () => {

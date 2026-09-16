@@ -40,6 +40,9 @@ describe('commandRegistry', () => {
         'actions.open',
         'view.showSame',
         'search.findFilename',
+        'search.findNextFilename',
+        'search.findPreviousFilename',
+        'edit.fullRefresh',
         'view.columns',
         'view.legend',
         'view.log',
@@ -195,6 +198,62 @@ describe('commandRegistry', () => {
       expect(command.placements).toContain('command-palette')
       expect(command.action).toBeDefined()
     }
+  })
+
+  it('aligns Session/Edit/Search accelerators with capture chords', () => {
+    expect(
+      commandRegistry.find((command) => command.id === 'session.openSession')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'Shift', 'O'],
+      scope: 'global',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'session.exit')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'Q'],
+      scope: 'global',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'session.save')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'Shift', 'S'],
+      scope: 'global',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'edit.selectAllFiles')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'Shift', 'A'],
+      scope: 'global',
+    })
+    expect(commandRegistry.find((command) => command.id === 'diff.next')?.defaultShortcut).toEqual({
+      keys: ['Ctrl', 'N'],
+      scope: 'global',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'diff.previous')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'P'],
+      scope: 'global',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'edit.fullRefresh')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'F5'],
+      scope: 'global',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'search.findNextFilename')?.defaultShortcut,
+    ).toEqual({
+      keys: ['F3'],
+      scope: 'global',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'search.findPreviousFilename')
+        ?.defaultShortcut,
+    ).toEqual({
+      keys: ['Shift', 'F3'],
+      scope: 'global',
+    })
   })
 
   it('detects duplicate active shortcuts in the same scope', () => {

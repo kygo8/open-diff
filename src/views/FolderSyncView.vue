@@ -768,7 +768,7 @@ function isCopyOverride(action: FolderSyncOverrideAction): boolean {
 
 function collectRiskySyncRows(): SyncPreviewRow[] {
   return previewRows.value.filter((row) => {
-    if (row.overrideAction === 'leave') {
+    if (excludedRowIds.value.has(row.id) || row.overrideAction === 'leave') {
       return false
     }
 
@@ -842,7 +842,7 @@ async function executeSyncNow(): Promise<void> {
 function currentOverrides(): FolderSyncActionOverride[] {
   return previewRows.value.map((row) => ({
     relativePath: row.relativePath,
-    action: row.overrideAction,
+    action: excludedRowIds.value.has(row.id) ? 'leave' : row.overrideAction,
   }))
 }
 

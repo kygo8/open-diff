@@ -746,6 +746,51 @@ describe('FolderSyncView', () => {
     expect(executeFolderSync).not.toHaveBeenCalled()
   })
 
+  it('sends leave for excluded sync rows and omits them from confirm', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-testid="sync-row-copy-app"]').trigger('click')
+    useViewActionsStore().dispatch('exclude-selected')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="sync-row-copy-app"]').exists()).toBe(false)
+    await wrapper.find('[data-testid="folder-sync-run"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').text()).not.toContain(
+      'package/app.exe',
+    )
+    expect(wrapper.find('[data-testid="folder-sync-safety-confirmation"]').text()).toContain(
+      'prod/old.dll',
+    )
+    await wrapper.find('[data-testid="folder-sync-confirm-safety"]').trigger('click')
+    await flushPromises()
+
+    expect(executeFolderSync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        leftRoot: 'D:/deploy/package',
+        rightRoot: 'D:/deploy/prod',
+        overrides: [
+          { relativePath: 'package/app.exe', action: 'leave' },
+          { relativePath: 'prod/old.dll', action: 'deleteRight' },
+        ],
+      }),
+    )
+  })
+
   it('skips the safety panel when overwrite and delete confirms are off', async () => {
     const settings = useSettingsStore()
 

@@ -17,10 +17,10 @@ describe('shell chrome density', () => {
   })
 
   it('densifies multi-tab title/menu/tab strip toward captures', () => {
-    expect(source).toMatch(/grid-template-rows:\s*54px minmax\(0, 1fr\) 24px/)
-    expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?grid-template-rows:\s*28px 26px/)
-    expect(source).toMatch(/\.tab-strip\s*\{[\s\S]*?padding:\s*1px 4px 0/)
-    expect(source).toMatch(/\.tab-chip button\s*\{[\s\S]*?height:\s*18px/)
+    expect(source).toMatch(/grid-template-rows:\s*52px minmax\(0, 1fr\) 24px/)
+    expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?grid-template-rows:\s*26px 26px/)
+    expect(source).toMatch(/\.tab-strip\s*\{[\s\S]*?padding:\s*0 3px/)
+    expect(source).toMatch(/\.tab-chip button\s*\{[\s\S]*?height:\s*16px/)
     expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
   })
 
@@ -28,7 +28,7 @@ describe('shell chrome density', () => {
     expect(mainCss).toMatch(
       /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*44px/,
     )
-    expect(mainCss).toMatch(/\.workbench-titlebar\s*\{[\s\S]*?height:\s*26px/)
+    expect(mainCss).toMatch(/\.workbench-titlebar\s*\{[\s\S]*?height:\s*24px/)
     expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*44px/)
     expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
   })

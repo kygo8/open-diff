@@ -8,21 +8,21 @@ const homeView = readFileSync(resolve(root, 'src/views/HomeView.vue'), 'utf8')
 
 describe('home chrome density', () => {
   it('keeps Home CTA/tree/header/footer chrome dense toward capture', () => {
-    expect(homeView).toMatch(/data-home-density="capture-pass4"/)
+    expect(homeView).toMatch(/data-home-density="capture-pass5"/)
     expect(homeView).toMatch(/data-home-chrome="minimal"/)
     expect(homeView).toMatch(
-      /\.bc-session-tree\s*\{[\s\S]*?grid-template-rows:\s*18px minmax\(0, 1fr\) 22px/,
+      /\.bc-session-tree\s*\{[\s\S]*?grid-template-rows:\s*16px minmax\(0, 1fr\) 20px/,
     )
     expect(homeView).toMatch(/\.bc-session-tree header\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(homeView).toMatch(/\.bc-tree-row\s*\{[\s\S]*?min-height:\s*16px/)
-    expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*16px/)
-    expect(homeView).toMatch(/\.bc-tree-footer input\s*\{[\s\S]*?height:\s*16px/)
-    expect(homeView).toMatch(/\.bc-selected-session\s*\{[\s\S]*?padding:\s*2px 6px/)
-    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?height:\s*20px/)
-    expect(homeView).toMatch(/\.new-session-grid\s*\{[\s\S]*?gap:\s*2px 10px/)
-    expect(homeView).toMatch(/\.session-card-icon\s*\{[\s\S]*?width:\s*54px/)
-    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*64px/)
+    expect(homeView).toMatch(/\.bc-tree-row\s*\{[\s\S]*?min-height:\s*15px/)
+    expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*15px/)
+    expect(homeView).toMatch(/\.bc-tree-footer input\s*\{[\s\S]*?height:\s*15px/)
+    expect(homeView).toMatch(/\.bc-selected-session\s*\{[\s\S]*?padding:\s*1px 4px/)
+    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?height:\s*18px/)
+    expect(homeView).toMatch(/\.new-session-grid\s*\{[\s\S]*?gap:\s*1px 8px/)
+    expect(homeView).toMatch(/\.session-card-icon\s*\{[\s\S]*?width:\s*48px/)
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*56px/)
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(homeView).toMatch(/:size="42"/)
+    expect(homeView).toMatch(/:size="36"/)
   })
 })

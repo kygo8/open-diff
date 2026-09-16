@@ -636,7 +636,7 @@ onMounted(() => {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture-pass4"
+      data-home-density="capture-pass5"
       data-home-chrome="minimal"
     >
       <aside
@@ -833,7 +833,7 @@ onMounted(() => {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="42"
+                  :size="36"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1147,14 +1147,14 @@ onMounted(() => {
 .bc-home-workspace {
   display: grid;
 
-  /* Capture-aligned left tree; pass-4 denser column toward home.png. */
-  grid-template-columns: minmax(190px, 220px) minmax(0, 1fr);
+  /* Capture-aligned left tree; pass-5 denser non-web-card column toward home.png. */
+  grid-template-columns: minmax(180px, 210px) minmax(0, 1fr);
   background: #ffffff;
 }
 
 .bc-session-tree {
   display: grid;
-  grid-template-rows: 18px minmax(0, 1fr) 22px;
+  grid-template-rows: 16px minmax(0, 1fr) 20px;
   min-width: 0;
   min-height: 0;
   border-right: 1px solid #a0a0a0;
@@ -1165,9 +1165,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 4px;
+  padding: 0 3px;
   overflow: hidden;
-  border-bottom: 1px solid #b0b0b0;
+  border-bottom: 1px solid #a0a0a0;
   background: #eceff3;
   color: #111827;
   font-size: 11px;
@@ -1189,24 +1189,24 @@ onMounted(() => {
   align-items: center;
   gap: 1px;
   width: 100%;
-  min-height: 16px;
+  min-height: 15px;
   padding: 0;
   border: 0;
   background: transparent;
   color: #111827;
   font-size: 11px;
-  line-height: 12px;
+  line-height: 11px;
   text-align: left;
   cursor: pointer;
 }
 
 .bc-tree-row.child {
-  padding-left: 12px;
+  padding-left: 11px;
   font-size: 11px;
 }
 
 .bc-tree-row.saved {
-  padding-left: 26px;
+  padding-left: 24px;
   font-size: 11px;
 }
 
@@ -1225,17 +1225,17 @@ onMounted(() => {
 
 .bc-tree-footer {
   display: grid;
-  grid-template-columns: 18px 18px minmax(0, 1fr);
+  grid-template-columns: 16px 16px minmax(0, 1fr);
   align-items: center;
   gap: 2px;
   padding: 1px 2px;
-  border-top: 1px solid #b0b0b0;
+  border-top: 1px solid #a0a0a0;
   background: #eceff3;
 }
 
 .bc-tree-footer button {
-  height: 16px;
-  border: 1px solid #b0b0b0;
+  height: 15px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
   color: #2f343a;
@@ -1246,10 +1246,10 @@ onMounted(() => {
 .bc-tree-footer input {
   width: 100%;
   min-width: 0;
-  height: 16px;
+  height: 15px;
   padding: 0 2px;
   overflow: hidden;
-  border: 1px solid #b0b0b0;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
   color: #111827;
@@ -1270,8 +1270,8 @@ onMounted(() => {
 
 .bc-selected-session {
   display: grid;
-  gap: 2px;
-  padding: 2px 6px;
+  gap: 1px;
+  padding: 1px 4px;
 }
 
 .bc-selected-title {
@@ -1280,7 +1280,7 @@ onMounted(() => {
   gap: 4px;
   min-width: 0;
   color: #111827;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .bc-selected-title div {
@@ -1298,7 +1298,7 @@ onMounted(() => {
 }
 
 .bc-selected-title strong {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.1;
 }
@@ -1311,13 +1311,13 @@ onMounted(() => {
 
 .bc-selected-actions {
   display: flex;
-  gap: 4px;
+  gap: 3px;
 }
 
 .bc-selected-actions button {
-  width: 80px;
+  width: 72px;
   max-width: 100%;
-  height: 20px;
+  height: 18px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1346,7 +1346,7 @@ onMounted(() => {
 }
 
 .new-session-panel {
-  padding: 0 4px 2px;
+  padding: 0 3px 1px;
 }
 
 .new-session-panel h2,
@@ -1358,10 +1358,10 @@ onMounted(() => {
 
 .new-session-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(96px, 1fr));
-  gap: 2px 10px;
-  width: min(500px, calc(100% - 12px));
-  margin: 1px auto 0;
+  grid-template-columns: repeat(3, minmax(88px, 1fr));
+  gap: 1px 8px;
+  width: min(470px, calc(100% - 10px));
+  margin: 0 auto;
 }
 
 .bc-home-instructions {
@@ -1385,8 +1385,8 @@ onMounted(() => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 64px;
-  padding: 1px 0 2px;
+  min-height: 56px;
+  padding: 0 0 1px;
   overflow: hidden;
   border: 0;
   border-radius: 0;
@@ -1406,8 +1406,8 @@ onMounted(() => {
 
 .session-card-icon {
   display: inline-grid;
-  width: 54px;
-  height: 42px;
+  width: 48px;
+  height: 36px;
   color: #2f353d;
   place-items: center;
 }
@@ -1671,7 +1671,7 @@ tr:hover .row-actions,
 }
 
 .bc-home-instructions.dragging {
-  padding: 6px;
+  padding: 4px;
   border: 1px dashed #4aa3ff;
   border-radius: 0;
   background: #eaf4ff;
@@ -1682,21 +1682,21 @@ tr:hover .row-actions,
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 6px;
+  margin-top: 2px;
 }
 
 .home-primary-cta {
-  min-width: 100px;
+  min-width: 88px;
   max-width: 100%;
-  height: 28px;
-  padding: 0 10px;
+  height: 24px;
+  padding: 0 8px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #e8f3ff;
   color: #111827;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
   cursor: pointer;
   text-overflow: ellipsis;
@@ -1713,13 +1713,13 @@ tr:hover .row-actions,
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  min-height: 28px;
-  padding: 0 10px;
+  min-height: 24px;
+  padding: 0 8px;
   overflow: hidden;
   border: 1px dashed #a0a0a0;
   border-radius: 0;
   color: #4b5563;
-  font-size: 12px;
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1754,29 +1754,29 @@ tr:hover .row-actions,
 .session-edit-panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 4px;
-  max-width: 480px;
+  gap: 3px;
+  max-width: 460px;
 }
 
 .session-edit-panel input {
   min-width: 0;
-  height: 24px;
-  padding: 0 6px;
+  height: 22px;
+  padding: 0 5px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
   color: #111827;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .session-edit-panel button {
-  height: 24px;
-  padding: 0 10px;
+  height: 22px;
+  padding: 0 8px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
   color: #111827;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
 }
 

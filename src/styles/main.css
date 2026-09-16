@@ -183,9 +183,9 @@ select {
 }
 
 .app-shell-single-session .folder-toolbar .path-pair {
-  gap: 4px !important;
-  min-height: 28px !important;
-  padding: 2px 6px !important;
+  gap: 2px !important;
+  min-height: 26px !important;
+  padding: 1px 4px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   background: #f3f3f3 !important;
 }
@@ -200,20 +200,22 @@ select {
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row {
-  gap: 4px !important;
+  gap: 3px !important;
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > input,
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > .path-input {
-  height: 22px !important;
-  min-height: 22px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  border-radius: 0 !important;
   font-size: 11px !important;
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > button {
-  height: 22px !important;
-  min-height: 22px !important;
-  padding: 0 7px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  border-radius: 0 !important;
   font-size: 11px !important;
 }
 
@@ -227,7 +229,7 @@ select {
 .app-shell-single-session .folder-toolbar .folder-criteria,
 .app-shell-single-session .folder-toolbar .folder-actions,
 .app-shell-single-session .folder-toolbar .archive-path-hint {
-  padding: 2px 6px !important;
+  padding: 1px 4px !important;
 }
 
 .app-shell-single-session .workbench-shell-single-session .bc-session-toolbar {
@@ -258,8 +260,8 @@ select {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-width: 0;
-  height: 26px;
-  padding: 0 6px;
+  height: 24px;
+  padding: 0 4px;
   border-bottom: 1px solid #a0a0a0;
   background: var(--app-surface-low);
 }
@@ -726,19 +728,19 @@ select {
   gap: 0;
   min-width: 0;
   height: auto;
-  min-height: 32px;
-  padding: 0 6px;
+  min-height: 28px;
+  padding: 0 4px;
   overflow: visible;
   border-bottom: 1px solid #a0a0a0;
-  background: #eeeeee;
+  background: #f3f3f3;
 }
 
 .workbench-toolbar select,
 .workbench-toolbar input,
 .path-pair-bar input {
-  height: 22px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
+  height: 20px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-canvas);
   color: var(--app-text);
   font-size: 11px;
@@ -755,11 +757,11 @@ select {
   min-width: 0;
   max-width: 12em;
   height: auto;
-  min-height: 22px;
-  padding: 2px 8px;
+  min-height: 20px;
+  padding: 1px 6px;
   overflow: hidden;
   border: 1px solid transparent;
-  border-radius: 2px;
+  border-radius: 0;
   background: transparent;
   color: var(--app-text);
   font-size: 11px;
@@ -802,17 +804,17 @@ select {
 
 .path-pair-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr) auto;
-  min-height: 32px;
-  padding: 2px 8px;
+  grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) auto;
+  min-height: 28px;
+  padding: 1px 6px;
   background: #f3f3f3;
 }
 
 .path-pair-field {
   display: grid;
-  grid-template-columns: auto 14px minmax(0, 1fr) auto;
+  grid-template-columns: auto 12px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 }
 
@@ -831,9 +833,9 @@ select {
 }
 
 .path-pair-swap {
-  width: 28px;
-  min-width: 28px;
-  height: 24px;
+  width: 24px;
+  min-width: 24px;
+  height: 20px;
   padding: 0;
 }
 
@@ -841,9 +843,9 @@ select {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 4px;
-  min-height: 28px;
-  padding: 2px 8px;
+  gap: 3px;
+  min-height: 26px;
+  padding: 1px 6px;
   border-bottom: 1px solid #a0a0a0;
   background: #f3f3f3;
 }
@@ -851,8 +853,8 @@ select {
 .bc-path-row input {
   width: 100%;
   min-width: 0;
-  height: 22px;
-  padding: 0 6px;
+  height: 20px;
+  padding: 0 5px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -868,11 +870,11 @@ select {
   width: auto;
   min-width: max-content;
   max-width: none;
-  height: 22px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 6px;
   overflow: visible;
-  border: 1px solid #bfc4cc;
-  border-radius: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: #ffffff;
   color: #111111;
   font-size: 11px;

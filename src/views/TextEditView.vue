@@ -1037,7 +1037,7 @@ const textEditToolbarCommands = computed(() =>
   display: flex;
   align-items: center;
   gap: 4px;
-  min-height: 22px;
+  min-height: 20px;
   padding: 2px 4px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface);
@@ -1127,14 +1127,14 @@ h1 {
   align-items: center;
   gap: 4px;
   min-width: 0;
-  min-height: 22px;
+  min-height: 20px;
 }
 
 .path-input,
 .find-input {
   min-width: 0;
-  height: 18px;
-  padding: 0 4px;
+  height: 16px;
+  padding: 0 3px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface);
@@ -1164,7 +1164,7 @@ h1 {
 }
 
 .toolbar-button {
-  height: 20px;
+  height: 18px;
   padding: 0 5px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -1211,12 +1211,12 @@ h1 {
 
 :deep(.path-toolbar .n-button),
 :deep(.find-toolbar .n-button) {
-  --n-height: 20px;
+  --n-height: 18px;
   --n-padding: 0 5px;
   --n-font-size: 11px;
 
-  height: 20px;
-  min-height: 20px;
+  height: 18px;
+  min-height: 18px;
   padding: 0 5px;
   font-size: 11px;
 }

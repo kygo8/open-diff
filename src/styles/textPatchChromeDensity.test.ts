@@ -11,7 +11,7 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('text patch chrome density', () => {
   it('keeps Text Patch path/toolbar/editor/status chrome dense toward capture', () => {
     expect(css).toMatch(/\.text-patch-view \.patch-workbench-main\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.text-patch-view \.patch-toolbar\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(/\.text-patch-view \.patch-toolbar\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(
       /\.text-patch-view \.patch-input-pane[\s\S]*?grid-template-rows:\s*20px minmax\(0, 1fr\)/,
     )
@@ -19,7 +19,7 @@ describe('text patch chrome density', () => {
     expect(css).toMatch(/\.text-patch-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
 
     expect(patchView).toMatch(/\.patch-workbench-main\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(patchView).toMatch(/\.patch-toolbar\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(patchView).toMatch(/\.patch-toolbar\s*\{[\s\S]*?min-height:\s*20px/)
     expect(patchView).toMatch(/\.patch-input-pane\s*\{[\s\S]*?grid-template-rows:\s*20px/)
     expect(patchView).toMatch(/\.patch-line\s*\{[\s\S]*?line-height:\s*18px/)
     expect(patchView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
@@ -29,15 +29,15 @@ describe('text patch chrome density', () => {
   })
 
   it('keeps Text Patch chrome dense one more notch vs Text Compare band', () => {
-    expect(css).toMatch(/\.text-patch-view \.patch-toolbar \.n-button[\s\S]*?height:\s*20px/)
+    expect(css).toMatch(/\.text-patch-view \.patch-toolbar \.n-button[\s\S]*?height:\s*18px/)
     expect(css).toMatch(/\.text-patch-view \.patch-hunk > header\s*\{[\s\S]*?line-height:\s*16px/)
     expect(css).toMatch(
       /\.text-patch-view \.patch-line\s*\{[\s\S]*?36px 36px 18px minmax\(0, 1fr\)/,
     )
     expect(css).toMatch(/\.text-patch-view \.patch-preview-row\s*\{[\s\S]*?min-height:\s*18px/)
 
-    expect(patchView).toMatch(/\.patch-open-file\s*\{[\s\S]*?height:\s*18px/)
+    expect(patchView).toMatch(/\.patch-open-file\s*\{[\s\S]*?height:\s*16px/)
     expect(patchView).toMatch(/\.patch-section-pane-body\s*\{[\s\S]*?line-height:\s*18px/)
-    expect(patchView).toMatch(/:deep\(\.patch-toolbar \.n-button\)[\s\S]*?height:\s*20px/)
+    expect(patchView).toMatch(/:deep\(\.patch-toolbar \.n-button\)[\s\S]*?height:\s*18px/)
   })
 })

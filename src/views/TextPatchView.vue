@@ -805,7 +805,7 @@ function lineNumber(value: number | null): string {
 
 .patch-toolbar {
   gap: 4px;
-  min-height: 22px;
+  min-height: 20px;
 }
 
 .patch-workbench-main {
@@ -897,7 +897,7 @@ function lineNumber(value: number | null): string {
 
 .patch-open-file {
   margin-left: auto;
-  height: 18px;
+  height: 16px;
   padding: 0 5px;
   border: 1px solid var(--app-border, #334155);
   border-radius: 2px;
@@ -1116,12 +1116,12 @@ function lineNumber(value: number | null): string {
 }
 
 :deep(.patch-toolbar .n-button) {
-  --n-height: 20px;
+  --n-height: 18px;
   --n-padding: 0 5px;
   --n-font-size: 11px;
 
-  height: 20px;
-  min-height: 20px;
+  height: 18px;
+  min-height: 18px;
   padding: 0 5px;
   font-size: 11px;
 }

@@ -27,9 +27,9 @@ describe('version compare chrome density', () => {
   })
 
   it('keeps Version summary/side/report/rules/row chrome dense one more notch toward capture', () => {
-    expect(css).toMatch(/\.version-compare-view \.version-summary-item[\s\S]*?padding:\s*2px 6px/)
-    expect(css).toMatch(/\.version-compare-view \.version-report-panel[\s\S]*?padding:\s*2px 6px/)
-    expect(css).toMatch(/\.version-compare-view \.version-rules-panel[\s\S]*?padding:\s*2px 6px/)
+    expect(css).toMatch(/\.version-compare-view \.version-summary-item[\s\S]*?padding:\s*2px 4px/)
+    expect(css).toMatch(/\.version-compare-view \.version-report-panel[\s\S]*?padding:\s*2px 4px/)
+    expect(css).toMatch(/\.version-compare-view \.version-rules-panel[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.version-compare-view \.version-field-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(css).toMatch(
       /\.version-compare-view \.version-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/,
@@ -39,14 +39,14 @@ describe('version compare chrome density', () => {
     )
     expect(css).toMatch(/\.version-compare-view \.version-rule-row\s*\{[\s\S]*?min-height:\s*18px/)
 
-    expect(versionView).toMatch(/\.version-summary-item[\s\S]*?padding:\s*2px 6px/)
-    expect(versionView).toMatch(/\.version-report-panel[\s\S]*?padding:\s*2px 6px/)
-    expect(versionView).toMatch(/\.version-rules-panel[\s\S]*?padding:\s*2px 6px/)
+    expect(versionView).toMatch(/\.version-summary-item[\s\S]*?padding:\s*2px 4px/)
+    expect(versionView).toMatch(/\.version-report-panel[\s\S]*?padding:\s*2px 4px/)
+    expect(versionView).toMatch(/\.version-rules-panel[\s\S]*?padding:\s*2px 4px/)
     expect(versionView).toMatch(/\.version-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/)
     expect(versionView).toMatch(/\.version-field-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(versionView).toMatch(/\.version-field-row\s*\{[\s\S]*?font-size:\s*11px/)
     expect(versionView).toMatch(/\.version-field-row > \*\s*\{[\s\S]*?line-height:\s*16px/)
-    expect(versionView).toMatch(/\.version-side dl div\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(versionView).toMatch(/\.version-side dl div\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(versionView).toMatch(/\.version-rule-row\s*\{[\s\S]*?min-height:\s*18px/)
   })
 })

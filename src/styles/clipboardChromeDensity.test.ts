@@ -12,7 +12,7 @@ describe('clipboard compare chrome density', () => {
   it('keeps Clipboard Compare toolbar/history/status chrome dense toward capture', () => {
     expect(css).toMatch(/\.clipboard-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(
-      /\.clipboard-compare-view \.clipboard-toolbar\s*\{[\s\S]*?min-height:\s*22px/,
+      /\.clipboard-compare-view \.clipboard-toolbar\s*\{[\s\S]*?min-height:\s*20px/,
     )
     expect(css).toMatch(/\.clipboard-compare-view \.history-entry\s*\{[\s\S]*?padding:\s*1px 4px/)
 

@@ -34,6 +34,12 @@ import {
   saveFolderDisplayFilters,
 } from '@/app/folderDisplayFilters'
 import {
+  defaultFolderMergeDisplay,
+  loadFolderMergeDisplay,
+  saveFolderMergeDisplay,
+  type FolderMergeViewPreset,
+} from '@/app/folderMergeDisplay'
+import {
   formatFolderNameFilterDraft,
   formatFolderNameFilterStripPattern,
   loadFolderNameFilters,
@@ -142,6 +148,7 @@ type OptionsSectionId =
   | 'startup'
   | 'textEditing'
   | 'folderCompare'
+  | 'folderMerge'
   | 'hexCompare'
   | 'pictureCompare'
   | 'mediaCompare'
@@ -167,6 +174,12 @@ const optionsSection = ref<OptionsSectionId>('appearance')
 const archiveExtensionsDraft = ref(formatArchiveSuffixesInput(settings.archiveExtensions))
 const folderCriteriaDraft = ref(loadFolderCompareCriteria())
 const folderDisplayFiltersDraft = ref(loadFolderDisplayFilters())
+const folderMergeDisplayDraft = ref(loadFolderMergeDisplay())
+const folderMergeViewPresetOptions: { value: FolderMergeViewPreset; labelKey: string }[] = [
+  { value: 'all', labelKey: 'ui.showAll' },
+  { value: 'changes', labelKey: 'ui.showChanges' },
+  { value: 'conflicts', labelKey: 'ui.showConflicts' },
+]
 const textCompareDefaultsDraft = ref(loadTextCompareSessionOptions())
 const hexCompareDefaultsDraft = ref(loadHexCompareSessionOptions())
 const fileFiltersDraft = ref(loadFolderNameFilters())
@@ -270,6 +283,7 @@ const optionsTree = [
     groupKey: 'ui.optionsGroupCompare',
     items: [
       { id: 'folderCompare' as const, labelKey: 'ui.folderCompare' },
+      { id: 'folderMerge' as const, labelKey: 'ui.folderMerge' },
       { id: 'hexCompare' as const, labelKey: 'ui.hexCompare' },
       { id: 'pictureCompare' as const, labelKey: 'ui.pictureCompare' },
       { id: 'mediaCompare' as const, labelKey: 'ui.mediaCompare' },
@@ -924,6 +938,8 @@ function restoreFactoryDefaultsFromOptions(): void {
   saveFolderCompareCriteria(folderCriteriaDraft.value)
   folderDisplayFiltersDraft.value = defaultFolderDisplayFilters()
   saveFolderDisplayFilters(folderDisplayFiltersDraft.value)
+  folderMergeDisplayDraft.value = defaultFolderMergeDisplay()
+  saveFolderMergeDisplay(folderMergeDisplayDraft.value)
   textCompareDefaultsDraft.value = defaultTextCompareSessionOptions()
   saveTextCompareSessionOptions(textCompareDefaultsDraft.value)
   hexCompareDefaultsDraft.value = defaultHexCompareSessionOptions()
@@ -970,6 +986,10 @@ function persistFolderCriteriaDraft(): void {
 
 function persistFolderDisplayFiltersDraft(): void {
   saveFolderDisplayFilters(folderDisplayFiltersDraft.value)
+}
+
+function persistFolderMergeDisplayDraft(): void {
+  saveFolderMergeDisplay(folderMergeDisplayDraft.value)
 }
 
 function onIgnoredTimezoneOffsetsChange(event: Event): void {
@@ -1912,6 +1932,58 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.suppressed') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.folderCompareOptionsHint') }}</p>
+        </NCard>
+
+        <NCard
+          v-show="optionsSection === 'folderMerge'"
+          :title="$t('ui.folderMerge')"
+          size="small"
+          data-testid="options-folder-merge-card"
+        >
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.showAll') }}</span>
+            <select
+              v-model="folderMergeDisplayDraft.viewPreset"
+              data-testid="folder-merge-view-preset-default"
+              @change="persistFolderMergeDisplayDraft"
+            >
+              <option
+                v-for="option in folderMergeViewPresetOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ $t(option.labelKey) }}
+              </option>
+            </select>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="folderMergeDisplayDraft.alwaysShowFolders"
+              data-testid="folder-merge-always-show-folders"
+              type="checkbox"
+              @change="persistFolderMergeDisplayDraft"
+            />
+            <span>{{ $t('ui.alwaysShowFolders') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="folderMergeDisplayDraft.showCenterPane"
+              data-testid="folder-merge-show-center-pane"
+              type="checkbox"
+              @change="persistFolderMergeDisplayDraft"
+            />
+            <span>{{ $t('ui.centerPane') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="folderMergeDisplayDraft.compareToOutput"
+              data-testid="folder-merge-compare-to-output"
+              type="checkbox"
+              @change="persistFolderMergeDisplayDraft"
+            />
+            <span>{{ $t('ui.compareToOutput') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.folderMergeRulesHint') }}</p>
         </NCard>
 
         <NCard

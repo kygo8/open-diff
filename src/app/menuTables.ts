@@ -131,6 +131,7 @@ export function resolveMenuCommandEnabled(
       !isTextEditRoute(path) &&
       !isTextPatchRoute(path) &&
       !isClipboardCompareRoute(path) &&
+      !isRegistrySessionRoute(path) &&
       !isReportsSessionRoute(path)
     )
   }
@@ -142,6 +143,8 @@ export function resolveMenuCommandEnabled(
       !isClipboardCompareRoute(path) &&
       !isTextEditRoute(path) &&
       !isTextMergeRoute(path) &&
+      !isFolderSyncRoute(path) &&
+      !isFolderMergeRoute(path) &&
       !isReportsSessionRoute(path)
     )
   }
@@ -174,16 +177,18 @@ export function resolveMenuCommandEnabled(
     return isFolderCompareRoute(path) || isFolderMergeRoute(path)
   }
 
+  if (commandId === 'view.expandAll' || commandId === 'view.collapseAll') {
+    return folderishOrRegistryRoute(path)
+  }
+
   if (
     commandId === 'actions.open' ||
     commandId === 'actions.openWith' ||
     commandId === 'actions.quickCompare' ||
     commandId === 'actions.exclude' ||
-    commandId === 'actions.refreshSelection' ||
-    commandId === 'view.expandAll' ||
-    commandId === 'view.collapseAll'
+    commandId === 'actions.refreshSelection'
   ) {
-    return folderishOrRegistryRoute(path)
+    return isFolderishSessionRoute(path)
   }
 
   if (

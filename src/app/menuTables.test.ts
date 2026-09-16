@@ -130,12 +130,28 @@ describe('menuTables', () => {
     expect(resolveMenuCommandEnabled('view.expandAll', true, registryCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('view.filters', true, registryCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('diff.next', true, registryCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.rules', true, registryCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.settings', true, registryCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('actions.open', true, registryCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('actions.exclude', true, registryCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('edit.selectAll', true, registryCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('edit.selectNewer', true, registryCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('view.showSame', true, registryCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('view.toggleMinor', true, registryCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('search.findFilename', true, registryCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('edit.fullRefresh', true, registryCtx)).toBe(false)
+  })
+
+  it('disables Next/Previous Difference on Folder Sync and Merge', () => {
+    const syncCtx = { ...baseCtx, routePath: '/sync/folder' }
+    const mergeCtx = { ...baseCtx, routePath: '/merge/folder' }
+
+    expect(resolveMenuCommandEnabled('diff.next', true, baseCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('diff.previous', true, baseCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('diff.next', true, syncCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('diff.previous', true, syncCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('diff.next', true, mergeCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('diff.previous', true, mergeCtx)).toBe(false)
   })
 
   it('honestly disables selection Actions when nothing is selected', () => {

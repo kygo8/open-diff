@@ -929,8 +929,12 @@ watch(
       case 'help-support':
       case 'import-settings':
       case 'next-difference':
-      case 'paste':
+        navigateFolderDifference('next')
+        break
       case 'previous-difference':
+        navigateFolderDifference('previous')
+        break
+      case 'paste':
       case 'redo':
       case 'restore-factory-defaults':
       case 'save':

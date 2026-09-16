@@ -56,5 +56,9 @@ describe('folder sync/merge chrome density', () => {
     expect(mergeView).toMatch(
       /\.merge-open-status,\s*\.merge-plan,\s*\.conflict-panel\s*\{[\s\S]*?padding:\s*2px 4px/,
     )
+    expect(syncView).toMatch(/\.sync-progress\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(syncView).toMatch(/\.sync-progress\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(mergeView).toMatch(/\.merge-summary div\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(mergeView).toMatch(/\.merge-summary div\s*\{[\s\S]*?border-radius:\s*0/)
   })
 })

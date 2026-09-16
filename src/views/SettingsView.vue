@@ -1095,6 +1095,32 @@ function persistVersionCompareDefaultsDraft(): void {
   saveVersionCompareOptions(versionCompareDefaultsDraft.value)
 }
 
+const mediaUnimportantFieldsDraft = computed({
+  get: () => mediaCompareDefaultsDraft.value.unimportantFields.join(', '),
+  set: (value: string) => {
+    mediaCompareDefaultsDraft.value = {
+      ...mediaCompareDefaultsDraft.value,
+      unimportantFields: value
+        .split(/[,\n]/u)
+        .map((item) => item.trim())
+        .filter(Boolean),
+    }
+  },
+})
+
+const versionUnimportantFieldsDraft = computed({
+  get: () => versionCompareDefaultsDraft.value.unimportantFields.join(', '),
+  set: (value: string) => {
+    versionCompareDefaultsDraft.value = {
+      ...versionCompareDefaultsDraft.value,
+      unimportantFields: value
+        .split(/[,\n]/u)
+        .map((item) => item.trim())
+        .filter(Boolean),
+    }
+  },
+})
+
 function persistTableCompareDefaultsDraft(): void {
   tableCompareDefaultsDraft.value = {
     ...tableCompareDefaultsDraft.value,
@@ -2048,6 +2074,16 @@ function parseShortcutText(value: string): string[] {
             />
             <span>{{ $t('ui.mediaShowRulesDefault') }}</span>
           </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.unimportant') }}</span>
+            <input
+              v-model="mediaUnimportantFieldsDraft"
+              class="auto-save-limit-input"
+              data-testid="media-unimportant-fields-default"
+              type="text"
+              @change="persistMediaCompareDefaultsDraft"
+            />
+          </label>
           <p class="options-hint">{{ $t('ui.mediaCompareOptionsHint') }}</p>
         </NCard>
 
@@ -2081,6 +2117,16 @@ function parseShortcutText(value: string): string[] {
               @change="persistVersionCompareDefaultsDraft"
             />
             <span>{{ $t('ui.versionShowRulesDefault') }}</span>
+          </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.unimportant') }}</span>
+            <input
+              v-model="versionUnimportantFieldsDraft"
+              class="auto-save-limit-input"
+              data-testid="version-unimportant-fields-default"
+              type="text"
+              @change="persistVersionCompareDefaultsDraft"
+            />
           </label>
           <p class="options-hint">{{ $t('ui.versionCompareOptionsHint') }}</p>
         </NCard>

@@ -74,10 +74,10 @@ function progressPercent(job: AppJob): string {
 <style scoped>
 .jobs-progress-panel {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 4px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -86,12 +86,13 @@ function progressPercent(job: AppJob): string {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 4px;
+  min-height: 18px;
 }
 
 .jobs-header h2 {
   margin: 0;
-  font-size: 15px;
+  font-size: 12px;
 }
 
 .jobs-header span,
@@ -107,7 +108,7 @@ function progressPercent(job: AppJob): string {
 
 .job-list {
   display: grid;
-  gap: 10px;
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -115,13 +116,13 @@ function progressPercent(job: AppJob): string {
 
 .job-item {
   display: grid;
-  gap: 8px;
+  gap: 2px;
 }
 
 .job-progress {
   height: 6px;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--app-surface-muted);
 }
 
@@ -133,10 +134,10 @@ function progressPercent(job: AppJob): string {
 }
 
 .job-row button {
-  height: 26px;
-  padding: 0 10px;
+  height: 18px;
+  padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text);
   cursor: pointer;

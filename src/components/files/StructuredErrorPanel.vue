@@ -31,23 +31,24 @@ defineProps<{
 <style scoped>
 .structured-error-panel {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 4px;
+  padding: 2px 4px;
   border: 1px solid var(--diff-deleted-fg);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--diff-deleted-bg);
 }
 
 header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  min-height: 18px;
 }
 
 .operation-label {
-  padding: 2px 6px;
+  padding: 0 4px;
   border: 1px solid var(--diff-deleted-fg);
-  border-radius: 6px;
+  border-radius: 0;
   color: var(--diff-deleted-fg);
   font-size: 11px;
   font-weight: 700;
@@ -57,7 +58,7 @@ header {
 
 dl {
   display: grid;
-  gap: 8px;
+  gap: 4px;
   margin: 0;
 }
 

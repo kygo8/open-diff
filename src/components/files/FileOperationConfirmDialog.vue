@@ -65,26 +65,25 @@ function confirmationTitle(): string {
 <style scoped>
 .file-operation-confirm {
   display: grid;
-  gap: 12px;
+  gap: 4px;
   width: min(520px, 100%);
-  padding: 16px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
-  box-shadow: 0 18px 44px rgb(15 23 42 / 0.18);
 }
 
 .confirm-header {
   display: flex;
   align-items: start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 4px;
 }
 
 .risk-label {
-  margin: 0 0 4px;
+  margin: 0 0 2px;
   color: var(--diff-deleted-fg);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -92,29 +91,29 @@ function confirmationTitle(): string {
 
 h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 12px;
   line-height: 1.25;
 }
 
 .confirm-message {
   margin: 0;
   color: var(--app-text-muted);
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .path-list {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   max-height: 180px;
   margin: 0;
-  padding: 10px;
+  padding: 2px 4px;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   font-family: var(--app-font-mono);
-  font-size: 12px;
+  font-size: 11px;
   list-style: none;
 }
 
@@ -125,15 +124,16 @@ h2 {
 .confirm-actions {
   display: flex;
   justify-content: end;
-  gap: 8px;
+  gap: 4px;
+  min-height: 20px;
 }
 
 .primary-action,
 .secondary-action {
-  height: 30px;
-  padding: 0 12px;
+  height: 18px;
+  padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   color: var(--app-text);
   cursor: pointer;
 }

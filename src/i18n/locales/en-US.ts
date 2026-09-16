@@ -202,6 +202,8 @@ export const enUS: LanguagePack = {
     'ui.hexDetails': 'Hex Details',
     'ui.help': 'Help',
     'ui.helpContents': 'Contents',
+    'ui.contextHelp': 'Context Help',
+    'ui.contextHelpTopic': 'Help: {topic}',
     'ui.about': 'About Open Diff',
     'ui.checkForUpdates': 'Check for Updates',
     'ui.support': 'Support',

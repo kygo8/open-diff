@@ -85,6 +85,10 @@ describe('AppLayout command palette', () => {
       wrapper.find('[data-testid="menu-command-help.contents"]').attributes('disabled'),
     ).toBeUndefined()
     expect(wrapper.find('[data-testid="menu-command-help.support"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-help.contextHelp"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="menu-command-help.contextHelp"]').attributes('disabled'),
+    ).toBeUndefined()
     expect(wrapper.find('[data-testid="menu-panel"]').text()).not.toContain('unimplemented')
     expect(wrapper.find('[data-testid="menu-panel"]').text()).not.toContain('未实现')
 
@@ -93,6 +97,9 @@ describe('AppLayout command palette', () => {
       wrapper.find('[data-testid="menu-command-session.newWindow"]').attributes('disabled'),
     ).toBeUndefined()
     expect(wrapper.find('[data-testid="menu-command-session.newTab"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-open.folderMerge"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-open.hexCompare"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-open.tableCompare"]').exists()).toBe(true)
   })
 
   it('enables Session compare/swap/reload/rules and Tools settings actions', async () => {

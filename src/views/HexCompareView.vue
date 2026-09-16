@@ -259,6 +259,7 @@ watch(
       case 'delete':
       case 'export-settings':
       case 'help-contents':
+      case 'help-context':
       case 'help-support':
       case 'import-settings':
       case 'paste':

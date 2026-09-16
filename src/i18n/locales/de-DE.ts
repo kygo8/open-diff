@@ -180,6 +180,8 @@ export const deDE: LanguagePack = {
     'ui.hexDetails': 'Hex-Details',
     'ui.help': 'Helfen',
     'ui.helpContents': 'Inhalt',
+    'ui.contextHelp': 'Kontexthilfe',
+    'ui.contextHelpTopic': 'Hilfe: {topic}',
     'ui.about': 'Über Open Diff',
     'ui.checkForUpdates': 'Nach Updates suchen',
     'ui.support': 'Support',

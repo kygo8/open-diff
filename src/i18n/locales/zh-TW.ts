@@ -165,6 +165,8 @@ export const zhTW: LanguagePack = {
     'ui.hexDetails': '十六進位詳細資訊',
     'ui.help': '說明',
     'ui.helpContents': '目錄',
+    'ui.contextHelp': '內容說明',
+    'ui.contextHelpTopic': '說明：{topic}',
     'ui.about': '關於 Open Diff',
     'ui.checkForUpdates': '檢查更新',
     'ui.support': '支援',

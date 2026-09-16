@@ -393,6 +393,7 @@ watch(
       case 'about':
       case 'check-for-updates':
       case 'help-contents':
+      case 'help-context':
       case 'help-support':
       case 'session-settings':
       case 'rules':

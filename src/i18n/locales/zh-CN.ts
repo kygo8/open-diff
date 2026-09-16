@@ -164,6 +164,8 @@ export const zhCN: LanguagePack = {
     'ui.hexDetails': '十六进制详情',
     'ui.help': '帮助',
     'ui.helpContents': '目录',
+    'ui.contextHelp': '上下文帮助',
+    'ui.contextHelpTopic': '帮助：{topic}',
     'ui.about': '关于 Open Diff',
     'ui.checkForUpdates': '检查更新',
     'ui.support': '支持',

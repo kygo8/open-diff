@@ -1317,6 +1317,7 @@ watch(
         showMergeFilters.value = !showMergeFilters.value
         break
       case 'help-contents':
+      case 'help-context':
       case 'help-support':
       case 'import-settings':
       case 'next-difference':

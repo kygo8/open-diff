@@ -89,3 +89,67 @@ export function isFolderMergeRoute(path: string): boolean {
 export function isRegistrySessionRoute(path: string): boolean {
   return path.includes('/registry')
 }
+
+/** Text Compare / Merge / Edit routes that implement copy-left / copy-right. */
+export function isTextishSessionRoute(path: string): boolean {
+  return (
+    path.includes('/compare/text') || path.includes('/merge/text') || path.includes('/edit/text')
+  )
+}
+
+/** Help topic label for the current route (OpenDiff docs, not third-party). */
+export function contextHelpTopic(path: string): string {
+  if (path.includes('/compare/folder')) {
+    return 'folder-compare'
+  }
+
+  if (path.includes('/sync')) {
+    return 'folder-sync'
+  }
+
+  if (path.includes('/merge/folder')) {
+    return 'folder-merge'
+  }
+
+  if (path.includes('/compare/text')) {
+    return 'text-compare'
+  }
+
+  if (path.includes('/merge/text')) {
+    return 'text-merge'
+  }
+
+  if (path.includes('/edit/text')) {
+    return 'text-edit'
+  }
+
+  if (path.includes('/compare/hex')) {
+    return 'hex-compare'
+  }
+
+  if (path.includes('/compare/table')) {
+    return 'table-compare'
+  }
+
+  if (path.includes('/compare/picture')) {
+    return 'picture-compare'
+  }
+
+  if (path.includes('/compare/media')) {
+    return 'media-compare'
+  }
+
+  if (path.includes('/compare/registry')) {
+    return 'registry-compare'
+  }
+
+  if (path.includes('/compare/version')) {
+    return 'version-compare'
+  }
+
+  if (path.includes('/settings')) {
+    return 'options'
+  }
+
+  return 'home'
+}

@@ -261,6 +261,7 @@ watch(
       case 'export-settings':
       case 'filters':
       case 'help-contents':
+      case 'help-context':
       case 'help-support':
       case 'import-settings':
       case 'next-conflict':

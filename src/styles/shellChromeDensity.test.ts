@@ -30,14 +30,14 @@ describe('shell chrome density', () => {
 
   it('keeps WorkbenchShell session toolbar/content frame denser', () => {
     expect(mainCss).toMatch(
-      /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*44px/,
+      /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*42px/,
     )
-    expect(mainCss).toMatch(/\.workbench-titlebar\s*\{[\s\S]*?height:\s*16px/)
-    expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*44px/)
+    expect(mainCss).toMatch(/\.workbench-titlebar\s*\{[\s\S]*?height:\s*15px/)
+    expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*42px/)
     expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
   })
 
-  it('marks WorkbenchShell frame densify pass 9', () => {
-    expect(workbench).toMatch(/data-shell-density="capture-pass9"/)
+  it('marks WorkbenchShell frame densify pass 10', () => {
+    expect(workbench).toMatch(/data-shell-density="capture-pass10"/)
   })
 })

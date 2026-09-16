@@ -148,13 +148,13 @@ select {
 }
 
 .workbench-shell-single-session .bc-session-toolbar {
-  min-height: 44px;
+  min-height: 42px;
   border-bottom: 1px solid #a0a0a0;
 }
 
 .workbench-shell-single-session .bc-toolbar-command {
   min-width: 48px;
-  height: 44px;
+  height: 42px;
   padding: 1px 2px 2px;
 }
 
@@ -260,7 +260,7 @@ select {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-width: 0;
-  height: 16px;
+  height: 15px;
   padding: 0;
   border-bottom: 1px solid #a0a0a0;
   background: var(--app-surface-low);
@@ -319,7 +319,7 @@ select {
   align-items: stretch;
   gap: 0;
   min-width: 0;
-  min-height: 44px;
+  min-height: 42px;
   padding: 0 1px;
   overflow: auto hidden;
   border-bottom: 1px solid #a0a0a0;
@@ -338,7 +338,7 @@ select {
   width: auto;
   min-width: 48px;
   max-width: 96px;
-  height: 44px;
+  height: 42px;
   padding: 1px 2px 2px;
   overflow: hidden;
   border: 0;

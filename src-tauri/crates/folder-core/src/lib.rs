@@ -764,12 +764,16 @@ pub fn should_skip_newer_target(
         None => None,
     };
     let source_ms = source_modified_at_ms.or_else(|| {
-        source.metadata().ok().and_then(|meta| meta.modified().ok()).and_then(|modified| {
-            modified
-                .duration_since(UNIX_EPOCH)
-                .ok()
-                .map(|duration| duration.as_millis())
-        })
+        source
+            .metadata()
+            .ok()
+            .and_then(|meta| meta.modified().ok())
+            .and_then(|modified| {
+                modified
+                    .duration_since(UNIX_EPOCH)
+                    .ok()
+                    .map(|duration| duration.as_millis())
+            })
     });
 
     match (source_ms, dest_ms) {
@@ -2319,7 +2323,11 @@ mod tests {
 
         assert!(should_skip_newer_target(&source, &target, Some(1)));
         assert!(!should_skip_newer_target(&source, &target, Some(u128::MAX)));
-        assert!(!should_skip_newer_target(&source, &root.join("missing.txt"), None));
+        assert!(!should_skip_newer_target(
+            &source,
+            &root.join("missing.txt"),
+            None
+        ));
 
         let _ = fs::remove_dir_all(root);
     }

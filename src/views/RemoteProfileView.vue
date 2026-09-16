@@ -478,7 +478,7 @@ function toDraft(profile: RemoteProfile): RemoteProfileDraft {
     pathStyle: false,
     credentialKind: profile.credentialRef.kind,
     credentialKey: profile.credentialRef.key,
-    username: profile.id ? '' : defaults.anonymousLogin ? '' : defaults.defaultUsername || '',
+    username: profile.id || defaults.anonymousLogin ? '' : defaults.defaultUsername || '',
     password: '',
     oauthClientId: '',
     oauthPaste: '',

@@ -92,8 +92,8 @@ export function saveFileFormatPreferences(
   storage.setItem(
     fileFormatPreferencesStorageKey,
     JSON.stringify({
-      treatUnknownAsText: Boolean(prefs.treatUnknownAsText),
-      preferHexForNoExtension: Boolean(prefs.preferHexForNoExtension),
+      treatUnknownAsText: prefs.treatUnknownAsText,
+      preferHexForNoExtension: prefs.preferHexForNoExtension,
     }),
   )
 }

@@ -1113,7 +1113,8 @@ export const zhCN: LanguagePack = {
     'ui.excludeJunctionPoints': '排除联接点 / 符号链接子项',
     'ui.excludeJunctionPointsHint': '文件夹比较扫描时省略符号链接子项，而不是把它们列成文件。',
     'ui.preferHexForNoExtension': '无扩展名文件以十六进制打开',
-    'ui.preferHexForNoExtensionHint': '即使未知扩展名按文本打开，没有扩展名的文件仍打开十六进制比较。',
+    'ui.preferHexForNoExtensionHint':
+      '即使未知扩展名按文本打开，没有扩展名的文件仍打开十六进制比较。',
     'ui.profileAnonymousLogin': '默认匿名登录',
     'ui.profileAnonymousLoginHint': '新建远程配置时用户名为空，而不使用默认用户名。',
     'ui.reportIncludeUnimportant': '文件夹报告包含不重要差异',

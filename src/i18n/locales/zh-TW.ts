@@ -1115,7 +1115,8 @@ export const zhTW: LanguagePack = {
     'ui.excludeJunctionPoints': '排除接點 / 符號連結子項',
     'ui.excludeJunctionPointsHint': '資料夾比較掃描時省略符號連結子項，而不是把它們列成檔案。',
     'ui.preferHexForNoExtension': '無副檔名檔案以十六進位開啟',
-    'ui.preferHexForNoExtensionHint': '即使未知副檔名按文字開啟，沒有副檔名的檔案仍開啟十六進位比較。',
+    'ui.preferHexForNoExtensionHint':
+      '即使未知副檔名按文字開啟，沒有副檔名的檔案仍開啟十六進位比較。',
     'ui.profileAnonymousLogin': '預設匿名登入',
     'ui.profileAnonymousLoginHint': '新建遠端設定時使用者名稱為空，而不使用預設使用者名稱。',
     'ui.reportIncludeUnimportant': '資料夾報告包含不重要差異',

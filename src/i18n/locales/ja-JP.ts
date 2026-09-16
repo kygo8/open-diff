@@ -1145,8 +1145,7 @@ export const jaJP: LanguagePack = {
     'ui.keepFolderExpansionOnReloadHint':
       '同じルートを再比較したあと、開いていたフォルダーを保ちます。',
     'ui.skipNewerTargetsOnCopy': 'コピー時に新しい宛先をスキップ',
-    'ui.skipNewerTargetsOnCopyHint':
-      '宛先が既に存在し、ソースより新しい場合は宛先を変更しません。',
+    'ui.skipNewerTargetsOnCopyHint': '宛先が既に存在し、ソースより新しい場合は宛先を変更しません。',
     'ui.excludeJunctionPoints': 'ジャンクション / シンボリックリンクの子を除外',
     'ui.excludeJunctionPointsHint':
       'フォルダー比較のスキャンでシンボリックリンクの子をファイルとして列挙せず省略します。',

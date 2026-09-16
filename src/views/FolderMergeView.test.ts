@@ -161,6 +161,9 @@ describe('FolderMergeView', () => {
     await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
     await flushPromises()
     await wrapper.find('[data-testid="folder-merge-execute-plan"]').trigger('click')
+    expect(executeFolderMergePlan).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="folder-merge-confirm-safety"]').trigger('click')
     await flushPromises()
 
     expect(executeFolderMergePlan).toHaveBeenCalledWith({
@@ -407,6 +410,8 @@ describe('FolderMergeView', () => {
     expect(wrapper.find('[data-testid="folder-merge-filter-state"]').text()).toContain('Same')
 
     await wrapper.find('[data-testid="folder-merge-session-toolbar-merge"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="folder-merge-confirm-safety"]').trigger('click')
     await flushPromises()
     expect(executeFolderMergePlan).toHaveBeenCalled()
   })
@@ -561,6 +566,7 @@ describe('FolderMergeView', () => {
     )
 
     await wrapper.find('[data-testid="folder-merge-execute-plan"]').trigger('click')
+    await wrapper.find('[data-testid="folder-merge-confirm-safety"]').trigger('click')
     await flushPromises()
 
     expect(vi.mocked(executeFolderMergePlan).mock.calls.at(-1)?.[0]).toEqual({
@@ -579,6 +585,54 @@ describe('FolderMergeView', () => {
     })
   })
 
+  it('lets a conflict row pick copy-left and sends that override on execute', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-merge-conflict-list"]').text()).toContain('notes.txt')
+    await wrapper
+      .find('[data-testid="folder-merge-action-notes-txt"]')
+      .setValue('Copy left to output')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-merge-conflict-list"]').text()).not.toContain(
+      'notes.txt',
+    )
+
+    await wrapper.find('[data-testid="folder-merge-execute-plan"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="folder-merge-confirm-safety"]').trigger('click')
+    await flushPromises()
+
+    expect(vi.mocked(executeFolderMergePlan).mock.calls.at(-1)?.[0]).toEqual(
+      expect.objectContaining({
+        overrides: [
+          {
+            relativePath: 'notes.txt',
+            action: 'Copy left to output',
+          },
+        ],
+      }),
+    )
+  })
+
+  it('cancels merge execution confirmation without writing', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-testid="folder-merge-execute-plan"]').trigger('click')
+    await wrapper.find('[data-testid="folder-merge-cancel-safety"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').exists()).toBe(false)
+    expect(executeFolderMergePlan).not.toHaveBeenCalled()
+  })
+
   it('wires Actions Compare Contents and Merge execute verbs', async () => {
     const wrapper = mountFolderMergeView()
 
@@ -594,6 +648,9 @@ describe('FolderMergeView', () => {
 
     vi.mocked(executeFolderMergePlan).mockClear()
     useViewActionsStore().dispatch('merge-execute')
+    await flushPromises()
+    expect(executeFolderMergePlan).not.toHaveBeenCalled()
+    await wrapper.find('[data-testid="folder-merge-confirm-safety"]').trigger('click')
     await flushPromises()
     expect(executeFolderMergePlan).toHaveBeenCalled()
   })

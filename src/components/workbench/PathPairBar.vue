@@ -91,7 +91,7 @@ onBeforeUnmount(() => window.removeEventListener('click', onDocumentClick))
   <section class="path-pair-bar">
     <label class="path-pair-field">
       <span>{{ leftLabel ?? t('ui.left') }}</span>
-      <FolderOpen :size="11" />
+      <FolderOpen :size="10" />
       <input
         :value="left"
         type="text"
@@ -116,11 +116,11 @@ onBeforeUnmount(() => window.removeEventListener('click', onDocumentClick))
       :aria-label="$t('ui.swapPaths')"
       @click="emit('swap')"
     >
-      <ArrowLeftRight :size="11" />
+      <ArrowLeftRight :size="10" />
     </button>
     <label class="path-pair-field">
       <span>{{ rightLabel ?? t('ui.right') }}</span>
-      <FolderOpen :size="11" />
+      <FolderOpen :size="10" />
       <input
         :value="right"
         type="text"
@@ -145,7 +145,7 @@ onBeforeUnmount(() => window.removeEventListener('click', onDocumentClick))
       :disabled="loading"
       @click="emit('run')"
     >
-      <Play :size="11" />
+      <Play :size="10" />
       <span>{{ actionLabel ?? t('ui.compare') }}</span>
     </button>
     <div

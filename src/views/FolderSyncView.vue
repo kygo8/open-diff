@@ -985,6 +985,46 @@ function skipRemainingSyncRows(): void {
   applySyncOverrideAction('leave', visiblePreviewRows.value)
 }
 
+function syncConflictRows(): SyncPreviewRow[] {
+  return previewRows.value.filter(
+    (row) => !excludedRowIds.value.has(row.id) && row.action === 'Conflict',
+  )
+}
+
+function stepSyncConflict(direction: 1 | -1): void {
+  const matches = syncConflictRows()
+
+  if (matches.length === 0) {
+    return
+  }
+
+  visibleActions.value = new Set(['Conflict'])
+
+  const currentId = selectedPeekRowId.value
+  const index = currentId ? matches.findIndex((row) => row.id === currentId) : -1
+  let nextIndex: number
+
+  if (index === -1) {
+    nextIndex = direction === 1 ? 0 : matches.length - 1
+  } else {
+    nextIndex = index + direction
+    if (nextIndex < 0) {
+      nextIndex = matches.length - 1
+    } else if (nextIndex >= matches.length) {
+      nextIndex = 0
+    }
+  }
+
+  const next = matches[nextIndex]
+
+  checkedRowIds.value = new Set([next.id])
+  selectSyncPeekRow(next)
+  lastSelectionAction.value = t('status.selectedRowCount', {
+    count: 1,
+    action: t('ui.conflicts'),
+  })
+}
+
 function openNewFolderPanel(): void {
   if (!leftPath.value && !rightPath.value) {
     return
@@ -1313,8 +1353,10 @@ watch(
       case 'compare-files-and-folder-structure':
       case 'ignore-folder-structure':
       case 'always-show-folders':
-      case 'show-changes':
       case 'show-conflicts':
+        visibleActions.value = new Set(['Conflict'])
+        break
+      case 'show-changes':
       case 'toggle-center-pane':
       case 'compare-to-output':
       case 'suppress-filters':
@@ -1393,7 +1435,11 @@ watch(
       case 'undo':
       case 'workspace-load':
       case 'next-conflict':
+        stepSyncConflict(1)
+        break
       case 'previous-conflict':
+        stepSyncConflict(-1)
+        break
       case 'toggle-session-locked':
       case 'workspace-save':
       case 'run-script':

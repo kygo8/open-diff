@@ -1569,6 +1569,13 @@ describe('global menu depth parity', () => {
     expect(
       sync.find('[data-testid="menu-command-view.columns"]').attributes('disabled'),
     ).toBeDefined()
+    expect(
+      sync.find('[data-testid="menu-command-view.showConflicts"]').attributes('disabled'),
+    ).toBeUndefined()
+    await sync.find('[data-testid="menu-search"]').trigger('click')
+    expect(
+      sync.find('[data-testid="menu-command-merge.nextConflict"]').attributes('disabled'),
+    ).toBeUndefined()
     sync.unmount()
 
     routePath = '/merge/folder'

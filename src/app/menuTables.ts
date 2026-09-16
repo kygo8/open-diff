@@ -200,9 +200,12 @@ export function resolveMenuCommandEnabled(
     return isFolderCompareRoute(path) || isFolderMergeRoute(path)
   }
 
+  if (commandId === 'view.showConflicts') {
+    return isFolderMergeRoute(path) || isFolderSyncRoute(path)
+  }
+
   if (
     commandId === 'view.showChanges' ||
-    commandId === 'view.showConflicts' ||
     commandId === 'view.centerPane' ||
     commandId === 'session.compareToOutput'
   ) {
@@ -349,7 +352,7 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'merge.previousConflict' || commandId === 'merge.nextConflict') {
-    return isFolderMergeRoute(path) || isTextMergeRoute(path)
+    return isFolderMergeRoute(path) || isTextMergeRoute(path) || isFolderSyncRoute(path)
   }
 
   return true

@@ -2021,7 +2021,7 @@ const sourceSessionTypes = new Set<SessionType>([
 <style scoped>
 .app-shell {
   display: grid;
-  grid-template-rows: 58px minmax(0, 1fr) 24px;
+  grid-template-rows: 54px minmax(0, 1fr) 24px;
   height: 100vh;
   overflow: hidden;
   background: #ffffff;
@@ -2033,13 +2033,13 @@ const sourceSessionTypes = new Set<SessionType>([
   z-index: 80;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: 30px 28px;
+  grid-template-rows: 28px 26px;
   align-items: center;
   gap: 0;
   min-width: 0;
   padding: 0;
   overflow: visible;
-  border-bottom: 1px solid #c7cbd1;
+  border-bottom: 1px solid #a0a0a0;
   background: #ffffff;
 }
 
@@ -2089,16 +2089,16 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-column: 1;
   grid-row: 1;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   min-width: 0;
   max-width: 100%;
-  height: 30px;
-  padding: 0 8px;
+  height: 28px;
+  padding: 0 6px;
   overflow: hidden;
   border: 0;
-  background: #eef2f8;
+  background: #f0f3f9;
   color: #111827;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2110,12 +2110,12 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-column: 1 / -1;
   grid-row: 2;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
-  height: 28px;
-  padding: 0 6px;
+  height: 26px;
+  padding: 0 4px;
   overflow: visible;
-  border-top: 1px solid #e7e9ed;
+  border-top: 1px solid #e0e0e0;
   background: #ffffff;
 }
 
@@ -2132,7 +2132,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button,
 .chrome-button {
-  height: 24px;
+  height: 22px;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -2142,7 +2142,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button {
   max-width: 9em;
-  padding: 0 4px;
+  padding: 0 3px;
   overflow: hidden;
   font-size: 12px;
   text-overflow: ellipsis;
@@ -2348,11 +2348,11 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-strip {
   display: flex;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
-  padding: 2px 5px 0;
+  padding: 1px 4px 0;
   overflow: auto hidden;
-  border-bottom: 1px solid #c7cbd1;
+  border-bottom: 1px solid #a0a0a0;
   background: var(--app-panel, var(--app-canvas));
 }
 
@@ -2393,9 +2393,9 @@ const sourceSessionTypes = new Set<SessionType>([
   display: inline-flex;
   align-items: center;
   min-width: 0;
-  border: 1px solid #c7cbd1;
+  border: 1px solid #a0a0a0;
   border-bottom: 0;
-  border-radius: 3px 3px 0 0;
+  border-radius: 2px 2px 0 0;
   background: var(--app-canvas);
 }
 
@@ -2409,8 +2409,8 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-chip button {
   min-width: 0;
-  height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  padding: 0 5px;
   border: 0;
   background: transparent;
   color: var(--app-text);
@@ -2736,43 +2736,44 @@ html[data-show-sidebar='1'] .sidebar {
 
 .app-shell-dense-chrome {
   /* Title + menu only — closer to native frames without a tab strip. */
-  grid-template-rows: 52px minmax(0, 1fr) 24px;
+  grid-template-rows: 48px minmax(0, 1fr) 24px;
 }
 
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind$='-session']) {
-  grid-template-rows: 52px minmax(0, 1fr) 22px;
+  /* Keep dense brand/menu at 48px; only the status track shrinks to 22px. */
+  grid-template-rows: 48px minmax(0, 1fr) 22px;
 }
 
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind$='-session']) {
-  grid-template-rows: 58px minmax(0, 1fr) 22px;
+  grid-template-rows: 54px minmax(0, 1fr) 22px;
 }
 
 .app-shell-dense-chrome .menu-bar {
-  grid-template-rows: 26px 26px;
+  grid-template-rows: 24px 24px;
 }
 
 .app-shell-dense-chrome .brand {
-  height: 26px;
-  padding: 0 8px;
-  font-size: 14px;
+  height: 24px;
+  padding: 0 6px;
+  font-size: 13px;
 }
 
 .app-shell-dense-chrome .brand :deep(svg) {
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
 }
 
 .app-shell-dense-chrome .menus {
-  gap: 4px;
-  height: 26px;
-  padding: 0 6px;
+  gap: 3px;
+  height: 24px;
+  padding: 0 4px;
 }
 
 .app-shell-dense-chrome .menus button {
-  height: 22px;
-  padding: 0 4px;
+  height: 20px;
+  padding: 0 3px;
   font-size: 12px;
 }
 

@@ -148,23 +148,23 @@ select {
 }
 
 .workbench-shell-single-session .bc-session-toolbar {
-  min-height: 48px;
-  border-bottom: 1px solid #bfc4cc;
+  min-height: 44px;
+  border-bottom: 1px solid #a0a0a0;
 }
 
 .workbench-shell-single-session .bc-toolbar-command {
-  min-width: 50px;
-  height: 48px;
-  padding: 1px 3px 2px;
+  min-width: 48px;
+  height: 44px;
+  padding: 1px 2px 2px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact {
-  min-height: 38px;
+  min-height: 36px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact .bc-toolbar-command {
-  min-width: 42px;
-  height: 38px;
+  min-width: 40px;
+  height: 36px;
 }
 
 .app-shell-single-session .tab-strip {
@@ -186,7 +186,7 @@ select {
   gap: 4px !important;
   min-height: 28px !important;
   padding: 2px 6px !important;
-  border-bottom: 1px solid #bfc4cc !important;
+  border-bottom: 1px solid #a0a0a0 !important;
   background: #f3f3f3 !important;
 }
 
@@ -231,7 +231,7 @@ select {
 }
 
 .app-shell-single-session .workbench-shell-single-session .bc-session-toolbar {
-  border-bottom: 1px solid #bfc4cc;
+  border-bottom: 1px solid #a0a0a0;
 }
 
 .app-shell-single-session .workbench-main {
@@ -258,9 +258,9 @@ select {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-width: 0;
-  height: 28px;
-  padding: 0 8px;
-  border-bottom: 1px solid #c7cbd1;
+  height: 26px;
+  padding: 0 6px;
+  border-bottom: 1px solid #a0a0a0;
   background: var(--app-surface-low);
 }
 
@@ -275,9 +275,9 @@ select {
   margin: 0;
   overflow: hidden;
   color: var(--app-text);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 18px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -317,32 +317,32 @@ select {
   align-items: stretch;
   gap: 0;
   min-width: 0;
-  min-height: 48px;
+  min-height: 44px;
   padding: 0 1px;
   overflow: auto hidden;
-  border-bottom: 1px solid #c8c8c8;
+  border-bottom: 1px solid #a0a0a0;
   background: #f0f0f0;
 }
 
 .bc-toolbar-command {
   display: grid;
-  grid-template-rows: 20px auto;
+  grid-template-rows: 18px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
   flex: 0 0 auto;
   width: auto;
-  min-width: 52px;
-  max-width: 100px;
-  height: 48px;
-  padding: 1px 3px 2px;
+  min-width: 48px;
+  max-width: 96px;
+  height: 44px;
+  padding: 1px 2px 2px;
   overflow: hidden;
   border: 0;
   border-right: 0;
   background: transparent;
   color: #1a1a1a;
   font-size: 11px;
-  line-height: 13px;
+  line-height: 12px;
   white-space: nowrap;
   cursor: default;
 }
@@ -394,14 +394,14 @@ select {
 }
 
 .bc-session-toolbar-compact {
-  min-height: 38px;
+  min-height: 36px;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-command {
-  grid-template-rows: 17px auto;
-  min-width: 42px;
-  max-width: 84px;
-  height: 38px;
+  grid-template-rows: 16px auto;
+  min-width: 40px;
+  max-width: 80px;
+  height: 36px;
   padding: 1px 2px;
   font-size: 10px;
   line-height: 11px;
@@ -729,7 +729,7 @@ select {
   min-height: 32px;
   padding: 0 6px;
   overflow: visible;
-  border-bottom: 1px solid #bfc4cc;
+  border-bottom: 1px solid #a0a0a0;
   background: #eeeeee;
 }
 
@@ -844,7 +844,7 @@ select {
   gap: 4px;
   min-height: 28px;
   padding: 2px 8px;
-  border-bottom: 1px solid #bfc4cc;
+  border-bottom: 1px solid #a0a0a0;
   background: #f3f3f3;
 }
 
@@ -854,8 +854,8 @@ select {
   height: 22px;
   padding: 0 6px;
   overflow: hidden;
-  border: 1px solid #bfc4cc;
-  border-radius: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: #ffffff;
   color: #111111;
   font-size: 11px;

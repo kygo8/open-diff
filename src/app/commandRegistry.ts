@@ -94,6 +94,13 @@ export type CommandId =
   | 'actions.rename'
   | 'actions.delete'
   | 'actions.copyFilename'
+  | 'actions.compareContents'
+  | 'actions.synchronize'
+  | 'actions.explorer'
+  | 'actions.ignored'
+  | 'actions.alignWith'
+  | 'actions.breakAlignment'
+  | 'actions.fileCompareReport'
   | 'session.mergeBaseFolders'
   | 'session.syncBaseFolders'
   | 'script.run'
@@ -185,6 +192,13 @@ export type CommandAction =
         | 'move-to-folder'
         | 'rename-selected'
         | 'copy-filename'
+        | 'compare-contents'
+        | 'synchronize'
+        | 'explorer'
+        | 'ignored'
+        | 'align-with'
+        | 'break-alignment'
+        | 'file-compare-report'
     }
 
 export interface CommandShortcut {
@@ -1211,6 +1225,76 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'N'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'copy-filename' },
+  },
+  {
+    id: 'actions.compareContents',
+    titleKey: 'ui.compareContents',
+    keywords: ['compare', 'contents', 'actions', 'content'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', '1'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'compare-contents' },
+  },
+  {
+    id: 'actions.synchronize',
+    titleKey: 'ui.synchronize',
+    keywords: ['synchronize', 'sync', 'folder', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', '2'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'synchronize' },
+  },
+  {
+    id: 'actions.explorer',
+    titleKey: 'ui.explorer',
+    keywords: ['explorer', 'reveal', 'folder', 'actions', 'shell'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'F'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'explorer' },
+  },
+  {
+    id: 'actions.ignored',
+    titleKey: 'ui.ignored',
+    keywords: ['ignored', 'ignore', 'actions', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', '3'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'ignored' },
+  },
+  {
+    id: 'actions.alignWith',
+    titleKey: 'ui.alignWith',
+    keywords: ['align', 'with', 'actions', 'orphan'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', '4'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'align-with' },
+  },
+  {
+    id: 'actions.breakAlignment',
+    titleKey: 'ui.breakAlignment',
+    keywords: ['break', 'alignment', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', '5'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'break-alignment' },
+  },
+  {
+    id: 'actions.fileCompareReport',
+    titleKey: 'ui.fileCompareReport',
+    keywords: ['file', 'compare', 'report', 'actions', 'export'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', '6'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'file-compare-report' },
   },
 ]
 

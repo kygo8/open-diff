@@ -97,6 +97,44 @@ describe('commandRegistry', () => {
     expect(commandRegistry.find((command) => command.id === 'actions.leaveAlone')?.enabled).toBe(
       true,
     )
+
+    expect(
+      commandRegistry.find((command) => command.id === 'actions.compareContents')?.action,
+    ).toEqual({
+      type: 'view-action',
+      name: 'compare-contents',
+    })
+    expect(commandRegistry.find((command) => command.id === 'actions.synchronize')?.action).toEqual(
+      {
+        type: 'view-action',
+        name: 'synchronize',
+      },
+    )
+    expect(commandRegistry.find((command) => command.id === 'actions.explorer')?.action).toEqual({
+      type: 'view-action',
+      name: 'explorer',
+    })
+    expect(commandRegistry.find((command) => command.id === 'actions.ignored')?.action).toEqual({
+      type: 'view-action',
+      name: 'ignored',
+    })
+    expect(commandRegistry.find((command) => command.id === 'actions.alignWith')?.action).toEqual({
+      type: 'view-action',
+      name: 'align-with',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'actions.breakAlignment')?.action,
+    ).toEqual({
+      type: 'view-action',
+      name: 'break-alignment',
+    })
+    expect(
+      commandRegistry.find((command) => command.id === 'actions.fileCompareReport')?.action,
+    ).toEqual({
+      type: 'view-action',
+      name: 'file-compare-report',
+    })
+
     expect(commandRegistry.find((command) => command.id === 'open.pictureCompare')?.enabled).toBe(
       true,
     )

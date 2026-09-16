@@ -1214,5 +1214,16 @@ export const deDE: LanguagePack = {
     'ui.copyToFolder': 'In Ordner kopieren...',
     'ui.moveToFolder': 'In Ordner verschieben...',
     'ui.copyFilename': 'Dateiname kopieren',
+    'ui.compareContents': 'Inhalt vergleichen…',
+    'ui.synchronize': 'Synchronisieren',
+    'ui.explorer': 'Explorer',
+    'ui.fileCompareReport': 'Dateivergleichsbericht…',
+    'status.compareContentsNeedsFile': 'Wählen Sie eine Datei zum Inhaltsvergleich.',
+    'status.compareContentsNoRoute':
+      'Für diese Auswahl ist keine Inhaltsvergleichssitzung verfügbar.',
+    'status.synchronizeNeedsRoots': 'Legen Sie vor dem Synchronisieren beide Ordnerwurzeln fest.',
+    'status.explorerRevealed': '{path} im Dateimanager angezeigt',
+    'status.ignoredMarked': '{path} als ignoriert markiert',
+    'status.ignoredUnmarked': 'Ignoriert-Markierung für {path} entfernt',
   },
 }

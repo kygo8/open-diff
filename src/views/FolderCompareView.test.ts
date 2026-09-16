@@ -613,6 +613,52 @@ describe('FolderCompareView', () => {
     expect(useTabsStore().tabs.some((tab) => tab.route === '/compare/text')).toBe(true)
   })
 
+  it('wires Compare Contents, Synchronize, Explorer, Ignored, and File Compare Report', async () => {
+    const wrapper = mountFolderCompareView()
+
+    await runCompare(wrapper)
+    await wrapper.find('[data-row-id="src-main-ts"]').trigger('click')
+
+    await wrapper.find('[data-testid="compare-contents-selected"]').trigger('click')
+    expect(push).toHaveBeenCalledWith('/compare/text')
+    expect(useSessionLaunchStore().pendingLaunch?.route).toBe('/compare/text')
+
+    push.mockClear()
+    await wrapper.find('[data-testid="synchronize-from-folder"]').trigger('click')
+    expect(push).toHaveBeenCalledWith('/sync/folder')
+    expect(useSessionLaunchStore().pendingLaunch).toMatchObject({
+      route: '/sync/folder',
+      sessionType: 'folder-sync',
+      locations: {
+        left: { uri: 'D:/left' },
+        right: { uri: 'D:/right' },
+      },
+    })
+
+    vi.mocked(openPathExternal).mockClear()
+    await wrapper.find('[data-testid="reveal-selected-in-explorer"]').trigger('click')
+    await flushPromises()
+    expect(openPathExternal).toHaveBeenCalledWith('D:/left/src')
+
+    await wrapper.find('[data-testid="toggle-ignored-selected"]').trigger('click')
+    expect(wrapper.text()).toMatch(/Marked|ignored/i)
+
+    vi.mocked(exportFolderCompareReport).mockClear()
+    await wrapper.find('[data-testid="file-compare-report"]').trigger('click')
+    await flushPromises()
+    expect(exportFolderCompareReport).toHaveBeenCalled()
+
+    const viewActions = useViewActionsStore()
+
+    viewActions.dispatch('align-with')
+    await flushPromises()
+    viewActions.dispatch('break-alignment')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="compare-contents-selected"]').text()).not.toContain(
+      'unimplemented',
+    )
+  })
+
   it('launches open-with and associated apps for the selected file', async () => {
     const wrapper = mountFolderCompareView()
 

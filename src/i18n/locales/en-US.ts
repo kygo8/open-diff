@@ -1186,10 +1186,15 @@ export const enUS: LanguagePack = {
     'ui.profileDefaultName': 'Default profile name',
     'ui.profileDefaultProtocol': 'Default protocol',
     'ui.profileDefaultRootPath': 'Default root path',
+    'ui.profileDefaultHost': 'Default host',
+    'ui.profileSavedCount': 'Saved profiles: {count}',
     'ui.profileDefaultsHint':
       'Applied when creating a new remote profile. Manage saved profiles from the Profiles window.',
     'ui.reportDefaultFormat': 'Default report format',
     'ui.reportDefaultKind': 'Default report kind',
+    'ui.openReportAfterExport': 'Open report after export',
+    'ui.openReportAfterExportHint':
+      'Reveal the exported report in the system file manager when Reports / Scripts finishes an export.',
     'ui.reportClearHistoryOnExit': 'Clear recent report history on exit (desktop)',
     'ui.clearReportHistory': 'Clear recent report history',
     'ui.openReportsScripts': 'Open Reports / Scripts',

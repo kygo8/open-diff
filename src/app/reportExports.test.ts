@@ -70,15 +70,19 @@ describe('reportPreferences', () => {
     localStorage.removeItem(reportExportsStorageKey)
   })
 
-  it('persists default report format and kind', () => {
+  it('persists default report format, kind, and leftover toggles', () => {
     saveReportPreferences({
       defaultFormat: 'markdown',
       defaultKind: 'folder',
+      openAfterExport: true,
+      clearHistoryOnExit: true,
     })
 
     expect(loadReportPreferences()).toEqual({
       defaultFormat: 'markdown',
       defaultKind: 'folder',
+      openAfterExport: true,
+      clearHistoryOnExit: true,
     })
   })
 

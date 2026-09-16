@@ -1210,10 +1210,15 @@ export const frFR: LanguagePack = {
     'ui.profileDefaultName': 'Nom de profil par défaut',
     'ui.profileDefaultProtocol': 'Protocole par défaut',
     'ui.profileDefaultRootPath': 'Chemin racine par défaut',
+    'ui.profileDefaultHost': 'Hôte par défaut',
+    'ui.profileSavedCount': 'Profils enregistrés : {count}',
     'ui.profileDefaultsHint':
       'Appliqué à la création d’un profil distant. Gérez les profils enregistrés dans la fenêtre Profils.',
     'ui.reportDefaultFormat': 'Format de rapport par défaut',
     'ui.reportDefaultKind': 'Type de rapport par défaut',
+    'ui.openReportAfterExport': 'Ouvrir le rapport après export',
+    'ui.openReportAfterExportHint':
+      'Afficher le rapport exporté dans le gestionnaire de fichiers quand Rapports / Scripts a terminé.',
     'ui.reportClearHistoryOnExit': 'Effacer l’historique des rapports à la sortie (bureau)',
     'ui.clearReportHistory': 'Effacer l’historique des rapports',
     'ui.openReportsScripts': 'Ouvrir Rapports / Scripts',

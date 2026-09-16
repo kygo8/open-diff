@@ -1173,10 +1173,15 @@ export const koKR: LanguagePack = {
     'ui.profileDefaultName': '기본 프로필 이름',
     'ui.profileDefaultProtocol': '기본 프로토콜',
     'ui.profileDefaultRootPath': '기본 루트 경로',
+    'ui.profileDefaultHost': '기본 호스트',
+    'ui.profileSavedCount': '저장된 프로필: {count}',
     'ui.profileDefaultsHint':
       '새 원격 프로필을 만들 때 적용됩니다. 저장된 프로필은 프로필 창에서 관리하세요.',
     'ui.reportDefaultFormat': '기본 보고서 형식',
     'ui.reportDefaultKind': '기본 보고서 종류',
+    'ui.openReportAfterExport': '내보내기 후 보고서 열기',
+    'ui.openReportAfterExportHint':
+      '보고서 / 스크립트 내보내기가 끝나면 파일 관리자에서 보고서를 표시합니다.',
     'ui.reportClearHistoryOnExit': '종료 시 최근 보고서 기록 지우기(데스크톱)',
     'ui.clearReportHistory': '최근 보고서 기록 지우기',
     'ui.openReportsScripts': '보고서 / 스크립트 열기',

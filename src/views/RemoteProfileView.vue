@@ -508,7 +508,7 @@ function emptyProfile(): RemoteProfile {
     name: defaults.defaultName,
     protocol: defaults.defaultProtocol,
     endpoint: {
-      host: '',
+      host: defaults.defaultHost || '',
       port: defaultPort,
       rootPath: defaults.defaultRootPath || '/',
     },

@@ -70,16 +70,18 @@ describe('remoteProfileDefaults', () => {
     localStorage.removeItem(remoteProfileDefaultsStorageKey)
   })
 
-  it('persists default name, protocol, and root path', () => {
+  it('persists default name, protocol, host, and root path', () => {
     saveRemoteProfileDefaults({
       defaultName: 'Lab Profile',
       defaultProtocol: 'ftps',
+      defaultHost: 'lab.example.com',
       defaultRootPath: '/srv',
     })
 
     expect(loadRemoteProfileDefaults()).toEqual({
       defaultName: 'Lab Profile',
       defaultProtocol: 'ftps',
+      defaultHost: 'lab.example.com',
       defaultRootPath: '/srv',
     })
   })

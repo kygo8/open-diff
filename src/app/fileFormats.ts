@@ -28,12 +28,17 @@ export interface FileFormatDefinition {
 
 /** Built-in format ids surfaced as association toggles in Options → Formats. */
 export const optionsFormatAssociationIds = [
+  'plain-text',
+  'source-code',
+  'rust',
+  'csv',
   'images',
   'media',
-  'source-code',
-  'csv',
   'registry',
   'version',
+  'patch',
+  'zip-archive',
+  'tar-archive',
 ] as const
 
 export type OptionsFormatAssociationId = (typeof optionsFormatAssociationIds)[number]

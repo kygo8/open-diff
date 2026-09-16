@@ -3,6 +3,7 @@ import {
   fileFormatsStorageKey,
   loadFileFormats,
   matchFileFormat,
+  optionsFormatAssociationIds,
   saveFileFormats,
   sessionTypeForPath,
   setFileFormatEnabled,
@@ -48,5 +49,18 @@ describe('fileFormats', () => {
 
     setFileFormatEnabled(loadFileFormats(), 'images', true)
     expect(sessionTypeForPath('photo.webp')).toBe('picture-compare')
+  })
+
+  it('exposes the denser Options format association checklist', () => {
+    expect(optionsFormatAssociationIds).toEqual(
+      expect.arrayContaining([
+        'plain-text',
+        'rust',
+        'patch',
+        'zip-archive',
+        'tar-archive',
+        'images',
+      ]),
+    )
   })
 })

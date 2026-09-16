@@ -516,13 +516,24 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
 
   await wrapper.find('[data-testid="options-section-folderCompare"]').trigger('click')
   expect(wrapper.find('[data-testid="options-folder-compare-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="folder-compare-timestamp"]').setValue(true)
+  await wrapper.find('[data-testid="folder-compare-crc"]').setValue(true)
+  await wrapper.find('[data-testid="folder-compare-attributes"]').setValue(true)
   await wrapper.find('[data-testid="folder-compare-follow-symlinks"]').setValue(true)
   await wrapper.find('[data-testid="folder-compare-size-only-unimportant"]').setValue(true)
+  await wrapper.find('[data-testid="folder-compare-ignore-dst"]').setValue(true)
+  await wrapper.find('[data-testid="folder-compare-timestamp-tolerance"]').setValue('3')
+  await wrapper.find('[data-testid="folder-compare-timestamp-tolerance"]').trigger('change')
   expect(
     JSON.parse(localStorage.getItem('open-diff-folder-compare-criteria') ?? '{}'),
   ).toMatchObject({
+    compareModifiedTime: true,
+    compareCrc: true,
+    compareAttributes: true,
     followSymlinks: true,
     sizeOnlyUnimportant: true,
+    ignoreDaylightSavingHourOffset: true,
+    timestampToleranceMs: 3000,
   })
 
   await wrapper.find('[data-testid="options-section-hexCompare"]').trigger('click')
@@ -560,6 +571,8 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="options-section-formats"]').trigger('click')
   expect(wrapper.find('[data-testid="options-formats-card"]').isVisible()).toBe(true)
   await wrapper.find('[data-testid="format-association-images"]').setValue(false)
+  await wrapper.find('[data-testid="format-association-plain-text"]').setValue(false)
+  await wrapper.find('[data-testid="format-association-zip-archive"]').setValue(false)
 
   const formats = JSON.parse(localStorage.getItem('open-diff-file-formats') ?? '[]') as {
     id: string
@@ -567,6 +580,8 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   }[]
 
   expect(formats.find((item) => item.id === 'images')).toMatchObject({ enabled: false })
+  expect(formats.find((item) => item.id === 'plain-text')).toMatchObject({ enabled: false })
+  expect(formats.find((item) => item.id === 'zip-archive')).toMatchObject({ enabled: false })
 
   await wrapper.find('[data-testid="options-section-profiles"]').trigger('click')
   expect(wrapper.find('[data-testid="options-profiles-card"]').isVisible()).toBe(true)
@@ -574,6 +589,8 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="profile-default-name"]').trigger('change')
   await wrapper.find('[data-testid="profile-default-protocol"]').setValue('ftps')
   await wrapper.find('[data-testid="profile-default-protocol"]').trigger('change')
+  await wrapper.find('[data-testid="profile-default-host"]').setValue('stage.example.com')
+  await wrapper.find('[data-testid="profile-default-host"]').trigger('change')
   await wrapper.find('[data-testid="profile-default-root-path"]').setValue('/data')
   await wrapper.find('[data-testid="profile-default-root-path"]').trigger('change')
   expect(
@@ -581,6 +598,7 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   ).toMatchObject({
     defaultName: 'Stage Box',
     defaultProtocol: 'ftps',
+    defaultHost: 'stage.example.com',
     defaultRootPath: '/data',
   })
 
@@ -590,9 +608,13 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="report-default-format"]').trigger('change')
   await wrapper.find('[data-testid="report-default-kind"]').setValue('folder')
   await wrapper.find('[data-testid="report-default-kind"]').trigger('change')
+  await wrapper.find('[data-testid="report-open-after-export"]').setValue(true)
+  await wrapper.find('[data-testid="report-clear-history-on-exit"]').setValue(true)
   expect(JSON.parse(localStorage.getItem('open-diff-report-preferences') ?? '{}')).toMatchObject({
     defaultFormat: 'markdown',
     defaultKind: 'folder',
+    openAfterExport: true,
+    clearHistoryOnExit: true,
   })
   await wrapper.find('[data-testid="open-reports-scripts"]').trigger('click')
   expect(push).toHaveBeenCalledWith('/reports/scripts')

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { exportFolderCompareReport, exportTextCompareReport } from '@/api/diff'
+import { revealPathInOs } from '@/api/integration'
 import { runScript, stopScript } from '@/api/script'
 import { playCompareCompleteBeep } from '@/app/compareCompleteNotify'
 import { useSettingsStore } from '@/stores/settings'
@@ -122,6 +123,14 @@ async function runExport(): Promise<void> {
       stateKey: 'ui.completed',
       target: lastExport.value,
     })
+
+    if (loadReportPreferences().openAfterExport && lastExport.value) {
+      try {
+        await revealPathInOs(lastExport.value)
+      } catch {
+        // Reveal is best-effort; export already succeeded.
+      }
+    }
   } catch (event) {
     error.value = String(event)
     jobs.value = recordRecentReportExport(jobs.value, {

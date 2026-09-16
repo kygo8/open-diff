@@ -1238,8 +1238,8 @@ h1 {
 
 .registry-input-panel textarea {
   min-width: 0;
-  min-height: 72px;
-  padding: 4px 6px;
+  min-height: 64px;
+  padding: 2px 4px;
   font-family: var(--font-mono);
   font-size: 11px;
   resize: vertical;

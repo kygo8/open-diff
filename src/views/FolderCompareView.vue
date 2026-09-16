@@ -5112,7 +5112,7 @@ onUnmounted(() => {
   display: grid;
   gap: 6px;
   width: min(340px, 100%);
-  padding: 8px 10px;
+  padding: 6px 8px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface);
@@ -5172,7 +5172,7 @@ onUnmounted(() => {
   display: grid;
   gap: 2px;
   margin: 0;
-  padding: 4px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);
@@ -5209,7 +5209,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: flex-end;
   gap: 4px;
-  min-height: 22px;
+  min-height: 20px;
   padding-top: 2px;
   border-top: 1px solid var(--app-border);
 }

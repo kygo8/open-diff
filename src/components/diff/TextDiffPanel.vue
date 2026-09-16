@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 import type { DiffLine, InlineDiffSegment } from '@/types/diff'
 import { useSettingsStore } from '@/stores/settings'
 
-const textDiffRowHeightPx = 20
+const textDiffRowHeightPx = 18
 const textDiffRowHeight = `${String(textDiffRowHeightPx)}px`
 const overscanRowCount = 12
 const defaultViewportHeight = 480
@@ -651,15 +651,15 @@ defineExpose({
   display: grid;
   grid-template-columns: 1fr 1fr auto;
   align-items: center;
-  gap: 4px;
-  height: 22px;
+  gap: 3px;
+  height: 20px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
   font-size: 11px;
   font-weight: 700;
-  padding-right: 14px;
-  padding-left: 44px;
+  padding-right: 12px;
+  padding-left: 36px;
 }
 
 .diff-navigation {
@@ -670,7 +670,7 @@ defineExpose({
 .diff-tools {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .diff-filter {
@@ -681,12 +681,13 @@ defineExpose({
 }
 
 .diff-filter-button {
-  height: 18px;
-  padding: 0 6px;
+  height: 16px;
+  padding: 0 5px;
   border: 0;
   background: transparent;
   color: var(--app-text-muted);
   font: inherit;
+  font-size: 11px;
   cursor: pointer;
 }
 
@@ -696,13 +697,14 @@ defineExpose({
 }
 
 .diff-option-button {
-  height: 18px;
-  padding: 0 6px;
+  height: 16px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: transparent;
   color: var(--app-text-muted);
   font: inherit;
+  font-size: 11px;
   cursor: pointer;
 }
 
@@ -719,24 +721,26 @@ defineExpose({
 }
 
 .diff-context-input {
-  width: 48px;
-  height: 22px;
-  padding: 0 4px;
-  border: 1px solid var(--app-border);
-  border-radius: 4px;
-  background: var(--app-surface);
-  color: var(--app-text);
-  font: inherit;
-}
-
-.diff-navigation-button {
-  height: 18px;
-  padding: 0 6px;
+  width: 40px;
+  height: 16px;
+  padding: 0 3px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface);
   color: var(--app-text);
   font: inherit;
+  font-size: 11px;
+}
+
+.diff-navigation-button {
+  height: 16px;
+  padding: 0 5px;
+  border: 1px solid var(--app-border);
+  border-radius: 2px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 11px;
   cursor: pointer;
 }
 
@@ -746,11 +750,11 @@ defineExpose({
 }
 
 .diff-body {
-  height: calc(100% - 22px);
-  margin-right: 12px;
+  height: calc(100% - 20px);
+  margin-right: 10px;
   overflow: auto;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .diff-virtual-spacer {
@@ -767,7 +771,7 @@ defineExpose({
 
 .diff-row {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 44px minmax(0, 1fr);
+  grid-template-columns: 36px minmax(0, 1fr) 36px minmax(0, 1fr);
   height: var(--text-diff-row-height);
   min-height: var(--text-diff-row-height);
   max-height: var(--text-diff-row-height);
@@ -799,20 +803,20 @@ defineExpose({
 }
 
 .gutter {
-  padding: 1px 6px;
+  padding: 0 4px;
   background: var(--diff-gutter-bg);
   color: var(--app-text-muted);
-  font-size: 11px;
-  line-height: 18px;
+  font-size: 10px;
+  line-height: 16px;
   text-align: right;
   user-select: none;
 }
 
 .cell {
   margin: 0;
-  padding: 1px 6px;
+  padding: 0 4px;
   overflow: hidden;
-  line-height: 18px;
+  line-height: 16px;
   white-space: pre;
 }
 
@@ -847,10 +851,10 @@ defineExpose({
 
 .diff-minimap {
   position: absolute;
-  top: 24px;
+  top: 22px;
   right: 2px;
   bottom: 2px;
-  width: 7px;
+  width: 6px;
   border-radius: 2px;
   background: color-mix(in srgb, var(--app-text-muted) 12%, transparent);
 }

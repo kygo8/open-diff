@@ -1160,9 +1160,9 @@ watch(
 .text-merge-view {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 4px;
+  gap: 2px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: hidden;
 }
 
@@ -1170,8 +1170,8 @@ watch(
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  min-height: 26px;
+  gap: 4px;
+  min-height: 22px;
 }
 
 .merge-toolbar > div {
@@ -1202,8 +1202,8 @@ watch(
   width: 220px;
   min-width: 0;
   max-width: 100%;
-  height: 20px;
-  padding: 0 5px;
+  height: 18px;
+  padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -1215,8 +1215,8 @@ watch(
 }
 
 .toolbar-button {
-  height: 22px;
-  padding: 0 6px;
+  height: 20px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface);
@@ -1243,7 +1243,7 @@ watch(
 
 .toolbar-button-dense {
   justify-content: center;
-  width: 22px;
+  width: 20px;
   padding: 0;
 }
 
@@ -1321,17 +1321,17 @@ watch(
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  min-height: 28px;
-  padding: 3px 6px;
+  gap: 4px;
+  min-height: 22px;
+  padding: 2px 4px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-muted);
 }
 
 .pane-header h2 {
   margin: 0;
-  font-size: 12px;
-  line-height: 1.15;
+  font-size: 11px;
+  line-height: 1.1;
 }
 
 .pane-header span,
@@ -1348,8 +1348,8 @@ watch(
   padding: 0;
   overflow: auto;
   font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 11px;
+  line-height: 16px;
   list-style: none;
 }
 
@@ -1357,22 +1357,22 @@ watch(
   width: 100%;
   min-width: 0;
   min-height: 0;
-  padding: 4px 6px;
+  padding: 2px 4px;
   border: 0;
   outline: 0;
   background: var(--app-surface);
   color: var(--app-text);
   font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 11px;
+  line-height: 18px;
   resize: none;
   white-space: pre;
 }
 
 .merge-lines li {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  min-height: 20px;
+  grid-template-columns: 36px minmax(0, 1fr);
+  min-height: 18px;
   border-bottom: 1px solid var(--app-border);
 }
 
@@ -1398,17 +1398,18 @@ watch(
 
 .merge-lines code {
   min-width: 0;
-  padding: 1px 6px;
+  padding: 0 4px;
   overflow-wrap: anywhere;
   color: inherit;
   font-family: inherit;
+  line-height: 16px;
   white-space: pre-wrap;
 }
 
 .conflict-panel {
   display: grid;
-  gap: 4px;
-  padding: 4px 6px;
+  gap: 2px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);

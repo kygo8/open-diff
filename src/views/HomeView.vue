@@ -636,7 +636,7 @@ onMounted(() => {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture-pass16"
+      data-home-density="capture-pass17"
       data-home-chrome="minimal"
     >
       <aside
@@ -1341,7 +1341,7 @@ onMounted(() => {
 .new-session-panel,
 .recent-session-panel {
   display: grid;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
 }
 

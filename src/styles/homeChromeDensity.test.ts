@@ -8,7 +8,7 @@ const homeView = readFileSync(resolve(root, 'src/views/HomeView.vue'), 'utf8')
 
 describe('home chrome density', () => {
   it('keeps Home CTA/tree/header/footer chrome dense toward capture', () => {
-    expect(homeView).toMatch(/data-home-density="capture-pass16"/)
+    expect(homeView).toMatch(/data-home-density="capture-pass17"/)
     expect(homeView).toMatch(/data-home-chrome="minimal"/)
     expect(homeView).toMatch(
       /\.bc-session-tree\s*\{[\s\S]*?grid-template-rows:\s*8px minmax\(0, 1fr\) 9px/,
@@ -24,6 +24,6 @@ describe('home chrome density', () => {
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*22px/)
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?border-radius:\s*0/)
     expect(homeView).toMatch(/:size="10"/)
-    expect(homeView).toMatch(/\.new-session-panel,\s*\.recent-session-panel\s*\{[\s\S]*?gap:\s*2px/)
+    expect(homeView).toMatch(/\.new-session-panel,\s*\.recent-session-panel\s*\{[\s\S]*?gap:\s*1px/)
   })
 })

@@ -11,6 +11,7 @@ import {
   saveTextFile,
 } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
+import { useViewActionsStore } from '@/stores/viewActions'
 
 const push = vi.fn()
 const clipboardWriteText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined)
@@ -524,6 +525,12 @@ describe('HexCompareView', () => {
 
     expect(clipboardWriteText).toHaveBeenCalledWith(expect.stringContaining('42'))
     expect(wrapper.find('[data-testid="hex-copy-status"]').exists()).toBe(true)
+
+    clipboardWriteText.mockClear()
+    useViewActionsStore().dispatch('copy')
+    await flushPromises()
+
+    expect(clipboardWriteText).toHaveBeenCalledWith(expect.stringContaining('42'))
   })
 
   it('exports a hex report to clipboard and disk', async () => {

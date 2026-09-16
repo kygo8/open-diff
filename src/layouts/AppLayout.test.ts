@@ -265,6 +265,12 @@ describe('AppLayout command palette', () => {
     expect(
       hex.find('[data-testid="menu-command-view.toggleMinor"]').attributes('disabled'),
     ).toBeDefined()
+    await hex.find('[data-testid="menu-edit"]').trigger('click')
+    expect(
+      hex.find('[data-testid="menu-command-edit.copy"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(hex.find('[data-testid="menu-command-edit.cut"]').attributes('disabled')).toBeDefined()
+    expect(hex.find('[data-testid="menu-command-edit.paste"]').attributes('disabled')).toBeDefined()
     hex.unmount()
 
     routePath = '/compare/table'

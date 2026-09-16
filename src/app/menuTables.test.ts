@@ -76,7 +76,9 @@ describe('menuTables', () => {
 
     expect(resolveMenuCommandEnabled('view.showAll', true, hexCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('view.toggleMinor', true, hexCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.copy', true, hexCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('edit.cut', true, hexCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.paste', true, hexCtx)).toBe(false)
 
     expect(resolveMenuCommandEnabled('view.showAll', true, tableCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('view.toggleMinor', true, tableCtx)).toBe(false)

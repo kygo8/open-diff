@@ -65,7 +65,7 @@ const plateIds = [
 ] as const
 
 describe('sessionToolbarIcons', () => {
-  it('prefers denser CSS glyph plates for capture MainBar actions including pass-2 leftovers', () => {
+  it('prefers denser CSS glyph plates for capture MainBar actions including pass-3 polish', () => {
     for (const id of plateIds) {
       const plate = plateForSessionToolbarCommand(id)
 
@@ -96,6 +96,22 @@ describe('sessionToolbarIcons', () => {
     // Capture picture MainBar: Tol+Range+Blend adjacent
     expect(sessionToolbarHasSeparatorBefore('range', 'tol')).toBe(false)
     expect(sessionToolbarHasSeparatorBefore('blend', 'range')).toBe(false)
+    // Pass 3: measured 0px-gap clusters from ui-capture MainBar rects
+    expect(sessionToolbarHasSeparatorBefore('same-ok', 'minor')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('favor-left', 'same-ok')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('favor-right', 'favor-left')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('to-output', 'merge')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('peek', 'filters')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('reload', 'swap')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('play2', 'reload')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('left', 'conflict')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('center', 'left')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('right', 'center')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('font', 'syntax')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('copy', 'cut')).toBe(false)
+    expect(sessionToolbarHasSeparatorBefore('syntax', 'delete')).toBe(true)
+    expect(sessionToolbarHasSeparatorBefore('rules', 'same-ok')).toBe(true)
+    expect(sessionToolbarHasSeparatorBefore('copy', 'format')).toBe(true)
   })
 
   it('returns undefined for unknown command ids instead of inventing icons', () => {

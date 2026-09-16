@@ -22,6 +22,8 @@ describe('session toolbar glyph polish', () => {
     expect(icons).toContain("plate: 'syntax'")
     expect(icons).toContain('sessionToolbarHasSeparatorBefore')
     expect(icons).toContain('sessionToolbarSeparatorBeforeIds')
+    expect(icons).toContain('Pass 3:')
+    expect(icons).toContain("['same-ok', 'minor']")
 
     expect(shell).toContain('bc-toolbar-command-group-start')
     expect(shell).toContain('data-group-start')
@@ -30,7 +32,8 @@ describe('session toolbar glyph polish', () => {
 
     expect(css).toContain('.bc-toolbar-command-group-start')
     expect(css).toContain('margin-left: 12px')
-    expect(css).toContain('border-left: 1px solid #848484')
+    expect(css).toContain('border-left: 1px solid #9a9a9a')
+    expect(css).toContain('background: #ffffff')
     expect(css).toContain('background: #f0f0f0')
     expect(css).toContain('background: #cce8ff')
     expect(css).toContain("data-plate='sync-now'")
@@ -43,6 +46,11 @@ describe('session toolbar glyph polish', () => {
     expect(css).toContain("data-plate='play2'")
     expect(css).toContain("data-plate='syntax'")
     expect(css).toContain('color: #cf2b2c')
+    expect(css).toContain('#ffffb6')
+    expect(css).toContain('#66b6ff')
+    expect(css).toContain('#660000')
+    expect(css).toContain('#db8f39')
+    expect(css).toContain('Pass 3:')
     expect(css).toMatch(
       /\.bc-toolbar-command:active:not\(:disabled\)\s*\{[\s\S]*?box-shadow:\s*inset/,
     )

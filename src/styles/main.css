@@ -321,7 +321,9 @@ select {
   padding: 0 1px;
   overflow: auto hidden;
   border-bottom: 1px solid #a0a0a0;
-  background: #f0f0f0;
+
+  /* Pass 3: capture MainBar band is white, not app-surface gray */
+  background: #ffffff;
 }
 
 .bc-toolbar-command {
@@ -378,11 +380,11 @@ select {
   box-shadow: inset 0 1px 2px rgb(30 60 90 / 0.28);
 }
 
-/* Capture MainBar group rhythm (~12px gaps + #848484 hairline) */
+/* Pass 3: capture MainBar group rhythm (~12px gaps + ~#9a9a9a hairline) */
 .bc-toolbar-command-group-start {
   margin-left: 12px;
-  padding-left: 4px;
-  border-left: 1px solid #848484;
+  padding-left: 5px;
+  border-left: 1px solid #9a9a9a;
   box-shadow: inset 1px 0 0 #ffffff;
 }
 
@@ -443,9 +445,9 @@ select {
   display: grid;
   width: 22px;
   height: 22px;
-  border: 1px solid #9aa3ad;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #fafbfc 0%, #e6e9ee 100%);
+  border: 1px solid #8e97a2;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #ffffff 0%, #e8ebf0 100%);
   color: #1f2933;
   font-size: 14px;
   font-weight: 700;
@@ -464,16 +466,17 @@ select {
 /* Warm brown home / sessions — capture house + briefcase tones */
 .bc-toolbar-plate[data-plate='home'],
 .bc-toolbar-plate[data-plate='sessions'] {
-  background: linear-gradient(180deg, #f3e6d4 0%, #d4b896 100%);
-  color: #5a3a18;
-  border-color: #a8845c;
+  /* Measured warm house/briefcase tones (~#db8f39 / #b66600) */
+  background: linear-gradient(180deg, #ffe0b0 0%, #db8f39 100%);
+  color: #5a3208;
+  border-color: #b66600;
 }
 
 .bc-toolbar-plate[data-plate='refresh'],
 .bc-toolbar-plate[data-plate='reload'] {
-  background: linear-gradient(180deg, #e7f8ec 0%, #c5e8d0 100%);
-  color: #0d6b34;
-  border-color: #6fb887;
+  background: linear-gradient(180deg, #e3f7e9 0%, #9fd6b0 100%);
+  color: #0a5c2c;
+  border-color: #5ea574;
 }
 
 .bc-toolbar-plate[data-plate='swap'] {
@@ -487,32 +490,34 @@ select {
 .bc-toolbar-plate[data-plate='copy-right'],
 .bc-toolbar-plate[data-plate='capture'],
 .bc-toolbar-plate[data-plate='paste'] {
-  background: linear-gradient(180deg, #eaf3fb 0%, #cfe0f2 100%);
-  color: #1a3f6b;
-  border-color: #7fa0c4;
+  background: linear-gradient(180deg, #e3f1ff 0%, #a8d0f5 100%);
+  color: #143a66;
+  border-color: #5f92c4;
 }
 
 .bc-toolbar-plate[data-plate='next'],
 .bc-toolbar-plate[data-plate='prev'] {
-  background: linear-gradient(180deg, #eaf4fc 0%, #cfe3f6 100%);
-  color: #1a4f91;
-  border-color: #7eacd0;
+  /* Measured blue glyph row (~#66b6ff / #0066b6) */
+  background: linear-gradient(180deg, #cce8ff 0%, #66b6ff 100%);
+  color: #003d73;
+  border-color: #398fdb;
 }
 
 .bc-toolbar-plate[data-plate='expand'],
 .bc-toolbar-plate[data-plate='collapse'] {
-  background: linear-gradient(180deg, #fff8e6 0%, #f0dea8 100%);
+  /* Measured yellow highlight (~#ffffb6 / #ffffdb) */
+  background: linear-gradient(180deg, #ffffdb 0%, #ffffb6 100%);
   color: #8a5a00;
-  border-color: #d0b26a;
+  border-color: #dbb33a;
 }
 
 .bc-toolbar-plate[data-plate='filters'],
 .bc-toolbar-plate[data-plate='peek'],
 .bc-toolbar-plate[data-plate='goto'],
 .bc-toolbar-plate[data-plate='range'] {
-  background: linear-gradient(180deg, #e6f1fb 0%, #c5dcf3 100%);
+  background: linear-gradient(180deg, #dff0ff 0%, #8fc8f5 100%);
   color: #0b57a4;
-  border-color: #74a6d4;
+  border-color: #4a9adb;
 }
 
 .bc-toolbar-plate[data-plate='rules'],
@@ -529,18 +534,19 @@ select {
 .bc-toolbar-plate[data-plate='cancel'],
 .bc-toolbar-plate[data-plate='delete'],
 .bc-toolbar-plate[data-plate='cut'] {
-  background: linear-gradient(180deg, #fdeceb 0%, #efc5c2 100%);
-  color: #a12622;
-  border-color: #d08a86;
+  /* Measured dark-red stop tones (~#660000) */
+  background: linear-gradient(180deg, #f8d4d4 0%, #e8a0a0 100%);
+  color: #660000;
+  border-color: #b34a4a;
 }
 
 .bc-toolbar-plate[data-plate='sync-now'],
 .bc-toolbar-plate[data-plate='accept'],
 .bc-toolbar-plate[data-plate='same-ok'],
 .bc-toolbar-plate[data-plate='play2'] {
-  background: linear-gradient(180deg, #e6f6ea 0%, #c2e4cc 100%);
-  color: #0d6b34;
-  border-color: #6fb887;
+  background: linear-gradient(180deg, #dff6e6 0%, #8fd4a4 100%);
+  color: #0a5c2c;
+  border-color: #4f9e68;
 }
 
 .bc-toolbar-plate[data-plate='merge'],
@@ -573,9 +579,10 @@ select {
 /* Capture Diffs / Compare: strong red ≠ */
 .bc-toolbar-plate[data-plate='diffs'],
 .bc-toolbar-plate[data-plate='compare'] {
-  background: linear-gradient(180deg, #fdeeee 0%, #f0c8c8 100%);
+  /* Capture Diffs ≠ strong red (~#660000 / #cf2b2c) */
+  background: linear-gradient(180deg, #ffe4e4 0%, #f0b4b4 100%);
   color: #cf2b2c;
-  border-color: #d48a8a;
+  border-color: #c45a5a;
 }
 
 .bc-toolbar-plate[data-plate='favor-left'],

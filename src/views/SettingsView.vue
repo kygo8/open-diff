@@ -29,6 +29,11 @@ import {
   defaultFolderCompareCriteria,
 } from '@/app/folderCompareCriteria'
 import {
+  defaultFolderDisplayFilters,
+  loadFolderDisplayFilters,
+  saveFolderDisplayFilters,
+} from '@/app/folderDisplayFilters'
+import {
   formatFolderNameFilterDraft,
   formatFolderNameFilterStripPattern,
   loadFolderNameFilters,
@@ -161,6 +166,7 @@ type OptionsSectionId =
 const optionsSection = ref<OptionsSectionId>('appearance')
 const archiveExtensionsDraft = ref(formatArchiveSuffixesInput(settings.archiveExtensions))
 const folderCriteriaDraft = ref(loadFolderCompareCriteria())
+const folderDisplayFiltersDraft = ref(loadFolderDisplayFilters())
 const textCompareDefaultsDraft = ref(loadTextCompareSessionOptions())
 const hexCompareDefaultsDraft = ref(loadHexCompareSessionOptions())
 const fileFiltersDraft = ref(loadFolderNameFilters())
@@ -916,6 +922,8 @@ function restoreFactoryDefaultsFromOptions(): void {
   settings.restoreFactoryDefaults()
   folderCriteriaDraft.value = defaultFolderCompareCriteria()
   saveFolderCompareCriteria(folderCriteriaDraft.value)
+  folderDisplayFiltersDraft.value = defaultFolderDisplayFilters()
+  saveFolderDisplayFilters(folderDisplayFiltersDraft.value)
   textCompareDefaultsDraft.value = defaultTextCompareSessionOptions()
   saveTextCompareSessionOptions(textCompareDefaultsDraft.value)
   hexCompareDefaultsDraft.value = defaultHexCompareSessionOptions()
@@ -958,6 +966,10 @@ function restoreFactoryDefaultsFromOptions(): void {
 
 function persistFolderCriteriaDraft(): void {
   saveFolderCompareCriteria(folderCriteriaDraft.value)
+}
+
+function persistFolderDisplayFiltersDraft(): void {
+  saveFolderDisplayFilters(folderDisplayFiltersDraft.value)
 }
 
 function onIgnoredTimezoneOffsetsChange(event: Event): void {
@@ -1872,6 +1884,33 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.excludeJunctionPoints') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.excludeJunctionPointsHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="folderDisplayFiltersDraft.alwaysShowFolders"
+              data-testid="folder-compare-always-show-folders"
+              type="checkbox"
+              @change="persistFolderDisplayFiltersDraft"
+            />
+            <span>{{ $t('ui.alwaysShowFolders') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="folderDisplayFiltersDraft.filesOnly"
+              data-testid="folder-compare-files-only-default"
+              type="checkbox"
+              @change="persistFolderDisplayFiltersDraft"
+            />
+            <span>{{ $t('ui.filesOnly') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="folderDisplayFiltersDraft.showSuppressed"
+              data-testid="folder-compare-show-suppressed-default"
+              type="checkbox"
+              @change="persistFolderDisplayFiltersDraft"
+            />
+            <span>{{ $t('ui.suppressed') }}</span>
+          </label>
           <p class="options-hint">{{ $t('ui.folderCompareOptionsHint') }}</p>
         </NCard>
 

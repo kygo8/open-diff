@@ -560,6 +560,16 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
     ignoredTimezoneHourOffsets: [8, -5],
     excludeJunctionPoints: true,
   })
+  await wrapper.find('[data-testid="folder-compare-always-show-folders"]').setValue(false)
+  await wrapper.find('[data-testid="folder-compare-files-only-default"]').setValue(true)
+  await wrapper.find('[data-testid="folder-compare-show-suppressed-default"]').setValue(true)
+  expect(
+    JSON.parse(localStorage.getItem('open-diff-folder-display-filters') ?? '{}'),
+  ).toMatchObject({
+    alwaysShowFolders: false,
+    filesOnly: true,
+    showSuppressed: true,
+  })
 
   await wrapper.find('[data-testid="options-section-hexCompare"]').trigger('click')
   expect(wrapper.find('[data-testid="options-hex-compare-card"]').isVisible()).toBe(true)

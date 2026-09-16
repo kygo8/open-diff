@@ -101,6 +101,8 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-command-open.hexCompare"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-open.tableCompare"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-open.archiveCompare"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-open.textEdit"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-open.textPatch"]').exists()).toBe(true)
   })
 
   it('enables Session compare/swap/reload/rules and Tools settings actions', async () => {
@@ -339,6 +341,8 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-command-open.mediaCompare"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-open.versionCompare"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-open.archiveCompare"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-open.textEdit"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-open.textPatch"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-edit.copyLeft"]').exists()).toBe(false)
 
     await wrapper.find('[data-testid="menu-edit"]').trigger('click')

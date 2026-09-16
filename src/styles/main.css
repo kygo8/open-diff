@@ -735,7 +735,7 @@ select {
   gap: 0;
   min-width: 0;
   height: auto;
-  min-height: 18px;
+  min-height: 16px;
   padding: 0;
   overflow: visible;
   border-bottom: 1px solid #a0a0a0;
@@ -811,8 +811,8 @@ select {
 
 .path-pair-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr) auto;
-  min-height: 18px;
+  grid-template-columns: minmax(0, 1fr) 12px minmax(0, 1fr) auto;
+  min-height: 16px;
   padding: 0 1px;
   background: #f3f3f3;
 }
@@ -827,7 +827,7 @@ select {
 
 .path-pair-field span {
   color: var(--app-text-muted);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -840,8 +840,8 @@ select {
 }
 
 .path-pair-swap {
-  width: 14px;
-  min-width: 14px;
+  width: 12px;
+  min-width: 12px;
   height: 12px;
   padding: 0;
 }

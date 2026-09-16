@@ -85,6 +85,8 @@ export interface RemoteProfileDefaults {
   defaultProtocol: RemoteProtocol
   defaultHost: string
   defaultRootPath: string
+  defaultUsername: string
+  defaultPort: number | null
 }
 
 const remoteProfileProtocols: readonly RemoteProtocol[] = [
@@ -104,6 +106,8 @@ export function defaultRemoteProfileDefaults(): RemoteProfileDefaults {
     defaultProtocol: 'sftp',
     defaultHost: '',
     defaultRootPath: '/',
+    defaultUsername: '',
+    defaultPort: null,
   }
 }
 
@@ -137,12 +141,19 @@ export function loadRemoteProfileDefaults(
         : defaults.defaultRootPath
 
     const host = typeof parsed.defaultHost === 'string' ? parsed.defaultHost.trim() : ''
+    const username = typeof parsed.defaultUsername === 'string' ? parsed.defaultUsername.trim() : ''
+    const port =
+      typeof parsed.defaultPort === 'number' && Number.isFinite(parsed.defaultPort)
+        ? Math.max(0, Math.round(parsed.defaultPort))
+        : null
 
     return {
       defaultName: name,
       defaultProtocol: normalizeRemoteProfileProtocol(parsed.defaultProtocol),
       defaultHost: host,
       defaultRootPath: rootPath,
+      defaultUsername: username,
+      defaultPort: port,
     }
   } catch {
     return defaultRemoteProfileDefaults()
@@ -160,6 +171,11 @@ export function saveRemoteProfileDefaults(
       defaultProtocol: normalizeRemoteProfileProtocol(prefs.defaultProtocol),
       defaultHost: prefs.defaultHost.trim(),
       defaultRootPath: prefs.defaultRootPath.trim() || '/',
+      defaultUsername: prefs.defaultUsername.trim(),
+      defaultPort:
+        typeof prefs.defaultPort === 'number' && Number.isFinite(prefs.defaultPort)
+          ? Math.max(0, Math.round(prefs.defaultPort))
+          : null,
     }),
   )
 }

@@ -1220,6 +1220,23 @@ export const deDE: LanguagePack = {
     'ui.profileDefaultProtocol': 'Standardprotokoll',
     'ui.profileDefaultRootPath': 'Standard-Stammverzeichnis',
     'ui.profileDefaultHost': 'Standardhost',
+    'ui.diffAlgorithm': 'Diff-Algorithmus',
+    'ui.longFileOperationThresholdSeconds': 'Schwelle für lange Vorgänge (Sekunden)',
+    'ui.longFileOperationThresholdHint':
+      'Signalton, wenn Dateivorgänge länger als diese Sekunden dauern.',
+    'ui.preserveTimestampsOnCopy': 'Zeitstempel beim Kopieren beibehalten',
+    'ui.preserveTimestampsOnCopyHint':
+      'Änderungszeit der Quelle nach dem Kopieren am Ziel behalten.',
+    'ui.overwriteReadOnlyFiles': 'Schreibgeschützte Dateien überschreiben',
+    'ui.overwriteReadOnlyFilesHint': 'Schreibschutz am Ziel vor dem Überschreiben entfernen.',
+    'ui.profileDefaultUsername': 'Standard-Benutzername',
+    'ui.profileDefaultPort': 'Standard-Port',
+    'ui.reportIncludeIdentical': 'Identische Einträge in Ordnerberichten',
+    'ui.reportIncludeIdenticalHint':
+      'Wenn aus, lässt der Ordnervergleichsbericht Zeilen mit Status Gleich weg.',
+    'ui.showMillisecondsInTimestamps': 'Millisekunden in Zeitstempeln anzeigen',
+    'ui.showMillisecondsInTimestampsHint':
+      'Sekunden und Millisekunden in Pfadleisten und Ordnerzeiten anzeigen.',
     'ui.profileSavedCount': 'Gespeicherte Profile: {count}',
     'ui.profileDefaultsHint':
       'Gilt beim Erstellen eines neuen Remote-Profils. Gespeicherte Profile im Profilfenster verwalten.',

@@ -7,6 +7,8 @@ export interface FolderTransferRow {
   relativePath?: string
   leftPath?: string
   rightPath?: string
+  leftModifiedAtMs?: number
+  rightModifiedAtMs?: number
 }
 
 export function joinTransferPath(root: string, relativePath: string, fileName?: string): string {
@@ -89,6 +91,7 @@ export interface SideTransferPlan {
   sourcePath: string
   targetPath: string
   relativePath: string
+  sourceModifiedAtMs?: number
 }
 
 /**
@@ -119,10 +122,13 @@ export function folderSideTransferPlans(
       continue
     }
 
+    const sourceModifiedAtMs = toSide === 'Left' ? row.rightModifiedAtMs : row.leftModifiedAtMs
+
     plans.push({
       sourcePath,
       targetPath: joinTransferPath(targetRoot, row.relativePath),
       relativePath: row.relativePath,
+      sourceModifiedAtMs,
     })
   }
 
@@ -153,10 +159,13 @@ export function folderExternalTransferPlans(
       continue
     }
 
+    const sourceModifiedAtMs = row.leftPath ? row.leftModifiedAtMs : row.rightModifiedAtMs
+
     plans.push({
       sourcePath,
       targetPath: `${dest}/${name}`,
       relativePath: row.relativePath ?? name,
+      sourceModifiedAtMs,
     })
   }
 

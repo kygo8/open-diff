@@ -37,6 +37,7 @@ export const optionsFormatAssociationIds = [
   'registry',
   'version',
   'patch',
+  'hex-binary',
   'zip-archive',
   'tar-archive',
 ] as const
@@ -195,6 +196,22 @@ export const builtInFileFormats: FileFormatDefinition[] = [
     },
   },
   {
+    id: 'hex-binary',
+    name: 'Hex Binary',
+    priority: 40,
+    defaultView: 'hex',
+    matcher: {
+      extensions: ['bin', 'dat', 'iso', 'img', 'raw'],
+      fileNames: [],
+      globs: [],
+    },
+    rules: {
+      grammar: '',
+      ignore: [],
+      conversion: '',
+    },
+  },
+  {
     id: 'zip-archive',
     name: 'ZIP Archive',
     priority: 88,
@@ -250,7 +267,14 @@ export function loadFileFormats(): FileFormatDefinition[] {
 
     const formats = parsed.filter(isFileFormatDefinition)
 
-    return formats.length > 0 ? formats : cloneFormats(builtInFileFormats)
+    if (formats.length === 0) {
+      return cloneFormats(builtInFileFormats)
+    }
+
+    const knownIds = new Set(formats.map((format) => format.id))
+    const missingBuiltIns = builtInFileFormats.filter((format) => !knownIds.has(format.id))
+
+    return missingBuiltIns.length > 0 ? [...formats, ...cloneFormats(missingBuiltIns)] : formats
   } catch {
     return cloneFormats(builtInFileFormats)
   }

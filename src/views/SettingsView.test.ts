@@ -506,12 +506,15 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
   await wrapper.find('[data-testid="ignore-whitespace-default"]').setValue(true)
   await wrapper.find('[data-testid="ignore-case-default"]').setValue(true)
   await wrapper.find('[data-testid="ignore-line-endings-default"]').setValue(true)
+  await wrapper.find('[data-testid="text-compare-algorithm-default"]').setValue('patience')
+  await wrapper.find('[data-testid="text-compare-algorithm-default"]').trigger('change')
   expect(
     JSON.parse(localStorage.getItem('open-diff-text-compare-session-options') ?? '{}'),
   ).toMatchObject({
     ignoreWhitespace: true,
     ignoreCase: true,
     ignoreLineEndings: true,
+    algorithm: 'patience',
   })
 
   await wrapper.find('[data-testid="options-section-folderCompare"]').trigger('click')
@@ -522,6 +525,7 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
   await wrapper.find('[data-testid="folder-compare-follow-symlinks"]').setValue(true)
   await wrapper.find('[data-testid="folder-compare-size-only-unimportant"]').setValue(true)
   await wrapper.find('[data-testid="folder-compare-ignore-dst"]').setValue(true)
+  await wrapper.find('[data-testid="folder-compare-case-sensitive-names"]').setValue(false)
   await wrapper.find('[data-testid="folder-compare-timestamp-tolerance"]').setValue('3')
   await wrapper.find('[data-testid="folder-compare-timestamp-tolerance"]').trigger('change')
   expect(
@@ -534,6 +538,7 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
     sizeOnlyUnimportant: true,
     ignoreDaylightSavingHourOffset: true,
     timestampToleranceMs: 3000,
+    caseSensitiveNames: false,
   })
 
   await wrapper.find('[data-testid="options-section-hexCompare"]').trigger('click')
@@ -573,6 +578,7 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="format-association-images"]').setValue(false)
   await wrapper.find('[data-testid="format-association-plain-text"]').setValue(false)
   await wrapper.find('[data-testid="format-association-zip-archive"]').setValue(false)
+  await wrapper.find('[data-testid="format-association-hex-binary"]').setValue(false)
 
   const formats = JSON.parse(localStorage.getItem('open-diff-file-formats') ?? '[]') as {
     id: string
@@ -582,6 +588,7 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   expect(formats.find((item) => item.id === 'images')).toMatchObject({ enabled: false })
   expect(formats.find((item) => item.id === 'plain-text')).toMatchObject({ enabled: false })
   expect(formats.find((item) => item.id === 'zip-archive')).toMatchObject({ enabled: false })
+  expect(formats.find((item) => item.id === 'hex-binary')).toMatchObject({ enabled: false })
 
   await wrapper.find('[data-testid="options-section-profiles"]').trigger('click')
   expect(wrapper.find('[data-testid="options-profiles-card"]').isVisible()).toBe(true)
@@ -591,6 +598,10 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="profile-default-protocol"]').trigger('change')
   await wrapper.find('[data-testid="profile-default-host"]').setValue('stage.example.com')
   await wrapper.find('[data-testid="profile-default-host"]').trigger('change')
+  await wrapper.find('[data-testid="profile-default-username"]').setValue('deploy')
+  await wrapper.find('[data-testid="profile-default-username"]').trigger('change')
+  await wrapper.find('[data-testid="profile-default-port"]').setValue('990')
+  await wrapper.find('[data-testid="profile-default-port"]').trigger('change')
   await wrapper.find('[data-testid="profile-default-root-path"]').setValue('/data')
   await wrapper.find('[data-testid="profile-default-root-path"]').trigger('change')
   expect(
@@ -599,6 +610,8 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
     defaultName: 'Stage Box',
     defaultProtocol: 'ftps',
     defaultHost: 'stage.example.com',
+    defaultUsername: 'deploy',
+    defaultPort: 990,
     defaultRootPath: '/data',
   })
 
@@ -610,11 +623,13 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="report-default-kind"]').trigger('change')
   await wrapper.find('[data-testid="report-open-after-export"]').setValue(true)
   await wrapper.find('[data-testid="report-clear-history-on-exit"]').setValue(true)
+  await wrapper.find('[data-testid="report-include-identical"]').setValue(false)
   expect(JSON.parse(localStorage.getItem('open-diff-report-preferences') ?? '{}')).toMatchObject({
     defaultFormat: 'markdown',
     defaultKind: 'folder',
     openAfterExport: true,
     clearHistoryOnExit: true,
+    includeIdentical: false,
   })
   await wrapper.find('[data-testid="open-reports-scripts"]').trigger('click')
   expect(push).toHaveBeenCalledWith('/reports/scripts')
@@ -725,3 +740,22 @@ function mountSettingsView(): VueWrapper {
     },
   })
 }
+
+it('persists Options depth-3 File Operations and Tweaks leftovers', async () => {
+  const wrapper = mountSettingsView()
+  const settings = useSettingsStore()
+
+  await wrapper.find('[data-testid="options-section-fileOperations"]').trigger('click')
+  await wrapper.find('[data-testid="preserve-timestamps-on-copy"]').setValue(true)
+  expect(settings.preserveTimestampsOnCopy).toBe(true)
+  await wrapper.find('[data-testid="overwrite-read-only-files"]').setValue(true)
+  expect(settings.overwriteReadOnlyFiles).toBe(true)
+  await wrapper.find('[data-testid="long-file-operation-threshold"]').setValue('5')
+  await wrapper.find('[data-testid="long-file-operation-threshold"]').trigger('change')
+  expect(settings.longFileOperationThresholdMs).toBe(5000)
+
+  await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
+  await wrapper.find('[data-testid="show-milliseconds-in-timestamps"]').setValue(true)
+  expect(settings.showMillisecondsInTimestamps).toBe(true)
+  wrapper.unmount()
+})

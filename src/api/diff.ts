@@ -251,6 +251,7 @@ export function exportFolderCompareReport(
     rightRoot: request.rightRoot,
     format: request.format,
     outputPath: request.outputPath,
+    includeIdentical: request.includeIdentical,
   })
 }
 
@@ -277,6 +278,9 @@ export function copyFolderEntry(
   return invoke<FolderFileOperationResponse>('copy_folder_entry', {
     sourcePath: request.sourcePath,
     targetPath: request.targetPath,
+    preserveTimestamps: request.preserveTimestamps,
+    overwriteReadOnly: request.overwriteReadOnly,
+    sourceModifiedAtMs: request.sourceModifiedAtMs,
   })
 }
 

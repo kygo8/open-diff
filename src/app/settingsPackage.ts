@@ -56,6 +56,10 @@ export interface SettingsPackage {
   createBackupOnReportExport?: boolean
   includeHiddenItemsInFileActions?: boolean
   beepAfterLongFileOperations?: boolean
+  preserveTimestampsOnCopy?: boolean
+  overwriteReadOnlyFiles?: boolean
+  longFileOperationThresholdMs?: number
+  showMillisecondsInTimestamps?: boolean
   enableRarArchiveTypes?: boolean
   escClosesFileViews?: boolean
   beepWhenScriptFinished?: boolean

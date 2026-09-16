@@ -57,10 +57,22 @@ describe('fileFormats', () => {
         'plain-text',
         'rust',
         'patch',
+        'hex-binary',
         'zip-archive',
         'tar-archive',
         'images',
       ]),
     )
+  })
+
+  it('merges missing built-in formats like hex-binary into saved packages', () => {
+    const withoutHex = loadFileFormats().filter((format) => format.id !== 'hex-binary')
+
+    localStorage.setItem(fileFormatsStorageKey, JSON.stringify(withoutHex))
+
+    const formats = loadFileFormats()
+
+    expect(formats.some((format) => format.id === 'hex-binary')).toBe(true)
+    expect(sessionTypeForPath('firmware.bin')).toBe('hex-compare')
   })
 })

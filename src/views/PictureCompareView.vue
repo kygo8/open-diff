@@ -576,7 +576,9 @@ function formatPicturePathFooter(stamp: FileStamp | null, dimensions: string): s
     return ''
   }
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
+    showMilliseconds: settings.showMillisecondsInTimestamps,
+  })
   const base = modified
     ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
     : t('status.bytes', { count: stamp.size })

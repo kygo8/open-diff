@@ -1955,18 +1955,18 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menu-panel {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 1px);
   left: 0;
   z-index: 90;
   display: grid;
-  width: 280px;
+  width: 240px;
   max-height: calc(100vh - 72px);
-  padding: 6px;
+  padding: 2px;
   overflow: auto;
-  border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-canvas);
-  box-shadow: 0 8px 22px rgb(25 28 30 / 0.18);
+  box-shadow: 0 4px 12px rgb(25 28 30 / 0.16);
 }
 
 .menu-panel button,
@@ -1974,16 +1974,16 @@ const sourceSessionTypes = new Set<SessionType>([
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
-  min-height: 28px;
-  padding: 0 8px;
+  min-height: 20px;
+  padding: 0 6px;
   overflow: hidden;
   border: 0;
-  border-radius: 4px;
+  border-radius: 0;
   background: transparent;
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
@@ -2289,20 +2289,21 @@ const sourceSessionTypes = new Set<SessionType>([
   z-index: 40;
   display: flex;
   flex-direction: column;
-  min-width: 160px;
-  padding: 4px;
-  border: 1px solid var(--app-border);
-  border-radius: 6px;
+  min-width: 148px;
+  padding: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-canvas);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.16);
 }
 
 .tab-context-menu button {
-  padding: 6px 10px;
+  padding: 2px 8px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 0;
   background: transparent;
   color: var(--app-text);
+  font-size: 11px;
   text-align: left;
   cursor: pointer;
 }
@@ -2337,7 +2338,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-chip button {
   min-width: 0;
-  height: 12px;
+  height: 11px;
   padding: 0 2px;
   border: 0;
   background: transparent;
@@ -2357,15 +2358,15 @@ const sourceSessionTypes = new Set<SessionType>([
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 6px;
   min-width: 0;
-  min-height: 30px;
-  padding: 4px 8px;
+  min-height: 22px;
+  padding: 1px 6px;
   overflow: hidden;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-primary-soft);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .dirty-tab-prompt > span,
@@ -2379,13 +2380,14 @@ const sourceSessionTypes = new Set<SessionType>([
 .dirty-tab-prompt button {
   flex: 0 0 auto;
   max-width: 8em;
-  height: 22px;
-  padding: 0 8px;
+  height: 18px;
+  padding: 0 6px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-canvas);
   color: var(--app-text);
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;

@@ -24,7 +24,10 @@ describe('shell chrome density', () => {
     expect(source).toMatch(/grid-template-rows:\s*48px minmax\(0, 1fr\) 24px/)
     expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?grid-template-rows:\s*24px 24px/)
     expect(source).toMatch(/\.tab-strip\s*\{[\s\S]*?padding:\s*0/)
-    expect(source).toMatch(/\.tab-chip button\s*\{[\s\S]*?height:\s*12px/)
+    expect(source).toMatch(/\.tab-chip button\s*\{[\s\S]*?height:\s*11px/)
+    expect(source).toMatch(/\.menu-panel\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(source).toMatch(/\.tab-context-menu\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(source).toMatch(/\.dirty-tab-prompt\s*\{[\s\S]*?min-height:\s*22px/)
     expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
   })
 
@@ -32,12 +35,12 @@ describe('shell chrome density', () => {
     expect(mainCss).toMatch(
       /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*34px/,
     )
-    expect(mainCss).toMatch(/\.workbench-titlebar\s*\{[\s\S]*?height:\s*12px/)
+    expect(mainCss).toMatch(/\.workbench-titlebar\s*\{[\s\S]*?height:\s*10px/)
     expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*34px/)
     expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
   })
 
-  it('marks WorkbenchShell frame densify pass 16', () => {
-    expect(workbench).toMatch(/data-shell-density="capture-pass16"/)
+  it('marks WorkbenchShell frame densify pass 17', () => {
+    expect(workbench).toMatch(/data-shell-density="capture-pass17"/)
   })
 })

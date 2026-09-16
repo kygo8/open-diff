@@ -5112,9 +5112,9 @@ onUnmounted(() => {
 
 .file-compare-report-panel {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   width: min(340px, 100%);
-  padding: 6px 8px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface);
@@ -5140,7 +5140,7 @@ onUnmounted(() => {
 
 .file-compare-report-body {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   padding: 2px 0;
 }
 
@@ -5148,7 +5148,7 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: 72px minmax(0, 1fr);
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-height: 20px;
 }
 

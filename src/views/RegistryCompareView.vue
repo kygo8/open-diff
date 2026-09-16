@@ -1284,7 +1284,7 @@ h1 {
 .registry-filter-bar,
 .registry-live-panel {
   margin: 0;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1297,7 +1297,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 6px;
+  gap: 2px 4px;
 }
 
 .registry-filter-bar button,
@@ -1350,7 +1350,7 @@ h1 {
 .registry-report-panel {
   display: grid;
   gap: 4px;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1360,7 +1360,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-height: 18px;
 }
 
@@ -1427,7 +1427,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 4px;
   min-height: 18px;
 }
 

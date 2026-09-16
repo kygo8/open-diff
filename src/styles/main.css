@@ -1169,9 +1169,9 @@ select {
 
 .file-compare-report-panel {
   display: grid !important;
-  gap: 6px !important;
+  gap: 4px !important;
   width: min(340px, 100%) !important;
-  padding: 6px 8px !important;
+  padding: 4px 6px !important;
   border: 1px solid #bfc4cc !important;
   border-radius: 2px !important;
   background: #ffffff !important;
@@ -1196,14 +1196,14 @@ select {
 
 .file-compare-report-body {
   display: grid !important;
-  gap: 6px !important;
+  gap: 4px !important;
 }
 
 .file-compare-report-row {
   display: grid !important;
   grid-template-columns: 72px minmax(0, 1fr) !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
   min-height: 20px !important;
 }
 
@@ -1293,6 +1293,18 @@ select {
 
 .reports-script-view .report-row > * {
   padding: 1px 4px !important;
+}
+
+.reports-script-view .script-path {
+  gap: 2px !important;
+  padding: 2px 4px 0 !important;
+}
+
+.reports-script-view .script-path input,
+.reports-script-view .script-path select,
+.reports-script-view .script-panel textarea {
+  padding: 2px 4px !important;
+  border-radius: 0 !important;
 }
 
 /* Capture-like Filters strip: densify chip/button rhythm toward toolbar band */
@@ -2002,7 +2014,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .picture-pane-grid {
-  gap: 6px !important;
+  gap: 4px !important;
 }
 
 .picture-compare-view .picture-side {
@@ -2425,9 +2437,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .registry-compare-view .registry-filter-bar,
 .registry-compare-view .registry-live-panel,
 .registry-compare-view .registry-report-panel {
-  gap: 4px 6px !important;
-  min-height: 22px !important;
-  padding: 2px 6px !important;
+  gap: 2px 4px !important;
+  min-height: 20px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2467,7 +2479,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .registry-compare-view .registry-key-pane header,
 .registry-compare-view .registry-value-pane header,
 .registry-compare-view .registry-report-panel header {
-  gap: 6px !important;
+  gap: 4px !important;
   min-height: 18px !important;
 }
 

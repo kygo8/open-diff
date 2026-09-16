@@ -13,8 +13,8 @@ describe('report dialog chrome density', () => {
     expect(folderView).toMatch(/data-testid="file-compare-report-panel"/)
     expect(folderView).toMatch(/data-testid="file-compare-report-backdrop"/)
     expect(folderView).toMatch(/aria-modal="true"/)
-    expect(folderView).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?padding:\s*6px 8px/)
-    expect(folderView).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?gap:\s*6px/)
+    expect(folderView).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(folderView).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?gap:\s*4px/)
     expect(folderView).toMatch(/\.file-compare-report-header\s*\{[\s\S]*?min-height:\s*18px/)
     expect(folderView).toMatch(/\.file-compare-report-row select\s*\{[\s\S]*?height:\s*20px/)
     expect(folderView).toMatch(/\.file-compare-report-scope\s*\{[\s\S]*?padding:\s*2px 4px/)
@@ -25,7 +25,7 @@ describe('report dialog chrome density', () => {
     expect(folderView).not.toMatch(/class="folder-operation-panel file-compare-report-panel"/)
 
     expect(css).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?display:\s*grid\s*!important/)
-    expect(css).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?padding:\s*6px 8px\s*!important/)
+    expect(css).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?padding:\s*4px 6px\s*!important/)
     expect(css).toMatch(/\.file-compare-report-row select\s*\{[\s\S]*?height:\s*20px\s*!important/)
     expect(css).toMatch(
       /\.file-compare-report-scope label\s*\{[\s\S]*?min-height:\s*18px\s*!important/,
@@ -39,8 +39,9 @@ describe('report dialog chrome density', () => {
       /\.report-export-form input,\s*\.report-export-form select\s*\{[\s\S]*?height:\s*20px/,
     )
     expect(reportsView).toMatch(/\.report-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(reportsView).toMatch(/\.script-path\s*\{[\s\S]*?padding:\s*2px 4px 0/)
     expect(reportsView).toMatch(
-      /\.script-path input,\s*\.script-path select,\s*\.script-panel textarea\s*\{[\s\S]*?padding:\s*4px 6px/,
+      /\.script-path input,\s*\.script-path select,\s*\.script-panel textarea\s*\{[\s\S]*?padding:\s*2px 4px/,
     )
     expect(css).toMatch(/\.reports-script-view \.report-export-form\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(
@@ -52,5 +53,6 @@ describe('report dialog chrome density', () => {
     )
     expect(reportsView).toMatch(/\.script-command-lists\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(reportsView).toMatch(/\.script-command-lists\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(css).toMatch(/\.reports-script-view \.script-path\s*\{[\s\S]*?padding:\s*2px 4px 0/)
   })
 })

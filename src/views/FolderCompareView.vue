@@ -4699,7 +4699,7 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 8px;
+  gap: 3px 6px;
   min-height: 22px;
   padding: 1px 0;
   font-size: 11px;
@@ -4708,18 +4708,18 @@ onUnmounted(() => {
 .folder-filter-chrome {
   display: flex;
   align-items: center;
-  min-height: 36px;
-  padding: 1px 0;
+  min-height: 32px;
+  padding: 0;
 }
 
 .folder-filter-strip {
   display: inline-flex;
   flex: 1 1 280px;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 220px;
   max-width: 640px;
-  margin-right: 8px;
+  margin-right: 6px;
 }
 
 .folder-filter-strip-actions {
@@ -4731,14 +4731,14 @@ onUnmounted(() => {
 
 .folder-filter-strip-btn {
   display: grid;
-  grid-template-rows: 16px auto;
+  grid-template-rows: 14px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
-  min-width: 44px;
-  max-width: 56px;
-  height: 36px;
-  padding: 1px 4px;
+  min-width: 40px;
+  max-width: 52px;
+  height: 32px;
+  padding: 0 3px;
   border: 0;
   border-right: 1px solid #c9cdd3;
   background: transparent;
@@ -5276,7 +5276,7 @@ onUnmounted(() => {
 .folder-peek-panel {
   display: grid;
   gap: 1px;
-  padding: 1px 4px 3px;
+  padding: 1px 3px 2px;
   border: 1px solid #c9cdd3;
   border-radius: 0;
   background: #ffffff;
@@ -5288,8 +5288,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  min-height: 18px;
+  gap: 3px;
+  min-height: 16px;
   margin: 0 0 1px;
   padding: 0 0 1px;
   border-bottom: 1px solid #dfe3e8;
@@ -5318,13 +5318,13 @@ onUnmounted(() => {
 .peek-dual-columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 4px;
+  gap: 2px;
   min-height: 0;
 }
 
 .peek-column {
   min-width: 0;
-  padding: 1px 3px 2px;
+  padding: 1px 2px;
   border: 1px solid #dfe3e8;
   background: #fafafa;
 }

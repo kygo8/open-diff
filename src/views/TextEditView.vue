@@ -988,8 +988,9 @@ const textEditToolbarCommands = computed(() =>
 .syntax-language-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
+  gap: 6px;
+  min-height: 26px;
+  padding: 2px 6px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface);
 }
@@ -997,20 +998,20 @@ const textEditToolbarCommands = computed(() =>
 .syntax-language-bar label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 4px;
+  font-size: 11px;
 }
 
 .syntax-preview {
   margin: 0;
-  padding: 10px 12px;
+  padding: 4px 6px;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 20px;
   white-space: pre-wrap;
 }
 
@@ -1036,9 +1037,9 @@ const textEditToolbarCommands = computed(() =>
 .text-edit-view {
   display: grid;
   grid-template-rows: auto auto auto auto auto minmax(0, 1fr) auto;
-  gap: 10px;
+  gap: 4px;
   height: 100%;
-  padding: 12px;
+  padding: 4px 6px;
   overflow: hidden;
 }
 
@@ -1046,13 +1047,13 @@ const textEditToolbarCommands = computed(() =>
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 8px;
 }
 
 .eyebrow {
-  margin: 0 0 6px;
+  margin: 0 0 2px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -1060,15 +1061,15 @@ const textEditToolbarCommands = computed(() =>
 
 h1 {
   margin: 0;
-  font-size: 22px;
-  line-height: 1.2;
+  font-size: 16px;
+  line-height: 1.15;
 }
 
 .document-stats {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .path-toolbar,
@@ -1076,20 +1077,21 @@ h1 {
 .metadata-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
+  min-height: 26px;
 }
 
 .path-input,
 .find-input {
   min-width: 0;
-  height: 30px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-surface);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .path-input {
@@ -1103,23 +1105,25 @@ h1 {
 
 .metadata-row {
   justify-content: space-between;
+  min-height: 22px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .status-chip {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .toolbar-button {
-  height: 28px;
-  padding: 0 8px;
+  height: 22px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-surface);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.2;
   cursor: pointer;
 }
 
@@ -1150,10 +1154,23 @@ h1 {
 
 :deep(textarea) {
   min-height: 100%;
+  padding: 4px 6px;
   font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 20px;
   resize: none;
+}
+
+:deep(.path-toolbar .n-button),
+:deep(.find-toolbar .n-button) {
+  --n-height: 22px;
+  --n-padding: 0 6px;
+  --n-font-size: 11px;
+
+  height: 22px;
+  min-height: 22px;
+  padding: 0 6px;
+  font-size: 11px;
 }
 
 @media (width <= 820px) {

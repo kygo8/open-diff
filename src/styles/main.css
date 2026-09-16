@@ -2360,3 +2360,163 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 11px !important;
   line-height: 13px !important;
 }
+
+/* Text Edit chrome densify toward capture path/toolbar/editor/status strips */
+.text-edit-view {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.text-edit-view .path-toolbar,
+.text-edit-view .find-toolbar,
+.text-edit-view .metadata-row {
+  gap: 6px !important;
+  min-height: 26px !important;
+}
+
+.text-edit-view .path-input,
+.text-edit-view .find-input {
+  height: 20px !important;
+  padding: 0 5px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.text-edit-view .toolbar-button {
+  height: 22px !important;
+  padding: 0 6px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.text-edit-view .status-chip,
+.text-edit-view .metadata-row,
+.text-edit-view .document-stats {
+  font-size: 11px !important;
+}
+
+.text-edit-view .syntax-language-bar {
+  gap: 6px !important;
+  min-height: 26px !important;
+  padding: 2px 6px !important;
+}
+
+.text-edit-view .syntax-preview {
+  padding: 4px 6px !important;
+  border-radius: 0 !important;
+  line-height: 20px !important;
+}
+
+.text-edit-view .editor-host textarea,
+.text-edit-view textarea {
+  padding: 4px 6px !important;
+  font-size: 12px !important;
+  line-height: 20px !important;
+}
+
+.text-edit-view .path-toolbar .n-button,
+.text-edit-view .find-toolbar .n-button {
+  --n-height: 22px !important;
+  --n-padding: 0 6px !important;
+  --n-font-size: 11px !important;
+
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+/* Text Patch chrome densify toward capture path/toolbar/editor/status strips */
+.text-patch-view {
+  gap: 4px !important;
+}
+
+.text-patch-view .patch-toolbar {
+  gap: 6px !important;
+  min-height: 26px !important;
+}
+
+.text-patch-view .patch-workbench-main {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.text-patch-view .patch-input-pane,
+.text-patch-view .patch-section-preview,
+.text-patch-view .patch-section-pane {
+  grid-template-rows: 22px minmax(0, 1fr) !important;
+}
+
+.text-patch-view .patch-input-pane header,
+.text-patch-view .patch-section-preview-header,
+.text-patch-view .patch-section-pane > header {
+  gap: 6px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.text-patch-view .patch-file {
+  gap: 4px !important;
+  border-radius: 0 !important;
+}
+
+.text-patch-view .patch-file > header {
+  min-height: 22px !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+}
+
+.text-patch-view .patch-hunk {
+  padding: 0 6px 6px !important;
+}
+
+.text-patch-view .patch-hunk > header {
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  line-height: 18px !important;
+}
+
+.text-patch-view .patch-line {
+  line-height: 20px !important;
+}
+
+.text-patch-view .patch-line-number,
+.text-patch-view .patch-line-prefix,
+.text-patch-view .patch-line code {
+  padding: 0 6px !important;
+}
+
+.text-patch-view .patch-section-pane-body {
+  line-height: 20px !important;
+}
+
+.text-patch-view .patch-preview-row {
+  gap: 6px !important;
+  padding: 0 6px !important;
+}
+
+.text-patch-view .bc-path-footers {
+  gap: 1px !important;
+  padding: 0 2px !important;
+}
+
+.text-patch-view .path-side-footer {
+  min-height: 10px !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+}
+
+.text-patch-view .status-chip {
+  font-size: 11px !important;
+}
+
+.text-patch-view .patch-toolbar .n-button {
+  --n-height: 22px !important;
+  --n-padding: 0 6px !important;
+  --n-font-size: 11px !important;
+
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}

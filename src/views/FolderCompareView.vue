@@ -3114,7 +3114,7 @@ onUnmounted(() => {
     <section class="folder-compare-view">
       <section
         class="folder-filter-chrome"
-        data-filters-density="capture-pass8"
+        data-filters-density="capture-pass9"
         data-testid="folder-filter-chrome"
       >
         <div
@@ -3939,7 +3939,7 @@ onUnmounted(() => {
       <section
         v-show="showPeekPanel"
         class="folder-peek-panel"
-        data-peek-density="capture-pass8"
+        data-peek-density="capture-pass9"
         data-testid="folder-peek-panel"
       >
         <header>
@@ -4961,7 +4961,7 @@ onUnmounted(() => {
   flex-wrap: wrap;
   align-items: center;
   gap: 1px 3px;
-  min-height: 16px;
+  min-height: 12px;
   padding: 0;
   font-size: 11px;
 }
@@ -4969,7 +4969,7 @@ onUnmounted(() => {
 .folder-filter-chrome {
   display: flex;
   align-items: center;
-  min-height: 18px;
+  min-height: 16px;
   padding: 0;
 }
 
@@ -4998,7 +4998,7 @@ onUnmounted(() => {
   box-sizing: border-box;
   min-width: 36px;
   max-width: 48px;
-  height: 18px;
+  height: 16px;
   padding: 0 2px;
   border: 0;
   border-right: 1px solid #c9cdd3;
@@ -5041,7 +5041,7 @@ onUnmounted(() => {
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 13px;
+  height: 12px;
   padding: 0 4px;
   border: 1px solid #bfc4cc;
   border-radius: 2px;
@@ -5049,7 +5049,7 @@ onUnmounted(() => {
   color: #111111;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 11px;
-  line-height: 13px;
+  line-height: 12px;
 }
 
 .column-config label,

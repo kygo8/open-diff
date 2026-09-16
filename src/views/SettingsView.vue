@@ -82,6 +82,7 @@ import {
 import {
   defaultPictureCompareOptions,
   loadPictureCompareOptions,
+  normalizeRgba,
   pictureBlendModes,
   savePictureCompareOptions,
 } from '@/app/pictureCompareOptions'
@@ -175,7 +176,28 @@ const fileOperationPreferencesDraft = ref(loadFileOperationPreferences())
 const reportPreferencesDraft = ref<ReportPreferences>(loadReportPreferences())
 const profileDefaultsDraft = ref<RemoteProfileDefaults>(loadRemoteProfileDefaults())
 const savedRemoteProfilesCount = computed(() => loadLocalRemoteProfiles().length)
+
+function formatRgbaDraft(value: number[] | null): string {
+  return value?.join(',') ?? ''
+}
+
+function parseRgbaDraft(value: string): number[] | null {
+  return normalizeRgba(
+    value
+      .split(/[,\s]+/)
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map(Number),
+  )
+}
+
 const pictureCompareDefaultsDraft = ref(loadPictureCompareOptions())
+const pictureIgnoreColorFromDraft = ref(
+  formatRgbaDraft(pictureCompareDefaultsDraft.value.ignoreColorFrom),
+)
+const pictureIgnoreColorToDraft = ref(
+  formatRgbaDraft(pictureCompareDefaultsDraft.value.ignoreColorTo),
+)
 const mediaCompareDefaultsDraft = ref(loadMediaCompareOptions())
 const versionCompareDefaultsDraft = ref(loadVersionCompareOptions())
 const tableCompareDefaultsDraft = ref(loadTableCompareSessionOptions())
@@ -922,6 +944,8 @@ function restoreFactoryDefaultsFromOptions(): void {
   profileDefaultsDraft.value = defaultRemoteProfileDefaults()
   saveRemoteProfileDefaults(profileDefaultsDraft.value)
   pictureCompareDefaultsDraft.value = defaultPictureCompareOptions()
+  pictureIgnoreColorFromDraft.value = ''
+  pictureIgnoreColorToDraft.value = ''
   savePictureCompareOptions(pictureCompareDefaultsDraft.value)
   mediaCompareDefaultsDraft.value = defaultMediaCompareOptions()
   saveMediaCompareOptions(mediaCompareDefaultsDraft.value)
@@ -1048,6 +1072,19 @@ function persistProfileDefaultsDraft(): void {
 
 function persistPictureCompareDefaultsDraft(): void {
   savePictureCompareOptions(pictureCompareDefaultsDraft.value)
+}
+
+function persistPictureIgnoreColorDefaults(): void {
+  pictureCompareDefaultsDraft.value = {
+    ...pictureCompareDefaultsDraft.value,
+    ignoreColorFrom: parseRgbaDraft(pictureIgnoreColorFromDraft.value),
+    ignoreColorTo: parseRgbaDraft(pictureIgnoreColorToDraft.value),
+  }
+  persistPictureCompareDefaultsDraft()
+  pictureIgnoreColorFromDraft.value = formatRgbaDraft(
+    pictureCompareDefaultsDraft.value.ignoreColorFrom,
+  )
+  pictureIgnoreColorToDraft.value = formatRgbaDraft(pictureCompareDefaultsDraft.value.ignoreColorTo)
 }
 
 function persistMediaCompareDefaultsDraft(): void {
@@ -1929,6 +1966,26 @@ function parseShortcutText(value: string): string[] {
                 {{ $t(option.labelKey) }}
               </option>
             </select>
+          </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.ignoreColorFrom') }}</span>
+            <input
+              v-model="pictureIgnoreColorFromDraft"
+              class="auto-save-limit-input"
+              data-testid="picture-ignore-color-from-default"
+              type="text"
+              @change="persistPictureIgnoreColorDefaults"
+            />
+          </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.ignoreColorTo') }}</span>
+            <input
+              v-model="pictureIgnoreColorToDraft"
+              class="auto-save-limit-input"
+              data-testid="picture-ignore-color-to-default"
+              type="text"
+              @change="persistPictureIgnoreColorDefaults"
+            />
           </label>
           <label class="tweak-row">
             <input

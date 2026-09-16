@@ -682,6 +682,10 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="picture-blend-opacity-default"]').trigger('change')
   await wrapper.find('[data-testid="picture-blend-mode-default"]').setValue('difference')
   await wrapper.find('[data-testid="picture-blend-mode-default"]').trigger('change')
+  await wrapper.find('[data-testid="picture-ignore-color-from-default"]').setValue('255,0,0,255')
+  await wrapper.find('[data-testid="picture-ignore-color-from-default"]').trigger('change')
+  await wrapper.find('[data-testid="picture-ignore-color-to-default"]').setValue('0,255,0')
+  await wrapper.find('[data-testid="picture-ignore-color-to-default"]').trigger('change')
   await wrapper.find('[data-testid="picture-show-meta-default"]').setValue(false)
   await wrapper.find('[data-testid="picture-show-minor-default"]').setValue(true)
   expect(
@@ -693,6 +697,8 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
     blendEnabled: true,
     blendOpacity: 40,
     blendMode: 'difference',
+    ignoreColorFrom: [255, 0, 0, 255],
+    ignoreColorTo: [0, 255, 0, 255],
     showMeta: false,
     showMinor: true,
   })

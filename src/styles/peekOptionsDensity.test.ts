@@ -102,6 +102,8 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="picture-blend-enabled-default"/)
     expect(settingsView).toMatch(/data-testid="picture-blend-opacity-default"/)
     expect(settingsView).toMatch(/data-testid="picture-blend-mode-default"/)
+    expect(settingsView).toMatch(/data-testid="picture-ignore-color-from-default"/)
+    expect(settingsView).toMatch(/data-testid="picture-ignore-color-to-default"/)
   })
 })
 

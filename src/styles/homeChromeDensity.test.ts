@@ -45,4 +45,19 @@ describe('home chrome density', () => {
     )
     expect(workspaceManager).not.toMatch(/padding:\s*8px/)
   })
+
+  it('keeps leftover Home restore and save banners dense toward session lists', () => {
+    expect(homeView).toMatch(/\.recovery-entry,\s*\.save-prompt\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(homeView).toMatch(/\.recovery-entry,\s*\.save-prompt\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(homeView).toMatch(/\.recovery-entry,\s*\.save-prompt\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(homeView).toMatch(
+      /\.recovery-entry button,\s*\.save-prompt button\s*\{[\s\S]*?height:\s*18px/,
+    )
+    expect(homeView).toMatch(
+      /\.recovery-entry button,\s*\.save-prompt button\s*\{[\s\S]*?border-radius:\s*0/,
+    )
+    expect(homeView).not.toMatch(
+      /\.recovery-entry,\s*\.save-prompt\s*\{[\s\S]*?padding:\s*8px 10px/,
+    )
+  })
 })

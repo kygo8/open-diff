@@ -106,6 +106,7 @@ describe('FolderSyncView', () => {
     setActivePinia(createPinia())
     useSettingsStore().setShowSyncNowInToolbar(true)
     useSettingsStore().setShowSyncCancelAcceptInToolbar(true)
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
     vi.clearAllMocks()
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
@@ -467,6 +468,7 @@ describe('FolderSyncView', () => {
       path: 'D:/deploy/folder-sync.txt',
       text: payload,
       createBackup: false,
+      backupRetention: 1,
     })
     expect(wrapper.find('[data-testid="folder-sync-report-status"]').text()).toBe(
       'D:/deploy/folder-sync.txt',

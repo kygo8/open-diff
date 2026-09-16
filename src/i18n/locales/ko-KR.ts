@@ -1086,6 +1086,17 @@ export const koKR: LanguagePack = {
     'ui.showChromeUtilities': '제목 표시줄 유틸리티 표시',
     'ui.showChromeUtilitiesHint': '제목 표시줄의 언어/테마 버튼(단일 세션 밀도 크롬에서는 숨김).',
     'ui.confirmBeforeQuit': '종료 전 확인',
+    'ui.showFolderLegendHint':
+      'Show the folder status legend under Folder Compare, Sync, and Merge.',
+    'ui.confirmBeforeCopy': '폴더 복사 전 확인',
+    'ui.confirmBeforeMove': '폴더 이동 전 확인',
+    'ui.confirmBeforeSyncDelete': '동기화 삭제 전 확인',
+    'ui.confirmBeforeSyncDeleteHint': 'Ask before Sync Now when the plan includes delete actions.',
+    'ui.createBackupOnReportExport': 'Create backup files when exporting reports',
+    'ui.createBackupOnReportExportHint':
+      'When a report path already exists, keep numbered .bak copies using Backup retention.',
+    'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
+    'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.confirmQuitMessage': 'Open Diff를 종료할까요?',
     'ui.toOutput': '출력으로',
     'ui.folderMergeRulesHint': '자동 복사는 출력으로 가고, 충돌은 텍스트 병합에서 엽니다.',

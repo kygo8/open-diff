@@ -31,7 +31,9 @@ import {
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useTabsStore } from '@/stores/tabs'
+import { useSettingsStore } from '@/stores/settings'
 
+const settings = useSettingsStore()
 const versionStatuses: VersionFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
 
 const emptyVersionSide: VersionSideSummary = {
@@ -459,7 +461,8 @@ async function exportVersionReport(): Promise<void> {
     await saveTextFile({
       path: outputPath,
       text: payload,
-      createBackup: false,
+      createBackup: settings.createBackupOnReportExport,
+      backupRetention: settings.backupRetentionCount,
     })
     reportStatus.value = outputPath
   } catch (event) {

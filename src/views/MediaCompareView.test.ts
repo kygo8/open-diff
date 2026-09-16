@@ -260,6 +260,7 @@ describe('MediaCompareView', () => {
       path: 'C:/music/media-compare.txt',
       text: payload,
       createBackup: false,
+      backupRetention: 1,
     })
     expect(wrapper.find('[data-testid="media-report-status"]').text()).toBe(
       'C:/music/media-compare.txt',

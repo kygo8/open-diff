@@ -23,9 +23,11 @@ import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 
+const settings = useSettingsStore()
 const zoom = ref(100)
 const panX = ref(0)
 const panY = ref(0)
@@ -619,7 +621,8 @@ async function exportPictureReport(): Promise<void> {
     await saveTextFile({
       path: outputPath,
       text: payload,
-      createBackup: false,
+      createBackup: settings.createBackupOnReportExport,
+      backupRetention: settings.backupRetentionCount,
     })
     reportStatus.value = outputPath
   } catch (event) {

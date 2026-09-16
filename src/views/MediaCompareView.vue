@@ -32,8 +32,10 @@ import { useI18n } from '@/i18n'
 import { formatCompareError } from '@/app/compareError'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { useSettingsStore } from '@/stores/settings'
 import { formatPathModifiedAt } from '@/app/pathMetadata'
 
+const settings = useSettingsStore()
 const mediaStatuses: MediaFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
 
 const { t } = useI18n()
@@ -199,7 +201,8 @@ async function exportMediaReport(): Promise<void> {
     await saveTextFile({
       path: outputPath,
       text: payload,
-      createBackup: false,
+      createBackup: settings.createBackupOnReportExport,
+      backupRetention: settings.backupRetentionCount,
     })
     reportStatus.value = outputPath
   } catch (event) {

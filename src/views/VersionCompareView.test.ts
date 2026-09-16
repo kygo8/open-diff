@@ -283,6 +283,7 @@ it('exports the version report to clipboard and a sibling text file', async () =
     path: 'C:/apps/version-compare.txt',
     text: payload,
     createBackup: false,
+    backupRetention: 1,
   })
   expect(wrapper.find('[data-testid="version-report-status"]').text()).toBe(
     'C:/apps/version-compare.txt',

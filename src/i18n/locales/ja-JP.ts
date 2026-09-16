@@ -1095,6 +1095,17 @@ export const jaJP: LanguagePack = {
     'ui.showChromeUtilitiesHint':
       'タイトルバーの言語・テーマボタン（単一セッションの高密度枠では非表示）。',
     'ui.confirmBeforeQuit': '終了前に確認',
+    'ui.showFolderLegendHint':
+      'Show the folder status legend under Folder Compare, Sync, and Merge.',
+    'ui.confirmBeforeCopy': 'フォルダーコピー前に確認',
+    'ui.confirmBeforeMove': 'フォルダー移動前に確認',
+    'ui.confirmBeforeSyncDelete': '同期削除前に確認',
+    'ui.confirmBeforeSyncDeleteHint': 'Ask before Sync Now when the plan includes delete actions.',
+    'ui.createBackupOnReportExport': 'Create backup files when exporting reports',
+    'ui.createBackupOnReportExportHint':
+      'When a report path already exists, keep numbered .bak copies using Backup retention.',
+    'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
+    'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.confirmQuitMessage': 'Open Diff を終了しますか？',
     'ui.toOutput': '出力へ',
     'ui.folderMergeRulesHint': '自動コピーは出力へ。競合はテキストマージで開きます。',

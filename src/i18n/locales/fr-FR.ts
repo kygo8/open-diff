@@ -1116,6 +1116,17 @@ export const frFR: LanguagePack = {
     'ui.showChromeUtilitiesHint':
       'Boutons langue et thème dans la barre de titre (masqués en chrome dense mono-session).',
     'ui.confirmBeforeQuit': 'Confirmer avant de quitter',
+    'ui.showFolderLegendHint':
+      'Show the folder status legend under Folder Compare, Sync, and Merge.',
+    'ui.confirmBeforeCopy': 'Confirmer avant copie de dossier',
+    'ui.confirmBeforeMove': 'Confirmer avant déplacement de dossier',
+    'ui.confirmBeforeSyncDelete': 'Confirmer avant suppressions de sync',
+    'ui.confirmBeforeSyncDeleteHint': 'Ask before Sync Now when the plan includes delete actions.',
+    'ui.createBackupOnReportExport': 'Create backup files when exporting reports',
+    'ui.createBackupOnReportExportHint':
+      'When a report path already exists, keep numbered .bak copies using Backup retention.',
+    'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
+    'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
     'ui.confirmQuitMessage': 'Quitter Open Diff ?',
     'ui.toOutput': 'Vers la sortie',
     'ui.folderMergeRulesHint':

@@ -571,6 +571,56 @@ function onConfirmBeforeQuitChange(event: Event): void {
   settings.setConfirmBeforeQuit(target.checked)
 }
 
+function onConfirmBeforeCopyChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setConfirmBeforeCopy(target.checked)
+}
+
+function onConfirmBeforeMoveChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setConfirmBeforeMove(target.checked)
+}
+
+function onConfirmBeforeSyncDeleteChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setConfirmBeforeSyncDelete(target.checked)
+}
+
+function onCreateBackupOnReportExportChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setCreateBackupOnReportExport(target.checked)
+}
+
+function onShowFolderLegendChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowFolderLegend(target.checked)
+}
+
 function onConfirmBeforeOverwriteSaveChange(event: Event): void {
   const target = event.target
 
@@ -1121,6 +1171,16 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.showChromeUtilities') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.showChromeUtilitiesHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="show-folder-legend"
+              type="checkbox"
+              :checked="settings.showFolderLegend"
+              @change="onShowFolderLegendChange"
+            />
+            <span>{{ $t('ui.showFolderLegend') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.showFolderLegendHint') }}</p>
           <p class="options-hint">{{ $t('ui.appearanceChromeHint') }}</p>
         </NCard>
 
@@ -1811,6 +1871,16 @@ function parseShortcutText(value: string): string[] {
               @change="onBackupRetentionCountChange"
             />
           </label>
+          <label class="tweak-row">
+            <input
+              data-testid="create-backup-on-report-export"
+              type="checkbox"
+              :checked="settings.createBackupOnReportExport"
+              @change="onCreateBackupOnReportExportChange"
+            />
+            <span>{{ $t('ui.createBackupOnReportExport') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.createBackupOnReportExportHint') }}</p>
           <p class="options-hint">{{ $t('ui.backupHint') }}</p>
         </NCard>
 
@@ -1837,6 +1907,54 @@ function parseShortcutText(value: string): string[] {
               @change="onConfirmBeforeSyncOverwriteChange"
             />
             <span>{{ $t('ui.confirmBeforeSyncOverwrite') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              data-testid="confirm-before-copy"
+              type="checkbox"
+              :checked="settings.confirmBeforeCopy"
+              @change="onConfirmBeforeCopyChange"
+            />
+            <span>{{ $t('ui.confirmBeforeCopy') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.confirmBeforeCopyHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="confirm-before-move"
+              type="checkbox"
+              :checked="settings.confirmBeforeMove"
+              @change="onConfirmBeforeMoveChange"
+            />
+            <span>{{ $t('ui.confirmBeforeMove') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.confirmBeforeMoveHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="confirm-before-sync-delete"
+              type="checkbox"
+              :checked="settings.confirmBeforeSyncDelete"
+              @change="onConfirmBeforeSyncDeleteChange"
+            />
+            <span>{{ $t('ui.confirmBeforeSyncDelete') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.confirmBeforeSyncDeleteHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="confirm-before-close-dirty-tab"
+              type="checkbox"
+              :checked="settings.confirmBeforeCloseDirtyTab"
+              @change="onConfirmBeforeCloseDirtyTabChange"
+            />
+            <span>{{ $t('ui.confirmBeforeCloseDirtyTab') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              data-testid="confirm-before-quit"
+              type="checkbox"
+              :checked="settings.confirmBeforeQuit"
+              @change="onConfirmBeforeQuitChange"
+            />
+            <span>{{ $t('ui.confirmBeforeQuit') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.confirmationsHint') }}</p>
         </NCard>
@@ -1894,24 +2012,6 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.notifyOnCompareComplete') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.notifyOnCompareCompleteHint') }}</p>
-          <label class="tweak-row">
-            <input
-              data-testid="confirm-before-close-dirty-tab"
-              type="checkbox"
-              :checked="settings.confirmBeforeCloseDirtyTab"
-              @change="onConfirmBeforeCloseDirtyTabChange"
-            />
-            <span>{{ $t('ui.confirmBeforeCloseDirtyTab') }}</span>
-          </label>
-          <label class="tweak-row">
-            <input
-              data-testid="confirm-before-quit"
-              type="checkbox"
-              :checked="settings.confirmBeforeQuit"
-              @change="onConfirmBeforeQuitChange"
-            />
-            <span>{{ $t('ui.confirmBeforeQuit') }}</span>
-          </label>
           <NButton
             size="small"
             data-testid="restore-factory-defaults"
@@ -2439,19 +2539,19 @@ function parseShortcutText(value: string): string[] {
 <style scoped>
 .settings-view {
   display: grid;
-  grid-template-columns: 196px minmax(0, 1fr);
+  grid-template-columns: 180px minmax(0, 1fr);
   align-content: start;
   align-items: start;
-  gap: 8px;
+  gap: 6px;
   height: 100%;
-  padding: 8px;
+  padding: 6px;
   overflow: auto;
   font-size: 11px;
 }
 
 .options-content {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   align-content: start;
   min-width: 0;
 }
@@ -2468,9 +2568,9 @@ function parseShortcutText(value: string): string[] {
 
 .options-section-nav {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   max-height: calc(100vh - 120px);
-  padding: 2px;
+  padding: 1px;
   overflow: auto;
   border: 1px solid var(--app-border);
   border-radius: 0;
@@ -2480,7 +2580,7 @@ function parseShortcutText(value: string): string[] {
 
 .options-section-tree {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   align-content: start;
 }
 
@@ -2493,7 +2593,7 @@ function parseShortcutText(value: string): string[] {
 .options-tree-group-label {
   min-width: 0;
   margin: 0;
-  padding: 4px 6px 2px;
+  padding: 3px 6px 1px;
   color: var(--app-text-muted);
   font-size: 10px;
   font-weight: 700;
@@ -2502,10 +2602,10 @@ function parseShortcutText(value: string): string[] {
 }
 
 .options-hint {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   color: var(--app-text-muted);
   font-size: 10px;
-  line-height: 13px;
+  line-height: 12px;
 }
 
 .open-with-list {
@@ -2520,8 +2620,8 @@ function parseShortcutText(value: string): string[] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  min-height: 22px;
+  gap: 6px;
+  min-height: 20px;
 }
 
 .open-with-draft {
@@ -2532,7 +2632,7 @@ function parseShortcutText(value: string): string[] {
 
 .open-with-draft input {
   min-width: 160px;
-  height: 22px;
+  height: 20px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -2544,14 +2644,14 @@ function parseShortcutText(value: string): string[] {
 .options-section-button {
   box-sizing: border-box;
   width: 100%;
-  min-height: 22px;
-  padding: 0 8px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: var(--app-text);
   font-size: 11px;
-  line-height: 20px;
+  line-height: 18px;
   text-align: left;
   cursor: pointer;
 }
@@ -2580,22 +2680,22 @@ function parseShortcutText(value: string): string[] {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-height: 22px;
-  margin-bottom: 4px;
+  min-height: 20px;
+  margin-bottom: 2px;
   font-size: 11px;
 }
 
 .stack-row {
   display: grid;
   gap: 2px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-size: 11px;
 }
 
 .stack-row input,
 .stack-row select {
   min-width: 0;
-  height: 22px;
+  height: 20px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;

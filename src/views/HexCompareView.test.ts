@@ -544,6 +544,7 @@ describe('HexCompareView', () => {
       path: 'C:/bin/hex-compare.txt',
       text: payload,
       createBackup: false,
+      backupRetention: 1,
     })
     expect(wrapper.find('[data-testid="hex-report-status"]').text()).toBe('C:/bin/hex-compare.txt')
   })

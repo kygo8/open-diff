@@ -552,6 +552,7 @@ describe('TableCompareView', () => {
       path: 'C:/data/table-compare.txt',
       text: payload,
       createBackup: false,
+      backupRetention: 1,
     })
     expect(wrapper.find('[data-testid="table-report-status"]').text()).toBe(
       'C:/data/table-compare.txt',

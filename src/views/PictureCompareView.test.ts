@@ -468,6 +468,7 @@ describe('PictureCompareView', () => {
       path: 'C:/images/picture-compare.txt',
       text: payload,
       createBackup: false,
+      backupRetention: 1,
     })
     expect(wrapper.find('[data-testid="picture-report-status"]').text()).toBe(
       'C:/images/picture-compare.txt',

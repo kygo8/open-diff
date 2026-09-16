@@ -136,11 +136,25 @@ export function resolveMenuCommandEnabled(
   if (
     commandId === 'view.showOrphans' ||
     commandId === 'view.showNoOrphans' ||
-    commandId === 'view.onlyCompareFiles' ||
+    commandId === 'view.showDifferencesNoOrphans' ||
+    commandId === 'view.showLeftOrphans' ||
+    commandId === 'view.showRightOrphans' ||
+    commandId === 'view.showLeftNewer' ||
+    commandId === 'view.showRightNewer' ||
+    commandId === 'view.showLeftNewerAndOrphans' ||
+    commandId === 'view.showRightNewerAndOrphans' ||
     commandId === 'view.suppressFilters' ||
     commandId === 'view.columns'
   ) {
     return isFolderCompareRoute(path)
+  }
+
+  if (
+    commandId === 'view.onlyCompareFiles' ||
+    commandId === 'view.compareFilesAndFolderStructure' ||
+    commandId === 'view.ignoreFolderStructure'
+  ) {
+    return isFolderCompareRoute(path) || isFolderMergeRoute(path)
   }
 
   if (commandId === 'view.legend') {
@@ -204,6 +218,14 @@ export function resolveMenuCommandEnabled(
 
   if (commandId === 'session.mergeBaseFolders' || commandId === 'session.syncBaseFolders') {
     return isFolderCompareRoute(path)
+  }
+
+  if (commandId === 'session.compareBaseFolders') {
+    return isFolderSyncRoute(path)
+  }
+
+  if (commandId === 'session.compareParentFolders') {
+    return isFolderishSessionRoute(path)
   }
 
   if (commandId === 'session.info') {

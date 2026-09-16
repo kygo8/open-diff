@@ -205,3 +205,41 @@ export function selectNewerRowIds(rows: FolderTimestampRow[]): string[] {
     })
     .map((row) => row.id)
 }
+
+export type FolderNewerViewPreset =
+  'left-newer' | 'right-newer' | 'left-newer-orphans' | 'right-newer-orphans'
+
+export interface FolderNewerViewRow extends FolderTimestampRow {
+  status: string
+}
+
+function isSideNewer(row: FolderTimestampRow, side: 'left' | 'right'): boolean {
+  const left = row.leftModifiedAtMs
+  const right = row.rightModifiedAtMs
+
+  if (left === undefined || right === undefined) {
+    return false
+  }
+
+  return side === 'left' ? left > right : right > left
+}
+
+/** Capture View presets that combine newer timestamps with orphan sides. */
+export function rowMatchesNewerViewPreset(
+  row: FolderNewerViewRow,
+  preset: FolderNewerViewPreset,
+): boolean {
+  if (preset === 'left-newer') {
+    return row.status === 'Different' && isSideNewer(row, 'left')
+  }
+
+  if (preset === 'right-newer') {
+    return row.status === 'Different' && isSideNewer(row, 'right')
+  }
+
+  if (preset === 'left-newer-orphans') {
+    return row.status === 'Left only' || (row.status === 'Different' && isSideNewer(row, 'left'))
+  }
+
+  return row.status === 'Right only' || (row.status === 'Different' && isSideNewer(row, 'right'))
+}

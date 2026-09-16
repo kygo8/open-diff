@@ -80,6 +80,15 @@ export type CommandId =
   | 'view.showNoOrphans'
   | 'view.onlyCompareFiles'
   | 'view.suppressFilters'
+  | 'view.showDifferencesNoOrphans'
+  | 'view.showLeftOrphans'
+  | 'view.showRightOrphans'
+  | 'view.showLeftNewer'
+  | 'view.showRightNewer'
+  | 'view.showLeftNewerAndOrphans'
+  | 'view.showRightNewerAndOrphans'
+  | 'view.compareFilesAndFolderStructure'
+  | 'view.ignoreFolderStructure'
   | 'search.findFilename'
   | 'search.findNextFilename'
   | 'search.findPreviousFilename'
@@ -115,6 +124,9 @@ export type CommandId =
   | 'session.mergeBaseFolders'
   | 'session.syncBaseFolders'
   | 'session.info'
+  | 'session.newSession'
+  | 'session.compareParentFolders'
+  | 'session.compareBaseFolders'
   | 'script.run'
   | 'report.save'
 
@@ -191,6 +203,16 @@ export type CommandAction =
         | 'show-no-orphans'
         | 'only-compare-files'
         | 'suppress-filters'
+        | 'show-differences-no-orphans'
+        | 'show-left-orphans'
+        | 'show-right-orphans'
+        | 'show-left-newer'
+        | 'show-right-newer'
+        | 'show-left-newer-orphans'
+        | 'show-right-newer-orphans'
+        | 'compare-files-and-folder-structure'
+        | 'ignore-folder-structure'
+        | 'compare-parent-folders'
         | 'find-filename'
         | 'find-next-filename'
         | 'find-previous-filename'
@@ -1070,6 +1092,127 @@ export const commandRegistry: AppCommand[] = [
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'suppress-filters' },
   },
+
+  {
+    id: 'view.showDifferencesNoOrphans',
+    titleKey: 'ui.showDifferencesNoOrphans',
+    keywords: ['show', 'differences', 'no', 'orphans', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-differences-no-orphans' },
+  },
+  {
+    id: 'view.showLeftOrphans',
+    titleKey: 'ui.showLeftOrphans',
+    keywords: ['show', 'left', 'orphans', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-left-orphans' },
+  },
+  {
+    id: 'view.showRightOrphans',
+    titleKey: 'ui.showRightOrphans',
+    keywords: ['show', 'right', 'orphans', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-right-orphans' },
+  },
+  {
+    id: 'view.showLeftNewer',
+    titleKey: 'ui.showLeftNewer',
+    keywords: ['show', 'left', 'newer', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-left-newer' },
+  },
+  {
+    id: 'view.showRightNewer',
+    titleKey: 'ui.showRightNewer',
+    keywords: ['show', 'right', 'newer', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-right-newer' },
+  },
+  {
+    id: 'view.showLeftNewerAndOrphans',
+    titleKey: 'ui.showLeftNewerAndOrphans',
+    keywords: ['show', 'left', 'newer', 'orphans', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-left-newer-orphans' },
+  },
+  {
+    id: 'view.showRightNewerAndOrphans',
+    titleKey: 'ui.showRightNewerAndOrphans',
+    keywords: ['show', 'right', 'newer', 'orphans', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-right-newer-orphans' },
+  },
+  {
+    id: 'view.compareFilesAndFolderStructure',
+    titleKey: 'ui.compareFilesAndFolderStructure',
+    keywords: ['compare', 'files', 'folder', 'structure', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'compare-files-and-folder-structure' },
+  },
+  {
+    id: 'view.ignoreFolderStructure',
+    titleKey: 'ui.ignoreFolderStructure',
+    keywords: ['ignore', 'folder', 'structure', 'flat', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'ignore-folder-structure' },
+  },
+  {
+    id: 'session.newSession',
+    titleKey: 'ui.newSession',
+    keywords: ['new', 'session', 'home'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/', titleKey: 'ui.home' },
+  },
+  {
+    id: 'session.compareParentFolders',
+    titleKey: 'ui.compareParentFolders',
+    keywords: ['compare', 'parent', 'folders', 'up', 'session'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'compare-parent-folders' },
+  },
+  {
+    id: 'session.compareBaseFolders',
+    titleKey: 'ui.compareBaseFolders',
+    keywords: ['compare', 'base', 'folders', 'session', 'sync'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/compare/folder', titleKey: 'ui.folderCompare' },
+  },
   {
     id: 'session.mergeBaseFolders',
     titleKey: 'ui.mergeBaseFolders',
@@ -1461,6 +1604,10 @@ export function getShortcutConflicts(commands: ShortcutConflictCandidate[]): Sho
 
   for (const command of commands) {
     if (!command.enabled || command.visibility === 'hidden') {
+      continue
+    }
+
+    if (command.defaultShortcut.keys.length === 0) {
       continue
     }
 

@@ -1236,8 +1236,20 @@ watch(
         break
       case 'show-orphans':
       case 'show-no-orphans':
+      case 'show-differences-no-orphans':
+      case 'show-left-orphans':
+      case 'show-right-orphans':
+      case 'show-left-newer':
+      case 'show-right-newer':
+      case 'show-left-newer-orphans':
+      case 'show-right-newer-orphans':
       case 'only-compare-files':
+      case 'compare-files-and-folder-structure':
+      case 'ignore-folder-structure':
       case 'suppress-filters':
+        break
+      case 'compare-parent-folders':
+        upOneSyncLevel()
         break
       case 'select-all':
       case 'select-all-files':

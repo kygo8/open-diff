@@ -43,6 +43,8 @@ import {
   stepRowIdByNameFilter,
   selectFileRowIds,
   selectNewerRowIds,
+  rowMatchesNewerViewPreset,
+  type FolderNewerViewPreset,
   selectRowIdsByNameFilter,
   selectRowIdsByStatuses,
 } from '@/app/folderRowSelection'
@@ -299,6 +301,7 @@ const visibleStatuses = ref<Set<FolderStatus>>(new Set(initialDisplayFilters.sta
 const showSuppressedFilters = ref(initialDisplayFilters.showSuppressed)
 const filesOnlyFilter = ref(initialDisplayFilters.filesOnly)
 const flatStructure = ref(false)
+const newerViewPreset = ref<FolderNewerViewPreset | 'none'>('none')
 const loadTimeSeconds = ref<number | null>(null)
 const minorOnly = ref(false)
 const showFolderRules = ref(true)
@@ -551,7 +554,8 @@ const visibleRows = computed(() =>
       !excludedRowIds.value.has(row.id) &&
       (visibleStatuses.value.has(row.status) || showSuppressedFilters.value) &&
       (!filesOnlyFilter.value || row.kind === 'file') &&
-      (!minorOnly.value || rowLooksUnimportant(row)),
+      (!minorOnly.value || rowLooksUnimportant(row)) &&
+      (newerViewPreset.value === 'none' || rowMatchesNewerViewPreset(row, newerViewPreset.value)),
   ),
 )
 const virtualStartIndex = computed(() =>
@@ -833,8 +837,7 @@ watch(
         showAllFolderStatuses()
         break
       case 'show-differences':
-        visibleStatuses.value = new Set(['Different', 'Left only', 'Right only'])
-        persistDisplayFilters()
+        applyStatusViewPreset(['Different', 'Left only', 'Right only'])
         break
       case 'copy-left':
         copySelectedTo('Left')
@@ -960,18 +963,46 @@ watch(
         showSameFolderStatuses()
         break
       case 'show-orphans':
-        visibleStatuses.value = new Set(['Left only', 'Right only'])
-        persistDisplayFilters()
+        applyStatusViewPreset(['Left only', 'Right only'])
         break
       case 'show-no-orphans':
-        visibleStatuses.value = new Set(['Same', 'Different'])
-        persistDisplayFilters()
+        applyStatusViewPreset(['Same', 'Different'])
+        break
+      case 'show-differences-no-orphans':
+        applyStatusViewPreset(['Different'])
+        break
+      case 'show-left-orphans':
+        applyStatusViewPreset(['Left only'])
+        break
+      case 'show-right-orphans':
+        applyStatusViewPreset(['Right only'])
+        break
+      case 'show-left-newer':
+        applyNewerViewPreset('left-newer')
+        break
+      case 'show-right-newer':
+        applyNewerViewPreset('right-newer')
+        break
+      case 'show-left-newer-orphans':
+        applyNewerViewPreset('left-newer-orphans')
+        break
+      case 'show-right-newer-orphans':
+        applyNewerViewPreset('right-newer-orphans')
+        break
+      case 'compare-files-and-folder-structure':
+        applyFolderStructurePreset('structure')
         break
       case 'only-compare-files':
-        toggleFilesOnlyFilter()
+        applyFolderStructurePreset('files')
+        break
+      case 'ignore-folder-structure':
+        applyFolderStructurePreset('flat')
         break
       case 'suppress-filters':
         showSuppressedFilters.value = !showSuppressedFilters.value
+        break
+      case 'compare-parent-folders':
+        upOneFolderLevel()
         break
       case 'find-filename':
         showFolderSelect.value = true
@@ -1101,18 +1132,21 @@ function swapFolderRoots(): void {
 
 function showAllFolderStatuses(): void {
   minorOnly.value = false
+  newerViewPreset.value = 'none'
   visibleStatuses.value = new Set(['Same', 'Different', 'Left only', 'Right only'])
   persistDisplayFilters()
 }
 
 function showSameFolderStatuses(): void {
   minorOnly.value = false
+  newerViewPreset.value = 'none'
   visibleStatuses.value = new Set(['Same'])
   persistDisplayFilters()
 }
 
 function showDiffsFolderStatuses(): void {
   minorOnly.value = false
+  newerViewPreset.value = 'none'
   visibleStatuses.value = new Set(['Different', 'Left only', 'Right only'])
   persistDisplayFilters()
 }
@@ -1125,6 +1159,40 @@ function isDiffsFolderFilterActive(): boolean {
     visibleStatuses.value.has('Left only') &&
     visibleStatuses.value.has('Right only')
   )
+}
+
+function applyStatusViewPreset(statuses: FolderStatus[]): void {
+  minorOnly.value = false
+  newerViewPreset.value = 'none'
+  visibleStatuses.value = new Set(statuses)
+  persistDisplayFilters()
+}
+
+function applyNewerViewPreset(preset: FolderNewerViewPreset): void {
+  minorOnly.value = false
+  newerViewPreset.value = preset
+  if (preset === 'left-newer' || preset === 'right-newer') {
+    visibleStatuses.value = new Set(['Different'])
+  } else if (preset === 'left-newer-orphans') {
+    visibleStatuses.value = new Set(['Different', 'Left only'])
+  } else {
+    visibleStatuses.value = new Set(['Different', 'Right only'])
+  }
+  persistDisplayFilters()
+}
+
+function applyFolderStructurePreset(mode: 'structure' | 'files' | 'flat'): void {
+  if (mode === 'structure') {
+    filesOnlyFilter.value = false
+    flatStructure.value = false
+  } else if (mode === 'files') {
+    filesOnlyFilter.value = true
+    flatStructure.value = false
+  } else {
+    flatStructure.value = true
+  }
+  scrollTop.value = 0
+  persistDisplayFilters()
 }
 
 function toggleFlatStructure(): void {

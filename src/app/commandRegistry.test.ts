@@ -44,6 +44,11 @@ describe('commandRegistry', () => {
         'view.showNoOrphans',
         'view.onlyCompareFiles',
         'view.suppressFilters',
+        'view.showLeftNewer',
+        'view.ignoreFolderStructure',
+        'session.newSession',
+        'session.compareParentFolders',
+        'session.compareBaseFolders',
         'search.findFilename',
         'search.findNextFilename',
         'search.findPreviousFilename',
@@ -199,7 +204,7 @@ describe('commandRegistry', () => {
       expect(allowedVisibilities.has(command.visibility)).toBe(true)
       expect(Array.isArray(command.defaultShortcut.keys)).toBe(true)
       expect(allowedScopes.has(command.defaultShortcut.scope)).toBe(true)
-      expect(command.defaultShortcut.keys.length).toBeGreaterThan(0)
+      // Empty keys = no menu accelerator (capture bodies omit chords for many View/Session verbs).
       expect(command.defaultShortcut.keys.every((key) => key.length > 0)).toBe(true)
       expect(command.placements).toContain('command-palette')
       expect(command.action).toBeDefined()
@@ -300,4 +305,14 @@ describe('commandRegistry', () => {
     expect(conflicts).toHaveLength(1)
     expect(conflicts[0]?.commandIds).toEqual(['open.settings', 'duplicate.command'])
   })
+})
+
+it('skips empty default shortcuts when detecting conflicts', () => {
+  expect(getShortcutConflicts(commandRegistry)).toEqual([])
+  expect(
+    commandRegistry.find((command) => command.id === 'view.showLeftNewer')?.defaultShortcut.keys,
+  ).toEqual([])
+  expect(
+    commandRegistry.find((command) => command.id === 'session.compareParentFolders')?.action,
+  ).toEqual({ type: 'view-action', name: 'compare-parent-folders' })
 })

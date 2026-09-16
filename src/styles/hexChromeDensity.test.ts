@@ -11,8 +11,8 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('hex compare chrome density', () => {
   it('keeps Hex Compare path/status/toolbar/footer chrome dense toward capture', () => {
     expect(css).toMatch(/\.hex-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.hex-compare-view \.bc-path-row\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(css).toMatch(/\.hex-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.hex-compare-view \.bc-path-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.hex-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*16px/)
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
 

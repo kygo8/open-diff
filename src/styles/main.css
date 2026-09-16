@@ -1778,18 +1778,18 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .hex-compare-view .bc-path-row {
   gap: 2px !important;
-  min-height: 22px !important;
-  padding: 1px 4px !important;
+  min-height: 20px !important;
+  padding: 1px 3px !important;
 }
 
 .hex-compare-view .bc-path-row input {
-  height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  padding: 0 3px !important;
   font-size: 11px !important;
 }
 
 .hex-compare-view .bc-path-row button {
-  height: 18px !important;
+  height: 16px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }
@@ -3235,19 +3235,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .text-edit-view .find-toolbar,
 .text-edit-view .metadata-row {
   gap: 4px !important;
-  min-height: 22px !important;
+  min-height: 20px !important;
 }
 
 .text-edit-view .path-input,
 .text-edit-view .find-input {
-  height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  padding: 0 3px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
 
 .text-edit-view .toolbar-button {
-  height: 20px !important;
+  height: 18px !important;
   padding: 0 5px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
@@ -3261,7 +3261,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .text-edit-view .syntax-language-bar {
   gap: 4px !important;
-  min-height: 22px !important;
+  min-height: 20px !important;
   padding: 2px 4px !important;
 }
 
@@ -3281,12 +3281,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .text-edit-view .path-toolbar .n-button,
 .text-edit-view .find-toolbar .n-button {
-  --n-height: 20px !important;
+  --n-height: 18px !important;
   --n-padding: 0 5px !important;
   --n-font-size: 11px !important;
 
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 18px !important;
+  min-height: 18px !important;
   padding: 0 5px !important;
   font-size: 11px !important;
 }
@@ -3298,7 +3298,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .text-patch-view .patch-toolbar {
   gap: 4px !important;
-  min-height: 22px !important;
+  min-height: 20px !important;
 }
 
 .text-patch-view .patch-workbench-main {
@@ -3381,12 +3381,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-patch-view .patch-toolbar .n-button {
-  --n-height: 20px !important;
+  --n-height: 18px !important;
   --n-padding: 0 5px !important;
   --n-font-size: 11px !important;
 
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 18px !important;
+  min-height: 18px !important;
   padding: 0 5px !important;
   font-size: 11px !important;
 }

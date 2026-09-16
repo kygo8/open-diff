@@ -587,6 +587,15 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
     compareToOutput: true,
   })
 
+  await wrapper.find('[data-testid="options-section-folderSync"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-folder-sync-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="folder-sync-strategy-default"]').setValue('mirrorRight')
+  expect(
+    JSON.parse(localStorage.getItem('open-diff-folder-sync-session-options') ?? '{}'),
+  ).toMatchObject({
+    strategy: 'mirrorRight',
+  })
+
   await wrapper.find('[data-testid="options-section-hexCompare"]').trigger('click')
   expect(wrapper.find('[data-testid="options-hex-compare-card"]').isVisible()).toBe(true)
   await wrapper.find('[data-testid="hex-diff-only-default"]').setValue(true)

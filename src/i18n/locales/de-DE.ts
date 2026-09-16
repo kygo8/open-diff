@@ -1249,6 +1249,8 @@ export const deDE: LanguagePack = {
     'ui.ignoreLineEndingDifferences': 'Zeilenende-Unterschiede ignorieren',
     'ui.folderCompareOptionsHint':
       'Standardkriterien für neue Ordnervergleiche. Sitzungseinstellungen können sie überschreiben.',
+    'ui.folderSyncOptionsHint':
+      'Standardstrategie für neue Ordnersynchronisierungen. Die Sitzungssymbolleiste kann sie ändern.',
     'ui.hexDiffOnlyDefault': 'Standardmäßig nur Differenzbytes anzeigen',
     'ui.hexBytesPerRow': 'Bytes pro Zeile',
     'ui.hexBytesPerRowAuto': 'Auto',

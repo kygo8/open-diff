@@ -1178,6 +1178,7 @@ export const zhTW: LanguagePack = {
     'ui.ignoreCaseDifferences': '忽略大小寫',
     'ui.ignoreLineEndingDifferences': '忽略換行符號差異',
     'ui.folderCompareOptionsHint': '新建資料夾比較工作階段的預設比較條件，工作階段設定仍可覆寫。',
+    'ui.folderSyncOptionsHint': '新建資料夾同步工作階段的預設策略，工作階段工具列仍可更改。',
     'ui.hexDiffOnlyDefault': '預設僅顯示差異位元組',
     'ui.hexBytesPerRow': '每列位元組數',
     'ui.hexBytesPerRowAuto': '自動',

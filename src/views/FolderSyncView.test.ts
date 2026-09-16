@@ -129,6 +129,9 @@ describe('FolderSyncView', () => {
 
     expect(wrapper.text()).toContain('Folder Sync')
     expect(
+      (wrapper.find('[data-testid="folder-sync-strategy"]').element as HTMLSelectElement).value,
+    ).toBe('updateBoth')
+    expect(
       (wrapper.find('[data-testid="folder-sync-left-path"]').element as HTMLInputElement).value,
     ).toBe('')
     expect(
@@ -182,6 +185,28 @@ describe('FolderSyncView', () => {
     expect(wrapper.text()).toContain('Completed 2 / 2')
     expect(wrapper.text()).toContain('Copied package/app.exe')
     expect(wrapper.text()).toContain('Deleted prod/old.dll')
+  })
+
+  it('loads the Options Folder Sync strategy default', () => {
+    localStorage.setItem(
+      'open-diff-folder-sync-session-options',
+      JSON.stringify({ strategy: 'mirrorLeft' }),
+    )
+
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            template: '<button :disabled="disabled"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(
+      (wrapper.find('[data-testid="folder-sync-strategy"]').element as HTMLSelectElement).value,
+    ).toBe('mirrorLeft')
   })
 
   it('cancels overrides to leave and resets a single row', async () => {

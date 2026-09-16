@@ -1250,6 +1250,8 @@ export const frFR: LanguagePack = {
     'ui.ignoreLineEndingDifferences': 'Ignorer les fins de ligne',
     'ui.folderCompareOptionsHint':
       'Critères par défaut des nouvelles sessions Dossier. Les paramètres de session peuvent les remplacer.',
+    'ui.folderSyncOptionsHint':
+      'Stratégie par défaut des nouvelles sessions Synchroniser dossiers. La barre d’outils de session peut encore la changer.',
     'ui.hexDiffOnlyDefault': 'Afficher uniquement les octets différents par défaut',
     'ui.hexBytesPerRow': 'Octets par ligne',
     'ui.hexBytesPerRowAuto': 'Auto',

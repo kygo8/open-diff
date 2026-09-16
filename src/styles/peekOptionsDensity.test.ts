@@ -68,6 +68,7 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/options-section-\$\{section\.id\}/)
     expect(settingsView).toMatch(/'folderCompare'/)
     expect(settingsView).toMatch(/'folderMerge'/)
+    expect(settingsView).toMatch(/'folderSync'/)
     expect(settingsView).toMatch(/'hexCompare'/)
     expect(settingsView).toMatch(/'pictureCompare'/)
     expect(settingsView).toMatch(/'mediaCompare'/)

@@ -1176,6 +1176,7 @@ export const zhCN: LanguagePack = {
     'ui.ignoreCaseDifferences': '忽略大小写',
     'ui.ignoreLineEndingDifferences': '忽略换行符差异',
     'ui.folderCompareOptionsHint': '新建文件夹比较会话的默认比较条件，会话设置仍可覆盖。',
+    'ui.folderSyncOptionsHint': '新建文件夹同步会话的默认策略，会话工具栏仍可更改。',
     'ui.hexDiffOnlyDefault': '默认仅显示差异字节',
     'ui.hexBytesPerRow': '每行字节数',
     'ui.hexBytesPerRowAuto': '自动',

@@ -636,7 +636,7 @@ onMounted(() => {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture-pass15"
+      data-home-density="capture-pass16"
       data-home-chrome="minimal"
     >
       <aside
@@ -833,7 +833,7 @@ onMounted(() => {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="11"
+                  :size="10"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1317,7 +1317,7 @@ onMounted(() => {
 .bc-selected-actions button {
   width: 48px;
   max-width: 100%;
-  height: 7px;
+  height: 6px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1385,7 +1385,7 @@ onMounted(() => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 24px;
+  min-height: 22px;
   padding: 0;
   overflow: hidden;
   border: 0;
@@ -1406,8 +1406,8 @@ onMounted(() => {
 
 .session-card-icon {
   display: inline-grid;
-  width: 16px;
-  height: 12px;
+  width: 14px;
+  height: 11px;
   color: #2f353d;
   place-items: center;
 }

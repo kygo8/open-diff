@@ -65,7 +65,7 @@ describe('HomeView', () => {
     const layout = wrapper.find('[data-testid="home-layout"]')
 
     expect(layout.exists()).toBe(true)
-    expect(layout.attributes('data-home-density')).toBe('capture-pass15')
+    expect(layout.attributes('data-home-density')).toBe('capture-pass16')
     expect(layout.attributes('data-home-chrome')).toBe('minimal')
     expect(wrapper.find('.workbench-shell').attributes('data-compact')).toBe('true')
     expect(wrapper.find('.bc-home-workspace').classes()).toContain('bc-home-workspace')

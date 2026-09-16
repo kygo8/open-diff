@@ -1197,5 +1197,10 @@ export const deDE: LanguagePack = {
     'status.syncPlanCancelled': 'Überschreibungen auf Belassen gesetzt',
     'status.syncPlanPending': 'Plan akzeptieren, um Sync Now zu aktivieren',
     'status.overrideCount': '{count} Zeilen überschrieben',
+    'ui.findFilename': 'Dateiname suchen',
+    'ui.columns': 'Spalten',
+    'ui.log': 'Protokoll',
+    'ui.toolbar': 'Symbolleiste',
+    'ui.attributes': 'Attribute',
   },
 }

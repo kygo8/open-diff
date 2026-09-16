@@ -1011,8 +1011,13 @@ describe('global menu depth parity', () => {
     await wrapper.find('[data-testid="menu-actions"]').trigger('click')
     expect(wrapper.find('[data-testid="menu-command-actions.open"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-actions.exclude"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.attributes"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-actions.touch"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="menu-command-actions.open"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.attributes"]').attributes('disabled'),
     ).toBeUndefined()
 
     await wrapper.find('[data-testid="menu-edit"]').trigger('click')
@@ -1020,8 +1025,16 @@ describe('global menu depth parity', () => {
     expect(wrapper.find('[data-testid="menu-command-view.expandAll"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-edit.invertSelection"]').exists()).toBe(true)
 
+    await wrapper.find('[data-testid="menu-search"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-search.findFilename"]').exists()).toBe(true)
+
     await wrapper.find('[data-testid="menu-view"]').trigger('click')
     expect(wrapper.find('[data-testid="menu-command-view.showSame"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-view.columns"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-view.toolbar"]').exists()).toBe(true)
+    expect(
+      wrapper.find('[data-testid="menu-command-view.columns"]').attributes('disabled'),
+    ).toBeUndefined()
 
     await wrapper.find('[data-testid="menu-session"]').trigger('click')
     expect(wrapper.find('[data-testid="menu-command-session.mergeBaseFolders"]').exists()).toBe(
@@ -1035,6 +1048,45 @@ describe('global menu depth parity', () => {
     ).toBeDefined()
 
     wrapper.unmount()
+
+    routePath = '/sync/folder'
+    const sync = mountAppLayout()
+
+    await sync.find('[data-testid="menu-actions"]').trigger('click')
+    expect(
+      sync.find('[data-testid="menu-command-actions.open"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      sync.find('[data-testid="menu-command-actions.attributes"]').attributes('disabled'),
+    ).toBeDefined()
+    await sync.find('[data-testid="menu-edit"]').trigger('click')
+    expect(
+      sync.find('[data-testid="menu-command-edit.selectAll"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      sync.find('[data-testid="menu-command-edit.selectOrphans"]').attributes('disabled'),
+    ).toBeDefined()
+    await sync.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      sync.find('[data-testid="menu-command-view.log"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      sync.find('[data-testid="menu-command-view.columns"]').attributes('disabled'),
+    ).toBeDefined()
+    sync.unmount()
+
+    routePath = '/merge/folder'
+    const merge = mountAppLayout()
+
+    await merge.find('[data-testid="menu-actions"]').trigger('click')
+    expect(
+      merge.find('[data-testid="menu-command-actions.exclude"]').attributes('disabled'),
+    ).toBeUndefined()
+    await merge.find('[data-testid="menu-edit"]').trigger('click')
+    expect(
+      merge.find('[data-testid="menu-command-edit.selectAllFiles"]').attributes('disabled'),
+    ).toBeUndefined()
+    merge.unmount()
 
     routePath = '/'
     const home = mountAppLayout()

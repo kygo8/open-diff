@@ -1195,5 +1195,10 @@ export const esES: LanguagePack = {
     'status.syncPlanCancelled': 'Anulaciones establecidas en dejar',
     'status.syncPlanPending': 'Acepte el plan para habilitar Sync Now',
     'status.overrideCount': '{count} filas anuladas',
+    'ui.findFilename': 'Buscar nombre de archivo',
+    'ui.columns': 'Columnas',
+    'ui.log': 'Registro',
+    'ui.toolbar': 'Barra de herramientas',
+    'ui.attributes': 'Atributos',
   },
 }

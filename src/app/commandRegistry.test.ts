@@ -39,6 +39,12 @@ describe('commandRegistry', () => {
         'edit.selectAll',
         'actions.open',
         'view.showSame',
+        'search.findFilename',
+        'view.columns',
+        'view.log',
+        'view.toolbar',
+        'actions.attributes',
+        'actions.touch',
         'session.mergeBaseFolders',
       ]),
     )

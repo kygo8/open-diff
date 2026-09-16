@@ -1134,5 +1134,10 @@ export const zhTW: LanguagePack = {
     'status.syncPlanCancelled': '已將覆寫操作設為保留',
     'status.syncPlanPending': '請先接受計劃以啟用立即同步',
     'status.overrideCount': '{count} 行已覆寫',
+    'ui.findFilename': '尋找檔名',
+    'ui.columns': '欄',
+    'ui.log': '記錄',
+    'ui.toolbar': '工具列',
+    'ui.attributes': '屬性',
   },
 }

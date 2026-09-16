@@ -1132,5 +1132,10 @@ export const zhCN: LanguagePack = {
     'status.syncPlanCancelled': '已将覆盖操作设为保留',
     'status.syncPlanPending': '请先接受计划以启用立即同步',
     'status.overrideCount': '{count} 行已覆盖',
+    'ui.findFilename': '查找文件名',
+    'ui.columns': '列',
+    'ui.log': '日志',
+    'ui.toolbar': '工具栏',
+    'ui.attributes': '属性',
   },
 }

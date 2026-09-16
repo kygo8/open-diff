@@ -1198,5 +1198,10 @@ export const frFR: LanguagePack = {
     'status.syncPlanCancelled': 'Remplacements définis sur laisser',
     'status.syncPlanPending': 'Acceptez le plan pour activer Sync Now',
     'status.overrideCount': '{count} lignes remplacées',
+    'ui.findFilename': 'Rechercher un nom de fichier',
+    'ui.columns': 'Colonnes',
+    'ui.log': 'Journal',
+    'ui.toolbar': 'Barre d’outils',
+    'ui.attributes': 'Attributs',
   },
 }

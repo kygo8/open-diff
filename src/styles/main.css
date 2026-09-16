@@ -2090,8 +2090,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .sync-preview,
 .folder-sync-view .sync-run-status,
-.folder-sync-view .sync-chrome-panel,
-.folder-sync-view .folder-sync-peek-panel {
+.folder-sync-view .sync-chrome-panel {
   gap: 2px !important;
   padding: 2px 6px 4px !important;
   border-radius: 0 !important;
@@ -2164,8 +2163,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-view .merge-plan,
 .folder-merge-view .conflict-panel,
 .folder-merge-view .merge-open-status,
-.folder-merge-view .merge-chrome-panel,
-.folder-merge-view .folder-merge-peek-panel {
+.folder-merge-view .merge-chrome-panel {
   gap: 2px !important;
   padding: 2px 6px 4px !important;
   border-radius: 0 !important;
@@ -2182,28 +2180,38 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 1px 0 !important;
 }
 
-/* Peek panel densify toward capture bottom-pane chrome */
+/* Peek panel pixel densify toward capture bottom-pane chrome */
 .folder-peek-panel,
+.folder-compare-view .folder-peek-panel,
 .folder-sync-peek-panel,
-.folder-merge-peek-panel {
-  gap: 2px !important;
+.folder-sync-view .folder-sync-peek-panel,
+.folder-merge-peek-panel,
+.folder-merge-view .folder-merge-peek-panel {
+  gap: 1px !important;
   min-height: 0 !important;
-  padding: 2px 6px 4px !important;
+  padding: 1px 4px 3px !important;
+  border: 1px solid #c9cdd3 !important;
   border-radius: 0 !important;
+  background: #ffffff !important;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif !important;
   font-size: 11px !important;
+  line-height: 13px !important;
 }
 
 .folder-peek-panel header,
 .folder-sync-peek-panel header,
 .folder-merge-peek-panel header {
   gap: 4px !important;
-  min-height: 20px !important;
-  padding: 0 !important;
+  min-height: 18px !important;
+  margin: 0 0 1px !important;
+  padding: 0 0 1px !important;
+  border-bottom: 1px solid #dfe3e8 !important;
 }
 
 .folder-peek-panel header strong,
 .folder-sync-peek-panel header strong,
 .folder-merge-peek-panel header strong {
+  color: #1a1a1a !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   line-height: 14px !important;
@@ -2215,34 +2223,46 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-peek-panel > button,
 .folder-sync-peek-panel > button,
 .folder-merge-peek-panel > button {
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 18px !important;
+  min-height: 18px !important;
   padding: 0 6px !important;
-  border-radius: 2px !important;
+  border: 1px solid #c9cdd3 !important;
+  border-radius: 0 !important;
+  background: #f3f3f3 !important;
+  color: #1a1a1a !important;
   font-size: 10px !important;
-  line-height: 18px !important;
+  line-height: 16px !important;
+}
+
+.folder-peek-panel header button:hover,
+.folder-sync-peek-panel header button:hover,
+.folder-merge-peek-panel header button:hover,
+.folder-peek-panel > button:hover,
+.folder-sync-peek-panel > button:hover,
+.folder-merge-peek-panel > button:hover {
+  background: #e7f1fb !important;
 }
 
 .peek-tabs {
   display: inline-flex !important;
   align-items: stretch !important;
   gap: 0 !important;
-  min-height: 20px !important;
+  min-height: 18px !important;
   margin: 0 0 2px !important;
-  border-bottom: 1px solid #bfc4cc !important;
+  border-bottom: 1px solid #b8bec6 !important;
 }
 
 .peek-tab {
   box-sizing: border-box !important;
-  min-width: 48px !important;
-  height: 20px !important;
-  padding: 0 8px !important;
+  min-width: 44px !important;
+  height: 18px !important;
+  padding: 0 7px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
-  background: transparent !important;
+  background: #f3f3f3 !important;
   color: #1a1a1a !important;
-  font-size: 10px !important;
-  line-height: 18px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
   cursor: default !important;
 }
 
@@ -2255,15 +2275,28 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .peek-tab-active {
-  background: #c8e4ff !important;
-  box-shadow: inset 0 0 0 1px #89bdea !important;
+  background: #ffffff !important;
+  box-shadow:
+    inset 0 -1px 0 #ffffff,
+    inset 0 0 0 1px #89bdea !important;
+  font-weight: 600 !important;
 }
 
 .folder-peek-panel dl,
 .folder-sync-peek-panel dl,
 .folder-merge-peek-panel dl {
-  gap: 2px !important;
+  display: grid !important;
+  gap: 1px !important;
   margin: 0 !important;
+}
+
+.folder-peek-panel dl > div,
+.folder-sync-peek-panel dl > div,
+.folder-merge-peek-panel dl > div {
+  display: grid !important;
+  gap: 0 !important;
+  min-height: 26px !important;
+  padding: 1px 0 2px !important;
 }
 
 .folder-peek-panel dt,
@@ -2272,22 +2305,24 @@ html[data-show-path-bars='0'] .path-pair-bar {
   margin: 0 !important;
   color: #5a6270 !important;
   font-size: 10px !important;
-  line-height: 12px !important;
+  line-height: 11px !important;
 }
 
 .folder-peek-panel dd,
 .folder-sync-peek-panel dd,
 .folder-merge-peek-panel dd {
   margin: 0 !important;
+  color: #000000 !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 13px !important;
   word-break: break-all !important;
 }
 
 .folder-peek-panel p,
 .folder-sync-peek-panel p,
 .folder-merge-peek-panel p {
-  margin: 2px 0 !important;
+  margin: 1px 0 !important;
+  color: #5a6270 !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 13px !important;
 }

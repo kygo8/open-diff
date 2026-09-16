@@ -14,22 +14,28 @@ const tauriMock = readFileSync(resolve(root, 'tests/e2e/helpers/tauriMock.ts'), 
 
 describe('peek panel densify', () => {
   it('keeps Folder/Sync/Merge peek panels dense with tab chrome', () => {
-    expect(css).toMatch(
-      /\.folder-peek-panel,\s*\.folder-sync-peek-panel,\s*\.folder-merge-peek-panel/,
-    )
+    expect(css).toMatch(/\.folder-peek-panel/)
+    expect(css).toMatch(/\.folder-sync-peek-panel/)
+    expect(css).toMatch(/\.folder-merge-peek-panel/)
     expect(css).toMatch(/\.peek-tabs\s*\{/)
     expect(css).toMatch(/\.peek-tab\s*\{/)
     expect(css).toMatch(/\.peek-tab-active\s*\{/)
+    expect(css).toMatch(/\.peek-tab\s*\{[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.peek-tab\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(css).toMatch(/\.folder-peek-panel,[\s\S]*?padding:\s*1px 4px 3px/)
 
     expect(folderView).toMatch(/data-testid="folder-peek-tabs"/)
-    expect(folderView).toMatch(/\.folder-peek-panel\s*\{[\s\S]*?padding:\s*2px 6px 4px/)
+    expect(folderView).toMatch(/\.folder-peek-panel\s*\{[\s\S]*?padding:\s*1px 4px 3px/)
     expect(folderView).toMatch(/\.folder-peek-panel\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(folderView).toMatch(/\.folder-peek-panel header\s*\{[\s\S]*?min-height:\s*18px/)
 
     expect(syncView).toMatch(/data-testid="folder-sync-peek-tabs"/)
-    expect(syncView).toMatch(/\.folder-sync-peek-panel\s*\{[\s\S]*?padding:\s*2px 6px 4px/)
+    expect(syncView).toMatch(/\.folder-sync-peek-panel\s*\{[\s\S]*?padding:\s*1px 4px 3px/)
+    expect(syncView).toMatch(/\.folder-sync-peek-panel header\s*\{[\s\S]*?min-height:\s*18px/)
 
     expect(mergeView).toMatch(/data-testid="folder-merge-peek-tabs"/)
-    expect(mergeView).toMatch(/\.folder-merge-peek-panel\s*\{[\s\S]*?padding:\s*2px 6px 4px/)
+    expect(mergeView).toMatch(/\.folder-merge-peek-panel\s*\{[\s\S]*?padding:\s*1px 4px 3px/)
+    expect(mergeView).toMatch(/\.folder-merge-peek-panel header\s*\{[\s\S]*?min-height:\s*18px/)
   })
 })
 

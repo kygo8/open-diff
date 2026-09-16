@@ -2508,12 +2508,12 @@ const sourceSessionTypes = new Set<SessionType>([
   height: 24px;
   min-height: 24px;
   padding: 0;
-  border-top: 1px solid #c9cdd3;
+  border-top: 1px solid #b8b8b8;
   background: #f0f0f0;
-  color: #111827;
+  color: #000000;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 11px;
-  line-height: 1.15;
+  line-height: 22px;
 }
 
 .status-bar[data-chrome-kind='folder-pair'] {
@@ -2521,10 +2521,17 @@ const sourceSessionTypes = new Set<SessionType>([
   height: 22px;
   min-height: 22px;
   font-size: 11px;
+  line-height: 20px;
 }
 
 .status-bar[data-chrome-kind='folder-pair'] .status-bar-pane {
-  padding: 0 5px;
+  padding: 0 4px;
+}
+
+/* Capture folder-pair strip: stronger center divider between left/right pairs */
+.status-bar[data-chrome-kind='folder-pair'][data-pane-count='4'] .status-bar-pane:nth-child(2),
+.status-bar[data-chrome-kind='folder-pair'][data-pane-count='5'] .status-bar-pane:nth-child(3) {
+  border-right-color: #8e8e8e;
 }
 
 .status-bar[data-chrome-kind='text-session'],
@@ -2538,6 +2545,7 @@ const sourceSessionTypes = new Set<SessionType>([
   height: 22px;
   min-height: 22px;
   font-size: 11px;
+  line-height: 20px;
 }
 
 .status-bar[data-chrome-kind='text-session'] .status-bar-pane,
@@ -2548,17 +2556,16 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='table-session'] .status-bar-pane,
 .status-bar[data-chrome-kind='registry-session'] .status-bar-pane,
 .status-bar[data-chrome-kind='clipboard-session'] .status-bar-pane {
-  padding: 0 5px;
+  padding: 0 4px;
 }
 
 .status-bar-pane {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 6px;
+  padding: 0 4px;
   overflow: hidden;
-  border-right: 1px solid #c9cdd3;
-  box-shadow: inset 1px 0 0 #ffffff;
+  border-right: 1px solid #c0c0c0;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2568,7 +2575,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar-pane-muted {
-  color: #9ca3af;
+  color: #808080;
 }
 
 .command-backdrop {
@@ -2722,6 +2729,16 @@ html[data-show-sidebar='1'] .sidebar {
 .app-shell-dense-chrome {
   /* Title + menu only — closer to native frames without a tab strip. */
   grid-template-rows: 52px minmax(0, 1fr) 24px;
+}
+
+.app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-pair']),
+.app-shell-dense-chrome:has(.status-bar[data-chrome-kind$='-session']) {
+  grid-template-rows: 52px minmax(0, 1fr) 22px;
+}
+
+.app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
+.app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind$='-session']) {
+  grid-template-rows: 58px minmax(0, 1fr) 22px;
 }
 
 .app-shell-dense-chrome .menu-bar {

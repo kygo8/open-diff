@@ -176,6 +176,7 @@ const fileOperationPreferencesDraft = ref(loadFileOperationPreferences())
 const reportPreferencesDraft = ref<ReportPreferences>(loadReportPreferences())
 const profileDefaultsDraft = ref<RemoteProfileDefaults>(loadRemoteProfileDefaults())
 const savedRemoteProfilesCount = computed(() => loadLocalRemoteProfiles().length)
+
 function formatRgbaDraft(value: number[] | null): string {
   return value?.join(',') ?? ''
 }

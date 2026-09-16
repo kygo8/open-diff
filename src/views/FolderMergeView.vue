@@ -408,6 +408,44 @@ function openMergeChildCompare(kind: 'open' | 'quick'): void {
   void router.push(launch.route)
 }
 
+function compareMergeContentsSelected(): void {
+  const row = mergeSelectedRow()
+
+  if (!row) {
+    lastSelectionAction.value = t('status.compareContentsNeedsFile')
+
+    return
+  }
+
+  const left = leftPath.value ? joinMergeSidePath(leftPath.value, row.path) : ''
+  const right = rightPath.value ? joinMergeSidePath(rightPath.value, row.path) : ''
+
+  if (!left || !right) {
+    lastSelectionAction.value = t('status.compareContentsNeedsFile')
+
+    return
+  }
+
+  if (row.left.kind !== 'File' && row.right.kind !== 'File') {
+    lastSelectionAction.value = t('status.compareContentsNeedsFile')
+
+    return
+  }
+
+  const launch = createChildCompareLaunch(left, right)
+
+  if (!launch) {
+    lastSelectionAction.value = t('status.compareContentsNoRoute')
+
+    return
+  }
+
+  lastSelectionAction.value = `${t('ui.compareContents')} -> ${launch.route}`
+  sessionLaunch.setPendingLaunch(launch)
+  tabs.openTab({ title: launch.title, route: launch.route, dirty: false })
+  void router.push(launch.route)
+}
+
 function mergeExplorerTarget(
   row: FolderMergePlanRow,
 ): { path: string; kind: 'file' | 'directory' } | undefined {
@@ -1239,6 +1277,12 @@ watch(
       case 'copy-to-output':
         applyCopyToOutputToSelection()
         break
+      case 'merge-execute':
+        void runFolderMerge()
+        break
+      case 'compare-contents':
+        compareMergeContentsSelected()
+        break
       case 'leave-alone':
       case 'sync-copy-left-to-right':
       case 'sync-copy-right-to-left':
@@ -1249,7 +1293,6 @@ watch(
       case 'copy-to-folder':
       case 'move-to-folder':
       case 'rename-selected':
-      case 'compare-contents':
       case 'synchronize':
       case 'ignored':
       case 'align-with':

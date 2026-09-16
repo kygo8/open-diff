@@ -105,6 +105,16 @@ describe('commandRegistry', () => {
       type: 'view-action',
       name: 'copy-to-output',
     })
+    expect(commandRegistry.find((command) => command.id === 'actions.merge')?.action).toEqual({
+      type: 'view-action',
+      name: 'merge-execute',
+    })
+    expect(commandRegistry.find((command) => command.id === 'actions.delete')?.titleKey).toBe(
+      'ui.deleteAction',
+    )
+    expect(commandRegistry.find((command) => command.id === 'actions.rename')?.titleKey).toBe(
+      'ui.renameAction',
+    )
 
     expect(
       commandRegistry.find((command) => command.id === 'actions.compareContents')?.action,

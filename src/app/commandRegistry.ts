@@ -83,6 +83,7 @@ export type CommandId =
   | 'actions.attributes'
   | 'actions.touch'
   | 'actions.copyToOutput'
+  | 'actions.merge'
   | 'actions.newFolder'
   | 'actions.leaveAlone'
   | 'actions.copyLeftToRight'
@@ -184,6 +185,7 @@ export type CommandAction =
         | 'change-attributes'
         | 'touch-selected'
         | 'copy-to-output'
+        | 'merge-execute'
         | 'new-folder'
         | 'leave-alone'
         | 'sync-copy-left-to-right'
@@ -1121,6 +1123,16 @@ export const commandRegistry: AppCommand[] = [
     action: { type: 'view-action', name: 'copy-to-output' },
   },
   {
+    id: 'actions.merge',
+    titleKey: 'ui.mergeAction',
+    keywords: ['merge', 'execute', 'output', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', '8'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'merge-execute' },
+  },
+  {
     id: 'actions.newFolder',
     titleKey: 'ui.newFolder',
     keywords: ['new', 'folder', 'mkdir', 'actions', 'insert'],
@@ -1222,7 +1234,7 @@ export const commandRegistry: AppCommand[] = [
   },
   {
     id: 'actions.rename',
-    titleKey: 'ui.rename',
+    titleKey: 'ui.renameAction',
     keywords: ['rename', 'folder', 'actions', 'f2'],
     enabled: true,
     visibility: 'view',
@@ -1232,7 +1244,7 @@ export const commandRegistry: AppCommand[] = [
   },
   {
     id: 'actions.delete',
-    titleKey: 'ui.delete',
+    titleKey: 'ui.deleteAction',
     keywords: ['delete', 'folder', 'actions'],
     enabled: true,
     visibility: 'view',

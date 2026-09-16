@@ -578,6 +578,25 @@ describe('FolderMergeView', () => {
       ],
     })
   })
+
+  it('wires Actions Compare Contents and Merge execute verbs', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    push.mockClear()
+    useViewActionsStore().dispatch('compare-contents')
+    await flushPromises()
+    expect(push).toHaveBeenCalled()
+    expect(useSessionLaunchStore().pendingLaunch?.sessionType).toBeTruthy()
+
+    vi.mocked(executeFolderMergePlan).mockClear()
+    useViewActionsStore().dispatch('merge-execute')
+    await flushPromises()
+    expect(executeFolderMergePlan).toHaveBeenCalled()
+  })
 })
 
 function createMergePlanResponse(): FolderMergePlanResponse {

@@ -324,6 +324,7 @@ const appMenus: AppMenuDefinition[] = [
       'actions.attributes',
       'actions.touch',
       'actions.copyToOutput',
+      'actions.merge',
       'actions.newFolder',
       'actions.exclude',
       'actions.copyFilename',
@@ -1308,7 +1309,7 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     }
   }
 
-  if (command.id === 'actions.copyToOutput') {
+  if (command.id === 'actions.copyToOutput' || command.id === 'actions.merge') {
     return {
       ...command,
       enabled: command.enabled && route.path.includes('/merge'),
@@ -1346,6 +1347,12 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     return { ...command, enabled: command.enabled && folderish }
   }
 
+  if (command.id === 'actions.compareContents') {
+    const supported = route.path.includes('/compare/folder') || route.path.includes('/merge')
+
+    return { ...command, enabled: command.enabled && supported }
+  }
+
   if (
     command.id === 'actions.copyToSide' ||
     command.id === 'actions.moveToSide' ||
@@ -1354,7 +1361,6 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     command.id === 'actions.rename' ||
     command.id === 'actions.delete' ||
     command.id === 'actions.copyFilename' ||
-    command.id === 'actions.compareContents' ||
     command.id === 'actions.synchronize' ||
     command.id === 'actions.ignored' ||
     command.id === 'actions.alignWith' ||

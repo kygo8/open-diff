@@ -1694,7 +1694,7 @@ h2 {
 .picture-pane-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
+  gap: 4px;
 }
 
 .picture-report-panel {

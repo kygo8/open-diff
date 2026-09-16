@@ -54,7 +54,7 @@ describe('picture compare chrome density', () => {
     expect(css).toMatch(/\.picture-compare-view \.picture-controls[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.picture-compare-view \.picture-controls input[\s\S]*?height:\s*18px/)
     expect(css).toMatch(/\.picture-compare-view \.picture-side\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.picture-compare-view \.picture-pane-grid\s*\{[\s\S]*?gap:\s*6px/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-pane-grid\s*\{[\s\S]*?gap:\s*4px/)
     expect(css).toMatch(
       /\.picture-compare-view \.picture-options-panel header[\s\S]*?min-height:\s*16px/,
     )
@@ -62,7 +62,7 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/\.picture-controls\s*\{[\s\S]*?min-height:\s*20px/)
     expect(pictureView).toMatch(/\.picture-transform-tools button\s*\{[\s\S]*?height:\s*18px/)
     expect(pictureView).toMatch(/\.picture-side\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(pictureView).toMatch(/\.picture-pane-grid\s*\{[\s\S]*?gap:\s*6px/)
+    expect(pictureView).toMatch(/\.picture-pane-grid\s*\{[\s\S]*?gap:\s*4px/)
     expect(pictureView).toMatch(/\.picture-options-panel\s*\{[\s\S]*?min-height:\s*20px/)
     expect(pictureView).toMatch(/\.picture-report-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
   })

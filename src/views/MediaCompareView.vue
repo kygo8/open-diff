@@ -389,6 +389,10 @@ watch(
       case 'toggle-minor':
         runMediaToolbarCommand(fieldFilter.value === 'minor' ? 'all' : 'minor')
         break
+      case 'session-settings':
+      case 'rules':
+        runMediaToolbarCommand('rules')
+        break
       case 'copy-left':
       case 'copy-right':
       case 'undo':
@@ -407,8 +411,6 @@ watch(
       case 'help-contents':
       case 'help-context':
       case 'help-support':
-      case 'session-settings':
-      case 'rules':
       case 'filters':
       case 'workspace-load':
       case 'export-settings':

@@ -221,6 +221,10 @@ watch(
       case 'toggle-minor':
         runVersionToolbarCommand(fieldFilter.value === 'minor' ? 'all' : 'minor')
         break
+      case 'session-settings':
+      case 'rules':
+        runVersionToolbarCommand('rules')
+        break
       case 'copy-left':
       case 'copy-right':
       case 'undo':
@@ -239,8 +243,6 @@ watch(
       case 'help-contents':
       case 'help-context':
       case 'help-support':
-      case 'session-settings':
-      case 'rules':
       case 'filters':
       case 'workspace-load':
       case 'export-settings':

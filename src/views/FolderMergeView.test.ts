@@ -718,6 +718,34 @@ describe('FolderMergeView', () => {
     ).toBe('Keep output')
   })
 
+  it('applies the checked merge row action to all visible rows and updates peek', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-testid="folder-merge-filter-strip-peek"]').trigger('click')
+
+    expect(wrapper.find('[data-testid="folder-merge-peek-path"]').text()).toBe('same.txt')
+
+    await wrapper.find('[data-testid="folder-merge-check-left-add"]').setValue(true)
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-merge-peek-path"]').text()).toBe('left-add.txt')
+
+    await wrapper.find('[data-testid="folder-merge-apply-to-all"]').trigger('click')
+    await flushPromises()
+
+    expect(
+      (wrapper.find('[data-testid="folder-merge-action-same-txt"]').element as HTMLSelectElement)
+        .value,
+    ).toBe('Copy left to output')
+    expect(
+      (wrapper.find('[data-testid="folder-merge-action-notes-txt"]').element as HTMLSelectElement)
+        .value,
+    ).toBe('Copy left to output')
+  })
+
   it('cancels merge execution confirmation without writing', async () => {
     const wrapper = mountFolderMergeView()
 

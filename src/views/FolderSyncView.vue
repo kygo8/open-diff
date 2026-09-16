@@ -631,6 +631,7 @@ function toggleSyncRowChecked(rowId: string): void {
     next.delete(rowId)
   } else {
     next.add(rowId)
+    selectedPeekRowId.value = rowId
   }
 
   checkedRowIds.value = next
@@ -720,7 +721,7 @@ onUnmounted(() => {
   folderMenuSelection.reset()
 })
 
-async function previewSync(): Promise<void> {
+async function previewSync(options?: { keepRunStatus?: boolean }): Promise<void> {
   previewLoading.value = true
   previewError.value = undefined
 
@@ -737,13 +738,7 @@ async function previewSync(): Promise<void> {
     previewRows.value = response.rows.map(syncPreviewResponseRowToViewRow)
     leftPath.value = response.leftRoot
     rightPath.value = response.rightRoot
-    completedOperations.value = 0
-    syncLogs.value = []
-    syncExecutionStatusByPath.value = new Map()
-    syncRunError.value = undefined
-    planAccepted.value = false
     pendingSyncSafetyRows.value = []
-    syncChromeMessage.value = ''
     collapsedPrefixes.value = new Set()
     checkedRowIds.value = new Set()
     excludedRowIds.value = new Set()
@@ -754,6 +749,15 @@ async function previewSync(): Promise<void> {
     syncOpenError.value = ''
     reportStatus.value = ''
     reportError.value = ''
+
+    if (!options?.keepRunStatus) {
+      completedOperations.value = 0
+      syncLogs.value = []
+      syncExecutionStatusByPath.value = new Map()
+      syncRunError.value = undefined
+      planAccepted.value = false
+      syncChromeMessage.value = ''
+    }
   } catch (error) {
     previewError.value = error instanceof Error ? error.message : String(error)
   } finally {
@@ -838,6 +842,11 @@ async function executeSyncNow(): Promise<void> {
     syncExecutionStatusByPath.value = new Map(
       response.logs.map((log) => [log.relativePath, log.status]),
     )
+    syncChromeMessage.value = t('status.syncCompleted', {
+      succeeded: response.succeeded,
+      failed: response.failed,
+    })
+    await previewSync({ keepRunStatus: true })
   } catch (error) {
     syncRunError.value = error instanceof Error ? error.message : String(error)
   } finally {

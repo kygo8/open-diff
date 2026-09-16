@@ -1530,4 +1530,26 @@ describe('FolderCompareView', () => {
     expect(leftFooter).toMatch(/file\(s\) selected|folder\(s\) selected|item\(s\) selected/)
     expect(leftFooter).not.toContain('91.8 GB free on C:\\')
   })
+
+  it('steps Next and Previous Difference from the Search menu action', async () => {
+    const wrapper = mountFolderCompareView()
+
+    await runCompare(wrapper)
+    useViewActionsStore().dispatch('next-difference')
+    await flushPromises()
+
+    const first = wrapper.find('[data-testid="folder-difference-navigation-status"]')
+
+    expect(first.exists()).toBe(true)
+    expect(first.text()).toMatch(/^Difference 1 \//)
+    const firstLabel = first.text()
+
+    useViewActionsStore().dispatch('previous-difference')
+    await flushPromises()
+
+    const previous = wrapper.find('[data-testid="folder-difference-navigation-status"]').text()
+
+    expect(previous).toMatch(/^Difference \d+ \//)
+    expect(previous).not.toBe(firstLabel)
+  })
 })

@@ -366,6 +366,13 @@ describe('AppLayout command palette', () => {
     expect(
       registry.find('[data-testid="menu-command-edit.selectAll"]').attributes('disabled'),
     ).toBeDefined()
+    await registry.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      registry.find('[data-testid="menu-command-session.rules"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      registry.find('[data-testid="menu-command-session.settings"]').attributes('disabled'),
+    ).toBeDefined()
     registry.unmount()
 
     routePath = '/compare/media'
@@ -1626,6 +1633,10 @@ describe('global menu depth parity', () => {
     expect(
       sync.find('[data-testid="menu-command-merge.nextConflict"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(sync.find('[data-testid="menu-command-diff.next"]').attributes('disabled')).toBeDefined()
+    expect(
+      sync.find('[data-testid="menu-command-diff.previous"]').attributes('disabled'),
+    ).toBeDefined()
     sync.unmount()
 
     routePath = '/merge/folder'
@@ -1661,6 +1672,9 @@ describe('global menu depth parity', () => {
     expect(
       merge.find('[data-testid="menu-command-merge.nextConflict"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(
+      merge.find('[data-testid="menu-command-diff.next"]').attributes('disabled'),
+    ).toBeDefined()
     merge.unmount()
 
     routePath = '/merge/text'

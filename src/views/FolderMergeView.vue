@@ -56,6 +56,10 @@ import { pickNativePath } from '@/app/filePicker'
 import { createChildCompareLaunch } from '@/app/childSession'
 import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { explorerRevealPath, explorerSelectTargetPath } from '@/app/folderCompareExtraActions'
+import {
+  buildCopyToOutputOverrides,
+  type FolderMergeCopyToOutputOverride,
+} from '@/app/folderMergeCopyToOutput'
 
 const leftPath = ref('')
 const newFolderPanelOpen = ref(false)
@@ -145,6 +149,7 @@ const showPeek = ref(false)
 const peekTab = ref<'path' | 'sides' | 'action'>('path')
 const showMergeRules = ref(false)
 const selectedPlanRowId = ref('')
+const mergeActionOverrides = ref<FolderMergeCopyToOutputOverride[]>([])
 const collapsedPrefixes = ref<Set<string>>(new Set())
 const showMergeFilters = ref(false)
 const folderNameFilters = ref<FolderNameFilters>(loadFolderNameFilters())
@@ -786,11 +791,76 @@ async function buildFolderMergePlan(): Promise<void> {
   collapsedPrefixes.value = new Set()
   checkedRowIds.value = new Set()
   excludedRowIds.value = new Set()
+  mergeActionOverrides.value = []
   lastSelectionAction.value = ''
   mergeOpenError.value = ''
   if (plan.value.rows.length > 0) {
     selectedPlanRowId.value = plan.value.rows[0].id
   }
+}
+
+function mergeCopyToOutputTargetRows(): FolderMergePlanRow[] {
+  const checked = visiblePlanRows.value.filter((row) => checkedRowIds.value.has(row.id))
+
+  if (checked.length > 0) {
+    return checked
+  }
+
+  const selected = mergeSelectedRow()
+
+  return selected ? [selected] : []
+}
+
+function applyCopyToOutputToSelection(): void {
+  if (!plan.value) {
+    return
+  }
+
+  const targets = mergeCopyToOutputTargetRows()
+  const overrides = buildCopyToOutputOverrides(targets)
+
+  if (overrides.length === 0) {
+    return
+  }
+
+  showMergeSelect.value = true
+
+  const byPath = new Map(overrides.map((item) => [item.relativePath, item.action]))
+
+  plan.value = {
+    ...plan.value,
+    rows: plan.value.rows.map((row) => {
+      const action = byPath.get(row.path)
+
+      if (!action) {
+        return row
+      }
+
+      return {
+        ...row,
+        action,
+        conflict: undefined,
+        detail: action,
+      }
+    }),
+  }
+
+  const existing = new Map(
+    mergeActionOverrides.value.map((item) => [item.relativePath, item] as const),
+  )
+
+  for (const item of overrides) {
+    existing.set(item.relativePath, item)
+  }
+
+  mergeActionOverrides.value = [...existing.values()]
+
+  const sampleAction = overrides[0]?.action ?? 'Copy left to output'
+
+  lastSelectionAction.value = t('status.mergeCopyToOutputApplied', {
+    action: folderMergeActionLabel(sampleAction),
+    count: overrides.length,
+  })
 }
 
 async function runFolderMerge(): Promise<void> {
@@ -806,6 +876,7 @@ async function runFolderMerge(): Promise<void> {
       outputRoot: outputPath.value,
       archiveExtensions: [...settings.archiveExtensions],
       filters: { ...folderNameFilters.value },
+      overrides: [...mergeActionOverrides.value],
     })
   } catch (error) {
     mergeExecutionError.value = error instanceof Error ? error.message : String(error)
@@ -1163,6 +1234,9 @@ watch(
         break
       case 'new-folder':
         openNewFolderPanel()
+        break
+      case 'copy-to-output':
+        applyCopyToOutputToSelection()
         break
       case 'leave-alone':
       case 'sync-copy-left-to-right':

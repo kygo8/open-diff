@@ -1326,6 +1326,13 @@ pub fn build_folder_merge_plan(
     })
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergeActionOverrideInput {
+    pub relative_path: String,
+    pub action: String,
+}
+
 #[tauri::command]
 pub fn execute_folder_merge_plan(
     left_root: String,
@@ -1334,6 +1341,7 @@ pub fn execute_folder_merge_plan(
     output_root: String,
     archive_extensions: Option<Vec<String>>,
     filters: Option<FolderNameFilters>,
+    overrides: Option<Vec<FolderMergeActionOverrideInput>>,
 ) -> Result<FolderMergeExecutionResponse, AppErrorPayload> {
     let name_filters = filters.unwrap_or_default();
     let document = folder_merge_document(
@@ -1348,7 +1356,21 @@ pub fn execute_folder_merge_plan(
     } else {
         document
     };
-    let plan = folder_merge_core::build_folder_merge_plan(&document);
+    let mut plan = folder_merge_core::build_folder_merge_plan(&document);
+    if let Some(overrides) = overrides {
+        let parsed = overrides
+            .into_iter()
+            .filter_map(|item| {
+                folder_merge_action_kind_from_label(&item.action).map(|kind| {
+                    folder_merge_core::FolderMergeActionOverride {
+                        relative_path: item.relative_path,
+                        kind,
+                    }
+                })
+            })
+            .collect::<Vec<_>>();
+        plan = folder_merge_core::apply_folder_merge_overrides(plan, &parsed);
+    }
 
     fs::create_dir_all(&output_root).map_err(|error| file_io_error(&output_root, error))?;
 
@@ -4017,6 +4039,19 @@ fn folder_merge_entry_kind_label(kind: &folder_merge_core::FolderMergeEntryKind)
     .to_owned()
 }
 
+fn folder_merge_action_kind_from_label(
+    label: &str,
+) -> Option<folder_merge_core::FolderMergeActionKind> {
+    match label {
+        "Keep output" => Some(folder_merge_core::FolderMergeActionKind::KeepOutput),
+        "Copy left to output" => Some(folder_merge_core::FolderMergeActionKind::CopyLeftToOutput),
+        "Copy right to output" => Some(folder_merge_core::FolderMergeActionKind::CopyRightToOutput),
+        "Delete output" => Some(folder_merge_core::FolderMergeActionKind::DeleteOutput),
+        "Mark conflict" => Some(folder_merge_core::FolderMergeActionKind::MarkConflict),
+        _ => None,
+    }
+}
+
 fn folder_merge_action_label(kind: &folder_merge_core::FolderMergeActionKind) -> String {
     match kind {
         folder_merge_core::FolderMergeActionKind::KeepOutput => "Keep output",
@@ -6142,6 +6177,7 @@ mod tests {
                 exclude: Vec::new(),
                 case_sensitive: false,
             }),
+            None,
         )
         .expect("include filter should execute a merge plan");
 
@@ -6274,6 +6310,7 @@ mod tests {
             output.display().to_string(),
             None,
             None,
+            None,
         )
         .expect("valid folders should execute automatic merge actions");
 
@@ -6295,6 +6332,43 @@ mod tests {
             "right"
         );
         assert!(!output.join("delete.txt").exists());
+    }
+
+    #[test]
+    fn execute_folder_merge_plan_honors_copy_to_output_overrides() {
+        let root = unique_temp_dir("folder-merge-copy-to-output-override");
+        let left = root.join("left");
+        let base = root.join("base");
+        let right = root.join("right");
+        let output = root.join("output");
+        fs::create_dir_all(&left).unwrap();
+        fs::create_dir_all(&base).unwrap();
+        fs::create_dir_all(&right).unwrap();
+        fs::create_dir_all(&output).unwrap();
+        fs::write(base.join("notes.txt"), b"base").unwrap();
+        fs::write(left.join("notes.txt"), b"left").unwrap();
+        fs::write(right.join("notes.txt"), b"right").unwrap();
+
+        let response = execute_folder_merge_plan(
+            left.display().to_string(),
+            base.display().to_string(),
+            right.display().to_string(),
+            output.display().to_string(),
+            None,
+            None,
+            Some(vec![FolderMergeActionOverrideInput {
+                relative_path: "notes.txt".to_owned(),
+                action: "Copy left to output".to_owned(),
+            }]),
+        )
+        .expect("override should force copy left to output");
+
+        assert_eq!(response.summary.conflicts, 0);
+        assert!(response
+            .rows
+            .iter()
+            .any(|row| row.path == "notes.txt" && row.action == "Copy left to output"));
+        assert_eq!(fs::read(output.join("notes.txt")).unwrap(), b"left");
     }
 
     #[test]
@@ -6337,6 +6411,7 @@ mod tests {
             base.display().to_string(),
             right.display().to_string(),
             output.display().to_string(),
+            None,
             None,
             None,
         )

@@ -317,6 +317,7 @@ watch(
       case 'break-alignment':
       case 'file-compare-report':
       case 'copy-filename':
+      case 'copy-to-output':
       case 'touch-selected':
         break
     }

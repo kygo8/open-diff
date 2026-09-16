@@ -1233,6 +1233,7 @@ watch(
       case 'toggle-columns':
       case 'toggle-toolbar':
       case 'change-attributes':
+      case 'copy-to-output':
       case 'touch-selected':
       case 'copy-to-side':
       case 'move-to-side':

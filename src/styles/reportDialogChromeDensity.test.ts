@@ -47,5 +47,10 @@ describe('report dialog chrome density', () => {
       /\.reports-script-view \.report-export-form input,\s*\.reports-script-view \.report-export-form select\s*\{[\s\S]*?height:\s*20px/,
     )
     expect(css).toMatch(/\.reports-script-view \.report-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(reportsView).toMatch(
+      /\.script-path input,\s*\.script-path select,\s*\.script-panel textarea\s*\{[\s\S]*?border-radius:\s*0/,
+    )
+    expect(reportsView).toMatch(/\.script-command-lists\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(reportsView).toMatch(/\.script-command-lists\s*\{[\s\S]*?border-radius:\s*0/)
   })
 })

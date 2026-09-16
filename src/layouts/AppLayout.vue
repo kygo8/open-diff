@@ -259,6 +259,7 @@ const appMenus: AppMenuDefinition[] = [
       'session.forward',
       'session.browseFolder',
       'session.upOneLevel',
+      'actions.newFolder',
       'session.mergeBaseFolders',
       'session.syncBaseFolders',
       'sync.syncNow',
@@ -288,6 +289,7 @@ const appMenus: AppMenuDefinition[] = [
       'session.forward',
       'session.browseFolder',
       'session.upOneLevel',
+      'actions.newFolder',
       'open.settings',
     ],
   },
@@ -295,6 +297,11 @@ const appMenus: AppMenuDefinition[] = [
     id: 'actions',
     titleKey: 'ui.actions',
     commandIds: [
+      'actions.leaveAlone',
+      'actions.copyRightToLeft',
+      'actions.copyLeftToRight',
+      'actions.deleteLeft',
+      'actions.deleteRight',
       'actions.open',
       'actions.openWith',
       'actions.quickCompare',
@@ -308,6 +315,7 @@ const appMenus: AppMenuDefinition[] = [
       'edit.copyRight',
       'actions.attributes',
       'actions.touch',
+      'actions.newFolder',
       'actions.exclude',
       'actions.refreshSelection',
       'report.save',
@@ -1277,6 +1285,28 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     return {
       ...command,
       enabled: command.enabled && route.path.includes('/compare/folder'),
+    }
+  }
+
+  if (command.id === 'actions.newFolder') {
+    const folderish =
+      route.path.includes('/compare/folder') ||
+      route.path.includes('/sync') ||
+      route.path.includes('/merge')
+
+    return { ...command, enabled: command.enabled && folderish }
+  }
+
+  if (
+    command.id === 'actions.leaveAlone' ||
+    command.id === 'actions.copyLeftToRight' ||
+    command.id === 'actions.copyRightToLeft' ||
+    command.id === 'actions.deleteLeft' ||
+    command.id === 'actions.deleteRight'
+  ) {
+    return {
+      ...command,
+      enabled: command.enabled && route.path.includes('/sync'),
     }
   }
 

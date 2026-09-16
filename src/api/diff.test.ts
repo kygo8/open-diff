@@ -14,6 +14,7 @@ import {
   compareTableCsv,
   compareVersionFiles,
   copyFolderCompareEntry,
+  createFolderEntry,
   deleteFolderEntry,
   exportFolderCompareReport,
   exportTextCompareReport,
@@ -213,6 +214,7 @@ describe('diff api', () => {
     })
     await renameFolderEntry({ path: 'D:/right/src/main.ts', newName: 'app.ts' })
     await deleteFolderEntry({ path: 'D:/right/src/app.ts' })
+    await createFolderEntry({ path: 'D:/right/src/new-folder' })
     await changeFolderEntryAttributes({ path: 'D:/right/README.md', readonly: true })
     await touchFolderEntry({ path: 'D:/right/README.md', modifiedAtMs: 1782864000000 })
 
@@ -229,11 +231,14 @@ describe('diff api', () => {
     expect(invoke).toHaveBeenNthCalledWith(3, 'delete_folder_entry', {
       path: 'D:/right/src/app.ts',
     })
-    expect(invoke).toHaveBeenNthCalledWith(4, 'change_folder_entry_attributes', {
+    expect(invoke).toHaveBeenNthCalledWith(4, 'create_folder_entry', {
+      path: 'D:/right/src/new-folder',
+    })
+    expect(invoke).toHaveBeenNthCalledWith(5, 'change_folder_entry_attributes', {
       path: 'D:/right/README.md',
       readonly: true,
     })
-    expect(invoke).toHaveBeenNthCalledWith(5, 'touch_folder_entry', {
+    expect(invoke).toHaveBeenNthCalledWith(6, 'touch_folder_entry', {
       path: 'D:/right/README.md',
       modifiedAtMs: 1782864000000,
     })

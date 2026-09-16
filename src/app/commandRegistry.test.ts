@@ -90,6 +90,13 @@ describe('commandRegistry', () => {
     expect(commandRegistry.find((command) => command.id === 'view.expandAll')?.enabled).toBe(true)
     expect(commandRegistry.find((command) => command.id === 'view.collapseAll')?.enabled).toBe(true)
     expect(commandRegistry.find((command) => command.id === 'sync.syncNow')?.enabled).toBe(true)
+    expect(commandRegistry.find((command) => command.id === 'actions.newFolder')?.action).toEqual({
+      type: 'view-action',
+      name: 'new-folder',
+    })
+    expect(commandRegistry.find((command) => command.id === 'actions.leaveAlone')?.enabled).toBe(
+      true,
+    )
     expect(commandRegistry.find((command) => command.id === 'open.pictureCompare')?.enabled).toBe(
       true,
     )

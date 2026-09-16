@@ -4,6 +4,7 @@ import type {
   ApplyTextPatchToFileRequest,
   ApplyTextPatchResponse,
   ChangeFolderEntryAttributesRequest,
+  CreateFolderEntryRequest,
   DeleteFolderEntryRequest,
   ExportFolderCompareReportRequest,
   ExportReportResponse,
@@ -153,6 +154,14 @@ export function deleteFolderEntry(
   request: DeleteFolderEntryRequest,
 ): Promise<FolderFileOperationResponse> {
   return invoke<FolderFileOperationResponse>('delete_folder_entry', {
+    path: request.path,
+  })
+}
+
+export function createFolderEntry(
+  request: CreateFolderEntryRequest,
+): Promise<FolderFileOperationResponse> {
+  return invoke<FolderFileOperationResponse>('create_folder_entry', {
     path: request.path,
   })
 }

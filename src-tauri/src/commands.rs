@@ -1163,6 +1163,16 @@ pub fn delete_folder_entry(
 }
 
 #[tauri::command]
+pub fn create_folder_entry(
+    path: String,
+) -> Result<folder_core::FileOperationResult, AppErrorPayload> {
+    let error_path = path.clone();
+
+    folder_core::perform_file_operation(folder_core::FileOperationRequest::CreateFolder { path })
+        .map_err(|error| folder_scan_error(&error_path, error))
+}
+
+#[tauri::command]
 pub fn change_folder_entry_attributes(
     path: String,
     readonly: Option<bool>,

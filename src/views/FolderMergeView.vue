@@ -20,7 +20,8 @@ import type {
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { Eye, Funnel } from '@lucide/vue'
-import { createFolderSnapshot, saveTextFile } from '@/api/diff'
+import { createFolderEntry, createFolderSnapshot, saveTextFile } from '@/api/diff'
+import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
 import {
   formatFolderNameFilterStripPattern,
   loadFolderNameFilters,
@@ -54,6 +55,8 @@ import { createChildCompareLaunch } from '@/app/childSession'
 import { openPathExternal } from '@/api/integration'
 
 const leftPath = ref('')
+const newFolderPanelOpen = ref(false)
+const newFolderName = ref('New Folder')
 const basePath = ref('')
 const rightPath = ref('')
 const outputPath = ref('')
@@ -935,6 +938,49 @@ function upOneMergeLevel(): void {
   }
 }
 
+function openNewFolderPanel(): void {
+  if (!leftPath.value && !rightPath.value && !outputPath.value) {
+    return
+  }
+
+  newFolderName.value = 'New Folder'
+  newFolderPanelOpen.value = true
+}
+
+async function confirmNewFolder(): Promise<void> {
+  const selected = mergeSelectedRow()
+  const selectedKind =
+    selected && (selected.left.kind === 'Directory' || selected.right.kind === 'Directory')
+      ? 'directory'
+      : 'file'
+  const parentRelative = newFolderParentRelativePath({
+    selectedRelativePath: selected?.path,
+    selectedKind,
+  })
+  const paths = resolveNewFolderPaths({
+    roots: [leftPath.value, rightPath.value, outputPath.value],
+    folderName: newFolderName.value,
+    parentRelativePath: parentRelative,
+  })
+
+  if (paths.length === 0) {
+    return
+  }
+
+  try {
+    for (const path of paths) {
+      await createFolderEntry({ path })
+    }
+    lastSelectionAction.value =
+      paths.length === 1
+        ? t('status.createdFolder', { path: paths[0] })
+        : t('status.createdFolders', { count: paths.length })
+    newFolderPanelOpen.value = false
+  } catch (error) {
+    mergeOpenError.value = error instanceof Error ? error.message : String(error)
+  }
+}
+
 watch(
   () => [viewActions.sequence, viewActions.name] as const,
   ([, actionName]) => {
@@ -1049,6 +1095,15 @@ watch(
         break
       case 'toggle-log':
         toggleMergeLogPanel()
+        break
+      case 'new-folder':
+        openNewFolderPanel()
+        break
+      case 'leave-alone':
+      case 'sync-copy-left-to-right':
+      case 'sync-copy-right-to-left':
+      case 'sync-delete-left':
+      case 'sync-delete-right':
         break
       case 'swap':
       case 'undo':
@@ -1627,6 +1682,25 @@ watch(
     </section>
 
     <template #inspector>
+      <section
+        v-if="newFolderPanelOpen"
+        class="folder-operation-panel"
+        data-testid="folder-merge-new-folder-panel"
+      >
+        <input
+          v-model="newFolderName"
+          data-testid="folder-merge-new-folder-name"
+        />
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="folder-merge-confirm-new-folder"
+          @click="confirmNewFolder"
+        >
+          {{ $t('ui.newFolder') }}
+        </NButton>
+      </section>
+
       <WorkbenchInspector>
         <section class="workbench-inspector-section">
           <h2>{{ $t('ui.mergePlan') }}</h2>

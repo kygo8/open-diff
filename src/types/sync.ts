@@ -3,7 +3,8 @@ import type { FolderNameFilters } from '@/types/diff'
 export type FolderSyncStrategy =
   'updateRight' | 'updateLeft' | 'updateBoth' | 'mirrorRight' | 'mirrorLeft'
 
-export type FolderSyncOverrideAction = 'leave' | 'copyLeftToRight' | 'copyRightToLeft' | 'delete'
+export type FolderSyncOverrideAction =
+  'leave' | 'copyLeftToRight' | 'copyRightToLeft' | 'delete' | 'deleteLeft' | 'deleteRight'
 
 export interface FolderSyncActionOverride {
   relativePath: string

@@ -262,8 +262,8 @@ export interface FolderCompareCopyResponse {
   refreshedStatus: 'unknown' | 'same' | 'different' | 'leftOnly' | 'rightOnly' | 'error'
 }
 
-export type FolderFileOperationKind = 'move' | 'delete' | 'rename'
-export type FolderFileOperationStatus = 'moved' | 'deleted' | 'renamed'
+export type FolderFileOperationKind = 'move' | 'delete' | 'rename' | 'createFolder'
+export type FolderFileOperationStatus = 'moved' | 'deleted' | 'renamed' | 'created'
 
 export interface FolderFileOperationResponse {
   operation: FolderFileOperationKind
@@ -278,6 +278,10 @@ export interface RenameFolderEntryRequest {
 }
 
 export interface DeleteFolderEntryRequest {
+  path: string
+}
+
+export interface CreateFolderEntryRequest {
   path: string
 }
 

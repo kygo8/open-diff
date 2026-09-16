@@ -260,6 +260,12 @@ watch(
       case 'toggle-log':
       case 'toggle-toolbar':
       case 'change-attributes':
+      case 'new-folder':
+      case 'leave-alone':
+      case 'sync-copy-left-to-right':
+      case 'sync-copy-right-to-left':
+      case 'sync-delete-left':
+      case 'sync-delete-right':
       case 'touch-selected':
         break
     }

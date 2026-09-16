@@ -349,4 +349,17 @@ describe('useSettingsStore', () => {
     expect(localStorage.getItem('open-diff-show-prev-difference-in-toolbar')).toBe('0')
     expect(store.archiveExtensions).toEqual(['.rar', '.zip'])
   })
+
+  it('persists folder status legend visibility', () => {
+    const store = useSettingsStore()
+
+    expect(store.showFolderLegend).toBe(false)
+    store.setShowFolderLegend(true)
+    expect(store.showFolderLegend).toBe(true)
+    expect(localStorage.getItem('open-diff-show-folder-legend')).toBe('1')
+
+    store.setShowFolderLegend(false)
+    expect(store.showFolderLegend).toBe(false)
+    expect(localStorage.getItem('open-diff-show-folder-legend')).toBe('0')
+  })
 })

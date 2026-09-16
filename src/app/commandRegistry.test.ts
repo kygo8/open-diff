@@ -41,6 +41,7 @@ describe('commandRegistry', () => {
         'view.showSame',
         'search.findFilename',
         'view.columns',
+        'view.legend',
         'view.log',
         'view.toolbar',
         'actions.attributes',

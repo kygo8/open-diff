@@ -5,6 +5,7 @@ import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useRouter } from 'vue-router'
 import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
+import FolderStatusLegend from '@/components/workbench/FolderStatusLegend.vue'
 import {
   buildFolderMergePlan as requestFolderMergePlan,
   executeFolderMergePlan,
@@ -1158,6 +1159,8 @@ watch(
       case 'toggle-log':
         toggleMergeLogPanel()
         break
+      case 'toggle-legend':
+        break
       case 'new-folder':
         openNewFolderPanel()
         break
@@ -1208,6 +1211,10 @@ watch(
     toolbar-test-id-prefix="folder-merge-session-toolbar"
     @toolbar-command="runMergeToolbarCommand"
   >
+    <FolderStatusLegend
+      v-if="settings.showFolderLegend"
+      class="folder-status-legend-slot"
+    />
     <section class="folder-merge-view">
       <header class="merge-header">
         <div>

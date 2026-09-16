@@ -219,6 +219,7 @@ watch(
       case 'find-filename':
       case 'toggle-columns':
       case 'toggle-log':
+      case 'toggle-legend':
       case 'toggle-toolbar':
       case 'change-attributes':
       case 'new-folder':

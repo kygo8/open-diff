@@ -382,6 +382,7 @@ const appMenus: AppMenuDefinition[] = [
       'diff.previous',
       'view.filters',
       'view.columns',
+      'view.legend',
       'view.log',
       'view.toolbar',
       'session.swap',
@@ -795,6 +796,9 @@ const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
     lastViewAction.value = name
     if (name === 'toggle-toolbar') {
       settings.setShowSessionToolbars(!settings.showSessionToolbars)
+    }
+    if (name === 'toggle-legend') {
+      settings.setShowFolderLegend(!settings.showFolderLegend)
     }
     viewActions.dispatch(name)
     if (name === 'about') {
@@ -1283,6 +1287,15 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
       ...command,
       enabled: command.enabled && route.path.includes('/compare/folder'),
     }
+  }
+
+  if (command.id === 'view.legend') {
+    const supported =
+      route.path.includes('/compare/folder') ||
+      route.path.includes('/sync') ||
+      route.path.includes('/merge')
+
+    return { ...command, enabled: command.enabled && supported }
   }
 
   if (command.id === 'view.log') {

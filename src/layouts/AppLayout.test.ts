@@ -320,7 +320,41 @@ describe('AppLayout command palette', () => {
     expect(
       textEdit.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
     ).toBeDefined()
+    await textEdit.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      textEdit.find('[data-testid="menu-command-session.reload"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      textEdit.find('[data-testid="menu-command-session.compare"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      textEdit.find('[data-testid="menu-command-session.swap"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      textEdit.find('[data-testid="menu-command-session.rules"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      textEdit.find('[data-testid="menu-command-session.settings"]').attributes('disabled'),
+    ).toBeDefined()
     textEdit.unmount()
+
+    routePath = '/patch/text'
+    const textPatch = mountAppLayout()
+
+    await textPatch.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      textPatch.find('[data-testid="menu-command-session.compare"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      textPatch.find('[data-testid="menu-command-session.reload"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      textPatch.find('[data-testid="menu-command-session.rules"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      textPatch.find('[data-testid="menu-command-session.save"]').attributes('disabled'),
+    ).toBeUndefined()
+    textPatch.unmount()
 
     routePath = '/compare/registry'
     const registry = mountAppLayout()

@@ -106,6 +106,8 @@ describe('menuTables', () => {
     expect(resolveMenuCommandEnabled('session.compare', true, clipboardCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('session.swap', true, clipboardCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('session.reload', true, clipboardCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.rules', true, clipboardCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.settings', true, clipboardCtx)).toBe(false)
 
     expect(resolveMenuCommandEnabled('view.showDifferences', true, patchCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('edit.cut', true, patchCtx)).toBe(false)
@@ -116,6 +118,18 @@ describe('menuTables', () => {
     expect(resolveMenuCommandEnabled('view.showAll', true, editCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('view.toggleMinor', true, editCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('diff.next', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.reload', true, editCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.compare', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.swap', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.rules', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.settings', true, editCtx)).toBe(false)
+
+    expect(resolveMenuCommandEnabled('session.compare', true, patchCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.swap', true, patchCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.reload', true, patchCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.rules', true, patchCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.settings', true, patchCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.save', true, patchCtx)).toBe(true)
 
     expect(resolveMenuCommandEnabled('view.showAll', true, registryCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('view.expandAll', true, registryCtx)).toBe(true)

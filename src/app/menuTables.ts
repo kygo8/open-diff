@@ -86,14 +86,26 @@ export function resolveMenuCommandEnabled(
     commandId === 'session.save' ||
     commandId === 'session.saveAs' ||
     commandId === 'session.clear' ||
-    commandId === 'session.export' ||
-    commandId === 'session.compare' ||
-    commandId === 'session.swap' ||
-    commandId === 'session.reload' ||
-    commandId === 'session.rules' ||
-    commandId === 'session.settings'
+    commandId === 'session.export'
   ) {
     return isSessionWorkbenchPath(path)
+  }
+
+  if (commandId === 'session.compare' || commandId === 'session.swap') {
+    return isSessionWorkbenchPath(path) && !isTextEditRoute(path) && !isTextPatchRoute(path)
+  }
+
+  if (commandId === 'session.reload') {
+    return isSessionWorkbenchPath(path) && !isTextPatchRoute(path)
+  }
+
+  if (commandId === 'session.rules' || commandId === 'session.settings') {
+    return (
+      isSessionWorkbenchPath(path) &&
+      !isTextEditRoute(path) &&
+      !isTextPatchRoute(path) &&
+      !isClipboardCompareRoute(path)
+    )
   }
 
   if (commandId === 'diff.next' || commandId === 'diff.previous') {

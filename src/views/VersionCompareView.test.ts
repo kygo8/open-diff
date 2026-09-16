@@ -329,4 +329,12 @@ it('applies View filter commands from the menu action bus', async () => {
   await wrapper.vm.$nextTick()
   expect(wrapper.find('[data-testid="version-field-FileVersion"]').exists()).toBe(true)
   expect(wrapper.find('[data-testid="version-field-CompanyName"]').exists()).toBe(true)
+
+  expect(wrapper.find('[data-testid="version-rules-panel"]').exists()).toBe(false)
+  viewActions.dispatch('rules')
+  await wrapper.vm.$nextTick()
+  expect(wrapper.find('[data-testid="version-rules-panel"]').exists()).toBe(true)
+  viewActions.dispatch('session-settings')
+  await wrapper.vm.$nextTick()
+  expect(wrapper.find('[data-testid="version-rules-panel"]').exists()).toBe(false)
 })

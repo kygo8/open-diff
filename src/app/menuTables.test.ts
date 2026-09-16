@@ -95,8 +95,12 @@ describe('menuTables', () => {
     expect(resolveMenuCommandEnabled('view.showDifferences', true, mediaCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('view.toggleMinor', true, mediaCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('diff.next', true, mediaCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.rules', true, mediaCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.settings', true, mediaCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('view.showAll', true, versionCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('diff.previous', true, versionCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.rules', true, versionCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.settings', true, versionCtx)).toBe(true)
 
     expect(resolveMenuCommandEnabled('view.showAll', true, clipboardCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('view.toggleMinor', true, clipboardCtx)).toBe(false)

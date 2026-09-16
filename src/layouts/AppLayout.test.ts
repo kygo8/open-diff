@@ -385,7 +385,26 @@ describe('AppLayout command palette', () => {
     expect(
       media.find('[data-testid="menu-command-view.toggleMinor"]').attributes('disabled'),
     ).toBeUndefined()
+    await media.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      media.find('[data-testid="menu-command-session.rules"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      media.find('[data-testid="menu-command-session.settings"]').attributes('disabled'),
+    ).toBeUndefined()
     media.unmount()
+
+    routePath = '/compare/version'
+    const version = mountAppLayout()
+
+    await version.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      version.find('[data-testid="menu-command-session.rules"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      version.find('[data-testid="menu-command-session.settings"]').attributes('disabled'),
+    ).toBeUndefined()
+    version.unmount()
 
     routePath = '/reports/scripts'
     const reports = mountAppLayout()

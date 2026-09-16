@@ -350,6 +350,14 @@ describe('MediaCompareView', () => {
     expect(wrapper.find('[data-testid="media-field-Comment"]').attributes('data-selected')).toBe(
       'true',
     )
+
+    expect(wrapper.find('[data-testid="media-rules-panel"]').exists()).toBe(false)
+    viewActions.dispatch('rules')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="media-rules-panel"]').exists()).toBe(true)
+    viewActions.dispatch('session-settings')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="media-rules-panel"]').exists()).toBe(false)
   })
   it('shows size/date path footers after compare', async () => {
     const wrapper = mount(MediaCompareView, {

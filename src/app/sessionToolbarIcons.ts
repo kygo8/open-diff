@@ -66,6 +66,7 @@ export type SessionToolbarVisual = { kind: 'icon'; icon: LucideIcon } | SessionT
  */
 export const sessionToolbarPlates: Readonly<Record<string, SessionToolbarPlate>> = {
   home: { kind: 'plate', plate: 'home', symbol: '⌂' },
+  sessions: { kind: 'plate', plate: 'sessions', symbol: '▣' },
   refresh: { kind: 'plate', plate: 'refresh', symbol: '↻' },
   reload: { kind: 'plate', plate: 'reload', symbol: '⟳' },
   swap: { kind: 'plate', plate: 'swap', symbol: '↔' },
@@ -97,6 +98,32 @@ export const sessionToolbarPlates: Readonly<Record<string, SessionToolbarPlate>>
   structure: { kind: 'plate', plate: 'structure', symbol: '▤' },
   minor: { kind: 'plate', plate: 'minor', symbol: '~' },
   files: { kind: 'plate', plate: 'files', symbol: '▤' },
+  // Pass 2: fill remaining Lucide-only / letter-glyph slots with OpenDiff plates
+  context: { kind: 'plate', plate: 'context', symbol: '☰' },
+  format: { kind: 'plate', plate: 'format', symbol: '¶' },
+  font: { kind: 'plate', plate: 'font', symbol: 'A' },
+  goto: { kind: 'plate', plate: 'goto', symbol: '#' },
+  wrap: { kind: 'plate', plate: 'wrap', symbol: '↩' },
+  'favor-left': { kind: 'plate', plate: 'favor-left', symbol: '◀' },
+  'favor-right': { kind: 'plate', plate: 'favor-right', symbol: '▶' },
+  conflict: { kind: 'plate', plate: 'conflict', symbol: '⚔' },
+  left: { kind: 'plate', plate: 'left', symbol: '◁' },
+  center: { kind: 'plate', plate: 'center', symbol: '▣' },
+  right: { kind: 'plate', plate: 'right', symbol: '▷' },
+  capture: { kind: 'plate', plate: 'capture', symbol: '⊕' },
+  compare: { kind: 'plate', plate: 'compare', symbol: '≠' },
+  tol: { kind: 'plate', plate: 'tol', symbol: '±' },
+  range: { kind: 'plate', plate: 'range', symbol: '⟷' },
+  blend: { kind: 'plate', plate: 'blend', symbol: '◐' },
+  meta: { kind: 'plate', plate: 'meta', symbol: '◈' },
+  play2: { kind: 'plate', plate: 'play2', symbol: '⏵' },
+  edit: { kind: 'plate', plate: 'edit', symbol: '✎' },
+  undo: { kind: 'plate', plate: 'undo', symbol: '↶' },
+  redo: { kind: 'plate', plate: 'redo', symbol: '↷' },
+  cut: { kind: 'plate', plate: 'cut', symbol: '✂' },
+  paste: { kind: 'plate', plate: 'paste', symbol: '⤵' },
+  delete: { kind: 'plate', plate: 'delete', symbol: '⌫' },
+  syntax: { kind: 'plate', plate: 'syntax', symbol: '{}' },
 }
 
 /**
@@ -147,15 +174,15 @@ export const sessionToolbarIcons: Readonly<Record<string, LucideIcon>> = {
   left: ArrowLeftFromLine,
   center: Rows2,
   right: ArrowRightFromLine,
-  // Clipboard Compare letter-glyph leftovers
+  // Clipboard Compare leftovers (plates preferred when showToolbarIcons)
   capture: ClipboardPlus,
   compare: Diff,
-  // Picture Compare letter-glyph leftovers
+  // Picture Compare leftovers
   tol: CircleGauge,
   range: SlidersHorizontal,
   blend: Blend,
   meta: Tag,
-  // Text Edit / general edit chrome
+  // Text Edit / optional edit chrome
   edit: SquarePen,
   undo: Undo2,
   redo: Redo2,
@@ -166,13 +193,14 @@ export const sessionToolbarIcons: Readonly<Record<string, LucideIcon>> = {
 }
 
 /**
- * Capture MainBar spacing (~12px group gaps on folder shots): mark commands that
+ * Capture MainBar spacing (~12px group gaps on folder/text shots): mark commands that
  * start a visual group so the shell can insert separator rhythm without PNGs.
  */
 export const sessionToolbarSeparatorBeforeIds: ReadonlySet<string> = new Set([
   'all',
   'minor',
   'structure',
+  'context',
   'same-ok',
   'rules',
   'merge',
@@ -192,7 +220,16 @@ export const sessionToolbarSeparatorBeforeIds: ReadonlySet<string> = new Set([
   'next-section',
   'next-conflict',
   'reload',
-  'format',
+  'favor-left',
+  'conflict',
+  'left',
+  'capture',
+  'tol',
+  'play2',
+  'meta',
+  'font',
+  'undo',
+  'syntax',
 ])
 
 export function sessionToolbarHasSeparatorBefore(
@@ -205,6 +242,21 @@ export function sessionToolbarHasSeparatorBefore(
 
   if (previousId === 'home') {
     return true
+  }
+
+  // Capture text MainBar keeps Context+Minor adjacent (0px gap).
+  if (id === 'minor' && previousId === 'context') {
+    return false
+  }
+
+  // Capture text MainBar keeps Rules+Format adjacent (0px gap).
+  if (id === 'format' && previousId === 'rules') {
+    return false
+  }
+
+  // Capture picture MainBar keeps Tol+Range+Blend adjacent.
+  if ((id === 'range' && previousId === 'tol') || (id === 'blend' && previousId === 'range')) {
+    return false
   }
 
   return sessionToolbarSeparatorBeforeIds.has(id)

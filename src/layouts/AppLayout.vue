@@ -246,7 +246,9 @@ const aboutDialogOpen = ref(false)
 const helpStatusMessage = ref('')
 const pendingCloseTab = ref<{ id: string; title: string }>()
 const tabContextMenu = ref<{ x: number; y: number; tabId: string }>()
-const visibleCommands = computed(() => filterCommands(commandRegistry, commandQuery.value))
+const visibleCommands = computed(() =>
+  filterCommands(commandRegistry.map(resolveMenuCommand), commandQuery.value),
+)
 const toolbarCommands = computed(() => getCommandsForPlacement(commandRegistry, 'toolbar'))
 const availableLocales = i18n.availableLocales
 const appMenus: AppMenuDefinition[] = [
@@ -1237,6 +1239,12 @@ function closeCommandPalette(): void {
 }
 
 function executeCommand(commandId: CommandId): void {
+  const command = menuCommandLookup.value.get(commandId)
+
+  if (!command || !resolveMenuCommand(command).enabled) {
+    return
+  }
+
   executeRegisteredCommand(commandId)
   closeCommandPalette()
   languageMenuOpen.value = false

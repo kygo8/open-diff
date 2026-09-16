@@ -11,14 +11,14 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('table compare chrome density', () => {
   it('keeps Table Compare path/status/controls chrome dense toward capture', () => {
     expect(css).toMatch(/\.table-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.table-compare-view \.table-source-controls[\s\S]*?min-height:\s*22px/)
-    expect(css).toMatch(/\.table-compare-view \.table-source-controls input[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.table-compare-view \.table-source-controls[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.table-compare-view \.table-source-controls input[\s\S]*?height:\s*16px/)
     expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
     expect(css).toMatch(/\.table-compare-view \.table-grid-row\s*\{[\s\S]*?min-height:\s*20px/)
 
     expect(tableView).toMatch(/\.table-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(tableView).toMatch(/\.table-source-controls[\s\S]*?padding:\s*1px 4px/)
-    expect(tableView).toMatch(/\.table-source-controls input[\s\S]*?height:\s*18px/)
+    expect(tableView).toMatch(/\.table-source-controls[\s\S]*?padding:\s*1px 3px/)
+    expect(tableView).toMatch(/\.table-source-controls input[\s\S]*?height:\s*16px/)
     expect(tableView).toMatch(/\.table-navigation-bar button\s*\{[\s\S]*?height:\s*18px/)
     expect(tableView).toMatch(/\.table-grid-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(tableView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)

@@ -1876,16 +1876,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .picture-compare-view .picture-path-panel {
   gap: 3px !important;
-  min-height: 22px !important;
-  padding: 1px 4px !important;
+  min-height: 20px !important;
+  padding: 1px 3px !important;
   border-radius: 0 !important;
 }
 
 .picture-compare-view .picture-path-panel input,
 .picture-compare-view .picture-path-panel button {
-  height: 18px !important;
-  min-height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  padding: 0 3px !important;
   font-size: 11px !important;
 }
 
@@ -2036,16 +2036,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .media-compare-view .media-path-panel {
   gap: 3px !important;
-  min-height: 22px !important;
-  padding: 1px 4px !important;
+  min-height: 20px !important;
+  padding: 1px 3px !important;
   border-radius: 0 !important;
 }
 
 .media-compare-view .media-path-panel input,
 .media-compare-view .media-path-panel button {
-  height: 18px !important;
-  min-height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  padding: 0 3px !important;
   font-size: 11px !important;
 }
 
@@ -2213,16 +2213,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .version-compare-view .version-path-panel {
   gap: 3px !important;
-  min-height: 22px !important;
-  padding: 1px 4px !important;
+  min-height: 20px !important;
+  padding: 1px 3px !important;
   border-radius: 0 !important;
 }
 
 .version-compare-view .version-path-panel input,
 .version-compare-view .version-path-panel button {
-  height: 18px !important;
-  min-height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  padding: 0 3px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
@@ -2554,8 +2554,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .table-compare-view .column-map-controls,
 .table-compare-view .table-navigation-bar {
   gap: 2px 4px !important;
-  min-height: 22px !important;
-  padding: 1px 4px !important;
+  min-height: 20px !important;
+  padding: 1px 3px !important;
   border-radius: 0 !important;
 }
 
@@ -2580,9 +2580,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .table-compare-view .column-map-controls select,
 .table-compare-view .table-navigation-bar input,
 .table-compare-view .table-navigation-bar button {
-  height: 18px !important;
-  min-height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  padding: 0 3px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }

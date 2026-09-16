@@ -12,10 +12,10 @@ describe('version compare chrome density', () => {
   it('keeps Version Compare path/status/toolbar/footer chrome dense toward capture', () => {
     expect(css).toMatch(/\.version-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(
-      /\.version-compare-view \.version-path-panel\s*\{[\s\S]*?min-height:\s*22px/,
+      /\.version-compare-view \.version-path-panel\s*\{[\s\S]*?min-height:\s*20px/,
     )
     expect(css).toMatch(
-      /\.version-compare-view \.version-path-panel input,\s*\.version-compare-view \.version-path-panel button\s*\{[\s\S]*?height:\s*18px/,
+      /\.version-compare-view \.version-path-panel input,\s*\.version-compare-view \.version-path-panel button\s*\{[\s\S]*?height:\s*16px/,
     )
     expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
 

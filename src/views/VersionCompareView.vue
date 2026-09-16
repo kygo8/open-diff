@@ -853,8 +853,8 @@ h1 {
   grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
   align-items: end;
   gap: 3px;
-  min-height: 22px;
-  padding: 1px 4px;
+  min-height: 20px;
+  padding: 1px 3px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -873,9 +873,9 @@ h1 {
 }
 
 .version-path-panel input {
-  height: 18px;
-  min-height: 18px;
-  padding: 0 4px;
+  height: 16px;
+  min-height: 16px;
+  padding: 0 3px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);
@@ -885,9 +885,9 @@ h1 {
 }
 
 .version-path-panel button {
-  height: 18px;
-  min-height: 18px;
-  padding: 0 4px;
+  height: 16px;
+  min-height: 16px;
+  padding: 0 3px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);

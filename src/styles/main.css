@@ -1302,7 +1302,7 @@ select {
   flex-wrap: wrap !important;
   align-items: center !important;
   gap: 1px 3px !important;
-  min-height: 16px !important;
+  min-height: 15px !important;
   padding: 0 !important;
   font-size: 11px !important;
 }
@@ -1317,14 +1317,14 @@ select {
 }
 
 .folder-filter-pattern {
-  height: 16px !important;
+  height: 15px !important;
   padding: 0 4px !important;
   border: 1px solid #bfc4cc !important;
   border-radius: 2px !important;
   background: #ffffff !important;
   color: #111111 !important;
   font-size: 11px !important;
-  line-height: 16px !important;
+  line-height: 15px !important;
 }
 
 .folder-filter-strip-actions {
@@ -1343,7 +1343,7 @@ select {
   box-sizing: border-box !important;
   min-width: 36px !important;
   max-width: 48px !important;
-  height: 24px !important;
+  height: 22px !important;
   padding: 0 2px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
@@ -2945,7 +2945,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-compare-view .folder-filter-chrome,
 .folder-sync-view .folder-filter-chrome {
-  min-height: 24px !important;
+  min-height: 22px !important;
   padding: 0 !important;
 }
 
@@ -3040,7 +3040,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .folder-filter-chrome {
-  min-height: 24px !important;
+  min-height: 22px !important;
   padding: 0 !important;
 }
 
@@ -3066,7 +3066,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-peek-panel header,
 .folder-merge-peek-panel header {
   gap: 2px !important;
-  min-height: 12px !important;
+  min-height: 11px !important;
   margin: 0 !important;
   padding: 0 !important;
   border-bottom: 1px solid #dfe3e8 !important;
@@ -3087,15 +3087,15 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-peek-panel > button,
 .folder-sync-peek-panel > button,
 .folder-merge-peek-panel > button {
-  height: 12px !important;
-  min-height: 12px !important;
+  height: 11px !important;
+  min-height: 11px !important;
   padding: 0 4px !important;
   border: 1px solid #c9cdd3 !important;
   border-radius: 0 !important;
   background: #f3f3f3 !important;
   color: #1a1a1a !important;
   font-size: 10px !important;
-  line-height: 12px !important;
+  line-height: 11px !important;
 }
 
 .folder-peek-panel header button:hover,
@@ -3111,7 +3111,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   display: inline-flex !important;
   align-items: stretch !important;
   gap: 0 !important;
-  min-height: 12px !important;
+  min-height: 11px !important;
   margin: 0 !important;
   border-bottom: 1px solid #b8bec6 !important;
 }
@@ -3119,14 +3119,14 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .peek-tab {
   box-sizing: border-box !important;
   min-width: 36px !important;
-  height: 12px !important;
+  height: 11px !important;
   padding: 0 5px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
   background: #f3f3f3 !important;
   color: #1a1a1a !important;
   font-size: 10px !important;
-  line-height: 12px !important;
+  line-height: 11px !important;
   cursor: default !important;
 }
 
@@ -3193,7 +3193,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-peek-panel dl > div {
   display: grid !important;
   gap: 0 !important;
-  min-height: 15px !important;
+  min-height: 14px !important;
   padding: 0 !important;
 }
 

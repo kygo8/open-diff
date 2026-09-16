@@ -2019,7 +2019,7 @@ function onVisibilityForDiskChange(): void {
 
 .compare-toolbar {
   flex-wrap: wrap;
-  gap: 3px;
+  gap: 2px;
   height: auto;
   overflow: visible;
 }
@@ -2104,7 +2104,7 @@ function onVisibilityForDiskChange(): void {
   flex: 0 0 auto;
   width: auto;
   max-width: 12em;
-  height: 20px;
+  height: 18px;
   padding: 0 6px;
   overflow: hidden;
   border: 1px solid var(--app-border);

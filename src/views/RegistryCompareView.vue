@@ -1171,9 +1171,9 @@ function runRegistryToolbarCommand(commandId: string): void {
 <style scoped>
 .registry-compare-view {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: auto;
 }
 
@@ -1218,8 +1218,8 @@ h1 {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   align-items: end;
   gap: 4px;
-  min-height: 26px;
-  padding: 2px 6px;
+  min-height: 22px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1385,16 +1385,16 @@ h1 {
 .registry-summary-item {
   display: grid;
   gap: 2px;
-  min-height: 22px;
-  padding: 2px 6px;
+  min-height: 20px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
 }
 
 .registry-summary-item strong {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .registry-summary-item span {
@@ -1416,7 +1416,7 @@ h1 {
   grid-template-rows: auto minmax(0, 1fr);
   gap: 4px;
   min-width: 0;
-  padding: 2px 6px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1451,8 +1451,8 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0 6px;
-  min-height: 28px;
-  padding: 2px 6px 2px calc(8px + var(--key-depth, 0) * 14px);
+  min-height: 24px;
+  padding: 1px 4px 1px calc(8px + var(--key-depth, 0) * 14px);
   border: 0;
   border-bottom: 1px solid var(--app-border);
   background: transparent;
@@ -1494,7 +1494,7 @@ h1 {
     minmax(220px, 1.35fr) minmax(112px, 0.7fr) minmax(150px, 1fr)
     minmax(150px, 1fr) 92px;
   min-width: 760px;
-  min-height: 22px;
+  min-height: 20px;
   padding: 0;
   border: 0;
   border-bottom: 1px solid var(--app-border);
@@ -1514,11 +1514,11 @@ h1 {
 .registry-value-row > * {
   min-width: 0;
   margin: 0;
-  padding: 2px 6px;
+  padding: 1px 4px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-style: normal;
-  line-height: 16px;
+  line-height: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1602,8 +1602,8 @@ h1 {
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 10px;
-  line-height: 10px;
+  font-size: 9px;
+  line-height: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

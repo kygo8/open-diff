@@ -1186,8 +1186,8 @@ watch(
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  min-height: 22px;
+  gap: 2px;
+  min-height: 20px;
 }
 
 .merge-toolbar > div {
@@ -1218,8 +1218,8 @@ watch(
   width: 220px;
   min-width: 0;
   max-width: 100%;
-  height: 18px;
-  padding: 0 4px;
+  height: 16px;
+  padding: 0 3px;
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -1231,8 +1231,8 @@ watch(
 }
 
 .toolbar-button {
-  height: 20px;
-  padding: 0 5px;
+  height: 18px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-surface);
@@ -1337,9 +1337,9 @@ watch(
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  min-height: 22px;
-  padding: 2px 4px;
+  gap: 2px;
+  min-height: 20px;
+  padding: 1px 3px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-muted);
 }

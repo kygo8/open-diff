@@ -1691,6 +1691,64 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+/* Picture Meta/Blend/Tol chrome densify one more notch toward capture */
+.picture-compare-view .picture-options-panel,
+.picture-compare-view .picture-blend-panel,
+.picture-compare-view .picture-metadata-panel {
+  gap: 2px 6px !important;
+  min-height: 22px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.picture-compare-view .picture-options-panel header,
+.picture-compare-view .picture-blend-panel header,
+.picture-compare-view .metadata-header {
+  gap: 6px !important;
+  min-height: 18px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.picture-compare-view .picture-options-panel header span,
+.picture-compare-view .picture-options-hint,
+.picture-compare-view .picture-blend-panel header span,
+.picture-compare-view .picture-blend-panel label,
+.picture-compare-view .metadata-header span {
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.picture-compare-view .picture-color-rule {
+  gap: 4px 6px !important;
+}
+
+.picture-compare-view .picture-options-panel input[type='number'],
+.picture-compare-view .picture-options-panel button,
+.picture-compare-view .picture-blend-panel select {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.picture-compare-view .picture-blend-panel input[type='range'] {
+  height: 18px !important;
+  min-height: 18px !important;
+}
+
+.picture-compare-view .metadata-grid {
+  border-radius: 0 !important;
+}
+
+.picture-compare-view .metadata-grid-heading,
+.picture-compare-view .metadata-cell {
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
 /* Media Compare chrome densify toward capture path/status/toolbar/footer strips */
 .media-compare-view {
   gap: 4px !important;
@@ -1713,16 +1771,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .media-compare-view .bc-path-footers {
-  gap: 1px !important;
+  gap: 0 !important;
   padding: 0 2px !important;
   margin-top: 0 !important;
 }
 
 .media-compare-view .path-side-footer {
-  min-height: 10px !important;
+  min-height: 9px !important;
   margin-top: 0 !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+  font-size: 9px !important;
+  line-height: 9px !important;
 }
 
 .media-compare-view .media-playback-panel,
@@ -1743,6 +1801,49 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .media-compare-view .media-summary-item strong {
   font-size: 12px !important;
   line-height: 16px !important;
+}
+
+/* Media scrub/footer densify one more notch toward capture */
+.media-compare-view .media-playback-header {
+  gap: 6px !important;
+  min-height: 18px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.media-compare-view .media-sync-toggle {
+  gap: 4px !important;
+  font-size: 11px !important;
+}
+
+.media-compare-view .media-scrub-row {
+  gap: 6px !important;
+  min-height: 22px !important;
+  padding: 0 2px !important;
+}
+
+.media-compare-view .media-scrub-row button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+.media-compare-view .media-scrub {
+  height: 18px !important;
+  min-height: 18px !important;
+}
+
+.media-compare-view .media-scrub-row span,
+.media-compare-view .media-playback-hint {
+  margin: 0 !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
 }
 
 /* Version Compare chrome densify toward capture path/status/toolbar/footer strips */

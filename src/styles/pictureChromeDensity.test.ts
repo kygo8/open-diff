@@ -25,4 +25,28 @@ describe('picture compare chrome density', () => {
 
     expect(layout).toMatch(/data-chrome-kind='picture-session'[\s\S]*?height:\s*22px/)
   })
+
+  it('keeps Picture Meta/Blend/Tol chrome dense one more notch toward capture', () => {
+    expect(css).toMatch(
+      /\.picture-compare-view \.picture-options-panel,\s*\.picture-compare-view \.picture-blend-panel,\s*\.picture-compare-view \.picture-metadata-panel\s*\{[\s\S]*?padding:\s*2px 6px/,
+    )
+    expect(css).toMatch(
+      /\.picture-compare-view \.picture-options-panel,\s*\.picture-compare-view \.picture-blend-panel,\s*\.picture-compare-view \.picture-metadata-panel\s*\{[\s\S]*?border-radius:\s*0/,
+    )
+    expect(css).toMatch(
+      /\.picture-compare-view \.metadata-grid-heading,\s*\.picture-compare-view \.metadata-cell\s*\{[\s\S]*?padding:\s*2px 6px/,
+    )
+    expect(css).toMatch(
+      /\.picture-compare-view \.picture-options-panel input\[type='number'\],\s*\.picture-compare-view \.picture-options-panel button,\s*\.picture-compare-view \.picture-blend-panel select\s*\{[\s\S]*?height:\s*18px/,
+    )
+
+    expect(pictureView).toMatch(/\.picture-options-panel\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(pictureView).toMatch(/\.picture-blend-panel\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(pictureView).toMatch(/\.picture-metadata-panel\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(pictureView).toMatch(/\.metadata-cell\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(pictureView).toMatch(/from '@lucide\/vue'/)
+    expect(pictureView).toMatch(/CircleGauge/)
+    expect(pictureView).toMatch(/<Blend[\s\S]*?aria-hidden="true"/)
+    expect(pictureView).toMatch(/<Tag[\s\S]*?aria-hidden="true"/)
+  })
 })

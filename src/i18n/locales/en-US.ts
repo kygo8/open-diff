@@ -1201,6 +1201,8 @@ export const enUS: LanguagePack = {
     'status.compareContentsNoRoute': 'No content compare session is available for this selection.',
     'status.synchronizeNeedsRoots': 'Set both folder roots before synchronizing.',
     'status.explorerRevealed': 'Revealed {path} in file manager',
+    'status.explorerOpenedParent': 'Opened parent folder {path} in file manager',
+    'status.selectionReportReady': 'Selection report ready ({count} items)',
     'status.ignoredMarked': 'Marked {path} as ignored',
     'status.ignoredUnmarked': 'Cleared ignored mark on {path}',
   },

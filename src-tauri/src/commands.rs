@@ -2568,6 +2568,165 @@ fn open_path_with_system_default(path: &str) -> std::io::Result<std::process::Ch
     }
 }
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RevealPathInOsResult {
+    pub path: String,
+    pub selected: bool,
+    pub fallback_opened: bool,
+    pub launched: bool,
+}
+
+/// Prefer OS select/highlight; fall back to opening the parent folder.
+#[tauri::command]
+pub fn reveal_path_in_os(path: String) -> Result<RevealPathInOsResult, AppErrorPayload> {
+    let trimmed = path.trim();
+    if trimmed.is_empty() {
+        return Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.app.unknown.title",
+            "Path is required".to_owned(),
+        ));
+    }
+
+    match reveal_path_in_os_inner(trimmed) {
+        Ok(result) => Ok(result),
+        Err(error) => Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.app.unknown.title",
+            error.to_string(),
+        )),
+    }
+}
+
+fn reveal_path_in_os_inner(path: &str) -> std::io::Result<RevealPathInOsResult> {
+    if try_reveal_path_selected(path)? {
+        return Ok(RevealPathInOsResult {
+            path: path.to_owned(),
+            selected: true,
+            fallback_opened: false,
+            launched: true,
+        });
+    }
+
+    let fallback = reveal_fallback_open_path(path);
+    open_path_with_system_default(&fallback)?;
+
+    Ok(RevealPathInOsResult {
+        path: fallback,
+        selected: false,
+        fallback_opened: true,
+        launched: true,
+    })
+}
+
+fn reveal_fallback_open_path(path: &str) -> String {
+    let candidate = std::path::Path::new(path);
+    if candidate.is_dir() {
+        return path.to_owned();
+    }
+
+    match candidate.parent() {
+        Some(parent) if !parent.as_os_str().is_empty() => parent.display().to_string(),
+        _ => path.to_owned(),
+    }
+}
+
+fn try_reveal_path_selected(path: &str) -> std::io::Result<bool> {
+    #[cfg(target_os = "windows")]
+    {
+        // explorer /select,<path> — no space after the comma.
+        Ok(std::process::Command::new("explorer")
+            .arg(format!("/select,{path}"))
+            .spawn()
+            .is_ok())
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        Ok(std::process::Command::new("open")
+            .args(["-R", path])
+            .spawn()
+            .is_ok())
+    }
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        try_linux_file_manager_select(path)
+    }
+
+    #[cfg(not(any(target_os = "windows", target_os = "macos", unix)))]
+    {
+        let _ = path;
+        Ok(false)
+    }
+}
+
+#[cfg(all(unix, not(target_os = "macos")))]
+fn try_linux_file_manager_select(path: &str) -> std::io::Result<bool> {
+    let absolute = std::fs::canonicalize(path).unwrap_or_else(|_| std::path::PathBuf::from(path));
+    let uri = path_as_file_uri(&absolute);
+
+    // Freedesktop FileManager1.ShowItems highlights the entry when supported.
+    let dbus = std::process::Command::new("dbus-send")
+        .args([
+            "--session",
+            "--dest=org.freedesktop.FileManager1",
+            "--type=method_call",
+            "/org/freedesktop/FileManager1",
+            "org.freedesktop.FileManager1.ShowItems",
+            &format!("array:string:\"{uri}\""),
+            "string:",
+        ])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status();
+
+    if matches!(dbus, Ok(status) if status.success()) {
+        return Ok(true);
+    }
+
+    // Best-effort desktop-specific select flags.
+    for (program, args) in [
+        (
+            "nautilus",
+            vec!["--select".to_owned(), absolute.display().to_string()],
+        ),
+        (
+            "dolphin",
+            vec!["--select".to_owned(), absolute.display().to_string()],
+        ),
+        ("nemo", vec![absolute.display().to_string()]),
+    ] {
+        if std::process::Command::new(program)
+            .args(&args)
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .is_ok()
+        {
+            return Ok(true);
+        }
+    }
+
+    Ok(false)
+}
+
+#[cfg(all(unix, not(target_os = "macos")))]
+fn path_as_file_uri(path: &std::path::Path) -> String {
+    let display = path.display().to_string();
+    let mut encoded = String::from("file://");
+    for ch in display.chars() {
+        match ch {
+            ' ' => encoded.push_str("%20"),
+            '#' => encoded.push_str("%23"),
+            '?' => encoded.push_str("%3F"),
+            c => encoded.push(c),
+        }
+    }
+    encoded
+}
+
 #[tauri::command]
 pub fn take_shell_compare_launch(
 ) -> Result<Option<crate::shell_startup::ShellCompareLaunchPayload>, AppErrorPayload> {
@@ -5269,6 +5428,32 @@ mod tests {
     use std::fs;
     use std::path::PathBuf;
     use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
+    #[test]
+    fn reveal_fallback_open_path_uses_parent_for_files() {
+        let root = unique_temp_dir("reveal-fallback");
+        fs::create_dir_all(&root).expect("fixture directory");
+        let file = root.join("sample.txt");
+        fs::write(&file, "x").expect("fixture file");
+        let fallback = reveal_fallback_open_path(&file.display().to_string());
+        assert_eq!(fallback, root.display().to_string());
+
+        let dir_fallback = reveal_fallback_open_path(&root.display().to_string());
+        assert_eq!(dir_fallback, root.display().to_string());
+    }
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    #[test]
+    fn path_as_file_uri_encodes_spaces() {
+        let uri = path_as_file_uri(std::path::Path::new("/tmp/my file.txt"));
+        assert_eq!(uri, "file:///tmp/my%20file.txt");
+    }
+
+    #[test]
+    fn reveal_path_in_os_rejects_empty_path() {
+        let error = reveal_path_in_os("  ".to_owned()).expect_err("empty path");
+        assert_eq!(error.code, AppErrorCode::Unknown);
+    }
 
     #[test]
     fn read_text_file_returns_localizable_not_found_error() {

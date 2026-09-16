@@ -1223,6 +1223,8 @@ export const deDE: LanguagePack = {
       'Für diese Auswahl ist keine Inhaltsvergleichssitzung verfügbar.',
     'status.synchronizeNeedsRoots': 'Legen Sie vor dem Synchronisieren beide Ordnerwurzeln fest.',
     'status.explorerRevealed': '{path} im Dateimanager angezeigt',
+    'status.explorerOpenedParent': 'Übergeordneten Ordner {path} im Dateimanager geöffnet',
+    'status.selectionReportReady': 'Auswahlbericht bereit ({count} Einträge)',
     'status.ignoredMarked': '{path} als ignoriert markiert',
     'status.ignoredUnmarked': 'Ignoriert-Markierung für {path} entfernt',
   },

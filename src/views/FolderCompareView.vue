@@ -54,8 +54,17 @@ import {
 import {
   createFolderSyncHandoffLaunch,
   explorerRevealPath,
+  explorerSelectTargetPath,
   toggleIgnoredRowId,
 } from '@/app/folderCompareExtraActions'
+import {
+  loadIgnoredRelativePathsForRoots,
+  saveIgnoredRelativePathsForRoots,
+} from '@/app/folderIgnoredPaths'
+import {
+  buildFolderCompareSelectionReportText,
+  defaultFolderCompareSelectionReportOutputPath,
+} from '@/app/folderCompareSelectionReport'
 import {
   aggregateFolderSelection,
   formatFolderSelectionLabel,
@@ -90,10 +99,11 @@ import {
   exportFolderCompareReport,
   moveFolderEntry,
   renameFolderEntry,
+  saveTextFile,
   touchFolderEntry,
 } from '@/api/diff'
 import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
-import { openPathExternal } from '@/api/integration'
+import { openPathExternal, revealPathInOs } from '@/api/integration'
 import {
   formatRemoteUri,
   isImplementedRemoteProtocol,
@@ -403,6 +413,7 @@ watch([leftRoot, rightRoot], () => {
   if (isArchivePath(leftRoot.value) && isArchivePath(rightRoot.value)) {
     archiveSessionActive.value = true
   }
+  ignoredRelativePaths.value = loadIgnoredRelativePathsForRoots(leftRoot.value, rightRoot.value)
   syncFolderTabTitle()
   void refreshRootFreeSpace()
 })
@@ -1371,6 +1382,10 @@ function applyFolderCompareResponse(response: FolderCompareResponse): void {
   rows.value = applyManualAlignments(normalized, manualAlignments.value)
   leftRoot.value = response.leftRoot
   rightRoot.value = response.rightRoot
+  ignoredRelativePaths.value = loadIgnoredRelativePathsForRoots(
+    response.leftRoot,
+    response.rightRoot,
+  )
   expandedDirectoryIds.value = settings.collapseIdenticalFoldersDefault
     ? directoryIdsWithDifferences(rows.value)
     : new Set(rows.value.filter((row) => row.kind === 'directory').map((row) => row.id))
@@ -2204,14 +2219,25 @@ async function revealSelectedInExplorer(): Promise<void> {
     return
   }
 
-  const revealPath = explorerRevealPath(entryPath, row.kind)
+  const selectPath = explorerSelectTargetPath(entryPath)
+  const fallbackPath = explorerRevealPath(entryPath, row.kind)
 
   try {
-    await openPathExternal(revealPath)
-    lastOpenAction.value = createDefaultOpenAction(revealPath)
-    lastSelectionAction.value = t('status.explorerRevealed', { path: revealPath })
-  } catch (error) {
-    folderCompareError.value = formatCompareError(error, t)
+    const result = await revealPathInOs(selectPath)
+    const revealedPath = result.selected ? selectPath : result.path || fallbackPath
+
+    lastOpenAction.value = createDefaultOpenAction(revealedPath)
+    lastSelectionAction.value = result.selected
+      ? t('status.explorerRevealed', { path: selectPath })
+      : t('status.explorerOpenedParent', { path: revealedPath })
+  } catch {
+    try {
+      await openPathExternal(fallbackPath)
+      lastOpenAction.value = createDefaultOpenAction(fallbackPath)
+      lastSelectionAction.value = t('status.explorerOpenedParent', { path: fallbackPath })
+    } catch (fallbackError) {
+      folderCompareError.value = formatCompareError(fallbackError, t)
+    }
   }
 }
 
@@ -2225,6 +2251,7 @@ function toggleIgnoredSelected(): void {
   const result = toggleIgnoredRowId(ignoredRelativePaths.value, row.relativePath)
 
   ignoredRelativePaths.value = result.next
+  saveIgnoredRelativePathsForRoots(leftRoot.value, rightRoot.value, result.next)
   lastSelectionAction.value = result.marked
     ? t('status.ignoredMarked', { path: displayName(row) })
     : t('status.ignoredUnmarked', { path: displayName(row) })
@@ -2310,7 +2337,34 @@ async function exportFolderReport(
     outputPath: `${leftRoot.value}/folder-compare.${reportFileExtension(format)}`,
   })
 
-  reportStatus.value = response.outputPath ?? format
+  const selectionRows = resolveOperationRows(rows.value, checkedRowIds.value, selectedRowId.value)
+  let status = response.outputPath ?? format
+
+  if (selectionRows.length > 0) {
+    const selectionText = buildFolderCompareSelectionReportText({
+      leftRoot: leftRoot.value,
+      rightRoot: rightRoot.value,
+      scopeLabel: checkedRowIds.value.size > 0 ? 'checked' : 'selection',
+      rows: selectionRows.map((row) => ({
+        relativePath: row.relativePath,
+        status: row.status,
+        kind: row.kind,
+        leftPath: row.leftPath,
+        rightPath: row.rightPath,
+        ignored: ignoredRelativePaths.value.has(row.relativePath),
+      })),
+    })
+    const selectionPath = defaultFolderCompareSelectionReportOutputPath(leftRoot.value)
+
+    try {
+      await saveTextFile({ path: selectionPath, text: selectionText })
+      status = `${status} + ${selectionPath}`
+    } catch {
+      status = `${status} | ${t('status.selectionReportReady', { count: selectionRows.length })}`
+    }
+  }
+
+  reportStatus.value = status
 }
 
 function markSyncPreviewItemAsLeave(itemId: string): void {

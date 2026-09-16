@@ -18,7 +18,7 @@ import { pickNativePath } from '@/app/filePicker'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
-import { openPathExternal } from '@/api/integration'
+import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { saveLocalRemoteProfiles } from '@/app/remoteProfilesLocal'
 import type * as remoteApi from '@/api/remote'
 import { useTabsStore } from '@/stores/tabs'
@@ -33,6 +33,12 @@ vi.mock('@/api/integration', () => ({
   openPathExternal: vi.fn().mockResolvedValue({
     path: 'D:/left/src/main.ts',
     executable: null,
+    launched: true,
+  }),
+  revealPathInOs: vi.fn().mockResolvedValue({
+    path: 'D:/left/src/main.ts',
+    selected: true,
+    fallbackOpened: false,
     launched: true,
   }),
 }))
@@ -185,6 +191,10 @@ vi.mock('@/api/diff', () => ({
     status: 'deleted',
     sourcePath: 'D:/left/notes.md',
     targetPath: null,
+  }),
+  saveTextFile: vi.fn().mockResolvedValue({
+    path: 'D:/folder-compare-selection.txt',
+    bytesWritten: 32,
   }),
   exportFolderCompareReport: vi.fn().mockResolvedValue({
     format: 'html',
@@ -635,10 +645,10 @@ describe('FolderCompareView', () => {
       },
     })
 
-    vi.mocked(openPathExternal).mockClear()
+    vi.mocked(revealPathInOs).mockClear()
     await wrapper.find('[data-testid="reveal-selected-in-explorer"]').trigger('click')
     await flushPromises()
-    expect(openPathExternal).toHaveBeenCalledWith('D:/left/src')
+    expect(revealPathInOs).toHaveBeenCalledWith('D:/left/src/main.ts')
 
     await wrapper.find('[data-testid="toggle-ignored-selected"]').trigger('click')
     expect(wrapper.text()).toMatch(/Marked|ignored/i)
@@ -657,6 +667,30 @@ describe('FolderCompareView', () => {
     expect(wrapper.find('[data-testid="compare-contents-selected"]').text()).not.toContain(
       'unimplemented',
     )
+  })
+
+  it('persists ignored marks across remount for the same folder roots', async () => {
+    const first = mountFolderCompareView()
+
+    await runCompare(first)
+    await first.find('[data-row-id="src-main-ts"]').trigger('click')
+    await first.find('[data-testid="toggle-ignored-selected"]').trigger('click')
+    expect(first.text()).toMatch(/Marked|ignored/i)
+    expect(JSON.parse(localStorage.getItem('open-diff-folder-ignored-paths') ?? '{}')).toEqual({
+      'D:/left|D:/right': ['src/main.ts'],
+    })
+    first.unmount()
+
+    const second = mountFolderCompareView()
+
+    await runCompare(second)
+    expect(JSON.parse(localStorage.getItem('open-diff-folder-ignored-paths') ?? '{}')).toEqual({
+      'D:/left|D:/right': ['src/main.ts'],
+    })
+    await second.find('[data-row-id="src-main-ts"]').trigger('click')
+    await second.find('[data-testid="toggle-ignored-selected"]').trigger('click')
+    expect(second.text()).toMatch(/Cleared|Unmarked|取消|해제|entfernt|effac|quitó/i)
+    expect(JSON.parse(localStorage.getItem('open-diff-folder-ignored-paths') ?? '{}')).toEqual({})
   })
 
   it('launches open-with and associated apps for the selected file', async () => {

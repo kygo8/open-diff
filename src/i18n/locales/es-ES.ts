@@ -1221,6 +1221,9 @@ export const esES: LanguagePack = {
       'No hay sesión de comparación de contenido para esta selección.',
     'status.synchronizeNeedsRoots': 'Establezca ambas raíces antes de sincronizar.',
     'status.explorerRevealed': 'Se mostró {path} en el administrador de archivos',
+    'status.explorerOpenedParent':
+      'Se abrió la carpeta principal {path} en el administrador de archivos',
+    'status.selectionReportReady': 'Informe de selección listo ({count} elementos)',
     'status.ignoredMarked': 'Se marcó {path} como ignorado',
     'status.ignoredUnmarked': 'Se quitó la marca de ignorado de {path}',
   },

@@ -1224,6 +1224,8 @@ export const frFR: LanguagePack = {
       'Aucune session de comparaison de contenu pour cette sélection.',
     'status.synchronizeNeedsRoots': 'Définissez les deux racines avant de synchroniser.',
     'status.explorerRevealed': '{path} affiché dans le gestionnaire de fichiers',
+    'status.explorerOpenedParent': 'Dossier parent {path} ouvert dans le gestionnaire de fichiers',
+    'status.selectionReportReady': 'Rapport de sélection prêt ({count} éléments)',
     'status.ignoredMarked': '{path} marqué comme ignoré',
     'status.ignoredUnmarked': 'Marque ignorée effacée pour {path}',
   },

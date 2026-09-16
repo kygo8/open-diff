@@ -92,3 +92,16 @@ export function openPathExternal(
     executable,
   })
 }
+
+export interface RevealPathInOsResult {
+  path: string
+  selected: boolean
+  fallbackOpened: boolean
+  launched: boolean
+}
+
+export function revealPathInOs(path: string): Promise<RevealPathInOsResult> {
+  return invoke<RevealPathInOsResult>('reveal_path_in_os', {
+    path,
+  })
+}

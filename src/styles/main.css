@@ -1015,10 +1015,10 @@ select {
   grid-auto-rows: auto !important;
   align-items: stretch !important;
   align-content: start !important;
-  gap: 4px !important;
+  gap: 2px !important;
   height: auto !important;
   min-height: min-content !important;
-  padding: 4px 6px !important;
+  padding: 2px 4px !important;
   overflow: visible !important;
 }
 
@@ -1063,7 +1063,7 @@ select {
 .folder-toolbar .path-pair .path-field-row {
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
   width: 100% !important;
   min-width: 0 !important;
 }
@@ -1077,7 +1077,7 @@ select {
   min-width: 0 !important;
   height: 18px !important;
   min-height: 18px !important;
-  padding: 0 6px !important;
+  padding: 0 4px !important;
   overflow: hidden !important;
   font-size: 11px !important;
   text-overflow: ellipsis !important;
@@ -1105,14 +1105,14 @@ select {
 .folder-toolbar .folder-actions {
   display: flex !important;
   flex-wrap: wrap !important;
-  gap: 4px !important;
+  gap: 2px !important;
 }
 
 .folder-toolbar .folder-criteria {
   display: flex !important;
   flex-wrap: wrap !important;
   align-items: center !important;
-  gap: 2px 6px !important;
+  gap: 1px 4px !important;
   font-size: 11px !important;
 }
 
@@ -1131,7 +1131,7 @@ select {
   display: inline-flex !important;
   flex: 0 1 auto !important;
   align-items: center !important;
-  gap: 3px !important;
+  gap: 2px !important;
   min-width: 0 !important;
   max-width: 100% !important;
   white-space: normal !important;
@@ -1698,13 +1698,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-toolbar .folder-actions .n-button,
 .folder-toolbar .folder-actions button {
-  --n-height: 22px !important;
-  --n-padding: 0 8px !important;
+  --n-height: 18px !important;
+  --n-padding: 0 6px !important;
   --n-font-size: 11px !important;
 
-  height: 22px !important;
-  min-height: 22px !important;
-  padding: 0 8px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 6px !important;
   font-size: 11px !important;
 }
 

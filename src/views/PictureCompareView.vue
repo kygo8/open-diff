@@ -26,6 +26,7 @@ import { useViewActionsStore } from '@/stores/viewActions'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
+import { Blend, CircleGauge, Tag } from '@lucide/vue'
 
 const settings = useSettingsStore()
 const zoom = ref(100)
@@ -764,7 +765,15 @@ async function runPictureCompare(): Promise<void> {
         data-testid="picture-tol-panel"
       >
         <header>
-          <h2>{{ $t('ui.tol') }}</h2>
+          <h2 class="picture-panel-title">
+            <CircleGauge
+              class="picture-panel-icon"
+              :size="14"
+              :stroke-width="2"
+              aria-hidden="true"
+            />
+            {{ $t('ui.tol') }}
+          </h2>
           <span>{{ $t('ui.rgbTolerance') }}</span>
         </header>
         <label>
@@ -1038,7 +1047,15 @@ async function runPictureCompare(): Promise<void> {
         data-testid="picture-blend-panel"
       >
         <header>
-          <strong>{{ $t('ui.blend') }}</strong>
+          <strong class="picture-panel-title">
+            <Blend
+              class="picture-panel-icon"
+              :size="14"
+              :stroke-width="2"
+              aria-hidden="true"
+            />
+            {{ $t('ui.blend') }}
+          </strong>
           <span
             >{{ $t('ui.blendOpacity') }}: {{ blendOpacity }}% ·
             {{ $t(`ui.blendMode${blendMode[0].toUpperCase()}${blendMode.slice(1)}`) }}</span
@@ -1165,7 +1182,15 @@ async function runPictureCompare(): Promise<void> {
         data-testid="picture-metadata-panel"
       >
         <header class="metadata-header">
-          <h2>{{ $t('ui.metadata') }}</h2>
+          <h2 class="picture-panel-title">
+            <Tag
+              class="picture-panel-icon"
+              :size="14"
+              :stroke-width="2"
+              aria-hidden="true"
+            />
+            {{ $t('ui.metadata') }}
+          </h2>
           <span>{{ $t('ui.leftVsRight') }}</span>
         </header>
         <div class="metadata-grid">
@@ -1494,31 +1519,36 @@ h2 {
 
 .picture-options-panel {
   display: grid;
-  gap: 4px 6px;
-  padding: 4px 6px;
+  gap: 2px 6px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .picture-options-panel header {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .picture-options-panel header span,
 .picture-options-hint {
   margin: 0;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .picture-options-panel label {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .picture-options-toggle {
@@ -1529,16 +1559,16 @@ h2 {
   display: grid;
   grid-template-columns: minmax(88px, auto) repeat(4, minmax(56px, 72px));
   align-items: center;
-  gap: 8px;
+  gap: 4px 6px;
 }
 
 .picture-options-panel input[type='number'] {
   width: 100%;
-  height: 20px;
-  min-height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -1547,15 +1577,15 @@ h2 {
 
 .picture-options-panel button {
   width: fit-content;
-  height: 20px;
-  min-height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .picture-transform-tools {
@@ -1673,10 +1703,11 @@ h2 {
 
 .picture-metadata-panel {
   display: grid;
-  gap: 10px;
-  padding: 10px;
+  gap: 2px 6px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -1684,12 +1715,16 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .metadata-header span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .metadata-grid {
@@ -1697,7 +1732,7 @@ h2 {
   grid-template-columns: minmax(120px, 0.8fr) repeat(2, minmax(160px, 1fr)) minmax(90px, auto);
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .metadata-row {
@@ -1707,9 +1742,10 @@ h2 {
 .metadata-grid-heading,
 .metadata-cell {
   min-width: 0;
-  padding: 8px 10px;
+  padding: 2px 6px;
   border-bottom: 1px solid var(--app-border);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .metadata-grid-heading {
@@ -1840,26 +1876,47 @@ h2 {
 
 .picture-blend-panel {
   display: grid;
-  gap: 4px 6px;
-  min-height: 26px;
+  gap: 2px 6px;
+  min-height: 22px;
   padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .picture-blend-panel header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .picture-blend-panel label {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.picture-blend-panel select {
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
+  border: 1px solid var(--app-border);
+  border-radius: 2px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 11px;
+}
+
+.picture-blend-panel input[type='range'] {
+  height: 18px;
+  min-height: 18px;
 }
 
 .picture-blend-overlay {
@@ -1873,6 +1930,21 @@ h2 {
 
 .picture-diff-overlay-minor {
   opacity: 0.45;
+}
+
+.picture-panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+}
+
+.picture-panel-icon {
+  flex: 0 0 auto;
+  color: var(--app-text-muted);
 }
 
 .bc-path-footers {

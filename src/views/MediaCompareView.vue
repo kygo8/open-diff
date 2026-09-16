@@ -14,6 +14,7 @@ import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { localFileSrc } from '@/app/localFileSrc'
 import { prefersVideoElement } from '@/app/mediaPlayback'
+import { Pause, Play } from '@lucide/vue'
 import { buildMediaCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
 import {
   buildMediaRulesCatalog,
@@ -768,10 +769,25 @@ function runMediaToolbarCommand(commandId: string): void {
         <div class="media-scrub-row">
           <button
             type="button"
+            class="media-scrub-play"
             data-testid="media-play-toggle"
             @click="togglePlayback"
           >
-            {{ isPlaying ? $t('ui.pause') : $t('ui.play') }}
+            <Pause
+              v-if="isPlaying"
+              class="media-scrub-icon"
+              :size="14"
+              :stroke-width="2"
+              aria-hidden="true"
+            />
+            <Play
+              v-else
+              class="media-scrub-icon"
+              :size="14"
+              :stroke-width="2"
+              aria-hidden="true"
+            />
+            <span>{{ isPlaying ? $t('ui.pause') : $t('ui.play') }}</span>
           </button>
           <input
             class="media-scrub"
@@ -1340,14 +1356,17 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .media-sync-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 4px;
+  font-size: 11px;
 }
 
 .media-players {
@@ -1378,37 +1397,68 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  min-height: 22px;
+  padding: 0 2px;
+}
+
+.media-scrub-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
+  border: 1px solid var(--app-border);
+  border-radius: 2px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.media-scrub-icon {
+  flex: 0 0 auto;
 }
 
 .media-scrub {
   flex: 1;
   min-width: 160px;
+  height: 18px;
+  min-height: 18px;
+}
+
+.media-scrub-row span {
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .media-playback-hint {
   margin: 0;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .bc-path-footers {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column: 1 / -1;
-  gap: 1px;
+  gap: 0;
   width: 100%;
   margin-top: 0;
   padding: 0 2px;
 }
 
 .path-side-footer {
-  min-height: 10px;
+  min-height: 9px;
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 10px;
-  line-height: 10px;
+  font-size: 9px;
+  line-height: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

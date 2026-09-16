@@ -635,7 +635,7 @@ function fillFromLastCompare(): void {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px 6px;
-  padding: 4px 6px;
+  padding: 2px 4px;
 }
 
 .report-export-form label {
@@ -674,7 +674,7 @@ function fillFromLastCompare(): void {
 .report-row {
   display: grid;
   grid-template-columns: minmax(220px, 1.4fr) 110px 110px minmax(180px, 1fr);
-  min-height: 22px;
+  min-height: 20px;
   border-bottom: 1px solid var(--app-border);
   font-size: 11px;
 }
@@ -682,7 +682,7 @@ function fillFromLastCompare(): void {
 .report-row > * {
   min-width: 0;
   margin: 0;
-  padding: 2px 6px;
+  padding: 1px 4px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   text-overflow: ellipsis;
@@ -702,7 +702,7 @@ function fillFromLastCompare(): void {
 .script-path {
   display: grid;
   gap: 4px;
-  padding: 8px 8px 0;
+  padding: 4px 6px 0;
 }
 
 .script-path span {
@@ -715,7 +715,7 @@ function fillFromLastCompare(): void {
 .script-panel textarea {
   width: 100%;
   min-width: 0;
-  padding: 6px 8px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
   border-radius: 6px;
   background: var(--app-bg);

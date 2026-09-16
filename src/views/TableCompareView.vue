@@ -1427,7 +1427,7 @@ h2 {
 .table-report-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 4px;
 }
 
 .table-summary strong {

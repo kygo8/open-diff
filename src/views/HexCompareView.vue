@@ -1650,13 +1650,21 @@ h2 {
 .hex-rules-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 8px 0;
-  font-size: 12px;
+  gap: 4px;
+  min-height: 18px;
+  margin: 0;
+  font-size: 11px;
 }
 
 .hex-rules-row input[type='number'] {
   width: 96px;
+  height: 16px;
+}
+
+.hex-rules-row ~ button {
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 0;
 }
 
 .bc-path-footers {

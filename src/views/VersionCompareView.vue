@@ -806,7 +806,7 @@ watch(
   display: grid;
   gap: 4px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: auto;
 }
 
@@ -853,8 +853,8 @@ h1 {
   grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
   align-items: end;
   gap: 3px;
-  min-height: 26px;
-  padding: 2px 6px;
+  min-height: 22px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -873,9 +873,9 @@ h1 {
 }
 
 .version-path-panel input {
-  height: 20px;
-  min-height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);
@@ -885,9 +885,9 @@ h1 {
 }
 
 .version-path-panel button {
-  height: 20px;
-  min-height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);
@@ -1195,12 +1195,12 @@ h1 {
 }
 
 .path-side-footer {
-  min-height: 10px;
+  min-height: 9px;
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 10px;
-  line-height: 10px;
+  font-size: 9px;
+  line-height: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

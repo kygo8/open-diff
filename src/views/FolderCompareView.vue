@@ -4139,65 +4139,78 @@ onUnmounted(() => {
         >
       </section>
 
-      <section
+      <div
         v-if="fileCompareReportPanelOpen"
-        class="folder-operation-panel file-compare-report-panel"
-        data-testid="file-compare-report-panel"
-        role="dialog"
-        :aria-label="$t('ui.fileCompareReport')"
+        class="file-compare-report-backdrop"
+        data-testid="file-compare-report-backdrop"
+        @click.self="closeFileCompareReportPanel"
       >
-        <strong>{{ $t('ui.fileCompareReport') }}</strong>
-        <label>
-          <span>{{ $t('ui.reportFormat') }}</span>
-          <select
-            v-model="fileCompareReportFormat"
-            data-testid="file-compare-report-format"
-          >
-            <option
-              v-for="format in fileCompareReportFormats"
-              :key="format"
-              :value="format"
+        <section
+          class="file-compare-report-panel"
+          data-testid="file-compare-report-panel"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="$t('ui.fileCompareReport')"
+        >
+          <header class="file-compare-report-header">
+            <strong>{{ $t('ui.fileCompareReport') }}</strong>
+          </header>
+          <div class="file-compare-report-body">
+            <label class="file-compare-report-row">
+              <span>{{ $t('ui.reportFormat') }}</span>
+              <select
+                v-model="fileCompareReportFormat"
+                data-testid="file-compare-report-format"
+              >
+                <option
+                  v-for="format in fileCompareReportFormats"
+                  :key="format"
+                  :value="format"
+                >
+                  {{ $t(fileCompareReportFormatLabelKey(format)) }}
+                </option>
+              </select>
+            </label>
+            <fieldset class="file-compare-report-scope">
+              <legend>{{ $t('ui.reportScope') }}</legend>
+              <label>
+                <input
+                  v-model="fileCompareReportScope"
+                  type="radio"
+                  value="full"
+                  data-testid="file-compare-report-scope-full"
+                />
+                <span>{{ $t('ui.reportScopeFull') }}</span>
+              </label>
+              <label>
+                <input
+                  v-model="fileCompareReportScope"
+                  type="radio"
+                  value="selection"
+                  data-testid="file-compare-report-scope-selection"
+                />
+                <span>{{ $t('ui.reportScopeSelection') }}</span>
+              </label>
+            </fieldset>
+          </div>
+          <footer class="file-compare-report-footer">
+            <NButton
+              size="tiny"
+              secondary
+              data-testid="file-compare-report-cancel"
+              @click="closeFileCompareReportPanel"
+              >{{ $t('ui.cancel') }}</NButton
             >
-              {{ $t(fileCompareReportFormatLabelKey(format)) }}
-            </option>
-          </select>
-        </label>
-        <fieldset class="file-compare-report-scope">
-          <legend>{{ $t('ui.reportScope') }}</legend>
-          <label>
-            <input
-              v-model="fileCompareReportScope"
-              type="radio"
-              value="full"
-              data-testid="file-compare-report-scope-full"
-            />
-            {{ $t('ui.reportScopeFull') }}
-          </label>
-          <label>
-            <input
-              v-model="fileCompareReportScope"
-              type="radio"
-              value="selection"
-              data-testid="file-compare-report-scope-selection"
-            />
-            {{ $t('ui.reportScopeSelection') }}
-          </label>
-        </fieldset>
-        <NButton
-          size="small"
-          secondary
-          data-testid="file-compare-report-cancel"
-          @click="closeFileCompareReportPanel"
-          >{{ $t('ui.cancel') }}</NButton
-        >
-        <NButton
-          size="small"
-          type="primary"
-          data-testid="file-compare-report-save"
-          @click="confirmFileCompareReport"
-          >{{ $t('ui.saveReport') }}</NButton
-        >
-      </section>
+            <NButton
+              size="tiny"
+              type="primary"
+              data-testid="file-compare-report-save"
+              @click="confirmFileCompareReport"
+              >{{ $t('ui.saveReport') }}</NButton
+            >
+          </footer>
+        </section>
+      </div>
 
       <section
         v-if="pendingDangerousOperation"
@@ -4963,23 +4976,127 @@ onUnmounted(() => {
   gap: 10px;
 }
 
+.file-compare-report-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  background: rgb(15 23 42 / 0.35);
+}
+
 .file-compare-report-panel {
-  flex-wrap: wrap;
+  display: grid;
+  gap: 6px;
+  width: min(340px, 100%);
+  padding: 8px 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 2px;
+  background: var(--app-surface);
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.16);
+  color: var(--app-text);
+  font-size: 11px;
+}
+
+.file-compare-report-header {
+  display: flex;
   align-items: center;
+  min-height: 18px;
+  margin: 0;
+  padding: 0 0 2px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.file-compare-report-header strong {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.file-compare-report-body {
+  display: grid;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.file-compare-report-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-height: 20px;
+}
+
+.file-compare-report-row span {
+  color: var(--app-text-muted);
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.file-compare-report-row select {
+  box-sizing: border-box;
+  width: 100%;
+  height: 20px;
+  padding: 0 4px;
+  border: 1px solid var(--app-border);
+  border-radius: 2px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-size: 11px;
 }
 
 .file-compare-report-scope {
-  display: flex;
-  gap: 10px;
+  display: grid;
+  gap: 2px;
   margin: 0;
-  padding: 0;
-  border: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--app-border);
+  border-radius: 2px;
+  background: var(--app-bg);
 }
 
 .file-compare-report-scope legend {
+  margin: 0;
+  padding: 0 2px;
+  color: var(--app-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 12px;
+}
+
+.file-compare-report-scope label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 18px;
+  color: var(--app-text);
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.file-compare-report-scope input {
+  width: auto;
+  height: auto;
+  margin: 0;
   padding: 0;
-  margin-right: 8px;
-  font-weight: 600;
+}
+
+.file-compare-report-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-height: 22px;
+  padding-top: 2px;
+  border-top: 1px solid var(--app-border);
+}
+
+.file-compare-report-footer :deep(.n-button) {
+  --n-height: 20px;
+  --n-font-size: 11px;
+  --n-padding: 0 8px;
+  --n-border-radius: 2px;
 }
 
 .folder-operation-panel input {

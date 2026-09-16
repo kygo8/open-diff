@@ -1156,6 +1156,145 @@ select {
   display: none !important;
 }
 
+/* File Compare Report dialog densify toward native Report UI spacing */
+.file-compare-report-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 40 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 12px !important;
+  background: rgb(15 23 42 / 0.35) !important;
+}
+
+.file-compare-report-panel {
+  display: grid !important;
+  gap: 6px !important;
+  width: min(340px, 100%) !important;
+  padding: 8px 10px !important;
+  border: 1px solid #bfc4cc !important;
+  border-radius: 2px !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-size: 11px !important;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.16) !important;
+}
+
+.file-compare-report-header {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 18px !important;
+  padding: 0 0 2px !important;
+  border-bottom: 1px solid #d4d7dc !important;
+}
+
+.file-compare-report-header strong {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 16px !important;
+}
+
+.file-compare-report-body {
+  display: grid !important;
+  gap: 6px !important;
+}
+
+.file-compare-report-row {
+  display: grid !important;
+  grid-template-columns: 72px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 6px !important;
+  min-height: 20px !important;
+}
+
+.file-compare-report-row select {
+  height: 20px !important;
+  padding: 0 4px !important;
+  border: 1px solid #bfc4cc !important;
+  border-radius: 2px !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-size: 11px !important;
+}
+
+.file-compare-report-scope {
+  display: grid !important;
+  gap: 2px !important;
+  margin: 0 !important;
+  padding: 4px 6px !important;
+  border: 1px solid #d4d7dc !important;
+  border-radius: 2px !important;
+  background: #f7f7f7 !important;
+}
+
+.file-compare-report-scope legend {
+  margin: 0 !important;
+  padding: 0 2px !important;
+  color: #555555 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  line-height: 12px !important;
+}
+
+.file-compare-report-scope label {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  min-height: 18px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.file-compare-report-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 4px !important;
+  min-height: 22px !important;
+  padding-top: 2px !important;
+  border-top: 1px solid #d4d7dc !important;
+}
+
+.file-compare-report-footer .n-button {
+  --n-height: 20px !important;
+  --n-font-size: 11px !important;
+  --n-padding: 0 8px !important;
+  --n-border-radius: 2px !important;
+}
+
+/* Reports / Scripts export form densify toward compact report chrome */
+.reports-script-view .report-export-form {
+  gap: 4px 6px !important;
+  padding: 4px 6px !important;
+}
+
+.reports-script-view .report-export-form span {
+  font-size: 10px !important;
+  line-height: 12px !important;
+}
+
+.reports-script-view .report-export-form input,
+.reports-script-view .report-export-form select {
+  height: 20px !important;
+  padding: 0 4px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.reports-script-view .report-panel,
+.reports-script-view .script-panel {
+  grid-template-rows: 22px auto minmax(0, 1fr) auto !important;
+}
+
+.reports-script-view .report-row {
+  min-height: 22px !important;
+  font-size: 11px !important;
+}
+
+.reports-script-view .report-row > * {
+  padding: 2px 6px !important;
+}
+
 /* Capture-like Filters strip: densify chip/button rhythm toward toolbar band */
 .folder-compare-view .display-filters,
 .folder-sync-view .display-filters,

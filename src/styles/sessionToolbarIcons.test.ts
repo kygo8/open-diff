@@ -21,6 +21,8 @@ describe('session toolbar icon presentation', () => {
     expect(css).toContain('.bc-toolbar-icon')
     expect(css).toContain('.bc-toolbar-plate')
     expect(css).toContain("data-plate='refresh'")
+    expect(css).toContain("data-plate='sessions'")
+    expect(css).toContain("data-plate='capture'")
     expect(css).toContain('color: #2a3038')
     expect(css).toContain('min-height: 50px')
     expect(css).toContain('height: 50px')

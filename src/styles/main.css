@@ -319,8 +319,8 @@ select {
   min-height: 50px;
   padding: 0 2px;
   overflow: auto hidden;
-  border-bottom: 1px solid #bfc4cc;
-  background: #eeeeee;
+  border-bottom: 1px solid #c8c8c8;
+  background: #f0f0f0;
 }
 
 .bc-toolbar-command {
@@ -337,7 +337,7 @@ select {
   padding: 1px 4px 2px;
   overflow: hidden;
   border: 0;
-  border-right: 1px solid #c9cdd3;
+  border-right: 0;
   background: transparent;
   color: #1a1a1a;
   font-size: 11px;
@@ -356,33 +356,38 @@ select {
   white-space: nowrap;
 }
 
+/* Capture MainBar active: ~#cce8ff fill, ~#a5c7f7 edge */
 .bc-toolbar-command-active {
-  background: #c8e4ff;
-  box-shadow: inset 0 0 0 1px #89bdea;
+  border-radius: 2px;
+  background: #cce8ff;
+  box-shadow: inset 0 0 0 1px #a5c7f7;
 }
 
 .bc-toolbar-command:hover:not(:disabled) {
-  background: #dceeff;
+  border-radius: 2px;
+  background: #e5f2fc;
 }
 
 .bc-toolbar-command-active:hover:not(:disabled) {
-  background: #b7dbf8;
+  background: #bddfff;
 }
 
 .bc-toolbar-command:active:not(:disabled) {
-  background: #b7dbf8;
-  box-shadow: inset 0 1px 2px rgb(30 60 90 / 0.22);
+  background: #b3d7f5;
+  box-shadow: inset 0 1px 2px rgb(30 60 90 / 0.28);
 }
 
-/* Capture MainBar group rhythm (~12px gaps on folder shots) */
+/* Capture MainBar group rhythm (~12px gaps + #848484 hairline) */
 .bc-toolbar-command-group-start {
-  margin-left: 10px;
-  border-left: 1px solid #b0b6be;
+  margin-left: 12px;
+  padding-left: 4px;
+  border-left: 1px solid #848484;
   box-shadow: inset 1px 0 0 #ffffff;
 }
 
 .bc-toolbar-command-group-start:first-child {
   margin-left: 0;
+  padding-left: 4px;
   border-left: 0;
   box-shadow: none;
 }
@@ -439,14 +444,14 @@ select {
   height: 22px;
   border: 1px solid #9aa3ad;
   border-radius: 3px;
-  background: linear-gradient(180deg, #f7f8fa 0%, #e4e7eb 100%);
+  background: linear-gradient(180deg, #fafbfc 0%, #e6e9ee 100%);
   color: #1f2933;
   font-size: 14px;
   font-weight: 700;
   line-height: 1;
   flex-shrink: 0;
   place-items: center;
-  box-shadow: inset 0 1px 0 #ffffffcc;
+  box-shadow: inset 0 1px 0 #ffffffd9;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-plate {
@@ -455,80 +460,95 @@ select {
   font-size: 12px;
 }
 
-.bc-toolbar-plate[data-plate='home'] {
-  background: linear-gradient(180deg, #eef3f8 0%, #d5dde8 100%);
-  color: #1f3a5f;
-  border-color: #8aa0b8;
+/* Warm brown home / sessions — capture house + briefcase tones */
+.bc-toolbar-plate[data-plate='home'],
+.bc-toolbar-plate[data-plate='sessions'] {
+  background: linear-gradient(180deg, #f3e6d4 0%, #d4b896 100%);
+  color: #5a3a18;
+  border-color: #a8845c;
 }
 
 .bc-toolbar-plate[data-plate='refresh'],
 .bc-toolbar-plate[data-plate='reload'] {
-  background: linear-gradient(180deg, #eaf8ef 0%, #cfead8 100%);
-  color: #0f7a3a;
-  border-color: #7cbc8f;
+  background: linear-gradient(180deg, #e7f8ec 0%, #c5e8d0 100%);
+  color: #0d6b34;
+  border-color: #6fb887;
 }
 
 .bc-toolbar-plate[data-plate='swap'] {
-  background: linear-gradient(180deg, #f4f5f7 0%, #d9dde3 100%);
+  background: linear-gradient(180deg, #f4f5f7 0%, #d7dbe2 100%);
   color: #1f2a37;
   border-color: #8b949e;
 }
 
 .bc-toolbar-plate[data-plate='copy'],
 .bc-toolbar-plate[data-plate='copy-left'],
-.bc-toolbar-plate[data-plate='copy-right'] {
-  background: linear-gradient(180deg, #eef4fb 0%, #d5e3f2 100%);
-  color: #1e3a5f;
-  border-color: #8aa4c3;
+.bc-toolbar-plate[data-plate='copy-right'],
+.bc-toolbar-plate[data-plate='capture'],
+.bc-toolbar-plate[data-plate='paste'] {
+  background: linear-gradient(180deg, #eaf3fb 0%, #cfe0f2 100%);
+  color: #1a3f6b;
+  border-color: #7fa0c4;
 }
 
 .bc-toolbar-plate[data-plate='next'],
 .bc-toolbar-plate[data-plate='prev'] {
-  background: linear-gradient(180deg, #edf4fc 0%, #d4e4f6 100%);
-  color: #1d4f91;
-  border-color: #89aed0;
+  background: linear-gradient(180deg, #eaf4fc 0%, #cfe3f6 100%);
+  color: #1a4f91;
+  border-color: #7eacd0;
 }
 
 .bc-toolbar-plate[data-plate='expand'],
 .bc-toolbar-plate[data-plate='collapse'] {
-  background: linear-gradient(180deg, #fff8e8 0%, #f0e0b0 100%);
+  background: linear-gradient(180deg, #fff8e6 0%, #f0dea8 100%);
   color: #8a5a00;
   border-color: #d0b26a;
 }
 
 .bc-toolbar-plate[data-plate='filters'],
-.bc-toolbar-plate[data-plate='peek'] {
-  background: linear-gradient(180deg, #e8f2fc 0%, #c9dff3 100%);
+.bc-toolbar-plate[data-plate='peek'],
+.bc-toolbar-plate[data-plate='goto'],
+.bc-toolbar-plate[data-plate='range'] {
+  background: linear-gradient(180deg, #e6f1fb 0%, #c5dcf3 100%);
   color: #0b57a4;
-  border-color: #7eacd8;
+  border-color: #74a6d4;
 }
 
-.bc-toolbar-plate[data-plate='rules'] {
-  background: linear-gradient(180deg, #f7f1e6 0%, #e5d7c0 100%);
+.bc-toolbar-plate[data-plate='rules'],
+.bc-toolbar-plate[data-plate='format'],
+.bc-toolbar-plate[data-plate='font'],
+.bc-toolbar-plate[data-plate='meta'],
+.bc-toolbar-plate[data-plate='syntax'] {
+  background: linear-gradient(180deg, #f6f0e4 0%, #e3d5bc 100%);
   color: #3b2f1c;
-  border-color: #b7a789;
+  border-color: #b5a586;
 }
 
 .bc-toolbar-plate[data-plate='stop'],
-.bc-toolbar-plate[data-plate='cancel'] {
-  background: linear-gradient(180deg, #fdeceb 0%, #f0c9c6 100%);
+.bc-toolbar-plate[data-plate='cancel'],
+.bc-toolbar-plate[data-plate='delete'],
+.bc-toolbar-plate[data-plate='cut'] {
+  background: linear-gradient(180deg, #fdeceb 0%, #efc5c2 100%);
   color: #a12622;
   border-color: #d08a86;
 }
 
 .bc-toolbar-plate[data-plate='sync-now'],
 .bc-toolbar-plate[data-plate='accept'],
-.bc-toolbar-plate[data-plate='same-ok'] {
-  background: linear-gradient(180deg, #e8f7ec 0%, #c6e6d0 100%);
-  color: #0f7a3a;
-  border-color: #7cbc8f;
+.bc-toolbar-plate[data-plate='same-ok'],
+.bc-toolbar-plate[data-plate='play2'] {
+  background: linear-gradient(180deg, #e6f6ea 0%, #c2e4cc 100%);
+  color: #0d6b34;
+  border-color: #6fb887;
 }
 
 .bc-toolbar-plate[data-plate='merge'],
-.bc-toolbar-plate[data-plate='to-output'] {
-  background: linear-gradient(180deg, #efe8fb 0%, #d9c8f0 100%);
+.bc-toolbar-plate[data-plate='to-output'],
+.bc-toolbar-plate[data-plate='conflict'],
+.bc-toolbar-plate[data-plate='blend'] {
+  background: linear-gradient(180deg, #efe8fb 0%, #d7c6ef 100%);
   color: #5b2d91;
-  border-color: #a888d0;
+  border-color: #a585cc;
 }
 
 .bc-toolbar-plate[data-plate='select'],
@@ -536,65 +556,91 @@ select {
 .bc-toolbar-plate[data-plate='same'],
 .bc-toolbar-plate[data-plate='structure'],
 .bc-toolbar-plate[data-plate='files'],
-.bc-toolbar-plate[data-plate='minor'] {
-  background: linear-gradient(180deg, #f3f5f8 0%, #e0e4ea 100%);
+.bc-toolbar-plate[data-plate='minor'],
+.bc-toolbar-plate[data-plate='context'],
+.bc-toolbar-plate[data-plate='wrap'],
+.bc-toolbar-plate[data-plate='center'],
+.bc-toolbar-plate[data-plate='tol'],
+.bc-toolbar-plate[data-plate='edit'],
+.bc-toolbar-plate[data-plate='undo'],
+.bc-toolbar-plate[data-plate='redo'] {
+  background: linear-gradient(180deg, #f4f6f9 0%, #dde2e9 100%);
   color: #2a3441;
-  border-color: #9aa3ad;
+  border-color: #959eaa;
 }
 
-.bc-toolbar-plate[data-plate='diffs'] {
-  background: linear-gradient(180deg, #fff4e8 0%, #f0d7b8 100%);
-  color: #9a4d00;
-  border-color: #d0a06a;
+/* Capture Diffs / Compare: strong red ≠ */
+.bc-toolbar-plate[data-plate='diffs'],
+.bc-toolbar-plate[data-plate='compare'] {
+  background: linear-gradient(180deg, #fdeeee 0%, #f0c8c8 100%);
+  color: #cf2b2c;
+  border-color: #d48a8a;
+}
+
+.bc-toolbar-plate[data-plate='favor-left'],
+.bc-toolbar-plate[data-plate='left'],
+.bc-toolbar-plate[data-plate='favor-right'],
+.bc-toolbar-plate[data-plate='right'] {
+  background: linear-gradient(180deg, #eaf3fb 0%, #cfe0f2 100%);
+  color: #1a3f6b;
+  border-color: #7fa0c4;
 }
 
 .bc-toolbar-command:hover:not(:disabled) .bc-toolbar-plate {
-  filter: brightness(0.97);
+  filter: brightness(0.98);
   box-shadow:
-    inset 0 1px 0 #ffffffaa,
-    0 0 0 1px rgb(80 120 180 / 0.18);
+    inset 0 1px 0 #ffffffcc,
+    0 0 0 1px rgb(80 120 180 / 0.22);
 }
 
 .bc-toolbar-command:active:not(:disabled) .bc-toolbar-plate,
 .bc-toolbar-command-active .bc-toolbar-plate {
-  filter: brightness(0.93);
-  box-shadow: inset 0 1px 2px rgb(30 50 70 / 0.2);
+  filter: brightness(0.94);
+  box-shadow: inset 0 1px 2px rgb(30 50 70 / 0.24);
 }
 
-/* Lucide outline icons: soft capture-like tints by command */
+/* Lucide outline icons: soft capture-like tints by command (fallback when plates off) */
 .bc-toolbar-command[data-command-id='home'] .bc-toolbar-icon,
 .bc-toolbar-command[data-command-id='sessions'] .bc-toolbar-icon {
-  color: #1f3a5f;
+  color: #5a3a18;
 }
 
 .bc-toolbar-command[data-command-id='refresh'] .bc-toolbar-icon,
 .bc-toolbar-command[data-command-id='reload'] .bc-toolbar-icon,
 .bc-toolbar-command[data-command-id='accept'] .bc-toolbar-icon,
 .bc-toolbar-command[data-command-id='same-ok'] .bc-toolbar-icon,
-.bc-toolbar-command[data-command-id='sync-now'] .bc-toolbar-icon {
-  color: #0f7a3a;
+.bc-toolbar-command[data-command-id='sync-now'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='play2'] .bc-toolbar-icon {
+  color: #0d6b34;
 }
 
 .bc-toolbar-command[data-command-id='stop'] .bc-toolbar-icon,
 .bc-toolbar-command[data-command-id='cancel'] .bc-toolbar-icon,
-.bc-toolbar-command[data-command-id='delete'] .bc-toolbar-icon {
+.bc-toolbar-command[data-command-id='delete'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='cut'] .bc-toolbar-icon {
   color: #a12622;
 }
 
 .bc-toolbar-command[data-command-id='filters'] .bc-toolbar-icon,
 .bc-toolbar-command[data-command-id='peek'] .bc-toolbar-icon,
 .bc-toolbar-command[data-command-id='next-diff'] .bc-toolbar-icon,
-.bc-toolbar-command[data-command-id='prev-diff'] .bc-toolbar-icon {
+.bc-toolbar-command[data-command-id='prev-diff'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='goto'] .bc-toolbar-icon {
   color: #0b57a4;
 }
 
 .bc-toolbar-command[data-command-id='merge'] .bc-toolbar-icon,
 .bc-toolbar-command[data-command-id='to-output'] .bc-toolbar-icon,
-.bc-toolbar-command[data-command-id='conflict'] .bc-toolbar-icon {
+.bc-toolbar-command[data-command-id='conflict'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='blend'] .bc-toolbar-icon {
   color: #5b2d91;
 }
 
 .bc-toolbar-command[data-command-id='diffs'] .bc-toolbar-icon,
+.bc-toolbar-command[data-command-id='compare'] .bc-toolbar-icon {
+  color: #cf2b2c;
+}
+
 .bc-toolbar-command[data-command-id='expand'] .bc-toolbar-icon,
 .bc-toolbar-command[data-command-id='collapse'] .bc-toolbar-icon {
   color: #8a5a00;

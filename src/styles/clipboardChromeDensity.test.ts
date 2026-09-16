@@ -14,11 +14,24 @@ describe('clipboard compare chrome density', () => {
     expect(css).toMatch(
       /\.clipboard-compare-view \.clipboard-toolbar\s*\{[\s\S]*?min-height:\s*26px/,
     )
-    expect(css).toMatch(/\.clipboard-compare-view \.history-entry\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(css).toMatch(/\.clipboard-compare-view \.history-entry\s*\{[\s\S]*?padding:\s*2px 6px/)
 
     expect(clipboardView).toMatch(/\.clipboard-compare-view\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(clipboardView).toMatch(/chromeKind:\s*'clipboard-session'/)
 
     expect(layout).toMatch(/data-chrome-kind='clipboard-session'[\s\S]*?height:\s*22px/)
+  })
+
+  it('keeps Clipboard history pane/entry chrome dense one more notch toward capture', () => {
+    expect(css).toMatch(/\.clipboard-compare-view \.history-pane\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(css).toMatch(
+      /\.clipboard-compare-view \.history-pane header\s*\{[\s\S]*?min-height:\s*18px/,
+    )
+    expect(css).toMatch(/\.clipboard-compare-view \.history-entry\s*\{[\s\S]*?min-height:\s*22px/)
+
+    expect(clipboardView).toMatch(/\.history-pane\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(clipboardView).toMatch(/\.history-pane header\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(clipboardView).toMatch(/\.history-entry\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(clipboardView).toMatch(/\.history-entry\s*\{[\s\S]*?padding:\s*2px 6px/)
   })
 })

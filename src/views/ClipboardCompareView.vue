@@ -379,35 +379,37 @@ function runClipboardToolbarCommand(commandId: string): void {
 .history-pane {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 4px;
-  padding: 4px 6px;
+  gap: 2px;
+  padding: 2px 6px;
 }
 
 .history-pane header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  min-height: 22px;
+  gap: 6px;
+  min-height: 18px;
 }
 
 .history-pane header span {
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 14px;
 }
 
 .history-list {
   display: grid;
   align-content: start;
-  gap: 4px;
+  gap: 2px;
   overflow: auto;
 }
 
 .history-entry {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 2px 6px;
-  padding: 4px 6px;
+  gap: 0 6px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);

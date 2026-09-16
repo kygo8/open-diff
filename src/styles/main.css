@@ -184,8 +184,8 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair {
   gap: 2px !important;
-  min-height: 26px !important;
-  padding: 1px 4px !important;
+  min-height: 24px !important;
+  padding: 1px 3px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   background: #f3f3f3 !important;
 }
@@ -205,31 +205,31 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > input,
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > .path-input {
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 18px !important;
+  min-height: 18px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > button {
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
 }
 
 .app-shell-single-session .path-side-footer {
-  min-height: 11px !important;
+  min-height: 10px !important;
   margin-top: 0 !important;
-  font-size: 10px !important;
-  line-height: 11px !important;
+  font-size: 9px !important;
+  line-height: 10px !important;
 }
 
 .app-shell-single-session .folder-toolbar .folder-criteria,
 .app-shell-single-session .folder-toolbar .folder-actions,
 .app-shell-single-session .folder-toolbar .archive-path-hint {
-  padding: 1px 4px !important;
+  padding: 1px 3px !important;
 }
 
 .app-shell-single-session .workbench-shell-single-session .bc-session-toolbar {
@@ -260,8 +260,8 @@ select {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-width: 0;
-  height: 24px;
-  padding: 0 4px;
+  height: 22px;
+  padding: 0 3px;
   border-bottom: 1px solid #a0a0a0;
   background: var(--app-surface-low);
 }
@@ -735,8 +735,8 @@ select {
   gap: 0;
   min-width: 0;
   height: auto;
-  min-height: 28px;
-  padding: 0 4px;
+  min-height: 26px;
+  padding: 0 3px;
   overflow: visible;
   border-bottom: 1px solid #a0a0a0;
   background: #f3f3f3;
@@ -745,7 +745,7 @@ select {
 .workbench-toolbar select,
 .workbench-toolbar input,
 .path-pair-bar input {
-  height: 20px;
+  height: 18px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-canvas);
@@ -764,8 +764,8 @@ select {
   min-width: 0;
   max-width: 12em;
   height: auto;
-  min-height: 20px;
-  padding: 1px 6px;
+  min-height: 18px;
+  padding: 1px 5px;
   overflow: hidden;
   border: 1px solid transparent;
   border-radius: 0;
@@ -811,17 +811,17 @@ select {
 
 .path-pair-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) auto;
-  min-height: 28px;
-  padding: 1px 6px;
+  grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr) auto;
+  min-height: 26px;
+  padding: 1px 4px;
   background: #f3f3f3;
 }
 
 .path-pair-field {
   display: grid;
-  grid-template-columns: auto 12px minmax(0, 1fr) auto;
+  grid-template-columns: auto 11px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -840,9 +840,9 @@ select {
 }
 
 .path-pair-swap {
-  width: 24px;
-  min-width: 24px;
-  height: 20px;
+  width: 22px;
+  min-width: 22px;
+  height: 18px;
   padding: 0;
 }
 
@@ -850,9 +850,9 @@ select {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 3px;
-  min-height: 26px;
-  padding: 1px 6px;
+  gap: 2px;
+  min-height: 24px;
+  padding: 1px 4px;
   border-bottom: 1px solid #a0a0a0;
   background: #f3f3f3;
 }
@@ -860,8 +860,8 @@ select {
 .bc-path-row input {
   width: 100%;
   min-width: 0;
-  height: 20px;
-  padding: 0 5px;
+  height: 18px;
+  padding: 0 4px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -877,8 +877,8 @@ select {
   width: auto;
   min-width: max-content;
   max-width: none;
-  height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  padding: 0 5px;
   overflow: visible;
   border: 1px solid #a0a0a0;
   border-radius: 0;

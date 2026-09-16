@@ -4948,12 +4948,13 @@ onUnmounted(() => {
 
 .folder-peek-panel {
   display: grid;
-  gap: 2px;
-  padding: 2px 6px 4px;
-  border: 1px solid var(--app-border);
+  gap: 1px;
+  padding: 1px 4px 3px;
+  border: 1px solid #c9cdd3;
   border-radius: 0;
-  background: var(--app-surface);
+  background: #ffffff;
   font-size: 11px;
+  line-height: 13px;
 }
 
 .folder-peek-panel header {
@@ -4961,25 +4962,29 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 4px;
-  min-height: 20px;
+  min-height: 18px;
+  margin: 0 0 1px;
+  padding: 0 0 1px;
+  border-bottom: 1px solid #dfe3e8;
 }
 
 .folder-peek-panel dl {
   display: grid;
-  gap: 2px;
+  gap: 1px;
   margin: 0;
 }
 
 .folder-peek-panel dt {
-  color: var(--app-text-muted);
+  color: #5a6270;
   font-size: 10px;
-  line-height: 12px;
+  line-height: 11px;
 }
 
 .folder-peek-panel dd {
   margin: 0;
+  color: #000000;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 13px;
   word-break: break-all;
 }
 

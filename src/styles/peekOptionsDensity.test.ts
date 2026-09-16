@@ -117,6 +117,11 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="folder-merge-always-show-folders"/)
     expect(settingsView).toMatch(/data-testid="folder-merge-show-center-pane"/)
     expect(settingsView).toMatch(/data-testid="folder-merge-compare-to-output"/)
+    expect(settingsView).toMatch(/\.shortcut-config\s*\{[\s\S]*?gap:\s*4px/)
+    expect(settingsView).toMatch(/\.shortcut-row\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(settingsView).toMatch(/\.shortcut-row\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(settingsView).toMatch(/\.shared-session-list li\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(settingsView).toMatch(/\.shared-session-list li\s*\{[\s\S]*?border-radius:\s*0/)
   })
 })
 

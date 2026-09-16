@@ -1107,6 +1107,24 @@ export const enUS: LanguagePack = {
       'When a report path already exists, keep numbered .bak copies using Backup retention.',
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
+    'ui.fileOperations': 'File Operations',
+    'ui.fileOperationsHint': 'Defaults for Folder Compare copy, move, and delete actions.',
+    'ui.includeHiddenItemsInFileActions': 'Include hidden items by default',
+    'ui.includeHiddenItemsInFileActionsHint':
+      'When acting on a selected folder, include descendants hidden by display or name filters.',
+    'ui.beepAfterLongFileOperations': 'Beep after long file operations',
+    'ui.beepAfterLongFileOperationsHint':
+      'Play a short beep when copy, move, or delete takes longer than three seconds.',
+    'ui.enableRarArchiveTypes': 'Enable RAR archive types',
+    'ui.enableRarArchiveTypesHint':
+      'Treat .rar paths as archive sides in Folder Compare, Sync, and Merge.',
+    'ui.escClosesFileViews': 'ESC key closes file views',
+    'ui.escClosesFileViewsHint':
+      'Close the active file-session tab when Escape is pressed (folder views are unchanged).',
+    'ui.beepWhenScriptFinished': 'Beep when script finished',
+    'ui.closeWhenScriptFinished': 'Close when script finished',
+    'ui.scriptFinishedTweaksHint':
+      'Applies to Tools > Reports / Scripts runs. Close returns to Home after a successful run.',
     'ui.confirmQuitMessage': 'Quit Open Diff?',
     'ui.toOutput': 'To Output',
     'ui.folderMergeRulesHint': 'Automatic copies go to output; conflicts open in Text Merge.',

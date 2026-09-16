@@ -1097,6 +1097,24 @@ export const koKR: LanguagePack = {
       'When a report path already exists, keep numbered .bak copies using Backup retention.',
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
+    'ui.fileOperations': '파일 작업',
+    'ui.fileOperationsHint': '폴더 비교 복사, 이동, 삭제 작업의 기본값입니다.',
+    'ui.includeHiddenItemsInFileActions': '기본적으로 숨긴 항목 포함',
+    'ui.includeHiddenItemsInFileActionsHint':
+      '선택한 폴더에 작업을 수행할 때 표시 또는 이름 필터로 숨겨진 하위 항목도 포함합니다.',
+    'ui.beepAfterLongFileOperations': '긴 파일 작업 후 경고음',
+    'ui.beepAfterLongFileOperationsHint':
+      '복사, 이동 또는 삭제가 3초보다 길면 짧은 경고음을 재생합니다.',
+    'ui.enableRarArchiveTypes': 'RAR 아카이브 형식 사용',
+    'ui.enableRarArchiveTypesHint':
+      '폴더 비교/동기화/병합에서 .rar 경로를 아카이브 쪽으로 취급합니다.',
+    'ui.escClosesFileViews': 'ESC로 파일 보기 닫기',
+    'ui.escClosesFileViewsHint':
+      'Escape를 누르면 활성 파일 세션 탭을 닫습니다(폴더 보기는 그대로).',
+    'ui.beepWhenScriptFinished': '스크립트 완료 시 경고음',
+    'ui.closeWhenScriptFinished': '스크립트 완료 시 닫기',
+    'ui.scriptFinishedTweaksHint':
+      '도구 > 보고서/스크립트에 적용됩니다. 성공 후 닫고 홈으로 돌아갑니다.',
     'ui.confirmQuitMessage': 'Open Diff를 종료할까요?',
     'ui.toOutput': '출력으로',
     'ui.folderMergeRulesHint': '자동 복사는 출력으로 가고, 충돌은 텍스트 병합에서 엽니다.',

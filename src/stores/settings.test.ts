@@ -386,4 +386,33 @@ describe('useSettingsStore', () => {
     store.setConfirmBeforeSyncDelete(true)
     store.setCreateBackupOnReportExport(false)
   })
+
+  it('persists File Operations, Archive RAR, and remaining Tweaks leftovers', () => {
+    const store = useSettingsStore()
+
+    expect(store.includeHiddenItemsInFileActions).toBe(false)
+    expect(store.beepAfterLongFileOperations).toBe(false)
+    expect(store.enableRarArchiveTypes).toBe(false)
+    expect(store.escClosesFileViews).toBe(false)
+    expect(store.beepWhenScriptFinished).toBe(false)
+    expect(store.closeWhenScriptFinished).toBe(false)
+
+    store.setIncludeHiddenItemsInFileActions(true)
+    store.setBeepAfterLongFileOperations(true)
+    store.setEnableRarArchiveTypes(true)
+    store.setEscClosesFileViews(true)
+    store.setBeepWhenScriptFinished(true)
+    store.setCloseWhenScriptFinished(true)
+
+    expect(localStorage.getItem('open-diff-include-hidden-items-in-file-actions')).toBe('1')
+    expect(localStorage.getItem('open-diff-beep-after-long-file-operations')).toBe('1')
+    expect(localStorage.getItem('open-diff-enable-rar-archive-types')).toBe('1')
+    expect(localStorage.getItem('open-diff-esc-closes-file-views')).toBe('1')
+    expect(localStorage.getItem('open-diff-beep-when-script-finished')).toBe('1')
+    expect(localStorage.getItem('open-diff-close-when-script-finished')).toBe('1')
+    expect(store.archiveExtensions).toContain('.rar')
+
+    store.setEnableRarArchiveTypes(false)
+    expect(store.archiveExtensions).not.toContain('.rar')
+  })
 })

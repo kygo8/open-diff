@@ -1124,6 +1124,25 @@ export const esES: LanguagePack = {
       'When a report path already exists, keep numbered .bak copies using Backup retention.',
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
+    'ui.fileOperations': 'Operaciones de archivo',
+    'ui.fileOperationsHint':
+      'Valores predeterminados para copiar, mover y eliminar en Comparar carpetas.',
+    'ui.includeHiddenItemsInFileActions': 'Incluir elementos ocultos de forma predeterminada',
+    'ui.includeHiddenItemsInFileActionsHint':
+      'Al actuar sobre una carpeta seleccionada, incluir descendientes ocultos por filtros de visualización o nombre.',
+    'ui.beepAfterLongFileOperations': 'Pitido tras operaciones de archivo largas',
+    'ui.beepAfterLongFileOperationsHint':
+      'Reproducir un pitido corto cuando copiar, mover o eliminar tarde más de tres segundos.',
+    'ui.enableRarArchiveTypes': 'Habilitar tipos de archivo RAR',
+    'ui.enableRarArchiveTypesHint':
+      'Tratar rutas .rar como lados de archivo en Comparar/Sincronizar/Combinar carpetas.',
+    'ui.escClosesFileViews': 'ESC cierra las vistas de archivo',
+    'ui.escClosesFileViewsHint':
+      'Cerrar la pestaña de sesión de archivo activa al pulsar Escape (las vistas de carpeta no cambian).',
+    'ui.beepWhenScriptFinished': 'Pitido al terminar el script',
+    'ui.closeWhenScriptFinished': 'Cerrar al terminar el script',
+    'ui.scriptFinishedTweaksHint':
+      'Aplica a Herramientas > Informes / Scripts. Cerrar vuelve a Inicio tras una ejecución correcta.',
     'ui.confirmQuitMessage': '¿Salir de Open Diff?',
     'ui.toOutput': 'A la salida',
     'ui.folderMergeRulesHint':

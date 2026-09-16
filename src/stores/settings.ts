@@ -103,6 +103,12 @@ const confirmBeforeCopyStorageKey = 'open-diff-confirm-before-copy'
 const confirmBeforeMoveStorageKey = 'open-diff-confirm-before-move'
 const confirmBeforeSyncDeleteStorageKey = 'open-diff-confirm-before-sync-delete'
 const createBackupOnReportExportStorageKey = 'open-diff-create-backup-on-report-export'
+const includeHiddenItemsInFileActionsStorageKey = 'open-diff-include-hidden-items-in-file-actions'
+const beepAfterLongFileOperationsStorageKey = 'open-diff-beep-after-long-file-operations'
+const enableRarArchiveTypesStorageKey = 'open-diff-enable-rar-archive-types'
+const escClosesFileViewsStorageKey = 'open-diff-esc-closes-file-views'
+const beepWhenScriptFinishedStorageKey = 'open-diff-beep-when-script-finished'
+const closeWhenScriptFinishedStorageKey = 'open-diff-close-when-script-finished'
 const fontFamilyIds = new Set<FontFamilyId>(['system', 'segoe', 'inter', 'noto', 'mono'])
 const shortcutScopes = new Set<ShortcutScope>(['global', 'text-compare'])
 const commandIds = new Set<string>(commandRegistry.map((command) => command.id))
@@ -162,6 +168,12 @@ export const useSettingsStore = defineStore('settings', () => {
   const confirmBeforeMove = ref(loadConfirmBeforeMove())
   const confirmBeforeSyncDelete = ref(loadConfirmBeforeSyncDelete())
   const createBackupOnReportExport = ref(loadCreateBackupOnReportExport())
+  const includeHiddenItemsInFileActions = ref(loadIncludeHiddenItemsInFileActions())
+  const beepAfterLongFileOperations = ref(loadBeepAfterLongFileOperations())
+  const enableRarArchiveTypes = ref(loadEnableRarArchiveTypes())
+  const escClosesFileViews = ref(loadEscClosesFileViews())
+  const beepWhenScriptFinished = ref(loadBeepWhenScriptFinished())
+  const closeWhenScriptFinished = ref(loadCloseWhenScriptFinished())
 
   bindSystemThemeListener((prefersDark) => {
     systemPrefersDark.value = prefersDark
@@ -526,6 +538,54 @@ export const useSettingsStore = defineStore('settings', () => {
     { immediate: true, flush: 'sync' },
   )
 
+  watch(
+    includeHiddenItemsInFileActions,
+    (value) => {
+      localStorage.setItem(includeHiddenItemsInFileActionsStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    beepAfterLongFileOperations,
+    (value) => {
+      localStorage.setItem(beepAfterLongFileOperationsStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    enableRarArchiveTypes,
+    (value) => {
+      localStorage.setItem(enableRarArchiveTypesStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    escClosesFileViews,
+    (value) => {
+      localStorage.setItem(escClosesFileViewsStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    beepWhenScriptFinished,
+    (value) => {
+      localStorage.setItem(beepWhenScriptFinishedStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    closeWhenScriptFinished,
+    (value) => {
+      localStorage.setItem(closeWhenScriptFinishedStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
   function toggleTheme(): void {
     theme.value = resolvedTheme.value === 'dark' ? 'light' : 'dark'
   }
@@ -762,6 +822,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   function setArchiveExtensions(values: string[]): void {
     archiveExtensions.value = setArchiveSuffixes(values)
+    enableRarArchiveTypes.value = archiveExtensions.value.includes('.rar')
   }
 
   function setLoadLastWorkspaceOnStartup(value: boolean): void {
@@ -790,6 +851,38 @@ export const useSettingsStore = defineStore('settings', () => {
 
   function setCreateBackupOnReportExport(value: boolean): void {
     createBackupOnReportExport.value = value
+  }
+
+  function setIncludeHiddenItemsInFileActions(value: boolean): void {
+    includeHiddenItemsInFileActions.value = value
+  }
+
+  function setBeepAfterLongFileOperations(value: boolean): void {
+    beepAfterLongFileOperations.value = value
+  }
+
+  function setEnableRarArchiveTypes(value: boolean): void {
+    enableRarArchiveTypes.value = value
+    const current = [...archiveExtensions.value]
+    const hasRar = current.includes('.rar')
+
+    if (value && !hasRar) {
+      archiveExtensions.value = setArchiveSuffixes([...current, '.rar'])
+    } else if (!value && hasRar) {
+      archiveExtensions.value = setArchiveSuffixes(current.filter((suffix) => suffix !== '.rar'))
+    }
+  }
+
+  function setEscClosesFileViews(value: boolean): void {
+    escClosesFileViews.value = value
+  }
+
+  function setBeepWhenScriptFinished(value: boolean): void {
+    beepWhenScriptFinished.value = value
+  }
+
+  function setCloseWhenScriptFinished(value: boolean): void {
+    closeWhenScriptFinished.value = value
   }
 
   function exportSettingsPackage(): SettingsPackage {
@@ -840,6 +933,12 @@ export const useSettingsStore = defineStore('settings', () => {
       confirmBeforeMove: confirmBeforeMove.value,
       confirmBeforeSyncDelete: confirmBeforeSyncDelete.value,
       createBackupOnReportExport: createBackupOnReportExport.value,
+      includeHiddenItemsInFileActions: includeHiddenItemsInFileActions.value,
+      beepAfterLongFileOperations: beepAfterLongFileOperations.value,
+      enableRarArchiveTypes: enableRarArchiveTypes.value,
+      escClosesFileViews: escClosesFileViews.value,
+      beepWhenScriptFinished: beepWhenScriptFinished.value,
+      closeWhenScriptFinished: closeWhenScriptFinished.value,
     }
   }
 
@@ -996,6 +1095,36 @@ export const useSettingsStore = defineStore('settings', () => {
         ? packageValue.createBackupOnReportExport
         : false,
     )
+    setIncludeHiddenItemsInFileActions(
+      typeof packageValue.includeHiddenItemsInFileActions === 'boolean'
+        ? packageValue.includeHiddenItemsInFileActions
+        : false,
+    )
+    setBeepAfterLongFileOperations(
+      typeof packageValue.beepAfterLongFileOperations === 'boolean'
+        ? packageValue.beepAfterLongFileOperations
+        : false,
+    )
+    setEnableRarArchiveTypes(
+      typeof packageValue.enableRarArchiveTypes === 'boolean'
+        ? packageValue.enableRarArchiveTypes
+        : false,
+    )
+    setEscClosesFileViews(
+      typeof packageValue.escClosesFileViews === 'boolean'
+        ? packageValue.escClosesFileViews
+        : false,
+    )
+    setBeepWhenScriptFinished(
+      typeof packageValue.beepWhenScriptFinished === 'boolean'
+        ? packageValue.beepWhenScriptFinished
+        : false,
+    )
+    setCloseWhenScriptFinished(
+      typeof packageValue.closeWhenScriptFinished === 'boolean'
+        ? packageValue.closeWhenScriptFinished
+        : false,
+    )
 
     return true
   }
@@ -1045,6 +1174,12 @@ export const useSettingsStore = defineStore('settings', () => {
     setConfirmBeforeMove(false)
     setConfirmBeforeSyncDelete(true)
     setCreateBackupOnReportExport(false)
+    setIncludeHiddenItemsInFileActions(false)
+    setBeepAfterLongFileOperations(false)
+    setEnableRarArchiveTypes(false)
+    setEscClosesFileViews(false)
+    setBeepWhenScriptFinished(false)
+    setCloseWhenScriptFinished(false)
   }
 
   return {
@@ -1093,6 +1228,12 @@ export const useSettingsStore = defineStore('settings', () => {
     confirmBeforeMove,
     confirmBeforeSyncDelete,
     createBackupOnReportExport,
+    includeHiddenItemsInFileActions,
+    beepAfterLongFileOperations,
+    enableRarArchiveTypes,
+    escClosesFileViews,
+    beepWhenScriptFinished,
+    closeWhenScriptFinished,
     toggleTheme,
     setTheme,
     setLocale,
@@ -1142,6 +1283,12 @@ export const useSettingsStore = defineStore('settings', () => {
     setConfirmBeforeMove,
     setConfirmBeforeSyncDelete,
     setCreateBackupOnReportExport,
+    setIncludeHiddenItemsInFileActions,
+    setBeepAfterLongFileOperations,
+    setEnableRarArchiveTypes,
+    setEscClosesFileViews,
+    setBeepWhenScriptFinished,
+    setCloseWhenScriptFinished,
     exportSettingsPackage,
     importSettingsPackage,
     restoreFactoryDefaults,
@@ -1695,6 +1842,66 @@ function loadConfirmBeforeSyncDelete(): boolean {
 
 function loadCreateBackupOnReportExport(): boolean {
   const stored = localStorage.getItem(createBackupOnReportExportStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadIncludeHiddenItemsInFileActions(): boolean {
+  const stored = localStorage.getItem(includeHiddenItemsInFileActionsStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadBeepAfterLongFileOperations(): boolean {
+  const stored = localStorage.getItem(beepAfterLongFileOperationsStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadEnableRarArchiveTypes(): boolean {
+  const stored = localStorage.getItem(enableRarArchiveTypesStorageKey)
+
+  if (stored === null) {
+    return loadArchiveSuffixes().includes('.rar')
+  }
+
+  return stored === '1'
+}
+
+function loadEscClosesFileViews(): boolean {
+  const stored = localStorage.getItem(escClosesFileViewsStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadBeepWhenScriptFinished(): boolean {
+  const stored = localStorage.getItem(beepWhenScriptFinishedStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadCloseWhenScriptFinished(): boolean {
+  const stored = localStorage.getItem(closeWhenScriptFinishedStorageKey)
 
   if (stored === null) {
     return false

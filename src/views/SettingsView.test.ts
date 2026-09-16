@@ -391,11 +391,13 @@ describe('SettingsView', () => {
     await wrapper.find('[data-testid="show-prev-difference-in-toolbar"]').setValue(false)
     expect(settings.showPrevDifferenceInToolbar).toBe(false)
 
-    await wrapper.find('[data-testid="options-section-formats"]').trigger('click')
+    await wrapper.find('[data-testid="options-section-archiveTypes"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-archive-types-card"]').isVisible()).toBe(true)
     await wrapper.find('[data-testid="archive-extensions-input"]').setValue('.zip, rar')
     await wrapper.find('[data-testid="apply-archive-extensions"]').trigger('click')
     await flushPromises()
     expect(settings.archiveExtensions).toEqual(['.rar', '.zip'])
+    expect(settings.enableRarArchiveTypes).toBe(true)
   })
 
   it('persists Appearance sidebar, Toolbars icons, Backup overwrite confirm, and Confirmations dirty-tab confirm', async () => {
@@ -447,6 +449,32 @@ describe('SettingsView', () => {
     expect(settings.confirmBeforeMove).toBe(true)
     await wrapper.find('[data-testid="confirm-before-sync-delete"]').setValue(false)
     expect(settings.confirmBeforeSyncDelete).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('persists File Operations, Archive Types RAR, and remaining Tweaks leftovers', async () => {
+    const wrapper = mountSettingsView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-fileOperations"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-file-operations-card"]').isVisible()).toBe(true)
+    await wrapper.find('[data-testid="include-hidden-items-in-file-actions"]').setValue(true)
+    expect(settings.includeHiddenItemsInFileActions).toBe(true)
+    await wrapper.find('[data-testid="beep-after-long-file-operations"]').setValue(true)
+    expect(settings.beepAfterLongFileOperations).toBe(true)
+
+    await wrapper.find('[data-testid="options-section-archiveTypes"]').trigger('click')
+    await wrapper.find('[data-testid="enable-rar-archive-types"]').setValue(true)
+    expect(settings.enableRarArchiveTypes).toBe(true)
+    expect(settings.archiveExtensions).toContain('.rar')
+
+    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
+    await wrapper.find('[data-testid="esc-closes-file-views"]').setValue(true)
+    expect(settings.escClosesFileViews).toBe(true)
+    await wrapper.find('[data-testid="beep-when-script-finished"]').setValue(true)
+    expect(settings.beepWhenScriptFinished).toBe(true)
+    await wrapper.find('[data-testid="close-when-script-finished"]').setValue(true)
+    expect(settings.closeWhenScriptFinished).toBe(true)
     wrapper.unmount()
   })
 })

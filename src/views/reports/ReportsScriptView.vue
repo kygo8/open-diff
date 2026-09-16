@@ -2,6 +2,10 @@
 import { computed, ref, watch } from 'vue'
 import { exportFolderCompareReport, exportTextCompareReport } from '@/api/diff'
 import { runScript, stopScript } from '@/api/script'
+import { playCompareCompleteBeep } from '@/app/compareCompleteNotify'
+import { useSettingsStore } from '@/stores/settings'
+import { useTabsStore } from '@/stores/tabs'
+import { useRouter } from 'vue-router'
 import {
   loadRecentReportExports,
   loadReportPreferences,
@@ -50,6 +54,9 @@ const unsupportedCommandsLabel = formatCommandList(unsupportedScriptCommands)
 const scriptPath = ref('')
 const scriptResult = ref('')
 const scriptLog = ref<string[]>([])
+const settings = useSettingsStore()
+const tabs = useTabsStore()
+const router = useRouter()
 const scriptRunning = ref(false)
 const selectedSampleId = ref(sampleScripts[0]?.id ?? 'text-report')
 const viewActions = useViewActionsStore()
@@ -185,6 +192,20 @@ async function runCurrentScript(): Promise<void> {
       stateKey: 'ui.completed',
       target: response.logs.at(-1) ?? scriptResult.value,
     })
+
+    if (settings.beepWhenScriptFinished) {
+      playCompareCompleteBeep()
+    }
+
+    if (settings.closeWhenScriptFinished && !response.cancelled) {
+      const active = tabs.activeTab
+
+      if (tabs.canCloseTab(active.id)) {
+        tabs.closeTab(active.id)
+      }
+
+      void router.push('/')
+    }
   } catch (event) {
     error.value = String(event)
     jobs.value = recordRecentReportExport(jobs.value, {

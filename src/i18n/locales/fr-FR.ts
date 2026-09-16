@@ -1127,6 +1127,25 @@ export const frFR: LanguagePack = {
       'When a report path already exists, keep numbered .bak copies using Backup retention.',
     'ui.confirmBeforeCopyHint': 'Show the Folder Compare copy confirmation panel before writing.',
     'ui.confirmBeforeMoveHint': 'Ask before Move to Side / Move to Folder operations.',
+    'ui.fileOperations': 'Opérations sur les fichiers',
+    'ui.fileOperationsHint':
+      'Valeurs par défaut pour copier, déplacer et supprimer dans Comparer des dossiers.',
+    'ui.includeHiddenItemsInFileActions': 'Inclure les éléments masqués par défaut',
+    'ui.includeHiddenItemsInFileActionsHint':
+      'Lors d’une action sur un dossier sélectionné, inclure les descendants masqués par les filtres d’affichage ou de nom.',
+    'ui.beepAfterLongFileOperations': 'Bip après les opérations longues',
+    'ui.beepAfterLongFileOperationsHint':
+      'Émettre un bip court lorsque copier, déplacer ou supprimer dure plus de trois secondes.',
+    'ui.enableRarArchiveTypes': 'Activer les types d’archive RAR',
+    'ui.enableRarArchiveTypesHint':
+      'Traiter les chemins .rar comme côtés d’archive dans Comparer/Synchroniser/Fusionner des dossiers.',
+    'ui.escClosesFileViews': 'Échap ferme les vues de fichiers',
+    'ui.escClosesFileViewsHint':
+      'Fermer l’onglet de session fichier actif lorsque Échap est pressé (vues de dossiers inchangées).',
+    'ui.beepWhenScriptFinished': 'Bip à la fin du script',
+    'ui.closeWhenScriptFinished': 'Fermer à la fin du script',
+    'ui.scriptFinishedTweaksHint':
+      'S’applique à Outils > Rapports / Scripts. Fermer revient à l’accueil après une exécution réussie.',
     'ui.confirmQuitMessage': 'Quitter Open Diff ?',
     'ui.toOutput': 'Vers la sortie',
     'ui.folderMergeRulesHint':

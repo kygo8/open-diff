@@ -54,6 +54,12 @@ export interface SettingsPackage {
   confirmBeforeMove?: boolean
   confirmBeforeSyncDelete?: boolean
   createBackupOnReportExport?: boolean
+  includeHiddenItemsInFileActions?: boolean
+  beepAfterLongFileOperations?: boolean
+  enableRarArchiveTypes?: boolean
+  escClosesFileViews?: boolean
+  beepWhenScriptFinished?: boolean
+  closeWhenScriptFinished?: boolean
 }
 
 export function isSettingsPackage(value: unknown): value is SettingsPackage {

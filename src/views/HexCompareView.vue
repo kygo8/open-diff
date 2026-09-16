@@ -1614,23 +1614,37 @@ h2 {
   z-index: 40;
   display: grid;
   place-items: center;
+  padding: 4px;
   background: rgb(15 23 42 / 0.45);
 }
 
 .hex-goto-dialog {
   display: grid;
-  gap: 10px;
+  gap: 4px;
   width: min(420px, 100%);
-  padding: 16px;
+  padding: 4px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
+}
+
+.hex-goto-dialog input {
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 0;
 }
 
 .hex-goto-dialog footer {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 4px;
+  min-height: 20px;
+}
+
+.hex-goto-dialog footer button {
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 0;
 }
 
 .hex-rules-row {

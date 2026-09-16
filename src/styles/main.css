@@ -2610,7 +2610,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .table-compare-view .column-source-grid,
 .table-compare-view .column-mapping-list,
 .table-compare-view .table-grid-panel {
-  gap: 4px 4px !important;
+  gap: 4px !important;
   padding: 2px 4px !important;
   border-radius: 0 !important;
 }

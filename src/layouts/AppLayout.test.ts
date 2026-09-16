@@ -442,6 +442,61 @@ describe('AppLayout command palette', () => {
     expect(push).toHaveBeenCalledWith('/settings')
   })
 
+  it('opens Help contents from the top chrome control', async () => {
+    const { openPathExternal } = await import('@/api/integration')
+    const { DOCS_URL } = await import('@/app/appMeta')
+    const wrapper = mountAppLayout()
+
+    vi.mocked(openPathExternal).mockClear()
+    await wrapper.find('[data-testid="top-command-help.contents"]').trigger('click')
+
+    expect(openPathExternal).toHaveBeenCalledWith(DOCS_URL)
+  })
+
+  it('filters sidebar session types and opens a matching saved session', async () => {
+    const { createUntitledSession } = await import('@/app/sessionFactory')
+    const savedSessions = (await import('@/stores/savedSessions')).useSavedSessionsStore()
+    const sessionLaunch = useSessionLaunchStore()
+    const session = createUntitledSession('folder-sync')
+
+    session.name = 'Nightly deploy sync'
+    session.locations = {
+      left: { uri: 'D:/deploy/package', readOnly: false },
+      right: { uri: 'D:/deploy/prod', readOnly: false },
+    }
+    savedSessions.saveSession(session)
+
+    const wrapper = mountAppLayout()
+
+    expect(wrapper.find('[data-testid="sidebar-nav-folder-compare"]').exists()).toBe(true)
+    expect(wrapper.find(`[data-testid="sidebar-saved-session-${session.id}"]`).exists()).toBe(false)
+
+    await wrapper.find('[data-testid="sidebar-session-search"]').setValue('deploy')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="sidebar-nav-folder-compare"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="sidebar-nav-home"]').exists()).toBe(false)
+    expect(wrapper.find(`[data-testid="sidebar-saved-session-${session.id}"]`).exists()).toBe(true)
+    expect(wrapper.find(`[data-testid="sidebar-saved-session-${session.id}"]`).text()).toContain(
+      'Nightly deploy sync',
+    )
+
+    await wrapper.find(`[data-testid="sidebar-saved-session-${session.id}"]`).trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/sync/folder')
+    expect(sessionLaunch.pendingLaunch).toMatchObject({
+      source: 'saved-session',
+      sessionType: 'folder-sync',
+      title: 'Nightly deploy sync',
+      route: '/sync/folder',
+      autoRun: true,
+      locations: {
+        left: { uri: 'D:/deploy/package', kind: 'directory' },
+        right: { uri: 'D:/deploy/prod', kind: 'directory' },
+      },
+    })
+  })
+
   it('executes menu and toolbar commands through the shared command system', async () => {
     const wrapper = mountAppLayout()
 

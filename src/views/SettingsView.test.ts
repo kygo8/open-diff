@@ -709,11 +709,14 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="media-default-filter"]').setValue('diffs')
   await wrapper.find('[data-testid="media-default-filter"]').trigger('change')
   await wrapper.find('[data-testid="media-show-rules-default"]').setValue(true)
+  await wrapper.find('[data-testid="media-unimportant-fields-default"]').setValue('Comment, Title')
+  await wrapper.find('[data-testid="media-unimportant-fields-default"]').trigger('change')
   expect(JSON.parse(localStorage.getItem('open-diff-media-compare-options') ?? '{}')).toMatchObject(
     {
       syncPlayback: false,
       defaultFilter: 'diffs',
       showRules: true,
+      unimportantFields: ['Comment', 'Title'],
     },
   )
 
@@ -722,11 +725,16 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="version-default-filter"]').setValue('minor')
   await wrapper.find('[data-testid="version-default-filter"]').trigger('change')
   await wrapper.find('[data-testid="version-show-rules-default"]').setValue(true)
+  await wrapper
+    .find('[data-testid="version-unimportant-fields-default"]')
+    .setValue('Comments, FileVersion')
+  await wrapper.find('[data-testid="version-unimportant-fields-default"]').trigger('change')
   expect(
     JSON.parse(localStorage.getItem('open-diff-version-compare-options') ?? '{}'),
   ).toMatchObject({
     defaultFilter: 'minor',
     showRules: true,
+    unimportantFields: ['Comments', 'FileVersion'],
   })
 
   await wrapper.find('[data-testid="options-section-tableCompare"]').trigger('click')

@@ -34,6 +34,12 @@ describe('shell chrome density', () => {
     expect(source).toMatch(/\.command-palette\s*\{[\s\S]*?border-radius:\s*0/)
     expect(source).toMatch(/\.command-palette header\s*\{[\s\S]*?height:\s*22px/)
     expect(source).toMatch(/\.command-item\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(source).toMatch(/\.command-backdrop\s*\{[\s\S]*?padding-top:\s*52px/)
+    expect(source).toMatch(/\.command-palette\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(source).toMatch(/\.top-actions\s*\{[\s\S]*?gap:\s*2px/)
+    expect(source).not.toMatch(/box-shadow:\s*0 10px 28px/)
+    expect(source).not.toMatch(/box-shadow:\s*0 8px 22px/)
+    expect(source).not.toMatch(/padding-top:\s*84px/)
   })
 
   it('keeps WorkbenchShell session toolbar/content frame denser', () => {
@@ -46,6 +52,18 @@ describe('shell chrome density', () => {
     expect(mainCss).toMatch(/\.workbench-inspector-stack\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mainCss).toMatch(/\.workbench-inspector-section\s*\{[\s\S]*?border-radius:\s*0/)
     expect(mainCss).toMatch(/\.workbench-inspector-section h2\s*\{[\s\S]*?height:\s*16px/)
+    expect(mainCss).toMatch(/\.status-summary-grid article\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(mainCss).toMatch(/\.status-summary-grid article\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(mainCss).toMatch(/\.status-summary-grid strong\s*\{[\s\S]*?font-size:\s*12px/)
+    expect(mainCss).toMatch(
+      /\.split-pane-header,\s*\.pane-header,\s*\.metadata-header\s*\{[\s\S]*?min-height:\s*20px/,
+    )
+    expect(mainCss).toMatch(
+      /\.path-context-menu,\s*\.in-app-context-menu\s*\{[\s\S]*?border-radius:\s*0/,
+    )
+    expect(mainCss).toMatch(
+      /\.path-context-menu button,\s*\.in-app-context-menu button\s*\{[\s\S]*?padding:\s*2px 4px/,
+    )
   })
 
   it('marks WorkbenchShell frame densify pass 18', () => {

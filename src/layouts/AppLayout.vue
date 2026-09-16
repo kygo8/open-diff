@@ -2090,9 +2090,9 @@ const sourceSessionTypes = new Set<SessionType>([
   display: flex;
   grid-column: 2;
   grid-row: 1;
-  gap: 6px;
+  gap: 2px;
   margin-left: auto;
-  padding: 4px 10px 0 0;
+  padding: 0 4px 0 0;
 }
 
 .language-menu {
@@ -2108,7 +2108,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .language-panel {
   position: absolute;
-  top: 29px;
+  top: 24px;
   right: 0;
   z-index: 50;
   display: grid;
@@ -2118,7 +2118,6 @@ const sourceSessionTypes = new Set<SessionType>([
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-canvas);
-  box-shadow: 0 8px 22px rgb(25 28 30 / 0.18);
 }
 
 .language-option {
@@ -2525,18 +2524,17 @@ const sourceSessionTypes = new Set<SessionType>([
   display: grid;
   background: rgb(25 28 30 / 0.28);
   place-items: start center;
-  padding-top: 84px;
+  padding-top: 52px;
 }
 
 .command-palette {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   width: min(640px, calc(100vw - 40px));
-  padding: 4px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-canvas);
-  box-shadow: 0 10px 28px rgb(25 28 30 / 0.2);
 }
 
 .command-palette header {

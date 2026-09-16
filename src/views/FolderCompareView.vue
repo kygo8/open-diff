@@ -5106,7 +5106,7 @@ onUnmounted(() => {
   z-index: 40;
   display: grid;
   place-items: center;
-  padding: 12px;
+  padding: 4px;
   background: rgb(15 23 42 / 0.35);
 }
 
@@ -5396,7 +5396,7 @@ onUnmounted(() => {
 .sync-preview-row span,
 .sync-preview-row strong {
   min-width: 0;
-  padding: 8px 10px;
+  padding: 1px 4px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   text-overflow: ellipsis;
@@ -5624,10 +5624,10 @@ onUnmounted(() => {
 }
 
 .folder-compare-progress button {
-  height: 28px;
-  padding: 0 10px;
+  height: 18px;
+  padding: 0 8px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-canvas);
   color: var(--app-text);
   cursor: pointer;
@@ -5648,15 +5648,14 @@ onUnmounted(() => {
   z-index: 40;
   display: grid;
   min-width: 160px;
-  padding: 4px;
+  padding: 2px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--app-surface);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.16);
 }
 
 .in-app-context-menu button {
-  padding: 6px 10px;
+  padding: 2px 4px;
   border: 0;
   background: transparent;
   color: var(--app-text);
@@ -5766,10 +5765,10 @@ onUnmounted(() => {
 
 .folder-select-name input {
   width: 140px;
-  height: 28px;
-  padding: 0 8px;
+  height: 16px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
 }

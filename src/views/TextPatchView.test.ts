@@ -6,6 +6,7 @@ import TextPatchView from './TextPatchView.vue'
 import { applyTextPatch, applyTextPatchToFile, parseTextPatch, readTextFile } from '@/api/diff'
 import { createAppI18n, installI18n } from '@/i18n'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
+import { useViewActionsStore } from '@/stores/viewActions'
 
 const push = vi.fn()
 
@@ -297,5 +298,36 @@ describe('TextPatchView', () => {
     await flushPromises()
 
     expect(push).toHaveBeenCalledWith('/compare/text')
+  })
+
+  it('parses, applies, and steps sections from Session and Search', async () => {
+    const wrapper = mountTextPatchView()
+
+    wrapper
+      .findComponent(NInputStub)
+      .vm.$emit('update:value', 'diff --git a/src/main.ts b/src/main.ts')
+    await wrapper.find('[data-testid="patch-source-file"]').setValue('C:/work/main.ts')
+    await wrapper.vm.$nextTick()
+
+    useViewActionsStore().dispatch('compare')
+    await flushPromises()
+    expect(parseTextPatch).toHaveBeenCalledWith('diff --git a/src/main.ts b/src/main.ts')
+    expect(wrapper.find('[data-testid="patch-section-position"]').text()).toContain('1 of 2')
+
+    useViewActionsStore().dispatch('next-difference')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="patch-section-position"]').text()).toContain('2 of 2')
+
+    useViewActionsStore().dispatch('previous-difference')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="patch-section-position"]').text()).toContain('1 of 2')
+
+    useViewActionsStore().dispatch('save')
+    await flushPromises()
+    expect(applyTextPatchToFile).toHaveBeenCalledWith({
+      sourcePath: 'C:/work/main.ts',
+      patch: 'diff --git a/src/main.ts b/src/main.ts',
+      outputPath: 'C:/work/main.ts',
+    })
   })
 })

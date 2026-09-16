@@ -109,13 +109,19 @@ describe('menuTables', () => {
 
     expect(resolveMenuCommandEnabled('view.showDifferences', true, patchCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('edit.cut', true, patchCtx)).toBe(false)
-    expect(resolveMenuCommandEnabled('diff.previous', true, patchCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('diff.previous', true, patchCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.compare', true, patchCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.swap', true, patchCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.settings', true, patchCtx)).toBe(false)
 
     expect(resolveMenuCommandEnabled('edit.paste', true, editCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('edit.copyLeft', true, editCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('view.showAll', true, editCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('view.toggleMinor', true, editCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('diff.next', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.compare', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.swap', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.settings', true, editCtx)).toBe(false)
 
     expect(resolveMenuCommandEnabled('view.showAll', true, registryCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('view.expandAll', true, registryCtx)).toBe(true)
@@ -168,28 +174,42 @@ it('enables deeper View presets and structure modes on Folder Compare', () => {
 
 it('enables Merge View Show Changes / Conflicts / Center Pane and Compare to Output only on Folder Merge', () => {
   const mergeCtx = { ...baseCtx, routePath: '/merge/folder' }
+  const textMergeCtx = { ...baseCtx, routePath: '/merge/text' }
 
   expect(resolveMenuCommandEnabled('view.showChanges', true, mergeCtx)).toBe(true)
   expect(resolveMenuCommandEnabled('view.showConflicts', true, mergeCtx)).toBe(true)
   expect(resolveMenuCommandEnabled('view.centerPane', true, mergeCtx)).toBe(true)
   expect(resolveMenuCommandEnabled('session.compareToOutput', true, mergeCtx)).toBe(true)
   expect(resolveMenuCommandEnabled('view.alwaysShowFolders', true, mergeCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('session.swap', true, mergeCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('merge.nextConflict', true, mergeCtx)).toBe(true)
   expect(resolveMenuCommandEnabled('view.showChanges', true, baseCtx)).toBe(false)
   expect(resolveMenuCommandEnabled('view.centerPane', true, baseCtx)).toBe(false)
   expect(resolveMenuCommandEnabled('session.compareToOutput', true, baseCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('view.centerPane', true, textMergeCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('merge.nextConflict', true, textMergeCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.showAll', true, textMergeCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('view.toggleMinor', true, textMergeCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('diff.next', true, textMergeCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.swap', true, textMergeCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.settings', true, textMergeCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('merge.nextConflict', true, baseCtx)).toBe(false)
+})
+
+it('enables Run Script only on the reports session', () => {
   expect(
-    resolveMenuCommandEnabled('view.centerPane', true, {
+    resolveMenuCommandEnabled('script.run', true, {
       ...baseCtx,
-      routePath: '/merge/text',
-    }),
-  ).toBe(false)
-  expect(
-    resolveMenuCommandEnabled('merge.nextConflict', true, {
-      ...baseCtx,
-      routePath: '/merge/text',
+      routePath: '/reports/scripts',
     }),
   ).toBe(true)
-  expect(resolveMenuCommandEnabled('merge.nextConflict', true, baseCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('script.run', true, baseCtx)).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('script.run', true, {
+      ...baseCtx,
+      routePath: '/compare/text',
+    }),
+  ).toBe(false)
 })
 
 it('enables Show All / Differences / Minor and Filters only where they run', () => {

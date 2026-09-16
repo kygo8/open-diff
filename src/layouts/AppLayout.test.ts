@@ -306,6 +306,22 @@ describe('AppLayout command palette', () => {
     ).toBeDefined()
     clipboard.unmount()
 
+    routePath = '/patch/text'
+    const patch = mountAppLayout()
+
+    await patch.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      patch.find('[data-testid="menu-command-session.compare"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      patch.find('[data-testid="menu-command-session.swap"]').attributes('disabled'),
+    ).toBeDefined()
+    await patch.find('[data-testid="menu-search"]').trigger('click')
+    expect(
+      patch.find('[data-testid="menu-command-diff.next"]').attributes('disabled'),
+    ).toBeUndefined()
+    patch.unmount()
+
     routePath = '/edit/text'
     const textEdit = mountAppLayout()
 
@@ -319,6 +335,10 @@ describe('AppLayout command palette', () => {
     await textEdit.find('[data-testid="menu-view"]').trigger('click')
     expect(
       textEdit.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
+    ).toBeDefined()
+    await textEdit.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      textEdit.find('[data-testid="menu-command-session.compare"]').attributes('disabled'),
     ).toBeDefined()
     textEdit.unmount()
 
@@ -1580,6 +1600,10 @@ describe('global menu depth parity', () => {
     expect(
       merge.find('[data-testid="menu-command-edit.selectAllFiles"]').attributes('disabled'),
     ).toBeUndefined()
+    await merge.find('[data-testid="menu-search"]').trigger('click')
+    expect(
+      merge.find('[data-testid="menu-command-merge.nextConflict"]').attributes('disabled'),
+    ).toBeUndefined()
     merge.unmount()
 
     routePath = '/merge/text'
@@ -1601,6 +1625,13 @@ describe('global menu depth parity', () => {
     await textMerge.find('[data-testid="menu-view"]').trigger('click')
     expect(
       textMerge.find('[data-testid="menu-command-view.centerPane"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      textMerge.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
+    ).toBeDefined()
+    await textMerge.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      textMerge.find('[data-testid="menu-command-session.swap"]').attributes('disabled'),
     ).toBeDefined()
     textMerge.unmount()
 

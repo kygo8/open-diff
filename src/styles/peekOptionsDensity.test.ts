@@ -26,7 +26,7 @@ describe('peek panel densify', () => {
     expect(css).toMatch(/\.peek-dual-columns\s*\{/)
     expect(css).toMatch(/grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/)
     expect(css).toMatch(/\.peek-dual-columns\s*\{[\s\S]*?gap:\s*0/)
-    expect(css).toMatch(/\.folder-peek-panel dl > div,[\s\S]*?min-height:\s*14px/)
+    expect(css).toMatch(/\.folder-peek-panel dl > div,[\s\S]*?min-height:\s*13px/)
     expect(css).toMatch(/\.folder-peek-panel header,[\s\S]*?min-height:\s*11px/)
     expect(css).toMatch(/\.peek-tabs\s*\{[\s\S]*?min-height:\s*11px/)
 
@@ -35,7 +35,7 @@ describe('peek panel densify', () => {
     expect(folderView).toMatch(/data-testid="folder-peek-left-col"/)
     expect(folderView).toMatch(/data-testid="folder-peek-right-col"/)
     expect(folderView).toMatch(/data-testid="folder-peek-importance"/)
-    expect(folderView).toMatch(/data-peek-density="capture-pass6"/)
+    expect(folderView).toMatch(/data-peek-density="capture-pass7"/)
     expect(folderView).toMatch(/\.folder-peek-panel\s*\{[\s\S]*?padding:\s*0/)
     expect(folderView).toMatch(/\.folder-peek-panel\s*\{[\s\S]*?font-size:\s*11px/)
     expect(folderView).toMatch(/\.folder-peek-panel header\s*\{[\s\S]*?min-height:\s*11px/)
@@ -43,13 +43,13 @@ describe('peek panel densify', () => {
 
     expect(syncView).toMatch(/data-testid="folder-sync-peek-tabs"/)
     expect(syncView).toMatch(/data-testid="folder-sync-peek-dual"/)
-    expect(syncView).toMatch(/data-peek-density="capture-pass6"/)
+    expect(syncView).toMatch(/data-peek-density="capture-pass7"/)
     expect(syncView).toMatch(/\.folder-sync-peek-panel\s*\{[\s\S]*?padding:\s*0/)
     expect(syncView).toMatch(/\.folder-sync-peek-panel header\s*\{[\s\S]*?min-height:\s*11px/)
 
     expect(mergeView).toMatch(/data-testid="folder-merge-peek-tabs"/)
     expect(mergeView).toMatch(/data-testid="folder-merge-peek-dual"/)
-    expect(mergeView).toMatch(/data-peek-density="capture-pass6"/)
+    expect(mergeView).toMatch(/data-peek-density="capture-pass7"/)
     expect(mergeView).toMatch(/\.folder-merge-peek-panel\s*\{[\s\S]*?padding:\s*0/)
     expect(mergeView).toMatch(/\.folder-merge-peek-panel header\s*\{[\s\S]*?min-height:\s*11px/)
   })

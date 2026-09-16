@@ -1385,7 +1385,7 @@ watch(
 
       <section
         class="display-filters folder-filter-chrome"
-        data-filters-density="capture-pass6"
+        data-filters-density="capture-pass7"
         data-testid="folder-sync-filter-strip"
       >
         <div class="folder-filter-strip">
@@ -1768,7 +1768,7 @@ watch(
       <section
         v-if="showPeek"
         class="folder-sync-peek-panel"
-        data-peek-density="capture-pass6"
+        data-peek-density="capture-pass7"
         data-testid="folder-sync-peek-panel"
       >
         <header>
@@ -2307,7 +2307,7 @@ h1 {
 
 .folder-filter-chrome {
   align-items: center;
-  min-height: 22px;
+  min-height: 20px;
   padding: 0;
 }
 
@@ -2329,13 +2329,13 @@ h1 {
 
 .folder-filter-strip-btn {
   display: grid;
-  grid-template-rows: 12px auto;
+  grid-template-rows: 11px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
   min-width: 36px;
   max-width: 48px;
-  height: 22px;
+  height: 20px;
   padding: 0 2px;
   border: 0;
   border-right: 1px solid #c9cdd3;
@@ -2378,14 +2378,14 @@ h1 {
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 15px;
+  height: 14px;
   padding: 0 4px;
   border: 1px solid #bfc4cc;
   border-radius: 2px;
   background: #ffffff;
   color: #111111;
   font-size: 11px;
-  line-height: 15px;
+  line-height: 14px;
 }
 
 .peek-dual-columns {

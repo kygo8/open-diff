@@ -1302,7 +1302,7 @@ select {
   flex-wrap: wrap !important;
   align-items: center !important;
   gap: 1px 3px !important;
-  min-height: 15px !important;
+  min-height: 14px !important;
   padding: 0 !important;
   font-size: 11px !important;
 }
@@ -1317,14 +1317,14 @@ select {
 }
 
 .folder-filter-pattern {
-  height: 15px !important;
+  height: 14px !important;
   padding: 0 4px !important;
   border: 1px solid #bfc4cc !important;
   border-radius: 2px !important;
   background: #ffffff !important;
   color: #111111 !important;
   font-size: 11px !important;
-  line-height: 15px !important;
+  line-height: 14px !important;
 }
 
 .folder-filter-strip-actions {
@@ -1337,13 +1337,13 @@ select {
 
 .folder-filter-strip-btn {
   display: grid !important;
-  grid-template-rows: 12px auto !important;
+  grid-template-rows: 11px auto !important;
   align-content: center !important;
   justify-items: center !important;
   box-sizing: border-box !important;
   min-width: 36px !important;
   max-width: 48px !important;
-  height: 22px !important;
+  height: 20px !important;
   padding: 0 2px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
@@ -1691,8 +1691,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-view .display-filters,
 .folder-merge-view .display-filters {
   gap: 1px 3px !important;
-  min-height: 18px !important;
-  padding: 0 2px !important;
+  min-height: 14px !important;
+  padding: 0 !important;
   font-size: 11px !important;
 }
 
@@ -2945,7 +2945,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-compare-view .folder-filter-chrome,
 .folder-sync-view .folder-filter-chrome {
-  min-height: 22px !important;
+  min-height: 20px !important;
   padding: 0 !important;
 }
 
@@ -3040,7 +3040,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .folder-filter-chrome {
-  min-height: 22px !important;
+  min-height: 20px !important;
   padding: 0 !important;
 }
 
@@ -3193,7 +3193,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-peek-panel dl > div {
   display: grid !important;
   gap: 0 !important;
-  min-height: 14px !important;
+  min-height: 13px !important;
   padding: 0 !important;
 }
 

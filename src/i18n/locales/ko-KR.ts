@@ -1173,5 +1173,10 @@ export const koKR: LanguagePack = {
     'ui.leaveAlone': '그대로 두기',
     'ui.deleteLeft': '왼쪽 삭제',
     'ui.deleteRight': '오른쪽 삭제',
+    'ui.copyToSide': '다른 쪽으로 복사...',
+    'ui.moveToSide': '다른 쪽으로 이동...',
+    'ui.copyToFolder': '폴더로 복사...',
+    'ui.moveToFolder': '폴더로 이동...',
+    'ui.copyFilename': '파일 이름 복사',
   },
 }

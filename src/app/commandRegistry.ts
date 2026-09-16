@@ -87,6 +87,13 @@ export type CommandId =
   | 'actions.copyRightToLeft'
   | 'actions.deleteLeft'
   | 'actions.deleteRight'
+  | 'actions.copyToSide'
+  | 'actions.moveToSide'
+  | 'actions.copyToFolder'
+  | 'actions.moveToFolder'
+  | 'actions.rename'
+  | 'actions.delete'
+  | 'actions.copyFilename'
   | 'session.mergeBaseFolders'
   | 'session.syncBaseFolders'
   | 'script.run'
@@ -172,6 +179,12 @@ export type CommandAction =
         | 'sync-copy-right-to-left'
         | 'sync-delete-left'
         | 'sync-delete-right'
+        | 'copy-to-side'
+        | 'move-to-side'
+        | 'copy-to-folder'
+        | 'move-to-folder'
+        | 'rename-selected'
+        | 'copy-filename'
     }
 
 export interface CommandShortcut {
@@ -1128,6 +1141,76 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'E'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'sync-delete-right' },
+  },
+  {
+    id: 'actions.copyToSide',
+    titleKey: 'ui.copyToSide',
+    keywords: ['copy', 'side', 'folder', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'B'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'copy-to-side' },
+  },
+  {
+    id: 'actions.moveToSide',
+    titleKey: 'ui.moveToSide',
+    keywords: ['move', 'side', 'folder', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'K'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'move-to-side' },
+  },
+  {
+    id: 'actions.copyToFolder',
+    titleKey: 'ui.copyToFolder',
+    keywords: ['copy', 'folder', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'P'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'copy-to-folder' },
+  },
+  {
+    id: 'actions.moveToFolder',
+    titleKey: 'ui.moveToFolder',
+    keywords: ['move', 'folder', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'V'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'move-to-folder' },
+  },
+  {
+    id: 'actions.rename',
+    titleKey: 'ui.rename',
+    keywords: ['rename', 'folder', 'actions', 'f2'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['F2'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'rename-selected' },
+  },
+  {
+    id: 'actions.delete',
+    titleKey: 'ui.delete',
+    keywords: ['delete', 'folder', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'Delete'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'delete' },
+  },
+  {
+    id: 'actions.copyFilename',
+    titleKey: 'ui.copyFilename',
+    keywords: ['copy', 'filename', 'path', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'N'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'copy-filename' },
   },
 ]
 

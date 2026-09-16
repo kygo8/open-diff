@@ -179,6 +179,10 @@ pub enum FileOperationRequest {
         source_path: String,
         target_path: String,
     },
+    Copy {
+        source_path: String,
+        target_path: String,
+    },
     Delete {
         path: String,
     },
@@ -195,6 +199,7 @@ pub enum FileOperationRequest {
 #[serde(rename_all = "camelCase")]
 pub enum FileOperationKind {
     Move,
+    Copy,
     Delete,
     Rename,
     CreateFolder,
@@ -204,6 +209,7 @@ pub enum FileOperationKind {
 #[serde(rename_all = "camelCase")]
 pub enum FileOperationStatus {
     Moved,
+    Copied,
     Deleted,
     Renamed,
     Created,
@@ -667,6 +673,19 @@ pub fn perform_file_operation(
                 target_path: Some(target_path),
             })
         }
+        FileOperationRequest::Copy {
+            source_path,
+            target_path,
+        } => {
+            copy_path(&source_path, &target_path)?;
+
+            Ok(FileOperationResult {
+                operation: FileOperationKind::Copy,
+                status: FileOperationStatus::Copied,
+                source_path,
+                target_path: Some(target_path),
+            })
+        }
         FileOperationRequest::Delete { path } => {
             let mut vfs = LocalVfs::new();
 
@@ -718,6 +737,46 @@ fn move_path(source_path: &str, target_path: &str) -> Result<(), FolderScanError
     }
 
     fs::rename(source_path, target_path).map_err(|error| FolderScanError::Vfs(error.to_string()))
+}
+
+fn copy_path(source_path: &str, target_path: &str) -> Result<(), FolderScanError> {
+    let source = Path::new(source_path);
+    let target = Path::new(target_path);
+
+    if source.is_dir() {
+        copy_dir_recursive(source, target)
+    } else {
+        if let Some(parent) = target.parent() {
+            fs::create_dir_all(parent).map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+        }
+
+        fs::copy(source, target).map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+        Ok(())
+    }
+}
+
+fn copy_dir_recursive(source: &Path, target: &Path) -> Result<(), FolderScanError> {
+    fs::create_dir_all(target).map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+
+    for entry in fs::read_dir(source).map_err(|error| FolderScanError::Vfs(error.to_string()))? {
+        let entry = entry.map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+        let entry_path = entry.path();
+        let dest = target.join(entry.file_name());
+
+        if entry_path.is_dir() {
+            copy_dir_recursive(&entry_path, &dest)?;
+        } else {
+            if let Some(parent) = dest.parent() {
+                fs::create_dir_all(parent)
+                    .map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+            }
+
+            fs::copy(&entry_path, &dest)
+                .map_err(|error| FolderScanError::Vfs(error.to_string()))?;
+        }
+    }
+
+    Ok(())
 }
 
 pub fn change_file_attributes(
@@ -2149,6 +2208,46 @@ mod tests {
             Some(created.to_string_lossy().as_ref())
         );
         assert!(created.is_dir());
+
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn copies_files_and_directories_with_diagnostic_results() {
+        let root = unique_temp_dir("folder-copy");
+        let source_file = root.join("notes.txt");
+        let target_file = root.join("out").join("notes.txt");
+        let source_dir = root.join("tree");
+        let nested = source_dir.join("nested.txt");
+        let target_dir = root.join("copied-tree");
+
+        fs::create_dir_all(&root).expect("root dir");
+        fs::write(&source_file, b"copy bytes").expect("source write");
+        fs::create_dir_all(&source_dir).expect("source dir");
+        fs::write(&nested, b"nested bytes").expect("nested write");
+
+        let file_result = perform_file_operation(FileOperationRequest::Copy {
+            source_path: source_file.display().to_string(),
+            target_path: target_file.display().to_string(),
+        })
+        .expect("copy file works");
+
+        assert_eq!(file_result.operation, FileOperationKind::Copy);
+        assert_eq!(file_result.status, FileOperationStatus::Copied);
+        assert_eq!(fs::read(&target_file).expect("copied read"), b"copy bytes");
+        assert!(source_file.exists());
+
+        let dir_result = perform_file_operation(FileOperationRequest::Copy {
+            source_path: source_dir.display().to_string(),
+            target_path: target_dir.display().to_string(),
+        })
+        .expect("copy dir works");
+
+        assert_eq!(dir_result.operation, FileOperationKind::Copy);
+        assert_eq!(
+            fs::read(target_dir.join("nested.txt")).expect("nested copied"),
+            b"nested bytes"
+        );
 
         let _ = fs::remove_dir_all(root);
     }

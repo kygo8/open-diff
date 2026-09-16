@@ -1210,5 +1210,10 @@ export const frFR: LanguagePack = {
     'ui.leaveAlone': 'Ne rien faire',
     'ui.deleteLeft': 'Supprimer à gauche',
     'ui.deleteRight': 'Supprimer à droite',
+    'ui.copyToSide': 'Copier vers le côté...',
+    'ui.moveToSide': 'Déplacer vers le côté...',
+    'ui.copyToFolder': 'Copier vers un dossier...',
+    'ui.moveToFolder': 'Déplacer vers un dossier...',
+    'ui.copyFilename': 'Copier le nom de fichier',
   },
 }

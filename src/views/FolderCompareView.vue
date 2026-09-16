@@ -45,6 +45,13 @@ import {
   selectRowIdsByStatuses,
 } from '@/app/folderRowSelection'
 import {
+  folderExternalTransferPlans,
+  folderSideTransferPlans,
+  inferCopyToSideDirectionForRows,
+  resolveNewFolderRoots,
+  type FolderTransferSide,
+} from '@/app/folderSideTransfer'
+import {
   aggregateFolderSelection,
   formatFolderSelectionLabel,
   joinStatusFooterParts,
@@ -71,6 +78,7 @@ import {
   changeFolderEntryAttributes,
   compareFolderPaths,
   copyFolderCompareEntry,
+  copyFolderEntry,
   createFolderEntry,
   createFolderSnapshot,
   deleteFolderEntry,
@@ -277,6 +285,10 @@ const pendingDangerousOperation = ref<FileOperationConfirmation>()
 const pendingDangerousOperationLabel = ref('')
 const renamePanelOpen = ref(false)
 const renameTargetName = ref('')
+const focusedPathSide = ref<'left' | 'right'>('left')
+const sideTransferPanelOpen = ref(false)
+const sideTransferMode = ref<'copy' | 'move'>('copy')
+const sideTransferDirection = ref<FolderTransferSide>('Right')
 const newFolderPanelOpen = ref(false)
 const newFolderName = ref('New Folder')
 const lastFileOperationAction = ref<string>()
@@ -764,6 +776,24 @@ watch(
       case 'copy-right':
         copySelectedTo('Right')
         break
+      case 'copy-to-side':
+        copySelectedToSide()
+        break
+      case 'move-to-side':
+        void moveSelectedToSide()
+        break
+      case 'copy-to-folder':
+        void copySelectedToFolder()
+        break
+      case 'move-to-folder':
+        void moveSelectedToFolder()
+        break
+      case 'rename-selected':
+        renameSelectedFile()
+        break
+      case 'copy-filename':
+        void copyRowPath()
+        break
       case 'toggle-minor':
         showMinorFolderDifferences()
         break
@@ -791,7 +821,6 @@ watch(
       case 'clear-session':
       case 'copy':
       case 'cut':
-      case 'delete':
       case 'export-settings':
       case 'help-contents':
       case 'help-support':
@@ -855,6 +884,9 @@ watch(
         break
       case 'new-folder':
         openNewFolderPanel()
+        break
+      case 'delete':
+        deleteSelectedFile()
         break
       case 'leave-alone':
       case 'sync-copy-left-to-right':
@@ -1785,15 +1817,14 @@ async function confirmNewFolder(): Promise<void> {
     selectedRelativePath: selected?.relativePath,
     selectedKind: selected?.kind,
   })
-  const roots: string[] = []
-
-  if (leftRoot.value && !leftSideIsArchive.value && !leftSideIsSnapshot.value) {
-    roots.push(leftRoot.value)
-  }
-
-  if (rightRoot.value && !rightSideIsArchive.value && !rightSideIsSnapshot.value) {
-    roots.push(rightRoot.value)
-  }
+  const roots = resolveNewFolderRoots({
+    leftRoot: leftRoot.value,
+    rightRoot: rightRoot.value,
+    leftWritable: Boolean(leftRoot.value) && !leftSideIsArchive.value && !leftSideIsSnapshot.value,
+    rightWritable:
+      Boolean(rightRoot.value) && !rightSideIsArchive.value && !rightSideIsSnapshot.value,
+    focusedSide: focusedPathSide.value,
+  })
 
   const paths = resolveNewFolderPaths({
     roots,
@@ -1821,26 +1852,168 @@ async function confirmNewFolder(): Promise<void> {
   }
 }
 
-async function moveSelectedFile(): Promise<void> {
-  const paths = folderEntryPaths(operationTargetRows())
+function openSideTransferPanel(mode: 'copy' | 'move', direction: FolderTransferSide): void {
+  sideTransferMode.value = mode
+  sideTransferDirection.value = direction
+  sideTransferPanelOpen.value = true
+}
 
-  if (paths.length === 0) {
+function copySelectedToSide(direction?: FolderTransferSide): void {
+  const rows = operationTargetRows()
+
+  if (rows.length === 0) {
+    return
+  }
+
+  const inferred = direction ?? inferCopyToSideDirectionForRows(rows)
+
+  if (!inferred) {
+    return
+  }
+
+  if (inferred === 'ambiguous') {
+    openSideTransferPanel('copy', 'Right')
+
+    return
+  }
+
+  copySelectedTo(inferred)
+}
+
+async function confirmSideTransfer(): Promise<void> {
+  const direction = sideTransferDirection.value
+  const mode = sideTransferMode.value
+
+  sideTransferPanelOpen.value = false
+
+  if (mode === 'copy') {
+    copySelectedTo(direction)
+
+    return
+  }
+
+  await executeMoveToSide(direction)
+}
+
+async function moveSelectedToSide(direction?: FolderTransferSide): Promise<void> {
+  const rows = operationTargetRows()
+
+  if (rows.length === 0) {
+    return
+  }
+
+  const inferred = direction ?? inferCopyToSideDirectionForRows(rows)
+
+  if (!inferred) {
+    return
+  }
+
+  if (inferred === 'ambiguous') {
+    openSideTransferPanel('move', 'Right')
+
+    return
+  }
+
+  await executeMoveToSide(inferred)
+}
+
+async function executeMoveToSide(direction: FolderTransferSide): Promise<void> {
+  const plans = folderSideTransferPlans(
+    operationTargetRows(),
+    direction,
+    leftRoot.value,
+    rightRoot.value,
+  )
+
+  if (plans.length === 0) {
+    return
+  }
+
+  const targetWritable =
+    direction === 'Left'
+      ? !leftSideIsArchive.value && !leftSideIsSnapshot.value
+      : !rightSideIsArchive.value && !rightSideIsSnapshot.value
+
+  if (!targetWritable) {
     return
   }
 
   try {
-    const moved: string[] = []
-
-    for (const path of paths) {
-      const targetPath = archivePath(path)
-
-      await moveFolderEntry({ sourcePath: path, targetPath })
-      moved.push(targetPath)
+    for (const plan of plans) {
+      await moveFolderEntry({ sourcePath: plan.sourcePath, targetPath: plan.targetPath })
     }
     lastFileOperationAction.value =
-      moved.length === 1
-        ? `${t('ui.move')} -> ${moved[0]}`
-        : t('status.movedBulkPaths', { count: moved.length })
+      plans.length === 1
+        ? `${t('ui.moveToSide')} -> ${plans[0].targetPath}`
+        : t('status.movedBulkPaths', { count: plans.length })
+    checkedRowIds.value = new Set()
+    await runFolderCompare()
+  } catch (error) {
+    folderCompareError.value = formatCompareError(error, t)
+  }
+}
+
+async function copySelectedToFolder(): Promise<void> {
+  const rows = operationTargetRows()
+
+  if (rows.length === 0) {
+    return
+  }
+
+  const destination = await pickNativePath({ directory: true })
+
+  if (!destination) {
+    return
+  }
+
+  const plans = folderExternalTransferPlans(rows, destination)
+
+  if (plans.length === 0) {
+    return
+  }
+
+  try {
+    for (const plan of plans) {
+      await copyFolderEntry({ sourcePath: plan.sourcePath, targetPath: plan.targetPath })
+    }
+    lastFileOperationAction.value =
+      plans.length === 1
+        ? t('status.copiedPath', { path: plans[0].targetPath })
+        : t('status.copiedBulkToSide', { count: plans.length, side: destination })
+    checkedRowIds.value = new Set()
+    await runFolderCompare()
+  } catch (error) {
+    folderCompareError.value = formatCompareError(error, t)
+  }
+}
+
+async function moveSelectedToFolder(): Promise<void> {
+  const rows = operationTargetRows()
+
+  if (rows.length === 0) {
+    return
+  }
+
+  const destination = await pickNativePath({ directory: true })
+
+  if (!destination) {
+    return
+  }
+
+  const plans = folderExternalTransferPlans(rows, destination)
+
+  if (plans.length === 0) {
+    return
+  }
+
+  try {
+    for (const plan of plans) {
+      await moveFolderEntry({ sourcePath: plan.sourcePath, targetPath: plan.targetPath })
+    }
+    lastFileOperationAction.value =
+      plans.length === 1
+        ? `${t('ui.moveToFolder')} -> ${plans[0].targetPath}`
+        : t('status.movedBulkPaths', { count: plans.length })
     checkedRowIds.value = new Set()
     await runFolderCompare()
   } catch (error) {
@@ -2139,16 +2312,6 @@ function navigateFolderDifference(direction: 'next' | 'previous'): void {
   })
 }
 
-function archivePath(path: string): string {
-  const separatorIndex = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'))
-
-  if (separatorIndex < 0) {
-    return `archive/${path}`
-  }
-
-  return `${path.slice(0, separatorIndex)}/archive/${path.slice(separatorIndex + 1)}`
-}
-
 const rowContextMenu = ref<{ x: number; y: number; rowId: string }>()
 const pathContextMenu = ref<{ x: number; y: number; side: 'left' | 'right' }>()
 
@@ -2281,6 +2444,7 @@ function openRowContextMenu(event: MouseEvent, row: FolderTreeRow): void {
 }
 
 function openPathContextMenu(event: MouseEvent, side: 'left' | 'right'): void {
+  focusedPathSide.value = side
   event.preventDefault()
   pathContextMenu.value = { x: event.clientX, y: event.clientY, side }
   rowContextMenu.value = undefined
@@ -2495,6 +2659,7 @@ onUnmounted(() => {
                 autocomplete="off"
                 spellcheck="false"
                 :title="leftRoot"
+                @focus="focusedPathSide = 'left'"
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'left')"
                 @contextmenu="openPathContextMenu($event, 'left')"
@@ -2554,6 +2719,7 @@ onUnmounted(() => {
                 autocomplete="off"
                 spellcheck="false"
                 :title="rightRoot"
+                @focus="focusedPathSide = 'right'"
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'right')"
                 @contextmenu="openPathContextMenu($event, 'right')"
@@ -2881,10 +3047,34 @@ onUnmounted(() => {
           <NButton
             size="small"
             secondary
+            data-testid="copy-selected-to-side"
+            :disabled="!selectedEntryPath"
+            @click="copySelectedToSide()"
+            >{{ $t('ui.copyToSide') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="move-selected-to-side"
+            :disabled="!selectedEntryPath"
+            @click="moveSelectedToSide()"
+            >{{ $t('ui.moveToSide') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
+            data-testid="copy-selected-to-folder"
+            :disabled="!selectedEntryPath"
+            @click="copySelectedToFolder"
+            >{{ $t('ui.copyToFolder') }}</NButton
+          >
+          <NButton
+            size="small"
+            secondary
             data-testid="move-selected-file"
             :disabled="!selectedEntryPath"
-            @click="moveSelectedFile"
-            >{{ $t('ui.move') }}</NButton
+            @click="moveSelectedToFolder"
+            >{{ $t('ui.moveToFolder') }}</NButton
           >
           <NButton
             size="small"
@@ -3296,6 +3486,39 @@ onUnmounted(() => {
           data-testid="confirm-rename-file"
           @click="confirmRenameFile"
           >{{ $t('ui.rename') }}</NButton
+        >
+      </section>
+
+      <section
+        v-if="sideTransferPanelOpen"
+        class="folder-operation-panel"
+        data-testid="folder-side-transfer-panel"
+      >
+        <span>{{ sideTransferMode === 'copy' ? $t('ui.copyToSide') : $t('ui.moveToSide') }}</span>
+        <label>
+          <input
+            v-model="sideTransferDirection"
+            type="radio"
+            value="Left"
+            data-testid="side-transfer-left"
+          />
+          {{ $t('ui.left') }}
+        </label>
+        <label>
+          <input
+            v-model="sideTransferDirection"
+            type="radio"
+            value="Right"
+            data-testid="side-transfer-right"
+          />
+          {{ $t('ui.right') }}
+        </label>
+        <NButton
+          size="small"
+          type="primary"
+          data-testid="confirm-side-transfer"
+          @click="confirmSideTransfer"
+          >{{ $t('ui.apply') }}</NButton
         >
       </section>
 

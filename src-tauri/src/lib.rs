@@ -42,6 +42,7 @@ pub fn run() {
             commands::compare_table_csv,
             commands::compare_version_files,
             commands::copy_folder_compare_entry,
+            commands::copy_folder_entry,
             commands::create_folder_snapshot,
             commands::create_folder_entry,
             commands::delete_folder_entry,

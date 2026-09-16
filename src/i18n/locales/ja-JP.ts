@@ -1185,5 +1185,10 @@ export const jaJP: LanguagePack = {
     'ui.leaveAlone': 'そのまま残す',
     'ui.deleteLeft': '左側を削除',
     'ui.deleteRight': '右側を削除',
+    'ui.copyToSide': '反対側へコピー...',
+    'ui.moveToSide': '反対側へ移動...',
+    'ui.copyToFolder': 'フォルダーへコピー...',
+    'ui.moveToFolder': 'フォルダーへ移動...',
+    'ui.copyFilename': 'ファイル名をコピー',
   },
 }

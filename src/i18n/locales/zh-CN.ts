@@ -1144,5 +1144,10 @@ export const zhCN: LanguagePack = {
     'ui.leaveAlone': '保持不动',
     'ui.deleteLeft': '删除左侧',
     'ui.deleteRight': '删除右侧',
+    'ui.copyToSide': '复制到另一侧...',
+    'ui.moveToSide': '移动到另一侧...',
+    'ui.copyToFolder': '复制到文件夹...',
+    'ui.moveToFolder': '移动到文件夹...',
+    'ui.copyFilename': '复制文件名',
   },
 }

@@ -1104,6 +1104,12 @@ watch(
       case 'sync-copy-right-to-left':
       case 'sync-delete-left':
       case 'sync-delete-right':
+      case 'copy-to-side':
+      case 'move-to-side':
+      case 'copy-to-folder':
+      case 'move-to-folder':
+      case 'rename-selected':
+      case 'copy-filename':
         break
       case 'swap':
       case 'undo':

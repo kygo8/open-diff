@@ -91,6 +91,8 @@ export type ReportPreferenceKind = 'text' | 'folder'
 export interface ReportPreferences {
   defaultFormat: ReportPreferenceFormat
   defaultKind: ReportPreferenceKind
+  openAfterExport: boolean
+  clearHistoryOnExit: boolean
 }
 
 const reportPreferenceFormats: readonly ReportPreferenceFormat[] = [
@@ -107,6 +109,8 @@ export function defaultReportPreferences(): ReportPreferences {
   return {
     defaultFormat: 'html',
     defaultKind: 'text',
+    openAfterExport: false,
+    clearHistoryOnExit: false,
   }
 }
 
@@ -137,6 +141,8 @@ export function loadReportPreferences(
     return {
       defaultFormat: normalizeReportPreferenceFormat(parsed.defaultFormat),
       defaultKind: normalizeReportPreferenceKind(parsed.defaultKind),
+      openAfterExport: Boolean(parsed.openAfterExport),
+      clearHistoryOnExit: Boolean(parsed.clearHistoryOnExit),
     }
   } catch {
     return defaultReportPreferences()

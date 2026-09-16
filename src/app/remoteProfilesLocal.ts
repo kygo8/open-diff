@@ -83,6 +83,7 @@ export const remoteProfileDefaultsStorageKey = 'open-diff-remote-profile-default
 export interface RemoteProfileDefaults {
   defaultName: string
   defaultProtocol: RemoteProtocol
+  defaultHost: string
   defaultRootPath: string
 }
 
@@ -101,6 +102,7 @@ export function defaultRemoteProfileDefaults(): RemoteProfileDefaults {
   return {
     defaultName: 'New Profile',
     defaultProtocol: 'sftp',
+    defaultHost: '',
     defaultRootPath: '/',
   }
 }
@@ -134,9 +136,12 @@ export function loadRemoteProfileDefaults(
         ? parsed.defaultRootPath.trim()
         : defaults.defaultRootPath
 
+    const host = typeof parsed.defaultHost === 'string' ? parsed.defaultHost.trim() : ''
+
     return {
       defaultName: name,
       defaultProtocol: normalizeRemoteProfileProtocol(parsed.defaultProtocol),
+      defaultHost: host,
       defaultRootPath: rootPath,
     }
   } catch {
@@ -153,6 +158,7 @@ export function saveRemoteProfileDefaults(
     JSON.stringify({
       defaultName: prefs.defaultName.trim() || defaultRemoteProfileDefaults().defaultName,
       defaultProtocol: normalizeRemoteProfileProtocol(prefs.defaultProtocol),
+      defaultHost: prefs.defaultHost.trim(),
       defaultRootPath: prefs.defaultRootPath.trim() || '/',
     }),
   )

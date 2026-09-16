@@ -64,6 +64,7 @@ import {
 } from '@/app/reportExports'
 import {
   defaultRemoteProfileDefaults,
+  loadLocalRemoteProfiles,
   loadRemoteProfileDefaults,
   saveRemoteProfileDefaults,
   type RemoteProfileDefaults,
@@ -160,6 +161,7 @@ const fileFiltersExcludeDraft = ref(formatFolderNameFilterDraft(fileFiltersDraft
 const fileFormatsDraft = ref<FileFormatDefinition[]>(loadFileFormats())
 const reportPreferencesDraft = ref<ReportPreferences>(loadReportPreferences())
 const profileDefaultsDraft = ref<RemoteProfileDefaults>(loadRemoteProfileDefaults())
+const savedRemoteProfilesCount = computed(() => loadLocalRemoteProfiles().length)
 const pictureCompareDefaultsDraft = ref(loadPictureCompareOptions())
 const mediaCompareDefaultsDraft = ref(loadMediaCompareOptions())
 const versionCompareDefaultsDraft = ref(loadVersionCompareOptions())
@@ -859,6 +861,20 @@ function persistFolderCriteriaDraft(): void {
   saveFolderCompareCriteria(folderCriteriaDraft.value)
 }
 
+function onFolderTimestampToleranceChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  folderCriteriaDraft.value.timestampToleranceMs = Math.max(
+    0,
+    Math.round(Number(target.value) || 0) * 1000,
+  )
+  persistFolderCriteriaDraft()
+}
+
 function persistTextCompareDefaultsDraft(): void {
   saveTextCompareSessionOptions(textCompareDefaultsDraft.value)
 }
@@ -1525,6 +1541,24 @@ function parseShortcutText(value: string): string[] {
         >
           <label class="tweak-row">
             <input
+              v-model="folderCriteriaDraft.compareSize"
+              data-testid="folder-compare-size"
+              type="checkbox"
+              @change="persistFolderCriteriaDraft"
+            />
+            <span>{{ $t('ui.compareBySize') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="folderCriteriaDraft.compareModifiedTime"
+              data-testid="folder-compare-timestamp"
+              type="checkbox"
+              @change="persistFolderCriteriaDraft"
+            />
+            <span>{{ $t('ui.compareByTimestamp') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
               v-model="folderCriteriaDraft.compareContents"
               data-testid="folder-compare-contents"
               type="checkbox"
@@ -1534,12 +1568,30 @@ function parseShortcutText(value: string): string[] {
           </label>
           <label class="tweak-row">
             <input
-              v-model="folderCriteriaDraft.compareSize"
-              data-testid="folder-compare-size"
+              v-model="folderCriteriaDraft.compareCrc"
+              data-testid="folder-compare-crc"
               type="checkbox"
               @change="persistFolderCriteriaDraft"
             />
-            <span>{{ $t('ui.compareBySize') }}</span>
+            <span>{{ $t('ui.compareCrc') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="folderCriteriaDraft.compareAttributes"
+              data-testid="folder-compare-attributes"
+              type="checkbox"
+              @change="persistFolderCriteriaDraft"
+            />
+            <span>{{ $t('ui.compareAttributes') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="folderCriteriaDraft.sizeOnlyUnimportant"
+              data-testid="folder-compare-size-only-unimportant"
+              type="checkbox"
+              @change="persistFolderCriteriaDraft"
+            />
+            <span>{{ $t('ui.sizeOnlyUnimportant') }}</span>
           </label>
           <label class="tweak-row">
             <input
@@ -1550,14 +1602,27 @@ function parseShortcutText(value: string): string[] {
             />
             <span>{{ $t('ui.followSymlinks') }}</span>
           </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.timestampToleranceSeconds') }}</span>
+            <input
+              class="auto-save-limit-input"
+              data-testid="folder-compare-timestamp-tolerance"
+              type="number"
+              min="0"
+              max="86400"
+              step="1"
+              :value="Math.round((folderCriteriaDraft.timestampToleranceMs ?? 0) / 1000)"
+              @change="onFolderTimestampToleranceChange"
+            />
+          </label>
           <label class="tweak-row">
             <input
-              v-model="folderCriteriaDraft.sizeOnlyUnimportant"
-              data-testid="folder-compare-size-only-unimportant"
+              v-model="folderCriteriaDraft.ignoreDaylightSavingHourOffset"
+              data-testid="folder-compare-ignore-dst"
               type="checkbox"
               @change="persistFolderCriteriaDraft"
             />
-            <span>{{ $t('ui.sizeOnlyUnimportant') }}</span>
+            <span>{{ $t('ui.ignoreDaylightSavingHourOffset') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.folderCompareOptionsHint') }}</p>
         </NCard>
@@ -2439,6 +2504,15 @@ function parseShortcutText(value: string): string[] {
             </select>
           </label>
           <label class="stack-row">
+            <span>{{ $t('ui.profileDefaultHost') }}</span>
+            <input
+              v-model="profileDefaultsDraft.defaultHost"
+              data-testid="profile-default-host"
+              type="text"
+              @change="persistProfileDefaultsDraft"
+            />
+          </label>
+          <label class="stack-row">
             <span>{{ $t('ui.profileDefaultRootPath') }}</span>
             <input
               v-model="profileDefaultsDraft.defaultRootPath"
@@ -2447,6 +2521,9 @@ function parseShortcutText(value: string): string[] {
               @change="persistProfileDefaultsDraft"
             />
           </label>
+          <p class="options-hint">
+            {{ $t('ui.profileSavedCount', { count: savedRemoteProfilesCount }) }}
+          </p>
           <p class="options-hint">{{ $t('ui.profileDefaultsHint') }}</p>
           <div
             v-if="policy.remoteProfiles"
@@ -2502,6 +2579,25 @@ function parseShortcutText(value: string): string[] {
                 {{ $t(option.labelKey) }}
               </option>
             </select>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="reportPreferencesDraft.openAfterExport"
+              data-testid="report-open-after-export"
+              type="checkbox"
+              @change="persistReportPreferencesDraft"
+            />
+            <span>{{ $t('ui.openReportAfterExport') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.openReportAfterExportHint') }}</p>
+          <label class="tweak-row">
+            <input
+              v-model="reportPreferencesDraft.clearHistoryOnExit"
+              data-testid="report-clear-history-on-exit"
+              type="checkbox"
+              @change="persistReportPreferencesDraft"
+            />
+            <span>{{ $t('ui.reportClearHistoryOnExit') }}</span>
           </label>
           <div class="settings-row">
             <NButton
@@ -2807,7 +2903,7 @@ function parseShortcutText(value: string): string[] {
 <style scoped>
 .settings-view {
   display: grid;
-  grid-template-columns: 172px minmax(0, 1fr);
+  grid-template-columns: 168px minmax(0, 1fr);
   align-content: start;
   align-items: start;
   gap: 6px;
@@ -2861,7 +2957,7 @@ function parseShortcutText(value: string): string[] {
 .options-tree-group-label {
   min-width: 0;
   margin: 0;
-  padding: 3px 6px 1px;
+  padding: 2px 6px 0;
   color: var(--app-text-muted);
   font-size: 10px;
   font-weight: 700;
@@ -2912,14 +3008,14 @@ function parseShortcutText(value: string): string[] {
 .options-section-button {
   box-sizing: border-box;
   width: 100%;
-  min-height: 20px;
+  min-height: 18px;
   padding: 0 6px;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: var(--app-text);
   font-size: 11px;
-  line-height: 18px;
+  line-height: 16px;
   text-align: left;
   cursor: pointer;
 }
@@ -3041,10 +3137,10 @@ function parseShortcutText(value: string): string[] {
 }
 
 .settings-view :deep(.n-card) {
-  --n-padding-top: 8px;
-  --n-padding-bottom: 8px;
-  --n-padding-left: 10px;
-  --n-padding-right: 10px;
+  --n-padding-top: 6px;
+  --n-padding-bottom: 6px;
+  --n-padding-left: 8px;
+  --n-padding-right: 8px;
   --n-title-font-size: 12px;
   --n-border-radius: 0;
 
@@ -3052,8 +3148,8 @@ function parseShortcutText(value: string): string[] {
 }
 
 .settings-view :deep(.n-card-header) {
-  min-height: 28px;
-  padding: 6px 10px !important;
+  min-height: 24px;
+  padding: 4px 8px !important;
 }
 
 .settings-view :deep(.n-space) {
@@ -3064,7 +3160,7 @@ function parseShortcutText(value: string): string[] {
 .settings-view :deep(.n-base-selection),
 .settings-view :deep(.n-input-number),
 .settings-view :deep(.n-button) {
-  --n-height: 22px;
+  --n-height: 20px;
   --n-font-size: 11px;
 }
 

@@ -49,6 +49,7 @@ import { isSingleSessionFrame, preferDenseAppChrome, shouldShowTabStrip } from '
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { useI18n } from '@/i18n'
 import { usePolicyStore } from '@/stores/policy'
+import { clearRecentReportExports, loadReportPreferences } from '@/app/reportExports'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import {
@@ -725,6 +726,10 @@ async function closeMainWindow(): Promise<void> {
     if (!confirmed) {
       return
     }
+  }
+
+  if (loadReportPreferences().clearHistoryOnExit) {
+    clearRecentReportExports()
   }
 
   try {

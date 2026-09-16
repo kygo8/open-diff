@@ -1208,10 +1208,15 @@ export const deDE: LanguagePack = {
     'ui.profileDefaultName': 'Standard-Profilname',
     'ui.profileDefaultProtocol': 'Standardprotokoll',
     'ui.profileDefaultRootPath': 'Standard-Stammverzeichnis',
+    'ui.profileDefaultHost': 'Standardhost',
+    'ui.profileSavedCount': 'Gespeicherte Profile: {count}',
     'ui.profileDefaultsHint':
       'Gilt beim Erstellen eines neuen Remote-Profils. Gespeicherte Profile im Profilfenster verwalten.',
     'ui.reportDefaultFormat': 'Standard-Berichtsformat',
     'ui.reportDefaultKind': 'Standard-Berichtsart',
+    'ui.openReportAfterExport': 'Bericht nach Export öffnen',
+    'ui.openReportAfterExportHint':
+      'Exportierten Bericht im Dateimanager anzeigen, wenn Berichte / Skripte fertig sind.',
     'ui.reportClearHistoryOnExit': 'Berichtverlauf beim Beenden löschen (Desktop)',
     'ui.clearReportHistory': 'Berichtverlauf löschen',
     'ui.openReportsScripts': 'Berichte / Skripte öffnen',

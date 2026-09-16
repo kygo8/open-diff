@@ -1183,10 +1183,15 @@ export const jaJP: LanguagePack = {
     'ui.profileDefaultName': '既定のプロファイル名',
     'ui.profileDefaultProtocol': '既定のプロトコル',
     'ui.profileDefaultRootPath': '既定のルートパス',
+    'ui.profileDefaultHost': '既定のホスト',
+    'ui.profileSavedCount': '保存済みプロファイル: {count}',
     'ui.profileDefaultsHint':
       '新しいリモートプロファイル作成時に適用されます。保存済みプロファイルはプロファイルウィンドウで管理します。',
     'ui.reportDefaultFormat': '既定のレポート形式',
     'ui.reportDefaultKind': '既定のレポート種類',
+    'ui.openReportAfterExport': 'エクスポート後にレポートを開く',
+    'ui.openReportAfterExportHint':
+      'レポート / スクリプトのエクスポート完了後、ファイルマネージャでレポートを表示します。',
     'ui.reportClearHistoryOnExit': '終了時に最近のレポート履歴を消去（デスクトップ）',
     'ui.clearReportHistory': '最近のレポート履歴を消去',
     'ui.openReportsScripts': 'レポート / スクリプトを開く',

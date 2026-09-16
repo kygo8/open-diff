@@ -1207,10 +1207,15 @@ export const esES: LanguagePack = {
     'ui.profileDefaultName': 'Nombre de perfil predeterminado',
     'ui.profileDefaultProtocol': 'Protocolo predeterminado',
     'ui.profileDefaultRootPath': 'Ruta raíz predeterminada',
+    'ui.profileDefaultHost': 'Host predeterminado',
+    'ui.profileSavedCount': 'Perfiles guardados: {count}',
     'ui.profileDefaultsHint':
       'Se aplica al crear un perfil remoto. Gestione los perfiles guardados en la ventana Perfiles.',
     'ui.reportDefaultFormat': 'Formato de informe predeterminado',
     'ui.reportDefaultKind': 'Tipo de informe predeterminado',
+    'ui.openReportAfterExport': 'Abrir informe tras exportar',
+    'ui.openReportAfterExportHint':
+      'Mostrar el informe exportado en el administrador de archivos cuando Informes / Scripts termine.',
     'ui.reportClearHistoryOnExit': 'Borrar historial de informes al salir (escritorio)',
     'ui.clearReportHistory': 'Borrar historial de informes',
     'ui.openReportsScripts': 'Abrir Informes / Scripts',

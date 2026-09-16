@@ -597,6 +597,66 @@ describe('FolderMergeView', () => {
     await flushPromises()
     expect(executeFolderMergePlan).toHaveBeenCalled()
   })
+
+  it('filters Show Changes and Show Conflicts from View actions', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(5)
+
+    useViewActionsStore().dispatch('show-changes')
+    await flushPromises()
+    expect(
+      wrapper
+        .findAll('[data-testid="folder-merge-row"]')
+        .map((row) => row.text())
+        .join('\n'),
+    ).not.toContain('same.txt')
+    expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(4)
+
+    useViewActionsStore().dispatch('show-conflicts')
+    await flushPromises()
+    expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(2)
+    expect(wrapper.text()).toContain('notes.txt')
+    expect(wrapper.text()).toContain('config')
+
+    useViewActionsStore().dispatch('show-all')
+    await flushPromises()
+    expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(5)
+  })
+
+  it('toggles Center Pane and Compare to Output with persisted hooks', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-merge-center-pane"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-compare-to-output"]').exists()).toBe(false)
+
+    useViewActionsStore().dispatch('toggle-center-pane')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-merge-center-pane"]').exists()).toBe(false)
+
+    useViewActionsStore().dispatch('compare-to-output')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-merge-compare-to-output"]').exists()).toBe(true)
+    expect(wrapper.findAll('[data-testid="folder-merge-row"]')).toHaveLength(4)
+
+    const stored = JSON.parse(localStorage.getItem('open-diff-folder-merge-display') ?? '{}') as {
+      showCenterPane?: boolean
+      compareToOutput?: boolean
+      viewPreset?: string
+    }
+
+    expect(stored.showCenterPane).toBe(false)
+    expect(stored.compareToOutput).toBe(true)
+    expect(stored.viewPreset).toBe('changes')
+  })
 })
 
 function createMergePlanResponse(): FolderMergePlanResponse {

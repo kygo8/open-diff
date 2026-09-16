@@ -6,6 +6,8 @@ export interface FolderDisplayFiltersState {
   statuses: FolderDisplayStatus[]
   showSuppressed: boolean
   filesOnly: boolean
+  /** Keep folder rows visible even when their own status is filtered out. */
+  alwaysShowFolders: boolean
 }
 
 const allStatuses: FolderDisplayStatus[] = ['Same', 'Different', 'Left only', 'Right only']
@@ -15,7 +17,22 @@ export function defaultFolderDisplayFilters(): FolderDisplayFiltersState {
     statuses: [...allStatuses],
     showSuppressed: false,
     filesOnly: false,
+    alwaysShowFolders: true,
   }
+}
+
+export function folderRowMatchesStatusFilter(input: {
+  kind: 'file' | 'directory'
+  status: FolderDisplayStatus
+  statuses: readonly FolderDisplayStatus[]
+  showSuppressed: boolean
+  alwaysShowFolders: boolean
+}): boolean {
+  if (input.showSuppressed || input.statuses.includes(input.status)) {
+    return true
+  }
+
+  return input.alwaysShowFolders && input.kind === 'directory'
 }
 
 export function loadFolderDisplayFilters(
@@ -39,6 +56,7 @@ export function loadFolderDisplayFilters(
       statuses: statuses.length > 0 ? statuses : [...allStatuses],
       showSuppressed: Boolean(parsed.showSuppressed),
       filesOnly: Boolean(parsed.filesOnly),
+      alwaysShowFolders: parsed.alwaysShowFolders !== false,
     }
   } catch {
     return defaultFolderDisplayFilters()
@@ -55,6 +73,7 @@ export function saveFolderDisplayFilters(
       statuses: state.statuses,
       showSuppressed: state.showSuppressed,
       filesOnly: state.filesOnly,
+      alwaysShowFolders: state.alwaysShowFolders,
     }),
   )
 }

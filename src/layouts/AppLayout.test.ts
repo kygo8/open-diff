@@ -916,6 +916,10 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-command-view.showOrphans"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-view.suppressFilters"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-view.showLeftNewer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-view.alwaysShowFolders"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-view.showChanges"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-view.showConflicts"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-view.centerPane"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-view.ignoreFolderStructure"]').exists()).toBe(
       true,
     )
@@ -925,6 +929,7 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-command-session.compareParentFolders"]').exists()).toBe(
       true,
     )
+    expect(wrapper.find('[data-testid="menu-command-session.compareToOutput"]').exists()).toBe(true)
 
     wrapper.unmount()
   })

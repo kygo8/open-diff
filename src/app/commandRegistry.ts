@@ -89,6 +89,10 @@ export type CommandId =
   | 'view.showRightNewerAndOrphans'
   | 'view.compareFilesAndFolderStructure'
   | 'view.ignoreFolderStructure'
+  | 'view.alwaysShowFolders'
+  | 'view.showChanges'
+  | 'view.showConflicts'
+  | 'view.centerPane'
   | 'search.findFilename'
   | 'search.findNextFilename'
   | 'search.findPreviousFilename'
@@ -127,6 +131,7 @@ export type CommandId =
   | 'session.newSession'
   | 'session.compareParentFolders'
   | 'session.compareBaseFolders'
+  | 'session.compareToOutput'
   | 'script.run'
   | 'report.save'
 
@@ -212,6 +217,11 @@ export type CommandAction =
         | 'show-right-newer-orphans'
         | 'compare-files-and-folder-structure'
         | 'ignore-folder-structure'
+        | 'always-show-folders'
+        | 'show-changes'
+        | 'show-conflicts'
+        | 'toggle-center-pane'
+        | 'compare-to-output'
         | 'compare-parent-folders'
         | 'find-filename'
         | 'find-next-filename'
@@ -1182,6 +1192,56 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: [], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'ignore-folder-structure' },
+  },
+  {
+    id: 'view.alwaysShowFolders',
+    titleKey: 'ui.alwaysShowFolders',
+    keywords: ['always', 'show', 'folders', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'always-show-folders' },
+  },
+  {
+    id: 'view.showChanges',
+    titleKey: 'ui.showChanges',
+    keywords: ['show', 'changes', 'view', 'merge', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-changes' },
+  },
+  {
+    id: 'view.showConflicts',
+    titleKey: 'ui.showConflicts',
+    keywords: ['show', 'conflicts', 'view', 'merge', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-conflicts' },
+  },
+  {
+    id: 'view.centerPane',
+    titleKey: 'ui.centerPane',
+    keywords: ['center', 'pane', 'base', 'view', 'merge'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'toggle-center-pane' },
+  },
+  {
+    id: 'session.compareToOutput',
+    titleKey: 'ui.compareToOutput',
+    keywords: ['compare', 'output', 'session', 'merge'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'compare-to-output' },
   },
   {
     id: 'session.newSession',

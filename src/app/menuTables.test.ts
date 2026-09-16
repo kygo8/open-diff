@@ -67,6 +67,7 @@ it('enables deeper View presets and structure modes on Folder Compare', () => {
   expect(resolveMenuCommandEnabled('view.showLeftNewer', true, baseCtx)).toBe(true)
   expect(resolveMenuCommandEnabled('view.showDifferencesNoOrphans', true, baseCtx)).toBe(true)
   expect(resolveMenuCommandEnabled('view.ignoreFolderStructure', true, baseCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.alwaysShowFolders', true, baseCtx)).toBe(true)
   expect(
     resolveMenuCommandEnabled('view.showLeftOrphans', true, {
       ...baseCtx,
@@ -79,6 +80,19 @@ it('enables deeper View presets and structure modes on Folder Compare', () => {
       routePath: '/merge/folder',
     }),
   ).toBe(true)
+})
+
+it('enables Merge View Show Changes / Conflicts / Center Pane and Compare to Output only on Folder Merge', () => {
+  const mergeCtx = { ...baseCtx, routePath: '/merge/folder' }
+
+  expect(resolveMenuCommandEnabled('view.showChanges', true, mergeCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.showConflicts', true, mergeCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.centerPane', true, mergeCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('session.compareToOutput', true, mergeCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.alwaysShowFolders', true, mergeCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.showChanges', true, baseCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('view.centerPane', true, baseCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.compareToOutput', true, baseCtx)).toBe(false)
 })
 
 it('gates Compare Parent / Base Folders and keeps New Session global', () => {

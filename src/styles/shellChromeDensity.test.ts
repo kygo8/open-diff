@@ -29,6 +29,11 @@ describe('shell chrome density', () => {
     expect(source).toMatch(/\.tab-context-menu\s*\{[\s\S]*?border-radius:\s*0/)
     expect(source).toMatch(/\.dirty-tab-prompt\s*\{[\s\S]*?min-height:\s*22px/)
     expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
+    expect(source).toMatch(/\.language-panel\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(source).toMatch(/\.language-option\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(source).toMatch(/\.command-palette\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(source).toMatch(/\.command-palette header\s*\{[\s\S]*?height:\s*22px/)
+    expect(source).toMatch(/\.command-item\s*\{[\s\S]*?min-height:\s*20px/)
   })
 
   it('keeps WorkbenchShell session toolbar/content frame denser', () => {
@@ -38,9 +43,12 @@ describe('shell chrome density', () => {
     expect(mainCss).toMatch(/\.workbench-titlebar\s*\{[\s\S]*?height:\s*10px/)
     expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*34px/)
     expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
+    expect(mainCss).toMatch(/\.workbench-inspector-stack\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(mainCss).toMatch(/\.workbench-inspector-section\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(mainCss).toMatch(/\.workbench-inspector-section h2\s*\{[\s\S]*?height:\s*16px/)
   })
 
-  it('marks WorkbenchShell frame densify pass 17', () => {
-    expect(workbench).toMatch(/data-shell-density="capture-pass17"/)
+  it('marks WorkbenchShell frame densify pass 18', () => {
+    expect(workbench).toMatch(/data-shell-density="capture-pass18"/)
   })
 })

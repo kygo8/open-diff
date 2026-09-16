@@ -636,7 +636,7 @@ onMounted(() => {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture-pass17"
+      data-home-density="capture-pass18"
       data-home-chrome="minimal"
     >
       <aside
@@ -1135,7 +1135,7 @@ onMounted(() => {
 <style scoped>
 .home-title-count {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .home-workspace {

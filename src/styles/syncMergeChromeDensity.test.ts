@@ -22,15 +22,15 @@ describe('folder sync/merge chrome density', () => {
 
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
-    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*10px/)
+    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*8px/)
+    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*8px/)
     expect(syncView).not.toMatch(
       /joinStatusFooterParts\(syncSelectionLabel\.value, leftFreeSpaceLabel\.value\)/,
     )
     expect(syncView).toMatch(/chromeKind:\s*'folder-pair'/)
 
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(mergeView).toMatch(/\.merge-path-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(mergeView).toMatch(/\.merge-path-footer\s*\{[\s\S]*?font-size:\s*8px/)
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?min-height:\s*22px/)
     expect(mergeView).toMatch(/chromeKind:\s*'folder-pair'/)
 

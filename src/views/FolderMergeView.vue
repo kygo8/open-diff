@@ -1530,7 +1530,7 @@ watch(
 
       <section
         class="display-filters folder-filter-chrome"
-        data-filters-density="capture-pass4"
+        data-filters-density="capture-pass5"
         data-testid="folder-merge-filter-strip"
       >
         <div class="folder-filter-strip">
@@ -1563,7 +1563,7 @@ watch(
             >
               <Funnel
                 class="folder-filter-strip-icon"
-                :size="12"
+                :size="11"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -1583,7 +1583,7 @@ watch(
             >
               <Eye
                 class="folder-filter-strip-icon"
-                :size="12"
+                :size="11"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -1975,7 +1975,7 @@ watch(
       <section
         v-if="showPeek"
         class="folder-merge-peek-panel"
-        data-peek-density="capture-pass4"
+        data-peek-density="capture-pass5"
         data-testid="folder-merge-peek-panel"
       >
         <header>
@@ -2448,7 +2448,7 @@ h1 {
 .folder-merge-peek-panel {
   display: grid;
   gap: 0;
-  padding: 0 1px;
+  padding: 0;
   border: 1px solid #c9cdd3;
   border-radius: 0;
   background: #ffffff;
@@ -2461,7 +2461,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 2px;
-  min-height: 13px;
+  min-height: 12px;
   margin: 0;
   padding: 0;
   border-bottom: 1px solid #dfe3e8;
@@ -2522,7 +2522,7 @@ h1 {
 
 .folder-filter-chrome {
   align-items: center;
-  min-height: 26px;
+  min-height: 24px;
   padding: 0;
 }
 
@@ -2550,7 +2550,7 @@ h1 {
   box-sizing: border-box;
   min-width: 36px;
   max-width: 48px;
-  height: 26px;
+  height: 24px;
   padding: 0 2px;
   border: 0;
   border-right: 1px solid #c9cdd3;
@@ -2593,7 +2593,7 @@ h1 {
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 18px;
+  height: 16px;
   padding: 0 4px;
   border: 1px solid #bfc4cc;
   border-radius: 2px;

@@ -184,7 +184,7 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair {
   gap: 0 !important;
-  min-height: 18px !important;
+  min-height: 16px !important;
   padding: 0 1px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   background: #f3f3f3 !important;
@@ -205,25 +205,25 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > input,
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > .path-input {
-  height: 13px !important;
-  min-height: 13px !important;
+  height: 12px !important;
+  min-height: 12px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > button {
-  height: 13px !important;
-  min-height: 13px !important;
+  height: 12px !important;
+  min-height: 12px !important;
   padding: 0 2px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
 }
 
 .app-shell-single-session .path-side-footer {
-  min-height: 7px !important;
+  min-height: 6px !important;
   margin-top: 0 !important;
-  font-size: 7px !important;
-  line-height: 7px !important;
+  font-size: 6px !important;
+  line-height: 6px !important;
 }
 
 .app-shell-single-session .folder-toolbar .folder-criteria,
@@ -735,7 +735,7 @@ select {
   gap: 0;
   min-width: 0;
   height: auto;
-  min-height: 20px;
+  min-height: 18px;
   padding: 0;
   overflow: visible;
   border-bottom: 1px solid #a0a0a0;
@@ -745,7 +745,7 @@ select {
 .workbench-toolbar select,
 .workbench-toolbar input,
 .path-pair-bar input {
-  height: 13px;
+  height: 12px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-canvas);
@@ -764,7 +764,7 @@ select {
   min-width: 0;
   max-width: 12em;
   height: auto;
-  min-height: 13px;
+  min-height: 12px;
   padding: 1px 2px;
   overflow: hidden;
   border: 1px solid transparent;
@@ -811,8 +811,8 @@ select {
 
 .path-pair-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr) auto;
-  min-height: 20px;
+  grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr) auto;
+  min-height: 18px;
   padding: 0 1px;
   background: #f3f3f3;
 }
@@ -840,9 +840,9 @@ select {
 }
 
 .path-pair-swap {
-  width: 16px;
-  min-width: 16px;
-  height: 13px;
+  width: 14px;
+  min-width: 14px;
+  height: 12px;
   padding: 0;
 }
 
@@ -851,7 +851,7 @@ select {
   grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 1px;
-  min-height: 18px;
+  min-height: 16px;
   padding: 0 1px;
   border-bottom: 1px solid #a0a0a0;
   background: #f3f3f3;
@@ -860,7 +860,7 @@ select {
 .bc-path-row input {
   width: 100%;
   min-width: 0;
-  height: 13px;
+  height: 12px;
   padding: 0 2px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
@@ -877,7 +877,7 @@ select {
   width: auto;
   min-width: max-content;
   max-width: none;
-  height: 13px;
+  height: 12px;
   padding: 0 2px;
   overflow: visible;
   border: 1px solid #a0a0a0;
@@ -1302,7 +1302,7 @@ select {
   flex-wrap: wrap !important;
   align-items: center !important;
   gap: 1px 3px !important;
-  min-height: 18px !important;
+  min-height: 16px !important;
   padding: 0 !important;
   font-size: 11px !important;
 }
@@ -1317,7 +1317,7 @@ select {
 }
 
 .folder-filter-pattern {
-  height: 18px !important;
+  height: 16px !important;
   padding: 0 4px !important;
   border: 1px solid #bfc4cc !important;
   border-radius: 2px !important;
@@ -1343,7 +1343,7 @@ select {
   box-sizing: border-box !important;
   min-width: 36px !important;
   max-width: 48px !important;
-  height: 26px !important;
+  height: 24px !important;
   padding: 0 2px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
@@ -1671,10 +1671,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .path-side-footer {
-  min-height: 7px !important;
+  min-height: 6px !important;
   margin-top: 0 !important;
-  font-size: 7px !important;
-  line-height: 7px !important;
+  font-size: 6px !important;
+  line-height: 6px !important;
 }
 
 /* Folder/Sync/Merge session body: cut leftover web page margins */
@@ -2945,7 +2945,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-compare-view .folder-filter-chrome,
 .folder-sync-view .folder-filter-chrome {
-  min-height: 26px !important;
+  min-height: 24px !important;
   padding: 0 !important;
 }
 
@@ -3040,7 +3040,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .folder-filter-chrome {
-  min-height: 26px !important;
+  min-height: 24px !important;
   padding: 0 !important;
 }
 
@@ -3053,7 +3053,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-view .folder-merge-peek-panel {
   gap: 0 !important;
   min-height: 0 !important;
-  padding: 0 1px !important;
+  padding: 0 !important;
   border: 1px solid #c9cdd3 !important;
   border-radius: 0 !important;
   background: #ffffff !important;
@@ -3066,7 +3066,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-peek-panel header,
 .folder-merge-peek-panel header {
   gap: 2px !important;
-  min-height: 13px !important;
+  min-height: 12px !important;
   margin: 0 !important;
   padding: 0 !important;
   border-bottom: 1px solid #dfe3e8 !important;
@@ -3087,8 +3087,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-peek-panel > button,
 .folder-sync-peek-panel > button,
 .folder-merge-peek-panel > button {
-  height: 13px !important;
-  min-height: 13px !important;
+  height: 12px !important;
+  min-height: 12px !important;
   padding: 0 4px !important;
   border: 1px solid #c9cdd3 !important;
   border-radius: 0 !important;
@@ -3111,7 +3111,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   display: inline-flex !important;
   align-items: stretch !important;
   gap: 0 !important;
-  min-height: 13px !important;
+  min-height: 12px !important;
   margin: 0 !important;
   border-bottom: 1px solid #b8bec6 !important;
 }
@@ -3119,7 +3119,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .peek-tab {
   box-sizing: border-box !important;
   min-width: 36px !important;
-  height: 13px !important;
+  height: 12px !important;
   padding: 0 5px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
@@ -3193,7 +3193,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-peek-panel dl > div {
   display: grid !important;
   gap: 0 !important;
-  min-height: 16px !important;
+  min-height: 15px !important;
   padding: 0 !important;
 }
 

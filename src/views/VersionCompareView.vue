@@ -796,34 +796,37 @@ watch(
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 8px;
 }
 
 .eyebrow {
-  margin: 0 0 6px;
+  margin: 0 0 2px;
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
+  line-height: 14px;
 }
 
 h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 16px;
   line-height: 1.2;
 }
 
 .version-source-pair {
   display: grid;
-  gap: 4px;
-  min-width: 220px;
-  padding: 10px 12px;
+  gap: 2px;
+  min-width: 180px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
   text-align: right;
 }
 
@@ -831,7 +834,7 @@ h1 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
   align-items: end;
-  gap: 4px;
+  gap: 3px;
   min-height: 26px;
   padding: 2px 6px;
   border: 1px solid var(--app-border);
@@ -848,6 +851,7 @@ h1 {
 .version-path-panel span {
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 14px;
 }
 
 .version-path-panel input {
@@ -855,7 +859,7 @@ h1 {
   min-height: 20px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -867,7 +871,7 @@ h1 {
   min-height: 20px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -883,19 +887,21 @@ h1 {
 }
 
 .version-error {
+  min-height: 18px;
   margin: 0;
-  padding: 8px 10px;
+  padding: 2px 6px;
   border: 1px solid var(--app-danger);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--diff-deleted-bg);
   color: var(--diff-deleted-fg);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .version-summary-grid,
 .version-side-grid {
   display: grid;
-  gap: 10px;
+  gap: 4px;
 }
 
 .version-summary-grid {
@@ -910,27 +916,29 @@ h1 {
 .version-side,
 .version-report-panel {
   display: grid;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 2px 6px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .version-summary-item {
-  gap: 4px;
+  gap: 2px;
 }
 
 .version-summary-item strong {
-  font-size: 18px;
-  line-height: 1;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .version-summary-item span,
 .version-side header span,
 .version-report-panel header span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .version-side header,
@@ -938,41 +946,50 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
+  min-height: 18px;
 }
 
 .version-report-panel header button {
+  height: 18px;
+  min-height: 18px;
   margin-left: auto;
+  padding: 0 5px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .version-side dl {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 4px;
   margin: 0;
 }
 
 .version-side dl div {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
-  padding: 8px;
+  min-height: 18px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
 }
 
 .version-side dt {
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 14px;
 }
 
 .version-side dd {
   min-width: 0;
   margin: 0;
   overflow: hidden;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
+  line-height: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -981,7 +998,7 @@ h1 {
   display: grid;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
 }
 
@@ -991,8 +1008,9 @@ h1 {
     110px 140px minmax(160px, 1fr) minmax(160px, 1fr)
     98px 98px;
   min-width: 820px;
+  min-height: 16px;
   border-bottom: 1px solid var(--app-border);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .version-field-minor {
@@ -1001,32 +1019,41 @@ h1 {
 
 .version-rules-panel {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 2px 6px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .version-rules-panel header {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
+  min-height: 18px;
 }
 
 .version-rules-panel header button {
+  height: 18px;
+  min-height: 18px;
   margin-left: auto;
+  padding: 0 5px;
+  font-size: 11px;
+  line-height: 18px;
 }
 
 .version-rules-panel header span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .version-rules-list {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   max-height: 240px;
   overflow: auto;
 }
@@ -1035,8 +1062,10 @@ h1 {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 4px;
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .version-rule-row em {
@@ -1051,11 +1080,11 @@ h1 {
 .version-field-row > * {
   min-width: 0;
   margin: 0;
-  padding: 8px 10px;
+  padding: 2px 6px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-style: normal;
-  line-height: 18px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

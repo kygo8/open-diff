@@ -1914,7 +1914,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
   height: 20px !important;
   min-height: 20px !important;
   padding: 0 6px !important;
+  border-radius: 2px !important;
   font-size: 11px !important;
+}
+
+.version-compare-view .version-path-panel span {
+  font-size: 11px !important;
+  line-height: 14px !important;
 }
 
 .version-compare-view .bc-path-footers {
@@ -1931,12 +1937,28 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .version-compare-view .version-summary-grid,
+.version-compare-view .version-side-grid,
+.version-compare-view .version-summary-item,
 .version-compare-view .version-side,
 .version-compare-view .version-report-panel,
 .version-compare-view .version-rules-panel {
-  gap: 4px 6px !important;
+  gap: 2px 6px !important;
+  min-height: 22px !important;
   padding: 2px 6px !important;
   border-radius: 0 !important;
+}
+
+.version-compare-view .version-summary-grid,
+.version-compare-view .version-side-grid {
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.version-compare-view .version-field-row {
+  min-height: 16px !important;
+  font-size: 11px !important;
 }
 
 .version-compare-view .version-field-row > * {
@@ -1947,6 +1969,95 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .version-compare-view .version-summary-item strong {
   font-size: 12px !important;
   line-height: 16px !important;
+}
+
+/* Version summary/side/report/rules densify one more notch toward capture */
+.version-compare-view .version-summary-item span,
+.version-compare-view .version-side header span,
+.version-compare-view .version-report-panel header span,
+.version-compare-view .version-rules-panel header span,
+.version-compare-view .version-side dt {
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.version-compare-view .version-side header,
+.version-compare-view .version-report-panel header,
+.version-compare-view .version-rules-panel header {
+  gap: 6px !important;
+  min-height: 18px !important;
+}
+
+.version-compare-view .version-report-panel header button,
+.version-compare-view .version-rules-panel header button {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
+  font-size: 11px !important;
+  line-height: 18px !important;
+}
+
+.version-compare-view .version-side dl {
+  gap: 4px !important;
+}
+
+.version-compare-view .version-side dl div {
+  gap: 2px !important;
+  min-height: 18px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.version-compare-view .version-side dd {
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.version-compare-view .version-report-table {
+  border-radius: 0 !important;
+}
+
+.version-compare-view .version-rules-list {
+  gap: 2px !important;
+}
+
+.version-compare-view .version-rule-row {
+  gap: 4px !important;
+  min-height: 18px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.version-compare-view .version-error {
+  min-height: 18px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.version-compare-view .version-source-pair {
+  gap: 2px !important;
+  min-height: 22px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.version-compare-view .version-header {
+  gap: 8px !important;
+}
+
+.version-compare-view .eyebrow {
+  margin: 0 0 2px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.version-compare-view h1 {
+  font-size: 16px !important;
+  line-height: 1.2 !important;
 }
 
 /* Registry Compare chrome densify toward capture path/status/toolbar/footer strips */

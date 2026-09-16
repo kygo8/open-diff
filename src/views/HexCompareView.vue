@@ -1389,31 +1389,35 @@ h2 {
 
 .hex-summary {
   display: grid;
+  gap: 2px 6px;
   min-width: 118px;
-  padding: 10px 12px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   text-align: right;
 }
 
 .hex-summary strong {
-  font-size: 18px;
-  line-height: 1;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .hex-summary span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .hex-wrap-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 4px 6px;
+  gap: 2px 6px;
   min-width: 0;
-  padding: 4px 6px;
+  min-height: 22px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1430,22 +1434,34 @@ h2 {
   font-size: 11px;
 }
 
-.hex-wrap-controls input {
+.hex-wrap-controls input,
+.hex-wrap-controls select,
+.hex-wrap-controls button {
   width: 100%;
   min-width: 0;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.hex-wrap-controls button {
+  width: auto;
 }
 
 .hex-wrap-controls strong {
   min-width: 0;
   max-width: 100%;
-  height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);
   font-size: 11px;
-  line-height: 20px;
+  line-height: 18px;
   text-align: center;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1479,11 +1495,11 @@ h2 {
   display: grid;
   grid-template-columns: 84px minmax(240px, 1fr) 132px;
   min-width: 460px;
-  min-height: 18px;
+  min-height: 16px;
   border-bottom: 1px solid var(--app-border);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .hex-row:last-child {
@@ -1526,18 +1542,20 @@ h2 {
 
 .hex-report-panel {
   display: grid;
-  gap: 0.5rem;
-  margin: 0.75rem 0;
-  padding: 0.65rem 0.75rem;
+  gap: 2px 6px;
+  min-height: 22px;
+  margin: 0;
+  padding: 2px 6px;
   border: 1px solid var(--border, #d0d7de);
-  border-radius: 0.4rem;
+  border-radius: 0;
 }
 
 .hex-report-panel header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
+  gap: 6px;
+  min-height: 18px;
 }
 
 .hex-byte-different {

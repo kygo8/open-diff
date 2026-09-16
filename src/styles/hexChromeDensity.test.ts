@@ -14,13 +14,27 @@ describe('hex compare chrome density', () => {
     expect(css).toMatch(/\.hex-compare-view \.bc-path-row\s*\{[\s\S]*?min-height:\s*26px/)
     expect(css).toMatch(/\.hex-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*10px/)
-    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
 
     expect(hexView).toMatch(/\.hex-compare-view\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(hexView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*10px/)
-    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(hexView).toMatch(/chromeKind:\s*'hex-session'/)
 
     expect(layout).toMatch(/data-chrome-kind='hex-session'[\s\S]*?height:\s*22px/)
+  })
+
+  it('keeps Hex summary/report/toolbar chrome dense one more notch toward capture', () => {
+    expect(css).toMatch(/\.hex-compare-view \.hex-summary[\s\S]*?padding:\s*2px 6px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-report-panel\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls input[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-summary strong\s*\{[\s\S]*?font-size:\s*12px/)
+
+    expect(hexView).toMatch(/\.hex-summary\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(hexView).toMatch(/\.hex-report-panel\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(hexView).toMatch(/\.hex-wrap-controls\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(hexView).toMatch(/\.hex-wrap-controls strong\s*\{[\s\S]*?height:\s*18px/)
+    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?font-size:\s*11px/)
   })
 })

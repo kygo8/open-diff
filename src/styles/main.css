@@ -992,6 +992,9 @@ select {
 .metadata-row,
 .column-source-grid,
 .table-controls,
+.table-source-controls,
+.column-map-controls,
+.table-navigation-bar,
 .format-detail-panel,
 .profile-detail-panel {
   border-color: #bfc4cc !important;
@@ -1611,31 +1614,65 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .hex-wrap-controls {
-  gap: 4px 6px !important;
-  min-height: 26px !important;
+  gap: 2px 6px !important;
+  min-height: 22px !important;
   padding: 2px 6px !important;
   border-radius: 0 !important;
 }
 
 .hex-compare-view .hex-wrap-controls input,
 .hex-compare-view .hex-wrap-controls select,
-.hex-compare-view .hex-wrap-controls button {
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+.hex-compare-view .hex-wrap-controls button,
+.hex-compare-view .hex-wrap-controls strong {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
   font-size: 11px !important;
+  line-height: 18px !important;
 }
 
 .hex-compare-view .hex-row {
-  min-height: 18px !important;
-  font-size: 12px !important;
-  line-height: 18px !important;
+  min-height: 16px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .hex-compare-view .hex-offset,
 .hex-compare-view .hex-bytes,
 .hex-compare-view .hex-ascii {
   padding: 0 6px !important;
+}
+
+/* Hex summary/report/pane densify one more notch toward capture */
+.hex-compare-view .hex-summary,
+.hex-compare-view .hex-report-panel {
+  gap: 2px 6px !important;
+  min-height: 22px !important;
+  margin: 0 !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.hex-compare-view .hex-summary strong {
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+
+.hex-compare-view .hex-summary span,
+.hex-compare-view .hex-report-panel header span {
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.hex-compare-view .hex-report-panel header {
+  gap: 6px !important;
+  min-height: 18px !important;
+}
+
+.hex-compare-view .hex-side {
+  gap: 2px !important;
+  padding: 2px 4px !important;
+  border-radius: 0 !important;
 }
 
 /* Picture Compare chrome densify toward capture path/status/toolbar/footer strips */
@@ -2000,30 +2037,115 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
+/* Table Compare chrome densify toward capture path/status/controls/grid strips */
 .table-compare-view {
-  padding: 6px 8px;
+  gap: 4px !important;
+  padding: 4px 6px !important;
 }
 
 .table-compare-view .table-source-controls,
 .table-compare-view .table-controls,
-.table-compare-view .column-map-controls {
-  min-height: 26px;
-  padding: 6px 8px;
-  border-radius: 0;
+.table-compare-view .column-map-controls,
+.table-compare-view .table-navigation-bar {
+  gap: 4px 6px !important;
+  min-height: 26px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.table-compare-view .table-source-controls label,
+.table-compare-view .column-map-controls label,
+.table-compare-view .table-navigation-bar label {
+  gap: 2px !important;
+}
+
+.table-compare-view .table-source-controls span,
+.table-compare-view .column-map-controls span,
+.table-compare-view .table-navigation-bar label span,
+.table-compare-view .table-navigation-bar > span {
+  font-size: 11px !important;
+  line-height: 14px !important;
 }
 
 .table-compare-view .table-source-controls input,
 .table-compare-view .table-source-controls select,
 .table-compare-view .table-controls input,
 .table-compare-view .table-controls button,
-.table-compare-view .column-map-controls select {
-  height: 24px;
-  min-height: 24px;
-  font-size: 12px;
+.table-compare-view .column-map-controls select,
+.table-compare-view .table-navigation-bar input,
+.table-compare-view .table-navigation-bar button {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.table-compare-view .table-navigation-bar > strong {
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+  line-height: 20px !important;
+}
+
+.table-compare-view .bc-path-footers {
+  gap: 1px !important;
+  padding: 0 2px !important;
 }
 
 .table-compare-view .path-side-footer {
-  font-size: 10px;
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+}
+
+.table-compare-view .column-source-grid,
+.table-compare-view .column-mapping-list,
+.table-compare-view .table-grid-panel {
+  gap: 4px 6px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.table-compare-view .column-source-grid li {
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.table-compare-view .table-column-rule {
+  gap: 2px 6px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+}
+
+.table-compare-view .table-grid-panes {
+  gap: 4px !important;
+}
+
+.table-compare-view .table-grid-viewport,
+.table-compare-view .column-map-table {
+  border-radius: 0 !important;
+}
+
+.table-compare-view .table-virtual-grid {
+  grid-template-rows: repeat(var(--visible-rows), 22px) !important;
+}
+
+.table-compare-view .table-grid-row {
+  min-height: 22px !important;
+}
+
+.table-compare-view .table-grid-cell,
+.table-compare-view .column-map-row span,
+.table-compare-view .column-map-row strong {
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 /* Text Compare chrome densify toward capture path/status/editor strips */

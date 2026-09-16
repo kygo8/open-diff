@@ -1354,9 +1354,9 @@ watch([leftPath, rightPath], () => {
 <style scoped>
 .table-compare-view {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   height: 100%;
-  padding: 6px 8px;
+  padding: 4px 6px;
   overflow: auto;
 }
 
@@ -1393,9 +1393,9 @@ h2 {
 .table-summary {
   display: grid;
   min-width: 132px;
-  padding: 10px 12px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
   text-align: right;
 }
@@ -1407,8 +1407,8 @@ h2 {
 }
 
 .table-summary strong {
-  font-size: 18px;
-  line-height: 1;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .table-summary span {
@@ -1421,8 +1421,9 @@ h2 {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
   align-items: end;
-  gap: 6px;
-  padding: 6px 8px;
+  gap: 4px 6px;
+  min-height: 26px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1434,76 +1435,78 @@ h2 {
 
 .table-source-controls label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
 }
 
 .table-source-controls input,
 .table-source-controls select {
   width: 100%;
-  height: 24px;
-  min-height: 24px;
+  height: 20px;
+  min-height: 20px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .column-map-controls label {
   display: grid;
-  gap: 5px;
+  gap: 2px;
 }
 
 .column-map-controls span,
 .column-mapping-list header span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .column-map-controls select {
   width: 100%;
-  height: 24px;
-  min-height: 24px;
+  height: 20px;
+  min-height: 20px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
-  font-size: 13px;
+  font-size: 11px;
 }
 
 .column-source-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 4px;
 }
 
 .column-source-grid section,
 .column-mapping-list,
 .table-grid-panel {
   display: grid;
-  gap: 8px;
-  padding: 10px;
+  gap: 4px 6px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
 .column-source-grid ul {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .column-source-grid li {
-  padding: 7px 9px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .column-mapping-list header {
@@ -1527,55 +1530,62 @@ h2 {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) auto auto auto auto;
   align-items: end;
-  gap: 8px;
+  gap: 4px 6px;
+  min-height: 26px;
+  padding: 2px 6px;
 }
 
 .table-navigation-bar label {
   display: grid;
-  gap: 4px;
+  gap: 2px;
 }
 
 .table-navigation-bar label span,
 .table-navigation-bar > span {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .table-navigation-bar input {
   width: 100%;
-  height: 32px;
-  padding: 0 9px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
   color: var(--app-text);
-  font-size: 13px;
+  font-size: 11px;
 }
 
 .table-navigation-bar button {
-  height: 32px;
-  padding: 0 10px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-surface-muted);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .table-navigation-bar > strong {
   min-width: 72px;
-  padding: 7px 9px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--app-bg);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 20px;
   text-align: center;
 }
 
 .table-column-rules {
   display: grid;
   grid-template-columns: repeat(5, minmax(128px, 1fr));
-  gap: 8px;
+  gap: 4px;
   overflow: auto;
 }
 
@@ -1583,13 +1593,13 @@ h2 {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 4px 8px;
+  gap: 2px 6px;
   min-width: 128px;
-  padding: 8px;
+  padding: 2px 6px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .table-column-rule input {
@@ -1616,7 +1626,7 @@ h2 {
 .table-grid-panes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 4px;
 }
 
 .table-grid-pane {
@@ -1635,20 +1645,20 @@ h2 {
   max-height: 178px;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--app-bg);
 }
 
 .table-virtual-grid {
   display: grid;
-  grid-template-rows: repeat(var(--visible-rows), 34px);
+  grid-template-rows: repeat(var(--visible-rows), 22px);
   min-width: calc(var(--visible-columns) * 132px);
 }
 
 .table-grid-row {
   display: grid;
   grid-template-columns: repeat(var(--visible-columns), minmax(132px, 1fr));
-  min-height: 34px;
+  min-height: 22px;
   border-bottom: 1px solid var(--app-border);
 }
 
@@ -1658,11 +1668,11 @@ h2 {
 
 .table-grid-cell {
   min-width: 0;
-  padding: 8px 10px;
+  padding: 2px 6px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1675,7 +1685,7 @@ h2 {
   display: grid;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .column-map-row {
@@ -1693,9 +1703,11 @@ h2 {
 .column-map-row span,
 .column-map-row strong {
   min-width: 0;
-  padding: 8px 10px;
+  padding: 2px 6px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1741,15 +1753,18 @@ h2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column: 1 / -1;
-  gap: 8px;
+  gap: 1px;
   width: 100%;
+  padding: 0 2px;
 }
 
 .path-side-footer {
-  min-height: 18px;
+  min-height: 10px;
+  margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

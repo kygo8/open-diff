@@ -311,7 +311,7 @@ const checkedRowIds = ref<Set<string>>(new Set())
 const selectNameFilter = ref('')
 let folderCompareGeneration = 0
 let folderWatchTimer: ReturnType<typeof setInterval> | undefined
-const rowHeight = 34
+const rowHeight = 22
 const virtualViewportRows = 18
 const virtualOverscanRows = 4
 const scrollTop = ref(0)
@@ -598,7 +598,7 @@ const gridTemplateColumns = computed(() => {
     columns.push('96px')
   }
 
-  columns.push('104px', 'minmax(180px, 1.2fr)')
+  columns.push('96px', 'minmax(180px, 1.2fr)')
 
   if (isColumnVisible('size')) {
     columns.push('90px')
@@ -616,7 +616,7 @@ const gridTemplateColumns = computed(() => {
 })
 
 function rowIndent(row: FolderTreeRow): string {
-  const indent = String(row.depth * 18)
+  const indent = String(row.depth * 14)
 
   return `${indent}px`
 }
@@ -5385,7 +5385,7 @@ onUnmounted(() => {
   min-height: 0;
   overflow: auto;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--app-surface);
 }
 
@@ -5402,6 +5402,7 @@ onUnmounted(() => {
 .tree-row {
   display: grid;
   min-width: 1040px;
+  min-height: 22px;
 }
 
 .tree-head {
@@ -5411,17 +5412,20 @@ onUnmounted(() => {
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
 }
 
 .tree-head span,
 .tree-row span,
 .tree-row strong {
   min-width: 0;
-  padding: 3px 8px;
+  padding: 2px 6px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -5429,7 +5433,8 @@ onUnmounted(() => {
 .tree-row {
   border-bottom: 1px solid var(--app-border);
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .tree-row.selected {
@@ -5443,19 +5448,49 @@ onUnmounted(() => {
 }
 
 .tree-row small {
-  margin-left: 8px;
+  margin-left: 4px;
   color: var(--app-text-muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
+  line-height: 14px;
+}
+
+.tree-row .name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .tree-row.directory .name-cell {
   font-weight: 700;
 }
 
+.folder-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--app-text-muted);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.folder-toggle:focus-visible {
+  outline: 1px solid var(--app-accent);
+  outline-offset: 1px;
+}
+
 .tree-row strong {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
+  text-align: center;
 }
 
 .status-same strong {
@@ -5689,7 +5724,10 @@ onUnmounted(() => {
 }
 
 .folder-row-check {
-  margin-right: 6px;
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin: 0 2px 0 0;
 }
 
 .tree-row.checked {

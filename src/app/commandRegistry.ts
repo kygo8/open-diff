@@ -78,6 +78,7 @@ export type CommandId =
   | 'search.findFilename'
   | 'view.columns'
   | 'view.log'
+  | 'view.legend'
   | 'view.toolbar'
   | 'actions.attributes'
   | 'actions.touch'
@@ -177,6 +178,7 @@ export type CommandAction =
         | 'find-filename'
         | 'toggle-columns'
         | 'toggle-log'
+        | 'toggle-legend'
         | 'toggle-toolbar'
         | 'change-attributes'
         | 'touch-selected'
@@ -276,7 +278,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['theme', 'appearance', 'dark', 'light'],
     enabled: true,
     visibility: 'global',
-    defaultShortcut: { keys: ['Ctrl', 'Alt', 'L'], scope: 'global' },
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'Z'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'toggle-theme' },
   },
@@ -1055,6 +1057,16 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'C'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'toggle-columns' },
+  },
+  {
+    id: 'view.legend',
+    titleKey: 'ui.legend',
+    keywords: ['legend', 'status', 'colors', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'L'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'toggle-legend' },
   },
   {
     id: 'view.log',

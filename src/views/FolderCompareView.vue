@@ -133,6 +133,7 @@ import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useSettingsStore } from '@/stores/settings'
+import FolderStatusLegend from '@/components/workbench/FolderStatusLegend.vue'
 import { useTabsStore } from '@/stores/tabs'
 import type { FolderSyncOverrideAction } from '@/types/sync'
 
@@ -943,6 +944,7 @@ watch(
       case 'run-script':
       case 'save-report':
       case 'toggle-log':
+      case 'toggle-legend':
       case 'toggle-toolbar':
         break
     }
@@ -3396,6 +3398,11 @@ onUnmounted(() => {
       >
         {{ folderCompareError }}
       </section>
+
+      <FolderStatusLegend
+        v-if="settings.showFolderLegend"
+        class="folder-status-legend-slot"
+      />
 
       <section
         v-show="showColumnConfig"

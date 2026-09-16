@@ -76,6 +76,7 @@ const collapseIdenticalFoldersDefaultStorageKey = 'open-diff-collapse-identical-
 const showHiddenFilesStorageKey = 'open-diff-show-hidden-files'
 const notifyOnCompareCompleteStorageKey = 'open-diff-notify-on-compare-complete'
 const showSessionToolbarsStorageKey = 'open-diff-show-session-toolbars'
+const showFolderLegendStorageKey = 'open-diff-show-folder-legend'
 const showToolbarLabelsStorageKey = 'open-diff-show-toolbar-labels'
 const largeToolbarButtonsStorageKey = 'open-diff-large-toolbar-buttons'
 const createBackupOnSaveStorageKey = 'open-diff-create-backup-on-save'
@@ -129,6 +130,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const showHiddenFiles = ref(loadShowHiddenFiles())
   const notifyOnCompareComplete = ref(loadNotifyOnCompareComplete())
   const showSessionToolbars = ref(loadShowSessionToolbars())
+  const showFolderLegend = ref(loadShowFolderLegend())
   const showToolbarLabels = ref(loadShowToolbarLabels())
   const largeToolbarButtons = ref(loadLargeToolbarButtons())
   const createBackupOnSave = ref(loadCreateBackupOnSave())
@@ -286,6 +288,14 @@ export const useSettingsStore = defineStore('settings', () => {
     showSessionToolbars,
     (value) => {
       localStorage.setItem(showSessionToolbarsStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showFolderLegend,
+    (value) => {
+      localStorage.setItem(showFolderLegendStorageKey, value ? '1' : '0')
     },
     { immediate: true, flush: 'sync' },
   )
@@ -630,6 +640,10 @@ export const useSettingsStore = defineStore('settings', () => {
     showSessionToolbars.value = value
   }
 
+  function setShowFolderLegend(value: boolean): void {
+    showFolderLegend.value = value
+  }
+
   function setShowToolbarLabels(value: boolean): void {
     showToolbarLabels.value = value
   }
@@ -742,6 +756,7 @@ export const useSettingsStore = defineStore('settings', () => {
       showHiddenFilesDefault: showHiddenFiles.value,
       notifyOnCompareComplete: notifyOnCompareComplete.value,
       showSessionToolbars: showSessionToolbars.value,
+      showFolderLegend: showFolderLegend.value,
       showToolbarLabels: showToolbarLabels.value,
       largeToolbarButtons: largeToolbarButtons.value,
       createBackupOnSave: createBackupOnSave.value,
@@ -819,6 +834,9 @@ export const useSettingsStore = defineStore('settings', () => {
         : false,
     )
     setShowSessionToolbars(packageValue.showSessionToolbars)
+    setShowFolderLegend(
+      typeof packageValue.showFolderLegend === 'boolean' ? packageValue.showFolderLegend : false,
+    )
     setShowToolbarLabels(packageValue.showToolbarLabels)
     setLargeToolbarButtons(packageValue.largeToolbarButtons)
     setCreateBackupOnSave(packageValue.createBackupOnSave)
@@ -923,6 +941,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowHiddenFiles(false)
     setNotifyOnCompareComplete(false)
     setShowSessionToolbars(true)
+    setShowFolderLegend(false)
     setShowToolbarLabels(true)
     setLargeToolbarButtons(true)
     setCreateBackupOnSave(false)
@@ -966,6 +985,7 @@ export const useSettingsStore = defineStore('settings', () => {
     showHiddenFiles,
     notifyOnCompareComplete,
     showSessionToolbars,
+    showFolderLegend,
     showToolbarLabels,
     largeToolbarButtons,
     createBackupOnSave,
@@ -1010,6 +1030,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setShowHiddenFiles,
     setNotifyOnCompareComplete,
     setShowSessionToolbars,
+    setShowFolderLegend,
     setShowToolbarLabels,
     setLargeToolbarButtons,
     setCreateBackupOnSave,
@@ -1262,6 +1283,16 @@ function loadShowSessionToolbars(): boolean {
   }
 
   return stored !== '0'
+}
+
+function loadShowFolderLegend(): boolean {
+  const stored = localStorage.getItem(showFolderLegendStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
 }
 
 function loadShowToolbarLabels(): boolean {

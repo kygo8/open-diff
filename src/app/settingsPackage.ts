@@ -26,6 +26,7 @@ export interface SettingsPackage {
   showHiddenFilesDefault?: boolean
   notifyOnCompareComplete?: boolean
   showSessionToolbars: boolean
+  showFolderLegend?: boolean
   showToolbarLabels: boolean
   largeToolbarButtons: boolean
   createBackupOnSave: boolean

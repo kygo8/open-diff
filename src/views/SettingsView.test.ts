@@ -193,7 +193,9 @@ describe('SettingsView', () => {
     await wrapper.find('[data-testid="reset-shortcut-theme.toggle"]').trigger('click')
 
     expect(settings.shortcutOverrides['theme.toggle']).toBeUndefined()
-    expect(wrapper.find('[data-testid="shortcut-current-theme.toggle"]').text()).toBe('Ctrl+Alt+L')
+    expect(wrapper.find('[data-testid="shortcut-current-theme.toggle"]').text()).toBe(
+      'Ctrl+Alt+Shift+Z',
+    )
   })
 
   it('updates font family and size from appearance options', async () => {

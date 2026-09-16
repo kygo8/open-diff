@@ -1058,9 +1058,13 @@ describe('global menu depth parity', () => {
     await wrapper.find('[data-testid="menu-view"]').trigger('click')
     expect(wrapper.find('[data-testid="menu-command-view.showSame"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-view.columns"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-view.legend"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-view.toolbar"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="menu-command-view.columns"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-view.legend"]').attributes('disabled'),
     ).toBeUndefined()
 
     await wrapper.find('[data-testid="menu-session"]').trigger('click')
@@ -1118,6 +1122,9 @@ describe('global menu depth parity', () => {
     await sync.find('[data-testid="menu-view"]').trigger('click')
     expect(
       sync.find('[data-testid="menu-command-view.log"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      sync.find('[data-testid="menu-command-view.legend"]').attributes('disabled'),
     ).toBeUndefined()
     expect(
       sync.find('[data-testid="menu-command-view.columns"]').attributes('disabled'),

@@ -32,6 +32,7 @@ import { buildFolderSyncToolbar, pathBaseName, syncPathPairTitle } from '@/app/s
 import { useI18n } from '@/i18n'
 import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
+import FolderStatusLegend from '@/components/workbench/FolderStatusLegend.vue'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useFolderPathNavStore } from '@/stores/folderPathNav'
@@ -1201,6 +1202,8 @@ watch(
       case 'toggle-log':
         toggleSyncLogPanel()
         break
+      case 'toggle-legend':
+        break
       case 'leave-alone':
         applySyncOverrideAction('leave')
         break
@@ -1259,6 +1262,10 @@ watch(
     toolbar-test-id-prefix="folder-sync-session-toolbar"
     @toolbar-command="runSyncToolbarCommand"
   >
+    <FolderStatusLegend
+      v-if="settings.showFolderLegend"
+      class="folder-status-legend-slot"
+    />
     <section class="folder-sync-view">
       <header class="folder-sync-header">
         <div>

@@ -1299,8 +1299,28 @@ watch(
         break
       case 'show-orphans':
       case 'show-no-orphans':
-      case 'only-compare-files':
+      case 'show-differences-no-orphans':
+      case 'show-left-orphans':
+      case 'show-right-orphans':
+      case 'show-left-newer':
+      case 'show-right-newer':
+      case 'show-left-newer-orphans':
+      case 'show-right-newer-orphans':
       case 'suppress-filters':
+        break
+      case 'only-compare-files':
+        filesOnlyFilter.value = true
+        flatStructure.value = false
+        break
+      case 'compare-files-and-folder-structure':
+        filesOnlyFilter.value = false
+        flatStructure.value = false
+        break
+      case 'ignore-folder-structure':
+        flatStructure.value = true
+        break
+      case 'compare-parent-folders':
+        upOneMergeLevel()
         break
       case 'select-all':
         showMergeSelect.value = true

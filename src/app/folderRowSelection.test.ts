@@ -10,6 +10,7 @@ import {
   selectFileRowIds,
   selectRowIdsByNameFilter,
   selectNewerRowIds,
+  rowMatchesNewerViewPreset,
   selectRowIdsByStatuses,
 } from './folderRowSelection'
 
@@ -169,4 +170,29 @@ it('selects rows where both sides exist and timestamps differ', () => {
       { id: 'd', rightModifiedAtMs: 100 },
     ]),
   ).toEqual(['b'])
+})
+
+it('matches capture newer View presets from timestamps', () => {
+  const leftNewer = {
+    id: 'ln',
+    status: 'Different',
+    leftModifiedAtMs: 200,
+    rightModifiedAtMs: 100,
+  }
+  const rightNewer = {
+    id: 'rn',
+    status: 'Different',
+    leftModifiedAtMs: 100,
+    rightModifiedAtMs: 200,
+  }
+  const leftOrphan = { id: 'lo', status: 'Left only' }
+  const rightOrphan = { id: 'ro', status: 'Right only' }
+
+  expect(rowMatchesNewerViewPreset(leftNewer, 'left-newer')).toBe(true)
+  expect(rowMatchesNewerViewPreset(rightNewer, 'left-newer')).toBe(false)
+  expect(rowMatchesNewerViewPreset(rightNewer, 'right-newer')).toBe(true)
+  expect(rowMatchesNewerViewPreset(leftOrphan, 'left-newer-orphans')).toBe(true)
+  expect(rowMatchesNewerViewPreset(leftNewer, 'left-newer-orphans')).toBe(true)
+  expect(rowMatchesNewerViewPreset(rightOrphan, 'left-newer-orphans')).toBe(false)
+  expect(rowMatchesNewerViewPreset(rightOrphan, 'right-newer-orphans')).toBe(true)
 })

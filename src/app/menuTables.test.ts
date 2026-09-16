@@ -62,3 +62,38 @@ describe('menuTables', () => {
     ).toBe(false)
   })
 })
+
+it('enables deeper View presets and structure modes on Folder Compare', () => {
+  expect(resolveMenuCommandEnabled('view.showLeftNewer', true, baseCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.showDifferencesNoOrphans', true, baseCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('view.ignoreFolderStructure', true, baseCtx)).toBe(true)
+  expect(
+    resolveMenuCommandEnabled('view.showLeftOrphans', true, {
+      ...baseCtx,
+      routePath: '/sync/folder',
+    }),
+  ).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('view.onlyCompareFiles', true, {
+      ...baseCtx,
+      routePath: '/merge/folder',
+    }),
+  ).toBe(true)
+})
+
+it('gates Compare Parent / Base Folders and keeps New Session global', () => {
+  expect(resolveMenuCommandEnabled('session.compareParentFolders', true, baseCtx)).toBe(true)
+  expect(
+    resolveMenuCommandEnabled('session.compareBaseFolders', true, {
+      ...baseCtx,
+      routePath: '/sync/folder',
+    }),
+  ).toBe(true)
+  expect(resolveMenuCommandEnabled('session.compareBaseFolders', true, baseCtx)).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('session.newSession', true, {
+      ...baseCtx,
+      routePath: '/',
+    }),
+  ).toBe(true)
+})

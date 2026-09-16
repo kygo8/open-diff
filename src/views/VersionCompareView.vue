@@ -258,8 +258,18 @@ watch(
       case 'show-same':
       case 'show-orphans':
       case 'show-no-orphans':
+      case 'show-differences-no-orphans':
+      case 'show-left-orphans':
+      case 'show-right-orphans':
+      case 'show-left-newer':
+      case 'show-right-newer':
+      case 'show-left-newer-orphans':
+      case 'show-right-newer-orphans':
+      case 'compare-files-and-folder-structure':
       case 'only-compare-files':
+      case 'ignore-folder-structure':
       case 'suppress-filters':
+      case 'compare-parent-folders':
       case 'run-script':
       case 'save-report':
       case 'find-filename':

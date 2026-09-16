@@ -504,6 +504,7 @@ const virtualOffset = computed(() => {
   return `translateY(${offset}px)`
 })
 const visibleColumnIds = ref<Set<FolderColumnId>>(new Set(['size', 'modified']))
+const showColumnConfig = ref(true)
 const gridTemplateColumns = computed(() => {
   const columns = ['minmax(180px, 1.2fr)']
 
@@ -835,8 +836,23 @@ watch(
       case 'show-same':
         showSameFolderStatuses()
         break
+      case 'find-filename':
+        showFolderSelect.value = true
+        selectVisibleByName()
+        break
+      case 'toggle-columns':
+        showColumnConfig.value = !showColumnConfig.value
+        break
+      case 'change-attributes':
+        void toggleSelectedReadonly(!selectedReadonly.value)
+        break
+      case 'touch-selected':
+        void touchSelectedFile()
+        break
       case 'run-script':
       case 'save-report':
+      case 'toggle-log':
+      case 'toggle-toolbar':
         break
     }
   },
@@ -2898,7 +2914,11 @@ onUnmounted(() => {
         {{ folderCompareError }}
       </section>
 
-      <section class="column-config">
+      <section
+        v-show="showColumnConfig"
+        class="column-config"
+        data-testid="folder-column-config"
+      >
         <label
           v-for="column in configurableColumns"
           :key="column.id"

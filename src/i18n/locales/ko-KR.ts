@@ -1161,5 +1161,10 @@ export const koKR: LanguagePack = {
     'status.syncPlanCancelled': '재정의가 유지로 설정됨',
     'status.syncPlanPending': '지금 동기화를 사용하려면 계획을 수락하세요',
     'status.overrideCount': '{count}개 행 재정의',
+    'ui.findFilename': '파일 이름 찾기',
+    'ui.columns': '열',
+    'ui.log': '로그',
+    'ui.toolbar': '도구 모음',
+    'ui.attributes': '특성',
   },
 }

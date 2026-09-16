@@ -306,6 +306,8 @@ const appMenus: AppMenuDefinition[] = [
       'view.filters',
       'edit.copyLeft',
       'edit.copyRight',
+      'actions.attributes',
+      'actions.touch',
       'actions.exclude',
       'actions.refreshSelection',
       'report.save',
@@ -336,7 +338,13 @@ const appMenus: AppMenuDefinition[] = [
   {
     id: 'search',
     titleKey: 'ui.search',
-    commandIds: ['diff.previous', 'diff.next', 'merge.previousConflict', 'merge.nextConflict'],
+    commandIds: [
+      'diff.previous',
+      'diff.next',
+      'merge.previousConflict',
+      'merge.nextConflict',
+      'search.findFilename',
+    ],
   },
   {
     id: 'view',
@@ -351,6 +359,9 @@ const appMenus: AppMenuDefinition[] = [
       'diff.next',
       'diff.previous',
       'view.filters',
+      'view.columns',
+      'view.log',
+      'view.toolbar',
       'session.swap',
       'session.reload',
       'session.back',
@@ -760,6 +771,9 @@ const executeRegisteredCommand = createCommandExecutor(commandRegistry, {
   },
   dispatchViewAction: (name) => {
     lastViewAction.value = name
+    if (name === 'toggle-toolbar') {
+      settings.setShowSessionToolbars(!settings.showSessionToolbars)
+    }
     viewActions.dispatch(name)
     if (name === 'about') {
       aboutDialogOpen.value = true
@@ -1203,11 +1217,26 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     return { ...command, enabled: command.enabled && folderish && historyReady }
   }
 
+  if (command.id === 'edit.selectAll' || command.id === 'edit.invertSelection') {
+    const folderish =
+      route.path.includes('/folder') ||
+      route.path.includes('/sync') ||
+      route.path.includes('/merge') ||
+      route.path.includes('/registry')
+
+    return { ...command, enabled: command.enabled && folderish }
+  }
+
+  if (command.id === 'edit.selectAllFiles' || command.id === 'edit.selectOrphans') {
+    const supported =
+      route.path.includes('/compare/folder') ||
+      route.path.includes('/merge') ||
+      route.path.includes('/registry')
+
+    return { ...command, enabled: command.enabled && supported }
+  }
+
   if (
-    command.id === 'edit.selectAll' ||
-    command.id === 'edit.selectAllFiles' ||
-    command.id === 'edit.selectOrphans' ||
-    command.id === 'edit.invertSelection' ||
     command.id === 'actions.open' ||
     command.id === 'actions.openWith' ||
     command.id === 'actions.quickCompare' ||
@@ -1215,7 +1244,8 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     command.id === 'actions.refreshSelection' ||
     command.id === 'view.showSame' ||
     command.id === 'view.expandAll' ||
-    command.id === 'view.collapseAll'
+    command.id === 'view.collapseAll' ||
+    command.id === 'search.findFilename'
   ) {
     const folderish =
       route.path.includes('/folder') ||
@@ -1224,6 +1254,30 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
       route.path.includes('/registry')
 
     return { ...command, enabled: command.enabled && folderish }
+  }
+
+  if (command.id === 'view.columns') {
+    return {
+      ...command,
+      enabled: command.enabled && route.path.includes('/compare/folder'),
+    }
+  }
+
+  if (command.id === 'view.log') {
+    const supported = route.path.includes('/sync') || route.path.includes('/merge')
+
+    return { ...command, enabled: command.enabled && supported }
+  }
+
+  if (command.id === 'view.toolbar') {
+    return { ...command, enabled: command.enabled }
+  }
+
+  if (command.id === 'actions.attributes' || command.id === 'actions.touch') {
+    return {
+      ...command,
+      enabled: command.enabled && route.path.includes('/compare/folder'),
+    }
   }
 
   if (command.id === 'session.mergeBaseFolders' || command.id === 'session.syncBaseFolders') {

@@ -50,6 +50,8 @@ import {
 } from '@/app/folderPathNavigation'
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
+import { createChildCompareLaunch } from '@/app/childSession'
+import { openPathExternal } from '@/api/integration'
 
 const leftPath = ref('')
 const basePath = ref('')
@@ -186,12 +188,16 @@ const showMergeSelect = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
 
 const lastSelectionAction = ref('')
+const excludedRowIds = ref<Set<string>>(new Set())
+const selectNameFilter = ref('')
+const showMergeLog = ref(true)
+const mergeOpenError = ref('')
 const mergeChromeMessage = ref('')
 
 const planRows = computed<FolderMergePlanRow[]>(() => plan.value?.rows ?? [])
 const hasPlan = computed(() => planRows.value.length > 0)
 const filteredPlanRows = computed(() => {
-  let rows = planRows.value
+  let rows = planRows.value.filter((row) => !excludedRowIds.value.has(row.id))
 
   if (sameOkOnly.value || importanceFilter.value === 'same') {
     rows = rows.filter((row) => row.action === 'Keep output')
@@ -304,6 +310,188 @@ function invertMergeSelection(): void {
     count: next.size,
     action: t('ui.invertSelection'),
   })
+}
+
+function joinMergeSidePath(root: string, relativePath: string): string {
+  const normalizedRoot = root.replaceAll('\\', '/').replace(/\/$/u, '')
+  const normalizedRelativePath = relativePath.replaceAll('\\', '/').replace(/^\//u, '')
+
+  if (!normalizedRelativePath) {
+    return normalizedRoot
+  }
+
+  return `${normalizedRoot}/${normalizedRelativePath}`
+}
+
+function mergeSelectedRow(): FolderMergePlanRow | undefined {
+  const selected = planRows.value.find((row) => row.id === selectedPlanRowId.value)
+
+  if (selected) {
+    return selected
+  }
+
+  return visiblePlanRows.value.find((row) => checkedRowIds.value.has(row.id))
+}
+
+function selectVisibleMergeFiles(): void {
+  const ids = visiblePlanRows.value
+    .filter(
+      (row) => row.left.kind === 'File' || row.right.kind === 'File' || row.base.kind === 'File',
+    )
+    .map((row) => row.id)
+
+  checkedRowIds.value = new Set(ids)
+  lastSelectionAction.value = t('status.selectedRowCount', {
+    count: ids.length,
+    action: t('ui.selectAllFiles'),
+  })
+}
+
+function selectVisibleMergeOrphans(): void {
+  const ids = visiblePlanRows.value
+    .filter(
+      (row) =>
+        row.left.kind === 'Missing' || row.right.kind === 'Missing' || row.base.kind === 'Missing',
+    )
+    .map((row) => row.id)
+
+  checkedRowIds.value = new Set(ids)
+  lastSelectionAction.value = t('status.selectedRowCount', {
+    count: ids.length,
+    action: t('ui.selectOrphans'),
+  })
+}
+
+function openMergeChildCompare(kind: 'open' | 'quick'): void {
+  const row = mergeSelectedRow()
+
+  if (!row) {
+    return
+  }
+
+  const left = leftPath.value ? joinMergeSidePath(leftPath.value, row.path) : ''
+  const right = rightPath.value ? joinMergeSidePath(rightPath.value, row.path) : ''
+
+  if (!left || !right) {
+    const single = left || right
+
+    if (single) {
+      void openPathExternal(single)
+    }
+
+    return
+  }
+
+  const launch = createChildCompareLaunch(left, right)
+
+  if (!launch) {
+    return
+  }
+
+  lastSelectionAction.value =
+    kind === 'quick'
+      ? `${t('ui.quickCompare')} -> ${launch.route}`
+      : `${t('ui.open')} -> ${launch.route}`
+  sessionLaunch.setPendingLaunch(launch)
+  tabs.openTab({ title: launch.title, route: launch.route, dirty: false })
+  void router.push(launch.route)
+}
+
+async function openMergeSelectedWithAssociatedApplication(): Promise<void> {
+  const row = mergeSelectedRow()
+
+  if (!row) {
+    return
+  }
+
+  let path: string | undefined
+
+  if (row.left.kind !== 'Missing' && leftPath.value) {
+    path = joinMergeSidePath(leftPath.value, row.path)
+  } else if (row.right.kind !== 'Missing' && rightPath.value) {
+    path = joinMergeSidePath(rightPath.value, row.path)
+  } else if (basePath.value) {
+    path = joinMergeSidePath(basePath.value, row.path)
+  }
+
+  if (!path) {
+    return
+  }
+
+  try {
+    await openPathExternal(path)
+    lastSelectionAction.value = `${t('ui.openWith')} -> ${path}`
+  } catch (error) {
+    mergeOpenError.value = error instanceof Error ? error.message : String(error)
+  }
+}
+
+function excludeMergeSelectedRows(): void {
+  const targets = new Set<string>()
+
+  for (const row of visiblePlanRows.value) {
+    if (checkedRowIds.value.has(row.id)) {
+      targets.add(row.id)
+    }
+  }
+
+  const selected = mergeSelectedRow()
+
+  if (selected) {
+    targets.add(selected.id)
+  }
+
+  if (targets.size === 0) {
+    return
+  }
+
+  excludedRowIds.value = new Set([...excludedRowIds.value, ...targets])
+  checkedRowIds.value = new Set([...checkedRowIds.value].filter((id) => !targets.has(id)))
+
+  if (selectedPlanRowId.value && targets.has(selectedPlanRowId.value)) {
+    selectedPlanRowId.value = ''
+  }
+
+  const label = selected?.path ?? String(targets.size)
+
+  lastSelectionAction.value = t('status.excludedPath', { path: label })
+}
+
+async function refreshMergeSelection(): Promise<void> {
+  await buildFolderMergePlan()
+  const row = mergeSelectedRow()
+
+  lastSelectionAction.value = row ? t('status.refreshedPath', { path: row.path }) : t('ui.refresh')
+}
+
+function selectMergeRowsByName(): void {
+  const query = selectNameFilter.value.trim().toLowerCase()
+
+  if (!query) {
+    return
+  }
+
+  const matches = visiblePlanRows.value.filter((row) => row.path.toLowerCase().includes(query))
+
+  checkedRowIds.value = new Set(matches.map((row) => row.id))
+
+  if (matches[0]) {
+    selectedPlanRowId.value = matches[0].id
+  }
+
+  lastSelectionAction.value = t('status.selectedRowCount', {
+    count: matches.length,
+    action: t('ui.findFilename'),
+  })
+}
+
+function openMergeFindFilename(): void {
+  showMergeSelect.value = true
+  selectMergeRowsByName()
+}
+
+function toggleMergeLogPanel(): void {
+  showMergeLog.value = !showMergeLog.value
 }
 
 function toggleMergeRowChecked(rowId: string): void {
@@ -534,7 +722,9 @@ async function buildFolderMergePlan(): Promise<void> {
   reportError.value = ''
   collapsedPrefixes.value = new Set()
   checkedRowIds.value = new Set()
+  excludedRowIds.value = new Set()
   lastSelectionAction.value = ''
+  mergeOpenError.value = ''
   if (plan.value.rows.length > 0) {
     selectedPlanRowId.value = plan.value.rows[0].id
   }
@@ -815,7 +1005,51 @@ watch(
         showMergeRules.value = true
         break
       case 'show-all':
+        setImportanceFilter('all')
+        break
       case 'show-differences':
+        setImportanceFilter('diffs')
+        break
+      case 'show-same':
+        setImportanceFilter('same')
+        break
+      case 'select-all':
+        showMergeSelect.value = true
+        selectVisibleMergeRows()
+        break
+      case 'select-all-files':
+        showMergeSelect.value = true
+        selectVisibleMergeFiles()
+        break
+      case 'select-orphans':
+        showMergeSelect.value = true
+        selectVisibleMergeOrphans()
+        break
+      case 'invert-selection':
+        showMergeSelect.value = true
+        invertMergeSelection()
+        break
+      case 'open-selected':
+        openMergeChildCompare('open')
+        break
+      case 'open-with':
+        void openMergeSelectedWithAssociatedApplication()
+        break
+      case 'quick-compare':
+        openMergeChildCompare('quick')
+        break
+      case 'exclude-selected':
+        excludeMergeSelectedRows()
+        break
+      case 'refresh-selection':
+        void refreshMergeSelection()
+        break
+      case 'find-filename':
+        openMergeFindFilename()
+        break
+      case 'toggle-log':
+        toggleMergeLogPanel()
+        break
       case 'swap':
       case 'undo':
       case 'workspace-load':
@@ -823,18 +1057,12 @@ watch(
       case 'previous-conflict':
       case 'sync-now':
       case 'workspace-save':
-      case 'select-all':
-      case 'select-all-files':
-      case 'select-orphans':
-      case 'invert-selection':
-      case 'open-selected':
-      case 'open-with':
-      case 'quick-compare':
-      case 'exclude-selected':
-      case 'refresh-selection':
-      case 'show-same':
       case 'run-script':
       case 'save-report':
+      case 'toggle-columns':
+      case 'toggle-toolbar':
+      case 'change-attributes':
+      case 'touch-selected':
         break
     }
   },
@@ -1089,7 +1317,15 @@ watch(
       </section>
 
       <section
-        v-if="executionSummary"
+        v-if="mergeOpenError"
+        class="merge-open-status"
+        data-testid="folder-merge-open-error"
+      >
+        {{ mergeOpenError }}
+      </section>
+
+      <section
+        v-if="showMergeLog && executionSummary"
         class="merge-open-status"
         data-testid="folder-merge-execution-status"
       >
@@ -1186,6 +1422,22 @@ watch(
         >
           {{ $t('ui.clearSelection') }}
         </button>
+        <label class="merge-select-name">
+          <span>{{ $t('ui.findFilename') }}</span>
+          <input
+            v-model="selectNameFilter"
+            type="text"
+            data-testid="folder-merge-find-filename"
+            @keydown.enter.prevent="selectMergeRowsByName"
+          />
+          <button
+            type="button"
+            data-testid="folder-merge-find-filename-apply"
+            @click="selectMergeRowsByName"
+          >
+            {{ $t('ui.apply') }}
+          </button>
+        </label>
         <span
           v-if="lastSelectionAction"
           data-testid="folder-merge-selection-status"

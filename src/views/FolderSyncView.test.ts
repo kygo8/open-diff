@@ -10,6 +10,7 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
 }))
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
+import { openPathExternal } from '@/api/integration'
 import { saveTextFile } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
@@ -20,6 +21,12 @@ vi.mock('@/api/diff', () => ({
     path: 'D:/deploy/folder-sync.txt',
     bytesWritten: 64,
   }),
+}))
+
+vi.mock('@/api/integration', () => ({
+  openPathExternal: vi
+    .fn()
+    .mockResolvedValue({ path: 'D:/deploy/package/package/app.exe', launched: true }),
 }))
 
 vi.mock('@/api/sync', () => ({
@@ -487,5 +494,65 @@ describe('FolderSyncView', () => {
     expect(wrapper.find('[data-testid="folder-sync-report-status"]').text()).toBe(
       'D:/deploy/folder-sync.txt',
     )
+  })
+
+  it('wires Actions/Edit selection commands for Sync preview rows', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('[data-testid="sync-row-copy-app"]').trigger('click')
+
+    useViewActionsStore().dispatch('select-all')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-sync-select-panel"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-sync-selection-status"]').text()).toContain('2')
+
+    useViewActionsStore().dispatch('invert-selection')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-sync-selection-status"]').text()).toContain('0')
+
+    await wrapper.find('[data-testid="sync-row-copy-app"]').trigger('click')
+    useViewActionsStore().dispatch('exclude-selected')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="sync-row-copy-app"]').exists()).toBe(false)
+    expect(
+      wrapper.find('[data-testid="folder-sync-selection-status"]').text().toLowerCase(),
+    ).toContain('exclude')
+
+    useViewActionsStore().dispatch('find-filename')
+    await wrapper.find('[data-testid="folder-sync-find-filename"]').setValue('old.dll')
+    await wrapper.find('[data-testid="folder-sync-find-filename-apply"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-sync-selection-status"]').text()).toContain('1')
+
+    await wrapper.find('[data-testid="sync-row-delete-old"]').trigger('click')
+    useViewActionsStore().dispatch('open-with')
+    await flushPromises()
+    expect(openPathExternal).toHaveBeenCalled()
+
+    useViewActionsStore().dispatch('open-selected')
+    await flushPromises()
+    expect(push).toHaveBeenCalled()
+
+    vi.mocked(previewFolderSync).mockClear()
+    useViewActionsStore().dispatch('refresh-selection')
+    await flushPromises()
+    expect(previewFolderSync).toHaveBeenCalled()
+
+    useViewActionsStore().dispatch('toggle-log')
+    await flushPromises()
   })
 })

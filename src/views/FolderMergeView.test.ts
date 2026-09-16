@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { openPathExternal } from '@/api/integration'
 import { useSettingsStore } from '@/stores/settings'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
@@ -21,6 +22,12 @@ const push = vi.fn()
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
+}))
+
+vi.mock('@/api/integration', () => ({
+  openPathExternal: vi
+    .fn()
+    .mockResolvedValue({ path: 'D:/workspace/merge/left/same.txt', launched: true }),
 }))
 
 vi.mock('@/api/folderMerge', () => ({
@@ -440,6 +447,55 @@ describe('FolderMergeView', () => {
     expect(wrapper.find('[data-testid="folder-merge-report-status"]').text()).toBe(
       'D:/workspace/merge/folder-merge.txt',
     )
+  })
+
+  it('wires Actions/Edit selection commands for Merge plan rows', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    useViewActionsStore().dispatch('select-all')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-merge-select-panel"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-selection-status"]').text()).toContain('5')
+
+    useViewActionsStore().dispatch('select-orphans')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-merge-selection-status"]').text()).toContain('2')
+
+    useViewActionsStore().dispatch('select-all-files')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="folder-merge-selection-status"]').text()).toContain('5')
+
+    await wrapper.find('[data-testid="folder-merge-select-clear"]').trigger('click')
+
+    const firstRow = wrapper.find('[data-testid="folder-merge-row"]')
+
+    await firstRow.trigger('click')
+    useViewActionsStore().dispatch('exclude-selected')
+    await flushPromises()
+    expect(
+      wrapper.find('[data-testid="folder-merge-selection-status"]').text().toLowerCase(),
+    ).toContain('exclude')
+
+    await wrapper.find('[data-testid="folder-merge-find-filename"]').setValue('left-add')
+    await wrapper.find('[data-testid="folder-merge-find-filename-apply"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-merge-selection-status"]').text()).toContain('1')
+
+    useViewActionsStore().dispatch('open-with')
+    await flushPromises()
+    expect(openPathExternal).toHaveBeenCalled()
+
+    useViewActionsStore().dispatch('quick-compare')
+    await flushPromises()
+    expect(push).toHaveBeenCalled()
+
+    vi.mocked(buildFolderMergePlan).mockClear()
+    useViewActionsStore().dispatch('refresh-selection')
+    await flushPromises()
+    expect(buildFolderMergePlan).toHaveBeenCalled()
   })
 })
 

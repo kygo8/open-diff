@@ -245,6 +245,12 @@ watch(
       case 'show-same':
       case 'run-script':
       case 'save-report':
+      case 'find-filename':
+      case 'toggle-columns':
+      case 'toggle-log':
+      case 'toggle-toolbar':
+      case 'change-attributes':
+      case 'touch-selected':
         break
     }
   },

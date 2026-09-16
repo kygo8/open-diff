@@ -49,6 +49,8 @@ import { useStatusBarStore } from '@/stores/statusBar'
 import { joinStatusFooterParts } from '@/app/folderSelectionStatus'
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
+import { createChildCompareLaunch } from '@/app/childSession'
+import { openPathExternal } from '@/api/integration'
 
 interface SyncStrategyOption {
   value: FolderSyncStrategy
@@ -220,6 +222,10 @@ const visibleActions = ref<Set<FolderSyncPreviewAction>>(
   new Set(['Copy', 'Delete', 'Leave', 'Conflict']),
 )
 const lastSelectionAction = ref('')
+const excludedRowIds = ref<Set<string>>(new Set())
+const selectNameFilter = ref('')
+const showSyncLog = ref(true)
+const syncOpenError = ref('')
 const reportStatus = ref('')
 const reportError = ref('')
 
@@ -242,6 +248,10 @@ const syncSessionTitle = computed(() => {
 })
 const filteredPreviewRows = computed(() =>
   previewRows.value.filter((row) => {
+    if (excludedRowIds.value.has(row.id)) {
+      return false
+    }
+
     if (!visibleActions.value.has(row.action)) {
       return false
     }
@@ -345,6 +355,172 @@ function invertSyncSelection(): void {
     count: next.size,
     action: t('ui.invertSelection'),
   })
+}
+
+function joinSyncSidePath(root: string, relativePath: string): string {
+  const normalizedRoot = root.replaceAll('\\', '/').replace(/\/$/u, '')
+  const normalizedRelativePath = relativePath.replaceAll('\\', '/').replace(/^\//u, '')
+
+  if (!normalizedRelativePath) {
+    return normalizedRoot
+  }
+
+  return `${normalizedRoot}/${normalizedRelativePath}`
+}
+
+function syncSelectedRow(): SyncPreviewRow | undefined {
+  if (selectedPeekRow.value) {
+    return selectedPeekRow.value
+  }
+
+  const checked = visiblePreviewRows.value.find((row) => checkedRowIds.value.has(row.id))
+
+  return checked
+}
+
+function syncOpenPathForRow(row: SyncPreviewRow): string | undefined {
+  if (row.sourcePath) {
+    return row.sourcePath
+  }
+
+  if (row.targetPath) {
+    return row.targetPath
+  }
+
+  if (leftPath.value) {
+    return joinSyncSidePath(leftPath.value, row.relativePath)
+  }
+
+  if (rightPath.value) {
+    return joinSyncSidePath(rightPath.value, row.relativePath)
+  }
+
+  return undefined
+}
+
+function openSyncChildCompare(kind: 'open' | 'quick'): void {
+  const row = syncSelectedRow()
+
+  if (!row) {
+    return
+  }
+
+  const left =
+    row.sourcePath ?? (leftPath.value ? joinSyncSidePath(leftPath.value, row.relativePath) : '')
+  const right =
+    row.targetPath ?? (rightPath.value ? joinSyncSidePath(rightPath.value, row.relativePath) : '')
+
+  if (!left || !right) {
+    const single = syncOpenPathForRow(row)
+
+    if (single) {
+      void openPathExternal(single)
+    }
+
+    return
+  }
+
+  const launch = createChildCompareLaunch(left, right)
+
+  if (!launch) {
+    return
+  }
+
+  lastSelectionAction.value =
+    kind === 'quick'
+      ? `${t('ui.quickCompare')} -> ${launch.route}`
+      : `${t('ui.open')} -> ${launch.route}`
+  sessionLaunch.setPendingLaunch(launch)
+  tabs.openTab({ title: launch.title, route: launch.route, dirty: false })
+  void router.push(launch.route)
+}
+
+async function openSyncSelectedWithAssociatedApplication(): Promise<void> {
+  const row = syncSelectedRow()
+  const path = row ? syncOpenPathForRow(row) : undefined
+
+  if (!path) {
+    return
+  }
+
+  try {
+    await openPathExternal(path)
+    lastSelectionAction.value = `${t('ui.openWith')} -> ${path}`
+  } catch (error) {
+    syncOpenError.value = error instanceof Error ? error.message : String(error)
+  }
+}
+
+function excludeSyncSelectedRows(): void {
+  const targets = new Set<string>()
+
+  for (const row of visiblePreviewRows.value) {
+    if (checkedRowIds.value.has(row.id)) {
+      targets.add(row.id)
+    }
+  }
+
+  const selected = syncSelectedRow()
+
+  if (selected) {
+    targets.add(selected.id)
+  }
+
+  if (targets.size === 0) {
+    return
+  }
+
+  excludedRowIds.value = new Set([...excludedRowIds.value, ...targets])
+  checkedRowIds.value = new Set([...checkedRowIds.value].filter((id) => !targets.has(id)))
+
+  if (selectedPeekRowId.value && targets.has(selectedPeekRowId.value)) {
+    selectedPeekRowId.value = ''
+  }
+
+  const label = selected?.relativePath ?? String(targets.size)
+
+  lastSelectionAction.value = t('status.excludedPath', { path: label })
+}
+
+async function refreshSyncSelection(): Promise<void> {
+  await previewSync()
+  const row = syncSelectedRow()
+
+  lastSelectionAction.value = row
+    ? t('status.refreshedPath', { path: row.relativePath })
+    : t('ui.refresh')
+}
+
+function selectSyncRowsByName(): void {
+  const query = selectNameFilter.value.trim().toLowerCase()
+
+  if (!query) {
+    return
+  }
+
+  const matches = visiblePreviewRows.value.filter((row) =>
+    row.relativePath.toLowerCase().includes(query),
+  )
+
+  checkedRowIds.value = new Set(matches.map((row) => row.id))
+
+  if (matches[0]) {
+    selectedPeekRowId.value = matches[0].id
+  }
+
+  lastSelectionAction.value = t('status.selectedRowCount', {
+    count: matches.length,
+    action: t('ui.findFilename'),
+  })
+}
+
+function openSyncFindFilename(): void {
+  showSyncSelect.value = true
+  selectSyncRowsByName()
+}
+
+function toggleSyncLogPanel(): void {
+  showSyncLog.value = !showSyncLog.value
 }
 
 function toggleSyncRowChecked(rowId: string): void {
@@ -466,10 +642,12 @@ async function previewSync(): Promise<void> {
     syncChromeMessage.value = ''
     collapsedPrefixes.value = new Set()
     checkedRowIds.value = new Set()
+    excludedRowIds.value = new Set()
     selectedPeekRowId.value = ''
     showPeek.value = false
     minorOnly.value = false
     lastSelectionAction.value = ''
+    syncOpenError.value = ''
     reportStatus.value = ''
     reportError.value = ''
   } catch (error) {
@@ -856,25 +1034,58 @@ watch(
         showSyncFilters.value = true
         break
       case 'show-all':
+        visibleActions.value = new Set(['Copy', 'Delete', 'Leave', 'Conflict'])
+        break
       case 'show-differences':
+        visibleActions.value = new Set(['Copy', 'Delete', 'Conflict'])
+        break
+      case 'show-same':
+        visibleActions.value = new Set(['Leave'])
+        break
+      case 'select-all':
+      case 'select-all-files':
+        showSyncSelect.value = true
+        selectVisibleSyncRows()
+        break
+      case 'select-orphans':
+        break
+      case 'invert-selection':
+        showSyncSelect.value = true
+        invertSyncSelection()
+        break
+      case 'open-selected':
+        openSyncChildCompare('open')
+        break
+      case 'open-with':
+        void openSyncSelectedWithAssociatedApplication()
+        break
+      case 'quick-compare':
+        openSyncChildCompare('quick')
+        break
+      case 'exclude-selected':
+        excludeSyncSelectedRows()
+        break
+      case 'refresh-selection':
+        void refreshSyncSelection()
+        break
+      case 'find-filename':
+        openSyncFindFilename()
+        break
+      case 'toggle-log':
+        toggleSyncLogPanel()
+        break
       case 'undo':
       case 'workspace-load':
       case 'next-conflict':
       case 'previous-conflict':
       case 'toggle-session-locked':
       case 'workspace-save':
-      case 'select-all':
-      case 'select-all-files':
-      case 'select-orphans':
-      case 'invert-selection':
-      case 'open-selected':
-      case 'open-with':
-      case 'quick-compare':
-      case 'exclude-selected':
-      case 'refresh-selection':
-      case 'show-same':
       case 'run-script':
       case 'save-report':
+      case 'toggle-columns':
+      case 'toggle-toolbar':
+      case 'change-attributes':
+      case 'touch-selected':
         break
     }
   },
@@ -1144,6 +1355,22 @@ watch(
         >
           {{ $t('ui.clearSelection') }}
         </button>
+        <label class="sync-select-name">
+          <span>{{ $t('ui.findFilename') }}</span>
+          <input
+            v-model="selectNameFilter"
+            type="text"
+            data-testid="folder-sync-find-filename"
+            @keydown.enter.prevent="selectSyncRowsByName"
+          />
+          <button
+            type="button"
+            data-testid="folder-sync-find-filename-apply"
+            @click="selectSyncRowsByName"
+          >
+            {{ $t('ui.apply') }}
+          </button>
+        </label>
         <span
           v-if="lastSelectionAction"
           data-testid="folder-sync-selection-status"
@@ -1332,7 +1559,15 @@ watch(
       </section>
 
       <section
-        v-if="completedOperations > 0"
+        v-if="syncOpenError"
+        class="folder-action-status"
+        data-testid="folder-sync-open-error"
+      >
+        {{ syncOpenError }}
+      </section>
+
+      <section
+        v-if="showSyncLog && completedOperations > 0"
         class="sync-run-status"
         data-testid="folder-sync-run-status"
       >

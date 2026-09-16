@@ -1173,5 +1173,10 @@ export const jaJP: LanguagePack = {
     'status.syncPlanCancelled': '上書きをそのままに設定しました',
     'status.syncPlanPending': '今すぐ同期を有効にするにはプランを承認してください',
     'status.overrideCount': '{count} 行を上書き',
+    'ui.findFilename': 'ファイル名の検索',
+    'ui.columns': '列',
+    'ui.log': 'ログ',
+    'ui.toolbar': 'ツールバー',
+    'ui.attributes': '属性',
   },
 }

@@ -75,6 +75,12 @@ export type CommandId =
   | 'actions.exclude'
   | 'actions.refreshSelection'
   | 'view.showSame'
+  | 'search.findFilename'
+  | 'view.columns'
+  | 'view.log'
+  | 'view.toolbar'
+  | 'actions.attributes'
+  | 'actions.touch'
   | 'session.mergeBaseFolders'
   | 'session.syncBaseFolders'
   | 'script.run'
@@ -148,6 +154,12 @@ export type CommandAction =
         | 'exclude-selected'
         | 'refresh-selection'
         | 'show-same'
+        | 'find-filename'
+        | 'toggle-columns'
+        | 'toggle-log'
+        | 'toggle-toolbar'
+        | 'change-attributes'
+        | 'touch-selected'
     }
 
 export interface CommandShortcut {
@@ -984,6 +996,66 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Shift', 'P'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'save-report' },
+  },
+  {
+    id: 'search.findFilename',
+    titleKey: 'ui.findFilename',
+    keywords: ['find', 'filename', 'search'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'F'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'find-filename' },
+  },
+  {
+    id: 'view.columns',
+    titleKey: 'ui.columns',
+    keywords: ['columns', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'C'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'toggle-columns' },
+  },
+  {
+    id: 'view.log',
+    titleKey: 'ui.log',
+    keywords: ['log', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'G'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'toggle-log' },
+  },
+  {
+    id: 'view.toolbar',
+    titleKey: 'ui.toolbar',
+    keywords: ['toolbar', 'view'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'T'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'toggle-toolbar' },
+  },
+  {
+    id: 'actions.attributes',
+    titleKey: 'ui.attributes',
+    keywords: ['attributes', 'readonly', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'R'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'change-attributes' },
+  },
+  {
+    id: 'actions.touch',
+    titleKey: 'ui.touch',
+    keywords: ['touch', 'timestamp', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'U'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'touch-selected' },
   },
 ]
 

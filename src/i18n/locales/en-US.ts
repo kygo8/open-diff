@@ -1176,5 +1176,10 @@ export const enUS: LanguagePack = {
     'status.syncPlanCancelled': 'Overrides set to leave',
     'status.syncPlanPending': 'Accept the plan to enable Sync Now',
     'status.overrideCount': '{count} row overrides',
+    'ui.findFilename': 'Find Filename',
+    'ui.columns': 'Columns',
+    'ui.log': 'Log',
+    'ui.toolbar': 'Toolbar',
+    'ui.attributes': 'Attributes',
   },
 }

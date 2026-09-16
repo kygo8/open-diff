@@ -740,6 +740,10 @@ describe('FolderCompareView', () => {
       }),
     )
 
+    useViewActionsStore().dispatch('save-report')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="file-compare-report-panel"]').exists()).toBe(true)
+
     const viewActions = useViewActionsStore()
 
     viewActions.dispatch('align-with')

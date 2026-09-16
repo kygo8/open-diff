@@ -1310,6 +1310,7 @@ watch(
       case 'cut':
       case 'delete':
       case 'export':
+      case 'save-report':
         void exportFolderMergeReport()
         break
       case 'export-settings':
@@ -1479,7 +1480,6 @@ watch(
       case 'sync-now':
       case 'workspace-save':
       case 'run-script':
-      case 'save-report':
       case 'toggle-columns':
       case 'toggle-toolbar':
       case 'change-attributes':

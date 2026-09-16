@@ -4,11 +4,15 @@ import {
   isFolderCompareRoute,
   isFolderishSessionRoute,
   isFolderMergeRoute,
+  isHexCompareRoute,
+  isPictureCompareRoute,
   isSessionWorkbenchPath,
+  isTableCompareRoute,
   isTextishSessionRoute,
   isTextMergeRoute,
   isSingleSessionFrame,
   preferDenseAppChrome,
+  sessionSupportsReportSave,
   shouldShowTabStrip,
   supportsFolderStatusLegend,
 } from './shellChrome'
@@ -130,6 +134,15 @@ describe('session route helpers', () => {
     expect(isFolderMergeRoute('/merge/folder')).toBe(true)
     expect(isFolderMergeRoute('/merge/text')).toBe(false)
     expect(isTextMergeRoute('/merge/text')).toBe(true)
+    expect(isPictureCompareRoute('/compare/picture')).toBe(true)
+    expect(isHexCompareRoute('/compare/hex')).toBe(true)
+    expect(isTableCompareRoute('/compare/table')).toBe(true)
+    expect(sessionSupportsReportSave('/compare/folder')).toBe(true)
+    expect(sessionSupportsReportSave('/sync/folder')).toBe(true)
+    expect(sessionSupportsReportSave('/compare/text')).toBe(true)
+    expect(sessionSupportsReportSave('/compare/picture')).toBe(true)
+    expect(sessionSupportsReportSave('/compare/clipboard')).toBe(false)
+    expect(sessionSupportsReportSave('/')).toBe(false)
     expect(contextHelpTopic('/compare/hex')).toBe('hex-compare')
     expect(contextHelpTopic('/')).toBe('home')
   })

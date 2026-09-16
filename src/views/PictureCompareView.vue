@@ -167,6 +167,7 @@ watch(
       case 'export':
       case 'save':
       case 'save-as':
+      case 'save-report':
         void exportPictureReport()
         break
       case 'toggle-minor':
@@ -239,7 +240,6 @@ watch(
       case 'suppress-filters':
       case 'compare-parent-folders':
       case 'run-script':
-      case 'save-report':
       case 'find-filename':
       case 'find-next-filename':
       case 'find-previous-filename':

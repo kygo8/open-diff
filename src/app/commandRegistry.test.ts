@@ -285,7 +285,7 @@ describe('commandRegistry', () => {
       scope: 'global',
     })
     expect(commandRegistry.find((command) => command.id === 'report.save')?.titleKey).toBe(
-      'ui.folderCompareReport',
+      'ui.saveReport',
     )
   })
 

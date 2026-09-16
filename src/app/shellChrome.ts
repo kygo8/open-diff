@@ -94,6 +94,36 @@ export function isRegistrySessionRoute(path: string): boolean {
   return path.includes('/registry')
 }
 
+export function isPictureCompareRoute(path: string): boolean {
+  return path.includes('/compare/picture')
+}
+
+export function isHexCompareRoute(path: string): boolean {
+  return path.includes('/compare/hex')
+}
+
+export function isTableCompareRoute(path: string): boolean {
+  return path.includes('/compare/table')
+}
+
+/** Sessions that already implement a report export or report dialog. */
+export function sessionSupportsReportSave(path: string): boolean {
+  return (
+    isFolderCompareRoute(path) ||
+    isFolderSyncRoute(path) ||
+    isFolderMergeRoute(path) ||
+    path.includes('/compare/text') ||
+    path.includes('/merge/text') ||
+    isHexCompareRoute(path) ||
+    isTableCompareRoute(path) ||
+    isPictureCompareRoute(path) ||
+    path.includes('/compare/media') ||
+    path.includes('/compare/version') ||
+    isRegistrySessionRoute(path) ||
+    path.includes('/reports')
+  )
+}
+
 /** Text Compare / Merge / Edit / Patch / Clipboard routes that implement text edit verbs. */
 export function isTextishSessionRoute(path: string): boolean {
   return (

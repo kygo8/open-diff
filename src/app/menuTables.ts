@@ -4,10 +4,14 @@ import {
   isFolderishSessionRoute,
   isFolderMergeRoute,
   isFolderSyncRoute,
+  isHexCompareRoute,
+  isPictureCompareRoute,
   isRegistrySessionRoute,
   isSessionWorkbenchPath,
+  isTableCompareRoute,
   isTextMergeRoute,
   isTextishSessionRoute,
+  sessionSupportsReportSave,
 } from './shellChrome'
 
 /** Actions that need a checked row or focused selection to run honestly. */
@@ -83,11 +87,13 @@ export function resolveMenuCommandEnabled(
     commandId === 'session.swap' ||
     commandId === 'session.reload' ||
     commandId === 'session.rules' ||
-    commandId === 'session.settings' ||
-    commandId === 'diff.next' ||
-    commandId === 'diff.previous'
+    commandId === 'session.settings'
   ) {
     return isSessionWorkbenchPath(path)
+  }
+
+  if (commandId === 'diff.next' || commandId === 'diff.previous') {
+    return isSessionWorkbenchPath(path) && !isPictureCompareRoute(path)
   }
 
   if (commandId === 'session.locked') {
@@ -184,12 +190,14 @@ export function resolveMenuCommandEnabled(
     return true
   }
 
-  if (
-    commandId === 'view.showAll' ||
-    commandId === 'view.showDifferences' ||
-    commandId === 'view.toggleMinor'
-  ) {
-    return isSessionWorkbenchPath(path)
+  if (commandId === 'view.showAll' || commandId === 'view.showDifferences') {
+    return (
+      isSessionWorkbenchPath(path) && !isPictureCompareRoute(path) && !isTableCompareRoute(path)
+    )
+  }
+
+  if (commandId === 'view.toggleMinor') {
+    return isSessionWorkbenchPath(path) && !isHexCompareRoute(path) && !isTableCompareRoute(path)
   }
 
   if (commandId === 'view.filters') {
@@ -275,7 +283,7 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'report.save') {
-    return isFolderCompareRoute(path)
+    return sessionSupportsReportSave(path)
   }
 
   if (commandId === 'sync.syncNow') {

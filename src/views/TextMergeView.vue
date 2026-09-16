@@ -639,6 +639,7 @@ watch(
         void saveOutput()
         break
       case 'export':
+      case 'save-report':
         void exportTextMergeReport()
         break
       case 'copy-left':
@@ -721,7 +722,6 @@ watch(
       case 'suppress-filters':
       case 'compare-parent-folders':
       case 'run-script':
-      case 'save-report':
       case 'find-filename':
       case 'find-next-filename':
       case 'find-previous-filename':

@@ -202,6 +202,7 @@ watch(
         runVersionToolbarCommand('swap')
         break
       case 'export':
+      case 'save-report':
         void exportVersionReport()
         break
 
@@ -277,7 +278,6 @@ watch(
       case 'suppress-filters':
       case 'compare-parent-folders':
       case 'run-script':
-      case 'save-report':
       case 'find-filename':
       case 'find-next-filename':
       case 'find-previous-filename':

@@ -35,14 +35,52 @@ describe('menuTables', () => {
     ).toBe(false)
   })
 
-  it('limits Folder Compare Report to Folder Compare', () => {
+  it('enables Save Report on sessions that already export reports', () => {
     expect(resolveMenuCommandEnabled('report.save', true, baseCtx)).toBe(true)
     expect(
       resolveMenuCommandEnabled('report.save', true, {
         ...baseCtx,
         routePath: '/sync/folder',
       }),
+    ).toBe(true)
+    expect(
+      resolveMenuCommandEnabled('report.save', true, {
+        ...baseCtx,
+        routePath: '/compare/text',
+      }),
+    ).toBe(true)
+    expect(
+      resolveMenuCommandEnabled('report.save', true, {
+        ...baseCtx,
+        routePath: '/compare/picture',
+      }),
+    ).toBe(true)
+    expect(
+      resolveMenuCommandEnabled('report.save', true, {
+        ...baseCtx,
+        routePath: '/',
+      }),
     ).toBe(false)
+  })
+
+  it('keeps inapplicable View commands disabled on Picture, Hex, and Table', () => {
+    const pictureCtx = { ...baseCtx, routePath: '/compare/picture' }
+    const hexCtx = { ...baseCtx, routePath: '/compare/hex' }
+    const tableCtx = { ...baseCtx, routePath: '/compare/table' }
+
+    expect(resolveMenuCommandEnabled('view.showAll', true, pictureCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('view.showDifferences', true, pictureCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('view.toggleMinor', true, pictureCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('diff.next', true, pictureCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.paste', true, pictureCtx)).toBe(false)
+
+    expect(resolveMenuCommandEnabled('view.showAll', true, hexCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('view.toggleMinor', true, hexCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.cut', true, hexCtx)).toBe(false)
+
+    expect(resolveMenuCommandEnabled('view.showAll', true, tableCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('view.toggleMinor', true, tableCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.copy', true, tableCtx)).toBe(false)
   })
 
   it('honestly disables selection Actions when nothing is selected', () => {

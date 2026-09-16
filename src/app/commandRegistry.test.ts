@@ -46,6 +46,11 @@ describe('commandRegistry', () => {
         'view.suppressFilters',
         'view.showLeftNewer',
         'view.ignoreFolderStructure',
+        'view.alwaysShowFolders',
+        'view.showChanges',
+        'view.showConflicts',
+        'view.centerPane',
+        'session.compareToOutput',
         'session.newSession',
         'session.compareParentFolders',
         'session.compareBaseFolders',
@@ -315,4 +320,25 @@ it('skips empty default shortcuts when detecting conflicts', () => {
   expect(
     commandRegistry.find((command) => command.id === 'session.compareParentFolders')?.action,
   ).toEqual({ type: 'view-action', name: 'compare-parent-folders' })
+  expect(
+    commandRegistry.find((command) => command.id === 'view.alwaysShowFolders')?.defaultShortcut
+      .keys,
+  ).toEqual([])
+  expect(
+    commandRegistry.find((command) => command.id === 'view.showChanges')?.defaultShortcut.keys,
+  ).toEqual([])
+  expect(
+    commandRegistry.find((command) => command.id === 'view.showConflicts')?.defaultShortcut.keys,
+  ).toEqual([])
+  expect(
+    commandRegistry.find((command) => command.id === 'view.centerPane')?.defaultShortcut.keys,
+  ).toEqual([])
+  expect(
+    commandRegistry.find((command) => command.id === 'session.compareToOutput')?.defaultShortcut
+      .keys,
+  ).toEqual([])
+  expect(commandRegistry.find((command) => command.id === 'view.legend')?.defaultShortcut).toEqual({
+    keys: ['Ctrl', 'Alt', 'L'],
+    scope: 'global',
+  })
 })

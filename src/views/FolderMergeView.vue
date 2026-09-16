@@ -61,6 +61,12 @@ import {
   buildCopyToOutputOverrides,
   type FolderMergeCopyToOutputOverride,
 } from '@/app/folderMergeCopyToOutput'
+import {
+  loadFolderMergeDisplay,
+  mergeRowMatchesViewPreset,
+  saveFolderMergeDisplay,
+  type FolderMergeViewPreset,
+} from '@/app/folderMergeDisplay'
 
 const leftPath = ref('')
 const newFolderPanelOpen = ref(false)
@@ -145,6 +151,11 @@ const lastOpenedConflictPath = ref('')
 const sameOkOnly = ref(false)
 const importanceFilter = ref<'all' | 'same' | 'minor' | 'diffs'>('all')
 const filesOnlyFilter = ref(false)
+const initialMergeDisplay = loadFolderMergeDisplay()
+const mergeViewPreset = ref<FolderMergeViewPreset>(initialMergeDisplay.viewPreset)
+const alwaysShowFolders = ref(initialMergeDisplay.alwaysShowFolders)
+const showCenterPane = ref(initialMergeDisplay.showCenterPane)
+const compareToOutput = ref(initialMergeDisplay.compareToOutput)
 const flatStructure = ref(false)
 const loadTimeSeconds = ref<number | null>(null)
 const showPeek = ref(false)
@@ -236,6 +247,13 @@ const filteredPlanRows = computed(() => {
       (row) => row.left.kind === 'File' || row.right.kind === 'File' || row.base.kind === 'File',
     )
   }
+
+  rows = rows.filter((row) =>
+    mergeRowMatchesViewPreset(row, {
+      viewPreset: mergeViewPreset.value,
+      alwaysShowFolders: alwaysShowFolders.value,
+    }),
+  )
 
   return rows
 })
@@ -1070,6 +1088,29 @@ function setImportanceFilter(next: 'all' | 'same' | 'minor' | 'diffs'): void {
   sameOkOnly.value = false
 }
 
+function persistMergeDisplay(): void {
+  saveFolderMergeDisplay({
+    viewPreset: mergeViewPreset.value,
+    alwaysShowFolders: alwaysShowFolders.value,
+    showCenterPane: showCenterPane.value,
+    compareToOutput: compareToOutput.value,
+  })
+}
+
+function applyMergeViewPreset(preset: FolderMergeViewPreset): void {
+  mergeViewPreset.value = preset
+  if (preset === 'all') {
+    compareToOutput.value = false
+  }
+  persistMergeDisplay()
+}
+
+function toggleCompareToOutput(): void {
+  compareToOutput.value = !compareToOutput.value
+  mergeViewPreset.value = compareToOutput.value ? 'changes' : 'all'
+  persistMergeDisplay()
+}
+
 function toggleMinorImportanceFilter(): void {
   setImportanceFilter(importanceFilter.value === 'minor' ? 'all' : 'minor')
 }
@@ -1290,12 +1331,32 @@ watch(
         break
       case 'show-all':
         setImportanceFilter('all')
+        applyMergeViewPreset('all')
         break
       case 'show-differences':
         setImportanceFilter('diffs')
+        applyMergeViewPreset('changes')
         break
       case 'show-same':
         setImportanceFilter('same')
+        applyMergeViewPreset('all')
+        break
+      case 'show-changes':
+        applyMergeViewPreset('changes')
+        break
+      case 'show-conflicts':
+        applyMergeViewPreset('conflicts')
+        break
+      case 'always-show-folders':
+        alwaysShowFolders.value = !alwaysShowFolders.value
+        persistMergeDisplay()
+        break
+      case 'toggle-center-pane':
+        showCenterPane.value = !showCenterPane.value
+        persistMergeDisplay()
+        break
+      case 'compare-to-output':
+        toggleCompareToOutput()
         break
       case 'show-orphans':
       case 'show-no-orphans':
@@ -1532,7 +1593,10 @@ watch(
         </div>
       </section>
 
-      <section class="merge-paths">
+      <section
+        class="merge-paths"
+        :class="{ 'merge-paths-no-center': !showCenterPane }"
+      >
         <label>
           <span>{{ $t('ui.leftFolder') }}</span>
           <input
@@ -1547,7 +1611,10 @@ watch(
             >{{ $t('status.editingDisabled') }}</span
           >
         </label>
-        <label>
+        <label
+          v-if="showCenterPane"
+          data-testid="folder-merge-center-pane"
+        >
           <span>{{ $t('ui.baseFolder') }}</span>
           <input
             v-model="basePath"
@@ -1636,6 +1703,14 @@ watch(
           >
         </div>
       </section>
+
+      <p
+        v-if="compareToOutput"
+        class="merge-open-status"
+        data-testid="folder-merge-compare-to-output"
+      >
+        {{ $t('ui.compareToOutputHint') }}
+      </p>
 
       <p
         v-if="mergeChromeMessage"
@@ -1971,7 +2046,7 @@ watch(
                     {{ sideLabel(selectedPlanRow.left) }}
                   </dd>
                 </div>
-                <div>
+                <div v-if="showCenterPane">
                   <dt>{{ $t('ui.base') }}</dt>
                   <dd data-testid="folder-merge-peek-base">
                     {{ sideLabel(selectedPlanRow.base) }}
@@ -1988,7 +2063,7 @@ watch(
                     {{ sideLabel(selectedPlanRow.right) }}
                   </dd>
                 </div>
-                <div>
+                <div v-if="showCenterPane">
                   <dt>{{ $t('ui.base') }}</dt>
                   <dd>{{ sideLabel(selectedPlanRow.base) }}</dd>
                 </div>
@@ -2172,6 +2247,10 @@ h1 {
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+}
+
+.merge-paths-no-center {
+  grid-template-columns: repeat(3, minmax(150px, 1fr)) auto;
 }
 
 .merge-paths label {

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   defaultFolderDisplayFilters,
   folderDisplayFiltersStorageKey,
+  folderRowMatchesStatusFilter,
   loadFolderDisplayFilters,
   saveFolderDisplayFilters,
 } from './folderDisplayFilters'
@@ -20,6 +21,7 @@ describe('folderDisplayFilters', () => {
       statuses: ['Different', 'Left only', 'Right only'],
       showSuppressed: true,
       filesOnly: true,
+      alwaysShowFolders: false,
     })
 
     expect(localStorage.getItem(folderDisplayFiltersStorageKey)).toContain('Different')
@@ -27,10 +29,11 @@ describe('folderDisplayFilters', () => {
       statuses: ['Different', 'Left only', 'Right only'],
       showSuppressed: true,
       filesOnly: true,
+      alwaysShowFolders: false,
     })
   })
 
-  it('defaults filesOnly to false for older persisted payloads', () => {
+  it('defaults filesOnly to false and alwaysShowFolders to true for older payloads', () => {
     localStorage.setItem(
       folderDisplayFiltersStorageKey,
       JSON.stringify({
@@ -43,6 +46,37 @@ describe('folderDisplayFilters', () => {
       statuses: ['Same'],
       showSuppressed: false,
       filesOnly: false,
+      alwaysShowFolders: true,
     })
+  })
+
+  it('keeps Same folders when Always Show Folders is on', () => {
+    expect(
+      folderRowMatchesStatusFilter({
+        kind: 'directory',
+        status: 'Same',
+        statuses: ['Different', 'Left only', 'Right only'],
+        showSuppressed: false,
+        alwaysShowFolders: true,
+      }),
+    ).toBe(true)
+    expect(
+      folderRowMatchesStatusFilter({
+        kind: 'directory',
+        status: 'Same',
+        statuses: ['Different', 'Left only', 'Right only'],
+        showSuppressed: false,
+        alwaysShowFolders: false,
+      }),
+    ).toBe(false)
+    expect(
+      folderRowMatchesStatusFilter({
+        kind: 'file',
+        status: 'Same',
+        statuses: ['Different'],
+        showSuppressed: false,
+        alwaysShowFolders: true,
+      }),
+    ).toBe(false)
   })
 })

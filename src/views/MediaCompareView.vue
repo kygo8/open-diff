@@ -436,6 +436,11 @@ watch(
       case 'compare-files-and-folder-structure':
       case 'only-compare-files':
       case 'ignore-folder-structure':
+      case 'always-show-folders':
+      case 'show-changes':
+      case 'show-conflicts':
+      case 'toggle-center-pane':
+      case 'compare-to-output':
       case 'suppress-filters':
       case 'compare-parent-folders':
       case 'run-script':

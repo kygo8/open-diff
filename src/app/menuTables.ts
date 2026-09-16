@@ -149,6 +149,19 @@ export function resolveMenuCommandEnabled(
     return isFolderCompareRoute(path)
   }
 
+  if (commandId === 'view.alwaysShowFolders') {
+    return isFolderCompareRoute(path) || isFolderMergeRoute(path)
+  }
+
+  if (
+    commandId === 'view.showChanges' ||
+    commandId === 'view.showConflicts' ||
+    commandId === 'view.centerPane' ||
+    commandId === 'session.compareToOutput'
+  ) {
+    return isFolderMergeRoute(path)
+  }
+
   if (
     commandId === 'view.onlyCompareFiles' ||
     commandId === 'view.compareFilesAndFolderStructure' ||

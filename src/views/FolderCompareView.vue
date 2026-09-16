@@ -16,7 +16,11 @@ import { isArchivePath } from '@/app/archivePath'
 import { folderSnapshotOutputPath, isSnapshotPath } from '@/app/snapshotPath'
 import { pickNativePath } from '@/app/filePicker'
 import { formatCompareError } from '@/app/compareError'
-import { loadFolderDisplayFilters, saveFolderDisplayFilters } from '@/app/folderDisplayFilters'
+import {
+  folderRowMatchesStatusFilter,
+  loadFolderDisplayFilters,
+  saveFolderDisplayFilters,
+} from '@/app/folderDisplayFilters'
 import { loadFolderCompareCriteria, saveFolderCompareCriteria } from '@/app/folderCompareCriteria'
 import {
   formatFolderNameFilterStripPattern,
@@ -300,6 +304,7 @@ const initialDisplayFilters = loadFolderDisplayFilters()
 const visibleStatuses = ref<Set<FolderStatus>>(new Set(initialDisplayFilters.statuses))
 const showSuppressedFilters = ref(initialDisplayFilters.showSuppressed)
 const filesOnlyFilter = ref(initialDisplayFilters.filesOnly)
+const alwaysShowFolders = ref(initialDisplayFilters.alwaysShowFolders)
 const flatStructure = ref(false)
 const newerViewPreset = ref<FolderNewerViewPreset | 'none'>('none')
 const loadTimeSeconds = ref<number | null>(null)
@@ -552,7 +557,13 @@ const visibleRows = computed(() =>
     (row) =>
       (flatStructure.value || !row.parentId || expandedDirectoryIds.value.has(row.parentId)) &&
       !excludedRowIds.value.has(row.id) &&
-      (visibleStatuses.value.has(row.status) || showSuppressedFilters.value) &&
+      folderRowMatchesStatusFilter({
+        kind: row.kind,
+        status: row.status,
+        statuses: [...visibleStatuses.value],
+        showSuppressed: showSuppressedFilters.value,
+        alwaysShowFolders: alwaysShowFolders.value,
+      }) &&
       (!filesOnlyFilter.value || row.kind === 'file') &&
       (!minorOnly.value || rowLooksUnimportant(row)) &&
       (newerViewPreset.value === 'none' || rowMatchesNewerViewPreset(row, newerViewPreset.value)),
@@ -998,6 +1009,15 @@ watch(
       case 'ignore-folder-structure':
         applyFolderStructurePreset('flat')
         break
+      case 'always-show-folders':
+        alwaysShowFolders.value = !alwaysShowFolders.value
+        persistDisplayFilters()
+        break
+      case 'show-changes':
+      case 'show-conflicts':
+      case 'toggle-center-pane':
+      case 'compare-to-output':
+        break
       case 'suppress-filters':
         showSuppressedFilters.value = !showSuppressedFilters.value
         break
@@ -1070,6 +1090,7 @@ function persistDisplayFilters(): void {
     statuses: [...visibleStatuses.value],
     showSuppressed: showSuppressedFilters.value,
     filesOnly: filesOnlyFilter.value,
+    alwaysShowFolders: alwaysShowFolders.value,
   })
 }
 
@@ -1094,6 +1115,10 @@ watch(showSuppressedFilters, () => {
 })
 
 watch(filesOnlyFilter, () => {
+  persistDisplayFilters()
+})
+
+watch(alwaysShowFolders, () => {
   persistDisplayFilters()
 })
 

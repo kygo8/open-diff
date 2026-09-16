@@ -255,6 +255,66 @@ describe('FolderCompareView', () => {
     useSettingsStore().setShowSessionsInToolbar(true)
     push.mockClear()
     vi.clearAllMocks()
+    vi.mocked(compareFolderPaths).mockResolvedValue({
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      rows: [
+        {
+          relativePath: 'src',
+          depth: 0,
+          status: 'Same',
+          left: { name: 'src', kind: 'directory', size: 0, path: 'D:/left/src' },
+          right: { name: 'src', kind: 'directory', size: 0, path: 'D:/right/src' },
+        },
+        {
+          relativePath: 'src/main.ts',
+          depth: 1,
+          status: 'Different',
+          left: { name: 'main.ts', kind: 'file', size: 12, path: 'D:/left/src/main.ts' },
+          right: { name: 'main.ts', kind: 'file', size: 14, path: 'D:/right/src/main.ts' },
+        },
+        {
+          relativePath: 'stamp.txt',
+          depth: 0,
+          status: 'Different',
+          unimportant: true,
+          left: {
+            name: 'stamp.txt',
+            kind: 'file',
+            size: 8,
+            modifiedAtMs: 1000,
+            path: 'D:/left/stamp.txt',
+          },
+          right: {
+            name: 'stamp.txt',
+            kind: 'file',
+            size: 8,
+            modifiedAtMs: 2000,
+            path: 'D:/right/stamp.txt',
+          },
+        },
+        {
+          relativePath: 'README.md',
+          depth: 0,
+          status: 'Same',
+          left: { name: 'README.md', kind: 'file', size: 10, path: 'D:/left/README.md' },
+          right: { name: 'README.md', kind: 'file', size: 10, path: 'D:/right/README.md' },
+        },
+        {
+          relativePath: 'notes.md',
+          depth: 0,
+          status: 'Left only',
+          left: { name: 'notes.md', kind: 'file', size: 4, path: 'D:/left/notes.md' },
+        },
+        {
+          relativePath: 'extra-right.md',
+          depth: 0,
+          status: 'Right only',
+          right: { name: 'extra-right.md', kind: 'file', size: 3, path: 'D:/right/extra-right.md' },
+        },
+      ],
+      summary: { total: 6, same: 2, different: 2, leftOnly: 1, rightOnly: 1 },
+    })
   })
 
   it('applies a remote profile URI into the folder path fields', async () => {
@@ -974,12 +1034,21 @@ describe('FolderCompareView', () => {
     await sameToggle.trigger('change')
     await flushPromises()
 
-    const statuses = wrapper
-      .findAll('[data-testid="folder-row"]')
-      .map((row) => row.classes().find((name) => name.startsWith('status-')))
+    const rows = wrapper.findAll('[data-testid="folder-row"]')
+    const sameFiles = rows.filter(
+      (row) => row.classes().includes('status-same') && row.classes().includes('file'),
+    )
 
-    expect(statuses.length).toBeGreaterThan(0)
-    expect(statuses.every((status) => status !== 'status-same')).toBe(true)
+    expect(rows.length).toBeGreaterThan(0)
+
+    expect(sameFiles).toHaveLength(0)
+    expect(
+      wrapper
+        .findAll('[data-testid="folder-row"]')
+        .some(
+          (row) => row.classes().includes('status-same') && row.classes().includes('directory'),
+        ),
+    ).toBe(true)
 
     const stored = JSON.parse(localStorage.getItem('open-diff-folder-display-filters') ?? '{}') as {
       statuses: string[]
@@ -1389,6 +1458,38 @@ describe('FolderCompareView', () => {
     )
     expect(statusBar.report.leftFreeSpace).toContain('91.8 GB free on C:\\')
     expect(statusBar.report.rightFreeSpace).toContain('91.8 GB free on C:\\')
+  })
+
+  it('keeps Same folders visible for Show Differences until Always Show Folders is off', async () => {
+    const wrapper = mountFolderCompareView()
+
+    await runCompare(wrapper)
+    useViewActionsStore().dispatch('show-differences')
+    await flushPromises()
+
+    const idsWithFolders = wrapper
+      .findAll('[data-testid="folder-row"]')
+      .map((row) => row.attributes('data-row-id'))
+
+    expect(idsWithFolders).toContain('src')
+    expect(idsWithFolders).toContain('src-main-ts')
+    expect(idsWithFolders).not.toContain('readme-md')
+
+    useViewActionsStore().dispatch('always-show-folders')
+    await flushPromises()
+
+    const idsWithoutFolders = wrapper
+      .findAll('[data-testid="folder-row"]')
+      .map((row) => row.attributes('data-row-id'))
+
+    expect(idsWithoutFolders).not.toContain('src')
+    expect(idsWithoutFolders).toContain('src-main-ts')
+
+    const stored = JSON.parse(localStorage.getItem('open-diff-folder-display-filters') ?? '{}') as {
+      alwaysShowFolders?: boolean
+    }
+
+    expect(stored.alwaysShowFolders).toBe(false)
   })
 
   it('keeps muted path-footer placeholders before roots are set', () => {

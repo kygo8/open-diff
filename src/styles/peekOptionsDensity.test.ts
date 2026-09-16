@@ -67,6 +67,7 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="options-section-nav"/)
     expect(settingsView).toMatch(/options-section-\$\{section\.id\}/)
     expect(settingsView).toMatch(/'folderCompare'/)
+    expect(settingsView).toMatch(/'folderMerge'/)
     expect(settingsView).toMatch(/'hexCompare'/)
     expect(settingsView).toMatch(/'pictureCompare'/)
     expect(settingsView).toMatch(/'mediaCompare'/)
@@ -109,6 +110,10 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="folder-compare-always-show-folders"/)
     expect(settingsView).toMatch(/data-testid="folder-compare-files-only-default"/)
     expect(settingsView).toMatch(/data-testid="folder-compare-show-suppressed-default"/)
+    expect(settingsView).toMatch(/data-testid="folder-merge-view-preset-default"/)
+    expect(settingsView).toMatch(/data-testid="folder-merge-always-show-folders"/)
+    expect(settingsView).toMatch(/data-testid="folder-merge-show-center-pane"/)
+    expect(settingsView).toMatch(/data-testid="folder-merge-compare-to-output"/)
   })
 })
 

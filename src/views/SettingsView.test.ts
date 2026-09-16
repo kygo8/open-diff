@@ -571,6 +571,19 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
     showSuppressed: true,
   })
 
+  await wrapper.find('[data-testid="options-section-folderMerge"]').trigger('click')
+  expect(wrapper.find('[data-testid="options-folder-merge-card"]').isVisible()).toBe(true)
+  await wrapper.find('[data-testid="folder-merge-view-preset-default"]').setValue('conflicts')
+  await wrapper.find('[data-testid="folder-merge-always-show-folders"]').setValue(false)
+  await wrapper.find('[data-testid="folder-merge-show-center-pane"]').setValue(false)
+  await wrapper.find('[data-testid="folder-merge-compare-to-output"]').setValue(true)
+  expect(JSON.parse(localStorage.getItem('open-diff-folder-merge-display') ?? '{}')).toMatchObject({
+    viewPreset: 'conflicts',
+    alwaysShowFolders: false,
+    showCenterPane: false,
+    compareToOutput: true,
+  })
+
   await wrapper.find('[data-testid="options-section-hexCompare"]').trigger('click')
   expect(wrapper.find('[data-testid="options-hex-compare-card"]').isVisible()).toBe(true)
   await wrapper.find('[data-testid="hex-diff-only-default"]').setValue(true)

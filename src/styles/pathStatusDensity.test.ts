@@ -9,7 +9,9 @@ describe('path/status strip density', () => {
   it('keeps path bars and footers denser toward capture chrome', () => {
     expect(css).toMatch(/\.bc-path-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(css).toMatch(/\.bc-path-row input\s*\{[\s\S]*?height:\s*12px/)
-    expect(css).toMatch(/\.path-pair-bar\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.path-pair-bar\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.path-pair-field span\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(css).toMatch(/\.path-pair-swap\s*\{[\s\S]*?width:\s*12px/)
     expect(css).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*6px/)
     expect(css).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*6px/)
     expect(css).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*6px/)

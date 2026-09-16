@@ -2371,14 +2371,14 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Registry Compare chrome densify toward capture path/status/toolbar/footer strips */
 .registry-compare-view {
-  gap: 4px !important;
-  padding: 4px 6px !important;
+  gap: 2px !important;
+  padding: 2px 4px !important;
 }
 
 .registry-compare-view .registry-input-panel {
-  gap: 4px !important;
-  min-height: 26px !important;
-  padding: 2px 6px !important;
+  gap: 2px !important;
+  min-height: 22px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2415,10 +2415,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .registry-compare-view .path-side-footer {
-  min-height: 10px !important;
+  min-height: 9px !important;
   margin-top: 0 !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+  font-size: 9px !important;
+  line-height: 9px !important;
 }
 
 .registry-compare-view .registry-maturity,
@@ -2438,14 +2438,14 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .registry-compare-view .registry-summary-item {
   gap: 2px !important;
-  min-height: 22px !important;
-  padding: 2px 6px !important;
+  min-height: 20px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
 .registry-compare-view .registry-summary-item strong {
-  font-size: 12px !important;
-  line-height: 16px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
 }
 
 .registry-compare-view .registry-summary-item span {
@@ -2459,8 +2459,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .registry-compare-view .registry-key-pane,
 .registry-compare-view .registry-value-pane {
-  gap: 4px !important;
-  padding: 2px 6px !important;
+  gap: 2px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2477,34 +2477,34 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .registry-compare-view .registry-key-row {
-  gap: 0 6px !important;
-  min-height: 28px !important;
-  padding-top: 2px !important;
-  padding-right: 6px !important;
-  padding-bottom: 2px !important;
+  gap: 0 4px !important;
+  min-height: 24px !important;
+  padding-top: 1px !important;
+  padding-right: 4px !important;
+  padding-bottom: 1px !important;
 }
 
 .registry-compare-view .registry-value-row {
-  min-height: 22px !important;
+  min-height: 20px !important;
   font-size: 11px !important;
 }
 
 .registry-compare-view .registry-value-row > * {
-  padding: 2px 6px !important;
+  padding: 1px 4px !important;
   font-size: 11px !important;
-  line-height: 16px !important;
+  line-height: 14px !important;
 }
 
 /* Clipboard Compare chrome densify toward capture toolbar/history/status strips */
 .clipboard-compare-view {
-  gap: 4px !important;
-  padding: 4px 6px !important;
+  gap: 2px !important;
+  padding: 2px 4px !important;
 }
 
 .clipboard-compare-view .clipboard-toolbar {
-  gap: 4px 6px !important;
-  min-height: 26px !important;
-  padding: 2px 6px !important;
+  gap: 2px 4px !important;
+  min-height: 22px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2524,12 +2524,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .clipboard-compare-view .history-pane {
   gap: 2px !important;
-  padding: 2px 6px !important;
+  padding: 1px 4px !important;
 }
 
 .clipboard-compare-view .history-pane header {
-  gap: 6px !important;
-  min-height: 18px !important;
+  gap: 4px !important;
+  min-height: 16px !important;
 }
 
 .clipboard-compare-view .history-list {
@@ -2537,9 +2537,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .clipboard-compare-view .history-entry {
-  gap: 0 6px !important;
-  min-height: 22px !important;
-  padding: 2px 6px !important;
+  gap: 0 4px !important;
+  min-height: 20px !important;
+  padding: 1px 4px !important;
   border-radius: 0 !important;
 }
 
@@ -2662,19 +2662,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .text-compare-view .bc-path-row {
   gap: 2px !important;
-  min-height: 22px !important;
-  padding: 1px 4px !important;
+  min-height: 20px !important;
+  padding: 1px 3px !important;
 }
 
 .text-compare-view .bc-path-row input {
-  height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  padding: 0 3px !important;
   font-size: 11px !important;
 }
 
 .text-compare-view .bc-path-row button {
-  height: 18px !important;
-  padding: 0 5px !important;
+  height: 16px !important;
+  padding: 0 4px !important;
   font-size: 11px !important;
 }
 
@@ -2696,12 +2696,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-compare-view .compare-toolbar {
-  gap: 3px !important;
+  gap: 2px !important;
 }
 
 .text-compare-view .toolbar-button {
-  height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  padding: 0 5px !important;
   font-size: 11px !important;
 }
 
@@ -2779,20 +2779,20 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-merge-view .merge-toolbar {
-  gap: 4px !important;
-  min-height: 22px !important;
+  gap: 2px !important;
+  min-height: 20px !important;
 }
 
 .text-merge-view .output-path-input {
-  height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  padding: 0 3px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
 
 .text-merge-view .toolbar-button {
-  height: 20px !important;
-  padding: 0 5px !important;
+  height: 18px !important;
+  padding: 0 4px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
@@ -2810,9 +2810,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-merge-view .pane-header {
-  gap: 4px !important;
-  min-height: 22px !important;
-  padding: 2px 4px !important;
+  gap: 2px !important;
+  min-height: 20px !important;
+  padding: 1px 3px !important;
 }
 
 .text-merge-view .pane-header h2 {
@@ -2861,9 +2861,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .sync-settings input,
 .folder-sync-view .sync-settings select {
-  height: 18px !important;
-  min-height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  padding: 0 3px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
@@ -2874,13 +2874,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .sync-setting-actions .n-button,
 .folder-sync-view .sync-setting-actions button {
-  --n-height: 20px !important;
-  --n-padding: 0 6px !important;
+  --n-height: 18px !important;
+  --n-padding: 0 5px !important;
   --n-font-size: 11px !important;
 
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
   font-size: 11px !important;
 }
 
@@ -2914,9 +2914,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-view .sync-preview-row strong,
 .folder-sync-view .sync-preview-row label,
 .folder-sync-view .sync-override-cell {
-  padding: 2px 6px !important;
+  padding: 1px 4px !important;
   font-size: 11px !important;
-  line-height: 16px !important;
+  line-height: 14px !important;
 }
 
 .folder-sync-view .sync-override-cell {
@@ -2926,16 +2926,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-view .sync-preview-row select,
 .folder-sync-view .sync-reset-override,
 .folder-sync-view .sync-chrome-panel button {
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
 
 .folder-sync-view .sync-chrome-panel {
-  gap: 3px 6px !important;
-  min-height: 20px !important;
+  gap: 2px 4px !important;
+  min-height: 18px !important;
 }
 
 .folder-sync-view .sync-run-status ul {
@@ -2963,9 +2963,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .merge-paths input {
-  height: 18px !important;
-  min-height: 18px !important;
-  padding: 0 4px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  padding: 0 3px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
@@ -2984,13 +2984,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-view .merge-actions .n-button,
 .folder-merge-view .merge-actions button,
 .folder-merge-view .merge-chrome-panel button {
-  --n-height: 20px !important;
-  --n-padding: 0 6px !important;
+  --n-height: 18px !important;
+  --n-padding: 0 5px !important;
   --n-font-size: 11px !important;
 
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
   font-size: 11px !important;
 }
 
@@ -3018,14 +3018,14 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-merge-view .merge-plan-row span,
 .folder-merge-view .merge-plan-row strong {
-  padding: 2px 6px !important;
+  padding: 1px 4px !important;
   font-size: 11px !important;
-  line-height: 16px !important;
+  line-height: 14px !important;
 }
 
 .folder-merge-view .merge-chrome-panel {
-  gap: 3px 6px !important;
-  min-height: 20px !important;
+  gap: 2px 4px !important;
+  min-height: 18px !important;
 }
 
 .folder-merge-view .conflict-panel ul {
@@ -3033,8 +3033,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .conflict-panel li {
-  gap: 4px !important;
-  padding: 4px 6px !important;
+  gap: 2px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
 }

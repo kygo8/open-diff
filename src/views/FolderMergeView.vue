@@ -2363,7 +2363,7 @@ h1 {
 .merge-plan-row span,
 .merge-plan-row strong {
   min-width: 0;
-  padding: 2px 6px;
+  padding: 1px 4px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-size: 11px;
@@ -2496,8 +2496,8 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 3px 6px;
-  min-height: 20px;
+  gap: 2px 4px;
+  min-height: 18px;
   padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -2506,8 +2506,8 @@ h1 {
 }
 
 .merge-chrome-panel button {
-  height: 20px;
-  padding: 0 6px;
+  height: 18px;
+  padding: 0 5px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);

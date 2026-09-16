@@ -337,9 +337,9 @@ function runClipboardToolbarCommand(commandId: string): void {
 .clipboard-compare-view {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  gap: 4px;
+  gap: 2px;
   height: 100%;
-  padding: 4px 6px;
+  padding: 2px 4px;
   overflow: hidden;
 }
 
@@ -347,9 +347,9 @@ function runClipboardToolbarCommand(commandId: string): void {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 6px;
-  min-height: 26px;
-  padding: 2px 6px;
+  gap: 2px 4px;
+  min-height: 22px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -380,15 +380,15 @@ function runClipboardToolbarCommand(commandId: string): void {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 2px;
-  padding: 2px 6px;
+  padding: 1px 4px;
 }
 
 .history-pane header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  min-height: 18px;
+  gap: 4px;
+  min-height: 16px;
 }
 
 .history-pane header span {
@@ -407,9 +407,9 @@ function runClipboardToolbarCommand(commandId: string): void {
 .history-entry {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0 6px;
-  min-height: 22px;
-  padding: 2px 6px;
+  gap: 0 4px;
+  min-height: 20px;
+  padding: 1px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);

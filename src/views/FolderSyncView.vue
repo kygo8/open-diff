@@ -2158,8 +2158,8 @@ h1 {
 
 .sync-preview-row select {
   width: 100%;
-  height: 20px;
-  min-height: 20px;
+  height: 18px;
+  min-height: 18px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
   background: var(--app-bg);
@@ -2182,7 +2182,7 @@ h1 {
 .sync-preview-row span,
 .sync-preview-row strong {
   min-width: 0;
-  padding: 2px 6px;
+  padding: 1px 4px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-size: 11px;
@@ -2229,8 +2229,8 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 3px 6px;
-  min-height: 20px;
+  gap: 2px 4px;
+  min-height: 18px;
   padding: 2px 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;

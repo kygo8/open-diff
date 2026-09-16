@@ -41,6 +41,12 @@ import {
   type FolderMergeViewPreset,
 } from '@/app/folderMergeDisplay'
 import {
+  defaultFolderSyncSessionOptions,
+  loadFolderSyncSessionOptions,
+  saveFolderSyncSessionOptions,
+  type FolderSyncSessionOptions,
+} from '@/app/folderSyncSessionOptions'
+import {
   formatFolderNameFilterDraft,
   formatFolderNameFilterStripPattern,
   loadFolderNameFilters,
@@ -150,6 +156,7 @@ type OptionsSectionId =
   | 'textEditing'
   | 'folderCompare'
   | 'folderMerge'
+  | 'folderSync'
   | 'hexCompare'
   | 'pictureCompare'
   | 'mediaCompare'
@@ -176,6 +183,17 @@ const archiveExtensionsDraft = ref(formatArchiveSuffixesInput(settings.archiveEx
 const folderCriteriaDraft = ref(loadFolderCompareCriteria())
 const folderDisplayFiltersDraft = ref(loadFolderDisplayFilters())
 const folderMergeDisplayDraft = ref(loadFolderMergeDisplay())
+const folderSyncDefaultsDraft = ref(loadFolderSyncSessionOptions())
+const folderSyncStrategyOptions: {
+  value: FolderSyncSessionOptions['strategy']
+  labelKey: string
+}[] = [
+  { value: 'updateRight', labelKey: 'sync.strategy.updateRight' },
+  { value: 'updateLeft', labelKey: 'sync.strategy.updateLeft' },
+  { value: 'updateBoth', labelKey: 'sync.strategy.updateBoth' },
+  { value: 'mirrorRight', labelKey: 'sync.strategy.mirrorRight' },
+  { value: 'mirrorLeft', labelKey: 'sync.strategy.mirrorLeft' },
+]
 const folderMergeViewPresetOptions: { value: FolderMergeViewPreset; labelKey: string }[] = [
   { value: 'all', labelKey: 'ui.showAll' },
   { value: 'changes', labelKey: 'ui.showChanges' },
@@ -294,6 +312,7 @@ const optionsTree = [
     items: [
       { id: 'folderCompare' as const, labelKey: 'ui.folderCompare' },
       { id: 'folderMerge' as const, labelKey: 'ui.folderMerge' },
+      { id: 'folderSync' as const, labelKey: 'ui.folderSync' },
       { id: 'hexCompare' as const, labelKey: 'ui.hexCompare' },
       { id: 'pictureCompare' as const, labelKey: 'ui.pictureCompare' },
       { id: 'mediaCompare' as const, labelKey: 'ui.mediaCompare' },
@@ -950,6 +969,8 @@ function restoreFactoryDefaultsFromOptions(): void {
   saveFolderDisplayFilters(folderDisplayFiltersDraft.value)
   folderMergeDisplayDraft.value = defaultFolderMergeDisplay()
   saveFolderMergeDisplay(folderMergeDisplayDraft.value)
+  folderSyncDefaultsDraft.value = defaultFolderSyncSessionOptions()
+  saveFolderSyncSessionOptions(folderSyncDefaultsDraft.value)
   textCompareDefaultsDraft.value = defaultTextCompareSessionOptions()
   saveTextCompareSessionOptions(textCompareDefaultsDraft.value)
   hexCompareDefaultsDraft.value = defaultHexCompareSessionOptions()
@@ -1000,6 +1021,10 @@ function persistFolderDisplayFiltersDraft(): void {
 
 function persistFolderMergeDisplayDraft(): void {
   saveFolderMergeDisplay(folderMergeDisplayDraft.value)
+}
+
+function persistFolderSyncDefaultsDraft(): void {
+  saveFolderSyncSessionOptions(folderSyncDefaultsDraft.value)
 }
 
 function folderDisplayStatusChecked(statuses: FolderDisplayStatus[]): boolean {
@@ -2034,6 +2059,31 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.compareToOutput') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.folderMergeRulesHint') }}</p>
+        </NCard>
+
+        <NCard
+          v-show="optionsSection === 'folderSync'"
+          :title="$t('ui.folderSync')"
+          size="small"
+          data-testid="options-folder-sync-card"
+        >
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.strategy') }}</span>
+            <select
+              v-model="folderSyncDefaultsDraft.strategy"
+              data-testid="folder-sync-strategy-default"
+              @change="persistFolderSyncDefaultsDraft"
+            >
+              <option
+                v-for="option in folderSyncStrategyOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ $t(option.labelKey) }}
+              </option>
+            </select>
+          </label>
+          <p class="options-hint">{{ $t('ui.folderSyncOptionsHint') }}</p>
         </NCard>
 
         <NCard

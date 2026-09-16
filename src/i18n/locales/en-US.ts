@@ -1227,6 +1227,8 @@ export const enUS: LanguagePack = {
     'ui.ignoreLineEndingDifferences': 'Ignore line ending differences',
     'ui.folderCompareOptionsHint':
       'Default Folder Compare criteria for new sessions. Session Settings can still override them.',
+    'ui.folderSyncOptionsHint':
+      'Default Folder Sync strategy for new sessions. The session toolbar can still change it.',
     'ui.hexDiffOnlyDefault': 'Show difference bytes only by default',
     'ui.hexBytesPerRow': 'Bytes per row',
     'ui.hexBytesPerRowAuto': 'Auto',

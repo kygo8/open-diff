@@ -1247,6 +1247,8 @@ export const esES: LanguagePack = {
     'ui.ignoreLineEndingDifferences': 'Ignorar finales de línea',
     'ui.folderCompareOptionsHint':
       'Criterios predeterminados para nuevas sesiones de carpetas. La configuración de sesión puede anularlos.',
+    'ui.folderSyncOptionsHint':
+      'Estrategia predeterminada para nuevas sesiones de sincronización. La barra de sesión puede cambiarla.',
     'ui.hexDiffOnlyDefault': 'Mostrar solo bytes diferentes por defecto',
     'ui.hexBytesPerRow': 'Bytes por fila',
     'ui.hexBytesPerRowAuto': 'Auto',

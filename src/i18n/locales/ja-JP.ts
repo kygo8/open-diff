@@ -1223,6 +1223,8 @@ export const jaJP: LanguagePack = {
     'ui.ignoreLineEndingDifferences': '改行の違いを無視',
     'ui.folderCompareOptionsHint':
       '新しいフォルダ比較セッションの既定の比較条件です。セッション設定で上書きできます。',
+    'ui.folderSyncOptionsHint':
+      '新しいフォルダ同期セッションの既定の戦略です。セッションツールバーで変更できます。',
     'ui.hexDiffOnlyDefault': '既定で差分バイトのみ表示',
     'ui.hexBytesPerRow': '行あたりのバイト数',
     'ui.hexBytesPerRowAuto': '自動',

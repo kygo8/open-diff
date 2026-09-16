@@ -19,6 +19,7 @@ import {
   buildFolderSyncReportText,
   defaultFolderSyncReportOutputPath,
 } from '@/app/folderSyncReport'
+import { loadFolderSyncSessionOptions } from '@/app/folderSyncSessionOptions'
 import {
   formatFolderNameFilterStripPattern,
   loadFolderNameFilters,
@@ -160,7 +161,7 @@ function goFolderPathForward(): void {
 
 const leftFreeSpaceLabel = ref('')
 const rightFreeSpaceLabel = ref('')
-const selectedStrategy = ref<FolderSyncStrategy>('updateBoth')
+const selectedStrategy = ref<FolderSyncStrategy>(loadFolderSyncSessionOptions().strategy)
 const previewName = ref('')
 const previewLoading = ref(false)
 const previewError = ref<string>()

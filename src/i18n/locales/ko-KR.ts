@@ -1212,6 +1212,8 @@ export const koKR: LanguagePack = {
     'ui.ignoreLineEndingDifferences': '줄 끝 차이 무시',
     'ui.folderCompareOptionsHint':
       '새 폴더 비교 세션의 기본 비교 기준입니다. 세션 설정에서 덮어쓸 수 있습니다.',
+    'ui.folderSyncOptionsHint':
+      '새 폴더 동기화 세션의 기본 전략입니다. 세션 도구 모음에서 바꿀 수 있습니다.',
     'ui.hexDiffOnlyDefault': '기본적으로 다른 바이트만 표시',
     'ui.hexBytesPerRow': '행당 바이트',
     'ui.hexBytesPerRowAuto': '자동',

@@ -636,7 +636,7 @@ onMounted(() => {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture-pass5"
+      data-home-density="capture-pass6"
       data-home-chrome="minimal"
     >
       <aside
@@ -833,7 +833,7 @@ onMounted(() => {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="36"
+                  :size="32"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1147,14 +1147,14 @@ onMounted(() => {
 .bc-home-workspace {
   display: grid;
 
-  /* Capture-aligned left tree; pass-5 denser non-web-card column toward home.png. */
-  grid-template-columns: minmax(180px, 210px) minmax(0, 1fr);
+  /* Capture-aligned left tree; pass-6 denser non-web-card column toward home.png. */
+  grid-template-columns: minmax(170px, 200px) minmax(0, 1fr);
   background: #ffffff;
 }
 
 .bc-session-tree {
   display: grid;
-  grid-template-rows: 16px minmax(0, 1fr) 20px;
+  grid-template-rows: 15px minmax(0, 1fr) 18px;
   min-width: 0;
   min-height: 0;
   border-right: 1px solid #a0a0a0;
@@ -1165,7 +1165,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 3px;
+  padding: 0 2px;
   overflow: hidden;
   border-bottom: 1px solid #a0a0a0;
   background: #eceff3;
@@ -1189,24 +1189,24 @@ onMounted(() => {
   align-items: center;
   gap: 1px;
   width: 100%;
-  min-height: 15px;
+  min-height: 14px;
   padding: 0;
   border: 0;
   background: transparent;
   color: #111827;
   font-size: 11px;
-  line-height: 11px;
+  line-height: 10px;
   text-align: left;
   cursor: pointer;
 }
 
 .bc-tree-row.child {
-  padding-left: 11px;
+  padding-left: 10px;
   font-size: 11px;
 }
 
 .bc-tree-row.saved {
-  padding-left: 24px;
+  padding-left: 22px;
   font-size: 11px;
 }
 
@@ -1225,16 +1225,16 @@ onMounted(() => {
 
 .bc-tree-footer {
   display: grid;
-  grid-template-columns: 16px 16px minmax(0, 1fr);
+  grid-template-columns: 15px 15px minmax(0, 1fr);
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   padding: 1px 2px;
   border-top: 1px solid #a0a0a0;
   background: #eceff3;
 }
 
 .bc-tree-footer button {
-  height: 15px;
+  height: 14px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
@@ -1246,7 +1246,7 @@ onMounted(() => {
 .bc-tree-footer input {
   width: 100%;
   min-width: 0;
-  height: 15px;
+  height: 14px;
   padding: 0 2px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
@@ -1271,7 +1271,7 @@ onMounted(() => {
 .bc-selected-session {
   display: grid;
   gap: 1px;
-  padding: 1px 4px;
+  padding: 1px 3px;
 }
 
 .bc-selected-title {
@@ -1280,7 +1280,7 @@ onMounted(() => {
   gap: 4px;
   min-width: 0;
   color: #111827;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .bc-selected-title div {
@@ -1298,7 +1298,7 @@ onMounted(() => {
 }
 
 .bc-selected-title strong {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   line-height: 1.1;
 }
@@ -1311,13 +1311,13 @@ onMounted(() => {
 
 .bc-selected-actions {
   display: flex;
-  gap: 3px;
+  gap: 2px;
 }
 
 .bc-selected-actions button {
-  width: 72px;
+  width: 66px;
   max-width: 100%;
-  height: 18px;
+  height: 16px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1346,7 +1346,7 @@ onMounted(() => {
 }
 
 .new-session-panel {
-  padding: 0 3px 1px;
+  padding: 0 2px;
 }
 
 .new-session-panel h2,
@@ -1358,9 +1358,9 @@ onMounted(() => {
 
 .new-session-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(88px, 1fr));
-  gap: 1px 8px;
-  width: min(470px, calc(100% - 10px));
+  grid-template-columns: repeat(3, minmax(84px, 1fr));
+  gap: 0 6px;
+  width: min(450px, calc(100% - 8px));
   margin: 0 auto;
 }
 
@@ -1385,8 +1385,8 @@ onMounted(() => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 56px;
-  padding: 0 0 1px;
+  min-height: 50px;
+  padding: 0;
   overflow: hidden;
   border: 0;
   border-radius: 0;
@@ -1406,8 +1406,8 @@ onMounted(() => {
 
 .session-card-icon {
   display: inline-grid;
-  width: 48px;
-  height: 36px;
+  width: 42px;
+  height: 32px;
   color: #2f353d;
   place-items: center;
 }
@@ -1671,7 +1671,7 @@ tr:hover .row-actions,
 }
 
 .bc-home-instructions.dragging {
-  padding: 4px;
+  padding: 3px;
   border: 1px dashed #4aa3ff;
   border-radius: 0;
   background: #eaf4ff;
@@ -1682,15 +1682,15 @@ tr:hover .row-actions,
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin-top: 2px;
+  gap: 4px;
+  margin-top: 1px;
 }
 
 .home-primary-cta {
-  min-width: 88px;
+  min-width: 80px;
   max-width: 100%;
-  height: 24px;
-  padding: 0 8px;
+  height: 22px;
+  padding: 0 6px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1713,8 +1713,8 @@ tr:hover .row-actions,
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  min-height: 24px;
-  padding: 0 8px;
+  min-height: 22px;
+  padding: 0 6px;
   overflow: hidden;
   border: 1px dashed #a0a0a0;
   border-radius: 0;
@@ -1754,14 +1754,14 @@ tr:hover .row-actions,
 .session-edit-panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 3px;
-  max-width: 460px;
+  gap: 2px;
+  max-width: 440px;
 }
 
 .session-edit-panel input {
   min-width: 0;
-  height: 22px;
-  padding: 0 5px;
+  height: 20px;
+  padding: 0 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
@@ -1770,8 +1770,8 @@ tr:hover .row-actions,
 }
 
 .session-edit-panel button {
-  height: 22px;
-  padding: 0 8px;
+  height: 20px;
+  padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;

@@ -6,8 +6,9 @@ use crate::{
 use std::cell::RefCell;
 use std::fs;
 use std::io::{Read, Write};
-use std::net::{TcpStream, ToSocketAddrs};
+use std::net::{SocketAddr, TcpStream, ToSocketAddrs};
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 pub fn protocol_is_implemented(protocol: RemoteProtocol) -> bool {
@@ -28,6 +29,37 @@ pub fn unimplemented_protocol_message(protocol: RemoteProtocol) -> String {
     format!(
         "{protocol:?} is unimplemented; only SFTP, FTP, FTPS, WebDAV, S3, Dropbox, OneDrive, and SVN connections are live"
     )
+}
+
+static PREFER_IPV6: AtomicBool = AtomicBool::new(false);
+
+/// Prefer IPv6 addresses when DNS returns both families (Options > Tweaks).
+pub fn set_prefer_ipv6(prefer: bool) {
+    PREFER_IPV6.store(prefer, Ordering::Relaxed);
+}
+
+pub fn prefer_ipv6() -> bool {
+    PREFER_IPV6.load(Ordering::Relaxed)
+}
+
+/// Pick a socket address according to the IPv6 preference tweak.
+pub fn pick_preferred_socket_addr(
+    addrs: impl IntoIterator<Item = SocketAddr>,
+) -> Option<SocketAddr> {
+    let mut addrs: Vec<SocketAddr> = addrs.into_iter().collect();
+    if addrs.is_empty() {
+        return None;
+    }
+    let prefer_v6 = prefer_ipv6();
+    addrs.sort_by_key(|addr| {
+        let is_v6 = matches!(addr, SocketAddr::V6(_));
+        if prefer_v6 {
+            !is_v6
+        } else {
+            is_v6
+        }
+    });
+    addrs.into_iter().next()
 }
 
 pub fn test_network_connection(
@@ -516,11 +548,11 @@ fn socket_address(endpoint: &RemoteEndpoint, default_port: u16) -> String {
     )
 }
 
-fn resolve_address(address: &str) -> RemoteProviderResult<std::net::SocketAddr> {
-    address
+fn resolve_address(address: &str) -> RemoteProviderResult<SocketAddr> {
+    let addrs = address
         .to_socket_addrs()
-        .map_err(|error| RemoteProviderError::Backend(error.to_string()))?
-        .next()
+        .map_err(|error| RemoteProviderError::Backend(error.to_string()))?;
+    pick_preferred_socket_addr(addrs)
         .ok_or_else(|| RemoteProviderError::Backend(format!("could not resolve {address}")))
 }
 
@@ -797,5 +829,20 @@ mod tests {
             error,
             RemoteProviderError::Backend(message) if message.contains("connect failed")
         ));
+    }
+    #[test]
+    fn pick_preferred_socket_addr_orders_by_preference() {
+        use std::net::{Ipv4Addr, Ipv6Addr, SocketAddrV4, SocketAddrV6};
+
+        let v4 = SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::LOCALHOST, 22));
+        let v6 = SocketAddr::V6(SocketAddrV6::new(Ipv6Addr::LOCALHOST, 22, 0, 0));
+
+        set_prefer_ipv6(false);
+        assert_eq!(pick_preferred_socket_addr([v6, v4]), Some(v4));
+
+        set_prefer_ipv6(true);
+        assert_eq!(pick_preferred_socket_addr([v4, v6]), Some(v6));
+
+        set_prefer_ipv6(false);
     }
 }

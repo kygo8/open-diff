@@ -1124,6 +1124,23 @@ export const jaJP: LanguagePack = {
     'ui.closeWhenScriptFinished': 'スクリプト終了時に閉じる',
     'ui.scriptFinishedTweaksHint':
       'ツール > レポート / スクリプトに適用。成功後に閉じてホームへ戻ります。',
+    'ui.checkForFilesChangedOnDisk': 'ディスク上で変更されたファイルを確認',
+    'ui.checkForFilesChangedOnDiskHint':
+      'ファイルビューが再びフォーカスを得たときタイムスタンプを比較し、変更があれば再読み込みを提案します。',
+    'ui.autoReloadUnlessChangesDiscarded': '変更が破棄されない場合は自動的に再読み込み',
+    'ui.autoReloadUnlessChangesDiscardedHint':
+      '未保存の編集がないとき、確認なしで変更されたファイルを再読み込みします。',
+    'ui.stickyHomeSessionSelection': 'ホームのセッション選択を固定',
+    'ui.stickyHomeSessionSelectionHint':
+      '最新セッションに戻るのではなく、ホームで最後に選んだセッションを記憶します。',
+    'ui.preferIpv6WhenAvailable': '利用可能なら IPv6 を使用',
+    'ui.preferIpv6WhenAvailableHint':
+      'DNS が両系統を返すとき、リモート接続で IPv6 アドレスを優先します。',
+    'ui.watchFoldersForChanges': 'フォルダーの変更を監視',
+    'ui.watchFoldersForChangesHint': '有効な間、約 30 秒ごとにフォルダー比較を自動更新します。',
+    'ui.binaryCompareBufferSize': 'バイナリ比較のバッファーサイズ',
+    'ui.binaryCompareBufferSizeHint': '新しいバイナリ比較で使う Hex 比較の既定ウィンドウ長です。',
+    'ui.fileChangedOnDiskReload': 'ディスク上のファイルが変更されました。再読み込みしますか？',
     'ui.confirmQuitMessage': 'Open Diff を終了しますか？',
     'ui.toOutput': '出力へ',
     'ui.folderMergeRulesHint': '自動コピーは出力へ。競合はテキストマージで開きます。',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
-import { readTextFile, saveTextFile } from '@/api/diff'
+import { checkTextFileChanged, readTextFile, saveTextFile } from '@/api/diff'
 import { useRouter } from 'vue-router'
 import { useI18n } from '@/i18n'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
@@ -25,6 +25,7 @@ import {
   tokenizeSyntaxLine,
 } from '@/app/syntaxGrammars'
 import { resolveGoToLine } from '@/app/textEditNavigation'
+import { anyPathChangedOnDisk, shouldAutoReloadDiskChange } from '@/app/diskChangeReload'
 import { visualForSessionToolbarCommand } from '@/app/sessionToolbarIcons'
 
 interface LoadedTextDocument {
@@ -624,12 +625,57 @@ const highlightedLines = computed(() =>
 const hasEditorContent = computed(() => editorText.value.length > 0)
 const canPaste = computed(() => localClipboard.value.length > 0)
 
+async function checkDiskChangesOnFocus(): Promise<void> {
+  if (!settings.checkForFilesChangedOnDisk || globalThis.document.hidden || !document.value) {
+    return
+  }
+
+  const changed = await anyPathChangedOnDisk(
+    [{ path: document.value.path, stamp: document.value.fileStamp }],
+    checkTextFileChanged,
+  )
+
+  if (!changed) {
+    return
+  }
+
+  if (
+    shouldAutoReloadDiskChange({
+      autoReloadUnlessChangesDiscarded: settings.autoReloadUnlessChangesDiscarded,
+      dirty: dirty.value,
+    })
+  ) {
+    await openDocument()
+
+    return
+  }
+
+  // eslint-disable-next-line no-alert -- Options Tweaks disk-change reload confirmation
+  if (window.confirm(t('ui.fileChangedOnDiskReload'))) {
+    await openDocument()
+  }
+}
+
+function onWindowFocusForDiskChange(): void {
+  void checkDiskChangesOnFocus()
+}
+
+function onVisibilityForDiskChange(): void {
+  if (!globalThis.document.hidden) {
+    void checkDiskChangesOnFocus()
+  }
+}
+
 onMounted(() => {
   window.addEventListener('keydown', onSessionInsertKeydown)
+  window.addEventListener('focus', onWindowFocusForDiskChange)
+  globalThis.document.addEventListener('visibilitychange', onVisibilityForDiskChange)
 })
 
 onUnmounted(() => {
   window.removeEventListener('keydown', onSessionInsertKeydown)
+  window.removeEventListener('focus', onWindowFocusForDiskChange)
+  globalThis.document.removeEventListener('visibilitychange', onVisibilityForDiskChange)
 })
 
 function onFontFamilyChange(event: Event): void {

@@ -1125,6 +1125,25 @@ export const enUS: LanguagePack = {
     'ui.closeWhenScriptFinished': 'Close when script finished',
     'ui.scriptFinishedTweaksHint':
       'Applies to Tools > Reports / Scripts runs. Close returns to Home after a successful run.',
+    'ui.checkForFilesChangedOnDisk': 'Check for files changed on disk',
+    'ui.checkForFilesChangedOnDiskHint':
+      'When a file view regains focus, compare stamps and offer to reload if the file changed.',
+    'ui.autoReloadUnlessChangesDiscarded': 'Automatically reload unless changes will be discarded',
+    'ui.autoReloadUnlessChangesDiscardedHint':
+      'Reload changed files without prompting when the view has no unsaved edits.',
+    'ui.stickyHomeSessionSelection': 'Sticky Home session selection',
+    'ui.stickyHomeSessionSelectionHint':
+      'Remember the last session picked on Home instead of falling back to the newest session.',
+    'ui.preferIpv6WhenAvailable': 'Use IPv6 when available',
+    'ui.preferIpv6WhenAvailableHint':
+      'Prefer IPv6 addresses for remote connections when DNS returns both families.',
+    'ui.watchFoldersForChanges': 'Watch folders for changes',
+    'ui.watchFoldersForChangesHint':
+      'Automatically refresh Folder Compare about every 30 seconds while this option is on.',
+    'ui.binaryCompareBufferSize': 'Buffer size for binary compare',
+    'ui.binaryCompareBufferSizeHint':
+      'Default Hex Compare window length used for new binary comparisons.',
+    'ui.fileChangedOnDiskReload': 'File changed on disk. Reload?',
     'ui.confirmQuitMessage': 'Quit Open Diff?',
     'ui.toOutput': 'To Output',
     'ui.folderMergeRulesHint': 'Automatic copies go to output; conflicts open in Text Merge.',

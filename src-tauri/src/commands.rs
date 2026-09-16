@@ -1882,6 +1882,12 @@ pub fn set_archive_extensions(extensions: Vec<String>) -> Result<Vec<String>, Ap
 }
 
 #[tauri::command]
+pub fn set_prefer_ipv6(prefer_ipv6: bool) -> Result<(), AppErrorPayload> {
+    remote_core::set_prefer_ipv6(prefer_ipv6);
+    Ok(())
+}
+
+#[tauri::command]
 pub fn list_archive(
     path: String,
     archive_extensions: Option<Vec<String>>,

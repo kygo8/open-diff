@@ -1143,6 +1143,26 @@ export const esES: LanguagePack = {
     'ui.closeWhenScriptFinished': 'Cerrar al terminar el script',
     'ui.scriptFinishedTweaksHint':
       'Aplica a Herramientas > Informes / Scripts. Cerrar vuelve a Inicio tras una ejecución correcta.',
+    'ui.checkForFilesChangedOnDisk': 'Comprobar archivos cambiados en disco',
+    'ui.checkForFilesChangedOnDiskHint':
+      'Al recuperar el foco una vista de archivo, comparar marcas de tiempo y ofrecer recargar si cambió.',
+    'ui.autoReloadUnlessChangesDiscarded':
+      'Recargar automáticamente salvo que se descarten cambios',
+    'ui.autoReloadUnlessChangesDiscardedHint':
+      'Recargar archivos cambiados sin preguntar cuando la vista no tiene ediciones sin guardar.',
+    'ui.stickyHomeSessionSelection': 'Selección de sesión de Inicio fija',
+    'ui.stickyHomeSessionSelectionHint':
+      'Recordar la última sesión elegida en Inicio en lugar de volver a la más reciente.',
+    'ui.preferIpv6WhenAvailable': 'Usar IPv6 cuando esté disponible',
+    'ui.preferIpv6WhenAvailableHint':
+      'Preferir direcciones IPv6 en conexiones remotas cuando el DNS devuelve ambas familias.',
+    'ui.watchFoldersForChanges': 'Vigilar carpetas por cambios',
+    'ui.watchFoldersForChangesHint':
+      'Actualizar automáticamente la comparación de carpetas cada unos 30 segundos mientras esté activado.',
+    'ui.binaryCompareBufferSize': 'Tamaño de búfer para comparación binaria',
+    'ui.binaryCompareBufferSizeHint':
+      'Longitud de ventana predeterminada de Hex Compare para nuevas comparaciones binarias.',
+    'ui.fileChangedOnDiskReload': 'El archivo cambió en el disco. ¿Recargar?',
     'ui.confirmQuitMessage': '¿Salir de Open Diff?',
     'ui.toOutput': 'A la salida',
     'ui.folderMergeRulesHint':

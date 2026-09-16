@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
-import { diffText, exportTextCompareReport, readTextFile } from '@/api/diff'
+import { checkTextFileChanged, diffText, exportTextCompareReport, readTextFile } from '@/api/diff'
 import { reportFileExtension } from '@/app/reportExports'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
@@ -41,6 +41,7 @@ import {
 } from '@/app/textCompareSessionOptions'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { anyPathChangedOnDisk, shouldAutoReloadDiskChange } from '@/app/diskChangeReload'
 import { defaultFolderCompareCriteria } from '@/app/folderCompareCriteria'
 
 type DiffLine = TextDiffResponse['lines'][number]
@@ -492,6 +493,48 @@ watchEffect(() => {
 onUnmounted(() => {
   window.removeEventListener('keydown', onSessionInsertKeydown)
 })
+
+async function reloadTextCompareFromDisk(): Promise<void> {
+  if (leftPathLabel.value && rightPathLabel.value) {
+    await loadLaunchTextFiles(leftPathLabel.value, rightPathLabel.value)
+  } else {
+    await runDiff()
+  }
+}
+
+async function checkDiskChangesOnFocus(): Promise<void> {
+  if (!settings.checkForFilesChangedOnDisk || document.hidden) {
+    return
+  }
+
+  const changed = await anyPathChangedOnDisk(
+    [
+      { path: leftPathLabel.value, stamp: leftFileStamp.value },
+      { path: rightPathLabel.value, stamp: rightFileStamp.value },
+    ],
+    checkTextFileChanged,
+  )
+
+  if (!changed) {
+    return
+  }
+
+  if (
+    shouldAutoReloadDiskChange({
+      autoReloadUnlessChangesDiscarded: settings.autoReloadUnlessChangesDiscarded,
+      dirty: dirty.value,
+    })
+  ) {
+    await reloadTextCompareFromDisk()
+
+    return
+  }
+
+  // eslint-disable-next-line no-alert -- Options Tweaks disk-change reload confirmation
+  if (window.confirm(t('ui.fileChangedOnDiskReload'))) {
+    await reloadTextCompareFromDisk()
+  }
+}
 
 onMounted(() => {
   window.addEventListener('keydown', onSessionInsertKeydown)
@@ -1273,6 +1316,26 @@ watch([leftPathLabel, rightPathLabel], () => {
 
 function toggleSourceEditors(): void {
   showSourceEditors.value = !showSourceEditors.value
+}
+
+onMounted(() => {
+  window.addEventListener('focus', onWindowFocusForDiskChange)
+  document.addEventListener('visibilitychange', onVisibilityForDiskChange)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('focus', onWindowFocusForDiskChange)
+  document.removeEventListener('visibilitychange', onVisibilityForDiskChange)
+})
+
+function onWindowFocusForDiskChange(): void {
+  void checkDiskChangesOnFocus()
+}
+
+function onVisibilityForDiskChange(): void {
+  if (!document.hidden) {
+    void checkDiskChangesOnFocus()
+  }
 }
 </script>
 

@@ -1146,6 +1146,26 @@ export const frFR: LanguagePack = {
     'ui.closeWhenScriptFinished': 'Fermer à la fin du script',
     'ui.scriptFinishedTweaksHint':
       'S’applique à Outils > Rapports / Scripts. Fermer revient à l’accueil après une exécution réussie.',
+    'ui.checkForFilesChangedOnDisk': 'Vérifier les fichiers modifiés sur le disque',
+    'ui.checkForFilesChangedOnDiskHint':
+      'Quand une vue fichier reprend le focus, comparer les horodatages et proposer de recharger si le fichier a changé.',
+    'ui.autoReloadUnlessChangesDiscarded':
+      'Recharger automatiquement sauf si des modifications seraient perdues',
+    'ui.autoReloadUnlessChangesDiscardedHint':
+      'Recharger les fichiers modifiés sans demander lorsque la vue n’a pas de modifications non enregistrées.',
+    'ui.stickyHomeSessionSelection': 'Sélection de session Accueil persistante',
+    'ui.stickyHomeSessionSelectionHint':
+      'Mémoriser la dernière session choisie sur Accueil au lieu de revenir à la plus récente.',
+    'ui.preferIpv6WhenAvailable': 'Utiliser IPv6 si disponible',
+    'ui.preferIpv6WhenAvailableHint':
+      'Préférer les adresses IPv6 pour les connexions distantes lorsque le DNS renvoie les deux familles.',
+    'ui.watchFoldersForChanges': 'Surveiller les dossiers pour les changements',
+    'ui.watchFoldersForChangesHint':
+      'Actualiser automatiquement la comparaison de dossiers environ toutes les 30 secondes tant que l’option est active.',
+    'ui.binaryCompareBufferSize': 'Taille du tampon pour la comparaison binaire',
+    'ui.binaryCompareBufferSizeHint':
+      'Longueur de fenêtre Hex Compare par défaut pour les nouvelles comparaisons binaires.',
+    'ui.fileChangedOnDiskReload': 'Fichier modifié sur le disque. Recharger ?',
     'ui.confirmQuitMessage': 'Quitter Open Diff ?',
     'ui.toOutput': 'Vers la sortie',
     'ui.folderMergeRulesHint':

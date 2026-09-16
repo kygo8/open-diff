@@ -1294,7 +1294,7 @@ export const commandRegistry: AppCommand[] = [
     visibility: 'view',
     defaultShortcut: { keys: [], scope: 'global' },
     placements: ['command-palette', 'menu'],
-    action: { type: 'navigate', route: '/compare/folder', titleKey: 'ui.folderCompare' },
+    action: { type: 'noop' },
   },
   {
     id: 'session.mergeBaseFolders',
@@ -1304,7 +1304,7 @@ export const commandRegistry: AppCommand[] = [
     visibility: 'view',
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'M'], scope: 'global' },
     placements: ['command-palette', 'menu'],
-    action: { type: 'navigate', route: '/merge/folder', titleKey: 'ui.folderMerge' },
+    action: { type: 'noop' },
   },
   {
     id: 'session.syncBaseFolders',
@@ -1314,7 +1314,7 @@ export const commandRegistry: AppCommand[] = [
     visibility: 'view',
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'Y'], scope: 'global' },
     placements: ['command-palette', 'menu'],
-    action: { type: 'navigate', route: '/sync/folder', titleKey: 'ui.folderSync' },
+    action: { type: 'noop' },
   },
   {
     id: 'session.info',

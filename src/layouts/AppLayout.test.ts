@@ -1519,6 +1519,7 @@ describe('global menu depth parity', () => {
     const folderMenuSelection = useFolderMenuSelectionStore()
 
     folderMenuSelection.setHasSelection(true)
+    folderMenuSelection.setRoots('D:/left', 'D:/right')
 
     const wrapper = mountAppLayout()
 
@@ -1609,6 +1610,7 @@ describe('global menu depth parity', () => {
 
     routePath = '/sync/folder'
     folderMenuSelection.setHasSelection(true)
+    folderMenuSelection.setRoots('D:/left', 'D:/right')
 
     const sync = mountAppLayout()
 
@@ -1751,5 +1753,67 @@ describe('global menu depth parity', () => {
       home.find('[data-testid="menu-command-view.legend"]').attributes('disabled'),
     ).toBeDefined()
     home.unmount()
+  })
+
+  it('opens Merge/Sync/Compare Base Folders from current roots and disables them when missing', async () => {
+    const folderMenuSelection = useFolderMenuSelectionStore()
+    const sessionLaunch = useSessionLaunchStore()
+
+    const empty = mountAppLayout()
+
+    await empty.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      empty.find('[data-testid="menu-command-session.mergeBaseFolders"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      empty.find('[data-testid="menu-command-session.syncBaseFolders"]').attributes('disabled'),
+    ).toBeDefined()
+    empty.unmount()
+
+    folderMenuSelection.setRoots('D:/left', 'D:/right')
+    const compare = mountAppLayout()
+
+    await compare.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      compare.find('[data-testid="menu-command-session.mergeBaseFolders"]').attributes('disabled'),
+    ).toBeUndefined()
+    await compare.find('[data-testid="menu-command-session.mergeBaseFolders"]').trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/merge/folder')
+    expect(sessionLaunch.pendingLaunch).toMatchObject({
+      source: 'command',
+      sessionType: 'folder-merge',
+      route: '/merge/folder',
+      autoRun: false,
+      locations: {
+        left: { uri: 'D:/left' },
+        right: { uri: 'D:/right' },
+      },
+    })
+    compare.unmount()
+
+    push.mockClear()
+    routePath = '/sync/folder'
+    folderMenuSelection.setRoots('D:/deploy/package', 'D:/deploy/prod')
+    const sync = mountAppLayout()
+
+    await sync.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      sync.find('[data-testid="menu-command-session.compareBaseFolders"]').attributes('disabled'),
+    ).toBeUndefined()
+    await sync.find('[data-testid="menu-command-session.compareBaseFolders"]').trigger('click')
+
+    expect(push).toHaveBeenCalledWith('/compare/folder')
+    expect(sessionLaunch.pendingLaunch).toMatchObject({
+      source: 'command',
+      sessionType: 'folder-compare',
+      route: '/compare/folder',
+      autoRun: true,
+      locations: {
+        left: { uri: 'D:/deploy/package' },
+        right: { uri: 'D:/deploy/prod' },
+      },
+    })
+    sync.unmount()
   })
 })

@@ -2,7 +2,6 @@
 
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import type { SessionLaunchPayload } from '@/types/sessionLaunch'
-import type { SessionType } from '@/types/session'
 
 /** Absolute path to select/highlight in the OS file manager (the entry itself). */
 export function explorerSelectTargetPath(entryPath: string): string {
@@ -47,7 +46,16 @@ export function toggleIgnoredRowId(
   return { next, marked: true }
 }
 
-export function createFolderSyncHandoffLaunch(
+const FOLDER_SESSION_HANDOFF_ROUTES = {
+  'folder-compare': '/compare/folder',
+  'folder-sync': '/sync/folder',
+  'folder-merge': '/merge/folder',
+} as const
+
+export type FolderSessionHandoffType = keyof typeof FOLDER_SESSION_HANDOFF_ROUTES
+
+export function createFolderSessionHandoffLaunch(
+  sessionType: FolderSessionHandoffType,
   leftRoot: string,
   rightRoot: string,
   title: string,
@@ -59,20 +67,26 @@ export function createFolderSyncHandoffLaunch(
     return undefined
   }
 
-  const sessionType: SessionType = 'folder-sync'
-
   return {
     id: crypto.randomUUID(),
     source: 'command',
     sessionType,
     title,
-    route: '/sync/folder',
-    autoRun: true,
+    route: FOLDER_SESSION_HANDOFF_ROUTES[sessionType],
+    autoRun: sessionType !== 'folder-merge',
     locations: {
       left: { uri: left, displayName: baseName(left), kind: 'directory', readOnly: false },
       right: { uri: right, displayName: baseName(right), kind: 'directory', readOnly: false },
     },
   }
+}
+
+export function createFolderSyncHandoffLaunch(
+  leftRoot: string,
+  rightRoot: string,
+  title: string,
+): SessionLaunchPayload | undefined {
+  return createFolderSessionHandoffLaunch('folder-sync', leftRoot, rightRoot, title)
 }
 
 function baseName(path: string): string {

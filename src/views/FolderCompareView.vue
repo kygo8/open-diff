@@ -449,6 +449,7 @@ watch(
 )
 
 watch([leftRoot, rightRoot], () => {
+  folderMenuSelection.setRoots(leftRoot.value, rightRoot.value)
   if (isArchivePath(leftRoot.value) && isArchivePath(rightRoot.value)) {
     archiveSessionActive.value = true
   }

@@ -14,6 +14,7 @@ import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { createFolderEntry, saveTextFile } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
 
 vi.mock('@/api/diff', () => ({
   createFolderEntry: vi.fn(),
@@ -198,6 +199,30 @@ describe('FolderSyncView', () => {
       'Sync finished',
     )
     expect(previewFolderSync).toHaveBeenCalledTimes(2)
+  })
+
+  it('publishes both sync roots for Compare Base Folders menu enablement', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+    const folderMenuSelection = useFolderMenuSelectionStore()
+
+    expect(folderMenuSelection.hasRoots).toBe(false)
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+
+    expect(folderMenuSelection.hasRoots).toBe(true)
+    expect(folderMenuSelection.leftRoot).toBe('D:/deploy/package')
+    expect(folderMenuSelection.rightRoot).toBe('D:/deploy/prod')
   })
 
   it('loads the Options Folder Sync strategy default', () => {

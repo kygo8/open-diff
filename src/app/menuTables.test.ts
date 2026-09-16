@@ -83,6 +83,49 @@ describe('menuTables', () => {
     expect(resolveMenuCommandEnabled('edit.copy', true, tableCtx)).toBe(false)
   })
 
+  it('keeps Media/Version View filters enabled and disables leftover Clipboard/Patch/Edit/Registry verbs', () => {
+    const mediaCtx = { ...baseCtx, routePath: '/compare/media' }
+    const versionCtx = { ...baseCtx, routePath: '/compare/version' }
+    const clipboardCtx = { ...baseCtx, routePath: '/compare/clipboard' }
+    const patchCtx = { ...baseCtx, routePath: '/patch/text' }
+    const editCtx = { ...baseCtx, routePath: '/edit/text' }
+    const registryCtx = { ...baseCtx, routePath: '/compare/registry' }
+
+    expect(resolveMenuCommandEnabled('view.showAll', true, mediaCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('view.showDifferences', true, mediaCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('view.toggleMinor', true, mediaCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('diff.next', true, mediaCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('view.showAll', true, versionCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('diff.previous', true, versionCtx)).toBe(true)
+
+    expect(resolveMenuCommandEnabled('view.showAll', true, clipboardCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('view.toggleMinor', true, clipboardCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('diff.next', true, clipboardCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.paste', true, clipboardCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.copyLeft', true, clipboardCtx)).toBe(false)
+
+    expect(resolveMenuCommandEnabled('view.showDifferences', true, patchCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.cut', true, patchCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('diff.previous', true, patchCtx)).toBe(false)
+
+    expect(resolveMenuCommandEnabled('edit.paste', true, editCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('edit.copyLeft', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('view.showAll', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('view.toggleMinor', true, editCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('diff.next', true, editCtx)).toBe(false)
+
+    expect(resolveMenuCommandEnabled('view.showAll', true, registryCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('view.expandAll', true, registryCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('view.filters', true, registryCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('diff.next', true, registryCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('edit.selectAll', true, registryCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.selectNewer', true, registryCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('view.showSame', true, registryCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('view.toggleMinor', true, registryCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('search.findFilename', true, registryCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('edit.fullRefresh', true, registryCtx)).toBe(false)
+  })
+
   it('honestly disables selection Actions when nothing is selected', () => {
     expect(MENU_COMMANDS_REQUIRING_SELECTION.has('actions.rename')).toBe(true)
     expect(applySelectionEnablement('actions.rename', true, false)).toBe(false)

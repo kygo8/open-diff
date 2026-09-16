@@ -106,6 +106,36 @@ export function isTableCompareRoute(path: string): boolean {
   return path.includes('/compare/table')
 }
 
+export function isMediaCompareRoute(path: string): boolean {
+  return path.includes('/compare/media')
+}
+
+export function isVersionCompareRoute(path: string): boolean {
+  return path.includes('/compare/version')
+}
+
+export function isClipboardCompareRoute(path: string): boolean {
+  return path.includes('/compare/clipboard')
+}
+
+export function isTextPatchRoute(path: string): boolean {
+  return path.includes('/patch/text')
+}
+
+export function isTextEditRoute(path: string): boolean {
+  return path.includes('/edit/text')
+}
+
+/** Text Compare / Merge / Edit routes that implement clipboard edit verbs. */
+export function isTextEditVerbRoute(path: string): boolean {
+  return path.includes('/compare/text') || path.includes('/merge/text') || isTextEditRoute(path)
+}
+
+/** Text Compare / Merge routes that copy a side into the other pane. */
+export function isTextSideCopyRoute(path: string): boolean {
+  return path.includes('/compare/text') || path.includes('/merge/text')
+}
+
 /** Sessions that already implement a report export or report dialog. */
 export function sessionSupportsReportSave(path: string): boolean {
   return (
@@ -117,8 +147,8 @@ export function sessionSupportsReportSave(path: string): boolean {
     isHexCompareRoute(path) ||
     isTableCompareRoute(path) ||
     isPictureCompareRoute(path) ||
-    path.includes('/compare/media') ||
-    path.includes('/compare/version') ||
+    isMediaCompareRoute(path) ||
+    isVersionCompareRoute(path) ||
     isRegistrySessionRoute(path) ||
     path.includes('/reports')
   )

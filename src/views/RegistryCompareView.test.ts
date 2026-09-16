@@ -14,6 +14,7 @@ import { queryLiveWindowsRegistry } from '@/api/policy'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { useViewActionsStore } from '@/stores/viewActions'
 
 const clipboardWriteText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined)
 
@@ -198,7 +199,8 @@ describe('RegistryCompareView', () => {
     await wrapper
       .find('[data-testid="registry-value-HKCU/Software/OpenDiff::Theme"]')
       .trigger('click')
-    await wrapper.find('[data-testid="registry-apply-right"]').trigger('click')
+    useViewActionsStore().dispatch('copy-right')
+    await flushPromises()
 
     expect(wrapper.find('[data-testid="registry-apply-status"]').text().length).toBeGreaterThan(0)
     expect(applyLiveRegistryValue).not.toHaveBeenCalled()

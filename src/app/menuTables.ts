@@ -285,7 +285,7 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'edit.copyLeft' || commandId === 'edit.copyRight') {
-    return isTextSideCopyRoute(path)
+    return isTextSideCopyRoute(path) || isRegistrySessionRoute(path)
   }
 
   if (

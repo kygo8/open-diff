@@ -34,5 +34,5 @@ export function formatPathFileMetadata(stamp: PathFileStampLike | null | undefin
   const modified = formatPathModifiedAt(stamp.modifiedAtMs)
   const sizePart = `${String(stamp.size)} bytes`
 
-  return modified ? `${sizePart}, ${modified}` : sizePart
+  return modified ? `${modified} · ${sizePart}` : sizePart
 }

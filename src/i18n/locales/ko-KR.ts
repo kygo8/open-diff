@@ -461,7 +461,7 @@ export const koKR: LanguagePack = {
     'status.insertMode': '삽입',
     'status.overwriteMode': '덮어쓰기',
     'status.diskFreeOn': '{root}에 {quantity} 남음',
-    'status.pathFileMetadata': '{bytes}바이트, {modified}',
+    'status.pathFileMetadata': '{modified} · {bytes}바이트',
     'status.pathFileMetadataWithDetail': '{metadata} · {detail}',
     'status.filesSelectedBytesWithDate': '파일 {count}개 선택, {bytes}바이트, {modified}',
     'status.panePlaceholder': '—',

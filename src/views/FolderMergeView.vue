@@ -2079,9 +2079,9 @@ h1 {
   display: grid;
   grid-template-columns: repeat(4, minmax(150px, 1fr)) auto;
   align-items: end;
-  gap: 4px;
+  gap: 3px;
   min-height: 26px;
-  padding: 4px 6px;
+  padding: 3px 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -2089,17 +2089,17 @@ h1 {
 
 .merge-paths label {
   display: grid;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
 }
 
 .merge-path-footer {
   display: block;
-  min-height: 11px;
-  margin-top: 1px;
+  min-height: 10px;
+  margin-top: 0;
   color: var(--od-muted, #6b7280);
-  font-size: 10px;
-  line-height: 11px;
+  font-size: 9px;
+  line-height: 10px;
 }
 
 .merge-paths label span {
@@ -2109,7 +2109,7 @@ h1 {
 
 .merge-paths input {
   width: 100%;
-  height: 22px;
+  height: 18px;
   padding: 0 6px;
   overflow: hidden;
   border: 1px solid var(--app-border);

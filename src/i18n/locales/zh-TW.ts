@@ -452,7 +452,7 @@ export const zhTW: LanguagePack = {
     'status.insertMode': '插入',
     'status.overwriteMode': '改寫',
     'status.diskFreeOn': '{quantity} 可用空間於 {root}',
-    'status.pathFileMetadata': '{bytes} 位元組，{modified}',
+    'status.pathFileMetadata': '{modified} · {bytes} 位元組',
     'status.pathFileMetadataWithDetail': '{metadata} · {detail}',
     'status.filesSelectedBytesWithDate': '已選 {count} 個檔案，{bytes} 位元組，{modified}',
     'status.panePlaceholder': '—',

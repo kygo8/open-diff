@@ -565,7 +565,7 @@ export const enUS: LanguagePack = {
     'status.insertMode': 'Insert',
     'status.overwriteMode': 'Overwrite',
     'status.diskFreeOn': '{quantity} free on {root}',
-    'status.pathFileMetadata': '{bytes} bytes, {modified}',
+    'status.pathFileMetadata': '{modified} · {bytes} bytes',
     'status.pathFileMetadataWithDetail': '{metadata} · {detail}',
     'status.filesSelectedBytesWithDate': '{count} file(s) selected, {bytes} bytes, {modified}',
     'status.panePlaceholder': '—',

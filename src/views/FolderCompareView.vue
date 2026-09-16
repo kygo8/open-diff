@@ -4571,14 +4571,14 @@ onUnmounted(() => {
 .path-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
+  gap: 3px;
   height: auto;
   min-height: min-content;
 }
 
 .path-pair label {
   display: grid;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
 }
 
@@ -4589,11 +4589,11 @@ onUnmounted(() => {
 
 .path-side-footer {
   display: block;
-  min-height: 11px;
-  margin-top: 1px;
+  min-height: 10px;
+  margin-top: 0;
   color: var(--od-muted, #6b7280);
-  font-size: 10px;
-  line-height: 11px;
+  font-size: 9px;
+  line-height: 10px;
 }
 
 .path-side-footer-muted {
@@ -4633,7 +4633,7 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 3px 8px;
+  gap: 2px 6px;
   padding: 0;
   border: 0;
   color: var(--app-text-muted);
@@ -4644,7 +4644,7 @@ onUnmounted(() => {
   display: block;
   float: none;
   width: 100%;
-  margin: 0 0 2px;
+  margin: 0 0 1px;
   padding: 0;
   color: var(--app-text);
   font-size: 11px;
@@ -4654,13 +4654,13 @@ onUnmounted(() => {
 .folder-criteria label {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .path-pair input {
   width: 100%;
   min-width: 0;
-  height: 22px;
+  height: 18px;
   padding: 0 6px;
   overflow: hidden;
   border: 1px solid var(--app-border);

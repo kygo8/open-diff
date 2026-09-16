@@ -13,7 +13,7 @@ describe('status strip pixel density', () => {
       /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?line-height:\s*20px/,
     )
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-pair'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 4px/,
+      /\.status-bar\[data-chrome-kind='folder-pair'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 3px/,
     )
     expect(layout).toMatch(/\.status-bar-pane\s*\{[\s\S]*?border-right:\s*1px solid #c0c0c0/)
     expect(layout).toMatch(

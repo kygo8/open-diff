@@ -370,6 +370,7 @@ watch(
         runMediaToolbarCommand('swap')
         break
       case 'export':
+      case 'save-report':
         void exportMediaReport()
         break
 
@@ -445,7 +446,6 @@ watch(
       case 'suppress-filters':
       case 'compare-parent-folders':
       case 'run-script':
-      case 'save-report':
       case 'find-filename':
       case 'find-next-filename':
       case 'find-previous-filename':

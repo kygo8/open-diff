@@ -214,6 +214,61 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-help"]').exists()).toBe(true)
   })
 
+  it('enables Save Report where reports exist and disables leftover Picture/Hex/Table View verbs', async () => {
+    routePath = '/compare/picture'
+    const picture = mountAppLayout()
+
+    await picture.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      picture.find('[data-testid="menu-command-report.save"]').attributes('disabled'),
+    ).toBeUndefined()
+    await picture.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      picture.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      picture.find('[data-testid="menu-command-view.toggleMinor"]').attributes('disabled'),
+    ).toBeUndefined()
+    await picture.find('[data-testid="menu-edit"]').trigger('click')
+    expect(
+      picture.find('[data-testid="menu-command-edit.paste"]').attributes('disabled'),
+    ).toBeDefined()
+    picture.unmount()
+
+    routePath = '/compare/hex'
+    const hex = mountAppLayout()
+
+    await hex.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      hex.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      hex.find('[data-testid="menu-command-view.toggleMinor"]').attributes('disabled'),
+    ).toBeDefined()
+    hex.unmount()
+
+    routePath = '/compare/table'
+    const table = mountAppLayout()
+
+    await table.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      table.find('[data-testid="menu-command-view.showDifferences"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      table.find('[data-testid="menu-command-view.toggleMinor"]').attributes('disabled'),
+    ).toBeDefined()
+    table.unmount()
+
+    routePath = '/compare/text'
+    const text = mountAppLayout()
+
+    await text.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      text.find('[data-testid="menu-command-report.save"]').attributes('disabled'),
+    ).toBeUndefined()
+    text.unmount()
+  })
+
   it('shows Session File Edit Search View Tools Help on Text Compare', () => {
     routePath = '/compare/text'
     const wrapper = mountAppLayout()
@@ -923,9 +978,7 @@ describe('AppLayout command palette', () => {
     expect(
       wrapper.find('[data-testid="menu-command-session.info"]').attributes('data-shortcut'),
     ).toBe('Ctrl+I')
-    expect(wrapper.find('[data-testid="menu-command-report.save"]').text()).toContain(
-      'Folder Compare Report...',
-    )
+    expect(wrapper.find('[data-testid="menu-command-report.save"]').text()).toContain('Save Report')
 
     await wrapper.find('[data-testid="menu-edit"]').trigger('click')
     expect(wrapper.find('[data-testid="menu-command-edit.selectNewer"]').exists()).toBe(true)

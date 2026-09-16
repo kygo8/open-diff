@@ -1206,6 +1206,7 @@ watch(
       case 'cut':
       case 'delete':
       case 'export':
+      case 'save-report':
         void exportFolderSyncReport()
         break
       case 'export-settings':
@@ -1332,7 +1333,6 @@ watch(
       case 'toggle-session-locked':
       case 'workspace-save':
       case 'run-script':
-      case 'save-report':
       case 'toggle-columns':
       case 'toggle-toolbar':
       case 'change-attributes':

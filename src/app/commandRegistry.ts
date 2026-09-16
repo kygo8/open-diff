@@ -1338,7 +1338,7 @@ export const commandRegistry: AppCommand[] = [
   },
   {
     id: 'report.save',
-    titleKey: 'ui.folderCompareReport',
+    titleKey: 'ui.saveReport',
     keywords: ['report', 'save', 'export'],
     enabled: true,
     visibility: 'view',

@@ -1069,8 +1069,10 @@ watch(
       case 'sync-delete-left':
       case 'sync-delete-right':
         break
-      case 'run-script':
       case 'save-report':
+        openFileCompareReportPanel()
+        break
+      case 'run-script':
       case 'toggle-log':
       case 'toggle-legend':
       case 'toggle-toolbar':

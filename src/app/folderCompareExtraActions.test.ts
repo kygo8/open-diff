@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  createFolderSessionHandoffLaunch,
   createFolderSyncHandoffLaunch,
   explorerRevealPath,
   explorerSelectTargetPath,
@@ -35,5 +36,20 @@ describe('folderCompareExtraActions', () => {
     expect(launch?.locations.left?.uri).toBe('/left')
     expect(launch?.locations.right?.uri).toBe('/right')
     expect(launch?.autoRun).toBe(true)
+  })
+
+  it('builds Compare and Merge handoffs from the same roots', () => {
+    expect(
+      createFolderSessionHandoffLaunch('folder-compare', '', '/right', 'Compare'),
+    ).toBeUndefined()
+    const compare = createFolderSessionHandoffLaunch('folder-compare', '/left', '/right', 'Compare')
+    const merge = createFolderSessionHandoffLaunch('folder-merge', '/left', '/right', 'Merge')
+
+    expect(compare?.route).toBe('/compare/folder')
+    expect(compare?.sessionType).toBe('folder-compare')
+    expect(compare?.autoRun).toBe(true)
+    expect(merge?.route).toBe('/merge/folder')
+    expect(merge?.sessionType).toBe('folder-merge')
+    expect(merge?.autoRun).toBe(false)
   })
 })

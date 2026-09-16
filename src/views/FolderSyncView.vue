@@ -241,6 +241,10 @@ watch(
   },
   { immediate: true },
 )
+
+watch([leftPath, rightPath], () => {
+  folderMenuSelection.setRoots(leftPath.value, rightPath.value)
+})
 const visibleActions = ref<Set<FolderSyncPreviewAction>>(
   new Set(['Copy', 'Delete', 'Leave', 'Conflict']),
 )

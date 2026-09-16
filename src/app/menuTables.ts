@@ -58,6 +58,7 @@ export interface MenuEnablementContext {
   canGoForward: boolean
   canCloseTab: boolean
   hasLockableSession: boolean
+  hasFolderRoots: boolean
 }
 
 export function folderishOrRegistryRoute(path: string): boolean {
@@ -347,11 +348,11 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'session.mergeBaseFolders' || commandId === 'session.syncBaseFolders') {
-    return isFolderCompareRoute(path)
+    return isFolderCompareRoute(path) && ctx.hasFolderRoots
   }
 
   if (commandId === 'session.compareBaseFolders') {
-    return isFolderSyncRoute(path)
+    return isFolderSyncRoute(path) && ctx.hasFolderRoots
   }
 
   if (commandId === 'session.compareParentFolders') {

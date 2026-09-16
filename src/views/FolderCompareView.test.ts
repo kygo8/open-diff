@@ -23,6 +23,7 @@ import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { saveLocalRemoteProfiles } from '@/app/remoteProfilesLocal'
 import type * as remoteApi from '@/api/remote'
 import { useTabsStore } from '@/stores/tabs'
+import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
 
 const push = vi.fn()
 
@@ -315,6 +316,20 @@ describe('FolderCompareView', () => {
       ],
       summary: { total: 6, same: 2, different: 2, leftOnly: 1, rightOnly: 1 },
     })
+  })
+
+  it('publishes both folder roots for Base Folders menu enablement', async () => {
+    const wrapper = mountFolderCompareView()
+    const folderMenuSelection = useFolderMenuSelectionStore()
+
+    expect(folderMenuSelection.hasRoots).toBe(false)
+
+    await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/left')
+    await wrapper.find('[data-testid="folder-right-root"]').setValue('D:/right')
+
+    expect(folderMenuSelection.hasRoots).toBe(true)
+    expect(folderMenuSelection.leftRoot).toBe('D:/left')
+    expect(folderMenuSelection.rightRoot).toBe('D:/right')
   })
 
   it('applies a remote profile URI into the folder path fields', async () => {

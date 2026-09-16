@@ -39,6 +39,7 @@ import {
   formatShortcutLabel,
   isEditableKeyboardTarget,
 } from '@/app/keyboardShortcuts'
+import { createFolderSessionHandoffLaunch } from '@/app/folderCompareExtraActions'
 import { applySelectionEnablement, resolveMenuCommandEnabled } from '@/app/menuTables'
 import { listenDesktopPathDrop } from '@/app/desktopDrop'
 import { openSessionWindow } from '@/app/sessionWindow'
@@ -1238,6 +1239,50 @@ function closeCommandPalette(): void {
   commandPaletteOpen.value = false
 }
 
+const BASE_FOLDER_HANDOFF = {
+  'session.mergeBaseFolders': { sessionType: 'folder-merge', titleKey: 'ui.folderMerge' },
+  'session.syncBaseFolders': { sessionType: 'folder-sync', titleKey: 'ui.folderSync' },
+  'session.compareBaseFolders': { sessionType: 'folder-compare', titleKey: 'ui.folderCompare' },
+} as const
+
+function openBaseFolderSession(commandId: keyof typeof BASE_FOLDER_HANDOFF): boolean {
+  const { sessionType, titleKey } = BASE_FOLDER_HANDOFF[commandId]
+  const launch = createFolderSessionHandoffLaunch(
+    sessionType,
+    folderMenuSelection.leftRoot,
+    folderMenuSelection.rightRoot,
+    t(titleKey),
+  )
+
+  if (!launch) {
+    return false
+  }
+
+  sessionLaunch.setPendingLaunch(launch)
+  const opened = tabs.openTab({
+    title: launch.title,
+    route: launch.route,
+    dirty: false,
+    forceNew: settings.openSessionsInNewTab,
+  })
+
+  void router.push(opened.route)
+
+  return true
+}
+
+function runAppCommand(commandId: CommandId): boolean {
+  if (
+    commandId === 'session.mergeBaseFolders' ||
+    commandId === 'session.syncBaseFolders' ||
+    commandId === 'session.compareBaseFolders'
+  ) {
+    return openBaseFolderSession(commandId)
+  }
+
+  return executeRegisteredCommand(commandId)
+}
+
 function executeCommand(commandId: CommandId): void {
   const command = menuCommandLookup.value.get(commandId)
 
@@ -1245,7 +1290,7 @@ function executeCommand(commandId: CommandId): void {
     return
   }
 
-  executeRegisteredCommand(commandId)
+  runAppCommand(commandId)
   closeCommandPalette()
   languageMenuOpen.value = false
   activeMenu.value = undefined
@@ -1365,6 +1410,7 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
       canGoForward: folderPathNav.canGoForward,
       canCloseTab: tabs.canCloseTab(tabs.activeTab.id),
       hasLockableSession: Boolean(resolveLockableSessionId()),
+      hasFolderRoots: folderMenuSelection.hasRoots,
     }),
     folderMenuSelection.hasSelection,
   )
@@ -1446,7 +1492,7 @@ function onChromeKeydown(event: KeyboardEvent): void {
   }
 
   event.preventDefault()
-  executeRegisteredCommand(commandId)
+  runAppCommand(commandId)
 }
 
 function requestCloseTab(tab: { id: string; title: string; dirty: boolean }): void {

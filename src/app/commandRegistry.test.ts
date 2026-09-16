@@ -323,6 +323,15 @@ it('skips empty default shortcuts when detecting conflicts', () => {
     commandRegistry.find((command) => command.id === 'session.compareParentFolders')?.action,
   ).toEqual({ type: 'view-action', name: 'compare-parent-folders' })
   expect(
+    commandRegistry.find((command) => command.id === 'session.compareBaseFolders')?.action,
+  ).toEqual({ type: 'noop' })
+  expect(
+    commandRegistry.find((command) => command.id === 'session.mergeBaseFolders')?.action,
+  ).toEqual({ type: 'noop' })
+  expect(
+    commandRegistry.find((command) => command.id === 'session.syncBaseFolders')?.action,
+  ).toEqual({ type: 'noop' })
+  expect(
     commandRegistry.find((command) => command.id === 'view.alwaysShowFolders')?.defaultShortcut
       .keys,
   ).toEqual([])

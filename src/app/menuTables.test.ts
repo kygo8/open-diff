@@ -12,6 +12,7 @@ const baseCtx = {
   canGoForward: false,
   canCloseTab: true,
   hasLockableSession: false,
+  hasFolderRoots: true,
 }
 
 describe('menuTables', () => {
@@ -324,6 +325,20 @@ it('gates Compare Parent / Base Folders and keeps New Session global', () => {
       routePath: '/sync/folder',
     }),
   ).toBe(true)
+  expect(
+    resolveMenuCommandEnabled('session.compareBaseFolders', true, {
+      ...baseCtx,
+      routePath: '/sync/folder',
+      hasFolderRoots: false,
+    }),
+  ).toBe(false)
+  expect(resolveMenuCommandEnabled('session.mergeBaseFolders', true, baseCtx)).toBe(true)
+  expect(
+    resolveMenuCommandEnabled('session.mergeBaseFolders', true, {
+      ...baseCtx,
+      hasFolderRoots: false,
+    }),
+  ).toBe(false)
   expect(resolveMenuCommandEnabled('session.compareBaseFolders', true, baseCtx)).toBe(false)
   expect(
     resolveMenuCommandEnabled('session.newSession', true, {

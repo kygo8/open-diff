@@ -417,7 +417,6 @@ impl FolderCompareCriteria {
             ignore_daylight_saving_hour_offset: self.ignore_daylight_saving_hour_offset,
             show_hidden_files: self.show_hidden_files,
             ignored_timezone_hour_offsets: self.ignored_timezone_hour_offsets.clone(),
-            ..Default::default()
         }
     }
 }

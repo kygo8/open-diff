@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
+  isFolderCompareRoute,
+  isFolderishSessionRoute,
+  isSessionWorkbenchPath,
   isSingleSessionFrame,
   preferDenseAppChrome,
   shouldShowTabStrip,
@@ -102,5 +105,16 @@ describe('supportsFolderStatusLegend', () => {
     expect(supportsFolderStatusLegend('/')).toBe(false)
     expect(supportsFolderStatusLegend('/compare/text')).toBe(false)
     expect(supportsFolderStatusLegend('/settings')).toBe(false)
+  })
+})
+
+describe('session route helpers', () => {
+  it('detects workbench and folderish routes', () => {
+    expect(isSessionWorkbenchPath('/')).toBe(false)
+    expect(isSessionWorkbenchPath('/compare/folder')).toBe(true)
+    expect(isFolderishSessionRoute('/compare/folder')).toBe(true)
+    expect(isFolderishSessionRoute('/sync/folder')).toBe(true)
+    expect(isFolderCompareRoute('/compare/folder')).toBe(true)
+    expect(isFolderCompareRoute('/sync/folder')).toBe(false)
   })
 })

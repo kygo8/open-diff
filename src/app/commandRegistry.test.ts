@@ -37,8 +37,13 @@ describe('commandRegistry', () => {
         'view.showDifferences',
         'workspace.save',
         'edit.selectAll',
+        'edit.selectNewer',
         'actions.open',
         'view.showSame',
+        'view.showOrphans',
+        'view.showNoOrphans',
+        'view.onlyCompareFiles',
+        'view.suppressFilters',
         'search.findFilename',
         'search.findNextFilename',
         'search.findPreviousFilename',
@@ -51,6 +56,7 @@ describe('commandRegistry', () => {
         'actions.touch',
         'actions.copyToOutput',
         'session.mergeBaseFolders',
+        'session.info',
       ]),
     )
     expect(commandRegistry.find((command) => command.id === 'session.newWindow')?.enabled).toBe(
@@ -260,6 +266,15 @@ describe('commandRegistry', () => {
       keys: ['Ctrl', 'Alt', 'L'],
       scope: 'global',
     })
+    expect(
+      commandRegistry.find((command) => command.id === 'session.info')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'I'],
+      scope: 'global',
+    })
+    expect(commandRegistry.find((command) => command.id === 'report.save')?.titleKey).toBe(
+      'ui.folderCompareReport',
+    )
   })
 
   it('detects duplicate active shortcuts in the same scope', () => {

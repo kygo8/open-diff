@@ -238,6 +238,7 @@ watch(
       case 'select-all':
       case 'select-all-files':
       case 'select-orphans':
+      case 'select-newer':
       case 'invert-selection':
       case 'open-selected':
       case 'open-with':
@@ -245,6 +246,10 @@ watch(
       case 'exclude-selected':
       case 'refresh-selection':
       case 'show-same':
+      case 'show-orphans':
+      case 'show-no-orphans':
+      case 'only-compare-files':
+      case 'suppress-filters':
       case 'run-script':
       case 'save-report':
       case 'find-filename':
@@ -274,6 +279,7 @@ watch(
       case 'align-with':
       case 'break-alignment':
       case 'file-compare-report':
+      case 'session-info':
       case 'copy-filename':
       case 'merge-execute':
       case 'copy-to-output':

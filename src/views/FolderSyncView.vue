@@ -36,6 +36,7 @@ import FolderStatusLegend from '@/components/workbench/FolderStatusLegend.vue'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useFolderPathNavStore } from '@/stores/folderPathNav'
+import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
 import {
   createFolderPathNavStack,
   folderPathNavBack,
@@ -99,6 +100,7 @@ const newFolderPanelOpen = ref(false)
 const newFolderName = ref('New Folder')
 
 const folderPathNavStore = useFolderPathNavStore()
+const folderMenuSelection = useFolderMenuSelectionStore()
 const folderPathNavStack = ref(createFolderPathNavStack<FolderPathPair>())
 let applyingFolderPathHistory = false
 
@@ -219,11 +221,22 @@ watch(
 )
 
 const showSyncSelect = ref(false)
+const showSessionInfo = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
 const showPeek = ref(false)
 const peekTab = ref<'path' | 'action' | 'detail'>('path')
 const minorOnly = ref(false)
 const selectedPeekRowId = ref('')
+
+watch(
+  [checkedRowIds, selectedPeekRowId],
+  () => {
+    folderMenuSelection.setHasSelection(
+      checkedRowIds.value.size > 0 || Boolean(selectedPeekRowId.value),
+    )
+  },
+  { immediate: true },
+)
 const visibleActions = ref<Set<FolderSyncPreviewAction>>(
   new Set(['Copy', 'Delete', 'Leave', 'Conflict']),
 )
@@ -700,6 +713,7 @@ onUnmounted(() => {
   }
 
   folderPathNavStore.reset()
+  folderMenuSelection.reset()
 })
 
 async function previewSync(): Promise<void> {
@@ -1220,12 +1234,18 @@ watch(
       case 'show-same':
         visibleActions.value = new Set(['Leave'])
         break
+      case 'show-orphans':
+      case 'show-no-orphans':
+      case 'only-compare-files':
+      case 'suppress-filters':
+        break
       case 'select-all':
       case 'select-all-files':
         showSyncSelect.value = true
         selectVisibleSyncRows()
         break
       case 'select-orphans':
+      case 'select-newer':
         break
       case 'invert-selection':
         showSyncSelect.value = true
@@ -1265,6 +1285,9 @@ watch(
         toggleSyncLogPanel()
         break
       case 'toggle-legend':
+        break
+      case 'session-info':
+        showSessionInfo.value = !showSessionInfo.value
         break
       case 'leave-alone':
         applySyncOverrideAction('leave')
@@ -1554,6 +1577,35 @@ watch(
           />
           <span>{{ folderSyncActionLabel(action) }}</span>
         </label>
+      </section>
+
+      <section
+        v-show="showSessionInfo"
+        class="folder-session-info-panel display-filters"
+        data-testid="folder-sync-session-info"
+      >
+        <h3>{{ $t('ui.folderSyncInfo') }}</h3>
+        <dl class="folder-session-info-grid">
+          <div>
+            <dt>{{ $t('ui.left') }}</dt>
+            <dd>{{ leftPath || '—' }}</dd>
+          </div>
+          <div>
+            <dt>{{ $t('ui.right') }}</dt>
+            <dd>{{ rightPath || '—' }}</dd>
+          </div>
+          <div>
+            <dt>{{ $t('ui.sessionInfoTotal') }}</dt>
+            <dd>{{ previewRows.length }}</dd>
+          </div>
+        </dl>
+        <button
+          type="button"
+          data-testid="folder-sync-session-info-close"
+          @click="showSessionInfo = false"
+        >
+          {{ $t('ui.close') }}
+        </button>
       </section>
 
       <section

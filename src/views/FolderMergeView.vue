@@ -41,6 +41,7 @@ import { buildFolderMergeToolbar, mergeSessionTitle, pathBaseName } from '@/app/
 import { useI18n } from '@/i18n'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useFolderPathNavStore } from '@/stores/folderPathNav'
+import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
 import {
   createFolderPathNavStack,
   folderPathNavBack,
@@ -81,6 +82,7 @@ const { t } = useI18n()
 const statusBar = useStatusBarStore()
 const viewActions = useViewActionsStore()
 const folderPathNavStore = useFolderPathNavStore()
+const folderMenuSelection = useFolderMenuSelectionStore()
 const folderPathNavStack = ref(createFolderPathNavStack<FolderMergePathTriple>())
 let applyingFolderPathHistory = false
 
@@ -196,7 +198,18 @@ watch(
 )
 
 const showMergeSelect = ref(false)
+const showSessionInfo = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
+
+watch(
+  [checkedRowIds, selectedPlanRowId],
+  () => {
+    folderMenuSelection.setHasSelection(
+      checkedRowIds.value.size > 0 || Boolean(selectedPlanRowId.value),
+    )
+  },
+  { immediate: true },
+)
 
 const lastSelectionAction = ref('')
 const excludedRowIds = ref<Set<string>>(new Set())
@@ -370,6 +383,18 @@ function selectVisibleMergeOrphans(): void {
   lastSelectionAction.value = t('status.selectedRowCount', {
     count: ids.length,
     action: t('ui.selectOrphans'),
+  })
+}
+
+function selectVisibleMergeNewer(): void {
+  const ids = visiblePlanRows.value
+    .filter((row) => Boolean(row.conflict) || row.action !== 'Keep output')
+    .map((row) => row.id)
+
+  checkedRowIds.value = new Set(ids)
+  lastSelectionAction.value = t('status.selectedRowCount', {
+    count: ids.length,
+    action: t('ui.selectNewer'),
   })
 }
 
@@ -807,6 +832,7 @@ onUnmounted(() => {
   }
 
   folderPathNavStore.reset()
+  folderMenuSelection.reset()
 })
 
 watchEffect(() => {
@@ -1271,6 +1297,11 @@ watch(
       case 'show-same':
         setImportanceFilter('same')
         break
+      case 'show-orphans':
+      case 'show-no-orphans':
+      case 'only-compare-files':
+      case 'suppress-filters':
+        break
       case 'select-all':
         showMergeSelect.value = true
         selectVisibleMergeRows()
@@ -1282,6 +1313,10 @@ watch(
       case 'select-orphans':
         showMergeSelect.value = true
         selectVisibleMergeOrphans()
+        break
+      case 'select-newer':
+        showMergeSelect.value = true
+        selectVisibleMergeNewer()
         break
       case 'invert-selection':
         showMergeSelect.value = true
@@ -1319,6 +1354,9 @@ watch(
         break
       case 'toggle-log':
         toggleMergeLogPanel()
+        break
+      case 'session-info':
+        showSessionInfo.value = !showSessionInfo.value
         break
       case 'toggle-legend':
         break
@@ -1698,6 +1736,35 @@ watch(
                 ? $t('ui.minor')
                 : $t('ui.all')
         }}</span>
+      </section>
+
+      <section
+        v-show="showSessionInfo"
+        class="folder-session-info-panel display-filters"
+        data-testid="folder-merge-session-info"
+      >
+        <h3>{{ $t('ui.folderMergeInfo') }}</h3>
+        <dl class="folder-session-info-grid">
+          <div>
+            <dt>{{ $t('ui.left') }}</dt>
+            <dd>{{ leftPath || '—' }}</dd>
+          </div>
+          <div>
+            <dt>{{ $t('ui.right') }}</dt>
+            <dd>{{ rightPath || '—' }}</dd>
+          </div>
+          <div>
+            <dt>{{ $t('ui.sessionInfoTotal') }}</dt>
+            <dd>{{ planRows.length }}</dd>
+          </div>
+        </dl>
+        <button
+          type="button"
+          data-testid="folder-merge-session-info-close"
+          @click="showSessionInfo = false"
+        >
+          {{ $t('ui.close') }}
+        </button>
       </section>
 
       <section

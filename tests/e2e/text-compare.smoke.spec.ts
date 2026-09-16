@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { ensureAnimationFrames } from './helpers/ensureAnimationFrames'
 
 interface TauriInternalsMock {
   invoke: (command: string, args?: unknown) => Promise<unknown>
@@ -9,6 +10,7 @@ type WindowWithTauriMock = Window & {
 }
 
 test('opens the home page and runs a text comparison', async ({ page }) => {
+  await ensureAnimationFrames(page)
   await page.addInitScript(() => {
     const tauriWindow = window as WindowWithTauriMock
 

@@ -213,6 +213,7 @@ watch(
 const showSyncSelect = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
 const showPeek = ref(false)
+const peekTab = ref<'path' | 'action' | 'detail'>('path')
 const minorOnly = ref(false)
 const selectedPeekRowId = ref('')
 const visibleActions = ref<Set<FolderSyncPreviewAction>>(
@@ -1235,46 +1236,83 @@ watch(
             {{ $t('ui.close') }}
           </button>
         </header>
-        <dl v-if="selectedPeekRow">
-          <div>
-            <dt>{{ $t('ui.path') }}</dt>
-            <dd data-testid="folder-sync-peek-path">{{ selectedPeekRow.relativePath }}</dd>
+        <template v-if="selectedPeekRow">
+          <div
+            class="peek-tabs"
+            role="tablist"
+            data-testid="folder-sync-peek-tabs"
+          >
+            <button
+              type="button"
+              class="peek-tab"
+              :class="{ 'peek-tab-active': peekTab === 'path' }"
+              role="tab"
+              data-testid="folder-sync-peek-tab-path"
+              :aria-selected="peekTab === 'path' ? 'true' : 'false'"
+              @click="peekTab = 'path'"
+            >
+              {{ $t('ui.path') }}
+            </button>
+            <button
+              type="button"
+              class="peek-tab"
+              :class="{ 'peek-tab-active': peekTab === 'action' }"
+              role="tab"
+              data-testid="folder-sync-peek-tab-action"
+              :aria-selected="peekTab === 'action' ? 'true' : 'false'"
+              @click="peekTab = 'action'"
+            >
+              {{ $t('ui.action') }}
+            </button>
+            <button
+              type="button"
+              class="peek-tab"
+              :class="{ 'peek-tab-active': peekTab === 'detail' }"
+              role="tab"
+              data-testid="folder-sync-peek-tab-detail"
+              :aria-selected="peekTab === 'detail' ? 'true' : 'false'"
+              @click="peekTab = 'detail'"
+            >
+              {{ $t('ui.detail') }}
+            </button>
           </div>
-          <div>
-            <dt>{{ $t('ui.plannedAction') }}</dt>
-            <dd data-testid="folder-sync-peek-planned">
-              {{
-                $t(
-                  overrideOptions.find((option) => option.value === selectedPeekRow?.plannedAction)
-                    ?.labelKey ?? 'ui.leave',
-                )
-              }}
-            </dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.override') }}</dt>
-            <dd data-testid="folder-sync-peek-override">
-              {{
-                $t(
-                  overrideOptions.find((option) => option.value === selectedPeekRow?.overrideAction)
-                    ?.labelKey ?? 'ui.leave',
-                )
-              }}
-            </dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.source') }}</dt>
-            <dd>{{ selectedPeekRow.sourcePath ?? '--' }}</dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.target') }}</dt>
-            <dd>{{ selectedPeekRow.targetPath ?? '--' }}</dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.detail') }}</dt>
-            <dd data-testid="folder-sync-peek-detail">{{ selectedPeekRow.detail }}</dd>
-          </div>
-        </dl>
+          <dl>
+            <div v-show="peekTab === 'path'">
+              <dt>{{ $t('ui.path') }}</dt>
+              <dd data-testid="folder-sync-peek-path">{{ selectedPeekRow.relativePath }}</dd>
+              <dt>{{ $t('ui.source') }}</dt>
+              <dd>{{ selectedPeekRow.sourcePath ?? '--' }}</dd>
+              <dt>{{ $t('ui.target') }}</dt>
+              <dd>{{ selectedPeekRow.targetPath ?? '--' }}</dd>
+            </div>
+            <div v-show="peekTab === 'action'">
+              <dt>{{ $t('ui.plannedAction') }}</dt>
+              <dd data-testid="folder-sync-peek-planned">
+                {{
+                  $t(
+                    overrideOptions.find(
+                      (option) => option.value === selectedPeekRow?.plannedAction,
+                    )?.labelKey ?? 'ui.leave',
+                  )
+                }}
+              </dd>
+              <dt>{{ $t('ui.override') }}</dt>
+              <dd data-testid="folder-sync-peek-override">
+                {{
+                  $t(
+                    overrideOptions.find(
+                      (option) => option.value === selectedPeekRow?.overrideAction,
+                    )?.labelKey ?? 'ui.leave',
+                  )
+                }}
+              </dd>
+            </div>
+            <div v-show="peekTab === 'detail'">
+              <dt>{{ $t('ui.detail') }}</dt>
+              <dd data-testid="folder-sync-peek-detail">{{ selectedPeekRow.detail }}</dd>
+            </div>
+          </dl>
+        </template>
         <p
           v-else
           data-testid="folder-sync-peek-empty"
@@ -1622,34 +1660,38 @@ h1 {
 
 .folder-sync-peek-panel {
   display: grid;
-  gap: 4px;
-  padding: 4px 6px;
+  gap: 2px;
+  padding: 2px 6px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+  font-size: 11px;
 }
 
 .folder-sync-peek-panel header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 4px;
+  min-height: 20px;
 }
 
 .folder-sync-peek-panel dl {
   display: grid;
-  gap: 8px;
+  gap: 2px;
   margin: 0;
 }
 
 .folder-sync-peek-panel dt {
   color: var(--app-text-muted);
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 12px;
 }
 
 .folder-sync-peek-panel dd {
-  margin: 2px 0 0;
-  font-size: 13px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .folder-filter-chrome {

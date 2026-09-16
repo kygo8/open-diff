@@ -134,6 +134,7 @@ const filesOnlyFilter = ref(false)
 const flatStructure = ref(false)
 const loadTimeSeconds = ref<number | null>(null)
 const showPeek = ref(false)
+const peekTab = ref<'path' | 'sides' | 'action'>('path')
 const showMergeRules = ref(false)
 const selectedPlanRowId = ref('')
 const collapsedPrefixes = ref<Set<string>>(new Set())
@@ -1248,34 +1249,69 @@ watch(
             {{ $t('ui.close') }}
           </button>
         </header>
-        <dl v-if="selectedPlanRow">
-          <div>
-            <dt>{{ $t('ui.path') }}</dt>
-            <dd data-testid="folder-merge-peek-path">{{ selectedPlanRow.path }}</dd>
+        <template v-if="selectedPlanRow">
+          <div
+            class="peek-tabs"
+            role="tablist"
+            data-testid="folder-merge-peek-tabs"
+          >
+            <button
+              type="button"
+              class="peek-tab"
+              :class="{ 'peek-tab-active': peekTab === 'path' }"
+              role="tab"
+              data-testid="folder-merge-peek-tab-path"
+              :aria-selected="peekTab === 'path' ? 'true' : 'false'"
+              @click="peekTab = 'path'"
+            >
+              {{ $t('ui.path') }}
+            </button>
+            <button
+              type="button"
+              class="peek-tab"
+              :class="{ 'peek-tab-active': peekTab === 'sides' }"
+              role="tab"
+              data-testid="folder-merge-peek-tab-sides"
+              :aria-selected="peekTab === 'sides' ? 'true' : 'false'"
+              @click="peekTab = 'sides'"
+            >
+              {{ $t('ui.left') }}
+            </button>
+            <button
+              type="button"
+              class="peek-tab"
+              :class="{ 'peek-tab-active': peekTab === 'action' }"
+              role="tab"
+              data-testid="folder-merge-peek-tab-action"
+              :aria-selected="peekTab === 'action' ? 'true' : 'false'"
+              @click="peekTab = 'action'"
+            >
+              {{ $t('ui.action') }}
+            </button>
           </div>
-          <div>
-            <dt>{{ $t('ui.base') }}</dt>
-            <dd>{{ sideLabel(selectedPlanRow.base) }}</dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.left') }}</dt>
-            <dd>{{ sideLabel(selectedPlanRow.left) }}</dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.right') }}</dt>
-            <dd>{{ sideLabel(selectedPlanRow.right) }}</dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.action') }}</dt>
-            <dd data-testid="folder-merge-peek-action">
-              {{ folderMergeActionLabel(selectedPlanRow.action) }}
-            </dd>
-          </div>
-          <div>
-            <dt>{{ $t('ui.detail') }}</dt>
-            <dd>{{ selectedPlanRow.detail }}</dd>
-          </div>
-        </dl>
+          <dl>
+            <div v-show="peekTab === 'path'">
+              <dt>{{ $t('ui.path') }}</dt>
+              <dd data-testid="folder-merge-peek-path">{{ selectedPlanRow.path }}</dd>
+            </div>
+            <div v-show="peekTab === 'sides'">
+              <dt>{{ $t('ui.base') }}</dt>
+              <dd>{{ sideLabel(selectedPlanRow.base) }}</dd>
+              <dt>{{ $t('ui.left') }}</dt>
+              <dd>{{ sideLabel(selectedPlanRow.left) }}</dd>
+              <dt>{{ $t('ui.right') }}</dt>
+              <dd>{{ sideLabel(selectedPlanRow.right) }}</dd>
+            </div>
+            <div v-show="peekTab === 'action'">
+              <dt>{{ $t('ui.action') }}</dt>
+              <dd data-testid="folder-merge-peek-action">
+                {{ folderMergeActionLabel(selectedPlanRow.action) }}
+              </dd>
+              <dt>{{ $t('ui.detail') }}</dt>
+              <dd>{{ selectedPlanRow.detail }}</dd>
+            </div>
+          </dl>
+        </template>
         <p
           v-else
           data-testid="folder-merge-peek-empty"
@@ -1612,34 +1648,38 @@ h1 {
 
 .folder-merge-peek-panel {
   display: grid;
-  gap: 4px;
-  padding: 4px 6px;
+  gap: 2px;
+  padding: 2px 6px 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+  font-size: 11px;
 }
 
 .folder-merge-peek-panel header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 4px;
+  min-height: 20px;
 }
 
 .folder-merge-peek-panel dl {
   display: grid;
-  gap: 8px;
+  gap: 2px;
   margin: 0;
 }
 
 .folder-merge-peek-panel dt {
   color: var(--app-text-muted);
-  font-size: 11px;
+  font-size: 10px;
+  line-height: 12px;
 }
 
 .folder-merge-peek-panel dd {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .merge-plan-row.selected {

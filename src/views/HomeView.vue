@@ -1341,7 +1341,7 @@ onMounted(() => {
 .new-session-panel,
 .recent-session-panel {
   display: grid;
-  gap: 12px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -1352,8 +1352,8 @@ onMounted(() => {
 .new-session-panel h2,
 .recent-session-panel h2 {
   margin: 0;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 11px;
+  line-height: 12px;
 }
 
 .new-session-grid {
@@ -1430,8 +1430,8 @@ onMounted(() => {
   margin: 0;
   overflow: hidden;
   color: #4b5563;
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 11px;
+  line-height: 1.2;
   text-align: center;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;

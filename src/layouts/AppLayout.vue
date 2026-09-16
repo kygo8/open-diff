@@ -2458,7 +2458,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='folder-pair'] .status-bar-pane {
-  padding: 0 2px;
+  padding: 0 1px;
 }
 
 /* Capture folder-pair strip: stronger center divider between left/right pairs */
@@ -2488,14 +2488,14 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='table-session'] .status-bar-pane,
 .status-bar[data-chrome-kind='registry-session'] .status-bar-pane,
 .status-bar[data-chrome-kind='clipboard-session'] .status-bar-pane {
-  padding: 0 2px;
+  padding: 0 1px;
 }
 
 .status-bar-pane {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 2px;
+  padding: 0 1px;
   overflow: hidden;
   border-right: 1px solid #c0c0c0;
   text-overflow: ellipsis;

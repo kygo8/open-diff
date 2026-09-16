@@ -3968,12 +3968,12 @@ h1 {
 
 .shortcut-config {
   display: grid;
-  gap: 12px;
+  gap: 4px;
 }
 
 .shortcut-list {
   display: grid;
-  gap: 8px;
+  gap: 4px;
 }
 
 .shortcut-row {
@@ -3982,10 +3982,10 @@ h1 {
     minmax(160px, 1.3fr) minmax(90px, 0.7fr) minmax(90px, 0.7fr) minmax(140px, 1fr)
     auto auto;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
+  gap: 4px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .shortcut-command {
@@ -4014,14 +4014,14 @@ h1 {
 .shared-session-input {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
+  gap: 4px;
 }
 
 .shared-session-import {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 10px;
+  gap: 4px;
 }
 
 .shared-session-error {
@@ -4032,7 +4032,7 @@ h1 {
 
 .shared-session-list {
   display: grid;
-  gap: 8px;
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -4042,10 +4042,10 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: 4px;
+  padding: 2px 4px;
   border: 1px solid var(--app-border);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .shared-session-list span {

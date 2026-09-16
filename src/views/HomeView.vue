@@ -636,7 +636,7 @@ onMounted(() => {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture-pass7"
+      data-home-density="capture-pass8"
       data-home-chrome="minimal"
     >
       <aside
@@ -650,7 +650,7 @@ onMounted(() => {
             class="bc-tree-row expanded"
           >
             <span>▾</span>
-            <FolderOpen :size="14" />
+            <FolderOpen :size="12" />
             <strong>{{ $t('ui.new') }}</strong>
           </button>
           <button
@@ -664,7 +664,7 @@ onMounted(() => {
             <span></span>
             <component
               :is="entry.icon"
-              :size="14"
+              :size="12"
             />
             <strong>{{ $t(entry.titleKey) }}</strong>
           </button>
@@ -674,7 +674,7 @@ onMounted(() => {
             data-testid="home-tree-auto-saved"
           >
             <span>▾</span>
-            <FolderOpen :size="14" />
+            <FolderOpen :size="12" />
             <strong>{{ $t('ui.autoSaved') }}</strong>
           </button>
           <button
@@ -688,7 +688,7 @@ onMounted(() => {
             @dblclick="openSavedSession(session)"
           >
             <span></span>
-            <FolderOpen :size="13" />
+            <FolderOpen :size="11" />
             <strong>{{ session.name }}</strong>
           </button>
           <button
@@ -697,7 +697,7 @@ onMounted(() => {
             data-testid="home-tree-today"
           >
             <span>▾</span>
-            <FolderOpen :size="14" />
+            <FolderOpen :size="12" />
             <strong>{{ $t('ui.today') }}</strong>
           </button>
           <button
@@ -711,7 +711,7 @@ onMounted(() => {
             @dblclick="openSavedSession(session)"
           >
             <span></span>
-            <FolderOpen :size="13" />
+            <FolderOpen :size="11" />
             <strong>{{ session.name }}</strong>
           </button>
         </section>
@@ -745,7 +745,7 @@ onMounted(() => {
       <main class="bc-home-main">
         <section class="bc-selected-session">
           <div class="bc-selected-title">
-            <FolderOpen :size="14" />
+            <FolderOpen :size="12" />
             <div>
               <strong :title="selectedSessionPreview.name">{{
                 selectedSessionPreview.name
@@ -833,7 +833,7 @@ onMounted(() => {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="28"
+                  :size="24"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1147,14 +1147,14 @@ onMounted(() => {
 .bc-home-workspace {
   display: grid;
 
-  /* Capture-aligned left tree; pass-7 denser non-web-card column toward home.png. */
-  grid-template-columns: minmax(160px, 190px) minmax(0, 1fr);
+  /* Capture-aligned left tree; pass-8 denser non-web-card column toward home.png. */
+  grid-template-columns: minmax(150px, 180px) minmax(0, 1fr);
   background: #ffffff;
 }
 
 .bc-session-tree {
   display: grid;
-  grid-template-rows: 14px minmax(0, 1fr) 16px;
+  grid-template-rows: 13px minmax(0, 1fr) 14px;
   min-width: 0;
   min-height: 0;
   border-right: 1px solid #a0a0a0;
@@ -1165,7 +1165,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 1px;
+  padding: 0;
   overflow: hidden;
   border-bottom: 1px solid #a0a0a0;
   background: #eceff3;
@@ -1179,34 +1179,34 @@ onMounted(() => {
 
 .bc-tree-list {
   min-height: 0;
-  padding: 0 1px;
+  padding: 0;
   overflow: auto;
 }
 
 .bc-tree-row {
   display: grid;
-  grid-template-columns: 10px 12px minmax(0, 1fr);
+  grid-template-columns: 9px 11px minmax(0, 1fr);
   align-items: center;
   gap: 1px;
   width: 100%;
-  min-height: 13px;
+  min-height: 12px;
   padding: 0;
   border: 0;
   background: transparent;
   color: #111827;
   font-size: 11px;
-  line-height: 9px;
+  line-height: 8px;
   text-align: left;
   cursor: pointer;
 }
 
 .bc-tree-row.child {
-  padding-left: 9px;
+  padding-left: 8px;
   font-size: 11px;
 }
 
 .bc-tree-row.saved {
-  padding-left: 20px;
+  padding-left: 18px;
   font-size: 11px;
 }
 
@@ -1225,16 +1225,16 @@ onMounted(() => {
 
 .bc-tree-footer {
   display: grid;
-  grid-template-columns: 14px 14px minmax(0, 1fr);
+  grid-template-columns: 12px 12px minmax(0, 1fr);
   align-items: center;
   gap: 1px;
-  padding: 1px 2px;
+  padding: 1px;
   border-top: 1px solid #a0a0a0;
   background: #eceff3;
 }
 
 .bc-tree-footer button {
-  height: 13px;
+  height: 12px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
@@ -1246,8 +1246,8 @@ onMounted(() => {
 .bc-tree-footer input {
   width: 100%;
   min-width: 0;
-  height: 13px;
-  padding: 0 2px;
+  height: 12px;
+  padding: 0 1px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1270,14 +1270,14 @@ onMounted(() => {
 
 .bc-selected-session {
   display: grid;
-  gap: 1px;
-  padding: 1px 2px;
+  gap: 0;
+  padding: 1px;
 }
 
 .bc-selected-title {
   display: flex;
   align-items: flex-start;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
   color: #111827;
   font-size: 11px;
@@ -1285,7 +1285,7 @@ onMounted(() => {
 
 .bc-selected-title div {
   display: grid;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
 }
 
@@ -1315,9 +1315,9 @@ onMounted(() => {
 }
 
 .bc-selected-actions button {
-  width: 60px;
+  width: 54px;
   max-width: 100%;
-  height: 15px;
+  height: 14px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1346,7 +1346,7 @@ onMounted(() => {
 }
 
 .new-session-panel {
-  padding: 0 2px;
+  padding: 0 1px;
 }
 
 .new-session-panel h2,
@@ -1358,9 +1358,9 @@ onMounted(() => {
 
 .new-session-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(78px, 1fr));
-  gap: 0 4px;
-  width: min(430px, calc(100% - 6px));
+  grid-template-columns: repeat(3, minmax(70px, 1fr));
+  gap: 0 2px;
+  width: min(400px, calc(100% - 4px));
   margin: 0 auto;
 }
 
@@ -1368,10 +1368,10 @@ onMounted(() => {
   display: grid;
   gap: 0;
   justify-items: center;
-  margin: 1px 0 0;
+  margin: 0;
   color: #111827;
   font-size: 11px;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
 .bc-home-instructions strong {
@@ -1385,7 +1385,7 @@ onMounted(() => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 46px;
+  min-height: 40px;
   padding: 0;
   overflow: hidden;
   border: 0;
@@ -1406,8 +1406,8 @@ onMounted(() => {
 
 .session-card-icon {
   display: inline-grid;
-  width: 36px;
-  height: 28px;
+  width: 30px;
+  height: 24px;
   color: #2f353d;
   place-items: center;
 }
@@ -1671,7 +1671,7 @@ tr:hover .row-actions,
 }
 
 .bc-home-instructions.dragging {
-  padding: 2px;
+  padding: 1px;
   border: 1px dashed #4aa3ff;
   border-radius: 0;
   background: #eaf4ff;
@@ -1682,15 +1682,15 @@ tr:hover .row-actions,
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   margin-top: 0;
 }
 
 .home-primary-cta {
-  min-width: 72px;
+  min-width: 64px;
   max-width: 100%;
-  height: 20px;
-  padding: 0 5px;
+  height: 18px;
+  padding: 0 4px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1713,8 +1713,8 @@ tr:hover .row-actions,
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  min-height: 20px;
-  padding: 0 5px;
+  min-height: 18px;
+  padding: 0 4px;
   overflow: hidden;
   border: 1px dashed #a0a0a0;
   border-radius: 0;
@@ -1755,13 +1755,13 @@ tr:hover .row-actions,
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 1px;
-  max-width: 420px;
+  max-width: 400px;
 }
 
 .session-edit-panel input {
   min-width: 0;
-  height: 18px;
-  padding: 0 3px;
+  height: 16px;
+  padding: 0 2px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
@@ -1770,8 +1770,8 @@ tr:hover .row-actions,
 }
 
 .session-edit-panel button {
-  height: 18px;
-  padding: 0 5px;
+  height: 16px;
+  padding: 0 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;

@@ -93,6 +93,19 @@ it('enables Merge View Show Changes / Conflicts / Center Pane and Compare to Out
   expect(resolveMenuCommandEnabled('view.showChanges', true, baseCtx)).toBe(false)
   expect(resolveMenuCommandEnabled('view.centerPane', true, baseCtx)).toBe(false)
   expect(resolveMenuCommandEnabled('session.compareToOutput', true, baseCtx)).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('view.centerPane', true, {
+      ...baseCtx,
+      routePath: '/merge/text',
+    }),
+  ).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('merge.nextConflict', true, {
+      ...baseCtx,
+      routePath: '/merge/text',
+    }),
+  ).toBe(true)
+  expect(resolveMenuCommandEnabled('merge.nextConflict', true, baseCtx)).toBe(false)
 })
 
 it('enables Show All / Differences / Minor and Filters only where they run', () => {
@@ -119,6 +132,19 @@ it('enables Show All / Differences / Minor and Filters only where they run', () 
     }),
   ).toBe(true)
   expect(resolveMenuCommandEnabled('edit.copyLeft', true, baseCtx)).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('edit.paste', true, {
+      ...baseCtx,
+      routePath: '/compare/text',
+    }),
+  ).toBe(true)
+  expect(resolveMenuCommandEnabled('edit.paste', true, baseCtx)).toBe(false)
+  expect(
+    resolveMenuCommandEnabled('edit.undo', true, {
+      ...baseCtx,
+      routePath: '/',
+    }),
+  ).toBe(false)
 })
 
 it('gates Compare Parent / Base Folders and keeps New Session global', () => {

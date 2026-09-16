@@ -2,6 +2,7 @@ export type CommandId =
   | 'open.textCompare'
   | 'open.folderCompare'
   | 'open.textPatch'
+  | 'open.clipboardCompare'
   | 'open.textEdit'
   | 'open.fileFormats'
   | 'open.remoteProfiles'
@@ -317,6 +318,16 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'P'], scope: 'global' },
     placements: ['command-palette', 'toolbar', 'menu'],
     action: { type: 'navigate', route: '/patch/text', titleKey: 'ui.textPatch' },
+  },
+  {
+    id: 'open.clipboardCompare',
+    titleKey: 'ui.clipboardCompare',
+    keywords: ['clipboard', 'paste', 'compare', 'open'],
+    enabled: true,
+    visibility: 'global',
+    defaultShortcut: { keys: [], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/compare/clipboard', titleKey: 'ui.clipboardCompare' },
   },
   {
     id: 'open.settings',

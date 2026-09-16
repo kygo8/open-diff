@@ -15,6 +15,7 @@ describe('commandRegistry', () => {
         'open.textCompare',
         'open.folderCompare',
         'open.textPatch',
+        'open.clipboardCompare',
         'open.settings',
         'theme.toggle',
         'session.save',

@@ -6,6 +6,7 @@ import {
   isFolderSyncRoute,
   isRegistrySessionRoute,
   isSessionWorkbenchPath,
+  isTextMergeRoute,
   isTextishSessionRoute,
 } from './shellChrome'
 
@@ -199,6 +200,17 @@ export function resolveMenuCommandEnabled(
     return isTextishSessionRoute(path)
   }
 
+  if (
+    commandId === 'edit.undo' ||
+    commandId === 'edit.redo' ||
+    commandId === 'edit.cut' ||
+    commandId === 'edit.copy' ||
+    commandId === 'edit.paste' ||
+    commandId === 'edit.delete'
+  ) {
+    return isTextishSessionRoute(path)
+  }
+
   if (commandId === 'actions.attributes' || commandId === 'actions.touch') {
     return isFolderCompareRoute(path)
   }
@@ -275,7 +287,7 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'merge.previousConflict' || commandId === 'merge.nextConflict') {
-    return isFolderMergeRoute(path)
+    return isFolderMergeRoute(path) || isTextMergeRoute(path)
   }
 
   return true

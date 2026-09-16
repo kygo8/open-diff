@@ -48,6 +48,7 @@ import { createUntitledSession } from '@/app/sessionFactory'
 import { isSessionWorkbenchRoute, tabRoutePathname } from '@/app/sessionTabRoute'
 import {
   contextHelpTopic,
+  isFolderishSessionRoute,
   isSessionWorkbenchPath as isSessionWorkbenchPathHelper,
   isSingleSessionFrame,
   preferDenseAppChrome,
@@ -265,6 +266,7 @@ const appMenus: AppMenuDefinition[] = [
       'open.archiveCompare',
       'open.textEdit',
       'open.textPatch',
+      'open.clipboardCompare',
       'session.newTab',
       'session.newWindow',
       'session.openSession',
@@ -315,6 +317,7 @@ const appMenus: AppMenuDefinition[] = [
       'open.archiveCompare',
       'open.textEdit',
       'open.textPatch',
+      'open.clipboardCompare',
       'session.save',
       'session.saveAs',
       'session.export',
@@ -489,11 +492,7 @@ const visibleAppMenus = computed(() => {
 
   if (route.path === '/') {
     wantedMenus = homeMenus
-  } else if (
-    route.path.includes('/folder') ||
-    route.path.includes('/sync') ||
-    route.path.includes('/merge')
-  ) {
+  } else if (isFolderishSessionRoute(route.path)) {
     wantedMenus = folderMenus
   } else if (route.path.includes('/picture')) {
     wantedMenus = pictureMenus
@@ -1210,6 +1209,10 @@ function executeCommand(commandId: CommandId): void {
 function commandIcon(commandId: CommandId): LucideIcon {
   if (commandId === 'open.folderCompare') {
     return FolderTree
+  }
+
+  if (commandId === 'open.clipboardCompare') {
+    return ClipboardList
   }
 
   if (commandId === 'open.settings') {

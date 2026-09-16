@@ -3,8 +3,10 @@ import {
   contextHelpTopic,
   isFolderCompareRoute,
   isFolderishSessionRoute,
+  isFolderMergeRoute,
   isSessionWorkbenchPath,
   isTextishSessionRoute,
+  isTextMergeRoute,
   isSingleSessionFrame,
   preferDenseAppChrome,
   shouldShowTabStrip,
@@ -106,6 +108,7 @@ describe('supportsFolderStatusLegend', () => {
   it('is false on Home and non-folder sessions', () => {
     expect(supportsFolderStatusLegend('/')).toBe(false)
     expect(supportsFolderStatusLegend('/compare/text')).toBe(false)
+    expect(supportsFolderStatusLegend('/merge/text')).toBe(false)
     expect(supportsFolderStatusLegend('/settings')).toBe(false)
   })
 })
@@ -116,10 +119,17 @@ describe('session route helpers', () => {
     expect(isSessionWorkbenchPath('/compare/folder')).toBe(true)
     expect(isFolderishSessionRoute('/compare/folder')).toBe(true)
     expect(isFolderishSessionRoute('/sync/folder')).toBe(true)
+    expect(isFolderishSessionRoute('/merge/folder')).toBe(true)
+    expect(isFolderishSessionRoute('/merge/text')).toBe(false)
     expect(isFolderCompareRoute('/compare/folder')).toBe(true)
     expect(isFolderCompareRoute('/sync/folder')).toBe(false)
     expect(isTextishSessionRoute('/compare/text')).toBe(true)
+    expect(isTextishSessionRoute('/patch/text')).toBe(true)
+    expect(isTextishSessionRoute('/compare/clipboard')).toBe(true)
     expect(isTextishSessionRoute('/compare/folder')).toBe(false)
+    expect(isFolderMergeRoute('/merge/folder')).toBe(true)
+    expect(isFolderMergeRoute('/merge/text')).toBe(false)
+    expect(isTextMergeRoute('/merge/text')).toBe(true)
     expect(contextHelpTopic('/compare/hex')).toBe('hex-compare')
     expect(contextHelpTopic('/')).toBe('home')
   })

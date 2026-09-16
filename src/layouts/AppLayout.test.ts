@@ -103,6 +103,7 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-command-open.archiveCompare"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-open.textEdit"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-open.textPatch"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-open.clipboardCompare"]').exists()).toBe(true)
   })
 
   it('enables Session compare/swap/reload/rules and Tools settings actions', async () => {
@@ -343,6 +344,7 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="menu-command-open.archiveCompare"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-open.textEdit"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-open.textPatch"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="menu-command-open.clipboardCompare"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="menu-command-edit.copyLeft"]').exists()).toBe(false)
 
     await wrapper.find('[data-testid="menu-edit"]').trigger('click')
@@ -1386,6 +1388,25 @@ describe('global menu depth parity', () => {
       merge.find('[data-testid="menu-command-edit.selectAllFiles"]').attributes('disabled'),
     ).toBeUndefined()
     merge.unmount()
+
+    routePath = '/merge/text'
+    const textMerge = mountAppLayout()
+
+    expect(textMerge.find('[data-testid="menu-file"]').exists()).toBe(true)
+    expect(textMerge.find('[data-testid="menu-actions"]').exists()).toBe(false)
+    await textMerge.find('[data-testid="menu-search"]').trigger('click')
+    expect(
+      textMerge.find('[data-testid="menu-command-merge.nextConflict"]').attributes('disabled'),
+    ).toBeUndefined()
+    await textMerge.find('[data-testid="menu-edit"]').trigger('click')
+    expect(
+      textMerge.find('[data-testid="menu-command-edit.paste"]').attributes('disabled'),
+    ).toBeUndefined()
+    await textMerge.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      textMerge.find('[data-testid="menu-command-view.centerPane"]').attributes('disabled'),
+    ).toBeDefined()
+    textMerge.unmount()
 
     routePath = '/'
     const home = mountAppLayout()

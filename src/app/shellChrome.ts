@@ -60,7 +60,7 @@ export function supportsFolderStatusLegend(routePath: string): boolean {
   return (
     routePath.includes('/compare/folder') ||
     routePath.includes('/sync') ||
-    routePath.includes('/merge')
+    routePath.includes('/merge/folder')
   )
 }
 
@@ -71,7 +71,7 @@ export function isSessionWorkbenchPath(path: string): boolean {
 
 /** Folder Compare / Sync / Merge routes that share folder-tree menus. */
 export function isFolderishSessionRoute(path: string): boolean {
-  return path.includes('/folder') || path.includes('/sync') || path.includes('/merge')
+  return path.includes('/folder') || path.includes('/sync')
 }
 
 export function isFolderCompareRoute(path: string): boolean {
@@ -83,17 +83,25 @@ export function isFolderSyncRoute(path: string): boolean {
 }
 
 export function isFolderMergeRoute(path: string): boolean {
-  return path.includes('/merge')
+  return path.includes('/merge/folder')
+}
+
+export function isTextMergeRoute(path: string): boolean {
+  return path.includes('/merge/text')
 }
 
 export function isRegistrySessionRoute(path: string): boolean {
   return path.includes('/registry')
 }
 
-/** Text Compare / Merge / Edit routes that implement copy-left / copy-right. */
+/** Text Compare / Merge / Edit / Patch / Clipboard routes that implement text edit verbs. */
 export function isTextishSessionRoute(path: string): boolean {
   return (
-    path.includes('/compare/text') || path.includes('/merge/text') || path.includes('/edit/text')
+    path.includes('/compare/text') ||
+    path.includes('/merge/text') ||
+    path.includes('/edit/text') ||
+    path.includes('/patch/text') ||
+    path.includes('/compare/clipboard')
   )
 }
 

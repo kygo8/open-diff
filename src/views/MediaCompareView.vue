@@ -1057,8 +1057,8 @@ function runMediaToolbarCommand(commandId: string): void {
   grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
   align-items: end;
   gap: 4px;
-  min-height: 22px;
-  padding: 1px 4px;
+  min-height: 20px;
+  padding: 1px 3px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1077,9 +1077,9 @@ function runMediaToolbarCommand(commandId: string): void {
 
 .media-path-panel input,
 .media-path-panel button {
-  height: 18px;
-  min-height: 18px;
-  padding: 0 4px;
+  height: 16px;
+  min-height: 16px;
+  padding: 0 3px;
   border: 1px solid var(--app-border);
   border-radius: 4px;
   background: var(--app-bg);

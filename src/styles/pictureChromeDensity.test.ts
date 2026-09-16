@@ -12,10 +12,10 @@ describe('picture compare chrome density', () => {
   it('keeps Picture Compare path/status/toolbar/footer chrome dense toward capture', () => {
     expect(css).toMatch(/\.picture-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-path-panel\s*\{[\s\S]*?min-height:\s*22px/,
+      /\.picture-compare-view \.picture-path-panel\s*\{[\s\S]*?min-height:\s*20px/,
     )
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-path-panel input,\s*\.picture-compare-view \.picture-path-panel button\s*\{[\s\S]*?height:\s*18px/,
+      /\.picture-compare-view \.picture-path-panel input,\s*\.picture-compare-view \.picture-path-panel button\s*\{[\s\S]*?height:\s*16px/,
     )
     expect(css).toMatch(/\.picture-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
 

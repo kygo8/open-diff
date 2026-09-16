@@ -1446,8 +1446,8 @@ h2 {
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
   align-items: end;
   gap: 4px 6px;
-  min-height: 22px;
-  padding: 1px 4px;
+  min-height: 20px;
+  padding: 1px 3px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1465,8 +1465,8 @@ h2 {
 .table-source-controls input,
 .table-source-controls select {
   width: 100%;
-  height: 18px;
-  min-height: 18px;
+  height: 16px;
+  min-height: 16px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;

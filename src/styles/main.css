@@ -1722,9 +1722,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .sync-preview-row td,
 .folder-sync-view .sync-preview-head th {
-  padding-top: 3px !important;
-  padding-bottom: 3px !important;
-  font-size: 12px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  font-size: 11px !important;
 }
 
 /* Hex Compare chrome densify toward capture path/status/toolbar/footer strips */
@@ -2803,40 +2803,41 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
-/* Folder Sync chrome densify toward Folder Compare path/filters/actions/status */
+/* Folder Sync chrome densify pass 2 toward Folder Compare denser band */
 .folder-sync-view .sync-settings {
-  gap: 3px !important;
-  min-height: 26px !important;
-  padding: 3px 6px !important;
+  gap: 2px !important;
+  min-height: 22px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
 .folder-sync-view .sync-settings span {
   font-size: 11px !important;
+  line-height: 14px !important;
 }
 
 .folder-sync-view .sync-settings input,
 .folder-sync-view .sync-settings select {
   height: 18px !important;
   min-height: 18px !important;
-  padding: 0 6px !important;
+  padding: 0 4px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
 
 .folder-sync-view .sync-setting-actions {
-  gap: 4px !important;
+  gap: 3px !important;
 }
 
 .folder-sync-view .sync-setting-actions .n-button,
 .folder-sync-view .sync-setting-actions button {
-  --n-height: 22px !important;
-  --n-padding: 0 8px !important;
+  --n-height: 20px !important;
+  --n-padding: 0 6px !important;
   --n-font-size: 11px !important;
 
-  height: 22px !important;
-  min-height: 22px !important;
-  padding: 0 8px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
   font-size: 11px !important;
 }
 
@@ -2851,22 +2852,51 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-view .sync-run-status,
 .folder-sync-view .sync-chrome-panel {
   gap: 2px !important;
-  padding: 2px 6px 4px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
-.folder-sync-view .sync-preview-row span,
-.folder-sync-view .sync-preview-row strong {
-  padding: 4px 8px !important;
+.folder-sync-view .sync-preview header strong,
+.folder-sync-view .sync-run-status strong {
   font-size: 12px !important;
+  line-height: 16px !important;
+}
+
+.folder-sync-view .sync-preview header span {
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.folder-sync-view .sync-preview-row span,
+.folder-sync-view .sync-preview-row strong,
+.folder-sync-view .sync-preview-row label,
+.folder-sync-view .sync-override-cell {
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.folder-sync-view .sync-override-cell {
+  gap: 4px !important;
 }
 
 .folder-sync-view .sync-preview-row select,
-.folder-sync-view .sync-reset-override {
-  height: 22px !important;
-  min-height: 22px !important;
+.folder-sync-view .sync-reset-override,
+.folder-sync-view .sync-chrome-panel button {
+  height: 20px !important;
+  min-height: 20px !important;
   padding: 0 6px !important;
   border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.folder-sync-view .sync-chrome-panel {
+  gap: 3px 6px !important;
+  min-height: 20px !important;
+}
+
+.folder-sync-view .sync-run-status ul {
+  gap: 3px !important;
   font-size: 11px !important;
 }
 
@@ -2876,22 +2906,23 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 0 !important;
 }
 
-/* Folder Merge chrome densify toward Folder Compare path/filters/actions/status */
+/* Folder Merge chrome densify pass 2 toward Folder Compare denser band */
 .folder-merge-view .merge-paths {
-  gap: 3px !important;
-  min-height: 26px !important;
-  padding: 3px 6px !important;
+  gap: 2px !important;
+  min-height: 22px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
 }
 
 .folder-merge-view .merge-paths label span {
   font-size: 11px !important;
+  line-height: 14px !important;
 }
 
 .folder-merge-view .merge-paths input {
   height: 18px !important;
   min-height: 18px !important;
-  padding: 0 6px !important;
+  padding: 0 4px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
@@ -2904,19 +2935,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .merge-actions {
-  gap: 4px !important;
+  gap: 3px !important;
 }
 
 .folder-merge-view .merge-actions .n-button,
 .folder-merge-view .merge-actions button,
 .folder-merge-view .merge-chrome-panel button {
-  --n-height: 22px !important;
-  --n-padding: 0 8px !important;
+  --n-height: 20px !important;
+  --n-padding: 0 6px !important;
   --n-font-size: 11px !important;
 
-  height: 22px !important;
-  min-height: 22px !important;
-  padding: 0 8px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
   font-size: 11px !important;
 }
 
@@ -2925,14 +2956,44 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-view .merge-open-status,
 .folder-merge-view .merge-chrome-panel {
   gap: 2px !important;
-  padding: 2px 6px 4px !important;
+  padding: 2px 4px !important;
   border-radius: 0 !important;
+}
+
+.folder-merge-view .merge-plan header strong,
+.folder-merge-view .conflict-panel header strong {
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+
+.folder-merge-view .merge-plan header span,
+.folder-merge-view .conflict-panel header span,
+.folder-merge-view .merge-open-status {
+  font-size: 11px !important;
+  line-height: 14px !important;
 }
 
 .folder-merge-view .merge-plan-row span,
 .folder-merge-view .merge-plan-row strong {
-  padding: 4px 8px !important;
-  font-size: 12px !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.folder-merge-view .merge-chrome-panel {
+  gap: 3px 6px !important;
+  min-height: 20px !important;
+}
+
+.folder-merge-view .conflict-panel ul {
+  gap: 4px !important;
+}
+
+.folder-merge-view .conflict-panel li {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
 }
 
 .folder-merge-view .folder-filter-chrome {

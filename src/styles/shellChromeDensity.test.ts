@@ -11,6 +11,9 @@ describe('shell chrome density', () => {
     expect(source).toMatch(
       /\.app-shell-dense-chrome \.menu-bar\s*\{[\s\S]*?grid-template-rows:\s*24px 24px/,
     )
+    expect(source).toMatch(
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*48px minmax\(0, 1fr\) 22px/,
+    )
   })
 
   it('densifies multi-tab title/menu/tab strip toward captures', () => {

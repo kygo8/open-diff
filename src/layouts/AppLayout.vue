@@ -2741,12 +2741,13 @@ html[data-show-sidebar='1'] .sidebar {
 
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind$='-session']) {
-  grid-template-rows: 52px minmax(0, 1fr) 22px;
+  /* Keep dense brand/menu at 48px; only the status track shrinks to 22px. */
+  grid-template-rows: 48px minmax(0, 1fr) 22px;
 }
 
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind$='-session']) {
-  grid-template-rows: 58px minmax(0, 1fr) 22px;
+  grid-template-rows: 54px minmax(0, 1fr) 22px;
 }
 
 .app-shell-dense-chrome .menu-bar {

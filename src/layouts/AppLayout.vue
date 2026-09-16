@@ -45,7 +45,12 @@ import { resolveDropLaunchFromPaths } from '@/app/dropLaunch'
 import { sessionCatalog } from '@/app/sessionCatalog'
 import { createUntitledSession } from '@/app/sessionFactory'
 import { isSessionWorkbenchRoute, tabRoutePathname } from '@/app/sessionTabRoute'
-import { isSingleSessionFrame, preferDenseAppChrome, shouldShowTabStrip } from '@/app/shellChrome'
+import {
+  isSingleSessionFrame,
+  preferDenseAppChrome,
+  shouldShowTabStrip,
+  supportsFolderStatusLegend,
+} from '@/app/shellChrome'
 import { setArchiveExtensions as syncArchiveExtensionsBackend } from '@/api/diff'
 import { useI18n } from '@/i18n'
 import { usePolicyStore } from '@/stores/policy'
@@ -1299,12 +1304,10 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
   }
 
   if (command.id === 'view.legend') {
-    const supported =
-      route.path.includes('/compare/folder') ||
-      route.path.includes('/sync') ||
-      route.path.includes('/merge')
-
-    return { ...command, enabled: command.enabled && supported }
+    return {
+      ...command,
+      enabled: command.enabled && supportsFolderStatusLegend(route.path),
+    }
   }
 
   if (command.id === 'view.log') {
@@ -1477,7 +1480,7 @@ function onChromeKeydown(event: KeyboardEvent): void {
     return
   }
 
-  const commandId = findCommandIdForKeyboardEvent(commandRegistry, event, {
+  const commandId = findCommandIdForKeyboardEvent(commandRegistry.map(resolveMenuCommand), event, {
     getEffectiveShortcut: (command) => settings.getEffectiveShortcut(command),
     routePath: route.path,
   })

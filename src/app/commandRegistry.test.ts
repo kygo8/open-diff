@@ -254,6 +254,12 @@ describe('commandRegistry', () => {
       keys: ['Shift', 'F3'],
       scope: 'global',
     })
+    expect(
+      commandRegistry.find((command) => command.id === 'view.legend')?.defaultShortcut,
+    ).toEqual({
+      keys: ['Ctrl', 'Alt', 'L'],
+      scope: 'global',
+    })
   })
 
   it('detects duplicate active shortcuts in the same scope', () => {

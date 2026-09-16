@@ -1724,8 +1724,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .picture-compare-view .picture-options-panel,
 .picture-compare-view .picture-blend-panel,
 .picture-compare-view .picture-stat-grid {
-  gap: 4px 6px !important;
-  min-height: 26px !important;
+  gap: 2px 6px !important;
+  min-height: 22px !important;
   padding: 2px 6px !important;
   border-radius: 0 !important;
 }
@@ -1737,10 +1737,11 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .picture-compare-view .picture-blend-panel input,
 .picture-compare-view .picture-blend-panel select,
 .picture-compare-view .picture-transform-tools button {
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
   font-size: 11px !important;
+  line-height: 18px !important;
 }
 
 .picture-compare-view .picture-stat-grid strong {
@@ -1748,21 +1749,29 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
-/* Picture Meta/Blend/Tol chrome densify one more notch toward capture */
+.picture-compare-view .picture-controls span,
+.picture-compare-view .picture-stat-grid span {
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+/* Picture Meta/Blend/Tol + toolbar/pane densify pass 2 toward Hex/Table/Version rhythm */
 .picture-compare-view .picture-options-panel,
 .picture-compare-view .picture-blend-panel,
-.picture-compare-view .picture-metadata-panel {
+.picture-compare-view .picture-metadata-panel,
+.picture-compare-view .picture-report-panel {
   gap: 2px 6px !important;
-  min-height: 22px !important;
+  min-height: 20px !important;
   padding: 2px 6px !important;
   border-radius: 0 !important;
 }
 
 .picture-compare-view .picture-options-panel header,
 .picture-compare-view .picture-blend-panel header,
-.picture-compare-view .metadata-header {
-  gap: 6px !important;
-  min-height: 18px !important;
+.picture-compare-view .metadata-header,
+.picture-compare-view .picture-report-panel header {
+  gap: 4px !important;
+  min-height: 16px !important;
   font-size: 11px !important;
   line-height: 14px !important;
 }
@@ -1771,37 +1780,68 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .picture-compare-view .picture-options-hint,
 .picture-compare-view .picture-blend-panel header span,
 .picture-compare-view .picture-blend-panel label,
-.picture-compare-view .metadata-header span {
+.picture-compare-view .metadata-header span,
+.picture-compare-view .picture-report-panel header span {
   font-size: 11px !important;
   line-height: 14px !important;
 }
 
 .picture-compare-view .picture-color-rule {
-  gap: 4px 6px !important;
+  gap: 2px 6px !important;
 }
 
 .picture-compare-view .picture-options-panel input[type='number'],
 .picture-compare-view .picture-options-panel button,
-.picture-compare-view .picture-blend-panel select {
+.picture-compare-view .picture-blend-panel select,
+.picture-compare-view .picture-report-panel header button {
   height: 18px !important;
   min-height: 18px !important;
   padding: 0 5px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
+  line-height: 18px !important;
 }
 
 .picture-compare-view .picture-blend-panel input[type='range'] {
-  height: 18px !important;
-  min-height: 18px !important;
+  height: 16px !important;
+  min-height: 16px !important;
 }
 
-.picture-compare-view .metadata-grid {
+.picture-compare-view .metadata-grid,
+.picture-compare-view .picture-report-table {
   border-radius: 0 !important;
 }
 
 .picture-compare-view .metadata-grid-heading,
 .picture-compare-view .metadata-cell {
-  padding: 2px 6px !important;
+  padding: 1px 5px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.picture-compare-view .picture-pane-grid {
+  gap: 6px !important;
+}
+
+.picture-compare-view .picture-side {
+  gap: 2px !important;
+  padding: 2px 4px !important;
+  border-radius: 0 !important;
+}
+
+.picture-compare-view .picture-canvas-frame {
+  border-radius: 0 !important;
+}
+
+.picture-compare-view .picture-report-row {
+  gap: 4px !important;
+  min-height: 16px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.picture-compare-view .picture-panel-title {
+  gap: 4px !important;
   font-size: 11px !important;
   line-height: 14px !important;
 }
@@ -1842,12 +1882,28 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .media-compare-view .media-playback-panel,
 .media-compare-view .media-summary-grid,
+.media-compare-view .media-side-grid,
+.media-compare-view .media-summary-item,
 .media-compare-view .media-side,
 .media-compare-view .media-report-panel,
 .media-compare-view .media-rules-panel {
-  gap: 4px 6px !important;
+  gap: 2px 6px !important;
+  min-height: 22px !important;
   padding: 2px 6px !important;
   border-radius: 0 !important;
+}
+
+.media-compare-view .media-summary-grid,
+.media-compare-view .media-side-grid {
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.media-compare-view .media-field-row {
+  min-height: 16px !important;
+  font-size: 11px !important;
 }
 
 .media-compare-view .media-field-row > * {
@@ -1860,10 +1916,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
-/* Media scrub/footer densify one more notch toward capture */
+/* Media scrub/transport/pane densify pass 2 toward Hex/Table/Version rhythm */
 .media-compare-view .media-playback-header {
-  gap: 6px !important;
-  min-height: 18px !important;
+  gap: 4px !important;
+  min-height: 16px !important;
   font-size: 11px !important;
   line-height: 14px !important;
 }
@@ -1874,8 +1930,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .media-compare-view .media-scrub-row {
-  gap: 6px !important;
-  min-height: 22px !important;
+  gap: 4px !important;
+  min-height: 20px !important;
   padding: 0 2px !important;
 }
 
@@ -1883,22 +1939,86 @@ html[data-show-path-bars='0'] .path-pair-bar {
   display: inline-flex !important;
   align-items: center !important;
   gap: 4px !important;
-  height: 20px !important;
-  min-height: 20px !important;
-  padding: 0 6px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
   line-height: 1.2 !important;
 }
 
 .media-compare-view .media-scrub {
-  height: 18px !important;
-  min-height: 18px !important;
+  height: 16px !important;
+  min-height: 16px !important;
 }
 
 .media-compare-view .media-scrub-row span,
 .media-compare-view .media-playback-hint {
   margin: 0 !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.media-compare-view .media-players {
+  gap: 6px !important;
+}
+
+.media-compare-view .media-player-card {
+  gap: 4px !important;
+}
+
+.media-compare-view .media-summary-item span,
+.media-compare-view .media-side header span,
+.media-compare-view .media-report-panel header span,
+.media-compare-view .media-rules-panel header span,
+.media-compare-view .media-side dt {
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.media-compare-view .media-side header,
+.media-compare-view .media-report-panel header,
+.media-compare-view .media-rules-panel header {
+  gap: 6px !important;
+  min-height: 18px !important;
+}
+
+.media-compare-view .media-report-panel header button,
+.media-compare-view .media-rules-panel header button {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
+  font-size: 11px !important;
+  line-height: 18px !important;
+}
+
+.media-compare-view .media-side dl {
+  gap: 4px !important;
+}
+
+.media-compare-view .media-side dl div {
+  gap: 2px !important;
+  min-height: 18px !important;
+  padding: 2px 6px !important;
+  border-radius: 0 !important;
+}
+
+.media-compare-view .media-side dd {
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.media-compare-view .media-report-table {
+  border-radius: 0 !important;
+}
+
+.media-compare-view .media-rules-list {
+  gap: 2px !important;
+}
+
+.media-compare-view .media-rule-row {
+  gap: 4px !important;
+  min-height: 18px !important;
   font-size: 11px !important;
   line-height: 14px !important;
 }

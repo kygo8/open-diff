@@ -4811,7 +4811,7 @@ onUnmounted(() => {
   align-content: start;
   align-items: stretch;
   align-self: start;
-  gap: 4px;
+  gap: 2px;
   height: auto;
   min-height: min-content;
   overflow: visible;
@@ -4894,7 +4894,7 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 2px 6px;
+  gap: 1px 4px;
   padding: 0;
   border: 0;
   color: var(--app-text-muted);
@@ -4915,14 +4915,14 @@ onUnmounted(() => {
 .folder-criteria label {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
 }
 
 .path-pair input {
   width: 100%;
   min-width: 0;
   height: 18px;
-  padding: 0 6px;
+  padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -4936,7 +4936,7 @@ onUnmounted(() => {
 .folder-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 2px;
 }
 
 .folder-root-summary {

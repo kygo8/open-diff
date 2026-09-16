@@ -518,6 +518,10 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
   await wrapper.find('[data-testid="ignore-line-endings-default"]').setValue(true)
   await wrapper.find('[data-testid="text-compare-algorithm-default"]').setValue('patience')
   await wrapper.find('[data-testid="text-compare-algorithm-default"]').trigger('change')
+  await wrapper
+    .find('[data-testid="text-compare-ignore-regexes-default"]')
+    .setValue('^TODO, ^FIXME')
+  await wrapper.find('[data-testid="text-compare-ignore-regexes-default"]').trigger('change')
   expect(
     JSON.parse(localStorage.getItem('open-diff-text-compare-session-options') ?? '{}'),
   ).toMatchObject({
@@ -525,6 +529,7 @@ it('persists Folder/Hex/File Filters compare options and text ignore defaults', 
     ignoreCase: true,
     ignoreLineEndings: true,
     algorithm: 'patience',
+    ignoreRegexes: ['^TODO', '^FIXME'],
   })
 
   await wrapper.find('[data-testid="options-section-folderCompare"]').trigger('click')
@@ -670,6 +675,13 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   await wrapper.find('[data-testid="picture-rgb-tolerance-default"]').setValue('12')
   await wrapper.find('[data-testid="picture-rgb-tolerance-default"]').trigger('change')
   await wrapper.find('[data-testid="picture-compare-alpha-default"]').setValue(false)
+  await wrapper.find('[data-testid="picture-alpha-tolerance-default"]').setValue('8')
+  await wrapper.find('[data-testid="picture-alpha-tolerance-default"]').trigger('change')
+  await wrapper.find('[data-testid="picture-blend-enabled-default"]').setValue(true)
+  await wrapper.find('[data-testid="picture-blend-opacity-default"]').setValue('40')
+  await wrapper.find('[data-testid="picture-blend-opacity-default"]').trigger('change')
+  await wrapper.find('[data-testid="picture-blend-mode-default"]').setValue('difference')
+  await wrapper.find('[data-testid="picture-blend-mode-default"]').trigger('change')
   await wrapper.find('[data-testid="picture-show-meta-default"]').setValue(false)
   await wrapper.find('[data-testid="picture-show-minor-default"]').setValue(true)
   expect(
@@ -677,6 +689,10 @@ it('persists Formats associations, Profiles defaults, Reports prefs, and Picture
   ).toMatchObject({
     rgbTolerance: 12,
     compareAlpha: false,
+    alphaTolerance: 8,
+    blendEnabled: true,
+    blendOpacity: 40,
+    blendMode: 'difference',
     showMeta: false,
     showMinor: true,
   })

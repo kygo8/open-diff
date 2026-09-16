@@ -97,6 +97,11 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="profile-anonymous-login"/)
     expect(settingsView).toMatch(/data-testid="report-include-unimportant"/)
     expect(settingsView).toMatch(/data-testid="folder-compare-exclude-junctions"/)
+    expect(settingsView).toMatch(/data-testid="text-compare-ignore-regexes-default"/)
+    expect(settingsView).toMatch(/data-testid="picture-alpha-tolerance-default"/)
+    expect(settingsView).toMatch(/data-testid="picture-blend-enabled-default"/)
+    expect(settingsView).toMatch(/data-testid="picture-blend-opacity-default"/)
+    expect(settingsView).toMatch(/data-testid="picture-blend-mode-default"/)
   })
 })
 

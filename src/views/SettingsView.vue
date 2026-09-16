@@ -82,6 +82,7 @@ import {
 import {
   defaultPictureCompareOptions,
   loadPictureCompareOptions,
+  pictureBlendModes,
   savePictureCompareOptions,
 } from '@/app/pictureCompareOptions'
 import {
@@ -178,6 +179,10 @@ const pictureCompareDefaultsDraft = ref(loadPictureCompareOptions())
 const mediaCompareDefaultsDraft = ref(loadMediaCompareOptions())
 const versionCompareDefaultsDraft = ref(loadVersionCompareOptions())
 const tableCompareDefaultsDraft = ref(loadTableCompareSessionOptions())
+const pictureBlendOptions = pictureBlendModes.map((value) => ({
+  value,
+  labelKey: `ui.blendMode${value.charAt(0).toUpperCase()}${value.slice(1)}`,
+}))
 const mediaFilterOptions = mediaFieldFilters.map((value) => ({
   value,
   labelKey: `ui.${value}` as const,
@@ -981,8 +986,27 @@ function onFolderTimestampToleranceChange(event: Event): void {
 }
 
 function persistTextCompareDefaultsDraft(): void {
+  textCompareDefaultsDraft.value = {
+    ...textCompareDefaultsDraft.value,
+    ignoreRegexes: textCompareDefaultsDraft.value.ignoreRegexes
+      .map((item) => item.trim())
+      .filter(Boolean),
+  }
   saveTextCompareSessionOptions(textCompareDefaultsDraft.value)
 }
+
+const textIgnoreRegexesDraft = computed({
+  get: () => textCompareDefaultsDraft.value.ignoreRegexes.join(', '),
+  set: (value: string) => {
+    textCompareDefaultsDraft.value = {
+      ...textCompareDefaultsDraft.value,
+      ignoreRegexes: value
+        .split(/[,\n]/u)
+        .map((item) => item.trim())
+        .filter(Boolean),
+    }
+  },
+})
 
 function persistHexCompareDefaultsDraft(): void {
   hexCompareDefaultsDraft.value = {
@@ -1647,6 +1671,16 @@ function parseShortcutText(value: string): string[] {
               <option value="histogram">{{ $t('ui.histogram') }}</option>
             </select>
           </label>
+          <label class="stack-row">
+            <span>{{ $t('ui.replacements') }}</span>
+            <input
+              v-model="textIgnoreRegexesDraft"
+              data-testid="text-compare-ignore-regexes-default"
+              type="text"
+              :placeholder="$t('ui.regex')"
+              @change="persistTextCompareDefaultsDraft"
+            />
+          </label>
           <p class="options-hint">{{ $t('ui.textEditingHint') }}</p>
         </NCard>
 
@@ -1846,6 +1880,55 @@ function parseShortcutText(value: string): string[] {
               @change="persistPictureCompareDefaultsDraft"
             />
             <span>{{ $t('ui.compareAlpha') }}</span>
+          </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.alphaTolerance') }}</span>
+            <input
+              v-model.number="pictureCompareDefaultsDraft.alphaTolerance"
+              class="auto-save-limit-input"
+              data-testid="picture-alpha-tolerance-default"
+              type="number"
+              min="0"
+              max="255"
+              @change="persistPictureCompareDefaultsDraft"
+            />
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="pictureCompareDefaultsDraft.blendEnabled"
+              data-testid="picture-blend-enabled-default"
+              type="checkbox"
+              @change="persistPictureCompareDefaultsDraft"
+            />
+            <span>{{ $t('ui.blend') }}</span>
+          </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.blendOpacity') }}</span>
+            <input
+              v-model.number="pictureCompareDefaultsDraft.blendOpacity"
+              class="auto-save-limit-input"
+              data-testid="picture-blend-opacity-default"
+              type="number"
+              min="0"
+              max="100"
+              @change="persistPictureCompareDefaultsDraft"
+            />
+          </label>
+          <label class="stack-row">
+            <span>{{ $t('ui.blendMode') }}</span>
+            <select
+              v-model="pictureCompareDefaultsDraft.blendMode"
+              data-testid="picture-blend-mode-default"
+              @change="persistPictureCompareDefaultsDraft"
+            >
+              <option
+                v-for="option in pictureBlendOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ $t(option.labelKey) }}
+              </option>
+            </select>
           </label>
           <label class="tweak-row">
             <input

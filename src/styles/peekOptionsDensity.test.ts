@@ -106,6 +106,9 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="picture-ignore-color-to-default"/)
     expect(settingsView).toMatch(/data-testid="media-unimportant-fields-default"/)
     expect(settingsView).toMatch(/data-testid="version-unimportant-fields-default"/)
+    expect(settingsView).toMatch(/data-testid="folder-compare-always-show-folders"/)
+    expect(settingsView).toMatch(/data-testid="folder-compare-files-only-default"/)
+    expect(settingsView).toMatch(/data-testid="folder-compare-show-suppressed-default"/)
   })
 })
 

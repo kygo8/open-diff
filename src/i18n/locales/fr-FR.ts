@@ -1222,6 +1222,24 @@ export const frFR: LanguagePack = {
     'ui.profileDefaultProtocol': 'Protocole par défaut',
     'ui.profileDefaultRootPath': 'Chemin racine par défaut',
     'ui.profileDefaultHost': 'Hôte par défaut',
+    'ui.diffAlgorithm': 'Algorithme de diff',
+    'ui.longFileOperationThresholdSeconds': "Seuil d'opération longue (secondes)",
+    'ui.longFileOperationThresholdHint':
+      'Émettre un bip si une opération fichier dépasse ce nombre de secondes.',
+    'ui.preserveTimestampsOnCopy': 'Conserver les horodatages lors de la copie',
+    'ui.preserveTimestampsOnCopyHint':
+      "Conserver l'heure de modification source sur la destination après copie.",
+    'ui.overwriteReadOnlyFiles': 'Écraser les fichiers en lecture seule',
+    'ui.overwriteReadOnlyFilesHint':
+      "Retirer l'attribut lecture seule de la destination avant écrasement.",
+    'ui.profileDefaultUsername': "Nom d'utilisateur par défaut",
+    'ui.profileDefaultPort': 'Port par défaut',
+    'ui.reportIncludeIdentical': 'Inclure les éléments identiques dans les rapports de dossier',
+    'ui.reportIncludeIdenticalHint':
+      'Si désactivé, les exports de rapport omettent les lignes Identique.',
+    'ui.showMillisecondsInTimestamps': 'Afficher les millisecondes dans les horodatages',
+    'ui.showMillisecondsInTimestampsHint':
+      'Inclure secondes et millisecondes dans les pieds de chemin et dates de dossier.',
     'ui.profileSavedCount': 'Profils enregistrés : {count}',
     'ui.profileDefaultsHint':
       'Appliqué à la création d’un profil distant. Gérez les profils enregistrés dans la fenêtre Profils.',

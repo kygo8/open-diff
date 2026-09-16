@@ -93,6 +93,8 @@ export interface ReportPreferences {
   defaultKind: ReportPreferenceKind
   openAfterExport: boolean
   clearHistoryOnExit: boolean
+  /** Include identical rows in folder report exports. */
+  includeIdentical: boolean
 }
 
 const reportPreferenceFormats: readonly ReportPreferenceFormat[] = [
@@ -111,6 +113,7 @@ export function defaultReportPreferences(): ReportPreferences {
     defaultKind: 'text',
     openAfterExport: false,
     clearHistoryOnExit: false,
+    includeIdentical: true,
   }
 }
 
@@ -143,6 +146,7 @@ export function loadReportPreferences(
       defaultKind: normalizeReportPreferenceKind(parsed.defaultKind),
       openAfterExport: Boolean(parsed.openAfterExport),
       clearHistoryOnExit: Boolean(parsed.clearHistoryOnExit),
+      includeIdentical: parsed.includeIdentical !== false,
     }
   } catch {
     return defaultReportPreferences()

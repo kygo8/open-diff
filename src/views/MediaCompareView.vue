@@ -142,7 +142,9 @@ function formatMediaPathFooter(stamp: FileStamp | null, duration: string): strin
     return ''
   }
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
+    showMilliseconds: settings.showMillisecondsInTimestamps,
+  })
   const base = modified
     ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
     : t('status.bytes', { count: stamp.size })

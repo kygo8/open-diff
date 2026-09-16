@@ -96,6 +96,7 @@ describe('ReportsScriptView', () => {
       rightRoot: 'D:/right',
       format: 'text',
       outputPath: 'folder-compare.txt',
+      includeIdentical: true,
     })
   })
 

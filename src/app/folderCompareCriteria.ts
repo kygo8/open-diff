@@ -23,6 +23,7 @@ export function defaultFolderCompareCriteria(): FolderCompareCriteria {
     followSymlinks: false,
     timestampToleranceMs: 0,
     ignoreDaylightSavingHourOffset: false,
+    caseSensitiveNames: true,
   }
 }
 
@@ -48,6 +49,7 @@ export function loadFolderCompareCriteria(
       followSymlinks: Boolean(parsed.followSymlinks),
       timestampToleranceMs: clampNonNegativeInt(parsed.timestampToleranceMs, 0),
       ignoreDaylightSavingHourOffset: Boolean(parsed.ignoreDaylightSavingHourOffset),
+      caseSensitiveNames: parsed.caseSensitiveNames !== false,
     }
   } catch {
     return defaultFolderCompareCriteria()
@@ -70,6 +72,7 @@ export function saveFolderCompareCriteria(
       followSymlinks: Boolean(state.followSymlinks),
       timestampToleranceMs: clampNonNegativeInt(state.timestampToleranceMs, 0),
       ignoreDaylightSavingHourOffset: Boolean(state.ignoreDaylightSavingHourOffset),
+      caseSensitiveNames: state.caseSensitiveNames !== false,
     }),
   )
 }

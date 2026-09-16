@@ -43,6 +43,7 @@ const props = withDefaults(
       followSymlinks: false,
       timestampToleranceMs: 0,
       ignoreDaylightSavingHourOffset: false,
+      caseSensitiveNames: true,
     }),
     folderFilters: () => ({
       include: [],
@@ -381,6 +382,14 @@ function applySettings(): void {
             data-testid="session-settings-ignore-dst"
           />
           <span>{{ $t('ui.ignoreDaylightSavingHourOffset') }}</span>
+        </label>
+        <label>
+          <input
+            v-model="draftFolder.caseSensitiveNames"
+            type="checkbox"
+            data-testid="session-settings-case-sensitive-names"
+          />
+          <span>{{ $t('ui.caseSensitiveNames') }}</span>
         </label>
       </div>
 

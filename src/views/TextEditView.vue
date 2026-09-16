@@ -94,7 +94,9 @@ const metadataLabel = computed(() => {
     lineEnding: document.value.lineEnding,
     bytes: document.value.fileStamp.size,
   })
-  const modified = formatPathModifiedAt(document.value.fileStamp.modifiedAtMs)
+  const modified = formatPathModifiedAt(document.value.fileStamp.modifiedAtMs, {
+    showMilliseconds: settings.showMillisecondsInTimestamps,
+  })
 
   return modified ? `${base} | ${modified}` : base
 })

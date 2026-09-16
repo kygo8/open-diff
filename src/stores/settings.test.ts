@@ -419,6 +419,26 @@ describe('useSettingsStore', () => {
     store.setEnableRarArchiveTypes(false)
     expect(store.archiveExtensions).not.toContain('.rar')
   })
+
+  it('persists File Operations / Tweaks depth-3 leftovers', () => {
+    const store = useSettingsStore()
+
+    expect(store.preserveTimestampsOnCopy).toBe(false)
+    expect(store.overwriteReadOnlyFiles).toBe(false)
+    expect(store.longFileOperationThresholdMs).toBe(3000)
+    expect(store.showMillisecondsInTimestamps).toBe(false)
+
+    store.setPreserveTimestampsOnCopy(true)
+    store.setOverwriteReadOnlyFiles(true)
+    store.setLongFileOperationThresholdMs(4500)
+    store.setShowMillisecondsInTimestamps(true)
+
+    expect(localStorage.getItem('open-diff-preserve-timestamps-on-copy')).toBe('1')
+    expect(localStorage.getItem('open-diff-overwrite-read-only-files')).toBe('1')
+    expect(localStorage.getItem('open-diff-long-file-operation-threshold-ms')).toBe('4500')
+    expect(localStorage.getItem('open-diff-show-milliseconds-in-timestamps')).toBe('1')
+  })
+
   it('persists Tweaks leftovers for disk reload, sticky Home, IPv6, watch folders, and binary buffer', () => {
     const store = useSettingsStore()
 

@@ -452,7 +452,9 @@ function formatPathSideFooter(stamp: FileStamp | null): string {
     return ''
   }
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
+    showMilliseconds: settings.showMillisecondsInTimestamps,
+  })
 
   if (!modified) {
     return t('status.bytes', { count: stamp.size })

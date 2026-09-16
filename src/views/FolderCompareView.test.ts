@@ -479,6 +479,7 @@ describe('FolderCompareView', () => {
         timestampToleranceMs: 0,
         ignoreDaylightSavingHourOffset: false,
         showHiddenFiles: false,
+        caseSensitiveNames: true,
       },
       filters: { include: ['*.ts'], exclude: [], caseSensitive: false },
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
@@ -593,6 +594,7 @@ describe('FolderCompareView', () => {
         timestampToleranceMs: 0,
         ignoreDaylightSavingHourOffset: false,
         showHiddenFiles: false,
+        caseSensitiveNames: true,
       },
       filters: {
         include: [],
@@ -850,6 +852,9 @@ describe('FolderCompareView', () => {
     expect(copyFolderEntry).toHaveBeenCalledWith({
       sourcePath: 'D:/left/notes.md',
       targetPath: 'D:/backup/notes.md',
+      preserveTimestamps: false,
+      overwriteReadOnly: false,
+      sourceModifiedAtMs: undefined,
     })
 
     await wrapper.find('[data-row-id="notes-md"]').trigger('click')

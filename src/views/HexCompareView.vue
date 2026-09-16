@@ -533,7 +533,9 @@ function formatHexPathFooter(stamp: FileStamp | null): string {
     return ''
   }
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
+  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
+    showMilliseconds: settings.showMillisecondsInTimestamps,
+  })
 
   return modified
     ? t('status.pathFileMetadata', { bytes: stamp.size, modified })

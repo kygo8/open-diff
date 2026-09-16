@@ -607,6 +607,60 @@ function onBeepAfterLongFileOperationsChange(event: Event): void {
   settings.setBeepAfterLongFileOperations(target.checked)
 }
 
+function onPreserveTimestampsOnCopyChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setPreserveTimestampsOnCopy(target.checked)
+}
+
+function onOverwriteReadOnlyFilesChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setOverwriteReadOnlyFiles(target.checked)
+}
+
+function onLongFileOperationThresholdChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setLongFileOperationThresholdMs(Math.max(1, Number(target.value) || 3) * 1000)
+}
+
+function onShowMillisecondsInTimestampsChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowMillisecondsInTimestamps(target.checked)
+}
+
+function onProfileDefaultPortChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  const raw = target.value.trim()
+
+  profileDefaultsDraft.value.defaultPort =
+    raw === '' ? null : Math.max(0, Math.round(Number(raw) || 0))
+  persistProfileDefaultsDraft()
+}
+
 function onEnableRarArchiveTypesChange(event: Event): void {
   const target = event.target
 
@@ -1530,6 +1584,18 @@ function parseShortcutText(value: string): string[] {
             />
             <span>{{ $t('ui.ignoreLineEndingDifferences') }}</span>
           </label>
+          <label class="stack-row">
+            <span>{{ $t('ui.diffAlgorithm') }}</span>
+            <select
+              v-model="textCompareDefaultsDraft.algorithm"
+              data-testid="text-compare-algorithm-default"
+              @change="persistTextCompareDefaultsDraft"
+            >
+              <option value="myers">{{ $t('ui.myers') }}</option>
+              <option value="patience">{{ $t('ui.patience') }}</option>
+              <option value="histogram">{{ $t('ui.histogram') }}</option>
+            </select>
+          </label>
           <p class="options-hint">{{ $t('ui.textEditingHint') }}</p>
         </NCard>
 
@@ -1623,6 +1689,15 @@ function parseShortcutText(value: string): string[] {
               @change="persistFolderCriteriaDraft"
             />
             <span>{{ $t('ui.ignoreDaylightSavingHourOffset') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              v-model="folderCriteriaDraft.caseSensitiveNames"
+              data-testid="folder-compare-case-sensitive-names"
+              type="checkbox"
+              @change="persistFolderCriteriaDraft"
+            />
+            <span>{{ $t('ui.caseSensitiveNames') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.folderCompareOptionsHint') }}</p>
         </NCard>
@@ -2101,6 +2176,40 @@ function parseShortcutText(value: string): string[] {
             <span>{{ $t('ui.beepAfterLongFileOperations') }}</span>
           </label>
           <p class="options-hint">{{ $t('ui.beepAfterLongFileOperationsHint') }}</p>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.longFileOperationThresholdSeconds') }}</span>
+            <input
+              class="auto-save-limit-input"
+              data-testid="long-file-operation-threshold"
+              type="number"
+              min="1"
+              max="60"
+              step="1"
+              :value="Math.round(settings.longFileOperationThresholdMs / 1000)"
+              @change="onLongFileOperationThresholdChange"
+            />
+          </label>
+          <p class="options-hint">{{ $t('ui.longFileOperationThresholdHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="preserve-timestamps-on-copy"
+              type="checkbox"
+              :checked="settings.preserveTimestampsOnCopy"
+              @change="onPreserveTimestampsOnCopyChange"
+            />
+            <span>{{ $t('ui.preserveTimestampsOnCopy') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.preserveTimestampsOnCopyHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="overwrite-read-only-files"
+              type="checkbox"
+              :checked="settings.overwriteReadOnlyFiles"
+              @change="onOverwriteReadOnlyFilesChange"
+            />
+            <span>{{ $t('ui.overwriteReadOnlyFiles') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.overwriteReadOnlyFilesHint') }}</p>
           <p class="options-hint">{{ $t('ui.fileOperationsHint') }}</p>
         </NCard>
 
@@ -2364,6 +2473,16 @@ function parseShortcutText(value: string): string[] {
             </select>
           </label>
           <p class="options-hint">{{ $t('ui.binaryCompareBufferSizeHint') }}</p>
+          <label class="tweak-row">
+            <input
+              data-testid="show-milliseconds-in-timestamps"
+              type="checkbox"
+              :checked="settings.showMillisecondsInTimestamps"
+              @change="onShowMillisecondsInTimestampsChange"
+            />
+            <span>{{ $t('ui.showMillisecondsInTimestamps') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.showMillisecondsInTimestampsHint') }}</p>
           <NButton
             size="small"
             data-testid="restore-factory-defaults"
@@ -2513,6 +2632,27 @@ function parseShortcutText(value: string): string[] {
             />
           </label>
           <label class="stack-row">
+            <span>{{ $t('ui.profileDefaultUsername') }}</span>
+            <input
+              v-model="profileDefaultsDraft.defaultUsername"
+              data-testid="profile-default-username"
+              type="text"
+              @change="persistProfileDefaultsDraft"
+            />
+          </label>
+          <label class="stack-row">
+            <span>{{ $t('ui.profileDefaultPort') }}</span>
+            <input
+              data-testid="profile-default-port"
+              type="number"
+              min="0"
+              max="65535"
+              step="1"
+              :value="profileDefaultsDraft.defaultPort ?? ''"
+              @change="onProfileDefaultPortChange"
+            />
+          </label>
+          <label class="stack-row">
             <span>{{ $t('ui.profileDefaultRootPath') }}</span>
             <input
               v-model="profileDefaultsDraft.defaultRootPath"
@@ -2599,6 +2739,16 @@ function parseShortcutText(value: string): string[] {
             />
             <span>{{ $t('ui.reportClearHistoryOnExit') }}</span>
           </label>
+          <label class="tweak-row">
+            <input
+              v-model="reportPreferencesDraft.includeIdentical"
+              data-testid="report-include-identical"
+              type="checkbox"
+              @change="persistReportPreferencesDraft"
+            />
+            <span>{{ $t('ui.reportIncludeIdentical') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.reportIncludeIdenticalHint') }}</p>
           <div class="settings-row">
             <NButton
               size="small"
@@ -2903,12 +3053,12 @@ function parseShortcutText(value: string): string[] {
 <style scoped>
 .settings-view {
   display: grid;
-  grid-template-columns: 168px minmax(0, 1fr);
+  grid-template-columns: 160px minmax(0, 1fr);
   align-content: start;
   align-items: start;
-  gap: 6px;
+  gap: 5px;
   height: 100%;
-  padding: 6px;
+  padding: 5px;
   overflow: auto;
   font-size: 11px;
 }
@@ -3008,14 +3158,14 @@ function parseShortcutText(value: string): string[] {
 .options-section-button {
   box-sizing: border-box;
   width: 100%;
-  min-height: 18px;
-  padding: 0 6px;
+  min-height: 16px;
+  padding: 0 5px;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: var(--app-text);
   font-size: 11px;
-  line-height: 16px;
+  line-height: 15px;
   text-align: left;
   cursor: pointer;
 }
@@ -3137,10 +3287,10 @@ function parseShortcutText(value: string): string[] {
 }
 
 .settings-view :deep(.n-card) {
-  --n-padding-top: 6px;
-  --n-padding-bottom: 6px;
-  --n-padding-left: 8px;
-  --n-padding-right: 8px;
+  --n-padding-top: 5px;
+  --n-padding-bottom: 5px;
+  --n-padding-left: 7px;
+  --n-padding-right: 7px;
   --n-title-font-size: 12px;
   --n-border-radius: 0;
 

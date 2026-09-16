@@ -1198,6 +1198,24 @@ export const enUS: LanguagePack = {
     'ui.profileDefaultProtocol': 'Default protocol',
     'ui.profileDefaultRootPath': 'Default root path',
     'ui.profileDefaultHost': 'Default host',
+    'ui.diffAlgorithm': 'Diff algorithm',
+    'ui.longFileOperationThresholdSeconds': 'Long operation threshold (seconds)',
+    'ui.longFileOperationThresholdHint':
+      'Beep after file operations that run longer than this many seconds.',
+    'ui.preserveTimestampsOnCopy': 'Preserve timestamps when copying',
+    'ui.preserveTimestampsOnCopyHint':
+      'Keep the source modified time on the destination after Folder Compare copy.',
+    'ui.overwriteReadOnlyFiles': 'Overwrite read-only files',
+    'ui.overwriteReadOnlyFilesHint':
+      'Clear the read-only attribute on the destination before overwriting.',
+    'ui.profileDefaultUsername': 'Default username',
+    'ui.profileDefaultPort': 'Default port',
+    'ui.reportIncludeIdentical': 'Include identical items in folder reports',
+    'ui.reportIncludeIdenticalHint':
+      'When off, Folder Compare report exports omit rows that compare as Same.',
+    'ui.showMillisecondsInTimestamps': 'Show milliseconds in timestamps',
+    'ui.showMillisecondsInTimestampsHint':
+      'Include seconds and milliseconds in path footer and folder modified times.',
     'ui.profileSavedCount': 'Saved profiles: {count}',
     'ui.profileDefaultsHint':
       'Applied when creating a new remote profile. Manage saved profiles from the Profiles window.',

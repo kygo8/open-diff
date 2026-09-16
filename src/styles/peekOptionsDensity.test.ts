@@ -51,9 +51,9 @@ describe('peek panel densify', () => {
 
 describe('options dialog densify', () => {
   it('uses a dense tree/content Options layout and keeps wired section ids', () => {
-    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*168px/)
-    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*6px/)
-    expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*160px/)
+    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*5px/)
+    expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*16px/)
     expect(settingsView).toMatch(
       /\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?height:\s*20px/,
     )
@@ -79,6 +79,13 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="profile-default-host"/)
     expect(settingsView).toMatch(/data-testid="report-open-after-export"/)
     expect(settingsView).toMatch(/data-testid="report-clear-history-on-exit"/)
+    expect(settingsView).toMatch(/data-testid="folder-compare-case-sensitive-names"/)
+    expect(settingsView).toMatch(/data-testid="text-compare-algorithm-default"/)
+    expect(settingsView).toMatch(/data-testid="preserve-timestamps-on-copy"/)
+    expect(settingsView).toMatch(/data-testid="overwrite-read-only-files"/)
+    expect(settingsView).toMatch(/data-testid="profile-default-username"/)
+    expect(settingsView).toMatch(/data-testid="report-include-identical"/)
+    expect(settingsView).toMatch(/data-testid="show-milliseconds-in-timestamps"/)
   })
 })
 

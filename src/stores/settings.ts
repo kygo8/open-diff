@@ -111,6 +111,10 @@ const confirmBeforeSyncDeleteStorageKey = 'open-diff-confirm-before-sync-delete'
 const createBackupOnReportExportStorageKey = 'open-diff-create-backup-on-report-export'
 const includeHiddenItemsInFileActionsStorageKey = 'open-diff-include-hidden-items-in-file-actions'
 const beepAfterLongFileOperationsStorageKey = 'open-diff-beep-after-long-file-operations'
+const preserveTimestampsOnCopyStorageKey = 'open-diff-preserve-timestamps-on-copy'
+const overwriteReadOnlyFilesStorageKey = 'open-diff-overwrite-read-only-files'
+const longFileOperationThresholdMsStorageKey = 'open-diff-long-file-operation-threshold-ms'
+const showMillisecondsInTimestampsStorageKey = 'open-diff-show-milliseconds-in-timestamps'
 const enableRarArchiveTypesStorageKey = 'open-diff-enable-rar-archive-types'
 const escClosesFileViewsStorageKey = 'open-diff-esc-closes-file-views'
 const beepWhenScriptFinishedStorageKey = 'open-diff-beep-when-script-finished'
@@ -183,6 +187,10 @@ export const useSettingsStore = defineStore('settings', () => {
   const createBackupOnReportExport = ref(loadCreateBackupOnReportExport())
   const includeHiddenItemsInFileActions = ref(loadIncludeHiddenItemsInFileActions())
   const beepAfterLongFileOperations = ref(loadBeepAfterLongFileOperations())
+  const preserveTimestampsOnCopy = ref(loadPreserveTimestampsOnCopy())
+  const overwriteReadOnlyFiles = ref(loadOverwriteReadOnlyFiles())
+  const longFileOperationThresholdMs = ref(loadLongFileOperationThresholdMs())
+  const showMillisecondsInTimestamps = ref(loadShowMillisecondsInTimestamps())
   const enableRarArchiveTypes = ref(loadEnableRarArchiveTypes())
   const escClosesFileViews = ref(loadEscClosesFileViews())
   const beepWhenScriptFinished = ref(loadBeepWhenScriptFinished())
@@ -575,6 +583,38 @@ export const useSettingsStore = defineStore('settings', () => {
   )
 
   watch(
+    preserveTimestampsOnCopy,
+    (value) => {
+      localStorage.setItem(preserveTimestampsOnCopyStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    overwriteReadOnlyFiles,
+    (value) => {
+      localStorage.setItem(overwriteReadOnlyFilesStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    longFileOperationThresholdMs,
+    (value) => {
+      localStorage.setItem(longFileOperationThresholdMsStorageKey, String(value))
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
+    showMillisecondsInTimestamps,
+    (value) => {
+      localStorage.setItem(showMillisecondsInTimestampsStorageKey, value ? '1' : '0')
+    },
+    { immediate: true, flush: 'sync' },
+  )
+
+  watch(
     enableRarArchiveTypes,
     (value) => {
       localStorage.setItem(enableRarArchiveTypesStorageKey, value ? '1' : '0')
@@ -947,6 +987,22 @@ export const useSettingsStore = defineStore('settings', () => {
     beepAfterLongFileOperations.value = value
   }
 
+  function setPreserveTimestampsOnCopy(value: boolean): void {
+    preserveTimestampsOnCopy.value = value
+  }
+
+  function setOverwriteReadOnlyFiles(value: boolean): void {
+    overwriteReadOnlyFiles.value = value
+  }
+
+  function setLongFileOperationThresholdMs(value: number): void {
+    longFileOperationThresholdMs.value = clampLongFileOperationThresholdMs(value)
+  }
+
+  function setShowMillisecondsInTimestamps(value: boolean): void {
+    showMillisecondsInTimestamps.value = value
+  }
+
   function setEnableRarArchiveTypes(value: boolean): void {
     enableRarArchiveTypes.value = value
     const current = [...archiveExtensions.value]
@@ -1049,6 +1105,10 @@ export const useSettingsStore = defineStore('settings', () => {
       createBackupOnReportExport: createBackupOnReportExport.value,
       includeHiddenItemsInFileActions: includeHiddenItemsInFileActions.value,
       beepAfterLongFileOperations: beepAfterLongFileOperations.value,
+      preserveTimestampsOnCopy: preserveTimestampsOnCopy.value,
+      overwriteReadOnlyFiles: overwriteReadOnlyFiles.value,
+      longFileOperationThresholdMs: longFileOperationThresholdMs.value,
+      showMillisecondsInTimestamps: showMillisecondsInTimestamps.value,
       enableRarArchiveTypes: enableRarArchiveTypes.value,
       escClosesFileViews: escClosesFileViews.value,
       beepWhenScriptFinished: beepWhenScriptFinished.value,
@@ -1226,6 +1286,26 @@ export const useSettingsStore = defineStore('settings', () => {
         ? packageValue.beepAfterLongFileOperations
         : false,
     )
+    setPreserveTimestampsOnCopy(
+      typeof packageValue.preserveTimestampsOnCopy === 'boolean'
+        ? packageValue.preserveTimestampsOnCopy
+        : false,
+    )
+    setOverwriteReadOnlyFiles(
+      typeof packageValue.overwriteReadOnlyFiles === 'boolean'
+        ? packageValue.overwriteReadOnlyFiles
+        : false,
+    )
+    setLongFileOperationThresholdMs(
+      typeof packageValue.longFileOperationThresholdMs === 'number'
+        ? packageValue.longFileOperationThresholdMs
+        : longFileOperationThresholdMs.value,
+    )
+    setShowMillisecondsInTimestamps(
+      typeof packageValue.showMillisecondsInTimestamps === 'boolean'
+        ? packageValue.showMillisecondsInTimestamps
+        : false,
+    )
     setEnableRarArchiveTypes(
       typeof packageValue.enableRarArchiveTypes === 'boolean'
         ? packageValue.enableRarArchiveTypes
@@ -1333,6 +1413,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setCreateBackupOnReportExport(false)
     setIncludeHiddenItemsInFileActions(false)
     setBeepAfterLongFileOperations(false)
+    setPreserveTimestampsOnCopy(false)
+    setOverwriteReadOnlyFiles(false)
+    setLongFileOperationThresholdMs(3000)
+    setShowMillisecondsInTimestamps(false)
     setEnableRarArchiveTypes(false)
     setEscClosesFileViews(false)
     setBeepWhenScriptFinished(false)
@@ -1394,6 +1478,10 @@ export const useSettingsStore = defineStore('settings', () => {
     createBackupOnReportExport,
     includeHiddenItemsInFileActions,
     beepAfterLongFileOperations,
+    preserveTimestampsOnCopy,
+    overwriteReadOnlyFiles,
+    longFileOperationThresholdMs,
+    showMillisecondsInTimestamps,
     enableRarArchiveTypes,
     escClosesFileViews,
     beepWhenScriptFinished,
@@ -1456,6 +1544,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setCreateBackupOnReportExport,
     setIncludeHiddenItemsInFileActions,
     setBeepAfterLongFileOperations,
+    setPreserveTimestampsOnCopy,
+    setOverwriteReadOnlyFiles,
+    setLongFileOperationThresholdMs,
+    setShowMillisecondsInTimestamps,
     setEnableRarArchiveTypes,
     setEscClosesFileViews,
     setBeepWhenScriptFinished,
@@ -2040,6 +2132,54 @@ function loadIncludeHiddenItemsInFileActions(): boolean {
 
 function loadBeepAfterLongFileOperations(): boolean {
   const stored = localStorage.getItem(beepAfterLongFileOperationsStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadPreserveTimestampsOnCopy(): boolean {
+  const stored = localStorage.getItem(preserveTimestampsOnCopyStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function loadOverwriteReadOnlyFiles(): boolean {
+  const stored = localStorage.getItem(overwriteReadOnlyFilesStorageKey)
+
+  if (stored === null) {
+    return false
+  }
+
+  return stored === '1'
+}
+
+function clampLongFileOperationThresholdMs(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 3000
+  }
+
+  return Math.min(60_000, Math.max(500, Math.round(value)))
+}
+
+function loadLongFileOperationThresholdMs(): number {
+  const stored = localStorage.getItem(longFileOperationThresholdMsStorageKey)
+
+  if (stored === null) {
+    return 3000
+  }
+
+  return clampLongFileOperationThresholdMs(Number(stored))
+}
+
+function loadShowMillisecondsInTimestamps(): boolean {
+  const stored = localStorage.getItem(showMillisecondsInTimestampsStorageKey)
 
   if (stored === null) {
     return false

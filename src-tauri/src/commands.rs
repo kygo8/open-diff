@@ -367,9 +367,16 @@ pub struct FolderCompareCriteria {
     /// Include dotfile / hidden-name entries in Folder Compare scans.
     #[serde(default = "default_show_hidden_files_criteria")]
     pub show_hidden_files: bool,
+    /// Align folder names with case sensitivity (default true).
+    #[serde(default = "default_case_sensitive_names_criteria")]
+    pub case_sensitive_names: bool,
 }
 
 fn default_show_hidden_files_criteria() -> bool {
+    true
+}
+
+fn default_case_sensitive_names_criteria() -> bool {
     true
 }
 
@@ -386,6 +393,7 @@ impl Default for FolderCompareCriteria {
             timestamp_tolerance_ms: 0,
             ignore_daylight_saving_hour_offset: false,
             show_hidden_files: true,
+            case_sensitive_names: true,
         }
     }
 }
@@ -395,7 +403,7 @@ impl FolderCompareCriteria {
         folder_core::FolderCompareOptions {
             compare_size: self.compare_size,
             compare_modified_time: self.compare_modified_time,
-            case_sensitive_names: true,
+            case_sensitive_names: self.case_sensitive_names,
             compare_contents: self.compare_contents,
             compare_crc: self.compare_crc,
             compare_attributes: self.compare_attributes,
@@ -1176,14 +1184,55 @@ pub fn create_folder_entry(
 pub fn copy_folder_entry(
     source_path: String,
     target_path: String,
+    preserve_timestamps: Option<bool>,
+    overwrite_read_only: Option<bool>,
+    source_modified_at_ms: Option<u128>,
 ) -> Result<folder_core::FileOperationResult, AppErrorPayload> {
     let error_path = source_path.clone();
+    let target_for_meta = target_path.clone();
 
-    folder_core::perform_file_operation(folder_core::FileOperationRequest::Copy {
+    if overwrite_read_only.unwrap_or(false) {
+        let target = std::path::Path::new(&target_path);
+        if target.exists() {
+            if let Ok(metadata) = std::fs::metadata(target) {
+                let mut permissions = metadata.permissions();
+                if permissions.readonly() {
+                    #[allow(clippy::permissions_set_readonly_false)]
+                    permissions.set_readonly(false);
+                    let _ = std::fs::set_permissions(target, permissions);
+                }
+            }
+        }
+    }
+
+    let result = folder_core::perform_file_operation(folder_core::FileOperationRequest::Copy {
         source_path,
         target_path,
     })
-    .map_err(|error| folder_scan_error(&error_path, error))
+    .map_err(|error| folder_scan_error(&error_path, error))?;
+
+    if preserve_timestamps.unwrap_or(false) {
+        let modified_at_ms = source_modified_at_ms.or_else(|| {
+            std::fs::metadata(&error_path)
+                .ok()
+                .and_then(|meta| meta.modified().ok())
+                .and_then(|modified| {
+                    modified
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .ok()
+                        .map(|duration| duration.as_millis())
+                })
+        });
+
+        if let Some(modified_at_ms) = modified_at_ms {
+            let _ = folder_core::touch_file(folder_core::TouchFileRequest {
+                path: target_for_meta,
+                modified_at_ms,
+            });
+        }
+    }
+
+    Ok(result)
 }
 
 #[tauri::command]
@@ -1757,6 +1806,7 @@ pub fn export_folder_compare_report(
     right_root: String,
     format: String,
     output_path: Option<String>,
+    include_identical: Option<bool>,
 ) -> Result<ExportReportResponse, AppErrorPayload> {
     let cancellation_token = job_core::CancellationToken::default();
     let left_tree = folder_core::scan_local_folder(&left_root, &cancellation_token)
@@ -1767,7 +1817,7 @@ pub fn export_folder_compare_report(
     let model = folder_core::build_folder_report_model(
         &alignment_rows,
         &folder_core::FolderCompareOptions::default(),
-        true,
+        include_identical.unwrap_or(true),
     );
     let content = match format.to_ascii_lowercase().as_str() {
         "text" | "txt" => folder_core::render_folder_report_text(&model, "Folder Compare"),
@@ -5591,6 +5641,7 @@ mod tests {
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,
@@ -5610,6 +5661,7 @@ mod tests {
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,
@@ -5629,6 +5681,7 @@ mod tests {
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,
@@ -5691,6 +5744,7 @@ mod tests {
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,
@@ -5710,6 +5764,7 @@ mod tests {
                 timestamp_tolerance_ms: 2_000,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,
@@ -5769,6 +5824,7 @@ mod tests {
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,
@@ -5812,6 +5868,7 @@ mod tests {
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,
@@ -5836,6 +5893,7 @@ mod tests {
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,
@@ -5893,6 +5951,7 @@ mod tests {
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,
@@ -5917,6 +5976,7 @@ mod tests {
                 timestamp_tolerance_ms: 0,
                 ignore_daylight_saving_hour_offset: false,
                 show_hidden_files: true,
+                case_sensitive_names: true,
             }),
             None,
             None,

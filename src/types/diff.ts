@@ -183,6 +183,8 @@ export interface FolderCompareCriteria {
   ignoreDaylightSavingHourOffset?: boolean
   /** Include dotfile / hidden-name entries in Folder Compare. */
   showHiddenFiles?: boolean
+  /** Align folder names with case sensitivity (off = case-insensitive match). */
+  caseSensitiveNames?: boolean
 }
 
 export interface FolderNameFilters {
@@ -563,6 +565,8 @@ export interface ExportTextCompareReportRequest extends ExportReportRequest {
 export interface ExportFolderCompareReportRequest extends ExportReportRequest {
   leftRoot: string
   rightRoot: string
+  /** When false, identical rows are omitted from the exported report. */
+  includeIdentical?: boolean
 }
 
 export interface ExportReportResponse {
@@ -603,6 +607,9 @@ export interface HexSaveResult {
 export interface CopyFolderEntryRequest {
   sourcePath: string
   targetPath: string
+  preserveTimestamps?: boolean
+  overwriteReadOnly?: boolean
+  sourceModifiedAtMs?: number
 }
 
 export interface MoveFolderEntryRequest {

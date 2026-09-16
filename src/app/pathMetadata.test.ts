@@ -15,4 +15,10 @@ describe('pathMetadata', () => {
       /^2026-01-0[12] \d{2}:\d{2} · 42 bytes$/,
     )
   })
+
+  it('can include seconds and milliseconds when requested', () => {
+    expect(
+      formatPathModifiedAt(Date.UTC(2026, 8, 15, 2, 30, 4, 56), { showMilliseconds: true }),
+    ).toMatch(/2026-09-1[45] \d{2}:\d{2}:\d{2}\.\d{3}/)
+  })
 })

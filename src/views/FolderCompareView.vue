@@ -111,6 +111,7 @@ import {
   saveTextFile,
   touchFolderEntry,
 } from '@/api/diff'
+import { loadReportPreferences } from '@/app/reportExports'
 import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
 import { openPathExternal, revealPathInOs } from '@/api/integration'
 import {
@@ -1641,8 +1642,16 @@ function formatFolderModified(modifiedAtMs: number | undefined): string {
   const day = String(date.getDate()).padStart(2, '0')
   const hours = String(date.getHours()).padStart(2, '0')
   const minutes = String(date.getMinutes()).padStart(2, '0')
+  const base = `${year}-${month}-${day} ${hours}:${minutes}`
 
-  return `${year}-${month}-${day} ${hours}:${minutes}`
+  if (!settings.showMillisecondsInTimestamps) {
+    return base
+  }
+
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  const millis = String(date.getMilliseconds()).padStart(3, '0')
+
+  return `${base}:${seconds}.${millis}`
 }
 
 function alignSelectedWithTarget(): void {
@@ -1826,7 +1835,7 @@ function maybeBeepAfterLongFileOperation(startedAt: number): void {
     return
   }
 
-  if (Date.now() - startedAt < 3000) {
+  if (Date.now() - startedAt < settings.longFileOperationThresholdMs) {
     return
   }
 
@@ -2189,7 +2198,13 @@ async function copySelectedToFolder(): Promise<void> {
 
   try {
     for (const plan of plans) {
-      await copyFolderEntry({ sourcePath: plan.sourcePath, targetPath: plan.targetPath })
+      await copyFolderEntry({
+        sourcePath: plan.sourcePath,
+        targetPath: plan.targetPath,
+        preserveTimestamps: settings.preserveTimestampsOnCopy,
+        overwriteReadOnly: settings.overwriteReadOnlyFiles,
+        sourceModifiedAtMs: plan.sourceModifiedAtMs,
+      })
     }
     lastFileOperationAction.value =
       plans.length === 1
@@ -2585,6 +2600,7 @@ async function exportFolderReport(
     rightRoot: rightRoot.value,
     format,
     outputPath: fileCompareReportOutputPath(leftRoot.value, format, 'full'),
+    includeIdentical: loadReportPreferences().includeIdentical,
   })
 
   reportStatus.value = response.outputPath ?? format
@@ -3346,6 +3362,14 @@ onUnmounted(() => {
               type="checkbox"
             />
             <span>{{ $t('ui.ignoreDaylightSavingHourOffset') }}</span>
+          </label>
+          <label>
+            <input
+              v-model="folderCriteria.caseSensitiveNames"
+              data-testid="folder-criteria-case-sensitive-names"
+              type="checkbox"
+            />
+            <span>{{ $t('ui.caseSensitiveNames') }}</span>
           </label>
         </fieldset>
         <button

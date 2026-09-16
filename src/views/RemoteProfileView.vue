@@ -454,6 +454,8 @@ function toLocalProfile(profile: RemoteProfile): LocalRemoteProfile {
 }
 
 function toDraft(profile: RemoteProfile): RemoteProfileDraft {
+  const defaults = loadRemoteProfileDefaults()
+
   return {
     id: profile.id,
     name: profile.name,
@@ -465,7 +467,7 @@ function toDraft(profile: RemoteProfile): RemoteProfileDraft {
     pathStyle: false,
     credentialKind: profile.credentialRef.kind,
     credentialKey: profile.credentialRef.key,
-    username: '',
+    username: profile.id ? '' : defaults.defaultUsername || '',
     password: '',
     oauthClientId: '',
     oauthPaste: '',
@@ -495,12 +497,14 @@ function fromDraft(source: RemoteProfileDraft): RemoteProfile {
 
 function emptyProfile(): RemoteProfile {
   const defaults = loadRemoteProfileDefaults()
-  let defaultPort: number | null = null
+  let defaultPort: number | null = defaults.defaultPort
 
-  if (defaults.defaultProtocol === 'ftp' || defaults.defaultProtocol === 'ftps') {
-    defaultPort = 21
-  } else if (defaults.defaultProtocol === 'sftp') {
-    defaultPort = 22
+  if (defaultPort === null) {
+    if (defaults.defaultProtocol === 'ftp' || defaults.defaultProtocol === 'ftps') {
+      defaultPort = 21
+    } else if (defaults.defaultProtocol === 'sftp') {
+      defaultPort = 22
+    }
   }
 
   return {

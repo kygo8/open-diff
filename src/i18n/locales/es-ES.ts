@@ -1219,6 +1219,24 @@ export const esES: LanguagePack = {
     'ui.profileDefaultProtocol': 'Protocolo predeterminado',
     'ui.profileDefaultRootPath': 'Ruta raíz predeterminada',
     'ui.profileDefaultHost': 'Host predeterminado',
+    'ui.diffAlgorithm': 'Algoritmo de diferencias',
+    'ui.longFileOperationThresholdSeconds': 'Umbral de operación larga (segundos)',
+    'ui.longFileOperationThresholdHint':
+      'Emitir un pitido si la operación de archivo supera estos segundos.',
+    'ui.preserveTimestampsOnCopy': 'Conservar marcas de tiempo al copiar',
+    'ui.preserveTimestampsOnCopyHint':
+      'Mantener la hora de modificación del origen en el destino tras copiar.',
+    'ui.overwriteReadOnlyFiles': 'Sobrescribir archivos de solo lectura',
+    'ui.overwriteReadOnlyFilesHint':
+      'Quitar el atributo de solo lectura del destino antes de sobrescribir.',
+    'ui.profileDefaultUsername': 'Nombre de usuario predeterminado',
+    'ui.profileDefaultPort': 'Puerto predeterminado',
+    'ui.reportIncludeIdentical': 'Incluir elementos idénticos en informes de carpeta',
+    'ui.reportIncludeIdenticalHint':
+      'Si está desactivado, el informe omite filas con estado Igual.',
+    'ui.showMillisecondsInTimestamps': 'Mostrar milisegundos en marcas de tiempo',
+    'ui.showMillisecondsInTimestampsHint':
+      'Incluir segundos y milisegundos en pies de ruta y fechas de carpeta.',
     'ui.profileSavedCount': 'Perfiles guardados: {count}',
     'ui.profileDefaultsHint':
       'Se aplica al crear un perfil remoto. Gestione los perfiles guardados en la ventana Perfiles.',

@@ -26,6 +26,7 @@ describe('folderCompareCriteria', () => {
       followSymlinks: true,
       timestampToleranceMs: 2000,
       ignoreDaylightSavingHourOffset: true,
+      caseSensitiveNames: false,
     })
 
     expect(localStorage.getItem(folderCompareCriteriaStorageKey)).toContain('followSymlinks')
@@ -39,6 +40,7 @@ describe('folderCompareCriteria', () => {
       followSymlinks: true,
       timestampToleranceMs: 2000,
       ignoreDaylightSavingHourOffset: true,
+      caseSensitiveNames: false,
     })
   })
 
@@ -64,6 +66,7 @@ describe('folderCompareCriteria', () => {
       followSymlinks: false,
       timestampToleranceMs: 0,
       ignoreDaylightSavingHourOffset: false,
+      caseSensitiveNames: true,
     })
   })
 })

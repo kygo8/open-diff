@@ -564,7 +564,7 @@ export const jaJP: LanguagePack = {
     'status.insertMode': '挿入',
     'status.overwriteMode': '上書き',
     'status.diskFreeOn': '{root} に {quantity} 空き',
-    'status.pathFileMetadata': '{bytes} バイト、{modified}',
+    'status.pathFileMetadata': '{modified} · {bytes} バイト',
     'status.pathFileMetadataWithDetail': '{metadata} · {detail}',
     'status.filesSelectedBytesWithDate': '{count} 個のファイルを選択、{bytes} バイト、{modified}',
     'status.panePlaceholder': '—',

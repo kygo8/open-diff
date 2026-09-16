@@ -48,7 +48,6 @@ import {
 } from '@/app/folderPathNavigation'
 import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
 import { useStatusBarStore } from '@/stores/statusBar'
-import { joinStatusFooterParts } from '@/app/folderSelectionStatus'
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
 import { createChildCompareLaunch } from '@/app/childSession'
@@ -1010,12 +1009,8 @@ const syncSelectionLabel = computed(() => {
   return t('status.itemsSelected', { count })
 })
 
-const leftSyncPathFooter = computed(() =>
-  joinStatusFooterParts(syncSelectionLabel.value, leftFreeSpaceLabel.value),
-)
-const rightSyncPathFooter = computed(() =>
-  joinStatusFooterParts(syncSelectionLabel.value, rightFreeSpaceLabel.value),
-)
+const leftSyncPathFooter = computed(() => syncSelectionLabel.value)
+const rightSyncPathFooter = computed(() => syncSelectionLabel.value)
 
 watchEffect(() => {
   statusBar.reportStatus({
@@ -1907,11 +1902,11 @@ watch(
 <style scoped>
 .path-side-footer {
   display: block;
-  min-height: 11px;
-  margin-top: 1px;
+  min-height: 10px;
+  margin-top: 0;
   color: var(--app-muted, #6b7280);
-  font-size: 10px;
-  line-height: 11px;
+  font-size: 9px;
+  line-height: 10px;
 }
 
 .path-side-footer-muted {
@@ -1972,9 +1967,9 @@ h1 {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 180px auto;
   align-items: end;
-  gap: 4px;
+  gap: 3px;
   min-height: 26px;
-  padding: 4px 6px;
+  padding: 3px 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1994,7 +1989,7 @@ h1 {
 .sync-settings input,
 .sync-settings select {
   width: 100%;
-  height: 22px;
+  height: 18px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 2px;

@@ -471,7 +471,7 @@ export const frFR: LanguagePack = {
     'status.insertMode': 'Insertion',
     'status.overwriteMode': 'Écrasement',
     'status.diskFreeOn': '{quantity} libres sur {root}',
-    'status.pathFileMetadata': '{bytes} octets, {modified}',
+    'status.pathFileMetadata': '{modified} · {bytes} octets',
     'status.pathFileMetadataWithDetail': '{metadata} · {detail}',
     'status.filesSelectedBytesWithDate':
       '{count} fichier(s) sélectionné(s), {bytes} octets, {modified}',

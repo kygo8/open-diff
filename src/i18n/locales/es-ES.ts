@@ -470,7 +470,7 @@ export const esES: LanguagePack = {
     'status.insertMode': 'Insertar',
     'status.overwriteMode': 'Sobrescribir',
     'status.diskFreeOn': '{quantity} libres en {root}',
-    'status.pathFileMetadata': '{bytes} bytes, {modified}',
+    'status.pathFileMetadata': '{modified} · {bytes} bytes',
     'status.pathFileMetadataWithDetail': '{metadata} · {detail}',
     'status.filesSelectedBytesWithDate':
       '{count} archivo(s) seleccionado(s), {bytes} bytes, {modified}',

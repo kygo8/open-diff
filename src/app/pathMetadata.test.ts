@@ -12,7 +12,7 @@ describe('pathMetadata', () => {
     expect(formatPathFileMetadata(null)).toBe('')
     expect(formatPathFileMetadata({ size: 12, modifiedAtMs: 0 })).toBe('12 bytes')
     expect(formatPathFileMetadata({ size: 42, modifiedAtMs: Date.UTC(2026, 0, 2, 3, 4) })).toMatch(
-      /^42 bytes, 2026-01-0[12] \d{2}:\d{2}$/,
+      /^2026-01-0[12] \d{2}:\d{2} · 42 bytes$/,
     )
   })
 })

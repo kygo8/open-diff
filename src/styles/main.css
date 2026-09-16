@@ -1035,14 +1035,14 @@ select {
   display: grid !important;
   grid-template-columns: minmax(140px, 1fr) minmax(140px, 1fr) !important;
   grid-auto-rows: auto !important;
-  gap: 4px !important;
+  gap: 3px !important;
   height: auto !important;
   min-height: min-content !important;
 }
 
 .folder-toolbar .path-pair > label {
   display: grid !important;
-  gap: 2px !important;
+  gap: 1px !important;
   min-width: 0 !important;
   pointer-events: auto !important;
 }
@@ -1070,8 +1070,8 @@ select {
   flex: 1 1 auto !important;
   width: auto !important;
   min-width: 0 !important;
-  height: 22px !important;
-  min-height: 22px !important;
+  height: 18px !important;
+  min-height: 18px !important;
   padding: 0 6px !important;
   overflow: hidden !important;
   font-size: 11px !important;
@@ -1083,6 +1083,10 @@ select {
 
 .folder-toolbar .path-pair .path-field-row > button {
   flex: 0 0 auto !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 5px !important;
+  font-size: 11px !important;
   white-space: nowrap !important;
 }
 
@@ -1103,7 +1107,7 @@ select {
   display: flex !important;
   flex-wrap: wrap !important;
   align-items: center !important;
-  gap: 3px 8px !important;
+  gap: 2px 6px !important;
   font-size: 11px !important;
 }
 
@@ -1111,7 +1115,7 @@ select {
   display: block !important;
   float: none !important;
   width: 100% !important;
-  margin: 0 0 2px !important;
+  margin: 0 0 1px !important;
   padding: 0 !important;
   color: #111111 !important;
   font-size: 11px !important;
@@ -1122,7 +1126,7 @@ select {
   display: inline-flex !important;
   flex: 0 1 auto !important;
   align-items: center !important;
-  gap: 4px !important;
+  gap: 3px !important;
   min-width: 0 !important;
   max-width: 100% !important;
   white-space: normal !important;
@@ -1516,15 +1520,15 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Dense path/status chrome toward capture strip height */
 .bc-path-footers {
-  gap: 2px !important;
+  gap: 1px !important;
   padding: 0 2px !important;
 }
 
 .path-side-footer {
-  min-height: 11px !important;
-  margin-top: 1px !important;
-  font-size: 10px !important;
-  line-height: 11px !important;
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 9px !important;
+  line-height: 10px !important;
 }
 
 /* Folder/Sync/Merge session body: cut leftover web page margins */
@@ -2278,9 +2282,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Folder Sync chrome densify toward Folder Compare path/filters/actions/status */
 .folder-sync-view .sync-settings {
-  gap: 4px !important;
+  gap: 3px !important;
   min-height: 26px !important;
-  padding: 4px 6px !important;
+  padding: 3px 6px !important;
   border-radius: 0 !important;
 }
 
@@ -2290,8 +2294,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .sync-settings input,
 .folder-sync-view .sync-settings select {
-  height: 22px !important;
-  min-height: 22px !important;
+  height: 18px !important;
+  min-height: 18px !important;
   padding: 0 6px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
@@ -2314,10 +2318,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-sync-view .path-side-footer {
-  min-height: 11px !important;
-  margin-top: 1px !important;
-  font-size: 10px !important;
-  line-height: 11px !important;
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 9px !important;
+  line-height: 10px !important;
 }
 
 .folder-sync-view .sync-preview,
@@ -2351,9 +2355,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Folder Merge chrome densify toward Folder Compare path/filters/actions/status */
 .folder-merge-view .merge-paths {
-  gap: 4px !important;
+  gap: 3px !important;
   min-height: 26px !important;
-  padding: 4px 6px !important;
+  padding: 3px 6px !important;
   border-radius: 0 !important;
 }
 
@@ -2362,18 +2366,18 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .merge-paths input {
-  height: 22px !important;
-  min-height: 22px !important;
+  height: 18px !important;
+  min-height: 18px !important;
   padding: 0 6px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
 }
 
 .folder-merge-view .merge-path-footer {
-  min-height: 11px !important;
-  margin-top: 1px !important;
-  font-size: 10px !important;
-  line-height: 11px !important;
+  min-height: 10px !important;
+  margin-top: 0 !important;
+  font-size: 9px !important;
+  line-height: 10px !important;
 }
 
 .folder-merge-view .merge-actions {

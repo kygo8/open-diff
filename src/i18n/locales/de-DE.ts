@@ -475,7 +475,7 @@ export const deDE: LanguagePack = {
     'status.insertMode': 'Einfügen',
     'status.overwriteMode': 'Überschreiben',
     'status.diskFreeOn': '{quantity} frei auf {root}',
-    'status.pathFileMetadata': '{bytes} Bytes, {modified}',
+    'status.pathFileMetadata': '{modified} · {bytes} Bytes',
     'status.pathFileMetadataWithDetail': '{metadata} · {detail}',
     'status.filesSelectedBytesWithDate': '{count} Datei(en) ausgewählt, {bytes} Bytes, {modified}',
     'status.panePlaceholder': '—',

@@ -1,4 +1,4 @@
-import { mount, type VueWrapper } from '@vue/test-utils'
+import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ClipboardCompareView from './ClipboardCompareView.vue'
@@ -6,6 +6,7 @@ import { diffText } from '@/api/diff'
 import { readClipboardTextSource } from '@/app/clipboardSource'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { useViewActionsStore } from '@/stores/viewActions'
 
 vi.mock('@/app/clipboardSource', () => ({
   readClipboardTextSource: vi.fn(),
@@ -151,5 +152,56 @@ describe('ClipboardCompareView', () => {
     await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
 
     expect(tabs.activeTab.title).toBe('Clipboard 1 <--> Clipboard 2')
+  })
+
+  it('runs Session Compare and Swap from the view-action bus', async () => {
+    vi.mocked(readClipboardTextSource)
+      .mockResolvedValueOnce({ kind: 'clipboard-text', title: 'Clipboard Text', text: 'left text' })
+      .mockResolvedValueOnce({
+        kind: 'clipboard-text',
+        title: 'Clipboard Text',
+        text: 'right text',
+      })
+
+    const wrapper = mountClipboardCompareView()
+    const viewActions = useViewActionsStore()
+
+    await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
+    await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
+
+    viewActions.dispatch('compare')
+    await flushPromises()
+
+    expect(diffText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        left: 'left text',
+        right: 'right text',
+      }),
+    )
+    expect(wrapper.find('[data-testid="clipboard-diff-panel"]').exists()).toBe(true)
+
+    vi.mocked(diffText).mockClear()
+    viewActions.dispatch('swap')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="clipboard-diff-panel"]').exists()).toBe(false)
+
+    viewActions.dispatch('reload')
+    await flushPromises()
+    expect(diffText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        left: 'right text',
+        right: 'left text',
+      }),
+    )
+  })
+
+  it('leaves Session Compare as a no-op until two history entries are selected', async () => {
+    const wrapper = mountClipboardCompareView()
+
+    useViewActionsStore().dispatch('compare')
+    await flushPromises()
+
+    expect(diffText).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="clipboard-diff-panel"]').exists()).toBe(false)
   })
 })

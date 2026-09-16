@@ -9,6 +9,7 @@ import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import { useI18n } from '@/i18n'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
+import { useViewActionsStore } from '@/stores/viewActions'
 import type { TextDiffResponse } from '@/types/diff'
 
 interface ClipboardHistoryEntry {
@@ -24,6 +25,7 @@ const { t } = useI18n()
 const router = useRouter()
 const tabs = useTabsStore()
 const statusBar = useStatusBarStore()
+const viewActions = useViewActionsStore()
 const leftEntryId = ref<number | null>(null)
 const rightEntryId = ref<number | null>(null)
 const nextEntryId = ref(1)
@@ -231,6 +233,21 @@ function runClipboardToolbarCommand(commandId: string): void {
       break
   }
 }
+
+watch(
+  () => [viewActions.sequence, viewActions.name] as const,
+  ([, actionName]) => {
+    if (actionName === 'compare' || actionName === 'reload') {
+      void compareClipboardHistory()
+
+      return
+    }
+
+    if (actionName === 'swap') {
+      swapClipboardSides()
+    }
+  },
+)
 </script>
 
 <template>

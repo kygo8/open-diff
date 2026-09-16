@@ -168,6 +168,26 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="last-view-action"]').text()).toContain('swap')
   })
 
+  it('dispatches Session Compare and Swap from the Session menu on Clipboard Compare', async () => {
+    routePath = '/compare/clipboard'
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="menu-command-session.compare"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-session.swap"]').attributes('disabled'),
+    ).toBeUndefined()
+
+    await wrapper.find('[data-testid="menu-command-session.compare"]').trigger('click')
+    expect(wrapper.find('[data-testid="last-view-action"]').text()).toContain('compare')
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    await wrapper.find('[data-testid="menu-command-session.swap"]').trigger('click')
+    expect(wrapper.find('[data-testid="last-view-action"]').text()).toContain('swap')
+  })
+
   it('opens the About dialog from Help', async () => {
     routePath = '/'
     const wrapper = mountAppLayout()

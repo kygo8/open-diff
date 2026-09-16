@@ -370,6 +370,12 @@ describe('AppLayout command palette', () => {
     ).toBeDefined()
     await registry.find('[data-testid="menu-edit"]').trigger('click')
     expect(
+      registry.find('[data-testid="menu-command-edit.copyLeft"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      registry.find('[data-testid="menu-command-edit.copyRight"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
       registry.find('[data-testid="menu-command-edit.selectAll"]').attributes('disabled'),
     ).toBeDefined()
     await registry.find('[data-testid="menu-session"]').trigger('click')

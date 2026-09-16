@@ -136,6 +136,8 @@ describe('menuTables', () => {
     expect(resolveMenuCommandEnabled('view.expandAll', true, registryCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('view.filters', true, registryCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('diff.next', true, registryCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('edit.copyLeft', true, registryCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('edit.copyRight', true, registryCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('session.rules', true, registryCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('session.settings', true, registryCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('actions.open', true, registryCtx)).toBe(false)

@@ -288,11 +288,14 @@ export function resolveMenuCommandEnabled(
     return isTextSideCopyRoute(path)
   }
 
+  if (commandId === 'edit.copy') {
+    return isTextEditVerbRoute(path) || isHexCompareRoute(path)
+  }
+
   if (
     commandId === 'edit.undo' ||
     commandId === 'edit.redo' ||
     commandId === 'edit.cut' ||
-    commandId === 'edit.copy' ||
     commandId === 'edit.paste' ||
     commandId === 'edit.delete'
   ) {

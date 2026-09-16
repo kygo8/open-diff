@@ -281,6 +281,8 @@ describe('session UI to command linkage', () => {
     })
 
     await wrapper.find('[data-testid="folder-merge-execute-plan"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-merge-safety-confirmation"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="folder-merge-confirm-safety"]').trigger('click')
     await flushPromises()
 
     expectCommand('execute_folder_merge_plan', {

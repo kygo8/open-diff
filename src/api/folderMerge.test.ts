@@ -123,6 +123,7 @@ describe('folder merge api', () => {
       outputRoot: 'D:/merge/output',
       archiveExtensions: ['.zip'],
       filters: undefined,
+      overrides: [],
     })
   })
 
@@ -179,6 +180,7 @@ describe('folder merge api', () => {
       outputRoot: 'D:/merge/output',
       archiveExtensions: undefined,
       filters: { include: ['*.txt'], exclude: ['*.log'], caseSensitive: false },
+      overrides: [],
     })
   })
 
@@ -219,7 +221,37 @@ describe('folder merge api', () => {
       outputRoot: 'D:/merge/output',
       archiveExtensions: undefined,
       filters: undefined,
+      overrides: [],
     })
     expect(result.summary.executed).toBe(1)
+  })
+
+  it('forwards copy-to-output overrides on folder merge execute', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce({
+      leftRoot: 'D:/merge/left',
+      baseRoot: 'D:/merge/base',
+      rightRoot: 'D:/merge/right',
+      outputRoot: 'D:/merge/output',
+      rows: [],
+      summary: { total: 0, executed: 0, skipped: 0, conflicts: 0, failed: 0 },
+    })
+
+    await executeFolderMergePlan({
+      leftRoot: 'D:/merge/left',
+      baseRoot: 'D:/merge/base',
+      rightRoot: 'D:/merge/right',
+      outputRoot: 'D:/merge/output',
+      overrides: [{ relativePath: 'notes.txt', action: 'Copy left to output' }],
+    })
+
+    expect(invoke).toHaveBeenCalledWith('execute_folder_merge_plan', {
+      leftRoot: 'D:/merge/left',
+      baseRoot: 'D:/merge/base',
+      rightRoot: 'D:/merge/right',
+      outputRoot: 'D:/merge/output',
+      archiveExtensions: undefined,
+      filters: undefined,
+      overrides: [{ relativePath: 'notes.txt', action: 'Copy left to output' }],
+    })
   })
 })

@@ -28,5 +28,6 @@ export function executeFolderMergePlan(
     outputRoot: request.outputRoot,
     archiveExtensions: request.archiveExtensions,
     filters: request.filters,
+    overrides: request.overrides ?? [],
   })
 }

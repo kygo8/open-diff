@@ -929,6 +929,8 @@ watch(
       case 'touch-selected':
         void touchSelectedFile()
         break
+      case 'copy-to-output':
+        break
       case 'new-folder':
         openNewFolderPanel()
         break

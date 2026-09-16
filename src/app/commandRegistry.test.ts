@@ -46,6 +46,7 @@ describe('commandRegistry', () => {
         'view.toolbar',
         'actions.attributes',
         'actions.touch',
+        'actions.copyToOutput',
         'session.mergeBaseFolders',
       ]),
     )
@@ -98,6 +99,12 @@ describe('commandRegistry', () => {
     expect(commandRegistry.find((command) => command.id === 'actions.leaveAlone')?.enabled).toBe(
       true,
     )
+    expect(
+      commandRegistry.find((command) => command.id === 'actions.copyToOutput')?.action,
+    ).toEqual({
+      type: 'view-action',
+      name: 'copy-to-output',
+    })
 
     expect(
       commandRegistry.find((command) => command.id === 'actions.compareContents')?.action,

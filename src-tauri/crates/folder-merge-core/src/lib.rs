@@ -162,6 +162,35 @@ pub fn build_folder_merge_plan(document: &FolderMergeDocument) -> FolderMergePla
     FolderMergePlan { actions, conflicts }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderMergeActionOverride {
+    pub relative_path: String,
+    pub kind: FolderMergeActionKind,
+}
+
+pub fn apply_folder_merge_overrides(
+    mut plan: FolderMergePlan,
+    overrides: &[FolderMergeActionOverride],
+) -> FolderMergePlan {
+    for override_item in overrides {
+        if let Some(action) = plan
+            .actions
+            .iter_mut()
+            .find(|action| action.relative_path == override_item.relative_path)
+        {
+            action.kind = override_item.kind.clone();
+            action.conflict = matches!(override_item.kind, FolderMergeActionKind::MarkConflict);
+            if !action.conflict {
+                action.conflict_detail = None;
+            }
+        }
+    }
+
+    plan.conflicts = plan.actions.iter().filter(|action| action.conflict).count();
+    plan
+}
+
 fn collect_side_entries(
     side: &FolderMergeSide,
     apply: impl Fn(&mut FolderMergeAlignmentRow, FolderMergeEntry),
@@ -472,6 +501,46 @@ mod tests {
                 .map(|conflict| conflict.reason),
             Some(FolderMergeConflictReason::BothSidesChanged)
         );
+    }
+
+    #[test]
+    fn apply_folder_merge_overrides_forces_copy_to_output() {
+        let document = FolderMergeDocument {
+            base: side(
+                FolderMergeRole::Base,
+                "D:/base",
+                vec![fingerprinted("notes.txt", "base")],
+            ),
+            left: side(
+                FolderMergeRole::Left,
+                "D:/left",
+                vec![fingerprinted("notes.txt", "left")],
+            ),
+            right: side(
+                FolderMergeRole::Right,
+                "D:/right",
+                vec![fingerprinted("notes.txt", "right")],
+            ),
+            output: FolderMergeSide::new(FolderMergeRole::Output, "D:/out"),
+        };
+
+        let plan = build_folder_merge_plan(&document);
+        assert_eq!(plan.actions[0].kind, FolderMergeActionKind::MarkConflict);
+
+        let plan = apply_folder_merge_overrides(
+            plan,
+            &[FolderMergeActionOverride {
+                relative_path: "notes.txt".to_owned(),
+                kind: FolderMergeActionKind::CopyLeftToOutput,
+            }],
+        );
+
+        assert_eq!(plan.conflicts, 0);
+        assert_eq!(
+            plan.actions[0].kind,
+            FolderMergeActionKind::CopyLeftToOutput
+        );
+        assert!(plan.actions[0].conflict_detail.is_none());
     }
 
     #[test]

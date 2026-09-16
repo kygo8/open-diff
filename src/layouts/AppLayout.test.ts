@@ -1046,6 +1046,9 @@ describe('global menu depth parity', () => {
     expect(
       wrapper.find('[data-testid="menu-command-actions.attributes"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(
+      wrapper.find('[data-testid="menu-command-actions.copyToOutput"]').attributes('disabled'),
+    ).toBeDefined()
 
     await wrapper.find('[data-testid="menu-edit"]').trigger('click')
     expect(wrapper.find('[data-testid="menu-command-edit.selectAll"]').exists()).toBe(true)
@@ -1141,6 +1144,13 @@ describe('global menu depth parity', () => {
     expect(
       merge.find('[data-testid="menu-command-actions.explorer"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(merge.find('[data-testid="menu-command-actions.copyToOutput"]').exists()).toBe(true)
+    expect(
+      merge.find('[data-testid="menu-command-actions.copyToOutput"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(
+      merge.find('[data-testid="menu-command-actions.attributes"]').attributes('disabled'),
+    ).toBeDefined()
     await merge.find('[data-testid="menu-edit"]').trigger('click')
     expect(
       merge.find('[data-testid="menu-command-edit.selectAllFiles"]').attributes('disabled'),

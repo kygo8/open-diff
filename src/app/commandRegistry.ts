@@ -82,6 +82,7 @@ export type CommandId =
   | 'view.toolbar'
   | 'actions.attributes'
   | 'actions.touch'
+  | 'actions.copyToOutput'
   | 'actions.newFolder'
   | 'actions.leaveAlone'
   | 'actions.copyLeftToRight'
@@ -182,6 +183,7 @@ export type CommandAction =
         | 'toggle-toolbar'
         | 'change-attributes'
         | 'touch-selected'
+        | 'copy-to-output'
         | 'new-folder'
         | 'leave-alone'
         | 'sync-copy-left-to-right'
@@ -1107,6 +1109,16 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'U'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'touch-selected' },
+  },
+  {
+    id: 'actions.copyToOutput',
+    titleKey: 'ui.copyToOutput',
+    keywords: ['copy', 'output', 'merge', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', '7'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'copy-to-output' },
   },
   {
     id: 'actions.newFolder',

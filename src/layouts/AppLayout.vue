@@ -322,6 +322,7 @@ const appMenus: AppMenuDefinition[] = [
       'actions.rename',
       'actions.attributes',
       'actions.touch',
+      'actions.copyToOutput',
       'actions.newFolder',
       'actions.exclude',
       'actions.copyFilename',
@@ -1312,6 +1313,13 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     return {
       ...command,
       enabled: command.enabled && route.path.includes('/compare/folder'),
+    }
+  }
+
+  if (command.id === 'actions.copyToOutput') {
+    return {
+      ...command,
+      enabled: command.enabled && route.path.includes('/merge'),
     }
   }
 

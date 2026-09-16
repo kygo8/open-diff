@@ -170,6 +170,7 @@ describe('FolderMergeView', () => {
       outputRoot: 'D:/workspace/merge/output',
       archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
       filters: { include: [], exclude: [], caseSensitive: false },
+      overrides: [],
     })
     expect(wrapper.find('[data-testid="folder-merge-execution-status"]').text()).toContain(
       'Completed 4 / 4',
@@ -531,6 +532,50 @@ describe('FolderMergeView', () => {
     expect(wrapper.find('[data-testid="folder-merge-selection-status"]').text()).toMatch(
       /Revealed|file manager/i,
     )
+  })
+
+  it('maps Actions Copy to Output onto plan copy-left/right handlers', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    const rows = wrapper.findAll('[data-testid="folder-merge-row"]')
+    const rightAdd = rows.find((row) => row.text().includes('right-add.txt'))
+
+    expect(rightAdd).toBeTruthy()
+
+    if (!rightAdd) {
+      throw new Error('expected right-add.txt plan row')
+    }
+
+    await rightAdd.trigger('click')
+
+    useViewActionsStore().dispatch('copy-to-output')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-merge-selection-status"]').text()).toMatch(
+      /Copy to Output|Copy right to output|Copy left to output/i,
+    )
+
+    await wrapper.find('[data-testid="folder-merge-execute-plan"]').trigger('click')
+    await flushPromises()
+
+    expect(vi.mocked(executeFolderMergePlan).mock.calls.at(-1)?.[0]).toEqual({
+      leftRoot: 'D:/workspace/merge/left',
+      baseRoot: 'D:/workspace/merge/base',
+      rightRoot: 'D:/workspace/merge/right',
+      outputRoot: 'D:/workspace/merge/output',
+      archiveExtensions: ['.tar.gz', '.tar', '.tgz', '.zip', '.7z', '.gz'],
+      filters: { include: [], exclude: [], caseSensitive: false },
+      overrides: [
+        {
+          relativePath: 'right-add.txt',
+          action: 'Copy right to output',
+        },
+      ],
+    })
   })
 })
 

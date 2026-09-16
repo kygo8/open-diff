@@ -1,5 +1,10 @@
 import type { FolderNameFilters } from '@/types/diff'
 
+export interface FolderMergeActionOverride {
+  relativePath: string
+  action: FolderMergeActionKind
+}
+
 export interface FolderMergePlanRequest {
   leftRoot: string
   baseRoot: string
@@ -7,6 +12,7 @@ export interface FolderMergePlanRequest {
   outputRoot: string
   archiveExtensions?: string[]
   filters?: FolderNameFilters
+  overrides?: FolderMergeActionOverride[]
 }
 
 export type FolderMergeRole = 'Base' | 'Left' | 'Right'

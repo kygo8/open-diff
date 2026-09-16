@@ -1307,6 +1307,50 @@ select {
   border-radius: 0 !important;
 }
 
+/* File Formats / Remote Profiles densify toward session-panel band */
+.file-format-view,
+.remote-profile-view {
+  gap: 4px !important;
+  padding: 2px 4px !important;
+}
+
+.file-format-view .format-list-panel,
+.file-format-view .format-detail-panel,
+.file-format-view .format-io-panel,
+.remote-profile-view .profile-list-panel,
+.remote-profile-view .profile-detail-panel {
+  gap: 4px !important;
+  padding: 2px 4px !important;
+  border-radius: 0 !important;
+}
+
+.file-format-view button,
+.remote-profile-view button {
+  min-height: 18px !important;
+  border-radius: 0 !important;
+}
+
+.file-format-view input:not([type='checkbox']),
+.file-format-view select,
+.remote-profile-view input:not([type='checkbox']),
+.remote-profile-view select {
+  height: 20px !important;
+  padding: 0 4px !important;
+  border-radius: 0 !important;
+}
+
+.file-format-view .format-row,
+.remote-profile-view .profile-row {
+  min-height: 22px !important;
+  padding: 1px 4px !important;
+}
+
+.file-format-view textarea {
+  min-height: 64px !important;
+  padding: 2px 4px !important;
+  border-radius: 0 !important;
+}
+
 /* Capture-like Filters strip: densify chip/button rhythm toward toolbar band */
 .folder-compare-view .display-filters,
 .folder-sync-view .display-filters,

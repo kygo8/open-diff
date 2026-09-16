@@ -2013,7 +2013,7 @@ const sourceSessionTypes = new Set<SessionType>([
 <style scoped>
 .app-shell {
   display: grid;
-  grid-template-rows: 64px minmax(0, 1fr) 24px;
+  grid-template-rows: 58px minmax(0, 1fr) 24px;
   height: 100vh;
   overflow: hidden;
   background: #ffffff;
@@ -2025,7 +2025,7 @@ const sourceSessionTypes = new Set<SessionType>([
   z-index: 80;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: 32px 32px;
+  grid-template-rows: 30px 28px;
   align-items: center;
   gap: 0;
   min-width: 0;
@@ -2081,16 +2081,16 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-column: 1;
   grid-row: 1;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   min-width: 0;
   max-width: 100%;
-  height: 32px;
-  padding: 0 10px;
+  height: 30px;
+  padding: 0 8px;
   overflow: hidden;
   border: 0;
   background: #eef2f8;
   color: #111827;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 400;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2102,10 +2102,10 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-column: 1 / -1;
   grid-row: 2;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
-  height: 32px;
-  padding: 0 8px;
+  height: 28px;
+  padding: 0 6px;
   overflow: visible;
   border-top: 1px solid #e7e9ed;
   background: #ffffff;
@@ -2124,7 +2124,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button,
 .chrome-button {
-  height: 28px;
+  height: 24px;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -2134,9 +2134,9 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button {
   max-width: 9em;
-  padding: 0 5px;
+  padding: 0 4px;
   overflow: hidden;
-  font-size: 13px;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2340,11 +2340,11 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-strip {
   display: flex;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
-  padding: 3px 6px 0;
+  padding: 2px 5px 0;
   overflow: auto hidden;
-  border-bottom: 1px solid var(--app-border);
+  border-bottom: 1px solid #c7cbd1;
   background: var(--app-panel, var(--app-canvas));
 }
 
@@ -2385,9 +2385,9 @@ const sourceSessionTypes = new Set<SessionType>([
   display: inline-flex;
   align-items: center;
   min-width: 0;
-  border: 1px solid var(--app-border);
+  border: 1px solid #c7cbd1;
   border-bottom: 0;
-  border-radius: 4px 4px 0 0;
+  border-radius: 3px 3px 0 0;
   background: var(--app-canvas);
 }
 
@@ -2401,8 +2401,8 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-chip button {
   min-width: 0;
-  height: 22px;
-  padding: 0 7px;
+  height: 20px;
+  padding: 0 6px;
   border: 0;
   background: transparent;
   color: var(--app-text);
@@ -2496,6 +2496,7 @@ const sourceSessionTypes = new Set<SessionType>([
 .content {
   flex: 1 1 auto;
   height: 100%;
+  border-top: 0;
   background: #ffffff;
 }
 
@@ -2720,33 +2721,33 @@ html[data-show-sidebar='1'] .sidebar {
 
 .app-shell-dense-chrome {
   /* Title + menu only — closer to native frames without a tab strip. */
-  grid-template-rows: 54px minmax(0, 1fr) 24px;
+  grid-template-rows: 52px minmax(0, 1fr) 24px;
 }
 
 .app-shell-dense-chrome .menu-bar {
-  grid-template-rows: 28px 26px;
+  grid-template-rows: 26px 26px;
 }
 
 .app-shell-dense-chrome .brand {
-  height: 28px;
-  padding: 0 10px;
-  font-size: 15px;
+  height: 26px;
+  padding: 0 8px;
+  font-size: 14px;
 }
 
 .app-shell-dense-chrome .brand :deep(svg) {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
 }
 
 .app-shell-dense-chrome .menus {
-  gap: 6px;
+  gap: 4px;
   height: 26px;
-  padding: 0 8px;
+  padding: 0 6px;
 }
 
 .app-shell-dense-chrome .menus button {
-  height: 24px;
-  padding: 0 5px;
+  height: 22px;
+  padding: 0 4px;
   font-size: 12px;
 }
 

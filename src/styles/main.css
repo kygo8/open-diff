@@ -148,22 +148,23 @@ select {
 }
 
 .workbench-shell-single-session .bc-session-toolbar {
-  min-height: 50px;
+  min-height: 48px;
+  border-bottom: 1px solid #bfc4cc;
 }
 
 .workbench-shell-single-session .bc-toolbar-command {
-  min-width: 52px;
-  height: 50px;
-  padding: 1px 4px 2px;
+  min-width: 50px;
+  height: 48px;
+  padding: 1px 3px 2px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact {
-  min-height: 40px;
+  min-height: 38px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact .bc-toolbar-command {
-  min-width: 44px;
-  height: 40px;
+  min-width: 42px;
+  height: 38px;
 }
 
 .app-shell-single-session .tab-strip {
@@ -257,9 +258,9 @@ select {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-width: 0;
-  height: 34px;
-  padding: 0 10px;
-  border-bottom: 1px solid var(--app-border);
+  height: 28px;
+  padding: 0 8px;
+  border-bottom: 1px solid #c7cbd1;
   background: var(--app-surface-low);
 }
 
@@ -274,9 +275,9 @@ select {
   margin: 0;
   overflow: hidden;
   color: var(--app-text);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  line-height: 20px;
+  line-height: 18px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -316,8 +317,8 @@ select {
   align-items: stretch;
   gap: 0;
   min-width: 0;
-  min-height: 50px;
-  padding: 0 2px;
+  min-height: 48px;
+  padding: 0 1px;
   overflow: auto hidden;
   border-bottom: 1px solid #c8c8c8;
   background: #f0f0f0;
@@ -325,16 +326,16 @@ select {
 
 .bc-toolbar-command {
   display: grid;
-  grid-template-rows: 22px auto;
+  grid-template-rows: 20px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
   flex: 0 0 auto;
   width: auto;
-  min-width: 56px;
-  max-width: 104px;
-  height: 50px;
-  padding: 1px 4px 2px;
+  min-width: 52px;
+  max-width: 100px;
+  height: 48px;
+  padding: 1px 3px 2px;
   overflow: hidden;
   border: 0;
   border-right: 0;
@@ -393,15 +394,15 @@ select {
 }
 
 .bc-session-toolbar-compact {
-  min-height: 40px;
+  min-height: 38px;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-command {
-  grid-template-rows: 18px auto;
-  min-width: 44px;
-  max-width: 88px;
-  height: 40px;
-  padding: 1px 3px;
+  grid-template-rows: 17px auto;
+  min-width: 42px;
+  max-width: 84px;
+  height: 38px;
+  padding: 1px 2px;
   font-size: 10px;
   line-height: 11px;
 }

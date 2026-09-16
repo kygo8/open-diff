@@ -118,6 +118,10 @@ export function isClipboardCompareRoute(path: string): boolean {
   return path.includes('/compare/clipboard')
 }
 
+export function isReportsSessionRoute(path: string): boolean {
+  return path.includes('/reports')
+}
+
 export function isTextPatchRoute(path: string): boolean {
   return path.includes('/patch/text')
 }

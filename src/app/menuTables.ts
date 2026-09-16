@@ -8,6 +8,7 @@ import {
   isHexCompareRoute,
   isPictureCompareRoute,
   isRegistrySessionRoute,
+  isReportsSessionRoute,
   isSessionWorkbenchPath,
   isTableCompareRoute,
   isTextEditRoute,
@@ -82,24 +83,35 @@ export function resolveMenuCommandEnabled(
     return ctx.canCloseTab
   }
 
-  if (
-    commandId === 'session.clear' ||
-    commandId === 'session.reload' ||
-    commandId === 'session.save'
-  ) {
+  if (commandId === 'session.clear' || commandId === 'session.save') {
     return isSessionWorkbenchPath(path)
   }
 
+  if (commandId === 'session.reload') {
+    return isSessionWorkbenchPath(path) && !isReportsSessionRoute(path)
+  }
+
   if (commandId === 'session.export') {
-    return isSessionWorkbenchPath(path) && !isTextEditRoute(path) && !isTextPatchRoute(path)
+    return (
+      isSessionWorkbenchPath(path) &&
+      !isTextEditRoute(path) &&
+      !isTextPatchRoute(path) &&
+      !isClipboardCompareRoute(path) &&
+      !isReportsSessionRoute(path)
+    )
   }
 
   if (commandId === 'session.saveAs') {
-    return isSessionWorkbenchPath(path) && !isTextMergeRoute(path) && !isTextPatchRoute(path)
+    return (
+      isSessionWorkbenchPath(path) &&
+      !isTextMergeRoute(path) &&
+      !isTextPatchRoute(path) &&
+      !isReportsSessionRoute(path)
+    )
   }
 
   if (commandId === 'session.compare') {
-    return isSessionWorkbenchPath(path) && !isTextEditRoute(path)
+    return isSessionWorkbenchPath(path) && !isTextEditRoute(path) && !isReportsSessionRoute(path)
   }
 
   if (commandId === 'session.swap') {
@@ -107,7 +119,8 @@ export function resolveMenuCommandEnabled(
       isSessionWorkbenchPath(path) &&
       !isTextMergeRoute(path) &&
       !isTextEditRoute(path) &&
-      !isTextPatchRoute(path)
+      !isTextPatchRoute(path) &&
+      !isReportsSessionRoute(path)
     )
   }
 
@@ -116,7 +129,9 @@ export function resolveMenuCommandEnabled(
       isSessionWorkbenchPath(path) &&
       !isTextMergeRoute(path) &&
       !isTextEditRoute(path) &&
-      !isTextPatchRoute(path)
+      !isTextPatchRoute(path) &&
+      !isClipboardCompareRoute(path) &&
+      !isReportsSessionRoute(path)
     )
   }
 
@@ -126,7 +141,8 @@ export function resolveMenuCommandEnabled(
       !isPictureCompareRoute(path) &&
       !isClipboardCompareRoute(path) &&
       !isTextEditRoute(path) &&
-      !isTextMergeRoute(path)
+      !isTextMergeRoute(path) &&
+      !isReportsSessionRoute(path)
     )
   }
 
@@ -237,7 +253,8 @@ export function resolveMenuCommandEnabled(
       !isClipboardCompareRoute(path) &&
       !isTextPatchRoute(path) &&
       !isTextEditRoute(path) &&
-      !isTextMergeRoute(path)
+      !isTextMergeRoute(path) &&
+      !isReportsSessionRoute(path)
     )
   }
 
@@ -250,7 +267,8 @@ export function resolveMenuCommandEnabled(
       !isClipboardCompareRoute(path) &&
       !isTextPatchRoute(path) &&
       !isTextEditRoute(path) &&
-      !isTextMergeRoute(path)
+      !isTextMergeRoute(path) &&
+      !isReportsSessionRoute(path)
     )
   }
 
@@ -345,7 +363,7 @@ export function resolveMenuCommandEnabled(
   }
 
   if (commandId === 'script.run') {
-    return path.includes('/reports')
+    return isReportsSessionRoute(path)
   }
 
   if (commandId === 'merge.previousConflict' || commandId === 'merge.nextConflict') {

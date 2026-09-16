@@ -304,6 +304,16 @@ describe('AppLayout command palette', () => {
     expect(
       clipboard.find('[data-testid="menu-command-edit.paste"]').attributes('disabled'),
     ).toBeDefined()
+    await clipboard.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      clipboard.find('[data-testid="menu-command-session.rules"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      clipboard.find('[data-testid="menu-command-session.settings"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      clipboard.find('[data-testid="menu-command-session.export"]').attributes('disabled'),
+    ).toBeDefined()
     clipboard.unmount()
 
     routePath = '/patch/text'
@@ -369,6 +379,29 @@ describe('AppLayout command palette', () => {
       media.find('[data-testid="menu-command-view.toggleMinor"]').attributes('disabled'),
     ).toBeUndefined()
     media.unmount()
+
+    routePath = '/reports/scripts'
+    const reports = mountAppLayout()
+
+    await reports.find('[data-testid="menu-session"]').trigger('click')
+    expect(
+      reports.find('[data-testid="menu-command-session.compare"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      reports.find('[data-testid="menu-command-session.swap"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      reports.find('[data-testid="menu-command-session.rules"]').attributes('disabled'),
+    ).toBeDefined()
+    await reports.find('[data-testid="menu-tools"]').trigger('click')
+    expect(
+      reports.find('[data-testid="menu-command-script.run"]').attributes('disabled'),
+    ).toBeUndefined()
+    await reports.find('[data-testid="menu-view"]').trigger('click')
+    expect(
+      reports.find('[data-testid="menu-command-view.showAll"]').attributes('disabled'),
+    ).toBeDefined()
+    reports.unmount()
   })
 
   it('shows Session File Edit Search View Tools Help on Text Compare', () => {
@@ -419,6 +452,23 @@ describe('AppLayout command palette', () => {
     await wrapper.find('[data-command-id="open.textCompare"]').trigger('click')
 
     expect(push).toHaveBeenCalledWith('/compare/text')
+  })
+
+  it('disables inapplicable commands in the palette on Picture Compare', async () => {
+    routePath = '/compare/picture'
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="open-command-palette"]').trigger('click')
+    await wrapper.find('[data-testid="command-search"]').setValue('show all')
+
+    const showAll = wrapper.find('[data-command-id="view.showAll"]')
+
+    expect(showAll.exists()).toBe(true)
+    expect(showAll.attributes('disabled')).toBeDefined()
+    expect(showAll.text()).toContain('Planned')
+
+    await showAll.trigger('click')
+    expect(wrapper.find('[data-testid="last-view-action"]').exists()).toBe(false)
   })
 
   it('renders only global chrome outside routed workbench content', () => {

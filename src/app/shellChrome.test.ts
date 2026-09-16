@@ -8,6 +8,7 @@ import {
   isHexCompareRoute,
   isMediaCompareRoute,
   isPictureCompareRoute,
+  isReportsSessionRoute,
   isSessionWorkbenchPath,
   isTableCompareRoute,
   isTextEditRoute,
@@ -145,6 +146,8 @@ describe('session route helpers', () => {
     expect(isTableCompareRoute('/compare/table')).toBe(true)
     expect(isMediaCompareRoute('/compare/media')).toBe(true)
     expect(isClipboardCompareRoute('/compare/clipboard')).toBe(true)
+    expect(isReportsSessionRoute('/reports/scripts')).toBe(true)
+    expect(isReportsSessionRoute('/compare/text')).toBe(false)
     expect(isTextPatchRoute('/patch/text')).toBe(true)
     expect(isTextEditRoute('/edit/text')).toBe(true)
     expect(isTextEditVerbRoute('/edit/text')).toBe(true)

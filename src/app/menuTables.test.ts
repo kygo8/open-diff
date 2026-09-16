@@ -106,6 +106,9 @@ describe('menuTables', () => {
     expect(resolveMenuCommandEnabled('session.compare', true, clipboardCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('session.swap', true, clipboardCtx)).toBe(true)
     expect(resolveMenuCommandEnabled('session.reload', true, clipboardCtx)).toBe(true)
+    expect(resolveMenuCommandEnabled('session.rules', true, clipboardCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.settings', true, clipboardCtx)).toBe(false)
+    expect(resolveMenuCommandEnabled('session.export', true, clipboardCtx)).toBe(false)
 
     expect(resolveMenuCommandEnabled('view.showDifferences', true, patchCtx)).toBe(false)
     expect(resolveMenuCommandEnabled('edit.cut', true, patchCtx)).toBe(false)
@@ -210,6 +213,29 @@ it('enables Run Script only on the reports session', () => {
       routePath: '/compare/text',
     }),
   ).toBe(false)
+})
+
+it('disables leftover compare-session verbs on Reports and unused Clipboard Session items', () => {
+  const reportsCtx = { ...baseCtx, routePath: '/reports/scripts' }
+  const clipboardCtx = { ...baseCtx, routePath: '/compare/clipboard' }
+
+  expect(resolveMenuCommandEnabled('session.compare', true, reportsCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.swap', true, reportsCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.reload', true, reportsCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.rules', true, reportsCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.settings', true, reportsCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.export', true, reportsCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('view.showAll', true, reportsCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('view.toggleMinor', true, reportsCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('diff.next', true, reportsCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('script.run', true, reportsCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('report.save', true, reportsCtx)).toBe(true)
+  expect(resolveMenuCommandEnabled('session.save', true, reportsCtx)).toBe(true)
+
+  expect(resolveMenuCommandEnabled('session.rules', true, clipboardCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.settings', true, clipboardCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.export', true, clipboardCtx)).toBe(false)
+  expect(resolveMenuCommandEnabled('session.compare', true, clipboardCtx)).toBe(true)
 })
 
 it('enables Show All / Differences / Minor and Filters only where they run', () => {

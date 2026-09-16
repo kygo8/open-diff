@@ -1086,6 +1086,13 @@ export const enUS: LanguagePack = {
     'ui.windowLength': 'Window length',
     'ui.accept': 'Accept',
     'ui.syncNow': 'Sync Now',
+    'ui.mergeBaseFolders': 'Merge Base Folders',
+    'ui.syncBaseFolders': 'Sync Base Folders',
+    'ui.showChromeUtilities': 'Show title-bar utilities',
+    'ui.showChromeUtilitiesHint':
+      'Language and theme buttons in the title bar (hidden in dense single-session chrome).',
+    'ui.confirmBeforeQuit': 'Confirm before quit',
+    'ui.confirmQuitMessage': 'Quit Open Diff?',
     'ui.toOutput': 'To Output',
     'ui.folderMergeRulesHint': 'Automatic copies go to output; conflicts open in Text Merge.',
     'ui.sameOk': 'Same OK',

@@ -47,6 +47,8 @@ export interface SettingsPackage {
   showPrevDifferenceInToolbar?: boolean
   archiveExtensions?: string[]
   loadLastWorkspaceOnStartup?: boolean
+  showChromeUtilities?: boolean
+  confirmBeforeQuit?: boolean
 }
 
 export function isSettingsPackage(value: unknown): value is SettingsPackage {

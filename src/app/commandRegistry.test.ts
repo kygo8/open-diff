@@ -36,6 +36,10 @@ describe('commandRegistry', () => {
         'view.showAll',
         'view.showDifferences',
         'workspace.save',
+        'edit.selectAll',
+        'actions.open',
+        'view.showSame',
+        'session.mergeBaseFolders',
       ]),
     )
     expect(commandRegistry.find((command) => command.id === 'session.newWindow')?.enabled).toBe(

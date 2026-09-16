@@ -551,6 +551,26 @@ function onConfirmBeforeCloseDirtyTabChange(event: Event): void {
   settings.setConfirmBeforeCloseDirtyTab(target.checked)
 }
 
+function onShowChromeUtilitiesChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setShowChromeUtilities(target.checked)
+}
+
+function onConfirmBeforeQuitChange(event: Event): void {
+  const target = event.target
+
+  if (!(target instanceof HTMLInputElement)) {
+    return
+  }
+
+  settings.setConfirmBeforeQuit(target.checked)
+}
+
 function onConfirmBeforeOverwriteSaveChange(event: Event): void {
   const target = event.target
 
@@ -1091,6 +1111,16 @@ function parseShortcutText(value: string): string[] {
             />
             <span>{{ $t('ui.showSidebar') }}</span>
           </label>
+          <label class="tweak-row">
+            <input
+              data-testid="show-chrome-utilities"
+              type="checkbox"
+              :checked="settings.showChromeUtilities"
+              @change="onShowChromeUtilitiesChange"
+            />
+            <span>{{ $t('ui.showChromeUtilities') }}</span>
+          </label>
+          <p class="options-hint">{{ $t('ui.showChromeUtilitiesHint') }}</p>
           <p class="options-hint">{{ $t('ui.appearanceChromeHint') }}</p>
         </NCard>
 
@@ -1872,6 +1902,15 @@ function parseShortcutText(value: string): string[] {
               @change="onConfirmBeforeCloseDirtyTabChange"
             />
             <span>{{ $t('ui.confirmBeforeCloseDirtyTab') }}</span>
+          </label>
+          <label class="tweak-row">
+            <input
+              data-testid="confirm-before-quit"
+              type="checkbox"
+              :checked="settings.confirmBeforeQuit"
+              @change="onConfirmBeforeQuitChange"
+            />
+            <span>{{ $t('ui.confirmBeforeQuit') }}</span>
           </label>
           <NButton
             size="small"

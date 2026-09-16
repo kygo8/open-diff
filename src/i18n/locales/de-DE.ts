@@ -1106,6 +1106,13 @@ export const deDE: LanguagePack = {
     'ui.windowLength': 'Window length',
     'ui.accept': 'Akzeptieren',
     'ui.syncNow': 'Jetzt synchronisieren',
+    'ui.mergeBaseFolders': 'Basisordner zusammenführen',
+    'ui.syncBaseFolders': 'Basisordner synchronisieren',
+    'ui.showChromeUtilities': 'Titelleisten-Hilfen anzeigen',
+    'ui.showChromeUtilitiesHint':
+      'Sprach- und Themen-Schaltflächen in der Titelleiste (in dichter Einzel-Session-Chrome ausgeblendet).',
+    'ui.confirmBeforeQuit': 'Vor dem Beenden bestätigen',
+    'ui.confirmQuitMessage': 'Open Diff beenden?',
     'ui.toOutput': 'Zur Ausgabe',
     'ui.folderMergeRulesHint':
       'Automatische Kopien gehen in die Ausgabe; Konflikte öffnen die Textzusammenführung.',

@@ -259,6 +259,9 @@ const appMenus: AppMenuDefinition[] = [
       'session.forward',
       'session.browseFolder',
       'session.upOneLevel',
+      'session.mergeBaseFolders',
+      'session.syncBaseFolders',
+      'sync.syncNow',
       'session.closeTab',
       'report.save',
       'session.exit',
@@ -292,6 +295,9 @@ const appMenus: AppMenuDefinition[] = [
     id: 'actions',
     titleKey: 'ui.actions',
     commandIds: [
+      'actions.open',
+      'actions.openWith',
+      'actions.quickCompare',
       'session.compare',
       'session.swap',
       'session.reload',
@@ -300,6 +306,8 @@ const appMenus: AppMenuDefinition[] = [
       'view.filters',
       'edit.copyLeft',
       'edit.copyRight',
+      'actions.exclude',
+      'actions.refreshSelection',
       'report.save',
       'workspace.save',
     ],
@@ -308,6 +316,13 @@ const appMenus: AppMenuDefinition[] = [
     id: 'edit',
     titleKey: 'ui.edit',
     commandIds: [
+      'view.expandAll',
+      'view.collapseAll',
+      'edit.selectAll',
+      'edit.selectAllFiles',
+      'edit.selectOrphans',
+      'edit.invertSelection',
+      'session.reload',
       'edit.undo',
       'edit.redo',
       'edit.cut',
@@ -329,6 +344,7 @@ const appMenus: AppMenuDefinition[] = [
     commandIds: [
       'view.showAll',
       'view.showDifferences',
+      'view.showSame',
       'view.toggleMinor',
       'view.expandAll',
       'view.collapseAll',
@@ -357,6 +373,7 @@ const appMenus: AppMenuDefinition[] = [
       'tools.saveSnapshot',
       'open.textEdit',
       'open.textPatch',
+      'script.run',
       'theme.toggle',
     ],
   },
@@ -657,6 +674,15 @@ function restoreFactoryDefaultsFromMenu(): void {
 }
 
 async function closeMainWindow(): Promise<void> {
+  if (settings.confirmBeforeQuit) {
+    // eslint-disable-next-line no-alert -- quit confirmation from Options → Tweaks
+    const confirmed = window.confirm(t('ui.confirmQuitMessage'))
+
+    if (!confirmed) {
+      return
+    }
+  }
+
   try {
     const { getCurrentWindow } = await import('@tauri-apps/api/window')
 
@@ -1142,8 +1168,7 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
     command.id === 'session.settings' ||
     command.id === 'report.save' ||
     command.id === 'diff.next' ||
-    command.id === 'diff.previous' ||
-    command.id === 'sync.syncNow'
+    command.id === 'diff.previous'
   ) {
     return { ...command, enabled: command.enabled && isSessionWorkbenchPath(route.path) }
   }
@@ -1176,6 +1201,45 @@ function resolveMenuCommand(command: AppCommand): AppCommand {
       command.id === 'session.back' ? folderPathNav.canGoBack : folderPathNav.canGoForward
 
     return { ...command, enabled: command.enabled && folderish && historyReady }
+  }
+
+  if (
+    command.id === 'edit.selectAll' ||
+    command.id === 'edit.selectAllFiles' ||
+    command.id === 'edit.selectOrphans' ||
+    command.id === 'edit.invertSelection' ||
+    command.id === 'actions.open' ||
+    command.id === 'actions.openWith' ||
+    command.id === 'actions.quickCompare' ||
+    command.id === 'actions.exclude' ||
+    command.id === 'actions.refreshSelection' ||
+    command.id === 'view.showSame' ||
+    command.id === 'view.expandAll' ||
+    command.id === 'view.collapseAll'
+  ) {
+    const folderish =
+      route.path.includes('/folder') ||
+      route.path.includes('/sync') ||
+      route.path.includes('/merge') ||
+      route.path.includes('/registry')
+
+    return { ...command, enabled: command.enabled && folderish }
+  }
+
+  if (command.id === 'session.mergeBaseFolders' || command.id === 'session.syncBaseFolders') {
+    const onFolderCompare = route.path.includes('/compare/folder')
+
+    return { ...command, enabled: command.enabled && onFolderCompare }
+  }
+
+  if (command.id === 'sync.syncNow') {
+    const onSync = route.path.includes('/sync')
+
+    return { ...command, enabled: command.enabled && onSync }
+  }
+
+  if (command.id === 'script.run') {
+    return { ...command, enabled: command.enabled && isSessionWorkbenchPath(route.path) }
   }
 
   return command
@@ -1360,10 +1424,12 @@ const sourceSessionTypes = new Set<SessionType>([
     :class="{
       'app-shell-single-session': singleSessionFrame,
       'app-shell-dense-chrome': denseAppChrome,
+      'app-shell-hide-chrome-utilities': !settings.showChromeUtilities,
     }"
     :data-show-tab-strip="showTabStrip ? 'true' : 'false'"
     :data-single-session-frame="singleSessionFrame ? 'true' : 'false'"
     :data-dense-chrome="denseAppChrome ? 'true' : 'false'"
+    :data-chrome-utilities="settings.showChromeUtilities ? 'true' : 'false'"
     data-testid="app-shell"
     @click="closeChromeMenus"
   >
@@ -1806,7 +1872,7 @@ const sourceSessionTypes = new Set<SessionType>([
 <style scoped>
 .app-shell {
   display: grid;
-  grid-template-rows: 78px minmax(0, 1fr) 24px;
+  grid-template-rows: 64px minmax(0, 1fr) 24px;
   height: 100vh;
   overflow: hidden;
   background: #ffffff;
@@ -1818,7 +1884,7 @@ const sourceSessionTypes = new Set<SessionType>([
   z-index: 80;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: 40px 38px;
+  grid-template-rows: 32px 32px;
   align-items: center;
   gap: 0;
   min-width: 0;
@@ -1877,13 +1943,13 @@ const sourceSessionTypes = new Set<SessionType>([
   gap: 7px;
   min-width: 0;
   max-width: 100%;
-  height: 40px;
-  padding: 0 12px;
+  height: 32px;
+  padding: 0 10px;
   overflow: hidden;
   border: 0;
   background: #eef2f8;
   color: #111827;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 400;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1895,10 +1961,10 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-column: 1 / -1;
   grid-row: 2;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
-  height: 38px;
-  padding: 0 10px;
+  height: 32px;
+  padding: 0 8px;
   overflow: visible;
   border-top: 1px solid #e7e9ed;
   background: #ffffff;
@@ -1917,7 +1983,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button,
 .chrome-button {
-  height: 32px;
+  height: 28px;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -1927,9 +1993,9 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button {
   max-width: 9em;
-  padding: 0 6px;
+  padding: 0 5px;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2133,9 +2199,9 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-strip {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
-  padding: 6px 8px 0;
+  padding: 3px 6px 0;
   overflow: auto hidden;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-panel, var(--app-canvas));
@@ -2194,12 +2260,12 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-chip button {
   min-width: 0;
-  height: 25px;
-  padding: 0 8px;
+  height: 22px;
+  padding: 0 7px;
   border: 0;
   background: transparent;
   color: var(--app-text);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
 }
 
@@ -2544,6 +2610,20 @@ html[data-show-sidebar='1'] .sidebar {
 }
 
 .app-shell-dense-chrome .top-actions {
+  /* Capture frames omit web utility chrome; keep nodes for command-palette tests. */
+  position: absolute;
+  top: auto;
+  left: -10000px;
+  display: block;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+}
+
+.app-shell-hide-chrome-utilities .top-actions {
   /* Capture frames omit web utility chrome; keep nodes for command-palette tests. */
   position: absolute;
   top: auto;

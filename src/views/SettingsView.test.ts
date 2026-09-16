@@ -417,6 +417,22 @@ describe('SettingsView', () => {
     await wrapper.find('[data-testid="confirm-before-close-dirty-tab"]').setValue(false)
     expect(settings.confirmBeforeCloseDirtyTab).toBe(false)
   })
+
+  it('persists Appearance chrome utilities and Tweaks confirm-before-quit', async () => {
+    const wrapper = mountSettingsView()
+    const settings = useSettingsStore()
+
+    await wrapper.find('[data-testid="options-section-appearance"]').trigger('click')
+    expect(wrapper.find('[data-testid="show-chrome-utilities"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="show-chrome-utilities"]').setValue(false)
+    expect(settings.showChromeUtilities).toBe(false)
+
+    await wrapper.find('[data-testid="options-section-tweaks"]').trigger('click')
+    expect(wrapper.find('[data-testid="confirm-before-quit"]').exists()).toBe(true)
+    await wrapper.find('[data-testid="confirm-before-quit"]').setValue(true)
+    expect(settings.confirmBeforeQuit).toBe(true)
+    wrapper.unmount()
+  })
 })
 
 it('persists Folder/Hex/File Filters compare options and text ignore defaults', async () => {

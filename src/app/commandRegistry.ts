@@ -65,6 +65,18 @@ export type CommandId =
   | 'open.mediaCompare'
   | 'open.versionCompare'
   | 'open.archiveCompare'
+  | 'edit.selectAll'
+  | 'edit.selectAllFiles'
+  | 'edit.selectOrphans'
+  | 'edit.invertSelection'
+  | 'actions.open'
+  | 'actions.openWith'
+  | 'actions.quickCompare'
+  | 'actions.exclude'
+  | 'actions.refreshSelection'
+  | 'view.showSame'
+  | 'session.mergeBaseFolders'
+  | 'session.syncBaseFolders'
   | 'script.run'
   | 'report.save'
 
@@ -126,6 +138,16 @@ export type CommandAction =
         | 'toggle-session-locked'
         | 'run-script'
         | 'save-report'
+        | 'select-all'
+        | 'select-all-files'
+        | 'select-orphans'
+        | 'invert-selection'
+        | 'open-selected'
+        | 'open-with'
+        | 'quick-compare'
+        | 'exclude-selected'
+        | 'refresh-selection'
+        | 'show-same'
     }
 
 export interface CommandShortcut {
@@ -822,6 +844,126 @@ export const commandRegistry: AppCommand[] = [
     defaultShortcut: { keys: ['Ctrl', 'Alt', 'Z'], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'navigate', route: '/compare/folder', titleKey: 'ui.archiveCompare' },
+  },
+  {
+    id: 'edit.selectAll',
+    titleKey: 'ui.selectAll',
+    keywords: ['select', 'all', 'edit'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'A'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'select-all' },
+  },
+  {
+    id: 'edit.selectAllFiles',
+    titleKey: 'ui.selectAllFiles',
+    keywords: ['select', 'files', 'all', 'edit'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'A'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'select-all-files' },
+  },
+  {
+    id: 'edit.selectOrphans',
+    titleKey: 'ui.selectOrphans',
+    keywords: ['select', 'orphans', 'edit'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'O'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'select-orphans' },
+  },
+  {
+    id: 'edit.invertSelection',
+    titleKey: 'ui.invertSelection',
+    keywords: ['invert', 'selection', 'edit'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'I'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'invert-selection' },
+  },
+  {
+    id: 'actions.open',
+    titleKey: 'ui.open',
+    keywords: ['open', 'actions', 'file'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Enter'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'open-selected' },
+  },
+  {
+    id: 'actions.openWith',
+    titleKey: 'ui.openWith',
+    keywords: ['open', 'with', 'actions', 'application'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'W'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'open-with' },
+  },
+  {
+    id: 'actions.quickCompare',
+    titleKey: 'ui.quickCompare',
+    keywords: ['quick', 'compare', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'Q'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'quick-compare' },
+  },
+  {
+    id: 'actions.exclude',
+    titleKey: 'ui.exclude',
+    keywords: ['exclude', 'actions', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'X'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'exclude-selected' },
+  },
+  {
+    id: 'actions.refreshSelection',
+    titleKey: 'ui.refreshSelection',
+    keywords: ['refresh', 'selection', 'actions'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Shift', 'F5'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'refresh-selection' },
+  },
+  {
+    id: 'view.showSame',
+    titleKey: 'ui.showSame',
+    keywords: ['show', 'same', 'view', 'filter'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'S'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'view-action', name: 'show-same' },
+  },
+  {
+    id: 'session.mergeBaseFolders',
+    titleKey: 'ui.mergeBaseFolders',
+    keywords: ['merge', 'base', 'folders', 'session'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'M'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/merge/folder', titleKey: 'ui.folderMerge' },
+  },
+  {
+    id: 'session.syncBaseFolders',
+    titleKey: 'ui.syncBaseFolders',
+    keywords: ['sync', 'base', 'folders', 'session'],
+    enabled: true,
+    visibility: 'view',
+    defaultShortcut: { keys: ['Ctrl', 'Alt', 'Shift', 'Y'], scope: 'global' },
+    placements: ['command-palette', 'menu'],
+    action: { type: 'navigate', route: '/sync/folder', titleKey: 'ui.folderSync' },
   },
   {
     id: 'script.run',

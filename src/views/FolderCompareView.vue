@@ -805,6 +805,36 @@ watch(
       case 'sync-now':
       case 'toggle-session-locked':
       case 'workspace-save':
+      case 'select-all':
+        selectVisibleAll()
+        break
+      case 'select-all-files':
+        selectVisibleFiles()
+        break
+      case 'select-orphans':
+        selectVisibleByStatuses(['Left only', 'Right only'], 'ui.orphans')
+        break
+      case 'invert-selection':
+        invertVisibleSelection()
+        break
+      case 'open-selected':
+        openSelectedFile()
+        break
+      case 'open-with':
+        void openSelectedWithAssociatedApplication()
+        break
+      case 'quick-compare':
+        quickCompareSelectedFile()
+        break
+      case 'exclude-selected':
+        excludeSelectedRow()
+        break
+      case 'refresh-selection':
+        void refreshSelectedRow()
+        break
+      case 'show-same':
+        showSameFolderStatuses()
+        break
       case 'run-script':
       case 'save-report':
         break

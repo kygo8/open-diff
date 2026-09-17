@@ -197,7 +197,7 @@ describe('AppLayout command palette', () => {
 
     expect(wrapper.find('[data-testid="about-dialog"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="about-dialog"]').text()).toContain('About Open Diff')
-    expect(wrapper.find('[data-testid="about-dialog"]').text()).toContain('1.1.2')
+    expect(wrapper.find('[data-testid="about-dialog"]').text()).toContain('1.2.0')
   })
 
   it('shows Session Actions Edit Search View Tools Help on Folder Compare', () => {

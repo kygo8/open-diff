@@ -70,7 +70,7 @@ dependencies = [
 
 [[package]]
 name = "archive-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "flate2",
  "rars",
@@ -596,7 +596,7 @@ dependencies = [
 
 [[package]]
 name = "cli-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "diff-core",
  "file-core",
@@ -612,7 +612,7 @@ dependencies = [
 
 [[package]]
 name = "clipboard-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
  "shared-types",
@@ -936,7 +936,7 @@ dependencies = [
 
 [[package]]
 name = "diff-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "format-core",
  "regex",
@@ -1044,7 +1044,7 @@ dependencies = [
 
 [[package]]
 name = "document-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "format-core",
  "logging-core",
@@ -1264,7 +1264,7 @@ dependencies = [
 
 [[package]]
 name = "file-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "encoding_rs",
  "libc",
@@ -1307,7 +1307,7 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "folder-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "diff-core",
  "job-core",
@@ -1318,7 +1318,7 @@ dependencies = [
 
 [[package]]
 name = "folder-merge-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
 ]
@@ -1382,7 +1382,7 @@ dependencies = [
 
 [[package]]
 name = "format-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
 ]
@@ -1802,7 +1802,7 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "hex-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
  "vfs-core",
@@ -2088,7 +2088,7 @@ dependencies = [
 
 [[package]]
 name = "image-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "image",
  "serde",
@@ -2226,7 +2226,7 @@ dependencies = [
 
 [[package]]
 name = "job-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
 ]
@@ -2411,7 +2411,7 @@ checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
 
 [[package]]
 name = "logging-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -2436,7 +2436,7 @@ dependencies = [
 
 [[package]]
 name = "media-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
 ]
@@ -2458,7 +2458,7 @@ dependencies = [
 
 [[package]]
 name = "merge-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
 ]
@@ -2808,7 +2808,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "open-diff-app"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "archive-core",
  "cli-core",
@@ -2966,7 +2966,7 @@ checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 
 [[package]]
 name = "performance-core"
-version = "1.1.2"
+version = "1.2.0"
 
 [[package]]
 name = "phf"
@@ -3085,7 +3085,7 @@ dependencies = [
 
 [[package]]
 name = "policy-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -3403,7 +3403,7 @@ checksum = "349e79c5a22cd52d15fe4d364428b1c1040a6b2025a763c59f645a955ceae1ef"
 
 [[package]]
 name = "registry-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "regf-rs",
  "serde",
@@ -3412,7 +3412,7 @@ dependencies = [
 
 [[package]]
 name = "remote-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "hmac 0.12.1",
  "logging-core",
@@ -3426,7 +3426,7 @@ dependencies = [
 
 [[package]]
 name = "report-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "logging-core",
  "serde",
@@ -3666,7 +3666,7 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "script-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "archive-core",
  "diff-core",
@@ -3898,7 +3898,7 @@ dependencies = [
 
 [[package]]
 name = "session-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -3906,7 +3906,7 @@ dependencies = [
 
 [[package]]
 name = "settings-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "format-core",
  "remote-core",
@@ -3962,7 +3962,7 @@ dependencies = [
 
 [[package]]
 name = "shared-types"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -3970,7 +3970,7 @@ dependencies = [
 
 [[package]]
 name = "shell-core"
-version = "1.1.2"
+version = "1.2.0"
 
 [[package]]
 name = "shlex"
@@ -4014,7 +4014,7 @@ checksum = "8ed6a63f02c8539c91a8685a86f4099661ba3da017932f6ebbea6de3f0fa7c90"
 
 [[package]]
 name = "snapshot-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -4191,7 +4191,7 @@ dependencies = [
 
 [[package]]
 name = "sync-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "folder-core",
  "logging-core",
@@ -4234,7 +4234,7 @@ dependencies = [
 
 [[package]]
 name = "table-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "calamine",
  "rust_xlsxwriter",
@@ -4993,7 +4993,7 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "update-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "policy-core",
  "serde",
@@ -5084,7 +5084,7 @@ checksum = "03c2856837ef78f57382f06b2b8563a2f512f7185d732608fd9176cb3b8edf0e"
 
 [[package]]
 name = "version-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
 ]
@@ -5097,7 +5097,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vfs-core"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
  "serde",
 ]

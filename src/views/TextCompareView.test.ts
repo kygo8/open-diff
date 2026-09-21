@@ -135,6 +135,9 @@ describe('TextCompareView', () => {
     const wrapper = mountTextCompareView()
     const ids = [
       'home',
+      'sessions',
+      'goto',
+      'wrap',
       'all',
       'diffs',
       'same',
@@ -142,9 +145,6 @@ describe('TextCompareView', () => {
       'minor',
       'rules',
       'format',
-      'sessions',
-      'goto',
-      'wrap',
       'copy',
       'next-section',
       'prev-section',

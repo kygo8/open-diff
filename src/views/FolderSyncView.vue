@@ -53,6 +53,7 @@ import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpac
 import { useStatusBarStore } from '@/stores/statusBar'
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import { createChildCompareLaunch } from '@/app/childSession'
 import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { explorerRevealPath, explorerSelectTargetPath } from '@/app/folderCompareExtraActions'
@@ -1261,6 +1262,22 @@ async function saveSyncFolderSnapshot(): Promise<void> {
   }
 }
 
+async function browseSyncFolderSide(side: 'left' | 'right'): Promise<void> {
+  const selected = await pickNativePath({ directory: true })
+
+  if (!selected) {
+    return
+  }
+
+  if (side === 'left') {
+    leftPath.value = selected
+  } else {
+    rightPath.value = selected
+  }
+
+  recordFolderPathCommit()
+}
+
 async function browseSyncFolder(): Promise<void> {
   const selected = await pickNativePath({ directory: true })
 
@@ -1604,12 +1621,21 @@ watch(
       <section class="sync-settings">
         <label>
           <span>{{ $t('ui.leftFolder') }}</span>
-          <input
-            v-model="leftPath"
-            data-testid="folder-sync-left-path"
-            @keydown.enter.prevent="recordFolderPathCommit"
-            @change="recordFolderPathCommit"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="leftPath"
+              class="path-input"
+              data-testid="folder-sync-left-path"
+              :title="leftPath"
+              @keydown.enter.prevent="recordFolderPathCommit"
+              @change="recordFolderPathCommit"
+            />
+            <SessionPathActions
+              browse-test-id="folder-sync-browse-left"
+              :show-save="false"
+              @browse="browseSyncFolderSide('left')"
+            />
+          </div>
           <span
             class="path-side-footer"
             :class="{ 'path-side-footer-muted': !leftSyncPathFooter }"
@@ -1619,12 +1645,21 @@ watch(
         </label>
         <label>
           <span>{{ $t('ui.rightFolder') }}</span>
-          <input
-            v-model="rightPath"
-            data-testid="folder-sync-right-path"
-            @keydown.enter.prevent="recordFolderPathCommit"
-            @change="recordFolderPathCommit"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="rightPath"
+              class="path-input"
+              data-testid="folder-sync-right-path"
+              :title="rightPath"
+              @keydown.enter.prevent="recordFolderPathCommit"
+              @change="recordFolderPathCommit"
+            />
+            <SessionPathActions
+              browse-test-id="folder-sync-browse-right"
+              :show-save="false"
+              @browse="browseSyncFolderSide('right')"
+            />
+          </div>
           <span
             class="path-side-footer"
             :class="{ 'path-side-footer-muted': !rightSyncPathFooter }"
@@ -2250,6 +2285,19 @@ h1 {
 .sync-progress span {
   color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.path-field-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.path-field-row input,
+.path-field-row .path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .sync-settings {

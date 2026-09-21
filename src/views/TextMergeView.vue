@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
-import { mergeTextFiles, saveTextFile } from '@/api/diff'
+import { mergeTextFiles, pathFileStamp, saveTextFile } from '@/api/diff'
+import type { FileStamp } from '@/types/diff'
 import { buildTextMergeReportText, defaultTextMergeReportOutputPath } from '@/app/textMergeReport'
 import { pickNativePath } from '@/app/filePicker'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
@@ -66,6 +68,24 @@ const leftPath = ref('')
 const rightPath = ref('')
 const centerPath = ref('')
 const outputPath = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
+const centerFileStamp = ref<FileStamp | null>(null)
+const outputFileStamp = ref<FileStamp | null>(null)
+
+async function refreshMergePathStamps(): Promise<void> {
+  const [left, right, center, output] = await Promise.all([
+    leftPath.value ? pathFileStamp(leftPath.value).catch(() => null) : Promise.resolve(null),
+    rightPath.value ? pathFileStamp(rightPath.value).catch(() => null) : Promise.resolve(null),
+    centerPath.value ? pathFileStamp(centerPath.value).catch(() => null) : Promise.resolve(null),
+    outputPath.value ? pathFileStamp(outputPath.value).catch(() => null) : Promise.resolve(null),
+  ])
+
+  leftFileStamp.value = left
+  rightFileStamp.value = right
+  centerFileStamp.value = center
+  outputFileStamp.value = output
+}
 
 async function browseMergePath(side: 'left' | 'center' | 'right' | 'output'): Promise<void> {
   const selected = await pickNativePath({ directory: false })
@@ -83,6 +103,8 @@ async function browseMergePath(side: 'left' | 'center' | 'right' | 'output'): Pr
   } else {
     outputPath.value = selected
   }
+
+  await refreshMergePathStamps()
 }
 
 const customOutputPath = ref('')
@@ -422,6 +444,7 @@ async function loadMerge(): Promise<void> {
     scrollPanesToCurrentConflict()
   } finally {
     loadTimeSeconds.value = elapsedSecondsSince(mergeStartedAt)
+    await refreshMergePathStamps()
     loading.value = false
   }
 }
@@ -611,6 +634,10 @@ watch(mergeTarget, (_next, previous) => {
     customOutputPath.value = outputPath.value
   }
   applyMergeTarget()
+})
+
+watch([leftPath, rightPath, centerPath, outputPath], () => {
+  void refreshMergePathStamps()
 })
 
 watch([leftPath, rightPath], () => {
@@ -1071,6 +1098,27 @@ watch(
             />
           </span>
         </span>
+        <div
+          class="bc-path-footers merge-path-footers"
+          data-testid="merge-path-footers"
+        >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            test-id="merge-left-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="centerFileStamp"
+            test-id="merge-center-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            test-id="merge-right-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="outputFileStamp"
+            test-id="merge-output-path-footer"
+          />
+        </div>
         <button
           type="button"
           class="bc-path-load"
@@ -1310,6 +1358,23 @@ watch(
   background: var(--app-surface);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.merge-path-footers {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 20px;
+  padding: 0 2px;
+}
+
+.bc-path-footers .path-side-footer,
+.merge-path-footers .path-meta-footer {
+  min-height: 20px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .path-field-row,

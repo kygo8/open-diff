@@ -25,8 +25,10 @@ describe('text merge chrome density', () => {
     expect(mergeView).toMatch(/chromeKind:\s*'text-session'/)
     expect(mergeView).toMatch(/session-toolbar-wrap/)
     expect(mergeView).toMatch(/SessionSettingsDialog/)
+    expect(mergeView).toMatch(/PathMetaFooter/)
+    expect(mergeView).toMatch(/merge-path-footers/)
     expect(css).toMatch(
-      /\.bc-session-toolbar\.bc-session-toolbar-wrap\s*\{[\s\S]*?min-height:\s*76px/,
+      /\.bc-session-toolbar\.bc-session-toolbar-wrap\s*\{[\s\S]*?min-height:\s*83px/,
     )
     expect(css).toMatch(
       /\.bc-session-toolbar\.bc-session-toolbar-wrap\s*\{[\s\S]*?flex-wrap:\s*wrap/,

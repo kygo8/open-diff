@@ -12,6 +12,9 @@ vi.mock('@/api/diff', () => ({
     bytesWritten: 32,
     backupPath: 'out.txt.bak',
   }),
+  pathFileStamp: vi
+    .fn()
+    .mockResolvedValue({ size: 12, modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30) }),
   mergeTextFiles: vi.fn().mockResolvedValue({
     leftPath: 'left.txt',
     rightPath: 'right.txt',
@@ -54,6 +57,16 @@ describe('TextMergeView', () => {
     expect(
       wrapper.find('[data-testid="merge-session-toolbar-bar"]').attributes('data-toolbar-wrap'),
     ).toBe('true')
+  })
+
+  it('renders capture-style path meta footers for merge paths', () => {
+    const wrapper = mount(TextMergeView)
+
+    expect(wrapper.find('[data-testid="merge-path-footers"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="merge-left-path-footer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="merge-center-path-footer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="merge-right-path-footer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="merge-output-path-footer"]').exists()).toBe(true)
   })
 
   it('starts without hardcoded merge conflicts', () => {

@@ -56,6 +56,7 @@ import {
 } from '@/app/folderPathNavigation'
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import { createChildCompareLaunch } from '@/app/childSession'
 import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { explorerRevealPath, explorerSelectTargetPath } from '@/app/folderCompareExtraActions'
@@ -1400,6 +1401,26 @@ watch(
   { immediate: true },
 )
 
+async function browseMergeFolderSide(side: 'left' | 'base' | 'right' | 'output'): Promise<void> {
+  const selected = await pickNativePath({ directory: true })
+
+  if (!selected) {
+    return
+  }
+
+  if (side === 'left') {
+    leftPath.value = selected
+  } else if (side === 'base') {
+    basePath.value = selected
+  } else if (side === 'right') {
+    rightPath.value = selected
+  } else {
+    outputPath.value = selected
+  }
+
+  recordFolderPathCommit()
+}
+
 async function browseMergeFolder(): Promise<void> {
   const selected = await pickNativePath({ directory: true })
 
@@ -1827,12 +1848,21 @@ watch(
       >
         <label>
           <span>{{ $t('ui.leftFolder') }}</span>
-          <input
-            v-model="leftPath"
-            data-testid="folder-merge-left-path"
-            @keydown.enter.prevent="recordFolderPathCommit"
-            @change="recordFolderPathCommit"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="leftPath"
+              class="path-input"
+              data-testid="folder-merge-left-path"
+              :title="leftPath"
+              @keydown.enter.prevent="recordFolderPathCommit"
+              @change="recordFolderPathCommit"
+            />
+            <SessionPathActions
+              browse-test-id="folder-merge-browse-left"
+              :show-save="false"
+              @browse="browseMergeFolderSide('left')"
+            />
+          </div>
           <span
             class="merge-path-footer"
             data-testid="folder-merge-left-editing-status"
@@ -1844,12 +1874,21 @@ watch(
           data-testid="folder-merge-center-pane"
         >
           <span>{{ $t('ui.baseFolder') }}</span>
-          <input
-            v-model="basePath"
-            data-testid="folder-merge-base-path"
-            @keydown.enter.prevent="recordFolderPathCommit"
-            @change="recordFolderPathCommit"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="basePath"
+              class="path-input"
+              data-testid="folder-merge-base-path"
+              :title="basePath"
+              @keydown.enter.prevent="recordFolderPathCommit"
+              @change="recordFolderPathCommit"
+            />
+            <SessionPathActions
+              browse-test-id="folder-merge-browse-base"
+              :show-save="false"
+              @browse="browseMergeFolderSide('base')"
+            />
+          </div>
           <span
             class="merge-path-footer"
             data-testid="folder-merge-base-editing-status"
@@ -1858,12 +1897,21 @@ watch(
         </label>
         <label>
           <span>{{ $t('ui.rightFolder') }}</span>
-          <input
-            v-model="rightPath"
-            data-testid="folder-merge-right-path"
-            @keydown.enter.prevent="recordFolderPathCommit"
-            @change="recordFolderPathCommit"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="rightPath"
+              class="path-input"
+              data-testid="folder-merge-right-path"
+              :title="rightPath"
+              @keydown.enter.prevent="recordFolderPathCommit"
+              @change="recordFolderPathCommit"
+            />
+            <SessionPathActions
+              browse-test-id="folder-merge-browse-right"
+              :show-save="false"
+              @browse="browseMergeFolderSide('right')"
+            />
+          </div>
           <span
             class="merge-path-footer"
             data-testid="folder-merge-right-editing-status"
@@ -1872,10 +1920,19 @@ watch(
         </label>
         <label>
           <span>{{ $t('ui.outputFolder') }}</span>
-          <input
-            v-model="outputPath"
-            data-testid="folder-merge-output-path"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="outputPath"
+              class="path-input"
+              data-testid="folder-merge-output-path"
+              :title="outputPath"
+            />
+            <SessionPathActions
+              browse-test-id="folder-merge-browse-output"
+              :show-save="false"
+              @browse="browseMergeFolderSide('output')"
+            />
+          </div>
         </label>
         <div class="merge-actions">
           <NButton
@@ -2561,6 +2618,19 @@ h1 {
 .merge-summary span {
   color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.path-field-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.path-field-row input,
+.path-field-row .path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .merge-paths {

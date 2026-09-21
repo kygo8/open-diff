@@ -1122,6 +1122,20 @@ describe('AppLayout command palette', () => {
     expect(menusBlock?.[0]).not.toContain('overflow: auto hidden')
   })
 
+  it('keeps menu bar row and menu label heights aligned with capture CSS px', () => {
+    const source = readFileSync(
+      resolve(dirname(fileURLToPath(import.meta.url)), './AppLayout.vue'),
+      'utf8',
+    )
+    const menusButton = /\.menus button \{[^}]+\}/.exec(source)
+
+    expect(source).toContain('grid-template-rows: 48px minmax(0, 1fr) 24px')
+    expect(source).toContain('grid-template-rows: 24px 24px')
+    expect(menusButton?.[0]).toContain('height: 22px')
+    expect(menusButton?.[0]).toContain('font-size: 12px')
+    expect(menusButton?.[0]).not.toContain('height: 15px')
+  })
+
   it('shows tab context menu actions and closes others', async () => {
     const wrapper = mountAppLayout()
     const tabs = useTabsStore()

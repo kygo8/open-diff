@@ -636,7 +636,7 @@ onMounted(() => {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture-pass18"
+      data-home-density="capture-1to1"
       data-home-chrome="minimal"
     >
       <aside
@@ -650,7 +650,7 @@ onMounted(() => {
             class="bc-tree-row expanded"
           >
             <span>▾</span>
-            <FolderOpen :size="11" />
+            <FolderOpen :size="14" />
             <strong>{{ $t('ui.new') }}</strong>
           </button>
           <button
@@ -664,7 +664,7 @@ onMounted(() => {
             <span></span>
             <component
               :is="entry.icon"
-              :size="11"
+              :size="14"
             />
             <strong>{{ $t(entry.titleKey) }}</strong>
           </button>
@@ -674,7 +674,7 @@ onMounted(() => {
             data-testid="home-tree-auto-saved"
           >
             <span>▾</span>
-            <FolderOpen :size="11" />
+            <FolderOpen :size="14" />
             <strong>{{ $t('ui.autoSaved') }}</strong>
           </button>
           <button
@@ -688,7 +688,7 @@ onMounted(() => {
             @dblclick="openSavedSession(session)"
           >
             <span></span>
-            <FolderOpen :size="10" />
+            <FolderOpen :size="13" />
             <strong>{{ session.name }}</strong>
           </button>
           <button
@@ -697,7 +697,7 @@ onMounted(() => {
             data-testid="home-tree-today"
           >
             <span>▾</span>
-            <FolderOpen :size="11" />
+            <FolderOpen :size="14" />
             <strong>{{ $t('ui.today') }}</strong>
           </button>
           <button
@@ -711,7 +711,7 @@ onMounted(() => {
             @dblclick="openSavedSession(session)"
           >
             <span></span>
-            <FolderOpen :size="10" />
+            <FolderOpen :size="13" />
             <strong>{{ session.name }}</strong>
           </button>
         </section>
@@ -745,7 +745,7 @@ onMounted(() => {
       <main class="bc-home-main">
         <section class="bc-selected-session">
           <div class="bc-selected-title">
-            <FolderOpen :size="11" />
+            <FolderOpen :size="28" />
             <div>
               <strong :title="selectedSessionPreview.name">{{
                 selectedSessionPreview.name
@@ -833,7 +833,7 @@ onMounted(() => {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="10"
+                  :size="48"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1147,17 +1147,17 @@ onMounted(() => {
 .bc-home-workspace {
   display: grid;
 
-  /* Capture-aligned left tree; pass-11 denser non-web-card column toward home.png. */
-  grid-template-columns: minmax(140px, 170px) minmax(0, 1fr);
+  /* home.png tree ~241 CSS px at DPR 2; avoid prior 140–170 crush. */
+  grid-template-columns: minmax(220px, 248px) minmax(0, 1fr);
   background: #ffffff;
 }
 
 .bc-session-tree {
   display: grid;
-  grid-template-rows: 8px minmax(0, 1fr) 9px;
+  grid-template-rows: 28px minmax(0, 1fr) 32px;
   min-width: 0;
   min-height: 0;
-  border-right: 1px solid #a0a0a0;
+  border-right: 1px solid #b9bec7;
   background: #e3e9f2;
 }
 
@@ -1165,12 +1165,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0;
+  padding: 0 8px;
   overflow: hidden;
-  border-bottom: 1px solid #a0a0a0;
-  background: #eceff3;
+  border-bottom: 1px solid #c6ccd5;
+  background: #eef1f5;
   color: #111827;
-  font-size: 9px;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1;
   text-overflow: ellipsis;
@@ -1179,35 +1180,36 @@ onMounted(() => {
 
 .bc-tree-list {
   min-height: 0;
-  padding: 0;
+  padding: 2px 4px;
   overflow: auto;
 }
 
 .bc-tree-row {
   display: grid;
-  grid-template-columns: 6px 7px minmax(0, 1fr);
+  grid-template-columns: 12px 16px minmax(0, 1fr);
   align-items: center;
-  gap: 1px;
+  gap: 2px;
   width: 100%;
-  min-height: 7px;
-  padding: 0;
+  min-height: 17px;
+  padding: 0 2px;
   border: 0;
   background: transparent;
   color: #111827;
-  font-size: 11px;
-  line-height: 7px;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 12px;
+  line-height: 16px;
   text-align: left;
   cursor: pointer;
 }
 
 .bc-tree-row.child {
-  padding-left: 7px;
-  font-size: 11px;
+  padding-left: 18px;
+  font-size: 12px;
 }
 
 .bc-tree-row.saved {
-  padding-left: 16px;
-  font-size: 11px;
+  padding-left: 34px;
+  font-size: 12px;
 }
 
 .bc-tree-row:hover,
@@ -1225,35 +1227,36 @@ onMounted(() => {
 
 .bc-tree-footer {
   display: grid;
-  grid-template-columns: 7px 7px minmax(0, 1fr);
+  grid-template-columns: 30px 30px minmax(0, 1fr);
   align-items: center;
-  gap: 1px;
-  padding: 1px;
-  border-top: 1px solid #a0a0a0;
-  background: #eceff3;
+  gap: 3px;
+  padding: 2px 4px;
+  border-top: 1px solid #c6ccd5;
+  background: #eef1f5;
 }
 
 .bc-tree-footer button {
-  height: 7px;
-  border: 1px solid #a0a0a0;
+  height: 28px;
+  border: 1px solid #c6ccd5;
   border-radius: 0;
   background: #ffffff;
   color: #2f343a;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1;
 }
 
 .bc-tree-footer input {
   width: 100%;
   min-width: 0;
-  height: 7px;
-  padding: 0 1px;
+  height: 22px;
+  padding: 0 6px;
   overflow: hidden;
-  border: 1px solid #a0a0a0;
+  border: 1px solid #c6ccd5;
   border-radius: 0;
   background: #ffffff;
   color: #111827;
-  font-size: 11px;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1270,22 +1273,22 @@ onMounted(() => {
 
 .bc-selected-session {
   display: grid;
-  gap: 0;
-  padding: 0;
+  gap: 8px;
+  padding: 12px 16px 8px;
 }
 
 .bc-selected-title {
   display: flex;
   align-items: flex-start;
-  gap: 1px;
+  gap: 10px;
   min-width: 0;
   color: #111827;
-  font-size: 11px;
+  font-size: 16px;
 }
 
 .bc-selected-title div {
   display: grid;
-  gap: 1px;
+  gap: 4px;
   min-width: 0;
 }
 
@@ -1298,32 +1301,35 @@ onMounted(() => {
 }
 
 .bc-selected-title strong {
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1.1;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.15;
 }
 
 .bc-selected-title span {
   color: #374151;
-  font-size: 11px;
-  line-height: 1.1;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 13px;
+  line-height: 1.2;
 }
 
 .bc-selected-actions {
   display: flex;
-  gap: 1px;
+  gap: 10px;
 }
 
 .bc-selected-actions button {
-  width: 48px;
+  width: 96px;
   max-width: 100%;
-  height: 6px;
+  height: 30px;
   overflow: hidden;
-  border: 1px solid #a0a0a0;
-  border-radius: 0;
+  border: 1px solid #c7cdd6;
+  border-radius: 2px;
   background: #ffffff;
-  color: #1d4f91;
-  font-size: 11px;
+  color: #111827;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
@@ -1341,52 +1347,54 @@ onMounted(() => {
 .new-session-panel,
 .recent-session-panel {
   display: grid;
-  gap: 1px;
+  gap: 8px;
   min-width: 0;
 }
 
 .new-session-panel {
-  padding: 0;
+  padding: 4px 12px 16px;
 }
 
 .new-session-panel h2,
 .recent-session-panel h2 {
   margin: 0;
-  font-size: 11px;
-  line-height: 12px;
+  font-size: 13px;
+  line-height: 18px;
 }
 
 .new-session-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(64px, 1fr));
-  gap: 0 1px;
-  width: min(380px, calc(100% - 2px));
-  margin: 0 auto;
+  grid-template-columns: repeat(3, minmax(140px, 157px));
+  justify-content: center;
+  gap: 8px 12px;
+  width: min(500px, calc(100% - 24px));
+  margin: 4px auto 8px;
 }
 
 .bc-home-instructions {
   display: grid;
-  gap: 0;
+  gap: 2px;
   justify-items: center;
-  margin: 0;
+  margin: 0 0 8px;
   color: #111827;
-  font-size: 11px;
-  line-height: 1;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 12px;
+  line-height: 1.25;
 }
 
 .bc-home-instructions strong {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .new-session-card {
   display: grid;
-  gap: 0;
+  gap: 4px;
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 22px;
-  padding: 0;
+  min-height: 100px;
+  padding: 6px 4px 4px;
   overflow: hidden;
   border: 0;
   border-radius: 0;
@@ -1406,8 +1414,8 @@ onMounted(() => {
 
 .session-card-icon {
   display: inline-grid;
-  width: 14px;
-  height: 11px;
+  width: 48px;
+  height: 48px;
   color: #2f353d;
   place-items: center;
 }
@@ -1416,26 +1424,13 @@ onMounted(() => {
   max-width: 100%;
   margin: 0;
   overflow: hidden;
-  font-size: 11px;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 12px;
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.2;
   text-align: center;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-.new-session-card p {
-  display: -webkit-box;
-  max-width: 100%;
-  margin: 0;
-  overflow: hidden;
-  color: #4b5563;
-  font-size: 11px;
-  line-height: 1.2;
-  text-align: center;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
 }
 
 .bc-home-secondary {
@@ -1743,14 +1738,14 @@ tr:hover .row-actions,
 
 .session-maturity {
   display: inline-flex;
-  margin-top: 0;
-  padding: 0 3px;
-  border-radius: 0;
+  margin-top: 2px;
+  padding: 0 6px;
+  border-radius: 2px;
   background: color-mix(in srgb, var(--accent, #2563eb) 12%, transparent);
   color: var(--text-muted, #64748b);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.01em;
-  line-height: 12px;
+  line-height: 16px;
 }
 
 .session-maturity[data-maturity='limited'] {
@@ -1758,35 +1753,40 @@ tr:hover .row-actions,
 }
 
 .bc-tree-row.selected {
-  background: #c7dcf6;
+  background: #0078d4;
+  color: #ffffff;
+}
+
+.bc-tree-row.selected strong {
+  color: #ffffff;
 }
 
 .session-edit-panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 1px;
-  max-width: 380px;
+  gap: 8px;
+  max-width: 480px;
 }
 
 .session-edit-panel input {
   min-width: 0;
-  height: 14px;
-  padding: 0 2px;
-  border: 1px solid #a0a0a0;
-  border-radius: 0;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid #c6ccd5;
+  border-radius: 2px;
   background: #ffffff;
   color: #111827;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .session-edit-panel button {
-  height: 14px;
-  padding: 0 3px;
-  border: 1px solid #a0a0a0;
-  border-radius: 0;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid #c7cdd6;
+  border-radius: 2px;
   background: #ffffff;
   color: #111827;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
 }
 

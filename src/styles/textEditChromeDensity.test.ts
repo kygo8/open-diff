@@ -26,7 +26,7 @@ describe('text edit chrome density', () => {
     expect(editView).not.toMatch(/\.path-input[^}]*height:\s*16px/)
 
     expect(phrases).toMatch(/EDIT_MODE_SOURCES[\s\S]*?'text-edit'/)
-    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*22px/)
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
   })
 

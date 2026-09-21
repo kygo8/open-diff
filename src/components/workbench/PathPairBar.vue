@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ArrowLeftRight, FolderOpen, Play } from '@lucide/vue'
+import { ArrowLeftRight, Play } from '@lucide/vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import { useI18n } from '@/i18n'
 
 withDefaults(
@@ -91,7 +92,6 @@ onBeforeUnmount(() => window.removeEventListener('click', onDocumentClick))
   <section class="path-pair-bar">
     <label class="path-pair-field">
       <span>{{ leftLabel ?? t('ui.left') }}</span>
-      <FolderOpen :size="8" />
       <input
         :value="left"
         type="text"
@@ -101,14 +101,12 @@ onBeforeUnmount(() => window.removeEventListener('click', onDocumentClick))
         @input="emit('update:left', ($event.target as HTMLInputElement).value)"
         @contextmenu="onPathContextMenu($event, 'left')"
       />
-      <button
+      <SessionPathActions
         v-if="showBrowse"
-        type="button"
-        data-testid="path-pair-browse-left"
-        @click="emit('browse-left')"
-      >
-        {{ t('ui.browse') }}
-      </button>
+        browse-test-id="path-pair-browse-left"
+        :show-save="false"
+        @browse="emit('browse-left')"
+      />
     </label>
     <button
       class="path-pair-swap"
@@ -116,11 +114,10 @@ onBeforeUnmount(() => window.removeEventListener('click', onDocumentClick))
       :aria-label="$t('ui.swapPaths')"
       @click="emit('swap')"
     >
-      <ArrowLeftRight :size="8" />
+      <ArrowLeftRight :size="14" />
     </button>
     <label class="path-pair-field">
       <span>{{ rightLabel ?? t('ui.right') }}</span>
-      <FolderOpen :size="8" />
       <input
         :value="right"
         type="text"
@@ -130,14 +127,12 @@ onBeforeUnmount(() => window.removeEventListener('click', onDocumentClick))
         @input="emit('update:right', ($event.target as HTMLInputElement).value)"
         @contextmenu="onPathContextMenu($event, 'right')"
       />
-      <button
+      <SessionPathActions
         v-if="showBrowse"
-        type="button"
-        data-testid="path-pair-browse-right"
-        @click="emit('browse-right')"
-      >
-        {{ t('ui.browse') }}
-      </button>
+        browse-test-id="path-pair-browse-right"
+        :show-save="false"
+        @browse="emit('browse-right')"
+      />
     </label>
     <button
       class="path-pair-run"
@@ -145,7 +140,7 @@ onBeforeUnmount(() => window.removeEventListener('click', onDocumentClick))
       :disabled="loading"
       @click="emit('run')"
     >
-      <Play :size="8" />
+      <Play :size="14" />
       <span>{{ actionLabel ?? t('ui.compare') }}</span>
     </button>
     <div

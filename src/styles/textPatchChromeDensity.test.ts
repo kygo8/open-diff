@@ -30,7 +30,7 @@ describe('text patch chrome density', () => {
     expect(patchView).not.toMatch(/font-size:\s*9px/)
     expect(patchView).not.toMatch(/min-height:\s*9px/)
 
-    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*22px/)
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
   })
 

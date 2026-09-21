@@ -1,0 +1,103 @@
+<script setup lang="ts">
+import { ChevronDown, FolderOpen, Save } from '@lucide/vue'
+import { useI18n } from '@/i18n'
+
+withDefaults(
+  defineProps<{
+    browseTestId?: string
+    saveTestId?: string
+    canSave?: boolean
+    showSave?: boolean
+  }>(),
+  {
+    browseTestId: undefined,
+    saveTestId: undefined,
+    canSave: false,
+    showSave: true,
+  },
+)
+
+const emit = defineEmits<{
+  browse: []
+  save: []
+}>()
+
+const { t } = useI18n()
+</script>
+
+<template>
+  <div class="bc-path-actions">
+    <button
+      class="bc-path-action bc-path-action-browse"
+      type="button"
+      :data-testid="browseTestId"
+      :aria-label="t('ui.browse')"
+      :title="t('ui.browse')"
+      @click="emit('browse')"
+    >
+      <FolderOpen
+        :size="14"
+        aria-hidden="true"
+      />
+      <ChevronDown
+        :size="10"
+        aria-hidden="true"
+      />
+    </button>
+    <button
+      v-if="showSave"
+      class="bc-path-action bc-path-action-save"
+      type="button"
+      :data-testid="saveTestId"
+      :aria-label="t('ui.save')"
+      :title="t('ui.save')"
+      :disabled="!canSave"
+      @click="emit('save')"
+    >
+      <Save
+        :size="14"
+        aria-hidden="true"
+      />
+    </button>
+  </div>
+</template>
+
+<style scoped>
+.bc-path-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 1px;
+}
+
+.bc-path-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 3px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: #333333;
+  cursor: default;
+  box-sizing: border-box;
+}
+
+.bc-path-action:hover:not(:disabled) {
+  border-color: #a0a0a0;
+  background: #f3f3f3;
+}
+
+.bc-path-action:disabled {
+  opacity: 0.45;
+}
+
+.bc-path-action:focus-visible {
+  outline: 2px solid var(--app-primary, #4aa3ff);
+  outline-offset: 1px;
+}
+</style>

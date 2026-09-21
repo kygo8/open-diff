@@ -1733,6 +1733,41 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+.bc-path-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 1px;
+}
+
+.bc-path-row .bc-path-action,
+.bc-path-row .bc-path-load,
+.bc-path-row .bc-path-swap,
+.path-field-row .bc-path-action,
+.path-pair-field .bc-path-action {
+  height: 20px;
+  min-height: 20px;
+  border-radius: 0;
+  font-size: 11px;
+}
+
+.bc-path-row .bc-path-load,
+.bc-path-row .bc-path-swap {
+  width: auto;
+  min-width: 20px;
+  padding: 0 4px;
+  border: 1px solid #a0a0a0;
+  background: #ffffff;
+  color: #111111;
+}
+
+.bc-path-footers .path-meta-footer,
+.bc-path-footers .path-side-footer {
+  min-height: 20px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
 /* Folder/Sync/Merge session body: cut leftover web page margins */
 .folder-compare-view,
 .folder-sync-view,

@@ -11,24 +11,31 @@ const workspaceManager = readFileSync(
 )
 
 describe('home chrome density', () => {
-  it('keeps Home CTA/tree/header/footer chrome dense toward capture', () => {
-    expect(homeView).toMatch(/data-home-density="capture-pass18"/)
+  it('keeps Home chrome metrics aligned with home.png CSS px', () => {
+    expect(homeView).toMatch(/data-home-density="capture-1to1"/)
     expect(homeView).toMatch(/data-home-chrome="minimal"/)
     expect(homeView).toMatch(
-      /\.bc-session-tree\s*\{[\s\S]*?grid-template-rows:\s*8px minmax\(0, 1fr\) 9px/,
+      /\.bc-home-workspace\s*\{[\s\S]*?grid-template-columns:\s*minmax\(220px, 248px\)/,
     )
-    expect(homeView).toMatch(/\.bc-session-tree header\s*\{[\s\S]*?font-size:\s*9px/)
-    expect(homeView).toMatch(/\.bc-tree-row\s*\{[\s\S]*?min-height:\s*7px/)
-    expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*7px/)
-    expect(homeView).toMatch(/\.bc-tree-footer input\s*\{[\s\S]*?height:\s*7px/)
-    expect(homeView).toMatch(/\.bc-selected-session\s*\{[\s\S]*?padding:\s*0/)
-    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?height:\s*6px/)
-    expect(homeView).toMatch(/\.new-session-grid\s*\{[\s\S]*?gap:\s*0 1px/)
-    expect(homeView).toMatch(/\.session-card-icon\s*\{[\s\S]*?width:\s*14px/)
-    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(homeView).toMatch(
+      /\.bc-session-tree\s*\{[\s\S]*?grid-template-rows:\s*28px minmax\(0, 1fr\) 32px/,
+    )
+    expect(homeView).toMatch(/\.bc-session-tree header\s*\{[\s\S]*?font-size:\s*12px/)
+    expect(homeView).toMatch(/\.bc-tree-row\s*\{[\s\S]*?min-height:\s*17px/)
+    expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*28px/)
+    expect(homeView).toMatch(/\.bc-tree-footer input\s*\{[\s\S]*?height:\s*22px/)
+    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?width:\s*96px/)
+    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?height:\s*30px/)
+    expect(homeView).toMatch(
+      /\.new-session-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3, minmax\(140px, 157px\)\)/,
+    )
+    expect(homeView).toMatch(/\.session-card-icon\s*\{[\s\S]*?width:\s*48px/)
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*100px/)
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(homeView).toMatch(/:size="10"/)
-    expect(homeView).toMatch(/\.new-session-panel,\s*\.recent-session-panel\s*\{[\s\S]*?gap:\s*1px/)
+    expect(homeView).toMatch(/:size="48"/)
+    expect(homeView).not.toMatch(/min-height:\s*7px/)
+    expect(homeView).not.toMatch(/height:\s*6px/)
+    expect(homeView).not.toMatch(/height:\s*7px/)
     expect(homeView).toMatch(/\.home-title-count\s*\{[\s\S]*?font-size:\s*11px/)
   })
 

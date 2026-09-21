@@ -240,8 +240,13 @@ export function sessionToolbarHasSeparatorBefore(
     return false
   }
 
+  // Capture Text/Folder MainBar: Home+Sessions cluster, then hairline before All/filters.
   if (previousId === 'home') {
-    return true
+    return id !== 'sessions'
+  }
+
+  if (previousId === 'sessions' || previousId === 'goto' || previousId === 'wrap') {
+    return id === 'all' || id === 'undo' || id === 'next-section'
   }
 
   // Pass 3: measured capture MainBar 0px-gap clusters (ui-capture.json rects).

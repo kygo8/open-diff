@@ -2746,13 +2746,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-compare-view .bc-path-row input {
-  height: 16px !important;
-  padding: 0 3px !important;
-  font-size: 11px !important;
+  height: 20px !important;
+  padding: 0 4px !important;
+  font-size: 12px !important;
 }
 
 .text-compare-view .bc-path-row button {
-  height: 16px !important;
+  height: 20px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }
@@ -2763,10 +2763,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-compare-view .path-side-footer {
-  min-height: 9px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 9px !important;
-  line-height: 9px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .text-compare-view .text-workbench-main {
@@ -2863,10 +2863,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-merge-view .output-path-input {
-  height: 16px !important;
-  padding: 0 3px !important;
-  border-radius: 2px !important;
-  font-size: 11px !important;
+  height: 20px !important;
+  padding: 0 4px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
 }
 
 .text-merge-view .toolbar-button {
@@ -3323,10 +3323,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .text-edit-view .path-input,
 .text-edit-view .find-input {
-  height: 16px !important;
-  padding: 0 3px !important;
-  border-radius: 2px !important;
-  font-size: 11px !important;
+  height: 20px !important;
+  padding: 0 4px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
 }
 
 .text-edit-view .toolbar-button {
@@ -3453,10 +3453,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-patch-view .path-side-footer {
-  min-height: 9px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 9px !important;
-  line-height: 9px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .text-patch-view .status-chip {

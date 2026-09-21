@@ -2137,11 +2137,11 @@ function onVisibilityForDiskChange(): void {
 }
 
 .path-side-footer {
-  min-height: 9px;
+  min-height: 20px;
   margin-top: 0;
   color: var(--od-muted, #6b7280);
-  font-size: 9px;
-  line-height: 9px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .path-side-footer-muted {

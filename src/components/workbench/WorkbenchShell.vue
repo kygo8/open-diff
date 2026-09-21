@@ -201,6 +201,9 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
   if (normalizedTitle.includes('text compare') || normalizedTitle.includes('文本比较')) {
     return [
       item('home', 'ui.home', 'H'),
+      item('sessions', 'ui.sessions', 'S'),
+      item('goto', 'ui.goToLine', '#'),
+      item('wrap', 'ui.wrap', 'W'),
       item('all', 'ui.all', '*'),
       item('diffs', 'ui.diffs', '!='),
       item('same', 'ui.same', '='),
@@ -208,9 +211,6 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
       item('format', 'ui.format', 'F'),
-      item('sessions', 'ui.sessions', 'S'),
-      item('goto', 'ui.goToLine', '#'),
-      item('wrap', 'ui.wrap', 'W'),
       item('copy', 'ui.copy', 'C'),
       item('next-section', 'ui.nextSection', 'N'),
       item('prev-section', 'ui.prevSection', 'P'),

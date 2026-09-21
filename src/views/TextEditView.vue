@@ -1133,13 +1133,13 @@ h1 {
 .path-input,
 .find-input {
   min-width: 0;
-  height: 16px;
-  padding: 0 3px;
+  height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .path-input {

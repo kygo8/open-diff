@@ -96,6 +96,7 @@ export const pictureCompareToolbarOrder = [
 
 export const registryCompareToolbarOrder = [
   'home',
+  'sessions',
   'all',
   'diffs',
   'same',
@@ -110,6 +111,7 @@ export const registryCompareToolbarOrder = [
 
 export const mediaCompareToolbarOrder = [
   'home',
+  'sessions',
   'all',
   'diffs',
   'same',
@@ -124,6 +126,7 @@ export const mediaCompareToolbarOrder = [
 
 export const versionCompareToolbarOrder = [
   'home',
+  'sessions',
   'all',
   'diffs',
   'same',
@@ -296,6 +299,7 @@ const pictureMeta: Record<(typeof pictureCompareToolbarOrder)[number], ToolbarMe
 
 const registryMeta: Record<(typeof registryCompareToolbarOrder)[number], ToolbarMeta> = {
   home: { glyph: 'H', labelKey: 'ui.home' },
+  sessions: { glyph: 'S', labelKey: 'ui.sessions' },
   all: { glyph: '*', labelKey: 'ui.all' },
   diffs: { glyph: '!=', labelKey: 'ui.diffs' },
   same: { glyph: '=', labelKey: 'ui.same' },
@@ -310,6 +314,7 @@ const registryMeta: Record<(typeof registryCompareToolbarOrder)[number], Toolbar
 
 const mediaMeta: Record<(typeof mediaCompareToolbarOrder)[number], ToolbarMeta> = {
   home: { glyph: 'H', labelKey: 'ui.home' },
+  sessions: { glyph: 'S', labelKey: 'ui.sessions' },
   all: { glyph: '*', labelKey: 'ui.all' },
   diffs: { glyph: '!=', labelKey: 'ui.diffs' },
   same: { glyph: '=', labelKey: 'ui.same' },
@@ -324,6 +329,7 @@ const mediaMeta: Record<(typeof mediaCompareToolbarOrder)[number], ToolbarMeta> 
 
 const versionMeta: Record<(typeof versionCompareToolbarOrder)[number], ToolbarMeta> = {
   home: { glyph: 'H', labelKey: 'ui.home' },
+  sessions: { glyph: 'S', labelKey: 'ui.sessions' },
   all: { glyph: '*', labelKey: 'ui.all' },
   diffs: { glyph: '!=', labelKey: 'ui.diffs' },
   same: { glyph: '=', labelKey: 'ui.same' },

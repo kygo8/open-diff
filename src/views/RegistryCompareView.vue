@@ -689,6 +689,7 @@ watch(
 const registrySessionToolbar = computed(() =>
   buildRegistryCompareToolbar({
     home: true,
+    sessions: true,
     all: true,
     diffs: true,
     same: true,
@@ -1598,12 +1599,12 @@ h1 {
 }
 
 .path-side-footer {
-  min-height: 10px;
+  min-height: 20px;
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 9px;
-  line-height: 9px;
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

@@ -9,24 +9,32 @@ const versionView = readFileSync(resolve(root, 'src/views/VersionCompareView.vue
 const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 
 describe('version compare chrome density', () => {
-  it('keeps Version Compare path/status/toolbar/footer chrome dense toward capture', () => {
+  it('keeps Version Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.version-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(
       /\.version-compare-view \.version-path-panel\s*\{[\s\S]*?min-height:\s*20px/,
     )
     expect(css).toMatch(
-      /\.version-compare-view \.version-path-panel input,\s*\.version-compare-view \.version-path-panel button\s*\{[\s\S]*?height:\s*16px/,
+      /\.version-compare-view \.version-path-panel input,\s*\.version-compare-view \.version-path-panel button\s*\{[\s\S]*?height:\s*20px/,
     )
-    expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
 
     expect(versionView).toMatch(/\.version-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(versionView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(versionView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(versionView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(versionView).toMatch(/\.version-path-panel input\s*\{[\s\S]*?height:\s*20px/)
     expect(versionView).toMatch(/chromeKind:\s*'version-session'/)
+    expect(versionView).toMatch(/sessions:\s*true/)
+    expect(versionView).not.toMatch(/font-size:\s*9px/)
+    expect(versionView).not.toMatch(/min-height:\s*9px/)
 
     expect(layout).toMatch(/data-chrome-kind='version-session'[\s\S]*?height:\s*22px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
   })
 
-  it('keeps Version summary/side/report/rules/row chrome dense one more notch toward capture', () => {
+  it('keeps Version summary/side/report/rules/row chrome on capture band', () => {
     expect(css).toMatch(/\.version-compare-view \.version-summary-item[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.version-compare-view \.version-report-panel[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.version-compare-view \.version-rules-panel[\s\S]*?padding:\s*2px 4px/)

@@ -132,12 +132,12 @@ describe('HexCompareView', () => {
     const wrapper = mount(HexCompareView)
     const ids = [
       'home',
+      'sessions',
       'all',
       'diffs',
       'same',
       'rules',
       'format',
-      'sessions',
       'copy',
       'next-diff',
       'prev-diff',

@@ -286,13 +286,13 @@ describe('TableCompareView', () => {
     const wrapper = mountTableCompareView()
     const ids = [
       'home',
+      'sessions',
       'all',
       'diffs',
       'same',
       'minor',
       'rules',
       'format',
-      'sessions',
       'copy',
       'next-diff',
       'prev-diff',

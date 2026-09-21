@@ -9,24 +9,30 @@ const pictureView = readFileSync(resolve(root, 'src/views/PictureCompareView.vue
 const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 
 describe('picture compare chrome density', () => {
-  it('keeps Picture Compare path/status/toolbar/footer chrome dense toward capture', () => {
+  it('keeps Picture Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.picture-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(
       /\.picture-compare-view \.picture-path-panel\s*\{[\s\S]*?min-height:\s*20px/,
     )
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-path-panel input,\s*\.picture-compare-view \.picture-path-panel button\s*\{[\s\S]*?height:\s*16px/,
+      /\.picture-compare-view \.picture-path-panel input,\s*\.picture-compare-view \.picture-path-panel button\s*\{[\s\S]*?height:\s*20px/,
     )
-    expect(css).toMatch(/\.picture-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(css).toMatch(/\.picture-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(css).toMatch(/\.picture-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
 
     expect(pictureView).toMatch(/\.picture-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*20px/)
     expect(pictureView).toMatch(/chromeKind:\s*'picture-session'/)
+    expect(pictureView).not.toMatch(/font-size:\s*9px/)
+    expect(pictureView).not.toMatch(/min-height:\s*9px/)
 
     expect(layout).toMatch(/data-chrome-kind='picture-session'[\s\S]*?height:\s*22px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
   })
 
-  it('keeps Picture Meta/Blend/Tol chrome dense one more notch toward capture', () => {
+  it('keeps Picture Meta/Blend/Tol chrome on capture band', () => {
     expect(css).toMatch(
       /\.picture-compare-view \.picture-options-panel,\s*\.picture-compare-view \.picture-blend-panel,\s*\.picture-compare-view \.picture-metadata-panel[\s\S]*?padding:\s*2px 4px/,
     )
@@ -50,7 +56,7 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/<Tag[\s\S]*?aria-hidden="true"/)
   })
 
-  it('keeps Picture toolbar/pane chrome dense toward Hex/Table/Version rhythm', () => {
+  it('keeps Picture toolbar/pane chrome on Hex/Table/Version rhythm', () => {
     expect(css).toMatch(/\.picture-compare-view \.picture-controls[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.picture-compare-view \.picture-controls input[\s\S]*?height:\s*18px/)
     expect(css).toMatch(/\.picture-compare-view \.picture-side\s*\{[\s\S]*?padding:\s*2px 4px/)

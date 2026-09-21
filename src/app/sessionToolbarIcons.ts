@@ -246,7 +246,7 @@ export function sessionToolbarHasSeparatorBefore(
   }
 
   if (previousId === 'sessions' || previousId === 'goto' || previousId === 'wrap') {
-    return id === 'all' || id === 'undo' || id === 'next-section'
+    return id === 'all' || id === 'undo' || id === 'next-section' || id === 'tol'
   }
 
   // Pass 3: measured capture MainBar 0px-gap clusters (ui-capture.json rects).

@@ -2204,15 +2204,16 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-column: 1;
   grid-row: 1;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
   min-width: 0;
   max-width: 100%;
   height: 24px;
-  padding: 0 2px;
+  padding: 0 8px;
   overflow: hidden;
   border: 0;
   background: #f0f3f9;
   color: #111827;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 12px;
   font-weight: 400;
   text-overflow: ellipsis;
@@ -2228,7 +2229,7 @@ const sourceSessionTypes = new Set<SessionType>([
   gap: 0;
   min-width: 0;
   height: 24px;
-  padding: 0;
+  padding: 0 4px;
   overflow: visible;
   border-top: 1px solid #e0e0e0;
   background: #ffffff;
@@ -2257,10 +2258,11 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button {
   max-width: 9em;
-  height: 15px;
-  padding: 0 2px;
+  height: 22px;
+  padding: 0 8px;
   overflow: hidden;
-  font-size: 11px;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2893,25 +2895,26 @@ html[data-show-sidebar='1'] .sidebar {
 
 .app-shell-dense-chrome .brand {
   height: 24px;
-  padding: 0 2px;
+  padding: 0 8px;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 12px;
 }
 
 .app-shell-dense-chrome .brand :deep(svg) {
-  width: 8px;
-  height: 8px;
+  width: 14px;
+  height: 14px;
 }
 
 .app-shell-dense-chrome .menus {
   gap: 0;
   height: 24px;
-  padding: 0 1px;
+  padding: 0 4px;
 }
 
 .app-shell-dense-chrome .menus button {
-  height: 15px;
-  padding: 0 2px;
-  font-size: 11px;
+  height: 22px;
+  padding: 0 8px;
+  font-size: 12px;
 }
 
 .app-shell-dense-chrome .top-actions {

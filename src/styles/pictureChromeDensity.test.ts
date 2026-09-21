@@ -23,6 +23,8 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/\.picture-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(pictureView).toMatch(/SessionPathActions/)
+    expect(pictureView).toMatch(/PathMetaFooter/)
     expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*20px/)
     expect(pictureView).toMatch(/chromeKind:\s*'picture-session'/)
     expect(pictureView).not.toMatch(/font-size:\s*9px/)

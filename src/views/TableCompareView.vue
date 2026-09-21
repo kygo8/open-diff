@@ -9,6 +9,9 @@ import type {
   TableCompareRequest,
   TableCompareResponse,
 } from '@/types/diff'
+import { pickNativePath } from '@/app/filePicker'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
@@ -22,7 +25,6 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
-import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
@@ -597,23 +599,18 @@ function addManualMapping(): void {
   ]
 }
 
-const leftPathFooterLabel = computed(() => formatTablePathFooter(leftFileStamp.value))
-const rightPathFooterLabel = computed(() => formatTablePathFooter(rightFileStamp.value))
+async function browseTablePath(side: 'left' | 'right'): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
 
-function formatTablePathFooter(stamp: FileStamp | null): string {
-  if (!stamp) {
-    return ''
+  if (!selected) {
+    return
   }
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
-    showMilliseconds: settings.showMillisecondsInTimestamps,
-  })
-
-  if (!modified) {
-    return t('status.bytes', { count: stamp.size })
+  if (side === 'left') {
+    leftPath.value = selected
+  } else {
+    rightPath.value = selected
   }
-
-  return t('status.pathFileMetadata', { bytes: stamp.size, modified })
 }
 
 const tableStatusEncoding = computed(() => {
@@ -967,36 +964,56 @@ watch([leftPath, rightPath], () => {
       <section class="table-source-controls">
         <label>
           <span>{{ $t('ui.leftPath') }}</span>
-          <input
-            v-model="leftPath"
-            type="text"
-            data-testid="table-left-path"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="leftPath"
+              type="text"
+              class="path-input"
+              data-testid="table-left-path"
+              :title="leftPath"
+            />
+            <SessionPathActions
+              browse-test-id="table-browse-left"
+              save-test-id="table-save-left"
+              :can-save="false"
+              @browse="browseTablePath('left')"
+            />
+          </div>
         </label>
         <label>
           <span>{{ $t('ui.rightPath') }}</span>
-          <input
-            v-model="rightPath"
-            type="text"
-            data-testid="table-right-path"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="rightPath"
+              type="text"
+              class="path-input"
+              data-testid="table-right-path"
+              :title="rightPath"
+            />
+            <SessionPathActions
+              browse-test-id="table-browse-right"
+              save-test-id="table-save-right"
+              :can-save="false"
+              @browse="browseTablePath('right')"
+            />
+          </div>
         </label>
         <div
           class="bc-path-footers"
           data-testid="table-path-footers"
         >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
-            data-testid="table-left-path-footer"
-            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
-            data-testid="table-right-path-footer"
-            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            :encoding="leftEncoding || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="table-left-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            :encoding="rightEncoding || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="table-right-path-footer"
+          />
         </div>
         <label>
           <span>{{ $t('ui.tableFormat') }}</span>
@@ -1455,6 +1472,19 @@ h2 {
 
 .table-source-controls {
   grid-template-columns: repeat(4, minmax(140px, 1fr));
+}
+
+.path-field-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.path-field-row input,
+.path-field-row .path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .table-source-controls label {

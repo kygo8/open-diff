@@ -12,6 +12,11 @@ const pathActions = readFileSync(
 )
 const pathMeta = readFileSync(resolve(root, 'src/components/workbench/PathMetaFooter.vue'), 'utf8')
 const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
+const pictureView = readFileSync(resolve(root, 'src/views/PictureCompareView.vue'), 'utf8')
+const mediaView = readFileSync(resolve(root, 'src/views/MediaCompareView.vue'), 'utf8')
+const tableView = readFileSync(resolve(root, 'src/views/TableCompareView.vue'), 'utf8')
+const registryView = readFileSync(resolve(root, 'src/views/RegistryCompareView.vue'), 'utf8')
+const versionView = readFileSync(resolve(root, 'src/views/VersionCompareView.vue'), 'utf8')
 
 describe('path/status strip density', () => {
   it('keeps path bars and footers at capture CSS scale', () => {
@@ -53,6 +58,13 @@ describe('path/status strip density', () => {
     expect(layout).toMatch(
       /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*48px minmax\(0, 1fr\) 20px/,
     )
+  })
+
+  it('rolls shared path actions/footers onto Picture/Media/Table/Registry/Version', () => {
+    for (const source of [pictureView, mediaView, tableView, registryView, versionView]) {
+      expect(source).toMatch(/SessionPathActions/)
+      expect(source).toMatch(/PathMetaFooter/)
+    }
   })
 
   it('fuses path row corners and borders into the shell frame', () => {

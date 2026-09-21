@@ -7,7 +7,6 @@ import { useI18n } from '@/i18n'
 import { formatCompareError } from '@/app/compareError'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useStatusBarStore } from '@/stores/statusBar'
-import { formatPathModifiedAt } from '@/app/pathMetadata'
 import type {
   FileStamp,
   VersionCompareResponse,
@@ -15,6 +14,9 @@ import type {
   VersionFieldStatus,
   VersionSideSummary,
 } from '@/types/diff'
+import { pickNativePath } from '@/app/filePicker'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { buildVersionCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
@@ -409,30 +411,18 @@ function valueText(value?: string): string {
   return value ?? '--'
 }
 
-const leftPathFooterLabel = computed(() =>
-  formatVersionPathFooter(leftFileStamp.value, leftVersion.value.fileVersion),
-)
-const rightPathFooterLabel = computed(() =>
-  formatVersionPathFooter(rightFileStamp.value, rightVersion.value.fileVersion),
-)
+async function browseVersionPath(side: 'left' | 'right'): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
 
-function formatVersionPathFooter(stamp: FileStamp | null, fileVersion: string): string {
-  if (!stamp) {
-    return ''
+  if (!selected) {
+    return
   }
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
-    showMilliseconds: settings.showMillisecondsInTimestamps,
-  })
-  const base = modified
-    ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
-    : t('status.bytes', { count: stamp.size })
-
-  if (!fileVersion) {
-    return base
+  if (side === 'left') {
+    leftPath.value = selected
+  } else {
+    rightPath.value = selected
   }
-
-  return t('status.pathFileMetadataWithDetail', { metadata: base, detail: fileVersion })
 }
 
 async function refreshVersionPathStamps(): Promise<void> {
@@ -587,19 +577,39 @@ watch(
       <section class="version-path-panel">
         <label>
           <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
-          <input
-            v-model="leftPath"
-            type="text"
-            data-testid="version-left-path"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="leftPath"
+              type="text"
+              class="path-input"
+              data-testid="version-left-path"
+              :title="leftPath"
+            />
+            <SessionPathActions
+              browse-test-id="version-browse-left"
+              save-test-id="version-save-left"
+              :can-save="false"
+              @browse="browseVersionPath('left')"
+            />
+          </div>
         </label>
         <label>
           <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
-          <input
-            v-model="rightPath"
-            type="text"
-            data-testid="version-right-path"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="rightPath"
+              type="text"
+              class="path-input"
+              data-testid="version-right-path"
+              :title="rightPath"
+            />
+            <SessionPathActions
+              browse-test-id="version-browse-right"
+              save-test-id="version-save-right"
+              :can-save="false"
+              @browse="browseVersionPath('right')"
+            />
+          </div>
         </label>
         <button
           type="button"
@@ -613,18 +623,18 @@ watch(
           class="bc-path-footers"
           data-testid="version-path-footers"
         >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
-            data-testid="version-left-path-footer"
-            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
-            data-testid="version-right-path-footer"
-            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            :format-label="leftVersion.fileVersion || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="version-left-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            :format-label="rightVersion.fileVersion || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="version-right-path-footer"
+          />
         </div>
       </section>
       <p
@@ -871,6 +881,19 @@ h1 {
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+}
+
+.path-field-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.path-field-row input,
+.path-field-row .path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .version-path-panel label {

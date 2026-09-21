@@ -148,13 +148,13 @@ select {
 }
 
 .workbench-shell-single-session .bc-session-toolbar {
-  min-height: 34px;
+  min-height: 38px;
   border-bottom: 1px solid #a0a0a0;
 }
 
 .workbench-shell-single-session .bc-toolbar-command {
   min-width: 48px;
-  height: 34px;
+  height: 38px;
   padding: 1px 2px 2px;
 }
 
@@ -184,7 +184,7 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair {
   gap: 0 !important;
-  min-height: 16px !important;
+  min-height: 20px !important;
   padding: 0 1px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   background: #f3f3f3 !important;
@@ -205,25 +205,25 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > input,
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > .path-input {
-  height: 12px !important;
-  min-height: 12px !important;
+  height: 20px !important;
+  min-height: 20px !important;
   border-radius: 0 !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > button {
-  height: 12px !important;
-  min-height: 12px !important;
-  padding: 0 2px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 4px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
 }
 
 .app-shell-single-session .path-side-footer {
-  min-height: 6px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 6px !important;
-  line-height: 6px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .app-shell-single-session .folder-toolbar .folder-criteria,
@@ -319,7 +319,7 @@ select {
   align-items: stretch;
   gap: 0;
   min-width: 0;
-  min-height: 34px;
+  min-height: 38px;
   padding: 0 1px;
   overflow: auto hidden;
   border-bottom: 1px solid #a0a0a0;
@@ -330,7 +330,7 @@ select {
 
 .bc-toolbar-command {
   display: grid;
-  grid-template-rows: 16px auto;
+  grid-template-rows: 20px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
@@ -338,7 +338,7 @@ select {
   width: auto;
   min-width: 48px;
   max-width: 96px;
-  height: 34px;
+  height: 38px;
   padding: 1px 2px 2px;
   overflow: hidden;
   border: 0;
@@ -398,14 +398,14 @@ select {
 }
 
 .bc-session-toolbar-compact {
-  min-height: 34px;
+  min-height: 38px;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-command {
-  grid-template-rows: 16px auto;
+  grid-template-rows: 20px auto;
   min-width: 40px;
   max-width: 80px;
-  height: 34px;
+  height: 38px;
   padding: 1px 2px;
   font-size: 10px;
   line-height: 11px;
@@ -735,7 +735,7 @@ select {
   gap: 0;
   min-width: 0;
   height: auto;
-  min-height: 16px;
+  min-height: 20px;
   padding: 0;
   overflow: visible;
   border-bottom: 1px solid #a0a0a0;
@@ -745,12 +745,12 @@ select {
 .workbench-toolbar select,
 .workbench-toolbar input,
 .path-pair-bar input {
-  height: 12px;
+  height: 20px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-canvas);
   color: var(--app-text);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .workbench-toolbar button,
@@ -764,8 +764,8 @@ select {
   min-width: 0;
   max-width: 12em;
   height: auto;
-  min-height: 12px;
-  padding: 1px 2px;
+  min-height: 20px;
+  padding: 1px 4px;
   overflow: hidden;
   border: 1px solid transparent;
   border-radius: 0;
@@ -811,8 +811,8 @@ select {
 
 .path-pair-bar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 12px minmax(0, 1fr) auto;
-  min-height: 16px;
+  grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr) auto;
+  min-height: 20px;
   padding: 0 1px;
   background: #f3f3f3;
 }
@@ -840,9 +840,9 @@ select {
 }
 
 .path-pair-swap {
-  width: 12px;
-  min-width: 12px;
-  height: 12px;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
   padding: 0;
 }
 
@@ -850,9 +850,9 @@ select {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 1px;
-  min-height: 16px;
-  padding: 0 1px;
+  gap: 2px;
+  min-height: 20px;
+  padding: 0 2px;
   border-bottom: 1px solid #a0a0a0;
   background: #f3f3f3;
 }
@@ -860,14 +860,14 @@ select {
 .bc-path-row input {
   width: 100%;
   min-width: 0;
-  height: 12px;
-  padding: 0 2px;
+  height: 20px;
+  padding: 0 4px;
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
   color: #111111;
-  font-size: 11px;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -877,8 +877,8 @@ select {
   width: auto;
   min-width: max-content;
   max-width: none;
-  height: 12px;
-  padding: 0 2px;
+  height: 20px;
+  padding: 0 4px;
   overflow: visible;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1075,11 +1075,11 @@ select {
   flex: 1 1 auto !important;
   width: auto !important;
   min-width: 0 !important;
-  height: 18px !important;
-  min-height: 18px !important;
+  height: 20px !important;
+  min-height: 20px !important;
   padding: 0 4px !important;
   overflow: hidden !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
   pointer-events: auto !important;
@@ -1088,8 +1088,8 @@ select {
 
 .folder-toolbar .path-pair .path-field-row > button {
   flex: 0 0 auto !important;
-  height: 18px !important;
-  min-height: 18px !important;
+  height: 20px !important;
+  min-height: 20px !important;
   padding: 0 5px !important;
   font-size: 11px !important;
   white-space: nowrap !important;
@@ -1357,9 +1357,9 @@ select {
 .folder-merge-view .display-filters {
   flex-wrap: wrap !important;
   align-items: center !important;
-  gap: 1px 3px !important;
-  min-height: 11px !important;
-  padding: 0 !important;
+  gap: 2px 6px !important;
+  min-height: 20px !important;
+  padding: 2px 4px !important;
   font-size: 11px !important;
 }
 
@@ -1367,20 +1367,20 @@ select {
   display: inline-flex !important;
   flex: 1 1 280px !important;
   align-items: center !important;
-  gap: 1px !important;
+  gap: 6px !important;
   min-width: 220px !important;
   max-width: 560px !important;
 }
 
 .folder-filter-pattern {
-  height: 11px !important;
-  padding: 0 4px !important;
+  height: 20px !important;
+  padding: 0 6px !important;
   border: 1px solid #bfc4cc !important;
   border-radius: 0 !important;
   background: #ffffff !important;
   color: #111111 !important;
-  font-size: 11px !important;
-  line-height: 11px !important;
+  font-size: 12px !important;
+  line-height: 18px !important;
 }
 
 .folder-filter-strip-actions {
@@ -1393,20 +1393,20 @@ select {
 
 .folder-filter-strip-btn {
   display: grid !important;
-  grid-template-rows: 10px auto !important;
+  grid-template-rows: 18px auto !important;
   align-content: center !important;
   justify-items: center !important;
   box-sizing: border-box !important;
-  min-width: 36px !important;
-  max-width: 48px !important;
-  height: 14px !important;
-  padding: 0 2px !important;
+  min-width: 48px !important;
+  max-width: 64px !important;
+  height: 38px !important;
+  padding: 1px 4px 2px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
   background: transparent !important;
   color: #1a1a1a !important;
-  font-size: 9px !important;
-  line-height: 10px !important;
+  font-size: 11px !important;
+  line-height: 12px !important;
   cursor: default !important;
 }
 
@@ -1727,10 +1727,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .path-side-footer {
-  min-height: 6px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 6px !important;
-  line-height: 6px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 /* Folder/Sync/Merge session body: cut leftover web page margins */
@@ -1746,9 +1746,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-compare-view .folder-select-panel,
 .folder-sync-view .display-filters,
 .folder-merge-view .display-filters {
-  gap: 1px 3px !important;
-  min-height: 11px !important;
-  padding: 0 !important;
+  gap: 2px 6px !important;
+  min-height: 20px !important;
+  padding: 2px 4px !important;
   font-size: 11px !important;
 }
 
@@ -1769,28 +1769,25 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
-.folder-compare-view .tree-head,
-.folder-compare-view .tree-row {
-  min-height: 22px !important;
-}
-
 .folder-compare-view .tree-head {
+  min-height: 22px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   line-height: 16px !important;
 }
 
+.folder-compare-view .tree-row {
+  min-height: 17px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
 .folder-compare-view .tree-head span,
 .folder-compare-view .tree-row span,
 .folder-compare-view .tree-row strong {
-  padding: 2px 6px !important;
+  padding: 1px 6px !important;
   font-size: 11px !important;
-  line-height: 16px !important;
-}
-
-.folder-compare-view .tree-row {
-  font-size: 11px !important;
-  line-height: 16px !important;
+  line-height: 14px !important;
 }
 
 .folder-compare-view .tree-row .name-cell {
@@ -3027,8 +3024,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-compare-view .folder-filter-chrome,
 .folder-sync-view .folder-filter-chrome {
-  min-height: 14px !important;
-  padding: 0 !important;
+  min-height: 38px !important;
+  padding: 0 4px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
+  background: #f0f0f0 !important;
 }
 
 /* Folder Merge chrome densify pass 2 toward Folder Compare denser band */
@@ -3122,8 +3121,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .folder-filter-chrome {
-  min-height: 14px !important;
-  padding: 0 !important;
+  min-height: 38px !important;
+  padding: 0 4px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
+  background: #f0f0f0 !important;
 }
 
 /* Peek panel pixel densify toward capture bottom-pane chrome */

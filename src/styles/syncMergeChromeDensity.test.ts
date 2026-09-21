@@ -17,7 +17,7 @@ describe('folder sync/merge chrome density', () => {
       /\.folder-sync-view \.sync-setting-actions \.n-button[\s\S]*?height:\s*18px/,
     )
     expect(css).toMatch(/\.folder-merge-view \.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.folder-merge-view \.merge-path-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(css).toMatch(/\.folder-merge-view \.merge-path-footer\s*\{[\s\S]*?font-size:\s*8px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*18px/)
 
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)

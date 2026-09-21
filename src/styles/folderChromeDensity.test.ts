@@ -55,6 +55,7 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(css).toMatch(/\.folder-filter-pattern\s*\{/)
   expect(css).toMatch(/\.folder-filter-strip-btn\s*\{/)
   expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*38px/)
+  expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*20px auto/)
   expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*20px/)
   expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?border-radius:\s*0/)
   expect(css).toMatch(/\.folder-compare-view \.folder-filter-chrome,[\s\S]*?min-height:\s*38px/)

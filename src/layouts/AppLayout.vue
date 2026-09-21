@@ -1632,13 +1632,17 @@ const sourceSessionTypes = new Set<SessionType>([
     data-testid="app-shell"
     @click="closeChromeMenus"
   >
-    <header class="menu-bar">
+    <header
+      class="menu-bar"
+      data-menu-density="capture-1to1"
+      data-testid="menu-bar"
+    >
       <button
         class="brand"
         type="button"
         @click="navigate('/', t('ui.home'), 'ui.home')"
       >
-        <Rows3 :size="12" />
+        <Rows3 :size="14" />
         <span>{{ windowTitle }}</span>
       </button>
       <nav
@@ -2138,7 +2142,9 @@ const sourceSessionTypes = new Set<SessionType>([
   padding: 0;
   overflow: visible;
   border-bottom: 1px solid #a0a0a0;
-  background: #ffffff;
+
+  /* Capture title band ~#f0f0f0; menu row paints white over row 2. */
+  background: #f0f0f0;
 }
 
 .menu-panel {
@@ -2162,16 +2168,18 @@ const sourceSessionTypes = new Set<SessionType>([
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   min-width: 0;
-  min-height: 20px;
-  padding: 0 6px;
+  min-height: 22px;
+  padding: 0 8px;
   overflow: hidden;
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--app-text);
-  font-size: 11px;
+  color: #000000;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 12px;
+  line-height: 20px;
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
@@ -2186,7 +2194,8 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menu-command-shortcut {
   color: var(--app-text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 20px;
   letter-spacing: 0.02em;
 }
 
@@ -2211,11 +2220,12 @@ const sourceSessionTypes = new Set<SessionType>([
   padding: 0 8px;
   overflow: hidden;
   border: 0;
-  background: #f0f3f9;
-  color: #111827;
+  background: transparent;
+  color: #000000;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 12px;
   font-weight: 400;
+  line-height: 22px;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
@@ -2229,9 +2239,9 @@ const sourceSessionTypes = new Set<SessionType>([
   gap: 0;
   min-width: 0;
   height: 24px;
-  padding: 0 4px;
+  padding: 0 2px;
   overflow: visible;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #d0d0d0;
   background: #ffffff;
 }
 
@@ -2900,13 +2910,16 @@ html[data-show-sidebar='1'] .sidebar {
 
 .app-shell-dense-chrome .menu-bar {
   grid-template-rows: 24px 24px;
+  background: #f0f0f0;
 }
 
 .app-shell-dense-chrome .brand {
   height: 24px;
   padding: 0 8px;
+  background: transparent;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 12px;
+  line-height: 22px;
 }
 
 .app-shell-dense-chrome .brand :deep(svg) {
@@ -2917,7 +2930,9 @@ html[data-show-sidebar='1'] .sidebar {
 .app-shell-dense-chrome .menus {
   gap: 0;
   height: 24px;
-  padding: 0 4px;
+  padding: 0 2px;
+  border-top: 1px solid #d0d0d0;
+  background: #ffffff;
 }
 
 .app-shell-dense-chrome .menus button {

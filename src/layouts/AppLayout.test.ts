@@ -1128,12 +1128,19 @@ describe('AppLayout command palette', () => {
       'utf8',
     )
     const menusButton = /\.menus button \{[^}]+\}/.exec(source)
+    const menuCommand = /\.menu-panel button,[\s\S]*?\.menu-panel \.menu-command \{[^}]+\}/.exec(
+      source,
+    )
 
     expect(source).toContain('grid-template-rows: 48px minmax(0, 1fr) 24px')
     expect(source).toContain('grid-template-rows: 24px 24px')
+    expect(source).toContain('data-menu-density="capture-1to1"')
+    expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(menusButton?.[0]).toContain('height: 22px')
     expect(menusButton?.[0]).toContain('font-size: 12px')
     expect(menusButton?.[0]).not.toContain('height: 15px')
+    expect(menuCommand?.[0]).toContain('min-height: 22px')
+    expect(menuCommand?.[0]).toContain('font-size: 12px')
   })
 
   it('shows tab context menu actions and closes others', async () => {

@@ -1961,7 +1961,7 @@ function loadShowSessionsInToolbar(): boolean {
   const stored = localStorage.getItem(showSessionsInToolbarStorageKey)
 
   if (stored === null) {
-    return false
+    return true
   }
 
   return stored === '1'

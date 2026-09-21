@@ -926,10 +926,10 @@ function lineNumber(value: number | null): string {
 
 .patch-open-file {
   margin-left: auto;
-  height: 16px;
+  height: 20px;
   padding: 0 5px;
   border: 1px solid var(--app-border, #334155);
-  border-radius: 2px;
+  border-radius: 0;
   background: transparent;
   color: inherit;
   font-size: 11px;
@@ -1131,11 +1131,11 @@ function lineNumber(value: number | null): string {
 }
 
 .path-side-footer {
-  min-height: 9px;
+  min-height: 20px;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 9px;
-  line-height: 9px;
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

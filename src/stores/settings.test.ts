@@ -234,7 +234,7 @@ describe('useSettingsStore', () => {
     expect(store.largeToolbarButtons).toBe(true)
     expect(store.createBackupOnSave).toBe(true)
     expect(store.backupRetentionCount).toBe(1)
-    expect(store.showSessionsInToolbar).toBe(false)
+    expect(store.showSessionsInToolbar).toBe(true)
     expect(store.showGotoInToolbar).toBe(false)
     expect(store.showWrapInToolbar).toBe(false)
     expect(store.showSyncNowInToolbar).toBe(false)

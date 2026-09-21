@@ -32,6 +32,9 @@ export const folderCompareToolbarOrder = [
 
 export const textCompareToolbarOrder = [
   'home',
+  'sessions',
+  'goto',
+  'wrap',
   'all',
   'diffs',
   'same',
@@ -39,9 +42,6 @@ export const textCompareToolbarOrder = [
   'minor',
   'rules',
   'format',
-  'sessions',
-  'goto',
-  'wrap',
   'copy',
   'next-section',
   'prev-section',

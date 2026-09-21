@@ -10,17 +10,23 @@ const diffPanel = readFileSync(resolve(root, 'src/components/diff/TextDiffPanel.
 const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 
 describe('text compare chrome density', () => {
-  it('keeps Text Compare path/status/editor chrome dense toward capture', () => {
+  it('keeps Text Compare path/status/editor chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.text-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.text-compare-view \.bc-path-row\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(css).toMatch(/\.text-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*16px/)
-    expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(css).toMatch(/\.text-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*20px/)
+    expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(css).toMatch(/\.text-compare-view \.diff-header\s*\{[\s\S]*?height:\s*20px/)
 
     expect(textView).toMatch(/\.text-workbench-main\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(textView).toMatch(/\.bc-path-block\s*\{[\s\S]*?gap:\s*1px/)
-    expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(textView).toMatch(/\.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
+    expect(textView).not.toMatch(/font-size:\s*9px/)
+    expect(textView).not.toMatch(/min-height:\s*9px/)
 
     expect(diffPanel).toMatch(/const textDiffRowHeightPx = 18/)
     expect(diffPanel).toMatch(/\.diff-header\s*\{[\s\S]*?height:\s*20px/)
@@ -31,9 +37,12 @@ describe('text compare chrome density', () => {
       /\.split-pane-header,\s*\.pane-header,\s*\.metadata-header\s*\{[\s\S]*?min-height:\s*20px/,
     )
     expect(css).toMatch(/\.split-pane-header\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
+    expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?height:\s*38px/)
+    expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?font-size:\s*11px/)
   })
 
-  it('keeps Text Compare toolbar/gutter/header/wrap chrome dense one more notch', () => {
+  it('keeps Text Compare toolbar/gutter/header/wrap chrome on capture band', () => {
     expect(css).toMatch(/\.text-compare-view \.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
     expect(css).toMatch(/\.text-compare-view \.diff-context-input\s*\{[\s\S]*?height:\s*16px/)
     expect(css).toMatch(/\.text-compare-view \.diff-row\s*\{[\s\S]*?36px minmax\(0, 1fr\) 36px/)

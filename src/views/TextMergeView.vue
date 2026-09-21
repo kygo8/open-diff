@@ -1218,14 +1218,14 @@ watch(
   width: 220px;
   min-width: 0;
   max-width: 100%;
-  height: 16px;
-  padding: 0 3px;
+  height: 20px;
+  padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text);
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }

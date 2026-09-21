@@ -140,8 +140,24 @@ export const versionCompareToolbarOrder = [
 
 export const textPatchToolbarOrder = ['home', 'next-section', 'prev-section'] as const
 
+export const textEditToolbarOrder = [
+  'home',
+  'sessions',
+  'undo',
+  'redo',
+  'cut',
+  'copy',
+  'paste',
+  'delete',
+  'syntax',
+  'font',
+  'goto',
+  'wrap',
+] as const
+
 export const textMergeToolbarOrder = [
   'home',
+  'sessions',
   'all',
   'diffs',
   'same',
@@ -343,6 +359,7 @@ const versionMeta: Record<(typeof versionCompareToolbarOrder)[number], ToolbarMe
 
 const textMergeMeta: Record<(typeof textMergeToolbarOrder)[number], ToolbarMeta> = {
   home: { glyph: 'H', labelKey: 'ui.home' },
+  sessions: { glyph: 'S', labelKey: 'ui.sessions' },
   all: { glyph: '*', labelKey: 'ui.all' },
   diffs: { glyph: '!=', labelKey: 'ui.diffs' },
   same: { glyph: '=', labelKey: 'ui.same' },

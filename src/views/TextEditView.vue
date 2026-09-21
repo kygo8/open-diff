@@ -29,6 +29,14 @@ import { visualForSessionToolbarCommand } from '@/app/sessionToolbarIcons'
 import { pickNativePath } from '@/app/filePicker'
 import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
+import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
+import {
+  loadTextCompareSessionOptions,
+  saveTextCompareSessionOptions,
+  type TextCompareSessionOptions,
+} from '@/app/textCompareSessionOptions'
+import { sessionToolbarHasSeparatorBefore } from '@/app/sessionToolbarIcons'
+import { textEditToolbarOrder } from '@/app/sessionToolbars'
 
 interface LoadedTextDocument {
   path: string
@@ -44,6 +52,8 @@ const sessionLaunch = useSessionLaunchStore()
 const viewActions = useViewActionsStore()
 const tabs = useTabsStore()
 const settings = useSettingsStore()
+const showSessionSettings = ref(false)
+const textSessionOptions = ref<TextCompareSessionOptions>(loadTextCompareSessionOptions())
 const statusBar = useStatusBarStore()
 const router = useRouter()
 const document = ref<LoadedTextDocument | null>(null)
@@ -362,6 +372,27 @@ function deleteEdit(): void {
   updateEditorText('')
 }
 
+function openTextEditSessionSettings(): void {
+  showSessionSettings.value = true
+}
+
+function applyTextEditSessionSettings(
+  payload:
+    | { kind: 'folder'; criteria: unknown }
+    | { kind: 'text'; options: TextCompareSessionOptions }
+    | { kind: 'table'; options: unknown }
+    | { kind: 'hex'; options: unknown }
+    | { kind: 'picture'; options: unknown },
+): void {
+  if (payload.kind !== 'text') {
+    return
+  }
+
+  textSessionOptions.value = payload.options
+  saveTextCompareSessionOptions(payload.options)
+  showSessionSettings.value = false
+}
+
 function goHome(): void {
   tabs.openTab({ title: t('ui.home'), titleKey: 'ui.home', route: '/', dirty: false })
   void router.push('/')
@@ -370,6 +401,12 @@ function goHome(): void {
 function runTextEditCommand(commandId: string): void {
   if (commandId === 'home') {
     goHome()
+
+    return
+  }
+
+  if (commandId === 'sessions') {
+    openTextEditSessionSettings()
 
     return
   }
@@ -607,6 +644,12 @@ watch(
 
     if (actionName === 'reload') {
       void openDocument()
+
+      return
+    }
+
+    if (actionName === 'session-settings') {
+      openTextEditSessionSettings()
     }
   },
 )
@@ -703,35 +746,74 @@ function onFontSizeChange(event: Event): void {
   settings.setFontSize(Math.min(24, Math.max(12, Math.round(next))))
 }
 
-const textEditToolbarCommands = computed(() =>
-  [
-    { id: 'home', glyph: 'H', labelKey: 'ui.home', enabled: true },
-    { id: 'undo', glyph: 'U', labelKey: 'ui.undo', enabled: undoStack.value.length > 0 },
-    { id: 'redo', glyph: 'R', labelKey: 'ui.redo', enabled: redoStack.value.length > 0 },
-    { id: 'cut', glyph: 'X', labelKey: 'ui.cut', enabled: hasEditorContent.value },
-    { id: 'copy', glyph: 'C', labelKey: 'ui.copy', enabled: hasEditorContent.value },
-    {
-      id: 'paste',
-      glyph: 'P',
-      labelKey: 'ui.paste',
-      enabled: canPaste.value || document.value !== null,
-    },
-    { id: 'delete', glyph: 'D', labelKey: 'ui.delete', enabled: hasEditorContent.value },
-    { id: 'syntax', glyph: 'S', labelKey: 'ui.syntax', enabled: true },
-    { id: 'font', glyph: 'A', labelKey: 'ui.font', enabled: true },
-    { id: 'goto', glyph: '#', labelKey: 'ui.goToLine', enabled: hasEditorContent.value },
-    { id: 'wrap', glyph: 'W', labelKey: 'ui.wrap', enabled: true },
-  ].map((command) => {
-    const visual = visualForSessionToolbarCommand(command.id)
+const textEditToolbarCommands = computed(() => {
+  const enabledById: Record<(typeof textEditToolbarOrder)[number], boolean> = {
+    home: true,
+    sessions: true,
+    undo: undoStack.value.length > 0,
+    redo: redoStack.value.length > 0,
+    cut: hasEditorContent.value,
+    copy: hasEditorContent.value,
+    paste: canPaste.value || document.value !== null,
+    delete: hasEditorContent.value,
+    syntax: true,
+    font: true,
+    goto: hasEditorContent.value,
+    wrap: true,
+  }
+  const labelById: Record<(typeof textEditToolbarOrder)[number], string> = {
+    home: 'ui.home',
+    sessions: 'ui.sessions',
+    undo: 'ui.undo',
+    redo: 'ui.redo',
+    cut: 'ui.cut',
+    copy: 'ui.copy',
+    paste: 'ui.paste',
+    delete: 'ui.delete',
+    syntax: 'ui.syntax',
+    font: 'ui.font',
+    goto: 'ui.goToLine',
+    wrap: 'ui.wrap',
+  }
+  const glyphById: Record<(typeof textEditToolbarOrder)[number], string> = {
+    home: 'H',
+    sessions: 'S',
+    undo: 'U',
+    redo: 'R',
+    cut: 'X',
+    copy: 'C',
+    paste: 'P',
+    delete: 'D',
+    syntax: 'S',
+    font: 'A',
+    goto: '#',
+    wrap: 'W',
+  }
+
+  return textEditToolbarOrder.map((id, index) => {
+    const previousId = index > 0 ? textEditToolbarOrder[index - 1] : undefined
+    const visual = visualForSessionToolbarCommand(id)
+
+    const active =
+      (id === 'sessions' && showSessionSettings.value) ||
+      (id === 'wrap' && wordWrap.value) ||
+      (id === 'goto' && goToMenuOpen.value) ||
+      (id === 'font' && fontMenuOpen.value) ||
+      (id === 'syntax' && syntaxMenuOpen.value)
 
     return {
-      ...command,
+      id,
+      glyph: glyphById[id],
+      labelKey: labelById[id],
+      enabled: enabledById[id],
+      groupStart: sessionToolbarHasSeparatorBefore(id, previousId),
+      active,
       visual,
       icon: visual?.kind === 'icon' ? visual.icon : undefined,
       plate: visual?.kind === 'plate' ? visual : undefined,
     }
-  }),
-)
+  })
+})
 </script>
 
 <template>
@@ -749,26 +831,14 @@ const textEditToolbarCommands = computed(() =>
       class="bc-toolbar-command"
       type="button"
       :class="{
-        'bc-toolbar-command-active':
-          (command.id === 'wrap' && wordWrap) ||
-          (command.id === 'goto' && goToMenuOpen) ||
-          (command.id === 'font' && fontMenuOpen) ||
-          (command.id === 'syntax' && syntaxMenuOpen),
+        'bc-toolbar-command-active': command.active,
+        'bc-toolbar-command-group-start': command.groupStart,
       }"
       :disabled="!command.enabled"
       :aria-label="$t(command.labelKey)"
-      :aria-pressed="
-        command.id === 'wrap'
-          ? wordWrap
-          : command.id === 'goto'
-            ? goToMenuOpen
-            : command.id === 'font'
-              ? fontMenuOpen
-              : command.id === 'syntax'
-                ? syntaxMenuOpen
-                : undefined
-      "
+      :aria-pressed="command.active ? 'true' : 'false'"
       :data-testid="`text-edit-toolbar-${command.id}`"
+      :data-group-start="command.groupStart ? 'true' : 'false'"
       :data-has-icon="command.visual && settings.showToolbarIcons ? 'true' : 'false'"
       :data-has-plate="command.plate && settings.showToolbarIcons ? 'true' : 'false'"
       :title="$t(command.labelKey)"
@@ -1037,6 +1107,14 @@ const textEditToolbarCommands = computed(() =>
         >{{ '\n' }}</code
       ></pre>
   </section>
+
+  <SessionSettingsDialog
+    :open="showSessionSettings"
+    kind="text"
+    :text-options="textSessionOptions"
+    @close="showSessionSettings = false"
+    @apply="applyTextEditSessionSettings"
+  />
 </template>
 <style scoped>
 .syntax-language-bar {

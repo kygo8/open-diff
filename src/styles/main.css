@@ -328,6 +328,14 @@ select {
   background: #ffffff;
 }
 
+/* Text Merge capture MainBar wraps to ~2×38px instead of horizontal-only scroll. */
+.bc-session-toolbar.bc-session-toolbar-wrap {
+  flex-wrap: wrap;
+  align-content: flex-start;
+  min-height: 76px;
+  overflow: visible;
+}
+
 .bc-toolbar-command {
   display: grid;
   grid-template-rows: 20px auto;

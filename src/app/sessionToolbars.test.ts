@@ -17,6 +17,7 @@ import {
   folderCompareToolbarOrder,
   folderMergeToolbarOrder,
   textMergeToolbarOrder,
+  textEditToolbarOrder,
   folderSyncToolbarOrder,
   hexCompareToolbarOrder,
   mergeSessionTitle,
@@ -287,11 +288,17 @@ describe('sessionToolbars', () => {
     })
 
     expect(toolbar.map((item) => item.id)).toEqual([...textMergeToolbarOrder])
+    expect(toolbar.map((item) => item.id).indexOf('home')).toBe(0)
+    expect(toolbar.map((item) => item.id).indexOf('sessions')).toBe(1)
     expect(toolbar.map((item) => item.id).indexOf('favor-left')).toBeLessThan(
       toolbar.map((item) => item.id).indexOf('next-conflict'),
     )
     expect(toolbar.map((item) => item.id).indexOf('next-conflict')).toBeLessThan(
       toolbar.map((item) => item.id).indexOf('prev-conflict'),
     )
+  })
+
+  it('keeps Text Edit MainBar Home then Sessions before Undo', () => {
+    expect([...textEditToolbarOrder].slice(0, 3)).toEqual(['home', 'sessions', 'undo'])
   })
 })

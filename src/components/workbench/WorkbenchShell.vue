@@ -15,6 +15,8 @@ const props = defineProps<{
   inspectorLabel?: string
   toolbarCommands?: SessionToolbarCommand[]
   toolbarTestIdPrefix?: string
+  /** Allow MainBar to wrap to a second ~38px row (Text Merge capture). */
+  sessionToolbarWrap?: boolean
   /** Home-style frame: no titlebar/toolbar chrome; inspector stays offscreen for tests. */
   compact?: boolean
 }>()
@@ -396,9 +398,11 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
         :class="{
           'bc-session-toolbar-glyphs-only': !settings.showToolbarLabels,
           'bc-session-toolbar-compact': !settings.largeToolbarButtons,
+          'bc-session-toolbar-wrap': props.sessionToolbarWrap,
         }"
         :data-testid="`${testIdPrefix}-bar`"
         :data-large-buttons="settings.largeToolbarButtons ? 'true' : 'false'"
+        :data-toolbar-wrap="props.sessionToolbarWrap ? 'true' : 'false'"
       >
         <button
           v-for="toolbarItem in toolbarItems"

@@ -3935,7 +3935,7 @@ onUnmounted(() => {
       <section
         v-show="showPeekPanel"
         class="folder-peek-panel"
-        data-peek-density="capture-pass11"
+        data-peek-density="capture-1to1"
         data-testid="folder-peek-panel"
       >
         <header>
@@ -4990,7 +4990,7 @@ onUnmounted(() => {
 
 .folder-filter-strip-btn {
   display: grid;
-  grid-template-rows: 18px auto;
+  grid-template-rows: 20px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
@@ -5679,17 +5679,17 @@ onUnmounted(() => {
   border-radius: 0;
   background: #ffffff;
   font-size: 11px;
-  line-height: 12px;
+  line-height: 14px;
 }
 
 .folder-peek-panel header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2px;
-  min-height: 10px;
+  gap: 4px;
+  min-height: 20px;
   margin: 0;
-  padding: 0;
+  padding: 2px 4px;
   border-bottom: 1px solid #dfe3e8;
 }
 
@@ -5701,15 +5701,15 @@ onUnmounted(() => {
 
 .folder-peek-panel dt {
   color: #5a6270;
-  font-size: 9px;
-  line-height: 10px;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .folder-peek-panel dd {
   margin: 0;
   color: #000000;
   font-size: 11px;
-  line-height: 12px;
+  line-height: 14px;
   word-break: break-all;
 }
 
@@ -5722,7 +5722,7 @@ onUnmounted(() => {
 
 .peek-column {
   min-width: 0;
-  padding: 0 1px;
+  padding: 2px 4px;
   border: 1px solid #dfe3e8;
   background: #fafafa;
 }
@@ -5734,16 +5734,16 @@ onUnmounted(() => {
 
 .peek-column > strong {
   display: block;
-  margin: 0;
+  margin: 0 0 2px;
   color: #1a1a1a;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 11px;
+  line-height: 14px;
 }
 
 .peek-status-block {
   margin-top: 0;
-  padding: 1px 0 0;
+  padding: 2px 4px 0;
   border-top: 1px solid #dfe3e8;
 }
 

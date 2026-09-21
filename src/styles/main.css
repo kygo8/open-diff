@@ -1401,7 +1401,7 @@ select {
 
 .folder-filter-strip-btn {
   display: grid !important;
-  grid-template-rows: 18px auto !important;
+  grid-template-rows: 20px auto !important;
   align-content: center !important;
   justify-items: center !important;
   box-sizing: border-box !important;
@@ -3178,7 +3178,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   background: #f0f0f0 !important;
 }
 
-/* Peek panel pixel densify toward capture bottom-pane chrome */
+/* Peek panel chrome at capture CSS scale (~20px tabs/header; undo 10px crush) */
 .folder-peek-panel,
 .folder-compare-view .folder-peek-panel,
 .folder-sync-peek-panel,
@@ -3193,16 +3193,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
   background: #ffffff !important;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif !important;
   font-size: 11px !important;
-  line-height: 12px !important;
+  line-height: 14px !important;
 }
 
 .folder-peek-panel header,
 .folder-sync-peek-panel header,
 .folder-merge-peek-panel header {
-  gap: 2px !important;
-  min-height: 10px !important;
+  gap: 4px !important;
+  min-height: 20px !important;
   margin: 0 !important;
-  padding: 0 !important;
+  padding: 2px 4px !important;
   border-bottom: 1px solid #dfe3e8 !important;
 }
 
@@ -3212,7 +3212,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   color: #1a1a1a !important;
   font-size: 11px !important;
   font-weight: 600 !important;
-  line-height: 12px !important;
+  line-height: 14px !important;
 }
 
 .folder-peek-panel header button,
@@ -3221,15 +3221,15 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-peek-panel > button,
 .folder-sync-peek-panel > button,
 .folder-merge-peek-panel > button {
-  height: 10px !important;
-  min-height: 10px !important;
-  padding: 0 4px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
   border: 1px solid #c9cdd3 !important;
   border-radius: 0 !important;
   background: #f3f3f3 !important;
   color: #1a1a1a !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+  font-size: 11px !important;
+  line-height: 18px !important;
 }
 
 .folder-peek-panel header button:hover,
@@ -3245,22 +3245,22 @@ html[data-show-path-bars='0'] .path-pair-bar {
   display: inline-flex !important;
   align-items: stretch !important;
   gap: 0 !important;
-  min-height: 10px !important;
+  min-height: 20px !important;
   margin: 0 !important;
   border-bottom: 1px solid #b8bec6 !important;
 }
 
 .peek-tab {
   box-sizing: border-box !important;
-  min-width: 36px !important;
-  height: 10px !important;
-  padding: 0 5px !important;
+  min-width: 48px !important;
+  height: 20px !important;
+  padding: 0 8px !important;
   border: 0 !important;
   border-right: 1px solid #c9cdd3 !important;
   background: #f3f3f3 !important;
   color: #1a1a1a !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
+  font-size: 11px !important;
+  line-height: 18px !important;
   cursor: default !important;
 }
 
@@ -3289,7 +3289,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .peek-column {
   min-width: 0 !important;
-  padding: 0 1px !important;
+  padding: 2px 4px !important;
   border: 1px solid #dfe3e8 !important;
   background: #fafafa !important;
 }
@@ -3301,16 +3301,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .peek-column > strong {
   display: block !important;
-  margin: 0 !important;
+  margin: 0 0 2px !important;
   color: #1a1a1a !important;
-  font-size: 10px !important;
+  font-size: 11px !important;
   font-weight: 600 !important;
-  line-height: 10px !important;
+  line-height: 14px !important;
 }
 
 .peek-status-block {
   margin-top: 0 !important;
-  padding: 1px 0 0 !important;
+  padding: 2px 4px 0 !important;
   border-top: 1px solid #dfe3e8 !important;
 }
 
@@ -3327,8 +3327,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-peek-panel dl > div {
   display: grid !important;
   gap: 0 !important;
-  min-height: 10px !important;
-  padding: 0 !important;
+  min-height: 20px !important;
+  padding: 1px 0 !important;
 }
 
 .folder-peek-panel dt,
@@ -3336,8 +3336,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-peek-panel dt {
   margin: 0 !important;
   color: #5a6270 !important;
-  font-size: 9px !important;
-  line-height: 10px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
 }
 
 .folder-peek-panel dd,
@@ -3346,7 +3346,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   margin: 0 !important;
   color: #000000 !important;
   font-size: 11px !important;
-  line-height: 12px !important;
+  line-height: 14px !important;
   word-break: break-all !important;
 }
 
@@ -3356,7 +3356,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   margin: 0 !important;
   color: #5a6270 !important;
   font-size: 11px !important;
-  line-height: 12px !important;
+  line-height: 14px !important;
 }
 
 /* Text Edit chrome densify toward Text Compare denser path/toolbar/editor strips */

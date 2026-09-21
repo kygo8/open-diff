@@ -222,13 +222,13 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
   if (normalizedTitle.includes('table compare') || normalizedTitle.includes('表格比较')) {
     return [
       item('home', 'ui.home', 'H'),
+      item('sessions', 'ui.sessions', 'S'),
       item('all', 'ui.all', '*'),
       item('diffs', 'ui.diffs', '!='),
       item('same', 'ui.same', '='),
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
       item('format', 'ui.format', 'F'),
-      item('sessions', 'ui.sessions', 'S'),
       item('copy', 'ui.copy', 'C'),
       item('next-diff', 'ui.nextDiff', 'N'),
       item('prev-diff', 'ui.prevDiff', 'P'),
@@ -240,12 +240,12 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
   if (normalizedTitle.includes('hex compare') || normalizedTitle.includes('十六进制比较')) {
     return [
       item('home', 'ui.home', 'H'),
+      item('sessions', 'ui.sessions', 'S'),
       item('all', 'ui.all', '*'),
       item('diffs', 'ui.diffs', '!='),
       item('same', 'ui.same', '='),
       item('rules', 'ui.rules', 'R'),
       item('format', 'ui.format', 'F'),
-      item('sessions', 'ui.sessions', 'S'),
       item('copy', 'ui.copy', 'C'),
       item('next-diff', 'ui.nextDiff', 'N'),
       item('prev-diff', 'ui.prevDiff', 'P'),
@@ -257,13 +257,13 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
   if (normalizedTitle.includes('picture compare') || normalizedTitle.includes('图片比较')) {
     return [
       item('home', 'ui.home', 'H'),
+      item('sessions', 'ui.sessions', 'S'),
       item('tol', 'ui.tol', 'T'),
       item('range', 'ui.range', 'G'),
       item('blend', 'ui.blend', 'B'),
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
       item('format', 'ui.format', 'F'),
-      item('sessions', 'ui.sessions', 'S'),
       item('swap', 'ui.swap', '<>'),
       item('reload', 'ui.reload', 'R'),
       item('meta', 'ui.meta', 'M'),

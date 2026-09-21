@@ -51,12 +51,12 @@ export const textCompareToolbarOrder = [
 
 export const hexCompareToolbarOrder = [
   'home',
+  'sessions',
   'all',
   'diffs',
   'same',
   'rules',
   'format',
-  'sessions',
   'copy',
   'next-diff',
   'prev-diff',
@@ -66,13 +66,13 @@ export const hexCompareToolbarOrder = [
 
 export const tableCompareToolbarOrder = [
   'home',
+  'sessions',
   'all',
   'diffs',
   'same',
   'minor',
   'rules',
   'format',
-  'sessions',
   'copy',
   'next-diff',
   'prev-diff',
@@ -82,13 +82,13 @@ export const tableCompareToolbarOrder = [
 
 export const pictureCompareToolbarOrder = [
   'home',
+  'sessions',
   'tol',
   'range',
   'blend',
   'minor',
   'rules',
   'format',
-  'sessions',
   'swap',
   'reload',
   'meta',

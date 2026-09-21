@@ -1463,8 +1463,8 @@ h2 {
 .hex-wrap-controls button {
   width: 100%;
   min-width: 0;
-  height: 16px;
-  min-height: 16px;
+  height: 20px;
+  min-height: 20px;
   padding: 0 4px;
   font-size: 11px;
   line-height: 16px;
@@ -1477,8 +1477,8 @@ h2 {
 .hex-wrap-controls strong {
   min-width: 0;
   max-width: 100%;
-  height: 16px;
-  min-height: 16px;
+  height: 20px;
+  min-height: 20px;
   padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
@@ -1677,11 +1677,11 @@ h2 {
 }
 
 .path-side-footer {
-  min-height: 9px;
+  min-height: 20px;
   margin-top: 0;
   color: var(--app-text-muted);
-  font-size: 9px;
-  line-height: 9px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .path-side-footer-muted {

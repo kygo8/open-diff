@@ -1459,19 +1459,21 @@ h2 {
 }
 
 .picture-path-panel input {
-  min-height: 18px;
-  padding: 0 5px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .picture-path-panel button {
-  min-height: 18px;
-  padding: 0 5px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);
@@ -1968,12 +1970,12 @@ h2 {
 }
 
 .path-side-footer {
-  min-height: 9px;
+  min-height: 20px;
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 9px;
-  line-height: 9px;
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

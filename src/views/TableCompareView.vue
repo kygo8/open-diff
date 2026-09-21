@@ -1465,14 +1465,14 @@ h2 {
 .table-source-controls input,
 .table-source-controls select {
   width: 100%;
-  height: 16px;
-  min-height: 16px;
-  padding: 0 6px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .column-map-controls label {
@@ -1783,12 +1783,12 @@ h2 {
 }
 
 .path-side-footer {
-  min-height: 9px;
+  min-height: 20px;
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 9px;
-  line-height: 9px;
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

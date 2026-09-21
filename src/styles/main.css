@@ -1836,13 +1836,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .bc-path-row input {
-  height: 16px !important;
-  padding: 0 3px !important;
-  font-size: 11px !important;
+  height: 20px !important;
+  padding: 0 4px !important;
+  font-size: 12px !important;
 }
 
 .hex-compare-view .bc-path-row button {
-  height: 16px !important;
+  height: 20px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }
@@ -1853,10 +1853,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .path-side-footer {
-  min-height: 9px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 9px !important;
-  line-height: 9px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .hex-compare-view .hex-wrap-controls {
@@ -1870,8 +1870,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .hex-compare-view .hex-wrap-controls select,
 .hex-compare-view .hex-wrap-controls button,
 .hex-compare-view .hex-wrap-controls strong {
-  height: 16px !important;
-  min-height: 16px !important;
+  height: 20px !important;
+  min-height: 20px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
   line-height: 16px !important;
@@ -1936,10 +1936,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .picture-compare-view .picture-path-panel input,
 .picture-compare-view .picture-path-panel button {
-  height: 16px !important;
-  min-height: 16px !important;
-  padding: 0 3px !important;
-  font-size: 11px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 4px !important;
+  font-size: 12px !important;
 }
 
 .picture-compare-view .bc-path-footers {
@@ -1949,10 +1949,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .path-side-footer {
-  min-height: 9px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 9px !important;
-  line-height: 9px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .picture-compare-view .picture-controls,
@@ -2659,11 +2659,11 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .table-compare-view .column-map-controls select,
 .table-compare-view .table-navigation-bar input,
 .table-compare-view .table-navigation-bar button {
-  height: 16px !important;
-  min-height: 16px !important;
-  padding: 0 3px !important;
-  border-radius: 2px !important;
-  font-size: 11px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 4px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
 }
 
 .table-compare-view .table-navigation-bar > strong {
@@ -2680,10 +2680,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .table-compare-view .path-side-footer {
-  min-height: 9px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 9px !important;
-  line-height: 9px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .table-compare-view .column-source-grid,

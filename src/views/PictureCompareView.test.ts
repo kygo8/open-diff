@@ -255,13 +255,13 @@ describe('PictureCompareView', () => {
     const wrapper = mount(PictureCompareView)
     const ids = [
       'home',
+      'sessions',
       'tol',
       'range',
       'blend',
       'minor',
       'rules',
       'format',
-      'sessions',
       'swap',
       'reload',
       'meta',

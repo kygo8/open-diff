@@ -2467,6 +2467,7 @@ const sourceSessionTypes = new Set<SessionType>([
   display: flex;
   gap: 0;
   min-width: 0;
+  min-height: 22px;
   padding: 0;
   overflow: auto hidden;
   border-bottom: 1px solid #a0a0a0;
@@ -2509,8 +2510,9 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-chip {
   display: inline-flex;
-  align-items: center;
+  align-items: stretch;
   min-width: 0;
+  min-height: 22px;
   border: 1px solid #a0a0a0;
   border-bottom: 0;
   border-radius: 0;
@@ -2527,20 +2529,27 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .tab-chip button {
   min-width: 0;
-  height: 11px;
-  padding: 0 2px;
+  height: 22px;
+  padding: 0 8px;
   border: 0;
   background: transparent;
   color: var(--app-text);
   font-size: 11px;
+  line-height: 20px;
   cursor: pointer;
 }
 
 .tab-chip button:first-child {
-  max-width: 160px;
+  max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.tab-chip button:last-child:not(:only-child) {
+  padding: 0 6px;
+  font-size: 12px;
+  line-height: 20px;
 }
 
 .dirty-tab-prompt {

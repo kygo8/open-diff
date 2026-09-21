@@ -364,7 +364,7 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
     }"
     :data-compact="compact ? 'true' : 'false'"
     :data-single-session-frame="preferSingleSessionFrame && !compact ? 'true' : 'false'"
-    data-shell-density="capture-pass18"
+    data-shell-density="capture-1to1"
   >
     <header
       v-if="!compact && !preferSingleSessionFrame"

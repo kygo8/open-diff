@@ -25,7 +25,7 @@ describe('text merge chrome density', () => {
     expect(mergeView).toMatch(/chromeKind:\s*'text-session'/)
     expect(mergeView).not.toMatch(/\.output-path-input\s*\{[^}]*height:\s*16px/)
 
-    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*22px/)
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
   })
 

@@ -2632,23 +2632,23 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: stretch;
   min-width: 0;
-  height: 24px;
-  min-height: 24px;
+  height: 20px;
+  min-height: 20px;
   padding: 0;
   border-top: 1px solid #b8b8b8;
   background: #f0f0f0;
   color: #000000;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 11px;
-  line-height: 22px;
+  line-height: 18px;
 }
 
 .status-bar[data-chrome-kind='folder-pair'] {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  height: 22px;
-  min-height: 22px;
+  height: 20px;
+  min-height: 20px;
   font-size: 11px;
-  line-height: 20px;
+  line-height: 18px;
 }
 
 .status-bar[data-chrome-kind='folder-pair'] .status-bar-pane {
@@ -2668,10 +2668,10 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='table-session'],
 .status-bar[data-chrome-kind='registry-session'],
 .status-bar[data-chrome-kind='clipboard-session'] {
-  height: 22px;
-  min-height: 22px;
+  height: 20px;
+  min-height: 20px;
   font-size: 11px;
-  line-height: 20px;
+  line-height: 18px;
 }
 
 .status-bar[data-chrome-kind='text-session'] .status-bar-pane,
@@ -2880,13 +2880,13 @@ html[data-show-sidebar='1'] .sidebar {
 
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind$='-session']) {
-  /* Keep dense brand/menu at 48px; only the status track shrinks to 22px. */
-  grid-template-rows: 48px minmax(0, 1fr) 22px;
+  /* Keep dense brand/menu at 48px; only the status track shrinks to capture ~20px. */
+  grid-template-rows: 48px minmax(0, 1fr) 20px;
 }
 
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind$='-session']) {
-  grid-template-rows: 48px minmax(0, 1fr) 22px;
+  grid-template-rows: 48px minmax(0, 1fr) 20px;
 }
 
 .app-shell-dense-chrome .menu-bar {

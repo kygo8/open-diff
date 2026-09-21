@@ -141,6 +141,7 @@ import { FOLDER_WATCH_REFRESH_MS } from '@/app/diskChangeReload'
 import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import RemotePathBrowser from '@/components/remote/RemotePathBrowser.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
@@ -3239,15 +3240,14 @@ onUnmounted(() => {
                 @keydown.enter.prevent="recordFolderPathCommit"
                 @change="recordFolderPathCommit"
               />
+              <SessionPathActions
+                browse-test-id="folder-browse-left"
+                :show-save="false"
+                @browse="browseFolder('left')"
+              />
               <button
                 type="button"
-                data-testid="folder-browse-left"
-                @click="browseFolder('left')"
-              >
-                {{ $t('ui.browse') }}
-              </button>
-              <button
-                type="button"
+                class="bc-path-action-text"
                 data-testid="folder-browse-archive-left"
                 @click="browseArchive('left')"
               >
@@ -3299,15 +3299,14 @@ onUnmounted(() => {
                 @keydown.enter.prevent="recordFolderPathCommit"
                 @change="recordFolderPathCommit"
               />
+              <SessionPathActions
+                browse-test-id="folder-browse-right"
+                :show-save="false"
+                @browse="browseFolder('right')"
+              />
               <button
                 type="button"
-                data-testid="folder-browse-right"
-                @click="browseFolder('right')"
-              >
-                {{ $t('ui.browse') }}
-              </button>
-              <button
-                type="button"
+                class="bc-path-action-text"
                 data-testid="folder-browse-archive-right"
                 @click="browseArchive('right')"
               >

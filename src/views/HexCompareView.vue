@@ -16,8 +16,8 @@ import type {
   HexFindMatch,
   HexViewCell,
 } from '@/types/diff'
-import { formatPathModifiedAt } from '@/app/pathMetadata'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { buildHexCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
@@ -541,23 +541,6 @@ watch([leftPath, rightPath], () => {
   syncHexTabTitle()
 })
 
-const leftPathFooterLabel = computed(() => formatHexPathFooter(leftFileStamp.value))
-const rightPathFooterLabel = computed(() => formatHexPathFooter(rightFileStamp.value))
-
-function formatHexPathFooter(stamp: FileStamp | null): string {
-  if (!stamp) {
-    return ''
-  }
-
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
-    showMilliseconds: settings.showMillisecondsInTimestamps,
-  })
-
-  return modified
-    ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
-    : t('status.bytes', { count: stamp.size })
-}
-
 async function refreshHexPathStamps(): Promise<void> {
   const [left, right] = await Promise.all([
     leftPath.value ? pathFileStamp(leftPath.value).catch(() => null) : Promise.resolve(null),
@@ -909,18 +892,14 @@ async function runHexSave(): Promise<void> {
           class="bc-path-footers"
           data-testid="hex-path-footers"
         >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
-            data-testid="hex-left-path-footer"
-            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
-            data-testid="hex-right-path-footer"
-            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            test-id="hex-left-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            test-id="hex-right-path-footer"
+          />
         </div>
         <label>
           <span>{{ $t('ui.viewportWidth') }}</span>

@@ -5,7 +5,8 @@ import { checkTextFileChanged, diffText, exportTextCompareReport, readTextFile }
 import { reportFileExtension } from '@/app/reportExports'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
-import { formatPathModifiedAt } from '@/app/pathMetadata'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import {
   applyOverwriteTyping,
   isInsertToggleKey,
@@ -460,24 +461,14 @@ const findStatus = computed(() => {
 
   return `${String(currentFindIndex.value + 1)} / ${String(findMatches.value.length)}`
 })
-const leftPathFooterLabel = computed(() => formatPathSideFooter(leftFileStamp.value))
-const rightPathFooterLabel = computed(() => formatPathSideFooter(rightFileStamp.value))
+const pathFormatLabel = computed(() => {
+  const format = fileFormats.value.find((item) => item.id === selectedFormatId.value)
 
-function formatPathSideFooter(stamp: FileStamp | null): string {
-  if (!stamp) {
-    return ''
-  }
+  return format?.name ?? 'Everything Else'
+})
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
-    showMilliseconds: settings.showMillisecondsInTimestamps,
-  })
-
-  if (!modified) {
-    return t('status.bytes', { count: stamp.size })
-  }
-
-  return t('status.pathFileMetadata', { bytes: stamp.size, modified })
-}
+const leftPathLineEnding = computed(() => detectLineEnding(left.value))
+const rightPathLineEnding = computed(() => detectLineEnding(right.value))
 
 const comparisonStatus = computed(() => {
   if (loading.value) {
@@ -1712,20 +1703,12 @@ function onVisibilityForDiskChange(): void {
             :title="leftPathLabel"
             :placeholder="$t('ui.remoteUriHint')"
           />
-          <button
-            type="button"
-            data-testid="text-browse-left"
-            @click="browseTextPath('left')"
-          >
-            {{ $t('ui.browse') }}
-          </button>
-          <button
-            type="button"
-            data-testid="swap-text-paths"
-            @click="swapPaths"
-          >
-            &lt;&gt;
-          </button>
+          <SessionPathActions
+            browse-test-id="text-browse-left"
+            save-test-id="text-save-left"
+            :can-save="false"
+            @browse="browseTextPath('left')"
+          />
           <input
             v-model="rightPathLabel"
             type="text"
@@ -1734,38 +1717,54 @@ function onVisibilityForDiskChange(): void {
             :title="rightPathLabel"
             :placeholder="$t('ui.remoteUriHint')"
           />
+          <SessionPathActions
+            browse-test-id="text-browse-right"
+            save-test-id="text-save-right"
+            :can-save="false"
+            @browse="browseTextPath('right')"
+          />
           <button
             type="button"
-            data-testid="text-browse-right"
-            @click="browseTextPath('right')"
-          >
-            {{ $t('ui.browse') }}
-          </button>
-          <button
-            type="button"
+            class="bc-path-load"
             data-testid="load-text-files"
             :disabled="loading || !leftPathLabel || !rightPathLabel"
+            :aria-label="$t('ui.loadFiles')"
+            :title="$t('ui.loadFiles')"
             @click="loadLaunchTextFiles(leftPathLabel, rightPathLabel)"
           >
             {{ $t('ui.loadFiles') }}
+          </button>
+          <button
+            type="button"
+            class="bc-path-swap"
+            data-testid="swap-text-paths"
+            :aria-label="$t('ui.swapPaths')"
+            :title="$t('ui.swapPaths')"
+            @click="swapPaths"
+          >
+            &lt;&gt;
           </button>
         </div>
         <div
           class="bc-path-footers"
           data-testid="text-path-footers"
         >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
-            data-testid="text-left-path-footer"
-            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
-            data-testid="text-right-path-footer"
-            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            :format-label="pathFormatLabel"
+            encoding="UTF-8"
+            :line-ending="leftPathLineEnding"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="text-left-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            :format-label="pathFormatLabel"
+            encoding="UTF-8"
+            :line-ending="rightPathLineEnding"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="text-right-path-footer"
+          />
         </div>
       </section>
       <WorkbenchToolbar class="find-toolbar">

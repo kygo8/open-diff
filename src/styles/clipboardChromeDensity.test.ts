@@ -19,7 +19,7 @@ describe('clipboard compare chrome density', () => {
     expect(clipboardView).toMatch(/\.clipboard-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(clipboardView).toMatch(/chromeKind:\s*'clipboard-session'/)
 
-    expect(layout).toMatch(/data-chrome-kind='clipboard-session'[\s\S]*?height:\s*22px/)
+    expect(layout).toMatch(/data-chrome-kind='clipboard-session'[\s\S]*?height:\s*20px/)
   })
 
   it('keeps Clipboard history pane/entry chrome dense one more notch toward capture', () => {

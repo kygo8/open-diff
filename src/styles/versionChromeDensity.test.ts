@@ -30,7 +30,7 @@ describe('version compare chrome density', () => {
     expect(versionView).not.toMatch(/font-size:\s*9px/)
     expect(versionView).not.toMatch(/min-height:\s*9px/)
 
-    expect(layout).toMatch(/data-chrome-kind='version-session'[\s\S]*?height:\s*22px/)
+    expect(layout).toMatch(/data-chrome-kind='version-session'[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
   })
 

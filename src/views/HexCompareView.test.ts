@@ -485,7 +485,7 @@ describe('HexCompareView', () => {
     expect(wrapper.find('[data-testid="hex-path-footers"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="hex-left-path-footer"]').text()).toMatch(/bytes/)
     expect(wrapper.find('[data-testid="hex-right-path-footer"]').text()).toMatch(/bytes/)
-    expect(wrapper.find('[data-testid="hex-left-path-footer"]').text()).toMatch(/2026-01-15/)
+    expect(wrapper.find('[data-testid="hex-left-path-footer"]').text()).toMatch(/2026\/1\/15/)
   })
 
   it('shows only rows containing byte differences when diff-only mode is enabled', async () => {

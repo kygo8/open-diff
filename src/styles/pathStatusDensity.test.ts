@@ -3,7 +3,15 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
-const css = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), 'main.css'), 'utf8')
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
+const css = readFileSync(resolve(root, 'src/styles/main.css'), 'utf8')
+const pathPair = readFileSync(resolve(root, 'src/components/workbench/PathPairBar.vue'), 'utf8')
+const pathActions = readFileSync(
+  resolve(root, 'src/components/workbench/SessionPathActions.vue'),
+  'utf8',
+)
+const pathMeta = readFileSync(resolve(root, 'src/components/workbench/PathMetaFooter.vue'), 'utf8')
+const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 
 describe('path/status strip density', () => {
   it('keeps path bars and footers at capture CSS scale', () => {
@@ -16,6 +24,35 @@ describe('path/status strip density', () => {
     expect(css).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(css).not.toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*6px/)
+  })
+
+  it('uses icon-only browse/save path actions toward capture chrome', () => {
+    expect(pathActions).toMatch(/FolderOpen/)
+    expect(pathActions).toMatch(/ChevronDown/)
+    expect(pathActions).toMatch(/Save/)
+    expect(pathActions).toMatch(/height:\s*20px/)
+    expect(pathActions).not.toMatch(/\{\{\s*t\('ui\.browse'\)\s*\}\}/)
+    expect(pathPair).toMatch(/SessionPathActions/)
+    expect(pathPair).not.toMatch(/\{\{\s*t\('ui\.browse'\)\s*\}\}/)
+    expect(css).toMatch(/\.bc-path-row \.bc-path-action/)
+  })
+
+  it('keeps path meta footers with capture timestamp/size/encoding chips', () => {
+    expect(pathMeta).toMatch(/path-meta-modified/)
+    expect(pathMeta).toMatch(/path-meta-size/)
+    expect(pathMeta).toMatch(/path-meta-chip/)
+    expect(pathMeta).toMatch(/path-meta-eol/)
+    expect(pathMeta).toMatch(/min-height:\s*20px/)
+    expect(pathMeta).toMatch(/font-size:\s*11px/)
+    expect(pathMeta).toMatch(/buildPathFooterMeta/)
+  })
+
+  it('keeps shared status strip near capture ~20px CSS height', () => {
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*20px/)
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*20px/)
+    expect(layout).toMatch(
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*48px minmax\(0, 1fr\) 20px/,
+    )
   })
 
   it('fuses path row corners and borders into the shell frame', () => {

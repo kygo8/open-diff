@@ -34,7 +34,7 @@ describe('folder sync/merge chrome density', () => {
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?min-height:\s*22px/)
     expect(mergeView).toMatch(/chromeKind:\s*'folder-pair'/)
 
-    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*22px/)
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*20px/)
   })
 
   it('keeps Sync/Merge plan/preview/action chrome dense one more notch vs Folder Compare band', () => {

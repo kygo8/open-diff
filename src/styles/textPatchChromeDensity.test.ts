@@ -26,6 +26,8 @@ describe('text patch chrome density', () => {
     expect(patchView).toMatch(/\.patch-line\s*\{[\s\S]*?line-height:\s*18px/)
     expect(patchView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(patchView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(patchView).toMatch(/SessionPathActions/)
+    expect(patchView).toMatch(/PathMetaFooter/)
     expect(patchView).toMatch(/chromeKind:\s*'text-session'/)
     expect(patchView).not.toMatch(/font-size:\s*9px/)
     expect(patchView).not.toMatch(/min-height:\s*9px/)

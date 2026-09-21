@@ -17,6 +17,11 @@ const mediaView = readFileSync(resolve(root, 'src/views/MediaCompareView.vue'), 
 const tableView = readFileSync(resolve(root, 'src/views/TableCompareView.vue'), 'utf8')
 const registryView = readFileSync(resolve(root, 'src/views/RegistryCompareView.vue'), 'utf8')
 const versionView = readFileSync(resolve(root, 'src/views/VersionCompareView.vue'), 'utf8')
+const hexView = readFileSync(resolve(root, 'src/views/HexCompareView.vue'), 'utf8')
+const textEditView = readFileSync(resolve(root, 'src/views/TextEditView.vue'), 'utf8')
+const textMergeView = readFileSync(resolve(root, 'src/views/TextMergeView.vue'), 'utf8')
+const textPatchView = readFileSync(resolve(root, 'src/views/TextPatchView.vue'), 'utf8')
+const clipboardView = readFileSync(resolve(root, 'src/views/ClipboardCompareView.vue'), 'utf8')
 
 describe('path/status strip density', () => {
   it('keeps path bars and footers at capture CSS scale', () => {
@@ -61,8 +66,30 @@ describe('path/status strip density', () => {
   })
 
   it('rolls shared path actions/footers onto Picture/Media/Table/Registry/Version', () => {
-    for (const source of [pictureView, mediaView, tableView, registryView, versionView]) {
+    for (const source of [
+      pictureView,
+      mediaView,
+      tableView,
+      registryView,
+      versionView,
+      hexView,
+      textEditView,
+      textMergeView,
+      textPatchView,
+    ]) {
       expect(source).toMatch(/SessionPathActions/)
+    }
+    for (const source of [
+      pictureView,
+      mediaView,
+      tableView,
+      registryView,
+      versionView,
+      hexView,
+      textEditView,
+      textPatchView,
+      clipboardView,
+    ]) {
       expect(source).toMatch(/PathMetaFooter/)
     }
   })

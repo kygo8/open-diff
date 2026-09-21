@@ -9,7 +9,6 @@ import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore, type FontFamilyId } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
-import { formatPathModifiedAt } from '@/app/pathMetadata'
 import {
   applyOverwriteTyping,
   isInsertToggleKey,
@@ -27,6 +26,9 @@ import {
 import { resolveGoToLine } from '@/app/textEditNavigation'
 import { anyPathChangedOnDisk, shouldAutoReloadDiskChange } from '@/app/diskChangeReload'
 import { visualForSessionToolbarCommand } from '@/app/sessionToolbarIcons'
+import { pickNativePath } from '@/app/filePicker'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 
 interface LoadedTextDocument {
   path: string
@@ -83,22 +85,6 @@ const fileTitle = computed(() => {
   }
 
   return fileName(document.value.path)
-})
-const metadataLabel = computed(() => {
-  if (!document.value) {
-    return t('status.noDocumentLoaded')
-  }
-
-  const base = t('status.documentMetadata', {
-    encoding: document.value.encoding,
-    lineEnding: document.value.lineEnding,
-    bytes: document.value.fileStamp.size,
-  })
-  const modified = formatPathModifiedAt(document.value.fileStamp.modifiedAtMs, {
-    showMilliseconds: settings.showMillisecondsInTimestamps,
-  })
-
-  return modified ? `${base} | ${modified}` : base
 })
 const dirty = computed(() => editorText.value !== savedText.value)
 const dirtyLabel = computed(() => (dirty.value ? t('status.unsavedChanges') : t('status.saved')))
@@ -168,6 +154,17 @@ onMounted(() => {
     void openDocument()
   }
 })
+
+async function browseTextEditPath(): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
+
+  if (!selected) {
+    return
+  }
+
+  pathInput.value = selected
+  await openDocument()
+}
 
 async function openDocument(): Promise<void> {
   const startedAt = performance.now()
@@ -906,24 +903,27 @@ const textEditToolbarCommands = computed(() =>
         class="path-input"
         data-testid="text-edit-path"
         type="text"
+        :title="pathInput"
         :aria-label="$t('ui.textFilePath')"
       />
-      <NButton
-        size="small"
-        :loading="loading"
+      <SessionPathActions
+        browse-test-id="text-edit-browse"
+        save-test-id="text-edit-save"
+        :can-save="Boolean(document) && !saving"
+        @browse="browseTextEditPath"
+        @save="saveDocument"
+      />
+      <button
+        type="button"
+        class="bc-path-load"
         data-testid="text-edit-open"
+        :disabled="loading || !pathInput"
+        :aria-label="$t('ui.open')"
+        :title="$t('ui.open')"
         @click="openDocument"
-        >{{ $t('ui.open') }}</NButton
       >
-      <NButton
-        size="small"
-        type="primary"
-        :disabled="!document"
-        :loading="saving"
-        data-testid="text-edit-save"
-        @click="saveDocument"
-        >{{ $t('ui.save') }}</NButton
-      >
+        {{ $t('ui.open') }}
+      </button>
       <span
         class="status-chip"
         data-testid="text-edit-dirty"
@@ -931,8 +931,14 @@ const textEditToolbarCommands = computed(() =>
       >
     </section>
 
-    <section class="metadata-row">
-      <span data-testid="text-edit-metadata">{{ metadataLabel }}</span>
+    <section class="metadata-row bc-path-footers">
+      <PathMetaFooter
+        :stamp="document?.fileStamp ?? null"
+        :encoding="document?.encoding"
+        :line-ending="document?.lineEnding"
+        :show-milliseconds="settings.showMillisecondsInTimestamps"
+        test-id="text-edit-metadata"
+      />
       <span data-testid="text-edit-save-status">{{ saveStatus }}</span>
     </section>
 
@@ -1118,6 +1124,27 @@ h1 {
   gap: 4px;
   color: var(--app-text-muted);
   font-size: 11px;
+}
+
+.bc-path-load {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+  font-size: 11px;
+  cursor: default;
+}
+
+.bc-path-load:disabled {
+  opacity: 0.45;
 }
 
 .path-toolbar,

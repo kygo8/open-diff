@@ -5,6 +5,7 @@ import { diffText } from '@/api/diff'
 import { readClipboardTextSource } from '@/app/clipboardSource'
 import { buildClipboardCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
 import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import { useI18n } from '@/i18n'
 import { useTabsStore } from '@/stores/tabs'
@@ -41,6 +42,12 @@ const historyCount = computed(() => t('status.capturedCount', { count: history.v
 const canCompare = computed(() => leftEntryId.value !== null && rightEntryId.value !== null)
 const leftEntry = computed(() => history.value.find((entry) => entry.id === leftEntryId.value))
 const rightEntry = computed(() => history.value.find((entry) => entry.id === rightEntryId.value))
+const leftClipboardStamp = computed(() =>
+  leftEntry.value ? { size: leftEntry.value.characterCount, modifiedAtMs: 0 } : null,
+)
+const rightClipboardStamp = computed(() =>
+  rightEntry.value ? { size: rightEntry.value.characterCount, modifiedAtMs: 0 } : null,
+)
 const diffStats = computed(() => {
   if (!result.value) {
     return t('status.noComparisonYet')
@@ -296,6 +303,22 @@ watch(
         >
       </section>
 
+      <div
+        class="bc-path-footers"
+        data-testid="clipboard-path-footers"
+      >
+        <PathMetaFooter
+          :stamp="leftClipboardStamp"
+          :format-label="leftEntry?.title"
+          test-id="clipboard-left-path-footer"
+        />
+        <PathMetaFooter
+          :stamp="rightClipboardStamp"
+          :format-label="rightEntry?.title"
+          test-id="clipboard-right-path-footer"
+        />
+      </div>
+
       <NAlert
         v-if="error"
         type="error"
@@ -351,6 +374,21 @@ watch(
   </WorkbenchShell>
 </template>
 <style scoped>
+.bc-path-footers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  padding: 0 2px;
+}
+
+.path-side-footer {
+  min-height: 20px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
 .clipboard-compare-view {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);

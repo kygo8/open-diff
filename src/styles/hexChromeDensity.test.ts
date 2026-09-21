@@ -21,6 +21,8 @@ describe('hex compare chrome density', () => {
     expect(hexView).toMatch(/\.hex-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(hexView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(hexView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(hexView).toMatch(/SessionPathActions/)
+    expect(hexView).toMatch(/PathMetaFooter/)
     expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(hexView).toMatch(/chromeKind:\s*'hex-session'/)
     expect(hexView).not.toMatch(/font-size:\s*9px/)

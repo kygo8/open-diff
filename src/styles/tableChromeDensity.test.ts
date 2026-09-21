@@ -24,6 +24,8 @@ describe('table compare chrome density', () => {
     expect(tableView).toMatch(/\.table-grid-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(tableView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(tableView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(tableView).toMatch(/SessionPathActions/)
+    expect(tableView).toMatch(/PathMetaFooter/)
     expect(tableView).toMatch(/chromeKind:\s*'table-session'/)
     expect(tableView).not.toMatch(/font-size:\s*9px/)
     expect(tableView).not.toMatch(/min-height:\s*9px/)

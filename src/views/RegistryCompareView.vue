@@ -19,6 +19,9 @@ import type {
   RegistryValueRow,
   RegistryValueSide,
 } from '@/types/diff'
+import { pickNativePath } from '@/app/filePicker'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import {
@@ -33,7 +36,6 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
-import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
@@ -206,23 +208,18 @@ function applyRegistryResult(result: RegistryCompareResponse): void {
   lastApplyAction.value = ''
 }
 
-const leftPathFooterLabel = computed(() => formatRegistryPathFooter(leftFileStamp.value))
-const rightPathFooterLabel = computed(() => formatRegistryPathFooter(rightFileStamp.value))
+async function browseRegistryHivePath(side: 'left' | 'right'): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
 
-function formatRegistryPathFooter(stamp: FileStamp | null): string {
-  if (!stamp) {
-    return ''
+  if (!selected) {
+    return
   }
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
-    showMilliseconds: settings.showMillisecondsInTimestamps,
-  })
-
-  if (!modified) {
-    return t('status.bytes', { count: stamp.size })
+  if (side === 'left') {
+    leftHivePath.value = selected
+  } else {
+    rightHivePath.value = selected
   }
-
-  return t('status.pathFileMetadata', { bytes: stamp.size, modified })
 }
 
 const registryStatusEncoding = computed(() => {
@@ -859,18 +856,18 @@ function runRegistryToolbarCommand(commandId: string): void {
           class="bc-path-footers"
           data-testid="registry-path-footers"
         >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
-            data-testid="registry-left-path-footer"
-            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
-            data-testid="registry-right-path-footer"
-            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            :encoding="leftEncoding || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="registry-left-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            :encoding="rightEncoding || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="registry-right-path-footer"
+          />
         </div>
       </section>
 
@@ -1107,19 +1104,37 @@ function runRegistryToolbarCommand(commandId: string): void {
         <div class="registry-live-row">
           <label>
             <span>{{ $t('ui.leftHiveFile') }}</span>
-            <input
-              v-model="leftHivePath"
-              data-testid="registry-hive-left-path"
-              type="text"
-            />
+            <div class="path-field-row">
+              <input
+                v-model="leftHivePath"
+                data-testid="registry-hive-left-path"
+                type="text"
+                class="path-input"
+                :title="leftHivePath"
+              />
+              <SessionPathActions
+                browse-test-id="registry-hive-browse-left"
+                :show-save="false"
+                @browse="browseRegistryHivePath('left')"
+              />
+            </div>
           </label>
           <label>
             <span>{{ $t('ui.rightHiveFile') }}</span>
-            <input
-              v-model="rightHivePath"
-              data-testid="registry-hive-right-path"
-              type="text"
-            />
+            <div class="path-field-row">
+              <input
+                v-model="rightHivePath"
+                data-testid="registry-hive-right-path"
+                type="text"
+                class="path-input"
+                :title="rightHivePath"
+              />
+              <SessionPathActions
+                browse-test-id="registry-hive-browse-right"
+                :show-save="false"
+                @browse="browseRegistryHivePath('right')"
+              />
+            </div>
           </label>
           <label>
             <span>{{ $t('ui.hiveRootSubpath') }}</span>
@@ -1224,6 +1239,19 @@ h1 {
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+}
+
+.path-field-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.path-field-row input,
+.path-field-row .path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .registry-input-panel label {

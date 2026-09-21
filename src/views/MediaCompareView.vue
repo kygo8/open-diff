@@ -10,6 +10,9 @@ import type {
   MediaFieldStatus,
   MediaSideSummary,
 } from '@/types/diff'
+import { pickNativePath } from '@/app/filePicker'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { localFileSrc } from '@/app/localFileSrc'
@@ -34,7 +37,6 @@ import { formatCompareError } from '@/app/compareError'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { useSettingsStore } from '@/stores/settings'
-import { formatPathModifiedAt } from '@/app/pathMetadata'
 
 const settings = useSettingsStore()
 const mediaStatuses: MediaFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
@@ -130,30 +132,18 @@ function valueText(value?: string): string {
   return value ?? '--'
 }
 
-const leftPathFooterLabel = computed(() =>
-  formatMediaPathFooter(leftFileStamp.value, leftMedia.value.duration),
-)
-const rightPathFooterLabel = computed(() =>
-  formatMediaPathFooter(rightFileStamp.value, rightMedia.value.duration),
-)
+async function browseMediaPath(side: 'left' | 'right'): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
 
-function formatMediaPathFooter(stamp: FileStamp | null, duration: string): string {
-  if (!stamp) {
-    return ''
+  if (!selected) {
+    return
   }
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
-    showMilliseconds: settings.showMillisecondsInTimestamps,
-  })
-  const base = modified
-    ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
-    : t('status.bytes', { count: stamp.size })
-
-  if (!duration) {
-    return base
+  if (side === 'left') {
+    leftPath.value = selected
+  } else {
+    rightPath.value = selected
   }
-
-  return t('status.pathFileMetadataWithDetail', { metadata: base, detail: duration })
 }
 
 async function refreshMediaPathStamps(): Promise<void> {
@@ -693,19 +683,39 @@ function runMediaToolbarCommand(commandId: string): void {
       <section class="media-path-panel">
         <label>
           <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
-          <input
-            v-model="leftPath"
-            type="text"
-            data-testid="media-left-path"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="leftPath"
+              type="text"
+              class="path-input"
+              data-testid="media-left-path"
+              :title="leftPath"
+            />
+            <SessionPathActions
+              browse-test-id="media-browse-left"
+              save-test-id="media-save-left"
+              :can-save="false"
+              @browse="browseMediaPath('left')"
+            />
+          </div>
         </label>
         <label>
           <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
-          <input
-            v-model="rightPath"
-            type="text"
-            data-testid="media-right-path"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="rightPath"
+              type="text"
+              class="path-input"
+              data-testid="media-right-path"
+              :title="rightPath"
+            />
+            <SessionPathActions
+              browse-test-id="media-browse-right"
+              save-test-id="media-save-right"
+              :can-save="false"
+              @browse="browseMediaPath('right')"
+            />
+          </div>
         </label>
         <button
           type="button"
@@ -720,18 +730,18 @@ function runMediaToolbarCommand(commandId: string): void {
           class="bc-path-footers"
           data-testid="media-path-footers"
         >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
-            data-testid="media-left-path-footer"
-            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
-            data-testid="media-right-path-footer"
-            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            :format-label="leftMedia.duration || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="media-left-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            :format-label="rightMedia.duration || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="media-right-path-footer"
+          />
         </div>
       </section>
       <section
@@ -1075,6 +1085,19 @@ function runMediaToolbarCommand(commandId: string): void {
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+}
+
+.path-field-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.path-field-row input,
+.path-field-row .path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .media-path-panel label {

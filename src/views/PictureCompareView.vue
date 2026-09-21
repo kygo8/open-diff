@@ -5,6 +5,9 @@ import { comparePictureFiles, pathFileStamp, saveTextFile } from '@/api/diff'
 import { buildPictureReportText, defaultPictureReportOutputPath } from '@/app/pictureReport'
 import { localFileSrc } from '@/app/localFileSrc'
 import type { FileStamp, PictureCompareResponse, PictureMetadataRow } from '@/types/diff'
+import { pickNativePath } from '@/app/filePicker'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
@@ -21,7 +24,6 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
-import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
@@ -580,30 +582,18 @@ function updatePixelPreview(side: 'Left' | 'Right', event: MouseEvent): void {
   }
 }
 
-const leftPathFooterLabel = computed(() =>
-  formatPicturePathFooter(leftFileStamp.value, leftPictureDimensions.value),
-)
-const rightPathFooterLabel = computed(() =>
-  formatPicturePathFooter(rightFileStamp.value, rightPictureDimensions.value),
-)
+async function browsePicturePath(side: 'left' | 'right'): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
 
-function formatPicturePathFooter(stamp: FileStamp | null, dimensions: string): string {
-  if (!stamp) {
-    return ''
+  if (!selected) {
+    return
   }
 
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs, {
-    showMilliseconds: settings.showMillisecondsInTimestamps,
-  })
-  const base = modified
-    ? t('status.pathFileMetadata', { bytes: stamp.size, modified })
-    : t('status.bytes', { count: stamp.size })
-
-  if (!dimensions) {
-    return base
+  if (side === 'left') {
+    leftPath.value = selected
+  } else {
+    rightPath.value = selected
   }
-
-  return t('status.pathFileMetadataWithDetail', { metadata: base, detail: dimensions })
 }
 
 async function refreshPicturePathStamps(): Promise<void> {
@@ -730,19 +720,39 @@ async function runPictureCompare(): Promise<void> {
       <section class="picture-path-panel">
         <label>
           <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
-          <input
-            v-model="leftPath"
-            type="text"
-            data-testid="picture-left-path"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="leftPath"
+              type="text"
+              class="path-input"
+              data-testid="picture-left-path"
+              :title="leftPath"
+            />
+            <SessionPathActions
+              browse-test-id="picture-browse-left"
+              save-test-id="picture-save-left"
+              :can-save="false"
+              @browse="browsePicturePath('left')"
+            />
+          </div>
         </label>
         <label>
           <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
-          <input
-            v-model="rightPath"
-            type="text"
-            data-testid="picture-right-path"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="rightPath"
+              type="text"
+              class="path-input"
+              data-testid="picture-right-path"
+              :title="rightPath"
+            />
+            <SessionPathActions
+              browse-test-id="picture-browse-right"
+              save-test-id="picture-save-right"
+              :can-save="false"
+              @browse="browsePicturePath('right')"
+            />
+          </div>
         </label>
         <button
           type="button"
@@ -757,18 +767,18 @@ async function runPictureCompare(): Promise<void> {
           class="bc-path-footers"
           data-testid="picture-path-footers"
         >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !leftPathFooterLabel }"
-            data-testid="picture-left-path-footer"
-            >{{ leftPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !rightPathFooterLabel }"
-            data-testid="picture-right-path-footer"
-            >{{ rightPathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            :format-label="leftPictureDimensions || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="picture-left-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            :format-label="rightPictureDimensions || undefined"
+            :show-milliseconds="settings.showMillisecondsInTimestamps"
+            test-id="picture-right-path-footer"
+          />
         </div>
       </section>
       <p
@@ -1442,6 +1452,19 @@ h2 {
 .picture-path-panel {
   grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
   align-items: end;
+}
+
+.path-field-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.path-field-row input,
+.path-field-row .path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .picture-path-panel label,

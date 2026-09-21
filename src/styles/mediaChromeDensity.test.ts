@@ -21,6 +21,8 @@ describe('media compare chrome density', () => {
     expect(mediaView).toMatch(/\.media-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mediaView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(mediaView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(mediaView).toMatch(/SessionPathActions/)
+    expect(mediaView).toMatch(/PathMetaFooter/)
     expect(mediaView).toMatch(
       /\.media-path-panel input,\s*\.media-path-panel button\s*\{[\s\S]*?height:\s*20px/,
     )

@@ -29,6 +29,8 @@ describe('registry compare chrome density', () => {
     expect(registryView).toMatch(/\.registry-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(registryView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(registryView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(registryView).toMatch(/SessionPathActions/)
+    expect(registryView).toMatch(/PathMetaFooter/)
     expect(registryView).toMatch(/chromeKind:\s*'registry-session'/)
     expect(registryView).toMatch(/sessions:\s*true/)
     expect(registryView).not.toMatch(/font-size:\s*9px/)

@@ -328,11 +328,11 @@ select {
   background: #ffffff;
 }
 
-/* Text Merge capture MainBar wraps to ~2×38px instead of horizontal-only scroll. */
+/* Text Merge capture MainBar wraps to ~2×38px (~83px CSS at DPR≈2) instead of horizontal-only scroll. */
 .bc-session-toolbar.bc-session-toolbar-wrap {
   flex-wrap: wrap;
   align-content: flex-start;
-  min-height: 76px;
+  min-height: 83px;
   overflow: visible;
 }
 

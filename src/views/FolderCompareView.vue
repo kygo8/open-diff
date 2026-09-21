@@ -3242,17 +3242,12 @@ onUnmounted(() => {
               />
               <SessionPathActions
                 browse-test-id="folder-browse-left"
+                archive-test-id="folder-browse-archive-left"
                 :show-save="false"
+                show-archive
                 @browse="browseFolder('left')"
+                @archive="browseArchive('left')"
               />
-              <button
-                type="button"
-                class="bc-path-action-text"
-                data-testid="folder-browse-archive-left"
-                @click="browseArchive('left')"
-              >
-                {{ $t('ui.browseArchive') }}
-              </button>
               <span
                 v-if="leftSideIsArchive"
                 class="archive-side-chip"
@@ -3301,17 +3296,12 @@ onUnmounted(() => {
               />
               <SessionPathActions
                 browse-test-id="folder-browse-right"
+                archive-test-id="folder-browse-archive-right"
                 :show-save="false"
+                show-archive
                 @browse="browseFolder('right')"
+                @archive="browseArchive('right')"
               />
-              <button
-                type="button"
-                class="bc-path-action-text"
-                data-testid="folder-browse-archive-right"
-                @click="browseArchive('right')"
-              >
-                {{ $t('ui.browseArchive') }}
-              </button>
               <span
                 v-if="rightSideIsArchive"
                 class="archive-side-chip"

@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import { ChevronDown, FolderOpen, Save } from '@lucide/vue'
+import { Archive, ChevronDown, FolderOpen, Save } from '@lucide/vue'
 import { useI18n } from '@/i18n'
 
 withDefaults(
   defineProps<{
     browseTestId?: string
     saveTestId?: string
+    archiveTestId?: string
     canSave?: boolean
     showSave?: boolean
+    showArchive?: boolean
   }>(),
   {
     browseTestId: undefined,
     saveTestId: undefined,
+    archiveTestId: undefined,
     canSave: false,
     showSave: true,
+    showArchive: false,
   },
 )
 
 const emit = defineEmits<{
   browse: []
   save: []
+  archive: []
 }>()
 
 const { t } = useI18n()
@@ -41,6 +46,20 @@ const { t } = useI18n()
       />
       <ChevronDown
         :size="10"
+        aria-hidden="true"
+      />
+    </button>
+    <button
+      v-if="showArchive"
+      class="bc-path-action bc-path-action-archive"
+      type="button"
+      :data-testid="archiveTestId"
+      :aria-label="t('ui.browseArchive')"
+      :title="t('ui.browseArchive')"
+      @click="emit('archive')"
+    >
+      <Archive
+        :size="14"
         aria-hidden="true"
       />
     </button>

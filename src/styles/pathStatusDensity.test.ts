@@ -22,6 +22,10 @@ const textEditView = readFileSync(resolve(root, 'src/views/TextEditView.vue'), '
 const textMergeView = readFileSync(resolve(root, 'src/views/TextMergeView.vue'), 'utf8')
 const textPatchView = readFileSync(resolve(root, 'src/views/TextPatchView.vue'), 'utf8')
 const clipboardView = readFileSync(resolve(root, 'src/views/ClipboardCompareView.vue'), 'utf8')
+const folderSyncView = readFileSync(resolve(root, 'src/views/FolderSyncView.vue'), 'utf8')
+const folderMergeView = readFileSync(resolve(root, 'src/views/FolderMergeView.vue'), 'utf8')
+const folderCompareView = readFileSync(resolve(root, 'src/views/FolderCompareView.vue'), 'utf8')
+const textMergeViewForFooter = readFileSync(resolve(root, 'src/views/TextMergeView.vue'), 'utf8')
 
 describe('path/status strip density', () => {
   it('keeps path bars and footers at capture CSS scale', () => {
@@ -40,6 +44,7 @@ describe('path/status strip density', () => {
     expect(pathActions).toMatch(/FolderOpen/)
     expect(pathActions).toMatch(/ChevronDown/)
     expect(pathActions).toMatch(/Save/)
+    expect(pathActions).toMatch(/Archive/)
     expect(pathActions).toMatch(/height:\s*20px/)
     expect(pathActions).not.toMatch(/\{\{\s*t\('ui\.browse'\)\s*\}\}/)
     expect(pathPair).toMatch(/SessionPathActions/)
@@ -92,6 +97,16 @@ describe('path/status strip density', () => {
     ]) {
       expect(source).toMatch(/PathMetaFooter/)
     }
+  })
+
+  it('finishes Folder archive/browse and Text Merge path footers on shared chrome', () => {
+    expect(folderCompareView).toMatch(/show-archive/)
+    expect(folderCompareView).toMatch(/folder-browse-archive-left/)
+    expect(folderCompareView).not.toMatch(/bc-path-action-text/)
+    expect(folderSyncView).toMatch(/SessionPathActions/)
+    expect(folderMergeView).toMatch(/SessionPathActions/)
+    expect(textMergeViewForFooter).toMatch(/PathMetaFooter/)
+    expect(textMergeViewForFooter).toMatch(/merge-path-footers/)
   })
 
   it('fuses path row corners and borders into the shell frame', () => {

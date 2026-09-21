@@ -317,7 +317,7 @@ const checkedRowIds = ref<Set<string>>(new Set())
 const selectNameFilter = ref('')
 let folderCompareGeneration = 0
 let folderWatchTimer: ReturnType<typeof setInterval> | undefined
-const rowHeight = 22
+const rowHeight = 17
 const virtualViewportRows = 18
 const virtualOverscanRows = 4
 const scrollTop = ref(0)
@@ -3121,7 +3121,7 @@ onUnmounted(() => {
     <section class="folder-compare-view">
       <section
         class="folder-filter-chrome"
-        data-filters-density="capture-pass11"
+        data-filters-density="capture-1to1"
         data-testid="folder-filter-chrome"
       >
         <div
@@ -3156,7 +3156,7 @@ onUnmounted(() => {
             >
               <Funnel
                 class="folder-filter-strip-icon"
-                :size="10"
+                :size="16"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -3175,7 +3175,7 @@ onUnmounted(() => {
             >
               <Eye
                 class="folder-filter-strip-icon"
-                :size="10"
+                :size="16"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -4857,11 +4857,11 @@ onUnmounted(() => {
 
 .path-side-footer {
   display: block;
-  min-height: 6px;
+  min-height: 20px;
   margin-top: 0;
   color: var(--od-muted, #6b7280);
-  font-size: 6px;
-  line-height: 6px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .path-side-footer-muted {
@@ -4928,14 +4928,14 @@ onUnmounted(() => {
 .path-pair input {
   width: 100%;
   min-width: 0;
-  height: 16px;
+  height: 20px;
   padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text);
-  font-size: 11px;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -4967,24 +4967,26 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1px 3px;
-  min-height: 11px;
-  padding: 0;
+  gap: 2px 6px;
+  min-height: 20px;
+  padding: 2px 4px;
   font-size: 11px;
 }
 
 .folder-filter-chrome {
   display: flex;
   align-items: center;
-  min-height: 14px;
-  padding: 0;
+  min-height: 38px;
+  padding: 0 4px;
+  border-bottom: 1px solid #a0a0a0;
+  background: #f0f0f0;
 }
 
 .folder-filter-strip {
   display: inline-flex;
   flex: 1 1 280px;
   align-items: center;
-  gap: 1px;
+  gap: 6px;
   min-width: 220px;
   max-width: 640px;
   margin-right: 1px;
@@ -4999,20 +5001,20 @@ onUnmounted(() => {
 
 .folder-filter-strip-btn {
   display: grid;
-  grid-template-rows: 10px auto;
+  grid-template-rows: 18px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
-  min-width: 36px;
-  max-width: 48px;
-  height: 14px;
-  padding: 0 2px;
+  min-width: 48px;
+  max-width: 64px;
+  height: 38px;
+  padding: 1px 4px 2px;
   border: 0;
   border-right: 1px solid #c9cdd3;
   background: transparent;
   color: #1a1a1a;
-  font-size: 9px;
-  line-height: 10px;
+  font-size: 11px;
+  line-height: 12px;
   cursor: default;
 }
 
@@ -5041,22 +5043,22 @@ onUnmounted(() => {
 .folder-filter-strip-label {
   flex: 0 0 auto;
   color: #111827;
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 11px;
-  padding: 0 4px;
+  height: 20px;
+  padding: 0 6px;
   border: 1px solid #bfc4cc;
   border-radius: 0;
   background: #ffffff;
   color: #111111;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-  font-size: 11px;
-  line-height: 11px;
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .column-config label,
@@ -5463,13 +5465,13 @@ onUnmounted(() => {
 .tree-row {
   display: grid;
   min-width: 1040px;
-  min-height: 22px;
 }
 
 .tree-head {
   position: sticky;
   top: 0;
   z-index: 1;
+  min-height: 22px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-muted);
   color: var(--app-text-muted);
@@ -5478,24 +5480,25 @@ onUnmounted(() => {
   line-height: 16px;
 }
 
+.tree-row {
+  min-height: 17px;
+  border-bottom: 1px solid var(--app-border);
+  color: var(--app-text);
+  font-size: 11px;
+  line-height: 14px;
+}
+
 .tree-head span,
 .tree-row span,
 .tree-row strong {
   min-width: 0;
-  padding: 2px 6px;
+  padding: 1px 6px;
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-size: 11px;
-  line-height: 16px;
+  line-height: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.tree-row {
-  border-bottom: 1px solid var(--app-border);
-  color: var(--app-text);
-  font-size: 11px;
-  line-height: 16px;
 }
 
 .tree-row.selected {

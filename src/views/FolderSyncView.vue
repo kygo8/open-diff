@@ -1537,7 +1537,7 @@ watch(
 
       <section
         class="display-filters folder-filter-chrome"
-        data-filters-density="capture-pass11"
+        data-filters-density="capture-1to1"
         data-testid="folder-sync-filter-strip"
       >
         <div class="folder-filter-strip">
@@ -1570,7 +1570,7 @@ watch(
             >
               <Funnel
                 class="folder-filter-strip-icon"
-                :size="10"
+                :size="16"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -1590,7 +1590,7 @@ watch(
             >
               <Eye
                 class="folder-filter-strip-icon"
-                :size="10"
+                :size="16"
                 :stroke-width="2.25"
                 absolute-stroke-width
                 aria-hidden="true"
@@ -2191,11 +2191,11 @@ watch(
 <style scoped>
 .path-side-footer {
   display: block;
-  min-height: 6px;
+  min-height: 20px;
   margin-top: 0;
   color: var(--app-muted, #6b7280);
-  font-size: 6px;
-  line-height: 6px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .path-side-footer-muted {
@@ -2576,15 +2576,17 @@ h1 {
 
 .folder-filter-chrome {
   align-items: center;
-  min-height: 14px;
-  padding: 0;
+  min-height: 38px;
+  padding: 0 4px;
+  border-bottom: 1px solid #a0a0a0;
+  background: #f0f0f0;
 }
 
 .folder-filter-strip {
   display: inline-flex;
   flex: 1 1 280px;
   align-items: center;
-  gap: 1px;
+  gap: 6px;
   min-width: 220px;
   max-width: 640px;
 }
@@ -2598,20 +2600,20 @@ h1 {
 
 .folder-filter-strip-btn {
   display: grid;
-  grid-template-rows: 10px auto;
+  grid-template-rows: 18px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
-  min-width: 36px;
-  max-width: 48px;
-  height: 14px;
-  padding: 0 2px;
+  min-width: 48px;
+  max-width: 64px;
+  height: 38px;
+  padding: 1px 4px 2px;
   border: 0;
   border-right: 1px solid #c9cdd3;
   background: transparent;
   color: #1a1a1a;
-  font-size: 9px;
-  line-height: 10px;
+  font-size: 11px;
+  line-height: 12px;
   cursor: default;
 }
 
@@ -2647,14 +2649,14 @@ h1 {
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 11px;
-  padding: 0 4px;
+  height: 20px;
+  padding: 0 6px;
   border: 1px solid #bfc4cc;
   border-radius: 0;
   background: #ffffff;
   color: #111111;
-  font-size: 11px;
-  line-height: 11px;
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .peek-dual-columns {

@@ -25,22 +25,6 @@ const routes = [
   ['reports scripts', '/reports/scripts'],
 ]
 
-const denseStatusRoutes = new Set([
-  'text',
-  'text merge',
-  'registry',
-  'clipboard',
-  'text patch',
-  'hex',
-  'picture',
-  'media',
-  'version',
-  'table',
-  'folder',
-  'folder sync',
-  'folder merge',
-])
-
 for (const [name, route] of routes) {
   test(`${name} uses dense workbench shell`, async ({ page }) => {
     await page.setViewportSize({ width: 1600, height: 1280 })
@@ -52,10 +36,7 @@ for (const [name, route] of routes) {
     )
     await expect(page.locator('.menu-bar')).toHaveCSS('height', '48px')
     await expect(page.locator('.sidebar')).toBeHidden()
-    await expect(page.locator('.status-bar')).toHaveCSS(
-      'height',
-      denseStatusRoutes.has(name) ? '22px' : '24px',
-    )
+    await expect(page.locator('.status-bar')).toHaveCSS('height', '20px')
     await expect(page.locator('.command-bar')).toHaveCount(0)
     await expect(page.locator('.pathbar')).toHaveCount(0)
     await expect(page.locator('.page-head')).toHaveCount(0)

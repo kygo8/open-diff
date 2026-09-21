@@ -57,8 +57,21 @@ describe('TextEditView', () => {
   beforeEach(() => {
     localStorage.clear()
     setActivePinia(createPinia())
+    useSettingsStore().setShowSessionsInToolbar(true)
     vi.mocked(readTextFile).mockClear()
     vi.mocked(saveTextFile).mockClear()
+  })
+
+  it('renders Home then Sessions before Undo on the Text Edit MainBar', () => {
+    const wrapper = mountTextEditView()
+    const ids = wrapper
+      .findAll('[data-testid^="text-edit-toolbar-"]')
+      .map((node) => node.attributes('data-testid')?.replace('text-edit-toolbar-', ''))
+
+    expect(ids.slice(0, 3)).toEqual(['home', 'sessions', 'undo'])
+    expect(
+      wrapper.find('[data-testid="text-edit-toolbar-sessions"]').attributes('disabled'),
+    ).toBeUndefined()
   })
 
   it('opens a text file and shows metadata for the loaded document', async () => {

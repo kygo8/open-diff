@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextMergeView from './TextMergeView.vue'
 import { mergeTextFiles, saveTextFile } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
+import { useSettingsStore } from '@/stores/settings'
 
 vi.mock('@/api/diff', () => ({
   saveTextFile: vi.fn().mockResolvedValue({
@@ -37,8 +38,22 @@ vi.mock('@/api/diff', () => ({
 describe('TextMergeView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    useSettingsStore().setShowSessionsInToolbar(true)
     vi.mocked(saveTextFile).mockClear()
     vi.mocked(mergeTextFiles).mockClear()
+  })
+
+  it('shows Sessions after Home on the Text Merge MainBar and enables wrap', () => {
+    const wrapper = mount(TextMergeView)
+    const ids = wrapper
+      .findAll('[data-testid^="merge-session-toolbar-"]')
+      .filter((node) => node.attributes('data-testid') !== 'merge-session-toolbar-bar')
+      .map((node) => node.attributes('data-testid')?.replace('merge-session-toolbar-', ''))
+
+    expect(ids.slice(0, 2)).toEqual(['home', 'sessions'])
+    expect(
+      wrapper.find('[data-testid="merge-session-toolbar-bar"]').attributes('data-toolbar-wrap'),
+    ).toBe('true')
   })
 
   it('starts without hardcoded merge conflicts', () => {

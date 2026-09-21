@@ -4,7 +4,13 @@ import { mergeTextFiles, saveTextFile } from '@/api/diff'
 import { buildTextMergeReportText, defaultTextMergeReportOutputPath } from '@/app/textMergeReport'
 import { pickNativePath } from '@/app/filePicker'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
+import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import {
+  loadTextCompareSessionOptions,
+  saveTextCompareSessionOptions,
+  type TextCompareSessionOptions,
+} from '@/app/textCompareSessionOptions'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { buildTextMergeToolbar, pathPairTitle, singlePathTitle } from '@/app/sessionToolbars'
 import { ArrowDownToLine, ArrowLeftFromLine, ArrowRightFromLine, ArrowUpToLine } from '@lucide/vue'
@@ -51,6 +57,8 @@ type MergeTarget = 'left' | 'right' | 'other'
 const { t } = useI18n()
 const tabs = useTabsStore()
 const settings = useSettingsStore()
+const showSessionSettings = ref(false)
+const textSessionOptions = ref<TextCompareSessionOptions>(loadTextCompareSessionOptions())
 const sessionLaunch = useSessionLaunchStore()
 const viewActions = useViewActionsStore()
 const statusBar = useStatusBarStore()
@@ -176,6 +184,7 @@ const conflictPositionLabel = computed(() => {
 const mergeSessionToolbar = computed(() =>
   buildTextMergeToolbar({
     home: true,
+    sessions: true,
     all: true,
     diffs: true,
     same: true,
@@ -194,13 +203,40 @@ const mergeSessionToolbar = computed(() =>
     'prev-conflict': unresolvedConflicts.value.length > 0,
     swap: Boolean(leftPath.value || rightPath.value),
     reload: Boolean(leftPath.value && rightPath.value),
-  }),
+  }).map((item) => ({
+    ...item,
+    active: item.id === 'sessions' && showSessionSettings.value,
+  })),
 )
+
+function openTextMergeSessionSettings(): void {
+  showSessionSettings.value = true
+}
+
+function applyTextMergeSessionSettings(
+  payload:
+    | { kind: 'folder'; criteria: unknown }
+    | { kind: 'text'; options: TextCompareSessionOptions }
+    | { kind: 'table'; options: unknown }
+    | { kind: 'hex'; options: unknown }
+    | { kind: 'picture'; options: unknown },
+): void {
+  if (payload.kind !== 'text') {
+    return
+  }
+
+  textSessionOptions.value = payload.options
+  saveTextCompareSessionOptions(payload.options)
+  showSessionSettings.value = false
+}
 
 function runMergeToolbarCommand(commandId: string): void {
   switch (commandId) {
     case 'home':
       tabs.openTab({ title: t('ui.home'), titleKey: 'ui.home', route: '/', dirty: false })
+      break
+    case 'sessions':
+      openTextMergeSessionSettings()
       break
     case 'favor-left':
       favorSide('left')
@@ -697,6 +733,8 @@ watch(
       case 'rules':
       case 'save-as':
       case 'session-settings':
+        openTextMergeSessionSettings()
+        break
       case 'show-all':
       case 'show-differences':
       case 'swap':
@@ -789,6 +827,7 @@ watch(
     :inspector-label="$t('ui.textMergeInspector')"
     :toolbar-commands="mergeSessionToolbar"
     toolbar-test-id-prefix="merge-session-toolbar"
+    session-toolbar-wrap
     @toolbar-command="runMergeToolbarCommand"
   >
     <section class="text-merge-view">
@@ -1222,6 +1261,14 @@ watch(
       </WorkbenchInspector>
     </template>
   </WorkbenchShell>
+
+  <SessionSettingsDialog
+    :open="showSessionSettings"
+    kind="text"
+    :text-options="textSessionOptions"
+    @close="showSessionSettings = false"
+    @apply="applyTextMergeSessionSettings"
+  />
 </template>
 <style scoped>
 .text-merge-view {

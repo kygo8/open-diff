@@ -23,6 +23,8 @@ describe('text edit chrome density', () => {
     expect(editView).toMatch(/\.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
     expect(editView).toMatch(/:deep\(textarea\)\s*\{[\s\S]*?line-height:\s*18px/)
     expect(editView).toMatch(/source:\s*'text-edit'/)
+    expect(editView).toMatch(/SessionSettingsDialog/)
+    expect(editView).toMatch(/textEditToolbarOrder/)
     expect(editView).toMatch(/SessionPathActions/)
     expect(editView).toMatch(/PathMetaFooter/)
     expect(editView).not.toMatch(/\.path-input[^}]*height:\s*16px/)

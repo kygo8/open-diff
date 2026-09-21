@@ -23,6 +23,14 @@ describe('text merge chrome density', () => {
     expect(mergeView).toMatch(/\.pane-header\s*\{[\s\S]*?min-height:\s*20px/)
     expect(mergeView).toMatch(/\.output-path-input\s*\{[\s\S]*?height:\s*20px/)
     expect(mergeView).toMatch(/chromeKind:\s*'text-session'/)
+    expect(mergeView).toMatch(/session-toolbar-wrap/)
+    expect(mergeView).toMatch(/SessionSettingsDialog/)
+    expect(css).toMatch(
+      /\.bc-session-toolbar\.bc-session-toolbar-wrap\s*\{[\s\S]*?min-height:\s*76px/,
+    )
+    expect(css).toMatch(
+      /\.bc-session-toolbar\.bc-session-toolbar-wrap\s*\{[\s\S]*?flex-wrap:\s*wrap/,
+    )
     expect(mergeView).toMatch(/SessionPathActions/)
     expect(mergeView).toMatch(/bc-path-load/)
     expect(mergeView).not.toMatch(/\.output-path-input\s*\{[^}]*height:\s*16px/)

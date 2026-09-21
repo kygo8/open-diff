@@ -7,6 +7,7 @@ import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
+import { ArrowLeftRight, RefreshCw } from '@lucide/vue'
 import {
   applyOverwriteTyping,
   isInsertToggleKey,
@@ -1732,7 +1733,10 @@ function onVisibilityForDiskChange(): void {
             :title="$t('ui.loadFiles')"
             @click="loadLaunchTextFiles(leftPathLabel, rightPathLabel)"
           >
-            {{ $t('ui.loadFiles') }}
+            <RefreshCw
+              :size="14"
+              aria-hidden="true"
+            />
           </button>
           <button
             type="button"
@@ -1742,7 +1746,10 @@ function onVisibilityForDiskChange(): void {
             :title="$t('ui.swapPaths')"
             @click="swapPaths"
           >
-            &lt;&gt;
+            <ArrowLeftRight
+              :size="14"
+              aria-hidden="true"
+            />
           </button>
         </div>
         <div

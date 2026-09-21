@@ -23,6 +23,8 @@ describe('text edit chrome density', () => {
     expect(editView).toMatch(/\.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
     expect(editView).toMatch(/:deep\(textarea\)\s*\{[\s\S]*?line-height:\s*18px/)
     expect(editView).toMatch(/source:\s*'text-edit'/)
+    expect(editView).toMatch(/SessionPathActions/)
+    expect(editView).toMatch(/PathMetaFooter/)
     expect(editView).not.toMatch(/\.path-input[^}]*height:\s*16px/)
 
     expect(phrases).toMatch(/EDIT_MODE_SOURCES[\s\S]*?'text-edit'/)
@@ -33,11 +35,13 @@ describe('text edit chrome density', () => {
   it('keeps Text Edit chrome on capture band with Text Compare path scale', () => {
     expect(css).toMatch(/\.text-edit-view \.syntax-language-bar\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.text-edit-view \.find-input[\s\S]*?height:\s*20px/)
-    expect(css).toMatch(/\.text-edit-view \.path-toolbar \.n-button[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.text-edit-view \.path-input[\s\S]*?height:\s*20px/)
 
     expect(editView).toMatch(/\.syntax-language-bar\s*\{[\s\S]*?min-height:\s*20px/)
     expect(editView).toMatch(/\.find-input[\s\S]*?height:\s*20px/)
     expect(editView).toMatch(/\.syntax-preview\s*\{[\s\S]*?line-height:\s*18px/)
-    expect(editView).toMatch(/:deep\(\.path-toolbar \.n-button\)[\s\S]*?height:\s*18px/)
+    expect(editView).toMatch(/SessionPathActions/)
+    expect(editView).toMatch(/PathMetaFooter/)
+    expect(editView).toMatch(/bc-path-load/)
   })
 })

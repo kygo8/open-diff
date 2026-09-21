@@ -25,6 +25,10 @@ describe('text compare chrome density', () => {
     expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
     expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(textView).toMatch(/\.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
+    expect(textView).toMatch(/SessionPathActions/)
+    expect(textView).toMatch(/PathMetaFooter/)
+    expect(textView).toMatch(/RefreshCw/)
+    expect(textView).toMatch(/ArrowLeftRight/)
     expect(textView).not.toMatch(/font-size:\s*9px/)
     expect(textView).not.toMatch(/min-height:\s*9px/)
 

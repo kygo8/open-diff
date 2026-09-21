@@ -11,6 +11,9 @@ import {
   reconstructSidesFromHunk,
 } from '@/app/textPatchSections'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import { pickNativePath } from '@/app/filePicker'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchToolbar from '@/components/workbench/WorkbenchToolbar.vue'
 import { useI18n } from '@/i18n'
@@ -19,7 +22,6 @@ import { useLastCompareStore } from '@/stores/lastCompare'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
-import { formatPathModifiedAt } from '@/app/pathMetadata'
 import { useTabsStore } from '@/stores/tabs'
 import { useViewActionsStore } from '@/stores/viewActions'
 import type { FileStamp, PatchFile, PatchLineKind, TextPatchResponse } from '@/types/diff'
@@ -36,6 +38,21 @@ const patchedText = ref('')
 const applyStatus = ref('')
 const sourceEncoding = ref('UTF-8')
 const sourceLineEnding = ref('LF')
+
+async function browsePatchPath(side: 'source' | 'target'): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
+
+  if (!selected) {
+    return
+  }
+
+  if (side === 'source') {
+    sourcePath.value = selected
+  } else {
+    targetPath.value = selected
+  }
+}
+
 const statusBar = useStatusBarStore()
 const sessionLaunch = useSessionLaunchStore()
 const lastCompare = useLastCompareStore()
@@ -126,22 +143,6 @@ const comparisonStatus = computed(() => {
   }
 
   return t('app.ready')
-})
-
-const sourcePathFooterLabel = computed(() => {
-  const stamp = sourceFileStamp.value
-
-  if (!stamp) {
-    return ''
-  }
-
-  const modified = formatPathModifiedAt(stamp.modifiedAtMs)
-
-  if (!modified) {
-    return t('status.bytes', { count: stamp.size })
-  }
-
-  return t('status.pathFileMetadata', { bytes: stamp.size, modified })
 })
 
 watchEffect(() => {
@@ -604,35 +605,53 @@ function lineNumber(value: number | null): string {
         />
         <label>
           <span>{{ $t('ui.sourceFile') }}</span>
-          <input
-            v-model="sourcePath"
-            type="text"
-            data-testid="patch-source-file"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="sourcePath"
+              type="text"
+              class="path-input"
+              data-testid="patch-source-file"
+              :title="sourcePath"
+            />
+            <SessionPathActions
+              browse-test-id="patch-browse-source"
+              :show-save="false"
+              @browse="browsePatchPath('source')"
+            />
+          </div>
         </label>
         <label>
           <span>{{ $t('ui.targetFile') }}</span>
-          <input
-            v-model="targetPath"
-            type="text"
-            data-testid="patch-target-file"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="targetPath"
+              type="text"
+              class="path-input"
+              data-testid="patch-target-file"
+              :title="targetPath"
+            />
+            <SessionPathActions
+              browse-test-id="patch-browse-target"
+              :show-save="false"
+              @browse="browsePatchPath('target')"
+            />
+          </div>
         </label>
         <div
           class="bc-path-footers"
           data-testid="patch-path-footers"
         >
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !sourcePathFooterLabel }"
-            data-testid="patch-source-path-footer"
-            >{{ sourcePathFooterLabel || $t('status.panePlaceholder') }}</span
-          >
-          <span
-            class="path-side-footer path-side-footer-muted"
-            data-testid="patch-target-path-footer"
-            >{{ $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="sourceFileStamp"
+            :encoding="sourceEncoding"
+            :line-ending="sourceLineEnding"
+            test-id="patch-source-path-footer"
+          />
+          <PathMetaFooter
+            :stamp="null"
+            muted
+            test-id="patch-target-path-footer"
+          />
         </div>
         <NInput
           :value="sourceText"
@@ -1120,6 +1139,19 @@ function lineNumber(value: number | null): string {
 
 .patch-preview-context {
   background: transparent;
+}
+
+.path-field-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.path-field-row input,
+.path-field-row .path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .bc-path-footers {

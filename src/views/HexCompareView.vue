@@ -17,7 +17,9 @@ import type {
   HexViewCell,
 } from '@/types/diff'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import { pickNativePath } from '@/app/filePicker'
 import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { buildHexCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
@@ -541,6 +543,20 @@ watch([leftPath, rightPath], () => {
   syncHexTabTitle()
 })
 
+async function browseHexPath(side: 'left' | 'right'): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
+
+  if (!selected) {
+    return
+  }
+
+  if (side === 'left') {
+    leftPath.value = selected
+  } else {
+    rightPath.value = selected
+  }
+}
+
 async function refreshHexPathStamps(): Promise<void> {
   const [left, right] = await Promise.all([
     leftPath.value ? pathFileStamp(leftPath.value).catch(() => null) : Promise.resolve(null),
@@ -872,21 +888,39 @@ async function runHexSave(): Promise<void> {
       <section class="hex-wrap-controls">
         <label>
           <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
-          <input
-            v-model="leftPath"
-            type="text"
-            data-testid="hex-left-path"
-            :title="leftPath"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="leftPath"
+              type="text"
+              class="path-input"
+              data-testid="hex-left-path"
+              :title="leftPath"
+            />
+            <SessionPathActions
+              browse-test-id="hex-browse-left"
+              save-test-id="hex-save-left"
+              :can-save="false"
+              @browse="browseHexPath('left')"
+            />
+          </div>
         </label>
         <label>
           <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
-          <input
-            v-model="rightPath"
-            type="text"
-            data-testid="hex-right-path"
-            :title="rightPath"
-          />
+          <div class="path-field-row">
+            <input
+              v-model="rightPath"
+              type="text"
+              class="path-input"
+              data-testid="hex-right-path"
+              :title="rightPath"
+            />
+            <SessionPathActions
+              browse-test-id="hex-browse-right"
+              save-test-id="hex-save-right"
+              :can-save="false"
+              @browse="browseHexPath('right')"
+            />
+          </div>
         </label>
         <div
           class="bc-path-footers"
@@ -1424,6 +1458,19 @@ h2 {
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+}
+
+.path-field-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.path-field-row input,
+.path-field-row .path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .hex-wrap-controls label {

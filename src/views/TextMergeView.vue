@@ -2,6 +2,8 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { mergeTextFiles, saveTextFile } from '@/api/diff'
 import { buildTextMergeReportText, defaultTextMergeReportOutputPath } from '@/app/textMergeReport'
+import { pickNativePath } from '@/app/filePicker'
+import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { buildTextMergeToolbar, pathPairTitle, singlePathTitle } from '@/app/sessionToolbars'
@@ -56,6 +58,25 @@ const leftPath = ref('')
 const rightPath = ref('')
 const centerPath = ref('')
 const outputPath = ref('')
+
+async function browseMergePath(side: 'left' | 'center' | 'right' | 'output'): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
+
+  if (!selected) {
+    return
+  }
+
+  if (side === 'left') {
+    leftPath.value = selected
+  } else if (side === 'center') {
+    centerPath.value = selected
+  } else if (side === 'right') {
+    rightPath.value = selected
+  } else {
+    outputPath.value = selected
+  }
+}
+
 const customOutputPath = ref('')
 const mergeTarget = ref<MergeTarget>('other')
 const leftText = ref('')
@@ -917,30 +938,51 @@ watch(
           </label>
         </span>
 
-        <input
-          v-model="leftPath"
-          class="output-path-input"
-          data-testid="merge-left-path"
-          :title="leftPath"
-          type="text"
-          :aria-label="$t('ui.leftPath')"
-        />
-        <input
-          v-model="centerPath"
-          class="output-path-input"
-          data-testid="merge-center-path"
-          :title="centerPath"
-          type="text"
-          :aria-label="$t('ui.base')"
-        />
-        <input
-          v-model="rightPath"
-          class="output-path-input"
-          data-testid="merge-right-path"
-          :title="rightPath"
-          type="text"
-          :aria-label="$t('ui.rightPath')"
-        />
+        <span class="path-field-row merge-path-field">
+          <input
+            v-model="leftPath"
+            class="output-path-input path-input"
+            data-testid="merge-left-path"
+            :title="leftPath"
+            type="text"
+            :aria-label="$t('ui.leftPath')"
+          />
+          <SessionPathActions
+            browse-test-id="merge-browse-left"
+            :show-save="false"
+            @browse="browseMergePath('left')"
+          />
+        </span>
+        <span class="path-field-row merge-path-field">
+          <input
+            v-model="centerPath"
+            class="output-path-input path-input"
+            data-testid="merge-center-path"
+            :title="centerPath"
+            type="text"
+            :aria-label="$t('ui.base')"
+          />
+          <SessionPathActions
+            browse-test-id="merge-browse-center"
+            :show-save="false"
+            @browse="browseMergePath('center')"
+          />
+        </span>
+        <span class="path-field-row merge-path-field">
+          <input
+            v-model="rightPath"
+            class="output-path-input path-input"
+            data-testid="merge-right-path"
+            :title="rightPath"
+            type="text"
+            :aria-label="$t('ui.rightPath')"
+          />
+          <SessionPathActions
+            browse-test-id="merge-browse-right"
+            :show-save="false"
+            @browse="browseMergePath('right')"
+          />
+        </span>
         <span
           class="merge-to-chrome"
           data-testid="merge-to-chrome"
@@ -973,21 +1015,30 @@ watch(
             />
             <span>{{ $t('ui.other') }}</span>
           </label>
-          <input
-            v-model="outputPath"
-            class="output-path-input"
-            data-testid="merge-output-path"
-            :title="outputPath"
-            type="text"
-            :disabled="mergeTargetLocked"
-            :aria-label="$t('ui.mergeOutputPath')"
-          />
+          <span class="path-field-row merge-path-field">
+            <input
+              v-model="outputPath"
+              class="output-path-input path-input"
+              data-testid="merge-output-path"
+              :title="outputPath"
+              type="text"
+              :disabled="mergeTargetLocked"
+              :aria-label="$t('ui.mergeOutputPath')"
+            />
+            <SessionPathActions
+              browse-test-id="merge-browse-output"
+              :show-save="false"
+              @browse="browseMergePath('output')"
+            />
+          </span>
         </span>
         <button
           type="button"
-          class="toolbar-button"
+          class="bc-path-load"
           data-testid="load-text-merge"
-          :disabled="loading"
+          :disabled="loading || !leftPath || !rightPath"
+          :aria-label="$t('ui.loadFiles')"
+          :title="$t('ui.loadFiles')"
           @click="loadMerge"
         >
           {{ $t('ui.loadFiles') }}
@@ -1212,6 +1263,20 @@ watch(
   background: var(--app-surface);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.path-field-row,
+.merge-path-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.path-field-row .output-path-input,
+.merge-path-field .output-path-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .output-path-input {

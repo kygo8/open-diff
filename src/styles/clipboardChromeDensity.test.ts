@@ -18,6 +18,8 @@ describe('clipboard compare chrome density', () => {
 
     expect(clipboardView).toMatch(/\.clipboard-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(clipboardView).toMatch(/chromeKind:\s*'clipboard-session'/)
+    expect(clipboardView).toMatch(/PathMetaFooter/)
+    expect(clipboardView).toMatch(/clipboard-path-footers/)
 
     expect(layout).toMatch(/data-chrome-kind='clipboard-session'[\s\S]*?height:\s*20px/)
   })

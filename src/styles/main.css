@@ -260,8 +260,8 @@ select {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-width: 0;
-  height: 10px;
-  padding: 0;
+  height: 22px;
+  padding: 0 4px;
   border-bottom: 1px solid #a0a0a0;
   background: var(--app-surface-low);
 }
@@ -3103,10 +3103,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .merge-path-footer {
-  min-height: 8px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 8px !important;
-  line-height: 8px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .folder-merge-view .merge-actions {

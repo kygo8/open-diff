@@ -2657,11 +2657,11 @@ h1 {
 
 .merge-path-footer {
   display: block;
-  min-height: 8px;
+  min-height: 20px;
   margin-top: 0;
   color: var(--od-muted, #6b7280);
-  font-size: 8px;
-  line-height: 8px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .merge-paths label span {

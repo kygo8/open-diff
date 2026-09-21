@@ -17,7 +17,8 @@ describe('folder sync/merge chrome density', () => {
       /\.folder-sync-view \.sync-setting-actions \.n-button[\s\S]*?height:\s*18px/,
     )
     expect(css).toMatch(/\.folder-merge-view \.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.folder-merge-view \.merge-path-footer\s*\{[\s\S]*?font-size:\s*8px/)
+    expect(css).toMatch(/\.folder-merge-view \.merge-path-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.folder-merge-view \.merge-path-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*18px/)
 
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
@@ -30,7 +31,8 @@ describe('folder sync/merge chrome density', () => {
     expect(syncView).toMatch(/chromeKind:\s*'folder-pair'/)
 
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(mergeView).toMatch(/\.merge-path-footer\s*\{[\s\S]*?font-size:\s*8px/)
+    expect(mergeView).toMatch(/\.merge-path-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(mergeView).toMatch(/\.merge-path-footer\s*\{[\s\S]*?min-height:\s*20px/)
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?min-height:\s*22px/)
     expect(mergeView).toMatch(/chromeKind:\s*'folder-pair'/)
 

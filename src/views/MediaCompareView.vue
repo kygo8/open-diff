@@ -303,6 +303,7 @@ const activeMediaFieldIndex = ref(0)
 const mediaSessionToolbar = computed(() =>
   buildMediaCompareToolbar({
     home: true,
+    sessions: true,
     all: true,
     diffs: true,
     same: true,
@@ -1089,15 +1090,15 @@ function runMediaToolbarCommand(commandId: string): void {
 
 .media-path-panel input,
 .media-path-panel button {
-  height: 16px;
-  min-height: 16px;
-  padding: 0 3px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .media-header {
@@ -1514,12 +1515,12 @@ h1 {
 }
 
 .path-side-footer {
-  min-height: 9px;
+  min-height: 20px;
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
-  font-size: 9px;
-  line-height: 9px;
+  font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

@@ -2122,23 +2122,23 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .media-compare-view .media-path-panel input,
 .media-compare-view .media-path-panel button {
-  height: 16px !important;
-  min-height: 16px !important;
-  padding: 0 3px !important;
-  font-size: 11px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 4px !important;
+  font-size: 12px !important;
 }
 
 .media-compare-view .bc-path-footers {
-  gap: 0 !important;
+  gap: 1px !important;
   padding: 0 2px !important;
   margin-top: 0 !important;
 }
 
 .media-compare-view .path-side-footer {
-  min-height: 9px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 9px !important;
-  line-height: 9px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .media-compare-view .media-playback-panel,
@@ -2299,11 +2299,11 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .version-compare-view .version-path-panel input,
 .version-compare-view .version-path-panel button {
-  height: 16px !important;
-  min-height: 16px !important;
-  padding: 0 3px !important;
-  border-radius: 2px !important;
-  font-size: 11px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 4px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
 }
 
 .version-compare-view .version-path-panel span {
@@ -2318,10 +2318,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .version-compare-view .path-side-footer {
-  min-height: 9px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 9px !important;
-  line-height: 9px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view .version-summary-grid,
@@ -2494,10 +2494,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .registry-compare-view .path-side-footer {
-  min-height: 9px !important;
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 9px !important;
-  line-height: 9px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .registry-compare-view .registry-maturity,

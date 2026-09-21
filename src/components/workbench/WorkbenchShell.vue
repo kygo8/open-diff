@@ -273,10 +273,13 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
   if (normalizedTitle.includes('registry compare') || normalizedTitle.includes('注册表比较')) {
     return [
       item('home', 'ui.home', 'H'),
+      item('sessions', 'ui.sessions', 'S'),
       item('all', 'ui.all', '*'),
       item('diffs', 'ui.diffs', '!='),
       item('same', 'ui.same', '='),
       item('copy', 'ui.copy', 'C'),
+      item('next-diff', 'ui.nextDiff', 'N'),
+      item('prev-diff', 'ui.prevDiff', 'P'),
       item('swap', 'ui.swap', '<>'),
       item('reload', 'ui.reload', 'R'),
       item('expand', 'ui.expand', '+'),
@@ -287,11 +290,14 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
   if (normalizedTitle.includes('media compare') || normalizedTitle.includes('媒体比较')) {
     return [
       item('home', 'ui.home', 'H'),
+      item('sessions', 'ui.sessions', 'S'),
       item('all', 'ui.all', '*'),
       item('diffs', 'ui.diffs', '!='),
       item('same', 'ui.same', '='),
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
+      item('next-diff', 'ui.nextDiff', 'N'),
+      item('prev-diff', 'ui.prevDiff', 'P'),
       item('swap', 'ui.swap', '<>'),
       item('reload', 'ui.reload', 'R'),
       item('play2', 'ui.play2', 'P2'),
@@ -301,11 +307,14 @@ function toolbarForTitle(title: string): LegacyToolbarItem[] {
   if (normalizedTitle.includes('version compare') || normalizedTitle.includes('版本比较')) {
     return [
       item('home', 'ui.home', 'H'),
+      item('sessions', 'ui.sessions', 'S'),
       item('all', 'ui.all', '*'),
       item('diffs', 'ui.diffs', '!='),
       item('same', 'ui.same', '='),
       item('minor', 'ui.minor', '~'),
       item('rules', 'ui.rules', 'R'),
+      item('next-diff', 'ui.nextDiff', 'N'),
+      item('prev-diff', 'ui.prevDiff', 'P'),
       item('swap', 'ui.swap', '<>'),
       item('reload', 'ui.reload', 'R'),
     ]

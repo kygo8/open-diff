@@ -9,7 +9,7 @@ const registryView = readFileSync(resolve(root, 'src/views/RegistryCompareView.v
 const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 
 describe('registry compare chrome density', () => {
-  it('keeps Registry Compare path/status/toolbar/footer chrome dense toward capture', () => {
+  it('keeps Registry Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.registry-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(
       /\.registry-compare-view \.registry-input-panel\s*\{[\s\S]*?min-height:\s*22px/,
@@ -20,16 +20,25 @@ describe('registry compare chrome density', () => {
     expect(css).toMatch(
       /\.registry-compare-view \.registry-report-panel header\s*\{[\s\S]*?gap:\s*4px/,
     )
-    expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(
+      /\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/,
+    )
 
     expect(registryView).toMatch(/\.registry-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(registryView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*9px/)
+    expect(registryView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(registryView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
     expect(registryView).toMatch(/chromeKind:\s*'registry-session'/)
+    expect(registryView).toMatch(/sessions:\s*true/)
+    expect(registryView).not.toMatch(/font-size:\s*9px/)
+    expect(registryView).not.toMatch(/min-height:\s*9px/)
 
     expect(layout).toMatch(/data-chrome-kind='registry-session'[\s\S]*?height:\s*22px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
   })
 
-  it('keeps Registry summary/pane/row chrome dense one more notch toward capture', () => {
+  it('keeps Registry summary/pane/row chrome on capture band', () => {
     expect(css).toMatch(
       /\.registry-compare-view \.registry-summary-item\s*\{[\s\S]*?padding:\s*1px 4px/,
     )

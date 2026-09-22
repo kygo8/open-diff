@@ -12,13 +12,13 @@ describe('registry compare chrome density', () => {
   it('keeps Registry Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.registry-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(
-      /\.registry-compare-view \.registry-input-panel\s*\{[\s\S]*?min-height:\s*20px/,
+      /\.registry-compare-view \.registry-input-panel\s*\{[\s\S]*?min-height:\s*22px/,
     )
     expect(css).toMatch(
-      /\.registry-compare-view \.registry-report-panel\s*\{[\s\S]*?padding:\s*2px 4px/,
+      /\.registry-compare-view \.registry-report-panel\s*\{[\s\S]*?padding:\s*4px 6px/,
     )
     expect(css).toMatch(
-      /\.registry-compare-view \.registry-report-panel header\s*\{[\s\S]*?gap:\s*4px/,
+      /\.registry-compare-view \.registry-report-panel header\s*\{[\s\S]*?gap:\s*6px/,
     )
     expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
@@ -42,35 +42,40 @@ describe('registry compare chrome density', () => {
 
   it('keeps Registry summary/pane/row chrome on capture band', () => {
     expect(css).toMatch(
-      /\.registry-compare-view \.registry-summary-item\s*\{[\s\S]*?padding:\s*1px 4px/,
+      /\.registry-compare-view \.registry-summary-item\s*\{[\s\S]*?padding:\s*2px 6px/,
     )
     expect(css).toMatch(
-      /\.registry-compare-view \.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*11px/,
+      /\.registry-compare-view \.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/,
     )
-    expect(css).toMatch(/\.registry-compare-view \.registry-key-pane[\s\S]*?padding:\s*1px 4px/)
-    expect(css).toMatch(/\.registry-compare-view \.registry-key-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.registry-compare-view \.registry-key-pane[\s\S]*?padding:\s*4px 6px/)
+    expect(css).toMatch(/\.registry-compare-view \.registry-key-row\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(
-      /\.registry-compare-view \.registry-value-row\s*\{[\s\S]*?min-height:\s*20px/,
-    )
-    expect(css).toMatch(
-      /\.registry-compare-view \.registry-value-row > \*\s*\{[\s\S]*?padding:\s*1px 4px/,
+      /\.registry-compare-view \.registry-value-row\s*\{[\s\S]*?min-height:\s*18px/,
     )
     expect(css).toMatch(
-      /\.registry-compare-view \.registry-input-panel textarea\s*\{[\s\S]*?padding:\s*2px 4px/,
+      /\.registry-compare-view \.registry-value-row > \*\s*\{[\s\S]*?padding:\s*2px 6px/,
+    )
+    expect(css).toMatch(
+      /\.registry-compare-view \.registry-input-panel textarea\s*\{[\s\S]*?padding:\s*2px 6px/,
     )
     expect(css).toMatch(
       /\.registry-compare-view \.registry-input-panel textarea\s*\{[\s\S]*?min-height:\s*64px/,
     )
+    expect(css).toMatch(
+      /\.registry-compare-view \.registry-report-panel\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
+    )
 
-    expect(registryView).toMatch(/\.registry-report-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(registryView).toMatch(/\.registry-report-panel header\s*\{[\s\S]*?gap:\s*4px/)
-    expect(registryView).toMatch(/\.registry-summary-item\s*\{[\s\S]*?padding:\s*1px 4px/)
-    expect(registryView).toMatch(/\.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(registryView).toMatch(/\.registry-key-pane[\s\S]*?padding:\s*1px 4px/)
-    expect(registryView).toMatch(/\.registry-key-row\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(registryView).toMatch(/\.registry-value-row\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(registryView).toMatch(/\.registry-value-row > \*\s*\{[\s\S]*?padding:\s*1px 4px/)
-    expect(registryView).toMatch(/\.registry-input-panel textarea\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(registryView).toMatch(/data-registry-chrome-density="capture-1to1"/)
+    expect(registryView).toMatch(/data-registry-rows-density="capture-1to1"/)
+    expect(registryView).toMatch(/\.registry-report-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(registryView).toMatch(/\.registry-report-panel header\s*\{[\s\S]*?gap:\s*6px/)
+    expect(registryView).toMatch(/\.registry-summary-item\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(registryView).toMatch(/\.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/)
+    expect(registryView).toMatch(/\.registry-key-pane[\s\S]*?padding:\s*4px 6px/)
+    expect(registryView).toMatch(/\.registry-key-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(registryView).toMatch(/\.registry-value-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(registryView).toMatch(/\.registry-value-row > \*\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(registryView).toMatch(/\.registry-input-panel textarea\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(registryView).toMatch(/\.registry-input-panel textarea\s*\{[\s\S]*?min-height:\s*64px/)
     expect(registryView).toMatch(
       /\.registry-input-panel textarea,\s*\.registry-input-panel button\s*\{[\s\S]*?border-radius:\s*0/,

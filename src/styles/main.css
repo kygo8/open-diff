@@ -2391,16 +2391,17 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border: 1px solid #a0a0a0 !important;
 }
 
-/* Version Compare chrome densify toward capture path/status/toolbar/footer strips */
+/* Version Compare path chrome densify toward capture (~20px path/status) */
 .version-compare-view {
   gap: 4px !important;
   padding: 2px 4px !important;
 }
 
 .version-compare-view .version-path-panel {
-  gap: 3px !important;
+  gap: 4px 6px !important;
   min-height: 20px !important;
-  padding: 1px 3px !important;
+  padding: 2px 4px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
@@ -2408,14 +2409,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .version-compare-view .version-path-panel button {
   height: 20px !important;
   min-height: 20px !important;
-  padding: 0 4px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
   font-size: 12px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view .version-path-panel span {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view .bc-path-footers {
@@ -2431,20 +2434,21 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
-.version-compare-view .version-summary-grid,
-.version-compare-view .version-side-grid,
+/* Version field/report/rules chrome at capture CSS scale (~18px rows; panels 4x6) */
 .version-compare-view .version-summary-item,
 .version-compare-view .version-side,
 .version-compare-view .version-report-panel,
 .version-compare-view .version-rules-panel {
-  gap: 2px 4px !important;
+  gap: 4px 6px !important;
   min-height: 20px !important;
-  padding: 2px 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
 .version-compare-view .version-summary-grid,
 .version-compare-view .version-side-grid {
+  gap: 4px !important;
   min-height: 0 !important;
   padding: 0 !important;
   border: 0 !important;
@@ -2452,12 +2456,14 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .version-compare-view .version-field-row {
-  min-height: 16px !important;
+  min-height: 18px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
   font-size: 11px !important;
 }
 
 .version-compare-view .version-field-row > * {
-  padding: 2px 4px !important;
+  padding: 2px 6px !important;
+  border-right: 1px solid #a0a0a0 !important;
   line-height: 16px !important;
 }
 
@@ -2466,30 +2472,31 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
-/* Version summary/side/report/rules densify one more notch toward capture */
 .version-compare-view .version-summary-item span,
 .version-compare-view .version-side header span,
 .version-compare-view .version-report-panel header span,
 .version-compare-view .version-rules-panel header span,
 .version-compare-view .version-side dt {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view .version-side header,
 .version-compare-view .version-report-panel header,
 .version-compare-view .version-rules-panel header {
   gap: 6px !important;
-  min-height: 18px !important;
+  min-height: 20px !important;
 }
 
 .version-compare-view .version-report-panel header button,
 .version-compare-view .version-rules-panel header button {
   height: 18px !important;
   min-height: 18px !important;
-  padding: 0 5px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
   font-size: 11px !important;
-  line-height: 18px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view .version-side dl {
@@ -2499,16 +2506,18 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .version-compare-view .version-side dl div {
   gap: 2px !important;
   min-height: 18px !important;
-  padding: 2px 4px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
 .version-compare-view .version-side dd {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view .version-report-table {
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
@@ -2517,27 +2526,28 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .version-compare-view .version-rule-row {
-  gap: 4px !important;
+  gap: 6px !important;
   min-height: 18px !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view .version-error {
   min-height: 18px !important;
-  padding: 2px 4px !important;
+  padding: 2px 6px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view .version-source-pair {
   gap: 2px !important;
   min-height: 20px !important;
-  padding: 2px 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view .version-header {
@@ -2547,7 +2557,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .version-compare-view .eyebrow {
   margin: 0 0 2px !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .version-compare-view h1 {
@@ -2555,16 +2565,17 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 1.2 !important;
 }
 
-/* Registry Compare chrome densify toward capture path/status/toolbar/footer strips */
+/* Registry Compare path chrome densify toward capture (~20px path/status) */
 .registry-compare-view {
   gap: 2px !important;
   padding: 2px 4px !important;
 }
 
 .registry-compare-view .registry-input-panel {
-  gap: 2px !important;
+  gap: 4px 6px !important;
   min-height: 22px !important;
-  padding: 1px 4px !important;
+  padding: 2px 4px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
@@ -2574,25 +2585,38 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .registry-compare-view .registry-input-panel span {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .registry-compare-view .registry-input-panel textarea {
   min-height: 64px !important;
-  padding: 2px 4px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .registry-compare-view .registry-input-panel button,
 .registry-compare-view .registry-filter-bar button,
 .registry-compare-view .registry-live-row button,
-.registry-compare-view .registry-live-row input,
-.registry-compare-view .registry-report-panel header button {
+.registry-compare-view .registry-live-row input {
   height: 20px !important;
   min-height: 20px !important;
   padding: 0 6px !important;
-  border-radius: 2px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
   font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.registry-compare-view .registry-report-panel header button {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .registry-compare-view .bc-path-footers {
@@ -2607,17 +2631,18 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+/* Registry tree/value/export chrome at capture CSS scale (~18px rows; panels 4x6) */
 .registry-compare-view .registry-maturity,
 .registry-compare-view .registry-filter-bar,
 .registry-compare-view .registry-live-panel,
 .registry-compare-view .registry-report-panel {
-  gap: 2px 4px !important;
+  gap: 4px 6px !important;
   min-height: 20px !important;
-  padding: 2px 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
-/* Registry summary/pane/row densify one more notch toward capture */
 .registry-compare-view .registry-summary-grid {
   gap: 4px 6px !important;
 }
@@ -2625,18 +2650,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .registry-compare-view .registry-summary-item {
   gap: 2px !important;
   min-height: 20px !important;
-  padding: 1px 4px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
 .registry-compare-view .registry-summary-item strong {
-  font-size: 11px !important;
-  line-height: 14px !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
 }
 
 .registry-compare-view .registry-summary-item span {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .registry-compare-view .registry-layout {
@@ -2645,40 +2671,46 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .registry-compare-view .registry-key-pane,
 .registry-compare-view .registry-value-pane {
-  gap: 2px !important;
-  padding: 1px 4px !important;
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
 .registry-compare-view .registry-key-pane header,
 .registry-compare-view .registry-value-pane header,
 .registry-compare-view .registry-report-panel header {
-  gap: 4px !important;
-  min-height: 18px !important;
+  gap: 6px !important;
+  min-height: 20px !important;
 }
 
 .registry-compare-view .registry-key-list,
 .registry-compare-view .registry-value-table {
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
 .registry-compare-view .registry-key-row {
-  gap: 0 4px !important;
-  min-height: 22px !important;
+  gap: 0 6px !important;
+  min-height: 18px !important;
   padding-top: 1px !important;
-  padding-right: 4px !important;
+  padding-right: 6px !important;
   padding-bottom: 1px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
+  line-height: 16px !important;
 }
 
 .registry-compare-view .registry-value-row {
-  min-height: 20px !important;
+  min-height: 18px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
   font-size: 11px !important;
 }
 
 .registry-compare-view .registry-value-row > * {
-  padding: 1px 4px !important;
+  padding: 2px 6px !important;
+  border-right: 1px solid #a0a0a0 !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 /* Clipboard Compare chrome densify toward capture toolbar/history/status strips */

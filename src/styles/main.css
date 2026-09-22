@@ -2682,7 +2682,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
-/* Table Compare chrome densify toward capture path/status/controls/grid strips */
+/* Table Compare path chrome densify toward capture (~20px path/status) */
 .table-compare-view {
   gap: 2px !important;
   padding: 2px 4px !important;
@@ -2690,12 +2690,44 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .table-compare-view .table-source-controls,
 .table-compare-view .table-controls,
-.table-compare-view .column-map-controls,
-.table-compare-view .table-navigation-bar {
+.table-compare-view .column-map-controls {
   gap: 2px 4px !important;
   min-height: 20px !important;
   padding: 1px 3px !important;
   border-radius: 0 !important;
+}
+
+/* Table secondary nav/report + in-view chrome at capture CSS scale (~18–20px; controls stay ~18px) */
+.table-compare-view .table-navigation-bar {
+  gap: 4px 6px !important;
+  min-height: 22px !important;
+  padding: 2px 4px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  background: var(--app-surface) !important;
+}
+
+.table-compare-view .table-summary,
+.table-compare-view .table-report-actions {
+  gap: 6px !important;
+  min-height: 20px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+}
+
+.table-compare-view .table-report-actions .n-button {
+  --n-height: 18px !important;
+  --n-padding: 0 6px !important;
+  --n-font-size: 11px !important;
+
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .table-compare-view .table-source-controls label,
@@ -2707,18 +2739,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .table-compare-view .table-source-controls span,
 .table-compare-view .column-map-controls span,
 .table-compare-view .table-navigation-bar label span,
-.table-compare-view .table-navigation-bar > span {
+.table-compare-view .table-navigation-bar > span,
+.table-compare-view .table-summary span {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .table-compare-view .table-source-controls input,
 .table-compare-view .table-source-controls select,
 .table-compare-view .table-controls input,
-.table-compare-view .table-controls button,
-.table-compare-view .column-map-controls select,
-.table-compare-view .table-navigation-bar input,
-.table-compare-view .table-navigation-bar button {
+.table-compare-view .table-controls button {
   height: 20px !important;
   min-height: 20px !important;
   padding: 0 4px !important;
@@ -2726,12 +2756,25 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 12px !important;
 }
 
+.table-compare-view .column-map-controls select,
+.table-compare-view .table-navigation-bar input,
+.table-compare-view .table-navigation-bar button {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
 .table-compare-view .table-navigation-bar > strong {
   min-height: 18px !important;
-  padding: 0 4px !important;
-  border-radius: 2px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
   font-size: 11px !important;
-  line-height: 18px !important;
+  line-height: 16px !important;
 }
 
 .table-compare-view .bc-path-footers {
@@ -2749,23 +2792,33 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .table-compare-view .column-source-grid,
 .table-compare-view .column-mapping-list,
 .table-compare-view .table-grid-panel {
-  gap: 4px !important;
-  padding: 2px 4px !important;
+  gap: 4px 6px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
+.table-compare-view .table-grid-panel header {
+  gap: 6px !important;
+  min-height: 20px !important;
+}
+
 .table-compare-view .column-source-grid li {
-  padding: 2px 4px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .table-compare-view .table-column-rule {
   gap: 2px 4px !important;
-  padding: 2px 4px !important;
+  min-height: 18px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
   font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .table-compare-view .table-grid-panes {
@@ -2789,6 +2842,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .table-compare-view .column-map-row span,
 .table-compare-view .column-map-row strong {
   padding: 2px 6px !important;
+  border-right: 1px solid #a0a0a0 !important;
   font-size: 11px !important;
   line-height: 16px !important;
 }

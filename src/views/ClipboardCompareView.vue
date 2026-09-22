@@ -266,7 +266,10 @@ watch(
     toolbar-test-id-prefix="clipboard-toolbar"
     @toolbar-command="runClipboardToolbarCommand"
   >
-    <section class="clipboard-compare-view">
+    <section
+      class="clipboard-compare-view"
+      data-clipboard-chrome-density="capture-1to1"
+    >
       <section class="clipboard-toolbar">
         <NButton
           size="small"
@@ -327,7 +330,10 @@ watch(
       >
 
       <section class="clipboard-layout">
-        <aside class="history-pane">
+        <aside
+          class="history-pane"
+          data-clipboard-rows-density="capture-1to1"
+        >
           <header>
             <strong>{{ $t('ui.history') }}</strong>
             <span>{{ $t('status.entryCount', { count: history.length }) }}</span>
@@ -378,7 +384,7 @@ watch(
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: 8px;
+  gap: 1px;
   min-height: 20px;
   padding: 0 2px;
 }
@@ -392,7 +398,7 @@ watch(
 .clipboard-compare-view {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
-  gap: 2px;
+  gap: 4px;
   height: 100%;
   padding: 2px 4px;
   overflow: hidden;
@@ -402,10 +408,10 @@ watch(
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 2px 4px;
-  min-height: 20px;
-  padding: 1px 4px;
-  border: 1px solid var(--app-border);
+  gap: 4px 6px;
+  min-height: 22px;
+  padding: 2px 4px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -413,6 +419,20 @@ watch(
 .status-chip {
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 16px;
+}
+
+:deep(.clipboard-toolbar .n-button) {
+  --n-height: 18px;
+  --n-padding: 0 6px;
+  --n-font-size: 11px;
+
+  height: 18px;
+  min-height: 18px;
+  padding: 0 6px;
+  border-radius: 0;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .clipboard-layout {
@@ -426,7 +446,7 @@ watch(
 .diff-pane {
   min-width: 0;
   min-height: 0;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -434,22 +454,22 @@ watch(
 .history-pane {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 2px;
-  padding: 1px 4px;
+  gap: 4px;
+  padding: 4px 6px;
 }
 
 .history-pane header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  min-height: 16px;
+  gap: 6px;
+  min-height: 20px;
 }
 
 .history-pane header span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .history-list {
@@ -462,13 +482,15 @@ watch(
 .history-entry {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0 4px;
-  min-height: 20px;
-  padding: 1px 4px;
-  border: 1px solid var(--app-border);
+  gap: 0 6px;
+  min-height: 18px;
+  padding: 2px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
+  font-size: 11px;
+  line-height: 16px;
   text-align: left;
   cursor: pointer;
 }
@@ -485,6 +507,7 @@ watch(
   overflow: hidden;
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

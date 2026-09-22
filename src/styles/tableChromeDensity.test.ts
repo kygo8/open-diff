@@ -34,8 +34,42 @@ describe('table compare chrome density', () => {
     expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
   })
 
-  it('keeps Table report-action chrome on the session-panel band', () => {
-    expect(tableView).toMatch(/\.table-report-actions\s*\{[\s\S]*?gap:\s*4px/)
+  it('keeps Table secondary nav/report chrome on capture band', () => {
+    expect(css).toMatch(
+      /\.table-compare-view \.table-navigation-bar\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
+    )
+    expect(css).toMatch(
+      /\.table-compare-view \.table-navigation-bar\s*\{[\s\S]*?min-height:\s*22px/,
+    )
+    expect(css).toMatch(
+      /\.table-compare-view \.table-navigation-bar input,[\s\S]*?\.table-compare-view \.table-navigation-bar button[\s\S]*?height:\s*18px/,
+    )
+    expect(css).toMatch(
+      /\.table-compare-view \.table-report-actions \.n-button[\s\S]*?height:\s*18px/,
+    )
+    expect(css).toMatch(
+      /\.table-compare-view \.table-summary,[\s\S]*?\.table-compare-view \.table-report-actions[\s\S]*?padding:\s*4px 6px/,
+    )
+
+    expect(tableView).toMatch(/data-table-secondary-density="capture-1to1"/)
+    expect(tableView).toMatch(/\.table-navigation-bar\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
+    expect(tableView).toMatch(/\.table-navigation-bar button\s*\{[\s\S]*?height:\s*18px/)
+    expect(tableView).toMatch(/\.table-navigation-bar label span[\s\S]*?line-height:\s*16px/)
+    expect(tableView).toMatch(/\.table-report-actions\s*\{[\s\S]*?gap:\s*6px/)
+    expect(tableView).toMatch(/:deep\(\.table-report-actions \.n-button\)[\s\S]*?height:\s*18px/)
     expect(tableView).not.toMatch(/\.table-report-actions\s*\{[\s\S]*?gap:\s*0\.5rem/)
+  })
+
+  it('keeps Table in-view grid/panel chrome on capture band', () => {
+    expect(css).toMatch(
+      /\.table-compare-view \.column-source-grid,[\s\S]*?\.table-compare-view \.table-grid-panel[\s\S]*?padding:\s*4px 6px/,
+    )
+    expect(css).toMatch(/\.table-compare-view \.table-grid-panel header[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.table-compare-view \.table-column-rule[\s\S]*?min-height:\s*18px/)
+
+    expect(tableView).toMatch(/\.table-grid-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(tableView).toMatch(/\.table-grid-panel header\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(tableView).toMatch(/\.table-column-rule\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(tableView).toMatch(/\.table-grid-cell\s*\{[\s\S]*?padding:\s*2px 6px/)
   })
 })

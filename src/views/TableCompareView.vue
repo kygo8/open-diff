@@ -937,7 +937,10 @@ watch([leftPath, rightPath], () => {
           <strong>{{ columnMappings.length }}</strong>
           <span>{{ $t('ui.columnMappings') }}</span>
         </div>
-        <div class="table-summary table-report-actions">
+        <div
+          class="table-summary table-report-actions"
+          data-table-secondary-density="capture-1to1"
+        >
           <NButton
             size="small"
             data-testid="export-table-report"
@@ -1186,7 +1189,10 @@ watch([leftPath, rightPath], () => {
             $t('status.rowColumnCount', { rows: visibleRowCount, columns: visibleColumns })
           }}</span>
         </header>
-        <div class="table-navigation-bar">
+        <div
+          class="table-navigation-bar"
+          data-table-secondary-density="capture-1to1"
+        >
           <label>
             <span>{{ $t('ui.find') }}</span>
             <input
@@ -1434,8 +1440,8 @@ h2 {
 .table-summary {
   display: grid;
   min-width: 132px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
   text-align: right;
@@ -1444,7 +1450,8 @@ h2 {
 .table-report-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  min-height: 20px;
 }
 
 .table-summary strong {
@@ -1455,6 +1462,21 @@ h2 {
 .table-summary span {
   color: var(--app-text-muted);
   font-size: 12px;
+  line-height: 16px;
+}
+
+:deep(.table-report-actions .n-button) {
+  --n-height: 18px;
+  --n-padding: 0 6px;
+  --n-font-size: 11px;
+
+  height: 18px;
+  min-height: 18px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .table-source-controls,
@@ -1514,7 +1536,7 @@ h2 {
 .column-mapping-list header span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .column-map-controls select {
@@ -1522,11 +1544,12 @@ h2 {
   height: 18px;
   min-height: 18px;
   padding: 0 6px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .column-source-grid {
@@ -1540,8 +1563,8 @@ h2 {
 .table-grid-panel {
   display: grid;
   gap: 4px 6px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1555,12 +1578,12 @@ h2 {
 }
 
 .column-source-grid li {
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 2px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .column-mapping-list header {
@@ -1572,12 +1595,14 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
+  min-height: 20px;
 }
 
 .table-grid-panel header span {
   color: var(--app-text-muted);
   font-size: 12px;
+  line-height: 16px;
 }
 
 .table-navigation-bar {
@@ -1586,7 +1611,10 @@ h2 {
   align-items: end;
   gap: 4px 6px;
   min-height: 22px;
-  padding: 1px 4px;
+  padding: 2px 4px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: var(--app-surface);
 }
 
 .table-navigation-bar label {
@@ -1598,7 +1626,7 @@ h2 {
 .table-navigation-bar > span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .table-navigation-bar input {
@@ -1606,33 +1634,35 @@ h2 {
   height: 18px;
   min-height: 18px;
   padding: 0 6px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .table-navigation-bar button {
   height: 18px;
   min-height: 18px;
   padding: 0 6px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
-  background: var(--app-surface-muted);
-  color: var(--app-text);
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #ffffff;
+  color: #111111;
   font-size: 11px;
+  line-height: 16px;
 }
 
 .table-navigation-bar > strong {
   min-width: 72px;
   min-height: 18px;
-  padding: 0 4px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-bg);
   font-size: 11px;
-  line-height: 18px;
+  line-height: 16px;
   text-align: center;
 }
 
@@ -1649,11 +1679,13 @@ h2 {
   align-items: center;
   gap: 2px 4px;
   min-width: 128px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  min-height: 18px;
+  padding: 2px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .table-column-rule input {
@@ -1722,9 +1754,9 @@ h2 {
 
 .table-grid-cell {
   min-width: 0;
-  padding: 2px 4px;
+  padding: 2px 6px;
   overflow: hidden;
-  border-right: 1px solid var(--app-border);
+  border-right: 1px solid #a0a0a0;
   font-size: 11px;
   line-height: 16px;
   text-overflow: ellipsis;
@@ -1757,9 +1789,9 @@ h2 {
 .column-map-row span,
 .column-map-row strong {
   min-width: 0;
-  padding: 2px 4px;
+  padding: 2px 6px;
   overflow: hidden;
-  border-right: 1px solid var(--app-border);
+  border-right: 1px solid #a0a0a0;
   font-size: 11px;
   line-height: 16px;
   text-overflow: ellipsis;

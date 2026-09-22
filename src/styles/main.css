@@ -2713,22 +2713,49 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
-/* Clipboard Compare chrome densify toward capture toolbar/history/status strips */
+/* Clipboard Compare chrome at capture CSS scale (toolbar/history ~18–20px; do not crush) */
 .clipboard-compare-view {
-  gap: 2px !important;
+  gap: 4px !important;
   padding: 2px 4px !important;
 }
 
 .clipboard-compare-view .clipboard-toolbar {
-  gap: 2px 4px !important;
-  min-height: 20px !important;
-  padding: 1px 4px !important;
+  gap: 4px 6px !important;
+  min-height: 22px !important;
+  padding: 2px 4px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
+  background: var(--app-surface) !important;
+}
+
+.clipboard-compare-view .clipboard-toolbar .n-button {
+  --n-height: 18px !important;
+  --n-padding: 0 6px !important;
+  --n-font-size: 11px !important;
+
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 6px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .clipboard-compare-view .status-chip {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
+}
+
+.clipboard-compare-view .bc-path-footers {
+  gap: 1px !important;
+  min-height: 20px !important;
+  padding: 0 2px !important;
+}
+
+.clipboard-compare-view .path-side-footer {
+  min-height: 20px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .clipboard-compare-view .clipboard-layout {
@@ -2737,17 +2764,23 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .clipboard-compare-view .history-pane,
 .clipboard-compare-view .diff-pane {
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
 .clipboard-compare-view .history-pane {
-  gap: 2px !important;
-  padding: 1px 4px !important;
+  gap: 4px !important;
+  padding: 4px 6px !important;
 }
 
 .clipboard-compare-view .history-pane header {
-  gap: 4px !important;
-  min-height: 16px !important;
+  gap: 6px !important;
+  min-height: 20px !important;
+}
+
+.clipboard-compare-view .history-pane header span {
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .clipboard-compare-view .history-list {
@@ -2755,10 +2788,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .clipboard-compare-view .history-entry {
-  gap: 0 4px !important;
-  min-height: 20px !important;
-  padding: 1px 4px !important;
+  gap: 0 6px !important;
+  min-height: 18px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.clipboard-compare-view .history-entry small,
+.clipboard-compare-view .history-entry code {
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 /* Table Compare path chrome densify toward capture (~20px path/status) */

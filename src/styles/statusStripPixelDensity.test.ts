@@ -8,7 +8,9 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 
 describe('status strip pixel density', () => {
   it('keeps folder-pair 4-segment strip at 20px with capture-like separators', () => {
-    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*20px/)
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*19\.5px/,
+    )
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?line-height:\s*18px/,
     )
@@ -26,19 +28,21 @@ describe('status strip pixel density', () => {
     expect(layout).not.toMatch(/data-pane-count='5'/)
   })
 
-  it('keeps session status bars at 20px with shared typography', () => {
+  it('keeps session status bars at 19.5px with shared typography', () => {
     expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?color:\s*#000000/)
     expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*20px/)
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*19\.5px/,
+    )
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='text-session'\] \.status-bar-pane[\s\S]*?padding:\s*0 1px/,
     )
     expect(layout).toMatch(
-      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?20px/,
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?19\.5px/,
     )
     expect(layout).toMatch(
-      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind\$='-session'\]\)[\s\S]*?20px/,
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind\$='-session'\]\)[\s\S]*?19\.5px/,
     )
   })
 })

@@ -53,20 +53,31 @@ describe('path/status strip density', () => {
   })
 
   it('keeps path meta footers with capture timestamp/size/encoding chips', () => {
+    expect(pathMeta).toMatch(/data-path-meta-density="capture-1to1"/)
     expect(pathMeta).toMatch(/path-meta-modified/)
     expect(pathMeta).toMatch(/path-meta-size/)
     expect(pathMeta).toMatch(/path-meta-chip/)
     expect(pathMeta).toMatch(/path-meta-eol/)
     expect(pathMeta).toMatch(/min-height:\s*20px/)
     expect(pathMeta).toMatch(/font-size:\s*11px/)
+    expect(pathMeta).toMatch(/\.path-meta-chip\s*\{[\s\S]*?height:\s*18px/)
+    expect(pathMeta).toMatch(/\.path-meta-chip\s*\{[\s\S]*?padding:\s*0 4px/)
+    expect(pathMeta).toMatch(/\.path-meta-footer\s*\{[\s\S]*?gap:\s*10px/)
+    expect(pathMeta).toMatch(/:size="12"/)
+    expect(pathMeta).toMatch(/ChevronDown/)
     expect(pathMeta).toMatch(/buildPathFooterMeta/)
+    expect(css).toMatch(/\.bc-path-footers \.path-meta-chip[\s\S]*?height:\s*18px/)
   })
 
-  it('keeps shared status strip near capture ~20px CSS height', () => {
-    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*20px/)
-    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*20px/)
+  it('keeps shared status strip near capture ~19.5px CSS height', () => {
     expect(layout).toMatch(
-      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*48px minmax\(0, 1fr\) 20px/,
+      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*19\.5px/,
+    )
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*19\.5px/,
+    )
+    expect(layout).toMatch(
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*48px minmax\(0, 1fr\) 19\.5px/,
     )
   })
 

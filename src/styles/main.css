@@ -1771,8 +1771,25 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .bc-path-footers .path-meta-footer,
 .bc-path-footers .path-side-footer {
+  gap: 10px;
   min-height: 20px;
+  color: #111111;
   font-size: 11px;
+  line-height: 16px;
+}
+
+.bc-path-footers .path-meta-chip {
+  height: 18px;
+  min-height: 18px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.bc-path-footers .path-meta-eol {
   line-height: 16px;
 }
 

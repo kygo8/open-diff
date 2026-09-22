@@ -36,7 +36,7 @@ for (const [name, route] of routes) {
     )
     await expect(page.locator('.menu-bar')).toHaveCSS('height', '48px')
     await expect(page.locator('.sidebar')).toBeHidden()
-    await expect(page.locator('.status-bar')).toHaveCSS('height', '20px')
+    await expect(page.locator('.status-bar')).toHaveCSS('height', '19.5px')
     await expect(page.locator('.command-bar')).toHaveCount(0)
     await expect(page.locator('.pathbar')).toHaveCount(0)
     await expect(page.locator('.page-head')).toHaveCount(0)

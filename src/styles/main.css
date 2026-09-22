@@ -3660,3 +3660,98 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 0 5px !important;
   font-size: 11px !important;
 }
+
+/* Options / Settings dialog chrome at capture CSS scale (tree rows ~18px; controls ~20px) */
+.settings-view {
+  gap: 6px !important;
+  padding: 4px 6px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.settings-view .options-section-nav {
+  gap: 4px !important;
+  padding: 2px 4px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+}
+
+.settings-view .options-tree-group-label {
+  padding: 4px 6px 2px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.settings-view .options-section-button {
+  min-height: 18px !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.settings-view .options-hint {
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.settings-view .stack-row input,
+.settings-view .stack-row select,
+.settings-view .open-with-draft input {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.settings-view .auto-save-limit-row,
+.settings-view .font-size-row,
+.settings-view .tweak-row {
+  gap: 6px !important;
+  min-height: 20px !important;
+  line-height: 16px !important;
+}
+
+.settings-view .shortcut-row,
+.settings-view .shared-session-list li {
+  min-height: 20px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+}
+
+.settings-view .n-card {
+  --n-padding-top: 4px !important;
+  --n-padding-bottom: 4px !important;
+  --n-padding-left: 6px !important;
+  --n-padding-right: 6px !important;
+  --n-title-font-size: 12px !important;
+  --n-border-radius: 0 !important;
+
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.settings-view .n-card-header {
+  min-height: 20px !important;
+  padding: 2px 6px !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+
+.settings-view .n-input,
+.settings-view .n-base-selection,
+.settings-view .n-input-number,
+.settings-view .n-button {
+  --n-height: 20px !important;
+  --n-font-size: 11px !important;
+  --n-border-radius: 0 !important;
+
+  min-height: 20px !important;
+  border-radius: 0 !important;
+  line-height: 16px !important;
+}

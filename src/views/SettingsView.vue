@@ -1465,7 +1465,10 @@ function parseShortcutText(value: string): string[] {
     :subtitle="$t('ui.manageMatchingRulesDefaultViewsAndRuleReferences')"
     :inspector-label="$t('ui.settingsInspector')"
   >
-    <section class="settings-view">
+    <section
+      class="settings-view"
+      data-options-density="capture-1to1"
+    >
       <nav
         class="options-section-nav options-section-tree"
         data-testid="options-section-nav"
@@ -3630,14 +3633,15 @@ function parseShortcutText(value: string): string[] {
 <style scoped>
 .settings-view {
   display: grid;
-  grid-template-columns: 160px minmax(0, 1fr);
+  grid-template-columns: 176px minmax(0, 1fr);
   align-content: start;
   align-items: start;
-  gap: 5px;
+  gap: 6px;
   height: 100%;
-  padding: 5px;
+  padding: 4px 6px;
   overflow: auto;
   font-size: 11px;
+  line-height: 16px;
 }
 
 .options-content {
@@ -3661,9 +3665,9 @@ function parseShortcutText(value: string): string[] {
   display: grid;
   gap: 4px;
   max-height: calc(100vh - 120px);
-  padding: 1px;
+  padding: 2px 4px;
   overflow: auto;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
   align-content: start;
@@ -3677,26 +3681,26 @@ function parseShortcutText(value: string): string[] {
 
 .options-tree-group {
   display: grid;
-  gap: 1px;
+  gap: 2px;
   align-content: start;
 }
 
 .options-tree-group-label {
   min-width: 0;
   margin: 0;
-  padding: 2px 6px 0;
+  padding: 4px 6px 2px;
   color: var(--app-text-muted);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  line-height: 12px;
+  line-height: 16px;
   text-transform: uppercase;
 }
 
 .options-hint {
   margin: 2px 0 0;
   color: var(--app-text-muted);
-  font-size: 10px;
-  line-height: 12px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .open-with-list {
@@ -3724,25 +3728,27 @@ function parseShortcutText(value: string): string[] {
 .open-with-draft input {
   min-width: 160px;
   height: 20px;
+  min-height: 20px;
   padding: 0 6px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .options-section-button {
   box-sizing: border-box;
   width: 100%;
-  min-height: 16px;
-  padding: 0 5px;
+  min-height: 18px;
+  padding: 2px 6px;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: var(--app-text);
   font-size: 11px;
-  line-height: 15px;
+  line-height: 16px;
   text-align: left;
   cursor: pointer;
 }
@@ -3770,10 +3776,11 @@ function parseShortcutText(value: string): string[] {
 .tweak-row {
   display: flex;
   align-items: center;
-  gap: 5px;
-  min-height: 18px;
+  gap: 6px;
+  min-height: 20px;
   margin-bottom: 2px;
   font-size: 11px;
+  line-height: 16px;
 }
 
 .stack-row {
@@ -3781,18 +3788,21 @@ function parseShortcutText(value: string): string[] {
   gap: 2px;
   margin-bottom: 4px;
   font-size: 11px;
+  line-height: 16px;
 }
 
 .stack-row input,
 .stack-row select {
   min-width: 0;
   height: 20px;
+  min-height: 20px;
   padding: 0 6px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .diff-color-grid {
@@ -3806,29 +3816,31 @@ function parseShortcutText(value: string): string[] {
   grid-template-columns: minmax(120px, 1fr) 28px minmax(100px, 0.8fr);
   align-items: center;
   gap: 6px;
-  min-height: 22px;
+  min-height: 20px;
 }
 
 .diff-color-picker {
   width: 28px;
-  height: 22px;
+  height: 20px;
   padding: 0;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: transparent;
   cursor: pointer;
 }
 
 .diff-color-text {
   min-width: 0;
-  height: 22px;
+  height: 20px;
+  min-height: 20px;
   padding: 0 6px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font-family: var(--font-mono);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .diff-color-preview {
@@ -3841,11 +3853,13 @@ function parseShortcutText(value: string): string[] {
 .preview-swatch {
   display: inline-flex;
   align-items: center;
-  min-height: 20px;
+  min-height: 18px;
   padding: 0 6px;
-  border-radius: 2px;
-  font-size: 10px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  font-size: 11px;
   font-weight: 600;
+  line-height: 16px;
 }
 
 .preview-swatch.added {
@@ -3864,19 +3878,24 @@ function parseShortcutText(value: string): string[] {
 }
 
 .settings-view :deep(.n-card) {
-  --n-padding-top: 5px;
-  --n-padding-bottom: 5px;
-  --n-padding-left: 7px;
-  --n-padding-right: 7px;
+  --n-padding-top: 4px;
+  --n-padding-bottom: 4px;
+  --n-padding-left: 6px;
+  --n-padding-right: 6px;
   --n-title-font-size: 12px;
   --n-border-radius: 0;
+  --n-border-color: #a0a0a0;
 
+  border: 1px solid #a0a0a0;
   font-size: 11px;
+  line-height: 16px;
 }
 
 .settings-view :deep(.n-card-header) {
-  min-height: 24px;
-  padding: 4px 8px !important;
+  min-height: 20px;
+  padding: 2px 6px !important;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .settings-view :deep(.n-space) {
@@ -3889,13 +3908,19 @@ function parseShortcutText(value: string): string[] {
 .settings-view :deep(.n-button) {
   --n-height: 20px;
   --n-font-size: 11px;
+  --n-border-radius: 0;
+
+  min-height: 20px;
+  border-radius: 0;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .settings-view :deep(label),
 .settings-view :deep(.n-checkbox),
 .settings-view :deep(.n-radio-button) {
   font-size: 11px;
-  line-height: 18px;
+  line-height: 16px;
 }
 
 h1 {
@@ -3921,12 +3946,15 @@ h1 {
 .integration-config input,
 .integration-config select {
   min-width: 180px;
-  height: 32px;
-  padding: 0 8px;
-  border: 1px solid var(--app-border);
-  border-radius: 6px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .settings-row {
@@ -3983,8 +4011,9 @@ h1 {
     auto auto;
   align-items: center;
   gap: 4px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  min-height: 20px;
+  padding: 2px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
 }
 
@@ -4043,8 +4072,9 @@ h1 {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 4px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  min-height: 20px;
+  padding: 2px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
 }
 

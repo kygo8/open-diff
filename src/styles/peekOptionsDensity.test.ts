@@ -61,13 +61,28 @@ describe('peek panel densify', () => {
 })
 
 describe('options dialog densify', () => {
-  it('uses a dense tree/content Options layout and keeps wired section ids', () => {
-    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*160px/)
-    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*5px/)
-    expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*16px/)
+  it('keeps Options tree/content chrome at capture CSS scale and wired section ids', () => {
+    expect(css).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(css).toMatch(/\.settings-view \.options-section-nav[\s\S]*?border:\s*1px solid #a0a0a0/)
+    expect(css).toMatch(/\.settings-view \.options-section-button[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.settings-view \.options-tree-group-label[\s\S]*?font-size:\s*11px/)
+    expect(css).toMatch(/\.settings-view \.n-card-header[\s\S]*?min-height:\s*20px/)
+
+    expect(settingsView).toMatch(/data-options-density="capture-1to1"/)
+    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*176px/)
+    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(settingsView).toMatch(/\.options-tree-group-label\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(settingsView).toMatch(/\.options-hint\s*\{[\s\S]*?line-height:\s*16px/)
     expect(settingsView).toMatch(
       /\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?height:\s*20px/,
     )
+    expect(settingsView).toMatch(
+      /\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
+    )
+    expect(settingsView).toMatch(/:deep\(\.n-card-header\)\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(settingsView).not.toMatch(/font-size:\s*9px/)
+    expect(settingsView).not.toMatch(/min-height:\s*9px/)
     expect(settingsView).toMatch(/data-testid="options-content"/)
     expect(settingsView).toMatch(/data-testid="options-section-nav"/)
     expect(settingsView).toMatch(/options-section-\$\{section\.id\}/)
@@ -123,9 +138,9 @@ describe('options dialog densify', () => {
     expect(settingsView).toMatch(/data-testid="folder-merge-show-center-pane"/)
     expect(settingsView).toMatch(/data-testid="folder-merge-compare-to-output"/)
     expect(settingsView).toMatch(/\.shortcut-config\s*\{[\s\S]*?gap:\s*4px/)
-    expect(settingsView).toMatch(/\.shortcut-row\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(settingsView).toMatch(/\.shortcut-row\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(settingsView).toMatch(/\.shortcut-row\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(settingsView).toMatch(/\.shared-session-list li\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(settingsView).toMatch(/\.shared-session-list li\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(settingsView).toMatch(/\.shared-session-list li\s*\{[\s\S]*?border-radius:\s*0/)
   })
 })

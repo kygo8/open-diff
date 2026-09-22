@@ -14,7 +14,8 @@ import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { Eye, Funnel } from '@lucide/vue'
-import { createFolderEntry, createFolderSnapshot, saveTextFile } from '@/api/diff'
+import { createFolderEntry, createFolderSnapshot, pathFileStamp, saveTextFile } from '@/api/diff'
+import type { FileStamp } from '@/types/diff'
 import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
 import {
   buildFolderSyncReportText,
@@ -54,6 +55,7 @@ import { useStatusBarStore } from '@/stores/statusBar'
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import { createChildCompareLaunch } from '@/app/childSession'
 import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { explorerRevealPath, explorerSelectTargetPath } from '@/app/folderCompareExtraActions'
@@ -99,6 +101,9 @@ const sessionLaunch = useSessionLaunchStore()
 const viewActions = useViewActionsStore()
 const leftPath = ref('')
 const rightPath = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
+
 const newFolderPanelOpen = ref(false)
 const newFolderName = ref('New Folder')
 
@@ -1133,6 +1138,7 @@ watch(
     }
 
     void refreshSyncFreeSpace()
+    void refreshSyncPathStamps()
   },
   { immediate: true },
 )
@@ -1167,8 +1173,15 @@ const syncSelectionLabel = computed(() => {
   return t('status.itemsSelected', { count })
 })
 
-const leftSyncPathFooter = computed(() => syncSelectionLabel.value)
-const rightSyncPathFooter = computed(() => syncSelectionLabel.value)
+async function refreshSyncPathStamps(): Promise<void> {
+  const [left, right] = await Promise.all([
+    leftPath.value ? pathFileStamp(leftPath.value).catch(() => null) : Promise.resolve(null),
+    rightPath.value ? pathFileStamp(rightPath.value).catch(() => null) : Promise.resolve(null),
+  ])
+
+  leftFileStamp.value = left
+  rightFileStamp.value = right
+}
 
 watchEffect(() => {
   statusBar.reportStatus({
@@ -1636,12 +1649,10 @@ watch(
               @browse="browseSyncFolderSide('left')"
             />
           </div>
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !leftSyncPathFooter }"
-            data-testid="folder-sync-left-path-footer"
-            >{{ leftSyncPathFooter || $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            test-id="folder-sync-left-path-footer"
+          />
         </label>
         <label>
           <span>{{ $t('ui.rightFolder') }}</span>
@@ -1660,12 +1671,10 @@ watch(
               @browse="browseSyncFolderSide('right')"
             />
           </div>
-          <span
-            class="path-side-footer"
-            :class="{ 'path-side-footer-muted': !rightSyncPathFooter }"
-            data-testid="folder-sync-right-path-footer"
-            >{{ rightSyncPathFooter || $t('status.panePlaceholder') }}</span
-          >
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            test-id="folder-sync-right-path-footer"
+          />
         </label>
         <label>
           <span>{{ $t('ui.strategy') }}</span>
@@ -2224,19 +2233,6 @@ watch(
   </WorkbenchShell>
 </template>
 <style scoped>
-.path-side-footer {
-  display: block;
-  min-height: 20px;
-  margin-top: 0;
-  color: var(--app-muted, #6b7280);
-  font-size: 11px;
-  line-height: 16px;
-}
-
-.path-side-footer-muted {
-  color: #9ca3af;
-}
-
 .folder-sync-view {
   display: grid;
   gap: 4px;

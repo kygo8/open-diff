@@ -43,6 +43,9 @@ vi.mock('@/api/folderMerge', () => ({
 
 vi.mock('@/api/diff', () => ({
   createFolderSnapshot: vi.fn(),
+  pathFileStamp: vi
+    .fn()
+    .mockResolvedValue({ size: 4096, modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30) }),
   saveTextFile: vi.fn().mockResolvedValue({
     path: 'D:/workspace/merge/folder-merge.txt',
     bytesWritten: 64,
@@ -102,15 +105,10 @@ describe('FolderMergeView', () => {
     const wrapper = mountFolderMergeView()
 
     expect(wrapper.find('[data-testid="folder-merge-left-path"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="folder-merge-left-editing-status"]').text()).toContain(
-      'Editing disabled',
-    )
-    expect(wrapper.find('[data-testid="folder-merge-base-editing-status"]').text()).toContain(
-      'Editing disabled',
-    )
-    expect(wrapper.find('[data-testid="folder-merge-right-editing-status"]').text()).toContain(
-      'Editing disabled',
-    )
+    expect(wrapper.find('[data-testid="folder-merge-left-path-footer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-base-path-footer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-right-path-footer"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-output-path-footer"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folder-merge-base-path"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folder-merge-right-path"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folder-merge-output-path"]').exists()).toBe(true)

@@ -99,12 +99,14 @@ describe('path/status strip density', () => {
     }
   })
 
-  it('finishes Folder archive/browse and Text Merge path footers on shared chrome', () => {
+  it('finishes Folder archive/browse and Sync/Merge path footers on shared chrome', () => {
     expect(folderCompareView).toMatch(/show-archive/)
     expect(folderCompareView).toMatch(/folder-browse-archive-left/)
     expect(folderCompareView).not.toMatch(/bc-path-action-text/)
     expect(folderSyncView).toMatch(/SessionPathActions/)
+    expect(folderSyncView).toMatch(/PathMetaFooter/)
     expect(folderMergeView).toMatch(/SessionPathActions/)
+    expect(folderMergeView).toMatch(/PathMetaFooter/)
     expect(textMergeViewForFooter).toMatch(/PathMetaFooter/)
     expect(textMergeViewForFooter).toMatch(/merge-path-footers/)
   })

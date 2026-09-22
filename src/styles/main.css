@@ -2206,12 +2206,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .media-compare-view .media-field-row {
-  min-height: 16px !important;
+  min-height: 18px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
   font-size: 11px !important;
 }
 
 .media-compare-view .media-field-row > * {
-  padding: 2px 4px !important;
+  padding: 2px 6px !important;
   line-height: 16px !important;
 }
 
@@ -2220,12 +2221,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
-/* Media scrub/transport/pane densify pass 2 toward Hex/Table/Version rhythm */
+/* Media scrub/field rows at capture CSS scale (~18–20px; controls stay ~18px) */
 .media-compare-view .media-playback-header {
-  gap: 4px !important;
-  min-height: 16px !important;
+  gap: 6px !important;
+  min-height: 20px !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .media-compare-view .media-sync-toggle {
@@ -2234,9 +2235,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .media-compare-view .media-scrub-row {
-  gap: 4px !important;
+  gap: 6px !important;
   min-height: 20px !important;
-  padding: 0 2px !important;
+  padding: 2px 4px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  background: var(--app-surface) !important;
 }
 
 .media-compare-view .media-scrub-row button {
@@ -2245,22 +2249,23 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 4px !important;
   height: 18px !important;
   min-height: 18px !important;
-  padding: 0 5px !important;
-  border-radius: 2px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
   font-size: 11px !important;
-  line-height: 1.2 !important;
+  line-height: 16px !important;
 }
 
 .media-compare-view .media-scrub {
-  height: 16px !important;
-  min-height: 16px !important;
+  height: 18px !important;
+  min-height: 18px !important;
 }
 
 .media-compare-view .media-scrub-row span,
 .media-compare-view .media-playback-hint {
   margin: 0 !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .media-compare-view .media-players {
@@ -2277,14 +2282,14 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .media-compare-view .media-rules-panel header span,
 .media-compare-view .media-side dt {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .media-compare-view .media-side header,
 .media-compare-view .media-report-panel header,
 .media-compare-view .media-rules-panel header {
   gap: 6px !important;
-  min-height: 18px !important;
+  min-height: 20px !important;
 }
 
 .media-compare-view .media-report-panel header button,
@@ -2324,7 +2329,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 4px !important;
   min-height: 18px !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
+}
+
+.media-compare-view .media-rules-panel {
+  gap: 4px 6px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
+}
+
+.media-compare-view .media-report-panel {
+  gap: 4px 6px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
 }
 
 /* Version Compare chrome densify toward capture path/status/toolbar/footer strips */

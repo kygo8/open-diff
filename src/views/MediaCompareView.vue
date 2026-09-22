@@ -816,7 +816,10 @@ function runMediaToolbarCommand(commandId: string): void {
             </p>
           </article>
         </div>
-        <div class="media-scrub-row">
+        <div
+          class="media-scrub-row"
+          data-media-scrub-density="capture-1to1"
+        >
           <button
             type="button"
             class="media-scrub-play"
@@ -826,14 +829,14 @@ function runMediaToolbarCommand(commandId: string): void {
             <Pause
               v-if="isPlaying"
               class="media-scrub-icon"
-              :size="12"
+              :size="14"
               :stroke-width="2"
               aria-hidden="true"
             />
             <Play
               v-else
               class="media-scrub-icon"
-              :size="12"
+              :size="14"
               :stroke-width="2"
               aria-hidden="true"
             />
@@ -969,7 +972,10 @@ function runMediaToolbarCommand(commandId: string): void {
           class="media-report-table"
           data-testid="media-report-table"
         >
-          <div class="media-field-row media-field-head">
+          <div
+            class="media-field-row media-field-head"
+            data-media-field-density="capture-1to1"
+          >
             <span>{{ $t('ui.field') }}</span>
             <span>{{ $t('ui.left') }}</span>
             <span>{{ $t('ui.right') }}</span>
@@ -1185,6 +1191,12 @@ h1 {
   background: var(--app-surface);
 }
 
+.media-report-panel {
+  gap: 4px 6px;
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
+}
+
 .media-summary-item {
   gap: 2px;
 }
@@ -1199,7 +1211,7 @@ h1 {
 .media-report-panel header span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .media-side header,
@@ -1208,7 +1220,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  min-height: 18px;
+  min-height: 20px;
 }
 
 .media-report-panel header button {
@@ -1272,8 +1284,8 @@ h1 {
   display: grid;
   grid-template-columns: 140px minmax(160px, 1fr) minmax(160px, 1fr) 98px 98px;
   min-width: 760px;
-  min-height: 16px;
-  border-bottom: 1px solid var(--app-border);
+  min-height: 18px;
+  border-bottom: 1px solid #a0a0a0;
   font-size: 11px;
 }
 
@@ -1283,10 +1295,10 @@ h1 {
 
 .media-rules-panel {
   display: grid;
-  gap: 2px 4px;
+  gap: 4px 6px;
   min-height: 20px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1296,7 +1308,7 @@ h1 {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  min-height: 18px;
+  min-height: 20px;
 }
 
 .media-rules-panel header button {
@@ -1311,7 +1323,7 @@ h1 {
 .media-rules-panel header span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .media-rules-list {
@@ -1328,7 +1340,7 @@ h1 {
   gap: 4px;
   min-height: 18px;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .media-rule-row em {
@@ -1343,9 +1355,9 @@ h1 {
 .media-field-row > * {
   min-width: 0;
   margin: 0;
-  padding: 2px 4px;
+  padding: 2px 6px;
   overflow: hidden;
-  border-right: 1px solid var(--app-border);
+  border-right: 1px solid #a0a0a0;
   font-style: normal;
   line-height: 16px;
   text-overflow: ellipsis;
@@ -1439,12 +1451,12 @@ h1 {
 
 .media-playback-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  min-height: 16px;
+  gap: 6px;
+  min-height: 20px;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .media-sync-toggle {
@@ -1482,9 +1494,12 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-height: 20px;
-  padding: 0 2px;
+  padding: 2px 4px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: var(--app-surface);
 }
 
 .media-scrub-play {
@@ -1493,14 +1508,14 @@ h1 {
   gap: 4px;
   height: 18px;
   min-height: 18px;
-  padding: 0 5px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
-  background: var(--app-bg);
-  color: var(--app-text);
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #ffffff;
+  color: #111111;
   font: inherit;
   font-size: 11px;
-  line-height: 1.2;
+  line-height: 16px;
   cursor: pointer;
 }
 
@@ -1511,20 +1526,20 @@ h1 {
 .media-scrub {
   flex: 1;
   min-width: 160px;
-  height: 16px;
-  min-height: 16px;
+  height: 18px;
+  min-height: 18px;
 }
 
 .media-scrub-row span {
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .media-playback-hint {
   margin: 0;
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .bc-path-footers {

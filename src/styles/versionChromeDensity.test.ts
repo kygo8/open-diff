@@ -37,10 +37,12 @@ describe('version compare chrome density', () => {
   })
 
   it('keeps Version summary/side/report/rules/row chrome on capture band', () => {
-    expect(css).toMatch(/\.version-compare-view \.version-summary-item[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.version-compare-view \.version-report-panel[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.version-compare-view \.version-rules-panel[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.version-compare-view \.version-field-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.version-compare-view \.version-report-panel[\s\S]*?padding:\s*4px 6px/)
+    expect(css).toMatch(/\.version-compare-view \.version-rules-panel[\s\S]*?padding:\s*4px 6px/)
+    expect(css).toMatch(
+      /\.version-compare-view \.version-report-panel[\s\S]*?border:\s*1px solid #a0a0a0/,
+    )
+    expect(css).toMatch(/\.version-compare-view \.version-field-row\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(
       /\.version-compare-view \.version-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/,
     )
@@ -48,15 +50,19 @@ describe('version compare chrome density', () => {
       /\.version-compare-view \.version-report-panel header button[\s\S]*?height:\s*18px/,
     )
     expect(css).toMatch(/\.version-compare-view \.version-rule-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.version-compare-view \.version-side header[\s\S]*?min-height:\s*20px/)
 
-    expect(versionView).toMatch(/\.version-summary-item[\s\S]*?padding:\s*2px 4px/)
-    expect(versionView).toMatch(/\.version-report-panel[\s\S]*?padding:\s*2px 4px/)
-    expect(versionView).toMatch(/\.version-rules-panel[\s\S]*?padding:\s*2px 4px/)
+    expect(versionView).toMatch(/data-version-chrome-density="capture-1to1"/)
+    expect(versionView).toMatch(/data-version-rows-density="capture-1to1"/)
+    expect(versionView).toMatch(/\.version-summary-item[\s\S]*?padding:\s*4px 6px/)
+    expect(versionView).toMatch(/\.version-report-panel[\s\S]*?padding:\s*4px 6px/)
+    expect(versionView).toMatch(/\.version-rules-panel[\s\S]*?padding:\s*4px 6px/)
     expect(versionView).toMatch(/\.version-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/)
-    expect(versionView).toMatch(/\.version-field-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(versionView).toMatch(/\.version-field-row\s*\{[\s\S]*?min-height:\s*18px/)
     expect(versionView).toMatch(/\.version-field-row\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(versionView).toMatch(/\.version-field-row > \*\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(versionView).toMatch(/\.version-field-row > \*\s*\{[\s\S]*?line-height:\s*16px/)
-    expect(versionView).toMatch(/\.version-side dl div\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(versionView).toMatch(/\.version-side dl div\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(versionView).toMatch(/\.version-rule-row\s*\{[\s\S]*?min-height:\s*18px/)
   })
 })

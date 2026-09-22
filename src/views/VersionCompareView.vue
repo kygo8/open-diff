@@ -705,7 +705,10 @@ watch(
         </article>
       </section>
 
-      <section class="version-report-panel">
+      <section
+        class="version-report-panel"
+        data-version-chrome-density="capture-1to1"
+      >
         <header>
           <strong>{{ $t('ui.versionFieldReport') }}</strong>
           <span>{{ $t('status.fieldCount', { count: versionFields.length }) }}</span>
@@ -727,7 +730,10 @@ watch(
           class="version-report-table"
           data-testid="version-report-table"
         >
-          <div class="version-field-row version-field-head">
+          <div
+            class="version-field-row version-field-head"
+            data-version-rows-density="capture-1to1"
+          >
             <span>{{ $t('ui.group') }}</span>
             <span>{{ $t('ui.field') }}</span>
             <span>{{ $t('ui.left') }}</span>
@@ -861,13 +867,13 @@ h1 {
   gap: 2px;
   min-width: 180px;
   min-height: 20px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
   text-align: right;
 }
 
@@ -875,10 +881,10 @@ h1 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
   align-items: end;
-  gap: 3px;
+  gap: 4px 6px;
   min-height: 20px;
-  padding: 1px 3px;
-  border: 1px solid var(--app-border);
+  padding: 2px 4px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -905,31 +911,33 @@ h1 {
 .version-path-panel span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .version-path-panel input {
   height: 20px;
   min-height: 20px;
-  padding: 0 4px;
-  border: 1px solid var(--app-border);
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
   font-size: 12px;
+  line-height: 16px;
 }
 
 .version-path-panel button {
   height: 20px;
   min-height: 20px;
-  padding: 0 4px;
-  border: 1px solid var(--app-border);
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: var(--app-bg);
-  color: var(--app-text);
+  background: #ffffff;
+  color: #111111;
   font: inherit;
   font-size: 11px;
+  line-height: 16px;
 }
 
 .version-path-panel button:hover {
@@ -943,13 +951,13 @@ h1 {
 .version-error {
   min-height: 18px;
   margin: 0;
-  padding: 2px 4px;
+  padding: 2px 6px;
   border: 1px solid var(--app-danger);
   border-radius: 0;
   background: var(--diff-deleted-bg);
   color: var(--diff-deleted-fg);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .version-summary-grid,
@@ -970,10 +978,10 @@ h1 {
 .version-side,
 .version-report-panel {
   display: grid;
-  gap: 2px 4px;
+  gap: 4px 6px;
   min-height: 20px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -992,7 +1000,7 @@ h1 {
 .version-report-panel header span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .version-side header,
@@ -1001,16 +1009,18 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  min-height: 18px;
+  min-height: 20px;
 }
 
 .version-report-panel header button {
   height: 18px;
   min-height: 18px;
   margin-left: auto;
-  padding: 0 5px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   font-size: 11px;
-  line-height: 18px;
+  line-height: 16px;
 }
 
 .version-side dl {
@@ -1025,8 +1035,8 @@ h1 {
   gap: 2px;
   min-width: 0;
   min-height: 18px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 2px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
 }
@@ -1034,7 +1044,7 @@ h1 {
 .version-side dt {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .version-side dd {
@@ -1043,7 +1053,7 @@ h1 {
   overflow: hidden;
   font-size: 11px;
   font-weight: 700;
-  line-height: 14px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1051,7 +1061,7 @@ h1 {
 .version-report-table {
   display: grid;
   overflow: auto;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
 }
@@ -1062,8 +1072,8 @@ h1 {
     110px 140px minmax(160px, 1fr) minmax(160px, 1fr)
     98px 98px;
   min-width: 820px;
-  min-height: 16px;
-  border-bottom: 1px solid var(--app-border);
+  min-height: 18px;
+  border-bottom: 1px solid #a0a0a0;
   font-size: 11px;
 }
 
@@ -1073,10 +1083,10 @@ h1 {
 
 .version-rules-panel {
   display: grid;
-  gap: 2px 4px;
+  gap: 4px 6px;
   min-height: 20px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1087,22 +1097,24 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  min-height: 18px;
+  min-height: 20px;
 }
 
 .version-rules-panel header button {
   height: 18px;
   min-height: 18px;
   margin-left: auto;
-  padding: 0 5px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   font-size: 11px;
-  line-height: 18px;
+  line-height: 16px;
 }
 
 .version-rules-panel header span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .version-rules-list {
@@ -1116,10 +1128,10 @@ h1 {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-height: 18px;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .version-rule-row em {
@@ -1134,9 +1146,9 @@ h1 {
 .version-field-row > * {
   min-width: 0;
   margin: 0;
-  padding: 2px 4px;
+  padding: 2px 6px;
   overflow: hidden;
-  border-right: 1px solid var(--app-border);
+  border-right: 1px solid #a0a0a0;
   font-style: normal;
   line-height: 16px;
   text-overflow: ellipsis;

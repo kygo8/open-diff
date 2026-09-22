@@ -896,6 +896,7 @@ function runRegistryToolbarCommand(commandId: string): void {
       <section
         v-if="allRegistryValues.length > 0"
         class="registry-report-panel"
+        data-registry-chrome-density="capture-1to1"
         data-testid="registry-report-panel"
       >
         <header>
@@ -959,7 +960,10 @@ function runRegistryToolbarCommand(commandId: string): void {
       </section>
 
       <section class="registry-layout">
-        <aside class="registry-key-pane">
+        <aside
+          class="registry-key-pane"
+          data-registry-rows-density="capture-1to1"
+        >
           <header>
             <strong>{{ $t('ui.keys') }}</strong>
             <span>{{ $t('status.keyCount', { count: flatRegistryKeys.length }) }}</span>
@@ -1219,13 +1223,13 @@ h1 {
   display: grid;
   gap: 2px;
   min-width: 220px;
-  padding: 2px 6px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
   text-align: right;
 }
 
@@ -1233,10 +1237,10 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   align-items: end;
-  gap: 4px;
+  gap: 4px 6px;
   min-height: 22px;
-  padding: 1px 4px;
-  border: 1px solid var(--app-border);
+  padding: 2px 4px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1263,20 +1267,22 @@ h1 {
 .registry-input-panel span {
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .registry-input-panel textarea {
   min-width: 0;
   min-height: 64px;
-  padding: 2px 4px;
+  padding: 2px 6px;
   font-family: var(--font-mono);
   font-size: 11px;
+  line-height: 16px;
   resize: vertical;
 }
 
 .registry-input-panel textarea,
 .registry-input-panel button {
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
@@ -1306,19 +1312,20 @@ h1 {
   background: var(--diff-deleted-bg);
   color: var(--diff-deleted-fg);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .registry-maturity,
 .registry-filter-bar,
 .registry-live-panel {
   margin: 0;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .registry-filter-bar,
@@ -1335,12 +1342,13 @@ h1 {
   height: 20px;
   min-height: 20px;
   padding: 0 6px;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: var(--app-bg);
-  color: var(--app-text);
+  background: #ffffff;
+  color: #111111;
   font: inherit;
   font-size: 11px;
+  line-height: 16px;
 }
 
 .registry-live-row input {
@@ -1355,19 +1363,19 @@ h1 {
   min-width: 0;
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .registry-live-result {
   margin: 4px 0 0;
   padding: 2px 6px;
   overflow: auto;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
   font-family: var(--font-mono);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
   white-space: pre-wrap;
 }
 
@@ -1378,9 +1386,10 @@ h1 {
 
 .registry-report-panel {
   display: grid;
-  gap: 4px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  gap: 4px 6px;
+  min-height: 20px;
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1389,19 +1398,20 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  min-height: 18px;
+  gap: 6px;
+  min-height: 20px;
 }
 
 .registry-report-panel header button {
-  height: 20px;
-  min-height: 20px;
+  height: 18px;
+  min-height: 18px;
   padding: 0 6px;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: var(--app-bg);
-  color: var(--app-text);
+  background: #ffffff;
+  color: #111111;
   font-size: 11px;
+  line-height: 16px;
   cursor: pointer;
 }
 
@@ -1415,21 +1425,21 @@ h1 {
   display: grid;
   gap: 2px;
   min-height: 20px;
-  padding: 1px 4px;
-  border: 1px solid var(--app-border);
+  padding: 2px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
 
 .registry-summary-item strong {
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .registry-summary-item span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .registry-layout {
@@ -1445,8 +1455,8 @@ h1 {
   grid-template-rows: auto minmax(0, 1fr);
   gap: 4px;
   min-width: 0;
-  padding: 1px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1456,22 +1466,22 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  min-height: 18px;
+  gap: 6px;
+  min-height: 20px;
 }
 
 .registry-key-pane header span,
 .registry-value-pane header span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .registry-key-list {
   display: grid;
   align-content: start;
   overflow: auto;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
 }
@@ -1480,12 +1490,13 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0 6px;
-  min-height: 22px;
-  padding: 1px 4px 1px calc(8px + var(--key-depth, 0) * 14px);
+  min-height: 18px;
+  padding: 1px 6px 1px calc(8px + var(--key-depth, 0) * 14px);
   border: 0;
-  border-bottom: 1px solid var(--app-border);
+  border-bottom: 1px solid #a0a0a0;
   background: transparent;
   color: var(--app-text);
+  line-height: 16px;
   text-align: left;
 }
 
@@ -1512,7 +1523,7 @@ h1 {
 .registry-value-table {
   display: grid;
   overflow: auto;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
 }
@@ -1523,10 +1534,10 @@ h1 {
     minmax(220px, 1.35fr) minmax(112px, 0.7fr) minmax(150px, 1fr)
     minmax(150px, 1fr) 92px;
   min-width: 760px;
-  min-height: 20px;
+  min-height: 18px;
   padding: 0;
   border: 0;
-  border-bottom: 1px solid var(--app-border);
+  border-bottom: 1px solid #a0a0a0;
   border-radius: 0;
   background: transparent;
   color: inherit;
@@ -1543,11 +1554,11 @@ h1 {
 .registry-value-row > * {
   min-width: 0;
   margin: 0;
-  padding: 1px 4px;
+  padding: 2px 6px;
   overflow: hidden;
-  border-right: 1px solid var(--app-border);
+  border-right: 1px solid #a0a0a0;
   font-style: normal;
-  line-height: 14px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

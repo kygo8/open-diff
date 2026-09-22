@@ -36,24 +36,32 @@ describe('picture compare chrome density', () => {
 
   it('keeps Picture Meta/Blend/Tol chrome on capture band', () => {
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-options-panel,\s*\.picture-compare-view \.picture-blend-panel,\s*\.picture-compare-view \.picture-metadata-panel[\s\S]*?padding:\s*2px 4px/,
+      /\.picture-compare-view \.picture-options-panel,\s*\.picture-compare-view \.picture-blend-panel,\s*\.picture-compare-view \.picture-metadata-panel[\s\S]*?padding:\s*4px 6px/,
     )
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-options-panel,\s*\.picture-compare-view \.picture-blend-panel,\s*\.picture-compare-view \.picture-metadata-panel[\s\S]*?border-radius:\s*0/,
+      /\.picture-compare-view \.picture-options-panel,\s*\.picture-compare-view \.picture-blend-panel,\s*\.picture-compare-view \.picture-metadata-panel[\s\S]*?border:\s*1px solid #a0a0a0/,
     )
     expect(css).toMatch(
-      /\.picture-compare-view \.metadata-grid-heading,\s*\.picture-compare-view \.metadata-cell\s*\{[\s\S]*?padding:\s*1px 5px/,
+      /\.picture-compare-view \.picture-options-panel header[\s\S]*?min-height:\s*20px/,
+    )
+    expect(css).toMatch(
+      /\.picture-compare-view \.metadata-grid-heading,\s*\.picture-compare-view \.metadata-cell\s*\{[\s\S]*?padding:\s*2px 6px/,
     )
     expect(css).toMatch(
       /\.picture-compare-view \.picture-options-panel input\[type='number'\],\s*\.picture-compare-view \.picture-options-panel button,\s*\.picture-compare-view \.picture-blend-panel select[\s\S]*?height:\s*18px/,
     )
+    expect(css).toMatch(/\.picture-compare-view \.picture-panel-title[\s\S]*?font-size:\s*12px/)
 
-    expect(pictureView).toMatch(/\.picture-options-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(pictureView).toMatch(/\.picture-blend-panel\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(pictureView).toMatch(/\.picture-metadata-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(pictureView).toMatch(/\.metadata-cell\s*\{[\s\S]*?padding:\s*1px 5px/)
+    expect(pictureView).toMatch(/data-picture-panel-density="capture-1to1"/)
+    expect(pictureView).toMatch(/\.picture-options-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(pictureView).toMatch(/\.picture-options-panel header\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(pictureView).toMatch(/\.picture-blend-panel\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
+    expect(pictureView).toMatch(/\.picture-metadata-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(pictureView).toMatch(/\.metadata-cell\s*\{[\s\S]*?padding:\s*2px 6px/)
+    expect(pictureView).toMatch(/\.picture-panel-title\s*\{[\s\S]*?font-size:\s*12px/)
     expect(pictureView).toMatch(/from '@lucide\/vue'/)
     expect(pictureView).toMatch(/CircleGauge/)
+    expect(pictureView).toMatch(/:size="14"/)
     expect(pictureView).toMatch(/<Blend[\s\S]*?aria-hidden="true"/)
     expect(pictureView).toMatch(/<Tag[\s\S]*?aria-hidden="true"/)
   })
@@ -64,7 +72,7 @@ describe('picture compare chrome density', () => {
     expect(css).toMatch(/\.picture-compare-view \.picture-side\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.picture-compare-view \.picture-pane-grid\s*\{[\s\S]*?gap:\s*4px/)
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-options-panel header[\s\S]*?min-height:\s*16px/,
+      /\.picture-compare-view \.picture-options-panel header[\s\S]*?min-height:\s*20px/,
     )
 
     expect(pictureView).toMatch(/\.picture-controls\s*\{[\s\S]*?min-height:\s*20px/)

@@ -1999,8 +1999,6 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .picture-controls,
-.picture-compare-view .picture-options-panel,
-.picture-compare-view .picture-blend-panel,
 .picture-compare-view .picture-stat-grid {
   gap: 2px 4px !important;
   min-height: 20px !important;
@@ -2033,14 +2031,15 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 14px !important;
 }
 
-/* Picture Meta/Blend/Tol + toolbar/pane densify pass 2 toward Hex/Table/Version rhythm */
+/* Picture Meta/Blend/Tol panels at capture CSS scale (headers ~20px; controls stay ~18px) */
 .picture-compare-view .picture-options-panel,
 .picture-compare-view .picture-blend-panel,
 .picture-compare-view .picture-metadata-panel,
 .picture-compare-view .picture-report-panel {
-  gap: 2px 4px !important;
+  gap: 4px 6px !important;
   min-height: 20px !important;
-  padding: 2px 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
@@ -2048,10 +2047,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .picture-compare-view .picture-blend-panel header,
 .picture-compare-view .metadata-header,
 .picture-compare-view .picture-report-panel header {
-  gap: 4px !important;
-  min-height: 16px !important;
+  gap: 6px !important;
+  min-height: 20px !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .picture-compare-view .picture-options-panel header span,
@@ -2061,7 +2060,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .picture-compare-view .metadata-header span,
 .picture-compare-view .picture-report-panel header span {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .picture-compare-view .picture-color-rule {
@@ -2081,8 +2080,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .picture-blend-panel input[type='range'] {
-  height: 16px !important;
-  min-height: 16px !important;
+  height: 18px !important;
+  min-height: 18px !important;
 }
 
 .picture-compare-view .metadata-grid,
@@ -2092,9 +2091,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .picture-compare-view .metadata-grid-heading,
 .picture-compare-view .metadata-cell {
-  padding: 1px 5px !important;
+  min-height: 18px !important;
+  padding: 2px 6px !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
+}
+
+.picture-compare-view .picture-panel-title {
+  gap: 6px !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
 }
 
 .picture-compare-view .picture-pane-grid {
@@ -2140,12 +2146,6 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .picture-compare-view .picture-report-row {
   gap: 4px !important;
   min-height: 16px !important;
-  font-size: 11px !important;
-  line-height: 14px !important;
-}
-
-.picture-compare-view .picture-panel-title {
-  gap: 4px !important;
   font-size: 11px !important;
   line-height: 14px !important;
 }

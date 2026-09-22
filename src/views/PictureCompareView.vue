@@ -799,13 +799,14 @@ async function runPictureCompare(): Promise<void> {
       <section
         v-if="showTolPanel"
         class="picture-options-panel"
+        data-picture-panel-density="capture-1to1"
         data-testid="picture-tol-panel"
       >
         <header>
           <h2 class="picture-panel-title">
             <CircleGauge
               class="picture-panel-icon"
-              :size="12"
+              :size="14"
               :stroke-width="2"
               aria-hidden="true"
             />
@@ -1081,13 +1082,14 @@ async function runPictureCompare(): Promise<void> {
       <section
         v-if="showBlendPanel || blendEnabled"
         class="picture-blend-panel"
+        data-picture-panel-density="capture-1to1"
         data-testid="picture-blend-panel"
       >
         <header>
           <strong class="picture-panel-title">
             <Blend
               class="picture-panel-icon"
-              :size="12"
+              :size="14"
               :stroke-width="2"
               aria-hidden="true"
             />
@@ -1216,13 +1218,14 @@ async function runPictureCompare(): Promise<void> {
       <section
         v-if="showMetaPanel"
         class="picture-metadata-panel"
+        data-picture-panel-density="capture-1to1"
         data-testid="picture-metadata-panel"
       >
         <header class="metadata-header">
           <h2 class="picture-panel-title">
             <Tag
               class="picture-panel-icon"
-              :size="12"
+              :size="14"
               :stroke-width="2"
               aria-hidden="true"
             />
@@ -1575,10 +1578,10 @@ h2 {
 
 .picture-options-panel {
   display: grid;
-  gap: 2px 4px;
+  gap: 4px 6px;
   min-height: 20px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1588,10 +1591,10 @@ h2 {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  min-height: 16px;
+  gap: 6px;
+  min-height: 20px;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .picture-options-panel header span,
@@ -1599,7 +1602,7 @@ h2 {
   margin: 0;
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .picture-options-panel label {
@@ -1776,10 +1779,10 @@ h2 {
 
 .picture-metadata-panel {
   display: grid;
-  gap: 2px 4px;
+  gap: 4px 6px;
   min-height: 20px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1788,16 +1791,16 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  min-height: 16px;
+  gap: 6px;
+  min-height: 20px;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .metadata-header span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .metadata-grid {
@@ -1815,10 +1818,11 @@ h2 {
 .metadata-grid-heading,
 .metadata-cell {
   min-width: 0;
-  padding: 1px 5px;
-  border-bottom: 1px solid var(--app-border);
+  min-height: 18px;
+  padding: 2px 6px;
+  border-bottom: 1px solid #a0a0a0;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .metadata-grid-heading {
@@ -1911,10 +1915,10 @@ h2 {
 
 .picture-blend-panel {
   display: grid;
-  gap: 2px 4px;
+  gap: 4px 6px;
   min-height: 20px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1923,10 +1927,10 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  min-height: 16px;
+  gap: 6px;
+  min-height: 20px;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .picture-blend-panel label {
@@ -1934,7 +1938,7 @@ h2 {
   gap: 2px;
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .picture-blend-panel select {
@@ -1950,8 +1954,8 @@ h2 {
 }
 
 .picture-blend-panel input[type='range'] {
-  height: 16px;
-  min-height: 16px;
+  height: 18px;
+  min-height: 18px;
 }
 
 .picture-blend-overlay {
@@ -1970,11 +1974,12 @@ h2 {
 .picture-panel-title {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   margin: 0;
-  font-size: 11px;
+  color: #111111;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .picture-panel-icon {

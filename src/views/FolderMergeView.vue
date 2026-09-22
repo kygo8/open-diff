@@ -24,7 +24,8 @@ import type {
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { Eye, Funnel } from '@lucide/vue'
-import { createFolderEntry, createFolderSnapshot, saveTextFile } from '@/api/diff'
+import { createFolderEntry, createFolderSnapshot, pathFileStamp, saveTextFile } from '@/api/diff'
+import type { FileStamp } from '@/types/diff'
 import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
 import {
   formatFolderNameFilterStripPattern,
@@ -57,6 +58,7 @@ import {
 import { parentDirectoryPath } from '@/app/parentDirectoryPath'
 import { pickNativePath } from '@/app/filePicker'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import { createChildCompareLaunch } from '@/app/childSession'
 import { openPathExternal, revealPathInOs } from '@/api/integration'
 import { explorerRevealPath, explorerSelectTargetPath } from '@/app/folderCompareExtraActions'
@@ -74,6 +76,11 @@ const newFolderName = ref('New Folder')
 const basePath = ref('')
 const rightPath = ref('')
 const outputPath = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
+const baseFileStamp = ref<FileStamp | null>(null)
+const outputFileStamp = ref<FileStamp | null>(null)
+
 const plan = ref<FolderMergePlanResponse>()
 const execution = ref<FolderMergeExecutionResponse>()
 const mergeExecuting = ref(false)
@@ -1390,16 +1397,32 @@ function joinRoot(root: string, relativePath: string): string {
 }
 
 watch(
-  [leftPath, rightPath, outputPath],
-  ([left, right, output]) => {
-    const title = mergeSessionTitle(left, right, output)
+  [leftPath, rightPath, basePath, outputPath],
+  () => {
+    const title = mergeSessionTitle(leftPath.value, rightPath.value, outputPath.value)
 
     if (title) {
       tabs.setTabTitle('/merge/folder', title)
     }
+
+    void refreshMergePathStamps()
   },
   { immediate: true },
 )
+
+async function refreshMergePathStamps(): Promise<void> {
+  const [left, right, base, output] = await Promise.all([
+    leftPath.value ? pathFileStamp(leftPath.value).catch(() => null) : Promise.resolve(null),
+    rightPath.value ? pathFileStamp(rightPath.value).catch(() => null) : Promise.resolve(null),
+    basePath.value ? pathFileStamp(basePath.value).catch(() => null) : Promise.resolve(null),
+    outputPath.value ? pathFileStamp(outputPath.value).catch(() => null) : Promise.resolve(null),
+  ])
+
+  leftFileStamp.value = left
+  rightFileStamp.value = right
+  baseFileStamp.value = base
+  outputFileStamp.value = output
+}
 
 async function browseMergeFolderSide(side: 'left' | 'base' | 'right' | 'output'): Promise<void> {
   const selected = await pickNativePath({ directory: true })
@@ -1419,6 +1442,7 @@ async function browseMergeFolderSide(side: 'left' | 'base' | 'right' | 'output')
   }
 
   recordFolderPathCommit()
+  await refreshMergePathStamps()
 }
 
 async function browseMergeFolder(): Promise<void> {
@@ -1863,11 +1887,10 @@ watch(
               @browse="browseMergeFolderSide('left')"
             />
           </div>
-          <span
-            class="merge-path-footer"
-            data-testid="folder-merge-left-editing-status"
-            >{{ $t('status.editingDisabled') }}</span
-          >
+          <PathMetaFooter
+            :stamp="leftFileStamp"
+            test-id="folder-merge-left-path-footer"
+          />
         </label>
         <label
           v-if="showCenterPane"
@@ -1889,11 +1912,10 @@ watch(
               @browse="browseMergeFolderSide('base')"
             />
           </div>
-          <span
-            class="merge-path-footer"
-            data-testid="folder-merge-base-editing-status"
-            >{{ $t('status.editingDisabled') }}</span
-          >
+          <PathMetaFooter
+            :stamp="baseFileStamp"
+            test-id="folder-merge-base-path-footer"
+          />
         </label>
         <label>
           <span>{{ $t('ui.rightFolder') }}</span>
@@ -1912,11 +1934,10 @@ watch(
               @browse="browseMergeFolderSide('right')"
             />
           </div>
-          <span
-            class="merge-path-footer"
-            data-testid="folder-merge-right-editing-status"
-            >{{ $t('status.editingDisabled') }}</span
-          >
+          <PathMetaFooter
+            :stamp="rightFileStamp"
+            test-id="folder-merge-right-path-footer"
+          />
         </label>
         <label>
           <span>{{ $t('ui.outputFolder') }}</span>
@@ -1933,6 +1954,10 @@ watch(
               @browse="browseMergeFolderSide('output')"
             />
           </div>
+          <PathMetaFooter
+            :stamp="outputFileStamp"
+            test-id="folder-merge-output-path-footer"
+          />
         </label>
         <div class="merge-actions">
           <NButton
@@ -2653,15 +2678,6 @@ h1 {
   display: grid;
   gap: 1px;
   min-width: 0;
-}
-
-.merge-path-footer {
-  display: block;
-  min-height: 20px;
-  margin-top: 0;
-  color: var(--od-muted, #6b7280);
-  font-size: 11px;
-  line-height: 16px;
 }
 
 .merge-paths label span {

@@ -19,6 +19,9 @@ import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
 vi.mock('@/api/diff', () => ({
   createFolderEntry: vi.fn(),
   createFolderSnapshot: vi.fn(),
+  pathFileStamp: vi
+    .fn()
+    .mockResolvedValue({ size: 4096, modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30) }),
   saveTextFile: vi.fn().mockResolvedValue({
     path: 'D:/deploy/folder-sync.txt',
     bytesWritten: 64,

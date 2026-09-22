@@ -3014,11 +3014,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 11px !important;
 }
 
-.folder-sync-view .path-side-footer {
-  min-height: 8px !important;
+.folder-sync-view .path-side-footer,
+.folder-sync-view .path-meta-footer {
+  min-height: 20px !important;
   margin-top: 0 !important;
-  font-size: 8px !important;
-  line-height: 8px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .folder-sync-view .sync-preview,
@@ -3102,7 +3103,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 11px !important;
 }
 
-.folder-merge-view .merge-path-footer {
+.folder-merge-view .merge-path-footer,
+.folder-merge-view .path-side-footer,
+.folder-merge-view .path-meta-footer {
   min-height: 20px !important;
   margin-top: 0 !important;
   font-size: 11px !important;

@@ -17,22 +17,28 @@ describe('folder sync/merge chrome density', () => {
       /\.folder-sync-view \.sync-setting-actions \.n-button[\s\S]*?height:\s*18px/,
     )
     expect(css).toMatch(/\.folder-merge-view \.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.folder-merge-view \.merge-path-footer\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(css).toMatch(/\.folder-merge-view \.merge-path-footer\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*18px/)
 
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(syncView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(syncView).toMatch(/PathMetaFooter/)
+    expect(syncView).toMatch(/folder-sync-left-path-footer/)
+    expect(syncView).toMatch(/folder-sync-right-path-footer/)
+    expect(css).toMatch(/\.folder-sync-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.folder-sync-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
     expect(syncView).not.toMatch(
       /joinStatusFooterParts\(syncSelectionLabel\.value, leftFreeSpaceLabel\.value\)/,
     )
     expect(syncView).toMatch(/chromeKind:\s*'folder-pair'/)
 
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(mergeView).toMatch(/\.merge-path-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(mergeView).toMatch(/\.merge-path-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(mergeView).toMatch(/PathMetaFooter/)
+    expect(mergeView).toMatch(/folder-merge-left-path-footer/)
+    expect(mergeView).toMatch(/folder-merge-output-path-footer/)
+    expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?min-height:\s*22px/)
     expect(mergeView).toMatch(/chromeKind:\s*'folder-pair'/)
 

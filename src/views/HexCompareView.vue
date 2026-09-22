@@ -885,7 +885,10 @@ async function runHexSave(): Promise<void> {
         </div>
       </header>
 
-      <section class="hex-wrap-controls">
+      <section
+        class="hex-wrap-controls"
+        data-hex-chrome-density="capture-1to1"
+      >
         <label>
           <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
           <div class="path-field-row">
@@ -1168,7 +1171,10 @@ async function runHexSave(): Promise<void> {
         </header>
       </section>
 
-      <section class="hex-pane-grid">
+      <section
+        class="hex-pane-grid"
+        data-hex-rows-density="capture-1to1"
+      >
         <section class="hex-side">
           <h2>{{ $t('ui.left') }} · {{ leftHex.path }}</h2>
           <div
@@ -1426,11 +1432,11 @@ h2 {
 
 .hex-summary {
   display: grid;
-  gap: 2px 6px;
+  gap: 4px 6px;
   min-width: 118px;
   min-height: 20px;
-  padding: 1px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
   text-align: right;
@@ -1444,18 +1450,18 @@ h2 {
 .hex-summary span {
   color: var(--app-text-muted);
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .hex-wrap-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 2px 6px;
+  gap: 4px 6px;
   min-width: 0;
-  min-height: 20px;
-  padding: 1px 4px;
-  border: 1px solid var(--app-border);
+  min-height: 22px;
+  padding: 2px 4px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1482,6 +1488,7 @@ h2 {
 .hex-wrap-controls span {
   color: var(--app-text-muted);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .hex-wrap-controls input,
@@ -1491,7 +1498,11 @@ h2 {
   min-width: 0;
   height: 20px;
   min-height: 20px;
-  padding: 0 4px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #ffffff;
+  color: #111111;
   font-size: 11px;
   line-height: 16px;
 }
@@ -1505,9 +1516,9 @@ h2 {
   max-width: 100%;
   height: 20px;
   min-height: 20px;
-  padding: 0 4px;
+  padding: 0 6px;
   overflow: hidden;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
   font-size: 11px;
@@ -1525,10 +1536,10 @@ h2 {
 
 .hex-side {
   display: grid;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1536,7 +1547,7 @@ h2 {
 .hex-viewport {
   max-height: none;
   overflow: auto;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-bg);
 }
@@ -1545,8 +1556,8 @@ h2 {
   display: grid;
   grid-template-columns: 84px minmax(240px, 1fr) 132px;
   min-width: 460px;
-  min-height: 16px;
-  border-bottom: 1px solid var(--app-border);
+  min-height: 18px;
+  border-bottom: 1px solid #a0a0a0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 11px;
   line-height: 16px;
@@ -1560,14 +1571,16 @@ h2 {
 .hex-bytes,
 .hex-ascii {
   min-width: 0;
-  padding: 0 6px;
+  padding: 1px 6px;
   overflow: hidden;
-  border-right: 1px solid var(--app-border);
+  border-right: 1px solid #a0a0a0;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .hex-offset {
+  background: #f7f7f7;
   color: var(--app-text-muted);
 }
 
@@ -1592,12 +1605,13 @@ h2 {
 
 .hex-report-panel {
   display: grid;
-  gap: 2px 6px;
+  gap: 4px 6px;
   min-height: 20px;
   margin: 0;
-  padding: 1px 4px;
-  border: 1px solid var(--border, #d0d7de);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
+  background: var(--app-surface);
 }
 
 .hex-report-panel header {
@@ -1605,7 +1619,15 @@ h2 {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  min-height: 18px;
+  min-height: 20px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.hex-report-panel header span {
+  color: var(--app-text-muted);
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .hex-byte-different {
@@ -1676,21 +1698,29 @@ h2 {
 .hex-rules-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-height: 18px;
   margin: 0;
   font-size: 11px;
+  line-height: 16px;
 }
 
 .hex-rules-row input[type='number'] {
   width: 96px;
-  height: 16px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
 }
 
 .hex-rules-row ~ button {
   height: 18px;
+  min-height: 18px;
   padding: 0 8px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
+  line-height: 16px;
 }
 
 .bc-path-footers {

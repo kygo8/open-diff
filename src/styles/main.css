@@ -1866,7 +1866,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 11px !important;
 }
 
-/* Hex Compare chrome densify toward capture path/status/toolbar/footer strips */
+/* Hex Compare path chrome densify toward capture (~20px path/status) */
 .hex-compare-view {
   gap: 2px !important;
   padding: 2px 4px !important;
@@ -1902,11 +1902,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+/* Hex wrap/controls + byte rows at capture CSS scale (~18px rows; path-band controls ~20px) */
 .hex-compare-view .hex-wrap-controls {
-  gap: 2px 4px !important;
-  min-height: 20px !important;
-  padding: 1px 4px !important;
+  gap: 4px 6px !important;
+  min-height: 22px !important;
+  padding: 2px 4px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
+  background: var(--app-surface) !important;
+}
+
+.hex-compare-view .hex-wrap-controls span {
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .hex-compare-view .hex-wrap-controls input,
@@ -1915,13 +1923,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .hex-compare-view .hex-wrap-controls strong {
   height: 20px !important;
   min-height: 20px !important;
-  padding: 0 4px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
   font-size: 11px !important;
   line-height: 16px !important;
 }
 
 .hex-compare-view .hex-row {
-  min-height: 16px !important;
+  min-height: 18px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
   font-size: 11px !important;
   line-height: 16px !important;
 }
@@ -1929,16 +1940,23 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .hex-compare-view .hex-offset,
 .hex-compare-view .hex-bytes,
 .hex-compare-view .hex-ascii {
-  padding: 0 6px !important;
+  padding: 1px 6px !important;
+  border-right: 1px solid #a0a0a0 !important;
+  line-height: 16px !important;
 }
 
-/* Hex summary/report/pane densify one more notch toward capture */
+.hex-compare-view .hex-offset {
+  background: #f7f7f7 !important;
+  color: var(--app-text-muted) !important;
+}
+
 .hex-compare-view .hex-summary,
 .hex-compare-view .hex-report-panel {
-  gap: 2px 4px !important;
+  gap: 4px 6px !important;
   min-height: 20px !important;
   margin: 0 !important;
-  padding: 1px 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
@@ -1950,18 +1968,47 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .hex-compare-view .hex-summary span,
 .hex-compare-view .hex-report-panel header span {
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .hex-compare-view .hex-report-panel header {
   gap: 6px !important;
-  min-height: 18px !important;
+  min-height: 20px !important;
+  line-height: 16px !important;
 }
 
 .hex-compare-view .hex-side {
-  gap: 2px !important;
-  padding: 2px 4px !important;
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
+}
+
+.hex-compare-view .hex-viewport {
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+}
+
+.hex-compare-view .hex-rules-row {
+  gap: 6px !important;
+  min-height: 18px !important;
+  line-height: 16px !important;
+}
+
+.hex-compare-view .hex-rules-row input[type='number'] {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+}
+
+.hex-compare-view .hex-rules-row ~ button {
+  height: 18px !important;
+  min-height: 18px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  line-height: 16px !important;
 }
 
 /* Picture Compare chrome densify toward capture path/status/toolbar/footer strips */

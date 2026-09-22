@@ -112,6 +112,9 @@ vi.mock('@/app/diskFreeSpace', () => ({
 }))
 
 vi.mock('@/api/diff', () => ({
+  pathFileStamp: vi
+    .fn()
+    .mockResolvedValue({ size: 4096, modifiedAtMs: Date.UTC(2026, 0, 15, 8, 30) }),
   changeFolderEntryAttributes: vi.fn().mockResolvedValue({
     path: 'D:/left/README.md',
     metadata: { readonly: true },
@@ -1528,8 +1531,10 @@ describe('FolderCompareView', () => {
     )
   })
 
-  it('summarizes multi-select files on the path footer without repeating free space', async () => {
+  it('summarizes multi-select on the status strip and keeps path footers as PathMeta stamps', async () => {
+    const { useStatusBarStore } = await import('@/stores/statusBar')
     const wrapper = mountFolderCompareView()
+    const statusBar = useStatusBarStore()
 
     await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/left')
     await wrapper.find('[data-testid="folder-right-root"]').setValue('D:/right')
@@ -1540,10 +1545,15 @@ describe('FolderCompareView', () => {
     await wrapper.find('[data-testid="folder-select-all"]').trigger('click')
     await flushPromises()
 
-    const leftFooter = wrapper.find('[data-testid="folder-left-path-footer"]').text()
-
-    expect(leftFooter).toMatch(/file\(s\) selected|folder\(s\) selected|item\(s\) selected/)
-    expect(leftFooter).not.toContain('91.8 GB free on C:\\')
+    expect(statusBar.report.leftSelection).toMatch(
+      /file\(s\) selected|folder\(s\) selected|item\(s\) selected/,
+    )
+    expect(wrapper.find('[data-testid="folder-left-path-footer"]').text()).not.toContain(
+      '91.8 GB free on C:\\',
+    )
+    expect(wrapper.find('[data-testid="folder-left-path-footer"]').text()).not.toMatch(
+      /file\(s\) selected|folder\(s\) selected|item\(s\) selected/,
+    )
   })
 
   it('steps Next and Previous Difference from the Search menu action', async () => {

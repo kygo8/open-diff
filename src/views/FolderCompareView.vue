@@ -79,11 +79,7 @@ import {
   type FileCompareReportFormat,
   type FileCompareReportScope,
 } from '@/app/fileCompareReportDialog'
-import {
-  aggregateFolderSelection,
-  formatFolderSelectionLabel,
-  joinStatusFooterParts,
-} from '@/app/folderSelectionStatus'
+import { aggregateFolderSelection, formatFolderSelectionLabel } from '@/app/folderSelectionStatus'
 import { useStatusBarStore } from '@/stores/statusBar'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import { Eye, Funnel } from '@lucide/vue'
@@ -113,6 +109,7 @@ import {
   deleteFolderEntry,
   exportFolderCompareReport,
   moveFolderEntry,
+  pathFileStamp,
   renameFolderEntry,
   saveTextFile,
   touchFolderEntry,
@@ -131,6 +128,7 @@ import {
 import { isTauriRuntime } from '@/app/desktopDrop'
 import { loadLocalRemoteProfiles } from '@/app/remoteProfilesLocal'
 import type {
+  FileStamp,
   FolderCompareCriteria,
   FolderCompareResponse,
   FolderCompareRow as FolderCompareResponseRow,
@@ -142,6 +140,7 @@ import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import RemotePathBrowser from '@/components/remote/RemotePathBrowser.vue'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
+import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import StatusSummaryGrid from '@/components/workbench/StatusSummaryGrid.vue'
 import { executeFolderSync, previewFolderSync } from '@/api/sync'
@@ -218,6 +217,8 @@ const leftRoot = ref('')
 const rightRoot = ref('')
 const leftFreeSpaceLabel = ref('')
 const rightFreeSpaceLabel = ref('')
+const leftFileStamp = ref<FileStamp | null>(null)
+const rightFileStamp = ref<FileStamp | null>(null)
 const folderCriteria = ref<FolderCompareCriteria>(loadFolderCompareCriteria())
 const folderNameFilters = ref<FolderNameFilters>(loadFolderNameFilters())
 const showSessionSettings = ref(false)
@@ -457,7 +458,18 @@ watch([leftRoot, rightRoot], () => {
   ignoredRelativePaths.value = loadIgnoredRelativePathsForRoots(leftRoot.value, rightRoot.value)
   syncFolderTabTitle()
   void refreshRootFreeSpace()
+  void refreshFolderPathStamps()
 })
+
+async function refreshFolderPathStamps(): Promise<void> {
+  const [left, right] = await Promise.all([
+    leftRoot.value ? pathFileStamp(leftRoot.value).catch(() => null) : Promise.resolve(null),
+    rightRoot.value ? pathFileStamp(rightRoot.value).catch(() => null) : Promise.resolve(null),
+  ])
+
+  leftFileStamp.value = left
+  rightFileStamp.value = right
+}
 
 async function refreshRootFreeSpace(): Promise<void> {
   const [leftInfo, rightInfo] = await Promise.all([
@@ -1488,10 +1500,6 @@ const folderSelectionSummary = computed(() => {
     ),
   }
 })
-
-function formatSelectionFooter(selectionLabel: string, freeSpace = ''): string {
-  return joinStatusFooterParts(selectionLabel, freeSpace)
-}
 
 watchEffect(() => {
   const summary = folderSelectionSummary.value
@@ -3261,20 +3269,10 @@ onUnmounted(() => {
                 >{{ $t('ui.snapshotSide') }}</span
               >
             </div>
-            <span
-              class="path-side-footer"
-              :class="{
-                'path-side-footer-muted': !formatSelectionFooter(
-                  folderSelectionSummary.leftSelectionLabel,
-                ),
-              }"
-              data-testid="folder-left-path-footer"
-            >
-              {{
-                formatSelectionFooter(folderSelectionSummary.leftSelectionLabel) ||
-                $t('status.panePlaceholder')
-              }}
-            </span>
+            <PathMetaFooter
+              :stamp="leftFileStamp"
+              test-id="folder-left-path-footer"
+            />
           </label>
           <label>
             <span>{{ $t('ui.rightFolder') }}</span>
@@ -3315,20 +3313,10 @@ onUnmounted(() => {
                 >{{ $t('ui.snapshotSide') }}</span
               >
             </div>
-            <span
-              class="path-side-footer"
-              :class="{
-                'path-side-footer-muted': !formatSelectionFooter(
-                  folderSelectionSummary.rightSelectionLabel,
-                ),
-              }"
-              data-testid="folder-right-path-footer"
-            >
-              {{
-                formatSelectionFooter(folderSelectionSummary.rightSelectionLabel) ||
-                $t('status.panePlaceholder')
-              }}
-            </span>
+            <PathMetaFooter
+              :stamp="rightFileStamp"
+              test-id="folder-right-path-footer"
+            />
           </label>
         </div>
 
@@ -4842,19 +4830,6 @@ onUnmounted(() => {
 .path-pair span {
   color: var(--app-text-muted);
   font-size: 11px;
-}
-
-.path-side-footer {
-  display: block;
-  min-height: 20px;
-  margin-top: 0;
-  color: var(--od-muted, #6b7280);
-  font-size: 11px;
-  line-height: 16px;
-}
-
-.path-side-footer-muted {
-  color: #9ca3af;
 }
 
 .archive-side-chip {

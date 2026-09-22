@@ -44,6 +44,7 @@ const isMuted = computed(() => props.muted || !meta.value)
   <div
     class="path-side-footer path-meta-footer"
     :class="{ 'path-side-footer-muted': isMuted }"
+    data-path-meta-density="capture-1to1"
     :data-testid="testId"
   >
     <template v-if="meta">
@@ -63,7 +64,7 @@ const isMuted = computed(() => props.muted || !meta.value)
       >
         <span>{{ meta.formatLabel }}</span>
         <ChevronDown
-          :size="10"
+          :size="12"
           aria-hidden="true"
         />
       </button>
@@ -77,7 +78,7 @@ const isMuted = computed(() => props.muted || !meta.value)
       >
         <span>{{ meta.encoding }}</span>
         <ChevronDown
-          :size="10"
+          :size="12"
           aria-hidden="true"
         />
       </button>
@@ -96,11 +97,11 @@ const isMuted = computed(() => props.muted || !meta.value)
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
   min-height: 20px;
   overflow: hidden;
-  color: var(--od-muted, #6b7280);
+  color: #111111;
   font-size: 11px;
   line-height: 16px;
   white-space: nowrap;
@@ -114,6 +115,7 @@ const isMuted = computed(() => props.muted || !meta.value)
 .path-meta-size,
 .path-meta-eol {
   flex: 0 0 auto;
+  line-height: 16px;
 }
 
 .path-meta-chip {
@@ -122,14 +124,18 @@ const isMuted = computed(() => props.muted || !meta.value)
   align-items: center;
   gap: 2px;
   min-width: 0;
-  max-width: 12em;
-  height: 16px;
-  padding: 0 2px;
+  max-width: 14em;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 4px;
   overflow: hidden;
   border: 0;
+  border-radius: 0;
   background: transparent;
   color: inherit;
   font: inherit;
+  font-size: 11px;
+  line-height: 16px;
   white-space: nowrap;
   cursor: default;
   text-overflow: ellipsis;
@@ -137,6 +143,11 @@ const isMuted = computed(() => props.muted || !meta.value)
 
 .path-meta-chip span {
   overflow: hidden;
+  line-height: 16px;
   text-overflow: ellipsis;
+}
+
+.path-meta-eol {
+  letter-spacing: 0;
 }
 </style>

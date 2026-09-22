@@ -2651,8 +2651,8 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: stretch;
   min-width: 0;
-  height: 20px;
-  min-height: 20px;
+  height: 19.5px;
+  min-height: 19.5px;
   padding: 0;
   border-top: 1px solid #b8b8b8;
   background: #f0f0f0;
@@ -2664,8 +2664,8 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .status-bar[data-chrome-kind='folder-pair'] {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  height: 20px;
-  min-height: 20px;
+  height: 19.5px;
+  min-height: 19.5px;
   font-size: 11px;
   line-height: 18px;
 }
@@ -2687,8 +2687,8 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='table-session'],
 .status-bar[data-chrome-kind='registry-session'],
 .status-bar[data-chrome-kind='clipboard-session'] {
-  height: 20px;
-  min-height: 20px;
+  height: 19.5px;
+  min-height: 19.5px;
   font-size: 11px;
   line-height: 18px;
 }
@@ -2899,13 +2899,13 @@ html[data-show-sidebar='1'] .sidebar {
 
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind$='-session']) {
-  /* Keep dense brand/menu at 48px; only the status track shrinks to capture ~20px. */
-  grid-template-rows: 48px minmax(0, 1fr) 20px;
+  /* Keep dense brand/menu at 48px; status track toward capture ~19.5px (DPR≈2). */
+  grid-template-rows: 48px minmax(0, 1fr) 19.5px;
 }
 
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind$='-session']) {
-  grid-template-rows: 48px minmax(0, 1fr) 20px;
+  grid-template-rows: 48px minmax(0, 1fr) 19.5px;
 }
 
 .app-shell-dense-chrome .menu-bar {

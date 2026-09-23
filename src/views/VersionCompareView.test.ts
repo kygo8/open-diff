@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import VersionCompareView from './VersionCompareView.vue'
 import { compareVersionFiles, saveTextFile } from '@/api/diff'
@@ -336,5 +337,22 @@ it('applies View filter commands from the menu action bus', async () => {
   expect(wrapper.find('[data-testid="version-rules-panel"]').exists()).toBe(true)
   viewActions.dispatch('session-settings')
   await wrapper.vm.$nextTick()
-  expect(wrapper.find('[data-testid="version-rules-panel"]').exists()).toBe(false)
+  expect(wrapper.find('[data-testid="session-settings-dialog"]').exists()).toBe(true)
+  expect(wrapper.find('[data-testid="version-rules-panel"]').exists()).toBe(true)
+})
+
+it('shows Sessions on the main toolbar and opens session settings', async () => {
+  const settings = useSettingsStore()
+
+  settings.setShowSessionsInToolbar(true)
+
+  const wrapper = mount(VersionCompareView)
+  const sessionsButton = wrapper.find('[data-testid="version-session-toolbar-sessions"]')
+
+  expect(sessionsButton.exists()).toBe(true)
+  await sessionsButton.trigger('click')
+  expect(wrapper.find('[data-testid="session-settings-dialog"]').exists()).toBe(true)
+  expect(wrapper.find('[data-testid="session-settings-version"]').exists()).toBe(true)
+
+  wrapper.unmount()
 })

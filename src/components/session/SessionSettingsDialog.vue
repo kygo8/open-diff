@@ -27,8 +27,23 @@ import {
   mediaFieldFilters,
   type MediaCompareOptionsState,
 } from '@/app/mediaCompareOptions'
+import {
+  defaultVersionCompareOptions,
+  versionFieldFilters,
+  type VersionCompareOptionsState,
+} from '@/app/versionCompareOptions'
+import {
+  defaultRegistryCompareOptions,
+  registryValueFilters,
+  type RegistryCompareOptionsState,
+} from '@/app/registryCompareOptions'
+import {
+  defaultTextPatchSessionOptions,
+  type TextPatchSessionOptions,
+} from '@/app/textPatchSessionOptions'
 
-export type SessionSettingsKind = 'folder' | 'text' | 'table' | 'hex' | 'picture' | 'media'
+export type SessionSettingsKind =
+  'folder' | 'text' | 'table' | 'hex' | 'picture' | 'media' | 'version' | 'registry' | 'patch'
 
 const props = withDefaults(
   defineProps<{
@@ -41,6 +56,9 @@ const props = withDefaults(
     hexOptions?: HexCompareSessionOptions
     pictureOptions?: PictureCompareOptionsState
     mediaOptions?: MediaCompareOptionsState
+    versionOptions?: VersionCompareOptionsState
+    registryOptions?: RegistryCompareOptionsState
+    patchOptions?: TextPatchSessionOptions
   }>(),
   {
     folderCriteria: () => ({
@@ -79,6 +97,9 @@ const props = withDefaults(
     hexOptions: () => defaultHexCompareSessionOptions(),
     pictureOptions: () => defaultPictureCompareOptions(),
     mediaOptions: () => defaultMediaCompareOptions(),
+    versionOptions: () => defaultVersionCompareOptions(),
+    registryOptions: () => defaultRegistryCompareOptions(),
+    patchOptions: () => defaultTextPatchSessionOptions(),
   },
 )
 
@@ -91,7 +112,10 @@ const emit = defineEmits<{
       | { kind: 'table'; options: TableCompareSessionOptions }
       | { kind: 'hex'; options: HexCompareSessionOptions }
       | { kind: 'picture'; options: PictureCompareOptionsState }
-      | { kind: 'media'; options: MediaCompareOptionsState },
+      | { kind: 'media'; options: MediaCompareOptionsState }
+      | { kind: 'version'; options: VersionCompareOptionsState }
+      | { kind: 'registry'; options: RegistryCompareOptionsState }
+      | { kind: 'patch'; options: TextPatchSessionOptions },
   ]
 }>()
 
@@ -119,6 +143,9 @@ const draftHex = ref<HexCompareSessionOptions>({
 })
 const draftPicture = ref<PictureCompareOptionsState>({ ...props.pictureOptions })
 const draftMedia = ref<MediaCompareOptionsState>({ ...props.mediaOptions })
+const draftVersion = ref<VersionCompareOptionsState>({ ...props.versionOptions })
+const draftRegistry = ref<RegistryCompareOptionsState>({ ...props.registryOptions })
+const draftPatch = ref<TextPatchSessionOptions>({ ...props.patchOptions })
 const ignoreRegexDraft = ref(props.textOptions.ignoreRegexes.join(', '))
 const ignoredColumnsDraft = ref(props.tableOptions.ignoredColumns.join(', '))
 
@@ -179,6 +206,10 @@ const titleKey = computed(() => {
       return 'ui.pictureSessionSettings'
     case 'media':
       return 'ui.mediaSessionSettings'
+    case 'version':
+    case 'registry':
+    case 'patch':
+      return 'ui.sessionSettings'
   }
 
   return 'ui.sessionSettings'
@@ -247,6 +278,24 @@ function applySettings(): void {
 
   if (props.kind === 'media') {
     emit('apply', { kind: 'media', options: { ...draftMedia.value } })
+
+    return
+  }
+
+  if (props.kind === 'version') {
+    emit('apply', { kind: 'version', options: { ...draftVersion.value } })
+
+    return
+  }
+
+  if (props.kind === 'registry') {
+    emit('apply', { kind: 'registry', options: { ...draftRegistry.value } })
+
+    return
+  }
+
+  if (props.kind === 'patch') {
+    emit('apply', { kind: 'patch', options: { ...draftPatch.value } })
 
     return
   }
@@ -690,6 +739,73 @@ function applySettings(): void {
               {{ filter }}
             </option>
           </select>
+        </label>
+      </div>
+
+      <div
+        v-else-if="kind === 'version'"
+        class="settings-body"
+        data-testid="session-settings-version"
+      >
+        <label class="settings-check">
+          <input
+            v-model="draftVersion.showRules"
+            data-testid="session-settings-version-show-rules"
+            type="checkbox"
+          />
+          <span>{{ $t('ui.rules') }}</span>
+        </label>
+        <label class="settings-field">
+          <span>{{ $t('ui.filter') }}</span>
+          <select
+            v-model="draftVersion.defaultFilter"
+            data-testid="session-settings-version-default-filter"
+          >
+            <option
+              v-for="filter in versionFieldFilters"
+              :key="filter"
+              :value="filter"
+            >
+              {{ filter }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <div
+        v-else-if="kind === 'registry'"
+        class="settings-body"
+        data-testid="session-settings-registry"
+      >
+        <label class="settings-field">
+          <span>{{ $t('ui.filter') }}</span>
+          <select
+            v-model="draftRegistry.defaultFilter"
+            data-testid="session-settings-registry-default-filter"
+          >
+            <option
+              v-for="filter in registryValueFilters"
+              :key="filter"
+              :value="filter"
+            >
+              {{ filter }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <div
+        v-else-if="kind === 'patch'"
+        class="settings-body"
+        data-testid="session-settings-patch"
+      >
+        <label class="settings-check">
+          <input
+            v-model="draftPatch.wrapLongLines"
+            data-testid="session-settings-patch-wrap"
+            type="checkbox"
+          />
+          <span>{{ $t('ui.wrap') }}</span>
         </label>
       </div>
 

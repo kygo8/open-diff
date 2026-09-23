@@ -18,6 +18,7 @@ import { pickNativePath } from '@/app/filePicker'
 import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import { buildVersionCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
 import {
@@ -65,6 +66,7 @@ const loading = ref(false)
 const error = ref('')
 const reportStatus = ref('')
 const showVersionRules = ref(versionOptions.value.showRules)
+const showSessionSettings = ref(false)
 const statusBar = useStatusBarStore()
 const loadTimeSeconds = ref<number | null>(null)
 
@@ -167,7 +169,13 @@ const versionSessionToolbar = computed(() =>
     'prev-diff': differenceFields.value.length > 0,
     swap: Boolean(leftPath.value || rightPath.value),
     reload: Boolean(leftPath.value && rightPath.value),
-  }),
+  }).map((item) => ({
+    ...item,
+    active:
+      Boolean(item.active) ||
+      (item.id === 'rules' && showVersionRules.value) ||
+      (item.id === 'sessions' && showSessionSettings.value),
+  })),
 )
 
 const versionSubtitle = computed(() => {
@@ -225,6 +233,8 @@ watch(
         runVersionToolbarCommand(fieldFilter.value === 'minor' ? 'all' : 'minor')
         break
       case 'session-settings':
+        openVersionSessionSettings()
+        break
       case 'rules':
         runVersionToolbarCommand('rules')
         break
@@ -334,6 +344,33 @@ watch([leftPath, rightPath], () => {
   syncVersionTabTitle()
 })
 
+function openVersionSessionSettings(): void {
+  showSessionSettings.value = true
+}
+
+function applyVersionSessionSettings(
+  payload:
+    | { kind: 'folder'; criteria: unknown; filters?: unknown }
+    | { kind: 'text'; options: unknown }
+    | { kind: 'table'; options: unknown }
+    | { kind: 'hex'; options: unknown }
+    | { kind: 'picture'; options: unknown }
+    | { kind: 'media'; options: unknown }
+    | { kind: 'version'; options: VersionCompareOptionsState }
+    | { kind: 'registry'; options: unknown }
+    | { kind: 'patch'; options: unknown },
+): void {
+  if (payload.kind !== 'version') {
+    return
+  }
+
+  versionOptions.value = { ...versionOptions.value, ...payload.options }
+  fieldFilter.value = payload.options.defaultFilter
+  showVersionRules.value = payload.options.showRules
+  saveVersionCompareOptions(versionOptions.value)
+  showSessionSettings.value = false
+}
+
 function runVersionToolbarCommand(commandId: string): void {
   if (commandId === 'home') {
     tabs.openTab({ title: 'Home', titleKey: 'ui.home', route: '/', dirty: false })
@@ -356,6 +393,12 @@ function runVersionToolbarCommand(commandId: string): void {
 
   if (commandId === 'rules') {
     showVersionRules.value = !showVersionRules.value
+
+    return
+  }
+
+  if (commandId === 'sessions') {
+    openVersionSessionSettings()
 
     return
   }
@@ -828,6 +871,13 @@ watch(
         </section>
       </WorkbenchInspector>
     </template>
+    <SessionSettingsDialog
+      :open="showSessionSettings"
+      kind="version"
+      :version-options="versionOptions"
+      @close="showSessionSettings = false"
+      @apply="applyVersionSessionSettings"
+    />
   </WorkbenchShell>
 </template>
 <style scoped>

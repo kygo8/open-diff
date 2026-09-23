@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import RegistryCompareView from './RegistryCompareView.vue'
 import {
@@ -391,5 +392,20 @@ describe('RegistryCompareView', () => {
     expect(wrapper.find('[data-testid="registry-path-footers"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="registry-left-path-footer"]').text()).toContain('24')
     expect(wrapper.find('[data-testid="registry-right-path-footer"]').text()).toContain('24')
+  })
+  it('shows Sessions on the main toolbar and opens session settings', async () => {
+    const settings = useSettingsStore()
+
+    settings.setShowSessionsInToolbar(true)
+
+    const wrapper = mount(RegistryCompareView)
+    const sessionsButton = wrapper.find('[data-testid="registry-session-toolbar-sessions"]')
+
+    expect(sessionsButton.exists()).toBe(true)
+    await sessionsButton.trigger('click')
+    expect(wrapper.find('[data-testid="session-settings-dialog"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="session-settings-registry"]').exists()).toBe(true)
+
+    wrapper.unmount()
   })
 })

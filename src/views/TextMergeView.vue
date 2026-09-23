@@ -242,7 +242,10 @@ function applyTextMergeSessionSettings(
     | { kind: 'table'; options: unknown }
     | { kind: 'hex'; options: unknown }
     | { kind: 'picture'; options: unknown }
-    | { kind: 'media'; options: unknown },
+    | { kind: 'media'; options: unknown }
+    | { kind: 'version'; options: unknown }
+    | { kind: 'registry'; options: unknown }
+    | { kind: 'patch'; options: unknown },
 ): void {
   if (payload.kind !== 'text') {
     return

@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import {
+  loadRegistryCompareOptions,
+  saveRegistryCompareOptions,
+  type RegistryCompareOptionsState,
+} from '@/app/registryCompareOptions'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import {
@@ -23,6 +28,7 @@ import { pickNativePath } from '@/app/filePicker'
 import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
 import {
   applyRegistryValueSide,
@@ -57,7 +63,9 @@ const rightName = ref('right.reg')
 const registryTree = ref<RegistryKeyNode[]>([])
 const loading = ref(false)
 const error = ref('')
-const valueFilter = ref<RegistryValueFilter>('all')
+const showSessionSettings = ref(false)
+const registryOptions = ref<RegistryCompareOptionsState>(loadRegistryCompareOptions())
+const valueFilter = ref<RegistryValueFilter>(registryOptions.value.defaultFilter)
 const collapsedKeyPaths = ref<Set<string>>(new Set())
 const selectedKeyPath = ref<string>()
 const selectedValueKey = ref<string>()
@@ -603,6 +611,8 @@ watch(
       case 'rules':
       case 'save-snapshot':
       case 'session-settings':
+        openRegistrySessionSettings()
+        break
       case 'undo':
       case 'workspace-load':
       case 'next-conflict':
@@ -697,7 +707,10 @@ const registrySessionToolbar = computed(() =>
     reload: Boolean(leftExport.value && rightExport.value),
     expand: registryTree.value.length > 0,
     collapse: registryTree.value.length > 0,
-  }),
+  }).map((item) => ({
+    ...item,
+    active: Boolean(item.active) || (item.id === 'sessions' && showSessionSettings.value),
+  })),
 )
 
 function navigateRegistryDifference(direction: 1 | -1): void {
@@ -717,10 +730,42 @@ function navigateRegistryDifference(direction: 1 | -1): void {
   selectKey(keys[nextIndex].path)
 }
 
+function openRegistrySessionSettings(): void {
+  showSessionSettings.value = true
+}
+
+function applyRegistrySessionSettings(
+  payload:
+    | { kind: 'folder'; criteria: unknown; filters?: unknown }
+    | { kind: 'text'; options: unknown }
+    | { kind: 'table'; options: unknown }
+    | { kind: 'hex'; options: unknown }
+    | { kind: 'picture'; options: unknown }
+    | { kind: 'media'; options: unknown }
+    | { kind: 'version'; options: unknown }
+    | { kind: 'registry'; options: RegistryCompareOptionsState }
+    | { kind: 'patch'; options: unknown },
+): void {
+  if (payload.kind !== 'registry') {
+    return
+  }
+
+  registryOptions.value = { ...registryOptions.value, ...payload.options }
+  valueFilter.value = payload.options.defaultFilter
+  saveRegistryCompareOptions(registryOptions.value)
+  showSessionSettings.value = false
+}
+
 function runRegistryToolbarCommand(commandId: string): void {
   if (commandId === 'home') {
     tabs.openTab({ title: 'Home', titleKey: 'ui.home', route: '/', dirty: false })
     void router.push('/')
+
+    return
+  }
+
+  if (commandId === 'sessions') {
+    openRegistrySessionSettings()
 
     return
   }
@@ -1186,6 +1231,13 @@ function runRegistryToolbarCommand(commandId: string): void {
         </section>
       </WorkbenchInspector>
     </template>
+    <SessionSettingsDialog
+      :open="showSessionSettings"
+      kind="registry"
+      :registry-options="registryOptions"
+      @close="showSessionSettings = false"
+      @apply="applyRegistrySessionSettings"
+    />
   </WorkbenchShell>
 </template>
 <style scoped>

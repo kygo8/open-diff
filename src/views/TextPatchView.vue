@@ -592,43 +592,49 @@ function lineNumber(value: number | null): string {
         >
           {{ $t('ui.applyToFile') }}
         </NButton>
-        <NButton
-          size="small"
-          :loading="loading"
-          data-testid="open-patched-text-compare"
-          @click="openPatchedInTextCompare"
+        <div
+          class="patch-section-nav-chrome"
+          data-testid="patch-section-nav-chrome"
+          data-section-nav-density="capture-1to1"
         >
-          {{ $t('ui.openInTextCompare') }}
-        </NButton>
-        <NButton
-          size="small"
-          :disabled="patchSections.length === 0"
-          data-testid="patch-prev-section"
-          @click="goToSection(-1)"
-        >
-          {{ $t('ui.prevSection') }}
-        </NButton>
-        <NButton
-          size="small"
-          :disabled="patchSections.length === 0"
-          data-testid="patch-next-section"
-          @click="goToSection(1)"
-        >
-          {{ $t('ui.nextSection') }}
-        </NButton>
-        <NButton
-          size="small"
-          :disabled="!currentSection"
-          data-testid="open-selected-text-compare"
-          @click="openSelectedInTextCompare"
-        >
-          {{ $t('ui.openSelectedInTextCompare') }}
-        </NButton>
-        <span
-          class="status-chip"
-          data-testid="patch-section-position"
-          >{{ sectionPositionLabel }}</span
-        >
+          <NButton
+            size="small"
+            :loading="loading"
+            data-testid="open-patched-text-compare"
+            @click="openPatchedInTextCompare"
+          >
+            {{ $t('ui.openInTextCompare') }}
+          </NButton>
+          <NButton
+            size="small"
+            :disabled="patchSections.length === 0"
+            data-testid="patch-prev-section"
+            @click="goToSection(-1)"
+          >
+            {{ $t('ui.prevSection') }}
+          </NButton>
+          <NButton
+            size="small"
+            :disabled="patchSections.length === 0"
+            data-testid="patch-next-section"
+            @click="goToSection(1)"
+          >
+            {{ $t('ui.nextSection') }}
+          </NButton>
+          <NButton
+            size="small"
+            :disabled="!currentSection"
+            data-testid="open-selected-text-compare"
+            @click="openSelectedInTextCompare"
+          >
+            {{ $t('ui.openSelectedInTextCompare') }}
+          </NButton>
+          <span
+            class="status-chip"
+            data-testid="patch-section-position"
+            >{{ sectionPositionLabel }}</span
+          >
+        </div>
         <span class="status-chip">{{ $t('status.fileCount', { count: fileCount }) }}</span>
         <span class="status-chip">{{ $t('status.hunkCount', { count: hunkCount }) }}</span>
       </WorkbenchToolbar>
@@ -682,8 +688,9 @@ function lineNumber(value: number | null): string {
           </div>
         </label>
         <div
-          class="bc-path-footers"
+          class="bc-path-footers patch-path-meta-strip"
           data-testid="patch-path-footers"
+          data-secondary-density="capture-1to1"
         >
           <PathMetaFooter
             :stamp="sourceFileStamp"
@@ -920,6 +927,26 @@ function lineNumber(value: number | null): string {
 }
 
 .patch-toolbar .status-chip,
+.patch-section-nav-chrome {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: 20px;
+  padding: 1px 2px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f5f5f5;
+}
+
+.patch-path-meta-strip {
+  min-height: 18px;
+  padding: 1px 4px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f0f0f0;
+}
+
 .patch-toolbar [data-testid='patch-section-position'] {
   font-size: 11px;
   line-height: 16px;
@@ -1241,7 +1268,7 @@ function lineNumber(value: number | null): string {
 }
 
 .path-side-footer {
-  min-height: 20px;
+  min-height: 18px;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);
   font-size: 11px;

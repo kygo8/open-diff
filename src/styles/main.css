@@ -4228,16 +4228,38 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 0 4px !important;
 }
 
-.text-patch-view .bc-path-footers {
+.text-patch-view .bc-path-footers,
+.text-patch-view .patch-path-meta-strip {
   gap: 1px !important;
-  padding: 0 2px !important;
+  min-height: 18px !important;
+  padding: 1px 4px !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 0 !important;
+  background: #f0f0f0 !important;
 }
 
 .text-patch-view .path-side-footer {
-  min-height: 20px !important;
+  min-height: 18px !important;
   margin-top: 0 !important;
+  color: #111111 !important;
   font-size: 11px !important;
   line-height: 16px !important;
+}
+
+.text-patch-view .patch-section-nav-chrome {
+  gap: 4px !important;
+  min-height: 20px !important;
+  padding: 1px 2px !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 0 !important;
+  background: #f5f5f5 !important;
+}
+
+.text-patch-view .patch-section-nav-chrome .n-button {
+  height: 18px !important;
+  min-height: 18px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
 }
 
 .text-patch-view .status-chip {

@@ -715,6 +715,7 @@ export const frFR: LanguagePack = {
     'ui.font': 'Police',
     'ui.dragFoldersOrFilesOntoSessionIcon': 'Drop two files or folders here',
     'ui.minor': 'Minor',
+    'ui.unimportantDifferences': 'Différences non importantes',
     'ui.orClickSessionIconToBegin': 'Or click a card below. Choose paths, then Compare.',
     'ui.paste': 'Paste',
     'ui.reload': 'Reload',

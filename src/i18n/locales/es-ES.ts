@@ -715,6 +715,7 @@ export const esES: LanguagePack = {
     'ui.font': 'Fuente',
     'ui.dragFoldersOrFilesOntoSessionIcon': 'Drop two files or folders here',
     'ui.minor': 'Minor',
+    'ui.unimportantDifferences': 'Diferencias no importantes',
     'ui.orClickSessionIconToBegin': 'Or click a card below. Choose paths, then Compare.',
     'ui.paste': 'Paste',
     'ui.reload': 'Reload',

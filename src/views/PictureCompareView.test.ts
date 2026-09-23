@@ -445,6 +445,7 @@ describe('PictureCompareView', () => {
     expect(
       wrapper.find('[data-testid="picture-session-toolbar-minor"]').attributes('data-active'),
     ).toBe('true')
+    expect(wrapper.find('[data-testid="picture-minor-banner"]').exists()).toBe(true)
   })
 
   it('exports the picture report to clipboard and a sibling text file', async () => {

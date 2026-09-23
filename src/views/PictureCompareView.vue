@@ -1263,6 +1263,16 @@ async function runPictureCompare(): Promise<void> {
       </section>
 
       <section
+        v-if="showMinor && compared"
+        class="picture-minor-banner"
+        data-picture-panel-density="capture-1to1"
+        data-testid="picture-minor-banner"
+      >
+        <strong class="picture-panel-title">{{ $t('ui.minor') }}</strong>
+        <span>{{ $t('ui.unimportantDifferences') }}</span>
+      </section>
+
+      <section
         v-if="compared"
         class="picture-report-panel"
         data-testid="picture-report-panel"
@@ -1731,12 +1741,32 @@ h2 {
   gap: 4px;
 }
 
+.picture-minor-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 20px;
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: var(--app-surface);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.picture-minor-banner span {
+  color: var(--app-text-muted);
+  font-size: 11px;
+  line-height: 16px;
+}
+
 .picture-report-panel {
   display: grid;
-  gap: 2px 4px;
+  gap: 4px 6px;
   min-height: 20px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);
 }
@@ -1745,10 +1775,10 @@ h2 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  min-height: 16px;
+  gap: 6px;
+  min-height: 20px;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .picture-report-panel header button {
@@ -1756,6 +1786,11 @@ h2 {
   height: 18px;
   min-height: 18px;
   padding: 0 5px;
+  border: 1px solid var(--app-border);
+  border-radius: 2px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
   font-size: 11px;
   line-height: 18px;
 }
@@ -1771,9 +1806,10 @@ h2 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: center;
   gap: 4px;
-  min-height: 16px;
+  min-height: 18px;
+  padding: 2px 6px;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .picture-report-head {
@@ -1958,8 +1994,8 @@ h2 {
 }
 
 .picture-blend-panel input[type='range'] {
-  height: 18px;
-  min-height: 18px;
+  height: 20px;
+  min-height: 20px;
 }
 
 .picture-blend-overlay {

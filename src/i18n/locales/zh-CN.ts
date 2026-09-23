@@ -686,6 +686,7 @@ export const zhCN: LanguagePack = {
     'ui.font': '字体',
     'ui.dragFoldersOrFilesOntoSessionIcon': '把两个文件或文件夹拖到这里',
     'ui.minor': '次要',
+    'ui.unimportantDifferences': '次要差异',
     'ui.orClickSessionIconToBegin': '或点下面的卡片。',
     'ui.paste': '粘贴',
     'ui.reload': '重新加载',

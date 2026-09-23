@@ -31,7 +31,7 @@ describe('folder sync/merge chrome density', () => {
       /\.sync-setting-actions :deep\(\.n-button\)\s*\{[\s\S]*?height:\s*30px/,
     )
     expect(css).toMatch(
-      /\.folder-sync-view \.sync-setting-actions \.n-button\[data-testid='folder-sync-run'\][\s\S]*?height:\s*48px/,
+      /\.folder-sync-view \.sync-setting-actions \.n-button\[data-testid='folder-sync-run'\][\s\S]*?height:\s*74\.5px/,
     )
     expect(syncView).toMatch(/PathMetaFooter/)
     expect(syncView).toMatch(/folder-sync-left-path-footer/)
@@ -70,14 +70,22 @@ describe('folder sync/merge chrome density', () => {
 
   it('keeps Sync/Merge plan/preview/action chrome dense one more notch vs Folder Compare band', () => {
     expect(css).toMatch(/\.folder-sync-view \.sync-preview-row span[\s\S]*?padding:\s*1px 4px/)
-    expect(css).toMatch(/\.folder-sync-view \.sync-preview-row select[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.folder-sync-view \.sync-preview-row select[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.folder-sync-view \.sync-chrome-panel\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(
+      /\.folder-sync-view \.sync-setting-actions \.n-button\[data-testid='folder-sync-run'\][\s\S]*?height:\s*74\.5px/,
+    )
     expect(css).toMatch(/\.folder-merge-view \.merge-plan-row span[\s\S]*?padding:\s*1px 4px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*30px/)
     expect(css).toMatch(/\.folder-merge-view \.conflict-panel li\s*\{[\s\S]*?padding:\s*2px 4px/)
 
     expect(syncView).toMatch(/\.sync-preview-row span[\s\S]*?padding:\s*1px 4px/)
-    expect(syncView).toMatch(/\.sync-preview-row select\s*\{[\s\S]*?height:\s*18px/)
+    expect(syncView).toMatch(/\.sync-preview-row select\s*\{[\s\S]*?height:\s*20px/)
+    expect(syncView).toMatch(/data-sync-action-strip="capture-1to1-residual"/)
+    expect(syncView).toMatch(/data-sync-override-density="capture-1to1-residual"/)
+    expect(syncView).toMatch(
+      /\.sync-setting-actions :deep\(\.n-button\[data-testid='folder-sync-run'\]\)\s*\{[\s\S]*?height:\s*74\.5px/,
+    )
     expect(syncView).toMatch(/\.sync-chrome-panel\s*\{[\s\S]*?min-height:\s*18px/)
     expect(syncView).toMatch(/\.sync-preview,\s*\.sync-run-status\s*\{[\s\S]*?padding:\s*2px 4px/)
 

@@ -1722,7 +1722,10 @@ watch(
             </option>
           </select>
         </label>
-        <div class="sync-setting-actions">
+        <div
+          class="sync-setting-actions"
+          data-sync-action-strip="capture-1to1-residual"
+        >
           <NButton
             size="small"
             secondary
@@ -1986,7 +1989,10 @@ watch(
             >
           </div>
         </section>
-        <div class="sync-preview-table">
+        <div
+          class="sync-preview-table"
+          data-sync-override-density="capture-1to1-residual"
+        >
           <div class="sync-preview-row sync-preview-head">
             <span>{{ $t('ui.select') }}</span>
             <span>{{ $t('ui.plannedAction') }}</span>
@@ -2437,8 +2443,16 @@ h1 {
 }
 
 .sync-setting-actions :deep(.n-button[data-testid='folder-sync-run']) {
-  height: 48px;
-  min-height: 48px;
+  width: 95.5px;
+  min-width: 95.5px;
+  height: 74.5px;
+  min-height: 74.5px;
+}
+
+.sync-setting-actions :deep(.n-button[data-testid='folder-sync-accept']),
+.sync-setting-actions :deep(.n-button[data-testid='folder-sync-cancel']) {
+  width: 95.5px;
+  min-width: 95.5px;
 }
 
 .sync-preview,
@@ -2549,16 +2563,16 @@ h1 {
   align-items: center;
   gap: 4px;
   min-width: 0;
-  padding: 2px 6px;
-  border-right: 1px solid var(--app-border);
+  padding: 1px 4px;
+  border-right: 1px solid #d0d0d0;
 }
 
 .sync-reset-override {
   height: 20px;
   min-height: 20px;
   padding: 0 6px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
   background: var(--app-bg);
   color: var(--app-text);
   font: inherit;
@@ -2578,11 +2592,11 @@ h1 {
 
 .sync-preview-row select {
   width: 100%;
-  height: 18px;
-  min-height: 18px;
-  border: 1px solid var(--app-border);
-  border-radius: 2px;
-  background: var(--app-bg);
+  height: 20px;
+  min-height: 20px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #ffffff;
   color: var(--app-text);
   font-size: 11px;
 }

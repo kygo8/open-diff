@@ -1454,6 +1454,36 @@ function commandsForMenu(menu: AppMenuDefinition): AppCommand[] {
     .map(resolveMenuCommand)
 }
 
+/** Capture-like Session/Tools separator breaks (chrome only; no new backends). */
+const MENU_SEPARATOR_AFTER: Partial<Record<AppMenuId, ReadonlySet<string>>> = {
+  session: new Set([
+    'session.newWindow',
+    'workspace.save',
+    'session.settings',
+    'session.clear',
+    'session.upOneLevel',
+    'session.closeTab',
+  ]),
+  tools: new Set(['open.remoteProfiles', 'tools.restoreFactoryDefaults', 'open.textPatch']),
+}
+
+type MenuPanelEntry = { kind: 'command'; command: AppCommand } | { kind: 'separator' }
+
+function menuPanelEntries(menu: AppMenuDefinition): MenuPanelEntry[] {
+  const commands = commandsForMenu(menu)
+  const breaks = MENU_SEPARATOR_AFTER[menu.id]
+  const entries: MenuPanelEntry[] = []
+
+  for (const [index, command] of commands.entries()) {
+    entries.push({ kind: 'command', command })
+    if (breaks?.has(command.id) && index < commands.length - 1) {
+      entries.push({ kind: 'separator' })
+    }
+  }
+
+  return entries
+}
+
 function toggleApplicationMenu(menu: AppMenuId): void {
   languageMenuOpen.value = false
   activeMenu.value = activeMenu.value === menu ? undefined : menu
@@ -1660,6 +1690,7 @@ const sourceSessionTypes = new Set<SessionType>([
     <header
       class="menu-bar"
       data-menu-density="capture-1to1"
+      data-menu-chrome="capture-1to1-residual"
       data-testid="menu-bar"
     >
       <button
@@ -1698,24 +1729,35 @@ const sourceSessionTypes = new Set<SessionType>([
             data-testid="menu-panel"
             @click.stop
           >
-            <button
-              v-for="command in commandsForMenu(menu)"
-              :key="command.id"
-              type="button"
-              class="menu-command"
-              :disabled="!command.enabled"
-              :data-testid="`menu-command-${command.id}`"
-              :data-shortcut="menuShortcutLabel(command)"
-              @click="executeCommand(command.id)"
+            <template
+              v-for="(entry, entryIndex) in menuPanelEntries(menu)"
+              :key="entry.kind === 'separator' ? `sep-${menu.id}-${entryIndex}` : entry.command.id"
             >
-              <span class="menu-command-label">{{ t(command.titleKey) }}</span>
-              <span
-                v-if="menuShortcutLabel(command)"
-                class="menu-command-shortcut"
-                data-testid="menu-command-shortcut"
-                >{{ menuShortcutLabel(command) }}</span
+              <div
+                v-if="entry.kind === 'separator'"
+                class="menu-separator"
+                role="separator"
+                data-testid="menu-separator"
+              />
+              <button
+                v-else
+                type="button"
+                class="menu-command"
+                :disabled="!entry.command.enabled"
+                :data-enabled="entry.command.enabled ? 'true' : 'false'"
+                :data-testid="`menu-command-${entry.command.id}`"
+                :data-shortcut="menuShortcutLabel(entry.command)"
+                @click="executeCommand(entry.command.id)"
               >
-            </button>
+                <span class="menu-command-label">{{ t(entry.command.titleKey) }}</span>
+                <span
+                  v-if="menuShortcutLabel(entry.command)"
+                  class="menu-command-shortcut"
+                  data-testid="menu-command-shortcut"
+                  >{{ menuShortcutLabel(entry.command) }}</span
+                >
+              </button>
+            </template>
           </section>
         </div>
       </nav>
@@ -2230,9 +2272,30 @@ const sourceSessionTypes = new Set<SessionType>([
   background: var(--app-primary-soft);
 }
 
-.menu-panel button:disabled {
-  color: var(--app-text-muted);
-  cursor: not-allowed;
+.menu-panel button:disabled,
+.menu-panel .menu-command[data-enabled='false'] {
+  color: #808080;
+  cursor: default;
+  opacity: 1;
+}
+
+.menu-separator {
+  height: 1px;
+  margin: 3px 4px;
+  border: 0;
+  background: #d0d0d0;
+}
+
+.menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button {
+  height: 22px;
+  color: #000000;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button.active {
+  background: #eef4ff;
+  color: #000000;
 }
 
 .brand {

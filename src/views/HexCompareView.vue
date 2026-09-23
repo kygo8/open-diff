@@ -980,47 +980,53 @@ async function runHexSave(): Promise<void> {
         >
           {{ $t('ui.runDiff') }}
         </button>
-        <label>
-          <span>{{ $t('ui.offset') }}</span>
-          <input
-            v-model.number="hexOffset"
-            type="number"
-            min="0"
-            data-testid="hex-offset"
-          />
-        </label>
-        <label>
-          <span>{{ $t('ui.chunkLength') }}</span>
-          <input
-            v-model.number="hexLength"
-            type="number"
-            min="16"
-            step="16"
-            data-testid="hex-length"
-          />
-        </label>
-        <label>
-          <span>{{ $t('ui.jump') }}</span>
-          <input
-            v-model="jumpOffsetInput"
-            type="text"
-            data-testid="hex-jump-offset"
-            :placeholder="$t('ui.hexOffsetHint')"
-          />
-        </label>
-        <button
-          type="button"
-          data-testid="hex-go-to-open"
-          :disabled="loading"
-          @click="openGoToDialog"
+        <div
+          class="hex-offset-chrome"
+          data-testid="hex-offset-chrome"
+          data-offset-density="capture-1to1"
         >
-          {{ $t('ui.goTo') }}
-        </button>
-        <strong
-          class="hex-window-range"
-          data-testid="hex-window-range"
-          >{{ hexWindowRangeLabel }}</strong
-        >
+          <label>
+            <span>{{ $t('ui.offset') }}</span>
+            <input
+              v-model.number="hexOffset"
+              type="number"
+              min="0"
+              data-testid="hex-offset"
+            />
+          </label>
+          <label>
+            <span>{{ $t('ui.chunkLength') }}</span>
+            <input
+              v-model.number="hexLength"
+              type="number"
+              min="16"
+              step="16"
+              data-testid="hex-length"
+            />
+          </label>
+          <label>
+            <span>{{ $t('ui.jump') }}</span>
+            <input
+              v-model="jumpOffsetInput"
+              type="text"
+              data-testid="hex-jump-offset"
+              :placeholder="$t('ui.hexOffsetHint')"
+            />
+          </label>
+          <button
+            type="button"
+            data-testid="hex-go-to-open"
+            :disabled="loading"
+            @click="openGoToDialog"
+          >
+            {{ $t('ui.goTo') }}
+          </button>
+          <strong
+            class="hex-window-range"
+            data-testid="hex-window-range"
+            >{{ hexWindowRangeLabel }}</strong
+          >
+        </div>
         <button
           type="button"
           data-testid="hex-first-page"
@@ -1355,6 +1361,7 @@ async function runHexSave(): Promise<void> {
     >
       <section
         class="hex-goto-dialog"
+        data-goto-density="capture-1to1"
         role="dialog"
         aria-modal="true"
         :aria-label="$t('ui.goToOffset')"
@@ -1666,6 +1673,48 @@ h2 {
   }
 }
 
+.hex-offset-chrome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 4px 6px;
+  min-height: 22px;
+  padding: 2px 4px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f5f5f5;
+}
+
+.hex-offset-chrome label {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hex-offset-chrome span {
+  color: #333333;
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.hex-offset-chrome input,
+.hex-offset-chrome button,
+.hex-offset-chrome strong {
+  height: 20px;
+  min-height: 20px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #ffffff;
+  color: #111111;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.hex-offset-chrome button {
+  width: auto;
+}
+
 .hex-goto-backdrop {
   position: fixed;
   inset: 0;
@@ -1673,36 +1722,61 @@ h2 {
   display: grid;
   place-items: center;
   padding: 4px;
-  background: rgb(15 23 42 / 0.45);
+  background: rgb(15 23 42 / 0.35);
 }
 
 .hex-goto-dialog {
   display: grid;
   gap: 4px;
-  width: min(420px, 100%);
+  width: min(360px, 100%);
   padding: 4px 6px;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: var(--app-surface);
+  background: #f0f0f0;
+}
+
+.hex-goto-dialog header h2 {
+  min-height: 20px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.hex-goto-dialog p {
+  margin: 0;
+  color: #333333;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .hex-goto-dialog input {
   height: 20px;
-  padding: 0 4px;
+  min-height: 20px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
+  background: #ffffff;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .hex-goto-dialog footer {
   display: flex;
   justify-content: flex-end;
   gap: 4px;
-  min-height: 20px;
+  min-height: 22px;
 }
 
 .hex-goto-dialog footer button {
   height: 18px;
-  padding: 0 8px;
+  min-height: 18px;
+  padding: 0 10px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
+  background: #ffffff;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .hex-rules-panel {

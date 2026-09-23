@@ -2115,6 +2115,50 @@ html[data-show-path-bars='0'] .path-pair-bar {
   background: #a8ffff !important;
 }
 
+.hex-compare-view .hex-offset-chrome {
+  gap: 4px 6px !important;
+  min-height: 22px !important;
+  padding: 2px 4px !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 0 !important;
+  background: #f5f5f5 !important;
+}
+
+.hex-compare-view .hex-offset-chrome input,
+.hex-compare-view .hex-offset-chrome button,
+.hex-compare-view .hex-offset-chrome strong {
+  height: 20px !important;
+  min-height: 20px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+}
+
+.hex-compare-view .hex-goto-dialog {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  background: #f0f0f0 !important;
+}
+
+.hex-compare-view .hex-goto-dialog input,
+.hex-goto-dialog input {
+  height: 20px !important;
+  min-height: 20px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+}
+
+.hex-goto-dialog footer button {
+  height: 18px !important;
+  min-height: 18px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+}
+
 .hex-compare-view .hex-offset {
   background: #f7f7f7 !important;
   color: var(--app-text-muted) !important;

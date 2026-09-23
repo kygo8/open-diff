@@ -312,6 +312,7 @@ function applySettings(): void {
   >
     <section
       class="session-settings-dialog"
+      data-options-rules-density="capture-1to1"
       role="dialog"
       aria-modal="true"
       :aria-label="$t(titleKey)"
@@ -846,9 +847,11 @@ function applySettings(): void {
   gap: 4px;
   width: min(520px, 100%);
   padding: 4px 6px;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: var(--app-surface);
+  background: var(--app-surface, #ffffff);
+  font-size: 11px;
+  line-height: 16px;
 }
 
 header,
@@ -856,25 +859,31 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
+  gap: 6px;
   min-height: 20px;
 }
 
 h2 {
   margin: 0;
   font-size: 12px;
+  line-height: 16px;
 }
 
 .settings-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  min-height: 20px;
+  padding: 2px 0;
 }
 
 .settings-tabs button {
   height: 18px;
   padding: 0 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .settings-tabs button.active {
@@ -885,13 +894,19 @@ h2 {
 .settings-body {
   display: grid;
   gap: 4px;
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: var(--app-surface-low, #ffffff);
 }
 
 .settings-body label {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-height: 18px;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .settings-body label.stack {
@@ -902,19 +917,25 @@ h2 {
 .settings-body input:not([type='checkbox']),
 .settings-body select {
   height: 20px;
-  padding: 0 4px;
+  min-height: 20px;
+  padding: 0 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .settings-body textarea {
   width: 100%;
   min-height: 64px;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 2px 6px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface-low, #ffffff);
   color: var(--app-text);
   font: inherit;
+  font-size: 11px;
+  line-height: 16px;
   resize: vertical;
 }
 
@@ -924,8 +945,12 @@ footer {
 
 footer button {
   height: 18px;
+  min-height: 18px;
   padding: 0 8px;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 button.primary {

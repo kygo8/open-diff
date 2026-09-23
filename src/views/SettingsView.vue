@@ -1497,6 +1497,7 @@ function parseShortcutText(value: string): string[] {
       <div
         class="options-content"
         data-testid="options-content"
+        data-options-content-density="capture-1to1"
       >
         <NCard
           v-show="optionsSection === 'appearance'"
@@ -3646,9 +3647,28 @@ function parseShortcutText(value: string): string[] {
 
 .options-content {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   align-content: start;
   min-width: 0;
+  padding: 0;
+}
+
+.options-content :deep([class='n-card__content']) {
+  display: grid;
+  gap: 4px;
+  padding: 4px 6px;
+}
+
+.options-content :deep(.n-checkbox) {
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.options-content :deep(.n-form-item) {
+  min-height: 20px;
+  margin: 0;
+  padding: 0;
 }
 
 @media (width <= 900px) {

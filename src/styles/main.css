@@ -2010,23 +2010,38 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
+.hex-compare-view .hex-rules-panel {
+  gap: 4px 6px !important;
+  min-height: 20px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+}
+
+.hex-compare-view .hex-rules-panel h2 {
+  min-height: 20px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 16px !important;
+}
+
 .hex-compare-view .hex-rules-row {
   gap: 6px !important;
-  min-height: 18px !important;
+  min-height: 20px !important;
   line-height: 16px !important;
 }
 
 .hex-compare-view .hex-rules-row input[type='number'] {
-  height: 18px !important;
-  min-height: 18px !important;
+  height: 20px !important;
+  min-height: 20px !important;
   padding: 0 6px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }
 
 .hex-compare-view .hex-rules-row ~ button {
-  height: 18px !important;
-  min-height: 18px !important;
+  height: 20px !important;
+  min-height: 20px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
   line-height: 16px !important;

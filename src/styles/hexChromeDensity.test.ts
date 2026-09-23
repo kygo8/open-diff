@@ -66,14 +66,17 @@ describe('hex compare chrome density', () => {
   })
 
   it('keeps Hex rules strip chrome on the session-panel band', () => {
+    expect(hexView).toMatch(/data-hex-panel-density="capture-1to1"/)
+    expect(hexView).toMatch(/\.hex-rules-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?gap:\s*6px/)
-    expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?margin:\s*0/)
-    expect(hexView).toMatch(/\.hex-rules-row input\[type='number'\]\s*\{[\s\S]*?height:\s*18px/)
-    expect(hexView).toMatch(/\.hex-rules-row ~ button\s*\{[\s\S]*?height:\s*18px/)
+    expect(hexView).toMatch(/\.hex-rules-row input\[type='number'\]\s*\{[\s\S]*?height:\s*20px/)
+    expect(hexView).toMatch(/\.hex-rules-row ~ button\s*\{[\s\S]*?height:\s*20px/)
     expect(hexView).not.toMatch(/\.hex-rules-row\s*\{[\s\S]*?margin:\s*8px 0/)
     expect(css).toMatch(
-      /\.hex-compare-view \.hex-rules-row input\[type='number'\][\s\S]*?height:\s*18px/,
+      /\.hex-compare-view \.hex-rules-row input\[type='number'\][\s\S]*?height:\s*20px/,
     )
+    expect(css).toMatch(/\.hex-compare-view \.hex-rules-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
   })
 })

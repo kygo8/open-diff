@@ -1291,8 +1291,9 @@ async function runHexSave(): Promise<void> {
           />
         </section>
         <section
-          class="workench-inspector-section"
+          class="workench-inspector-section hex-rules-panel"
           data-testid="hex-rules-panel"
+          data-hex-panel-density="capture-1to1"
         >
           <h2>{{ $t('ui.rules') }}</h2>
           <label class="hex-rules-row">
@@ -1699,11 +1700,30 @@ h2 {
   border-radius: 0;
 }
 
+.hex-rules-panel {
+  display: grid;
+  gap: 4px 6px;
+  min-height: 20px;
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: var(--app-surface);
+}
+
+.hex-rules-panel h2 {
+  min-height: 20px;
+  margin: 0;
+  color: #111111;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
 .hex-rules-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-height: 18px;
+  min-height: 20px;
   margin: 0;
   font-size: 11px;
   line-height: 16px;
@@ -1711,19 +1731,28 @@ h2 {
 
 .hex-rules-row input[type='number'] {
   width: 96px;
-  height: 18px;
-  min-height: 18px;
+  height: 20px;
+  min-height: 20px;
   padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 11px;
 }
 
 .hex-rules-row ~ button {
-  height: 18px;
-  min-height: 18px;
+  width: fit-content;
+  height: 20px;
+  min-height: 20px;
   padding: 0 8px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font: inherit;
+  font-size: 11px;
   line-height: 16px;
 }
 

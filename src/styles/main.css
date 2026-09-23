@@ -3366,7 +3366,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .table-compare-view .table-grid-row {
+  min-height: 16px !important;
+  border-bottom: 1px solid #d0d0d0 !important;
+}
+
+.table-compare-view[data-table-grid-density='capture-1to1-residual'] .table-grid-panel header {
   min-height: 20px !important;
+  background: #f7f7f7 !important;
+}
+
+.table-compare-view[data-table-grid-density='capture-1to1-residual'] .table-grid-cell {
+  padding: 1px 4px !important;
+  border-right: 1px solid #d0d0d0 !important;
+  line-height: 14px !important;
 }
 
 .table-compare-view .table-grid-cell,

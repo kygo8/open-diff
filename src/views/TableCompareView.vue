@@ -931,7 +931,10 @@ watch([leftPath, rightPath], () => {
     toolbar-test-id-prefix="table-session-toolbar"
     @toolbar-command="runTableToolbarCommand"
   >
-    <section class="table-compare-view">
+    <section
+      class="table-compare-view"
+      data-table-grid-density="capture-1to1-residual"
+    >
       <header class="table-compare-header">
         <div>
           <p class="eyebrow">{{ $t('ui.tableCompare') }}</p>
@@ -1747,8 +1750,8 @@ h2 {
 .table-grid-row {
   display: grid;
   grid-template-columns: repeat(var(--visible-columns), minmax(132px, 1fr));
-  min-height: 20px;
-  border-bottom: 1px solid var(--app-border);
+  min-height: 16px;
+  border-bottom: 1px solid #d0d0d0;
 }
 
 .table-grid-row:last-child {
@@ -1757,11 +1760,11 @@ h2 {
 
 .table-grid-cell {
   min-width: 0;
-  padding: 2px 6px;
+  padding: 1px 4px;
   overflow: hidden;
-  border-right: 1px solid #a0a0a0;
+  border-right: 1px solid #d0d0d0;
   font-size: 11px;
-  line-height: 16px;
+  line-height: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

@@ -90,8 +90,12 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
 
 describe('folder compare tree chrome density', () => {
   it('keeps Folder Compare tree/header at capture CSS scale', () => {
-    expect(css).toMatch(/\.folder-compare-view \.tree-head\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(css).toMatch(/\.folder-compare-view \.tree-row\s*\{[\s\S]*?min-height:\s*17px/)
+    expect(css).toMatch(/\.folder-compare-view \.tree-head\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.folder-compare-view \.tree-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.folder-compare-view \.tree-head\s*\{[\s\S]*?font-weight:\s*400/)
+    expect(css).toMatch(
+      /\.folder-compare-view \.tree-row\.selected\s*\{[\s\S]*?background:\s*#a8cdf1/,
+    )
     expect(css).toMatch(/\.folder-compare-view \.tree-head span,[\s\S]*?padding:\s*1px 6px/)
     expect(css).toMatch(/\.folder-compare-view \.tree-head span,[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.folder-compare-view \.tree-head span,[\s\S]*?line-height:\s*14px/)
@@ -99,10 +103,10 @@ describe('folder compare tree chrome density', () => {
     expect(css).toMatch(/\.folder-compare-view \.folder-row-check\s*\{[\s\S]*?width:\s*12px/)
     expect(css).toMatch(/\.folder-compare-view \.folder-tree-table\s*\{[\s\S]*?border-radius:\s*0/)
 
-    expect(folderView).toMatch(/const rowHeight = 17/)
+    expect(folderView).toMatch(/const rowHeight = 16/)
     expect(folderView).toMatch(/row\.depth \* 14/)
-    expect(folderView).toMatch(/\.tree-head\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(folderView).toMatch(/\.tree-row\s*\{[\s\S]*?min-height:\s*17px/)
+    expect(folderView).toMatch(/\.tree-head\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(folderView).toMatch(/\.tree-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(folderView).toMatch(/\.tree-head span,[\s\S]*?padding:\s*1px 6px/)
     expect(folderView).toMatch(/\.tree-head span,[\s\S]*?font-size:\s*11px/)
     expect(folderView).toMatch(/\.tree-head span,[\s\S]*?line-height:\s*14px/)
@@ -113,5 +117,23 @@ describe('folder compare tree chrome density', () => {
     expect(folderView).not.toMatch(/const rowHeight = 22/)
     expect(folderView).not.toMatch(/const rowHeight = 34/)
     expect(folderView).not.toMatch(/padding:\s*3px 8px/)
+  })
+})
+
+describe('folder compare session log chrome density', () => {
+  it('keeps Folder Compare session log pane at capture CSS scale', () => {
+    expect(folderView).toMatch(/data-testid="folder-session-log"/)
+    expect(folderView).toMatch(/data-log-density="capture-1to1"/)
+    expect(folderView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(folderView).toMatch(/\.folder-session-log\s*\{[\s\S]*?grid-template-columns:\s*22px/)
+    expect(folderView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(folderView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?line-height:\s*14px/)
+    expect(folderView).toMatch(/case 'toggle-log':/)
+    expect(css).toMatch(/\.folder-compare-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(css).toMatch(
+      /\.folder-compare-view \.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/,
+    )
+    expect(folderView).not.toMatch(/height:\s*6px/)
+    expect(folderView).not.toMatch(/font-size:\s*6px/)
   })
 })

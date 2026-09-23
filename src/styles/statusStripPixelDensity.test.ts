@@ -15,7 +15,7 @@ describe('status strip pixel density', () => {
       /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?line-height:\s*18px/,
     )
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-pair'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 1px/,
+      /\.status-bar\[data-chrome-kind='folder-pair'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 4px/,
     )
     expect(layout).toMatch(/\.status-bar-pane\s*\{[\s\S]*?border-right:\s*1px solid #c0c0c0/)
     expect(layout).toMatch(
@@ -38,7 +38,7 @@ describe('status strip pixel density', () => {
       /\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*19\.5px/,
     )
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='text-session'\] \.status-bar-pane[\s\S]*?padding:\s*0 1px/,
+      /\.status-bar\[data-chrome-kind='text-session'\] \.status-bar-pane[\s\S]*?padding:\s*0 4px/,
     )
     expect(layout).toMatch(
       /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?19\.5px/,
@@ -56,7 +56,7 @@ describe('status strip pixel density', () => {
       /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?line-height:\s*18px/,
     )
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-merge'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 1px/,
+      /\.status-bar\[data-chrome-kind='folder-merge'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 4px/,
     )
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='folder-merge'\]\[data-pane-count='12'\] \.status-bar-pane:nth-child\(4\)/,
@@ -66,6 +66,17 @@ describe('status strip pixel density', () => {
     )
     expect(layout).toMatch(
       /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-merge'\]\)/,
+    )
+  })
+})
+
+describe('status strip band residual', () => {
+  it('keeps 19.5px band content chrome residual toward capture', () => {
+    expect(layout).toMatch(/data-status-band="capture-1to1-residual"/)
+    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?border-top:\s*1px solid #a0a0a0/)
+    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?height:\s*19\.5px/)
+    expect(layout).toMatch(
+      /\.status-bar\[data-status-band='capture-1to1-residual'\] \.status-bar-pane\s*\{[\s\S]*?text-overflow:\s*ellipsis/,
     )
   })
 })

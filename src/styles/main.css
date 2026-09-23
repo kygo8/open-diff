@@ -2317,7 +2317,40 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .picture-pane-grid {
-  gap: 4px !important;
+  gap: 1px !important;
+}
+
+.picture-compare-view .picture-stage {
+  gap: 1px !important;
+  min-height: 360px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  background: #1c1c16 !important;
+}
+
+.picture-compare-view .picture-stage .picture-side {
+  padding: 2px !important;
+  border: 0 !important;
+  background: #1c1c16 !important;
+}
+
+.picture-compare-view .picture-canvas-frame {
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #1c1c16 !important;
+}
+
+.picture-compare-view .picture-tol-overlay {
+  top: 8px !important;
+  left: 8px !important;
+  width: min(220px, calc(100% - 16px)) !important;
+  background: rgb(28 28 22 / 0.88) !important;
+}
+
+.picture-compare-view .picture-diff-stage {
+  min-height: 140px !important;
+  background: #1c1c16 !important;
 }
 
 .picture-compare-view .picture-side {
@@ -2335,12 +2368,6 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .picture-compare-view .picture-summary strong {
   font-size: 12px !important;
   line-height: 16px !important;
-}
-
-.picture-compare-view .picture-canvas-frame {
-  min-height: 0 !important;
-  border-radius: 0 !important;
-  background: var(--app-bg) !important;
 }
 
 .picture-compare-view .picture-image {

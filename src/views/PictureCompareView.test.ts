@@ -175,7 +175,7 @@ describe('PictureCompareView', () => {
     await wrapper.find('[data-testid="run-picture-compare"]').trigger('click')
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.findAll('[data-testid="picture-diff-overlay"]')).toHaveLength(2)
+    expect(wrapper.findAll('[data-testid="picture-diff-overlay"]')).toHaveLength(3)
     expect(wrapper.find('[data-testid="picture-diff-region"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="picture-diff-region"]').attributes('style')).toContain(
       'left: 1px',

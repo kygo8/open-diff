@@ -801,56 +801,6 @@ async function runPictureCompare(): Promise<void> {
       </p>
 
       <section
-        v-if="showTolPanel"
-        class="picture-options-panel"
-        data-picture-panel-density="capture-1to1"
-        data-testid="picture-tol-panel"
-      >
-        <header>
-          <h2 class="picture-panel-title">
-            <CircleGauge
-              class="picture-panel-icon"
-              :size="14"
-              :stroke-width="2"
-              aria-hidden="true"
-            />
-            {{ $t('ui.tol') }}
-          </h2>
-          <span>{{ $t('ui.rgbTolerance') }}</span>
-        </header>
-        <label>
-          <span>{{ $t('ui.rgbTolerance') }}</span>
-          <input
-            v-model.number="rgbTolerance"
-            type="number"
-            min="0"
-            max="255"
-            step="1"
-            data-testid="picture-rgb-tolerance"
-          />
-        </label>
-        <label class="picture-toggle picture-options-toggle">
-          <input
-            v-model="compareAlpha"
-            type="checkbox"
-            data-testid="picture-compare-alpha"
-          />
-          <span>{{ $t('ui.compareAlpha') }}</span>
-        </label>
-        <label v-if="compareAlpha">
-          <span>{{ $t('ui.alphaTolerance') }}</span>
-          <input
-            v-model.number="alphaTolerance"
-            type="number"
-            min="0"
-            max="255"
-            step="1"
-            data-testid="picture-alpha-tolerance"
-          />
-        </label>
-      </section>
-
-      <section
         v-if="showRangePanel"
         class="picture-options-panel"
         data-testid="picture-range-panel"
@@ -1134,36 +1084,172 @@ async function runPictureCompare(): Promise<void> {
         </label>
       </section>
 
-      <section class="picture-pane-grid">
+      <section
+        class="picture-stage"
+        data-testid="picture-stage"
+        data-canvas-density="capture-1to1"
+      >
+        <section class="picture-pane-grid">
+          <section
+            class="picture-side"
+            data-testid="left-picture-pane"
+          >
+            <h2>{{ $t('ui.left') }}: {{ leftPictureName }}</h2>
+            <div
+              class="picture-canvas-frame"
+              data-testid="picture-canvas-frame"
+            >
+              <div
+                class="picture-image left-image"
+                :style="imageStyle"
+                data-testid="left-picture-image"
+                @mousemove="updatePixelPreview('Left', $event)"
+                @mouseleave="pixelPreview = null"
+              >
+                <img
+                  v-if="leftImageSrc"
+                  :src="leftImageSrc"
+                  :alt="leftPictureName"
+                  data-testid="left-picture-img"
+                />
+                <img
+                  v-if="blendEnabled && rightImageSrc"
+                  class="picture-blend-overlay"
+                  :src="rightImageSrc"
+                  :alt="rightPictureName"
+                  :style="blendOverlayStyle"
+                  data-testid="picture-blend-overlay"
+                />
+                <span
+                  v-if="showOverlay && pictureStatistics.boundingRect"
+                  class="picture-diff-overlay"
+                  data-testid="picture-diff-overlay"
+                  :class="{ 'picture-diff-overlay-minor': showMinor }"
+                >
+                  <span
+                    class="picture-diff-region"
+                    data-testid="picture-diff-region"
+                    :style="overlayStyle"
+                  ></span>
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="picture-side"
+            data-testid="right-picture-pane"
+          >
+            <h2>{{ $t('ui.right') }}: {{ rightPictureName }}</h2>
+            <div
+              class="picture-canvas-frame"
+              data-testid="picture-canvas-frame"
+            >
+              <div
+                class="picture-image right-image"
+                :style="rightImageStyle"
+                data-testid="right-picture-image"
+                @mousemove="updatePixelPreview('Right', $event)"
+                @mouseleave="pixelPreview = null"
+              >
+                <img
+                  v-if="rightImageSrc"
+                  :src="rightImageSrc"
+                  :alt="rightPictureName"
+                  data-testid="right-picture-img"
+                />
+                <span
+                  v-if="showOverlay && pictureStatistics.boundingRect"
+                  class="picture-diff-overlay"
+                  data-testid="picture-diff-overlay"
+                >
+                  <span
+                    class="picture-diff-region"
+                    :style="overlayStyle"
+                    data-testid="picture-diff-region"
+                  ></span>
+                </span>
+              </div>
+            </div>
+          </section>
+        </section>
         <section
-          class="picture-side"
-          data-testid="left-picture-pane"
+          class="picture-diff-stage"
+          data-testid="picture-diff-stage"
         >
-          <h2>{{ $t('ui.left') }}: {{ leftPictureName }}</h2>
+          <section
+            v-if="showTolPanel"
+            class="picture-options-panel picture-tol-overlay"
+            data-picture-panel-density="capture-1to1"
+            data-tol-placement="stage-overlay"
+            data-testid="picture-tol-panel"
+          >
+            <header>
+              <h2 class="picture-panel-title">
+                <CircleGauge
+                  class="picture-panel-icon"
+                  :size="14"
+                  :stroke-width="2"
+                  aria-hidden="true"
+                />
+                {{ $t('ui.tol') }}
+              </h2>
+              <span>{{ $t('ui.rgbTolerance') }}</span>
+            </header>
+            <label>
+              <span>{{ $t('ui.rgbTolerance') }}</span>
+              <input
+                v-model.number="rgbTolerance"
+                type="number"
+                min="0"
+                max="255"
+                step="1"
+                data-testid="picture-rgb-tolerance"
+              />
+            </label>
+            <label class="picture-toggle picture-options-toggle">
+              <input
+                v-model="compareAlpha"
+                type="checkbox"
+                data-testid="picture-compare-alpha"
+              />
+              <span>{{ $t('ui.compareAlpha') }}</span>
+            </label>
+            <label v-if="compareAlpha">
+              <span>{{ $t('ui.alphaTolerance') }}</span>
+              <input
+                v-model.number="alphaTolerance"
+                type="number"
+                min="0"
+                max="255"
+                step="1"
+                data-testid="picture-alpha-tolerance"
+              />
+            </label>
+          </section>
+
           <div
-            class="picture-canvas-frame"
-            data-testid="picture-canvas-frame"
+            class="picture-canvas-frame picture-diff-frame"
+            data-testid="picture-diff-canvas-frame"
           >
             <div
-              class="picture-image left-image"
+              class="picture-image picture-diff-image"
               :style="imageStyle"
-              data-testid="left-picture-image"
-              @mousemove="updatePixelPreview('Left', $event)"
-              @mouseleave="pixelPreview = null"
+              data-testid="picture-diff-image"
             >
               <img
                 v-if="leftImageSrc"
                 :src="leftImageSrc"
                 :alt="leftPictureName"
-                data-testid="left-picture-img"
+                data-testid="picture-diff-img"
               />
               <img
-                v-if="blendEnabled && rightImageSrc"
+                v-if="rightImageSrc"
                 class="picture-blend-overlay"
                 :src="rightImageSrc"
                 :alt="rightPictureName"
                 :style="blendOverlayStyle"
-                data-testid="picture-blend-overlay"
+                data-testid="picture-diff-overlay-img"
               />
               <span
                 v-if="showOverlay && pictureStatistics.boundingRect"
@@ -1175,43 +1261,6 @@ async function runPictureCompare(): Promise<void> {
                   class="picture-diff-region"
                   data-testid="picture-diff-region"
                   :style="overlayStyle"
-                ></span>
-              </span>
-            </div>
-          </div>
-        </section>
-
-        <section
-          class="picture-side"
-          data-testid="right-picture-pane"
-        >
-          <h2>{{ $t('ui.right') }}: {{ rightPictureName }}</h2>
-          <div
-            class="picture-canvas-frame"
-            data-testid="picture-canvas-frame"
-          >
-            <div
-              class="picture-image right-image"
-              :style="rightImageStyle"
-              data-testid="right-picture-image"
-              @mousemove="updatePixelPreview('Right', $event)"
-              @mouseleave="pixelPreview = null"
-            >
-              <img
-                v-if="rightImageSrc"
-                :src="rightImageSrc"
-                :alt="rightPictureName"
-                data-testid="right-picture-img"
-              />
-              <span
-                v-if="showOverlay && pictureStatistics.boundingRect"
-                class="picture-diff-overlay"
-                data-testid="picture-diff-overlay"
-              >
-                <span
-                  class="picture-diff-region"
-                  :style="overlayStyle"
-                  data-testid="picture-diff-region"
                 ></span>
               </span>
             </div>
@@ -1735,10 +1784,80 @@ h2 {
   border-radius: 4px;
 }
 
+.picture-stage {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 1px;
+  min-height: 360px;
+  overflow: hidden;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #1c1c16;
+}
+
+.picture-stage .picture-pane-grid {
+  gap: 1px;
+  min-height: 0;
+  background: #1c1c16;
+}
+
+.picture-stage .picture-side {
+  min-height: 0;
+  padding: 2px;
+  border: 0;
+  background: #1c1c16;
+  color: #d8d8d8;
+}
+
+.picture-stage .picture-side h2 {
+  margin: 0;
+  padding: 0 2px;
+  color: #d0d0d0;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 14px;
+}
+
+.picture-stage .picture-canvas-frame {
+  min-height: 0;
+  border: 0;
+  background: #1c1c16;
+}
+
+.picture-diff-stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: #1c1c16;
+}
+
+.picture-tol-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  width: min(220px, calc(100% - 16px));
+  background: rgb(28 28 22 / 0.88) !important;
+  color: #f0f0f0;
+  box-shadow: none;
+}
+
+.picture-tol-overlay header,
+.picture-tol-overlay span,
+.picture-tol-overlay label {
+  color: #f0f0f0;
+}
+
+.picture-diff-frame {
+  height: 100%;
+  min-height: 140px;
+}
+
 .picture-pane-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
+  gap: 1px;
 }
 
 .picture-minor-banner {

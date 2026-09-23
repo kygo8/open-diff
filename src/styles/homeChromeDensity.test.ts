@@ -30,7 +30,9 @@ describe('home chrome density', () => {
       /\.new-session-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3, minmax\(140px, 157px\)\)/,
     )
     expect(homeView).toMatch(/\.session-card-icon\s*\{[\s\S]*?width:\s*48px/)
-    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*124px/)
+    expect(homeView).toMatch(
+      /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?min-height:\s*131px/,
+    )
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?border-radius:\s*0/)
     expect(homeView).toMatch(/:size="48"/)
     expect(homeView).not.toMatch(/min-height:\s*7px/)
@@ -69,5 +71,22 @@ describe('home chrome density', () => {
     expect(homeView).not.toMatch(
       /\.recovery-entry,\s*\.save-prompt\s*\{[\s\S]*?padding:\s*8px 10px/,
     )
+  })
+})
+
+describe('home launch card band residual', () => {
+  it('keeps Home New tree / launch cards / instruction metrics on capture bands', () => {
+    expect(homeView).toMatch(/data-card-band/)
+    expect(homeView).toMatch(/homeCardBand/)
+    expect(homeView).toMatch(
+      /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?min-height:\s*131px/,
+    )
+    expect(homeView).toMatch(
+      /\.new-session-card\[data-card-band='short'\]\s*\{[\s\S]*?min-height:\s*92px/,
+    )
+    expect(homeView).toMatch(/\.bc-home-instructions\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(homeView).toMatch(/\.bc-home-instructions\s*\{[\s\S]*?font-size:\s*12px/)
+    expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*28px/)
+    expect(homeView).not.toMatch(/min-height:\s*6px/)
   })
 })

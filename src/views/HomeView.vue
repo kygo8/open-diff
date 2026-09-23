@@ -62,6 +62,19 @@ interface QuickStartEntry extends SessionCatalogEntry {
   icon: LucideIcon
 }
 
+const homeTallLaunchTypes = new Set<HomeLaunchType>([
+  'folder-compare',
+  'folder-merge',
+  'folder-sync',
+  'text-compare',
+  'text-merge',
+  'text-edit',
+])
+
+function homeCardBand(type: string): 'tall' | 'short' {
+  return homeTallLaunchTypes.has(type as HomeLaunchType) ? 'tall' : 'short'
+}
+
 const homeLaunchTypes: HomeLaunchType[] = [
   'folder-compare',
   'folder-merge',
@@ -825,6 +838,7 @@ onMounted(() => {
               class="new-session-card"
               data-testid="home-new-session-card"
               :data-session-type="entry.type"
+              :data-card-band="homeCardBand(entry.type)"
               tabindex="0"
               @click="openSession(entry)"
               @keydown.enter="openSession(entry)"
@@ -1374,12 +1388,13 @@ onMounted(() => {
 .bc-home-instructions {
   display: grid;
   gap: 2px;
-  justify-items: center;
+  min-height: 20px;
   margin: 0 0 6px;
   color: #111827;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 12px;
   line-height: 16px;
+  justify-items: center;
 }
 
 .bc-home-instructions strong {
@@ -1393,7 +1408,7 @@ onMounted(() => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 124px;
+  min-height: 92px;
   padding: 8px 4px 6px;
   overflow: hidden;
   border: 0;
@@ -1404,6 +1419,14 @@ onMounted(() => {
   justify-items: center;
   align-content: start;
   box-sizing: border-box;
+}
+
+.new-session-card[data-card-band='tall'] {
+  min-height: 131px;
+}
+
+.new-session-card[data-card-band='short'] {
+  min-height: 92px;
 }
 
 .new-session-card:hover,

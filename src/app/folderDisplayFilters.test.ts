@@ -22,6 +22,8 @@ describe('folderDisplayFilters', () => {
       showSuppressed: true,
       filesOnly: true,
       alwaysShowFolders: false,
+      showFiltersPanel: false,
+      showPeekPanel: true,
     })
 
     expect(localStorage.getItem(folderDisplayFiltersStorageKey)).toContain('Different')
@@ -30,6 +32,8 @@ describe('folderDisplayFilters', () => {
       showSuppressed: true,
       filesOnly: true,
       alwaysShowFolders: false,
+      showFiltersPanel: false,
+      showPeekPanel: true,
     })
   })
 
@@ -47,6 +51,8 @@ describe('folderDisplayFilters', () => {
       showSuppressed: false,
       filesOnly: false,
       alwaysShowFolders: true,
+      showFiltersPanel: true,
+      showPeekPanel: false,
     })
   })
 
@@ -79,4 +85,15 @@ describe('folderDisplayFilters', () => {
       }),
     ).toBe(false)
   })
+})
+
+it('persists Filters/Peek strip chrome toggles', () => {
+  saveFolderDisplayFilters({
+    ...defaultFolderDisplayFilters(),
+    showFiltersPanel: false,
+    showPeekPanel: true,
+  })
+
+  expect(loadFolderDisplayFilters().showFiltersPanel).toBe(false)
+  expect(loadFolderDisplayFilters().showPeekPanel).toBe(true)
 })

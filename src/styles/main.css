@@ -1387,7 +1387,7 @@ select {
 .folder-filter-pattern {
   height: 20px !important;
   padding: 0 6px !important;
-  border: 1px solid #bfc4cc !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
   background: #ffffff !important;
   color: #111111 !important;
@@ -1409,12 +1409,13 @@ select {
   align-content: center !important;
   justify-items: center !important;
   box-sizing: border-box !important;
-  min-width: 48px !important;
-  max-width: 64px !important;
-  height: 38px !important;
-  padding: 1px 4px 2px !important;
+  width: 59px !important;
+  min-width: 59px !important;
+  max-width: 59px !important;
+  height: 37.5px !important;
+  padding: 1px 2px 2px !important;
   border: 0 !important;
-  border-right: 1px solid #c9cdd3 !important;
+  border-right: 1px solid #c0c0c0 !important;
   background: transparent !important;
   color: #1a1a1a !important;
   font-size: 11px !important;
@@ -1423,7 +1424,7 @@ select {
 }
 
 .folder-filter-strip-btn:first-child {
-  border-left: 1px solid #c9cdd3 !important;
+  border-left: 1px solid #c0c0c0 !important;
 }
 
 .folder-filter-strip-btn:hover:not(:disabled) {
@@ -3729,9 +3730,15 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 11px !important;
 }
 
+.folder-compare-view .folder-filter-chrome[data-filters-align='capture-1to1-residual'],
+.folder-sync-view .folder-filter-chrome[data-filters-align='capture-1to1-residual'] {
+  gap: 4px 6px !important;
+  min-height: 37.5px !important;
+}
+
 .folder-compare-view .folder-filter-chrome,
 .folder-sync-view .folder-filter-chrome {
-  min-height: 38px !important;
+  min-height: 37.5px !important;
   padding: 0 4px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   background: #f0f0f0 !important;
@@ -3859,7 +3866,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .folder-filter-chrome {
-  min-height: 38px !important;
+  min-height: 37.5px !important;
   padding: 0 4px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   background: #f0f0f0 !important;

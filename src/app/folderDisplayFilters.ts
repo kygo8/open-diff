@@ -8,6 +8,10 @@ export interface FolderDisplayFiltersState {
   filesOnly: boolean
   /** Keep folder rows visible even when their own status is filtered out. */
   alwaysShowFolders: boolean
+  /** Persist Filters panel toggle from the filter-strip chrome. */
+  showFiltersPanel: boolean
+  /** Persist Peek panel toggle from the filter-strip chrome. */
+  showPeekPanel: boolean
 }
 
 const allStatuses: FolderDisplayStatus[] = ['Same', 'Different', 'Left only', 'Right only']
@@ -18,6 +22,8 @@ export function defaultFolderDisplayFilters(): FolderDisplayFiltersState {
     showSuppressed: false,
     filesOnly: false,
     alwaysShowFolders: true,
+    showFiltersPanel: true,
+    showPeekPanel: false,
   }
 }
 
@@ -57,6 +63,8 @@ export function loadFolderDisplayFilters(
       showSuppressed: Boolean(parsed.showSuppressed),
       filesOnly: Boolean(parsed.filesOnly),
       alwaysShowFolders: parsed.alwaysShowFolders !== false,
+      showFiltersPanel: parsed.showFiltersPanel !== false,
+      showPeekPanel: Boolean(parsed.showPeekPanel),
     }
   } catch {
     return defaultFolderDisplayFilters()
@@ -74,6 +82,8 @@ export function saveFolderDisplayFilters(
       showSuppressed: state.showSuppressed,
       filesOnly: state.filesOnly,
       alwaysShowFolders: state.alwaysShowFolders,
+      showFiltersPanel: state.showFiltersPanel,
+      showPeekPanel: state.showPeekPanel,
     }),
   )
 }

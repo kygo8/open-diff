@@ -15,13 +15,13 @@ describe('table compare chrome density', () => {
     expect(css).toMatch(/\.table-compare-view \.table-source-controls input[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
-    expect(css).toMatch(/\.table-compare-view \.table-grid-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.table-compare-view \.table-grid-row\s*\{[\s\S]*?min-height:\s*16px/)
 
     expect(tableView).toMatch(/\.table-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(tableView).toMatch(/\.table-source-controls[\s\S]*?padding:\s*1px 3px/)
     expect(tableView).toMatch(/\.table-source-controls input[\s\S]*?height:\s*20px/)
     expect(tableView).toMatch(/\.table-navigation-bar button\s*\{[\s\S]*?height:\s*18px/)
-    expect(tableView).toMatch(/\.table-grid-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(tableView).toMatch(/\.table-grid-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(tableView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(tableView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(tableView).toMatch(/SessionPathActions/)
@@ -107,5 +107,16 @@ describe('table path-meta secondary strip density', () => {
     )
     expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(tableView).not.toMatch(/min-height:\s*6px/)
+  })
+})
+
+describe('table grid residual', () => {
+  it('keeps table header/row density residual toward capture', () => {
+    expect(tableView).toMatch(/data-table-grid-density="capture-1to1-residual"/)
+    expect(tableView).toMatch(/\.table-grid-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.table-compare-view \.table-grid-row[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(
+      /data-table-grid-density='capture-1to1-residual'\] \.table-grid-panel header[\s\S]*?min-height:\s*20px/,
+    )
   })
 })

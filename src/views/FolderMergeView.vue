@@ -1891,39 +1891,12 @@ watch(
     toolbar-test-id-prefix="folder-merge-session-toolbar"
     @toolbar-command="runMergeToolbarCommand"
   >
-    <FolderStatusLegend
-      v-if="settings.showFolderLegend"
-      class="folder-status-legend-slot"
-    />
-    <section class="folder-merge-view">
-      <header class="merge-header">
-        <div>
-          <p class="eyebrow">{{ $t('ui.folderMerge') }}</p>
-          <h1>{{ $t('ui.folderMerge') }}</h1>
-        </div>
-        <section
-          class="merge-summary"
-          data-testid="folder-merge-summary"
-        >
-          <div>
-            <strong>{{ summary.actions }}</strong>
-            <span>{{ $t('ui.actions') }}</span>
-          </div>
-          <div>
-            <strong>{{ summary.automatic }}</strong>
-            <span>{{ $t('ui.automatic') }}</span>
-          </div>
-          <div>
-            <strong>{{ summary.conflicts }}</strong>
-            <span>{{ $t('ui.conflicts') }}</span>
-          </div>
-        </section>
-      </header>
-
+    <template #toolbar>
       <section
         class="display-filters folder-filter-chrome"
         data-filters-density="capture-1to1"
         data-filters-align="capture-1to1-residual"
+        data-mainbar-row2="capture-1to1-residual"
         data-testid="folder-merge-filter-strip"
       >
         <div class="folder-filter-strip">
@@ -1986,6 +1959,36 @@ watch(
           </div>
         </div>
       </section>
+    </template>
+
+    <FolderStatusLegend
+      v-if="settings.showFolderLegend"
+      class="folder-status-legend-slot"
+    />
+    <section class="folder-merge-view">
+      <header class="merge-header">
+        <div>
+          <p class="eyebrow">{{ $t('ui.folderMerge') }}</p>
+          <h1>{{ $t('ui.folderMerge') }}</h1>
+        </div>
+        <section
+          class="merge-summary"
+          data-testid="folder-merge-summary"
+        >
+          <div>
+            <strong>{{ summary.actions }}</strong>
+            <span>{{ $t('ui.actions') }}</span>
+          </div>
+          <div>
+            <strong>{{ summary.automatic }}</strong>
+            <span>{{ $t('ui.automatic') }}</span>
+          </div>
+          <div>
+            <strong>{{ summary.conflicts }}</strong>
+            <span>{{ $t('ui.conflicts') }}</span>
+          </div>
+        </section>
+      </header>
 
       <section
         class="merge-paths"
@@ -3388,11 +3391,18 @@ h1 {
 }
 
 .folder-filter-chrome {
+  display: flex;
   align-items: center;
-  min-height: 37.5px;
+  gap: 4px 6px;
+  min-height: 43.5px;
   padding: 0 4px;
   border-bottom: 1px solid #a0a0a0;
-  background: #f0f0f0;
+  background: #ffffff;
+}
+
+.folder-filter-chrome[data-mainbar-row2='capture-1to1-residual'] {
+  min-height: 43.5px;
+  background: #ffffff;
 }
 
 .folder-filter-strip {

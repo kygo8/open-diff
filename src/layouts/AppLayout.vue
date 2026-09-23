@@ -2287,7 +2287,9 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button {
+  height: 22px;
   color: #000000;
+  font-size: 12px;
   font-weight: 400;
 }
 

@@ -3391,6 +3391,46 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
+.text-merge-view .merge-path-chrome {
+  gap: 2px !important;
+  min-height: 22px !important;
+}
+
+.text-merge-view .merge-path-swatch {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 0 !important;
+}
+
+.text-merge-view .merge-path-footers {
+  gap: 2px !important;
+  min-height: 20px !important;
+  padding: 0 !important;
+}
+
+.text-merge-view .merge-to-chrome {
+  gap: 6px 10px !important;
+  min-height: 22px !important;
+  padding: 2px 4px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.text-merge-view .merge-path-field .output-path-input,
+.text-merge-view .merge-to-chrome .output-path-input {
+  height: 20px !important;
+  min-height: 20px !important;
+  font-size: 12px !important;
+}
+
+.text-merge-view .bc-path-footers .path-meta-footer,
+.text-merge-view .merge-path-footers .path-meta-footer {
+  min-height: 20px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
 /* Folder Sync chrome densify pass 2 toward Folder Compare denser band */
 .folder-sync-view .sync-settings {
   gap: 2px !important;

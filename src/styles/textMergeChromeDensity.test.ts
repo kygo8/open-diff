@@ -53,3 +53,19 @@ describe('text merge chrome density', () => {
     expect(mergeView).toMatch(/\.output-editor\s*\{[\s\S]*?line-height:\s*18px/)
   })
 })
+
+describe('text merge multi-pane path chrome density', () => {
+  it('keeps Text Merge path chrome on the capture multi-pane band', () => {
+    expect(mergeView).toMatch(/data-testid="merge-path-chrome"/)
+    expect(mergeView).toMatch(/data-path-density="capture-1to1"/)
+    expect(mergeView).toMatch(/\.merge-path-chrome\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3/)
+    expect(mergeView).toMatch(/\.merge-path-chrome\s*\{[\s\S]*?gap:\s*2px/)
+    expect(mergeView).toMatch(/\.merge-path-swatch\s*\{[\s\S]*?width:\s*10px/)
+    expect(mergeView).toMatch(/\.merge-path-footers\s*\{[\s\S]*?gap:\s*2px/)
+    expect(mergeView).toMatch(/\.merge-to-chrome\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(/\.text-merge-view \.merge-path-chrome\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(/\.text-merge-view \.merge-to-chrome\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(/\.text-merge-view \.merge-path-footers\s*\{[\s\S]*?gap:\s*2px/)
+    expect(mergeView).not.toMatch(/\.merge-path-footers\s*\{[\s\S]*?gap:\s*8px/)
+  })
+})

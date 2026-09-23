@@ -76,6 +76,7 @@ export const zhCN: LanguagePack = {
     'ui.bytesLoaded': '字节已加载',
     'ui.c': '复',
     'ui.cancel': '取消',
+    'ui.ok': '确定',
     'ui.captureClipboard': '捕获剪贴板',
     'ui.captureTwoClipboardTextsAndCompareThem': '捕获两段剪贴板文本并进行比较。',
     'ui.case': '大小写',

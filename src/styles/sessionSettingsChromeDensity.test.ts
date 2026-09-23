@@ -34,7 +34,7 @@ describe('session settings and hex goto chrome density', () => {
     )
     expect(settingsDialog).toMatch(/\.settings-body textarea\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(settingsDialog).toMatch(/\.settings-body textarea\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*18px/)
+    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*22px/)
     expect(settingsDialog).not.toMatch(/box-shadow:\s*0 18px 44px/)
     expect(settingsDialog).not.toMatch(/padding:\s*16px/)
   })
@@ -89,5 +89,19 @@ describe('session rules residual depth', () => {
       /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-tabs\s*\{[\s\S]*?gap:\s*2px/,
     )
     expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
+  })
+})
+
+describe('options footer residual', () => {
+  const settingsView = readFileSync(resolve(root, 'src/views/SettingsView.vue'), 'utf8')
+
+  it('keeps Options OK/Cancel/Apply footer at capture scale', () => {
+    expect(settingsView).toMatch(/data-options-footer="capture-1to1-residual"/)
+    expect(settingsView).toMatch(/data-testid="options-footer-ok"/)
+    expect(settingsView).toMatch(/data-testid="options-footer-cancel"/)
+    expect(settingsView).toMatch(/data-testid="options-footer-apply"/)
+    expect(settingsView).toMatch(/\.options-footer-btn\s*\{[\s\S]*?height:\s*22px/)
+    expect(settingsDialog).toMatch(/data-testid="session-settings-ok"/)
+    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*22px/)
   })
 })

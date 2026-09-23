@@ -48,9 +48,9 @@ describe('registry compare chrome density', () => {
       /\.registry-compare-view \.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/,
     )
     expect(css).toMatch(/\.registry-compare-view \.registry-key-pane[\s\S]*?padding:\s*4px 6px/)
-    expect(css).toMatch(/\.registry-compare-view \.registry-key-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.registry-compare-view \.registry-key-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(css).toMatch(
-      /\.registry-compare-view \.registry-value-row\s*\{[\s\S]*?min-height:\s*18px/,
+      /\.registry-compare-view \.registry-value-row\s*\{[\s\S]*?min-height:\s*16px/,
     )
     expect(css).toMatch(
       /\.registry-compare-view \.registry-value-row > \*\s*\{[\s\S]*?padding:\s*2px 6px/,
@@ -72,8 +72,8 @@ describe('registry compare chrome density', () => {
     expect(registryView).toMatch(/\.registry-summary-item\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(registryView).toMatch(/\.registry-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/)
     expect(registryView).toMatch(/\.registry-key-pane[\s\S]*?padding:\s*4px 6px/)
-    expect(registryView).toMatch(/\.registry-key-row\s*\{[\s\S]*?min-height:\s*18px/)
-    expect(registryView).toMatch(/\.registry-value-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(registryView).toMatch(/\.registry-key-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(registryView).toMatch(/\.registry-value-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(registryView).toMatch(/\.registry-value-row > \*\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(registryView).toMatch(/\.registry-input-panel textarea\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(registryView).toMatch(/\.registry-input-panel textarea\s*\{[\s\S]*?min-height:\s*64px/)
@@ -104,5 +104,17 @@ describe('registry secondary strip density', () => {
     )
     expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(registryView).not.toMatch(/min-height:\s*6px/)
+  })
+})
+
+describe('registry workspace residual', () => {
+  it('densifies registry tree/filter workspace residual chrome', () => {
+    expect(registryView).toMatch(/data-registry-workspace="capture-1to1-residual"/)
+    expect(css).toMatch(
+      /data-registry-workspace='capture-1to1-residual'\] \.registry-key-row[\s\S]*?min-height:\s*16px/,
+    )
+    expect(css).toMatch(
+      /data-registry-workspace='capture-1to1-residual'\] \.registry-filter-bar[\s\S]*?background:\s*#f0f0f0/,
+    )
   })
 })

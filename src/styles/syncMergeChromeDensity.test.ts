@@ -84,3 +84,20 @@ describe('folder sync/merge chrome density', () => {
     expect(mergeView).toMatch(/\.merge-summary div\s*\{[\s\S]*?border-radius:\s*0/)
   })
 })
+
+describe('folder sync tree and session log chrome density', () => {
+  it('keeps Folder Sync preview rows and session log at capture CSS scale', () => {
+    expect(syncView).toMatch(/data-testid="folder-sync-session-log"/)
+    expect(syncView).toMatch(/data-log-density="capture-1to1"/)
+    expect(syncView).toMatch(/\.sync-preview-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(syncView).toMatch(/\.sync-preview-head\s*\{[\s\S]*?font-weight:\s*400/)
+    expect(syncView).toMatch(/\.sync-row-selected\s*\{[\s\S]*?background:\s*#a8cdf1/)
+    expect(syncView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(syncView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(syncView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?line-height:\s*14px/)
+    expect(css).toMatch(/\.folder-sync-view \.sync-preview-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.folder-sync-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(syncView).not.toMatch(/min-height:\s*6px/)
+    expect(syncView).not.toMatch(/font-size:\s*6px/)
+  })
+})

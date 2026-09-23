@@ -13,7 +13,7 @@ import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
-import { Eye, Funnel } from '@lucide/vue'
+import { Eye, Funnel, Save, Settings } from '@lucide/vue'
 import { createFolderEntry, createFolderSnapshot, pathFileStamp, saveTextFile } from '@/api/diff'
 import type { FileStamp } from '@/types/diff'
 import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
@@ -258,6 +258,7 @@ const lastSelectionAction = ref('')
 const excludedRowIds = ref<Set<string>>(new Set())
 const selectNameFilter = ref('')
 const showSyncLog = ref(true)
+const sessionLogLines = ref<string[]>([])
 const syncOpenError = ref('')
 const reportStatus = ref('')
 const reportError = ref('')
@@ -738,9 +739,38 @@ onUnmounted(() => {
   folderMenuSelection.reset()
 })
 
+function formatSessionLogTimestamp(date = new Date()): string {
+  const year = String(date.getFullYear())
+  const month = String(date.getMonth() + 1)
+  const day = String(date.getDate())
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+
+  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`
+}
+
+function appendSessionLog(message: string): void {
+  sessionLogLines.value = [...sessionLogLines.value, `${formatSessionLogTimestamp()} ${message}`]
+}
+
+function saveSessionLog(): void {
+  const payload = sessionLogLines.value.join('\n')
+
+  if (!payload) {
+    return
+  }
+
+  void navigator.clipboard.writeText(payload)
+}
+
 async function previewSync(options?: { keepRunStatus?: boolean }): Promise<void> {
   previewLoading.value = true
   previewError.value = undefined
+  appendSessionLog(`${t('ui.username')}:`)
+  if (leftPath.value && rightPath.value) {
+    appendSessionLog(`Load comparison: ${leftPath.value} <-> ${rightPath.value}`)
+  }
 
   try {
     const response = await previewFolderSync({
@@ -2183,6 +2213,61 @@ watch(
           </li>
         </ul>
       </section>
+
+      <section
+        v-if="showSyncLog"
+        class="folder-session-log"
+        data-testid="folder-sync-session-log"
+        data-log-density="capture-1to1"
+      >
+        <div
+          class="folder-session-log-gutter"
+          data-testid="folder-sync-session-log-gutter"
+        >
+          <button
+            type="button"
+            class="folder-session-log-gutter-btn"
+            data-testid="folder-sync-session-log-settings"
+            :title="$t('ui.settings')"
+            :aria-label="$t('ui.settings')"
+            @click="showSyncFilters = true"
+          >
+            <Settings
+              :size="14"
+              :stroke-width="2"
+              absolute-stroke-width
+              aria-hidden="true"
+            />
+          </button>
+          <button
+            type="button"
+            class="folder-session-log-gutter-btn"
+            data-testid="folder-sync-session-log-save"
+            :title="$t('ui.save')"
+            :aria-label="$t('ui.save')"
+            @click="saveSessionLog"
+          >
+            <Save
+              :size="14"
+              :stroke-width="2"
+              absolute-stroke-width
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+        <div
+          class="folder-session-log-body"
+          data-testid="folder-sync-session-log-body"
+        >
+          <p
+            v-for="(line, index) in sessionLogLines"
+            :key="`${index}-${line}`"
+            class="folder-session-log-line"
+          >
+            {{ line }}
+          </p>
+        </div>
+      </section>
     </section>
 
     <template #inspector>
@@ -2236,10 +2321,11 @@ watch(
 <style scoped>
 .folder-sync-view {
   display: grid;
-  gap: 4px;
+  grid-template-rows: max-content max-content max-content minmax(0, 1fr) max-content;
+  gap: 2px;
   height: 100%;
   padding: 2px 4px;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .folder-sync-header {
@@ -2446,8 +2532,10 @@ h1 {
     44px 120px minmax(200px, 1fr) minmax(160px, 1.1fr) minmax(160px, 1.1fr)
     minmax(140px, 0.9fr) 88px;
   min-width: 1048px;
-  border-bottom: 1px solid var(--app-border);
+  min-height: 16px;
+  border-bottom: 0;
   font-size: 11px;
+  line-height: 14px;
 }
 
 .sync-row-overridden {
@@ -2527,9 +2615,10 @@ h1 {
 }
 
 .sync-preview-head {
-  background: var(--app-surface-muted);
-  color: var(--app-text-muted);
-  font-weight: 700;
+  min-height: 20px;
+  background: #f0f0f0;
+  color: #000000;
+  font-weight: 400;
 }
 
 .sync-run-status ul {
@@ -2592,7 +2681,63 @@ h1 {
 }
 
 .sync-row-selected {
-  background: color-mix(in srgb, var(--app-accent, #4c8bf5) 12%, transparent);
+  background: #a8cdf1;
+}
+
+.folder-session-log {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  height: 96px;
+  min-height: 96px;
+  overflow: hidden;
+  border: 1px solid #c0c0c0;
+  border-radius: 0;
+  background: #e7e7e7;
+}
+
+.folder-session-log-gutter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-right: 1px solid #c0c0c0;
+  background: #d4d4d4;
+}
+
+.folder-session-log-gutter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #333333;
+  cursor: pointer;
+}
+
+.folder-session-log-gutter-btn:hover {
+  background: #c0c0c0;
+}
+
+.folder-session-log-body {
+  min-width: 0;
+  padding: 2px 6px;
+  overflow: auto;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.folder-session-log-line {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
 }
 
 .folder-sync-peek-panel {

@@ -64,6 +64,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import {
   buildFolderPairStatusPanes,
+  buildFolderMergeStatusPanes,
   isEditModeStatusSource,
   isHexSessionStatusSource,
   isTextSessionStatusSource,
@@ -1097,6 +1098,18 @@ const statusChromePanes = computed((): StatusChromePane[] => {
     return buildFolderPairStatusPanes({
       leftSelection: statusBar.report.leftSelection,
       leftFreeSpace: statusBar.report.leftFreeSpace,
+      rightSelection: statusBar.report.rightSelection,
+      rightFreeSpace: statusBar.report.rightFreeSpace,
+      placeholder: t('status.panePlaceholder'),
+    })
+  }
+
+  if (kind === 'folder-merge') {
+    return buildFolderMergeStatusPanes({
+      leftSelection: statusBar.report.leftSelection,
+      leftFreeSpace: statusBar.report.leftFreeSpace,
+      centerSelection: statusBar.report.centerSelection,
+      centerFreeSpace: statusBar.report.centerFreeSpace,
       rightSelection: statusBar.report.rightSelection,
       rightFreeSpace: statusBar.report.rightFreeSpace,
       placeholder: t('status.panePlaceholder'),
@@ -2679,6 +2692,24 @@ const sourceSessionTypes = new Set<SessionType>([
   border-right-color: #8e8e8e;
 }
 
+.status-bar[data-chrome-kind='folder-merge'] {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  height: 19.5px;
+  min-height: 19.5px;
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.status-bar[data-chrome-kind='folder-merge'] .status-bar-pane {
+  padding: 0 1px;
+}
+
+/* Capture folder-merge strip: stronger dividers between left/center/right pairs */
+.status-bar[data-chrome-kind='folder-merge'][data-pane-count='6'] .status-bar-pane:nth-child(2),
+.status-bar[data-chrome-kind='folder-merge'][data-pane-count='6'] .status-bar-pane:nth-child(4) {
+  border-right-color: #8e8e8e;
+}
+
 .status-bar[data-chrome-kind='text-session'],
 .status-bar[data-chrome-kind='hex-session'],
 .status-bar[data-chrome-kind='picture-session'],
@@ -2898,12 +2929,14 @@ html[data-show-sidebar='1'] .sidebar {
 }
 
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-pair']),
+.app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-merge']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind$='-session']) {
   /* Keep dense brand/menu at 48px; status track toward capture ~19.5px (DPR≈2). */
   grid-template-rows: 48px minmax(0, 1fr) 19.5px;
 }
 
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
+.app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-merge']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind$='-session']) {
   grid-template-rows: 48px minmax(0, 1fr) 19.5px;
 }

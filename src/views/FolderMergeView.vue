@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
 import { useRouter } from 'vue-router'
 import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
@@ -85,6 +86,9 @@ const leftFileStamp = ref<FileStamp | null>(null)
 const rightFileStamp = ref<FileStamp | null>(null)
 const baseFileStamp = ref<FileStamp | null>(null)
 const outputFileStamp = ref<FileStamp | null>(null)
+const leftFreeSpaceLabel = ref('')
+const centerFreeSpaceLabel = ref('')
+const rightFreeSpaceLabel = ref('')
 
 const plan = ref<FolderMergePlanResponse>()
 const execution = ref<FolderMergeExecutionResponse>()
@@ -905,18 +909,21 @@ watchEffect(() => {
       ? t('status.itemsSelected', { count: checkedRowIds.value.size })
       : null
   const editing = t('status.editingDisabled')
+  const columnLabel = selection ?? editing
 
   statusBar.reportStatus({
     comparisonStatus: hasPlan.value ? t('status.compared') : t('status.readyIdle'),
     differenceCount: hasPlan.value ? summary.value.conflicts : null,
     filterStatus: t('status.allRows'),
     source: 'folder-merge',
-    chromeKind: 'folder-pair',
+    chromeKind: 'folder-merge',
     loadTimeSeconds: hasPlan.value ? loadTimeSeconds.value : null,
-    leftSelection: selection ?? editing,
-    leftFreeSpace: null,
-    rightSelection: selection ?? editing,
-    rightFreeSpace: null,
+    leftSelection: columnLabel,
+    leftFreeSpace: leftFreeSpaceLabel.value || null,
+    centerSelection: columnLabel,
+    centerFreeSpace: centerFreeSpaceLabel.value || null,
+    rightSelection: columnLabel,
+    rightFreeSpace: rightFreeSpaceLabel.value || null,
   })
 })
 
@@ -1454,9 +1461,37 @@ watch(
     }
 
     void refreshMergePathStamps()
+    void refreshMergeFreeSpace()
   },
   { immediate: true },
 )
+
+async function refreshMergeFreeSpace(): Promise<void> {
+  const [leftInfo, centerInfo, rightInfo] = await Promise.all([
+    fetchPathVolumeInfo(leftPath.value),
+    fetchPathVolumeInfo(basePath.value),
+    fetchPathVolumeInfo(rightPath.value),
+  ])
+
+  leftFreeSpaceLabel.value = leftInfo
+    ? t('status.diskFreeOn', {
+        quantity: formatFreeSpaceQuantity(leftInfo.freeBytes),
+        root: leftInfo.displayRoot,
+      })
+    : ''
+  centerFreeSpaceLabel.value = centerInfo
+    ? t('status.diskFreeOn', {
+        quantity: formatFreeSpaceQuantity(centerInfo.freeBytes),
+        root: centerInfo.displayRoot,
+      })
+    : ''
+  rightFreeSpaceLabel.value = rightInfo
+    ? t('status.diskFreeOn', {
+        quantity: formatFreeSpaceQuantity(rightInfo.freeBytes),
+        root: rightInfo.displayRoot,
+      })
+    : ''
+}
 
 async function refreshMergePathStamps(): Promise<void> {
   const [left, right, base, output] = await Promise.all([

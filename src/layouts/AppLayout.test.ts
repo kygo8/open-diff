@@ -1048,6 +1048,36 @@ describe('AppLayout command palette', () => {
     expect(status.find('[data-testid="status-pane-left-selection"]').text()).toBe('—')
   })
 
+  it('keeps a folder-merge six-pane editing/free status strip', async () => {
+    const wrapper = mountAppLayout()
+    const statusBar = useStatusBarStore()
+
+    statusBar.reportStatus({
+      chromeKind: 'folder-merge',
+      source: 'folder-merge',
+      leftSelection: 'Editing disabled',
+      leftFreeSpace: '91.8 GB free on C:\\',
+      centerSelection: 'Editing disabled',
+      centerFreeSpace: '91.8 GB free on C:\\',
+      rightSelection: 'Editing disabled',
+      rightFreeSpace: '91.8 GB free on D:\\',
+    })
+    await wrapper.vm.$nextTick()
+
+    const status = wrapper.find('[data-testid="status-bar"]')
+
+    expect(status.attributes('data-chrome-kind')).toBe('folder-merge')
+    expect(status.attributes('data-pane-count')).toBe('6')
+    expect(status.findAll('.status-bar-pane')).toHaveLength(6)
+    expect(status.find('[data-testid="status-pane-left-selection"]').text()).toContain(
+      'Editing disabled',
+    )
+    expect(status.find('[data-testid="status-pane-center-free"]').text()).toContain('91.8 GB')
+    expect(status.find('[data-testid="status-pane-right-selection"]').text()).toContain(
+      'Editing disabled',
+    )
+  })
+
   it('caps folder-pair at 4 panes when importance would add a 5th', async () => {
     const wrapper = mountAppLayout()
     const statusBar = useStatusBarStore()

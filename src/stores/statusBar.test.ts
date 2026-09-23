@@ -25,6 +25,8 @@ describe('useStatusBarStore', () => {
       leftFreeSpace: null,
       rightSelection: null,
       rightFreeSpace: null,
+      centerSelection: null,
+      centerFreeSpace: null,
     })
     expect(store.segments).toEqual([
       'Ready',
@@ -64,6 +66,8 @@ describe('useStatusBarStore', () => {
       leftFreeSpace: null,
       rightSelection: null,
       rightFreeSpace: null,
+      centerSelection: null,
+      centerFreeSpace: null,
     })
     expect(store.segments).toEqual([
       'Compared',
@@ -74,6 +78,16 @@ describe('useStatusBarStore', () => {
       'Load time: 0.03 seconds',
     ])
     expect(store.chromeKind).toBe('text-session')
+  })
+
+  it('derives folder-merge chrome from folder-merge source', () => {
+    const store = useStatusBarStore()
+
+    store.reportStatus({
+      source: 'folder-merge',
+      chromeKind: 'standard',
+    })
+    expect(store.chromeKind).toBe('folder-merge')
   })
 
   it('derives folder-pair chrome from folder sources', () => {

@@ -1196,6 +1196,7 @@ watch(
       </p>
       <div
         class="merge-grid"
+        data-pane-sync="capture-1to1-residual"
         data-testid="merge-four-way-grid"
         data-editor-density="capture-1to1"
         data-editor-chrome="capture-1to1"
@@ -1257,6 +1258,7 @@ watch(
 
       <section
         class="conflict-panel"
+        data-conflict-chrome="capture-1to1-residual"
         :aria-label="$t('ui.mergeConflicts')"
       >
         <header>

@@ -3718,6 +3718,28 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 2px !important;
 }
 
+.text-patch-view .path-field-row {
+  gap: 2px !important;
+  min-height: 20px !important;
+  padding: 1px 0 !important;
+}
+
+.text-patch-view .path-field-row input,
+.text-patch-view .path-field-row .path-input {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 4px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
+  line-height: 18px !important;
+}
+
+.text-patch-view .patch-toolbar [data-testid='patch-section-position'],
+.text-patch-view .patch-toolbar .status-chip {
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
 .text-patch-view .patch-toolbar {
   gap: 4px !important;
   min-height: 20px !important;

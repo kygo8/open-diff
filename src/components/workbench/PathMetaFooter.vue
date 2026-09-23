@@ -131,6 +131,7 @@ onBeforeUnmount(() => {
     class="path-side-footer path-meta-footer"
     :class="{ 'path-side-footer-muted': isMuted }"
     data-path-meta-density="capture-1to1"
+    data-path-meta-eol="capture-1to1-residual"
     :data-testid="testId"
   >
     <template v-if="meta">
@@ -231,6 +232,7 @@ onBeforeUnmount(() => {
       <span
         v-if="meta.lineEnding"
         class="path-meta-eol"
+        :data-eol-kind="meta.lineEnding"
         >{{ meta.lineEnding }}</span
       >
     </template>
@@ -258,10 +260,32 @@ onBeforeUnmount(() => {
 }
 
 .path-meta-modified,
-.path-meta-size,
-.path-meta-eol {
+.path-meta-size {
   flex: 0 0 auto;
   line-height: 16px;
+}
+
+.path-meta-eol {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 4px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f7f7f7;
+  color: #111111;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.path-meta-eol[data-eol-kind='MIX'],
+.path-meta-eol[data-eol-kind='CRLF'],
+.path-meta-eol[data-eol-kind='LF'],
+.path-meta-eol[data-eol-kind='CR'] {
+  letter-spacing: 0.02em;
 }
 
 .path-meta-chip-wrap {
@@ -340,9 +364,5 @@ onBeforeUnmount(() => {
 .path-meta-chip-menu-item:hover,
 .path-meta-chip-menu-item.is-active {
   background: #e5f1fb;
-}
-
-.path-meta-eol {
-  letter-spacing: 0;
 }
 </style>

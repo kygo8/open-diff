@@ -77,6 +77,7 @@ export const zhTW: LanguagePack = {
     'ui.bytesLoaded': '位元組已載入',
     'ui.c': '複',
     'ui.cancel': '取消',
+    'ui.ok': '確定',
     'ui.captureClipboard': '擷取剪貼簿',
     'ui.captureTwoClipboardTextsAndCompareThem': '擷取兩段剪貼簿文字並進行比較。',
     'ui.case': '大小寫',

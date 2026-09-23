@@ -87,6 +87,7 @@ export const esES: LanguagePack = {
     'ui.bytesLoaded': 'bytes cargados',
     'ui.c': 'C',
     'ui.cancel': 'Cancelar',
+    'ui.ok': 'Aceptar',
     'ui.captureClipboard': 'Capturar portapapeles',
     'ui.captureTwoClipboardTextsAndCompareThem':
       'Capture dos textos del portapapeles y compárelos.',

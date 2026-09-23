@@ -91,6 +91,7 @@ export const deDE: LanguagePack = {
     'ui.bytesLoaded': 'Bytes geladen',
     'ui.c': 'C',
     'ui.cancel': 'Stornieren',
+    'ui.ok': 'OK',
     'ui.captureClipboard': 'Zwischenablage erfassen',
     'ui.captureTwoClipboardTextsAndCompareThem':
       'Erfassen Sie zwei Texte aus der Zwischenablage und vergleichen Sie sie.',

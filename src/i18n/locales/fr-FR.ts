@@ -88,6 +88,7 @@ export const frFR: LanguagePack = {
     'ui.bytesLoaded': 'octets chargés',
     'ui.c': 'C',
     'ui.cancel': 'Annuler',
+    'ui.ok': 'OK',
     'ui.captureClipboard': 'Capturer le Presse-papiers',
     'ui.captureTwoClipboardTextsAndCompareThem':
       'Capturez deux textes du presse-papiers et comparez-les.',

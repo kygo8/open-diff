@@ -84,6 +84,7 @@ export const koKR: LanguagePack = {
     'ui.bytesLoaded': '로드된 바이트',
     'ui.c': 'C',
     'ui.cancel': '취소',
+    'ui.ok': '확인',
     'ui.captureClipboard': '클립보드 캡처',
     'ui.captureTwoClipboardTextsAndCompareThem': '두 개의 클립보드 텍스트를 캡처하고 비교합니다.',
     'ui.case': '사례',

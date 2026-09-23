@@ -727,16 +727,21 @@ function runMediaToolbarCommand(commandId: string): void {
         </div>
       </header>
 
-      <section class="media-path-panel">
-        <label>
-          <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
-          <div class="path-field-row">
+      <section
+        class="media-path-panel"
+        data-testid="media-path-chrome"
+        data-path-density="capture-1to1"
+      >
+        <div class="media-path-fields">
+          <div class="path-field-row media-path-field">
             <input
               v-model="leftPath"
               type="text"
               class="path-input"
               data-testid="media-left-path"
               :title="leftPath"
+              :placeholder="$t('ui.remoteUriHint')"
+              :aria-label="$t('ui.left') + ' ' + $t('ui.path')"
             />
             <SessionPathActions
               browse-test-id="media-browse-left"
@@ -745,16 +750,15 @@ function runMediaToolbarCommand(commandId: string): void {
               @browse="browseMediaPath('left')"
             />
           </div>
-        </label>
-        <label>
-          <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
-          <div class="path-field-row">
+          <div class="path-field-row media-path-field">
             <input
               v-model="rightPath"
               type="text"
               class="path-input"
               data-testid="media-right-path"
               :title="rightPath"
+              :placeholder="$t('ui.remoteUriHint')"
+              :aria-label="$t('ui.right') + ' ' + $t('ui.path')"
             />
             <SessionPathActions
               browse-test-id="media-browse-right"
@@ -763,19 +767,21 @@ function runMediaToolbarCommand(commandId: string): void {
               @browse="browseMediaPath('right')"
             />
           </div>
-        </label>
-        <button
-          type="button"
-          data-testid="run-media-compare"
-          :disabled="loading"
-          @click="runMediaCompare"
-        >
-          {{ $t('ui.runDiff') }}
-        </button>
+          <button
+            type="button"
+            class="media-path-run"
+            data-testid="run-media-compare"
+            :disabled="loading"
+            @click="runMediaCompare"
+          >
+            {{ $t('ui.runDiff') }}
+          </button>
+        </div>
 
         <div
-          class="bc-path-footers"
+          class="bc-path-footers media-path-meta-strip"
           data-testid="media-path-footers"
+          data-secondary-density="capture-1to1"
         >
           <PathMetaFooter
             :stamp="leftFileStamp"
@@ -865,6 +871,7 @@ function runMediaToolbarCommand(commandId: string): void {
         </div>
         <div
           class="media-scrub-row"
+          data-testid="media-scrub-chrome"
           data-media-scrub-density="capture-1to1"
         >
           <button
@@ -1136,13 +1143,63 @@ function runMediaToolbarCommand(commandId: string): void {
   overflow: auto;
 }
 
+.media-path-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px;
+  min-height: 22px;
+}
+
+.media-path-field {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.media-path-field .path-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 20px;
+  padding: 0 4px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  font-size: 12px;
+}
+
+.media-path-run {
+  height: 20px;
+  min-height: 20px;
+  padding: 0 8px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  font-size: 11px;
+}
+
+.media-path-meta-strip {
+  min-height: 18px;
+  padding: 1px 4px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f0f0f0;
+}
+
+.media-path-meta-strip :deep(.path-meta-footer) {
+  gap: 8px;
+  min-height: 16px;
+  color: #111111;
+  font-size: 11px;
+  line-height: 16px;
+}
+
 .media-path-panel {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
-  align-items: end;
-  gap: 4px;
-  min-height: 20px;
-  padding: 1px 3px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 1px;
+  min-height: 22px;
+  padding: 1px 2px;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1554,6 +1611,7 @@ h1 {
   padding: 2px 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
+  background: #f5f5f5;
   background: var(--app-surface);
 }
 
@@ -1608,10 +1666,10 @@ h1 {
 }
 
 .path-side-footer {
-  min-height: 20px;
+  min-height: 18px;
   margin-top: 0;
   overflow: hidden;
-  color: var(--app-text-muted, #6b7280);
+  color: #111111;
   font-size: 11px;
   line-height: 16px;
   text-overflow: ellipsis;

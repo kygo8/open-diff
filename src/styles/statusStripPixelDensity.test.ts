@@ -21,9 +21,11 @@ describe('status strip pixel density', () => {
     expect(layout).toMatch(
       /data-pane-count='4'\] \.status-bar-pane:nth-child\(2\)[\s\S]*?border-right-color:\s*#8e8e8e/,
     )
+    expect(layout).toMatch(/const statusBarGridStyle = computed/)
     expect(layout).toMatch(
-      /gridTemplateColumns: `repeat\(\$\{statusChromePanes\.length\}, minmax\(0, 1fr\)\)`/,
+      /gridTemplateColumns: `repeat\(\$\{String\(statusChromePanes\.value\.length\)\}, minmax\(0, 1fr\)\)`/,
     )
+    expect(layout).toMatch(/chromeKind === 'folder-merge'/)
     expect(layout).toMatch(/buildFolderPairStatusPanes/)
     expect(layout).not.toMatch(/data-pane-count='5'/)
   })
@@ -46,7 +48,7 @@ describe('status strip pixel density', () => {
     )
   })
 
-  it('keeps folder-merge 6-segment strip at capture height with column dividers', () => {
+  it('keeps folder-merge 12-segment strip at capture height with column dividers', () => {
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?height:\s*19\.5px/,
     )
@@ -57,7 +59,10 @@ describe('status strip pixel density', () => {
       /\.status-bar\[data-chrome-kind='folder-merge'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 1px/,
     )
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-merge'\]\[data-pane-count='6'\] \.status-bar-pane:nth-child\(2\)/,
+      /\.status-bar\[data-chrome-kind='folder-merge'\]\[data-pane-count='12'\] \.status-bar-pane:nth-child\(4\)/,
+    )
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?39px minmax\(0, 1\.12fr\)/,
     )
     expect(layout).toMatch(
       /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-merge'\]\)/,

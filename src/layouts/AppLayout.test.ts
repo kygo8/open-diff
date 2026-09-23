@@ -1048,7 +1048,7 @@ describe('AppLayout command palette', () => {
     expect(status.find('[data-testid="status-pane-left-selection"]').text()).toBe('—')
   })
 
-  it('keeps a folder-merge six-pane editing/free status strip', async () => {
+  it('keeps a folder-merge twelve-pane strip with edit/free and spacers', async () => {
     const wrapper = mountAppLayout()
     const statusBar = useStatusBarStore()
 
@@ -1067,8 +1067,10 @@ describe('AppLayout command palette', () => {
     const status = wrapper.find('[data-testid="status-bar"]')
 
     expect(status.attributes('data-chrome-kind')).toBe('folder-merge')
-    expect(status.attributes('data-pane-count')).toBe('6')
-    expect(status.findAll('.status-bar-pane')).toHaveLength(6)
+    expect(status.attributes('data-pane-count')).toBe('12')
+    expect(status.findAll('.status-bar-pane')).toHaveLength(12)
+    expect(status.find('[data-testid="status-pane-spacer-0"]').exists()).toBe(true)
+    expect(status.find('[data-testid="status-pane-spacer-5"]').exists()).toBe(true)
     expect(status.find('[data-testid="status-pane-left-selection"]').text()).toContain(
       'Editing disabled',
     )

@@ -134,17 +134,25 @@ describe('statusBarPhrases', () => {
       rightFreeSpace: '91.8 GB free on D:\\',
     })
 
-    expect(FOLDER_MERGE_STATUS_PANE_COUNT).toBe(6)
-    expect(panes).toHaveLength(6)
+    expect(FOLDER_MERGE_STATUS_PANE_COUNT).toBe(12)
+    expect(panes).toHaveLength(12)
     expect(panes.map((pane) => pane.testId)).toEqual([
+      'status-pane-spacer-0',
+      'status-pane-spacer-1',
       'status-pane-left-selection',
       'status-pane-left-free',
+      'status-pane-spacer-2',
+      'status-pane-spacer-3',
       'status-pane-center-selection',
       'status-pane-center-free',
+      'status-pane-spacer-4',
+      'status-pane-spacer-5',
       'status-pane-right-selection',
       'status-pane-right-free',
     ])
-    expect(panes[0]?.text).toBe('Editing disabled')
+    expect(panes[0]?.muted).toBe(true)
+    expect(panes[2]?.text).toBe('Editing disabled')
     expect(panes[3]?.text).toBe('91.8 GB free on C:\\')
+    expect(panes.filter((pane) => !pane.testId.startsWith('status-pane-spacer'))).toHaveLength(6)
   })
 })

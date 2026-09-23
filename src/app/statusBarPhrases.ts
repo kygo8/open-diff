@@ -216,12 +216,18 @@ export function buildFolderPairStatusPanes(input: {
   ].slice(0, FOLDER_PAIR_STATUS_PANE_COUNT)
 }
 
-/** Capture folder-merge status strip: editing/free for left, center, and right. */
-export const FOLDER_MERGE_STATUS_PANE_COUNT = 6
+/** Meaningful edit/free panes for left, center, and right. */
+export const FOLDER_MERGE_STATUS_MEANINGFUL_PANE_COUNT = 6
+
+/**
+ * Capture folder-merge status strip uses ~12 panes: two empty micro-panes
+ * ahead of each side's edit/free pair (StatusBar.Pane0–Pane11).
+ */
+export const FOLDER_MERGE_STATUS_PANE_COUNT = 12
 
 /**
  * Build the capture-aligned folder-merge status panes
- * (left edit/free, center edit/free, right edit/free).
+ * (spacer/spacer/edit/free × left, center, right).
  */
 export function buildFolderMergeStatusPanes(input: {
   leftSelection: string | null | undefined
@@ -242,12 +248,23 @@ export function buildFolderMergeStatusPanes(input: {
       testId,
     }
   }
+  const emptyPane = (testId: string): FolderPairStatusPaneDraft => ({
+    text: '',
+    muted: true,
+    testId,
+  })
 
   return [
+    emptyPane('status-pane-spacer-0'),
+    emptyPane('status-pane-spacer-1'),
     asPane(input.leftSelection, 'status-pane-left-selection'),
     asPane(input.leftFreeSpace, 'status-pane-left-free'),
+    emptyPane('status-pane-spacer-2'),
+    emptyPane('status-pane-spacer-3'),
     asPane(input.centerSelection, 'status-pane-center-selection'),
     asPane(input.centerFreeSpace, 'status-pane-center-free'),
+    emptyPane('status-pane-spacer-4'),
+    emptyPane('status-pane-spacer-5'),
     asPane(input.rightSelection, 'status-pane-right-selection'),
     asPane(input.rightFreeSpace, 'status-pane-right-free'),
   ].slice(0, FOLDER_MERGE_STATUS_PANE_COUNT)

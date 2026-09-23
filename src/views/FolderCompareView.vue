@@ -789,7 +789,8 @@ function applyFolderSessionSettings(
     | { kind: 'text'; options: typeof textSettingsPlaceholder }
     | { kind: 'table'; options: unknown }
     | { kind: 'hex'; options: unknown }
-    | { kind: 'picture'; options: unknown },
+    | { kind: 'picture'; options: unknown }
+    | { kind: 'media'; options: unknown },
 ): void {
   if (payload.kind !== 'folder') {
     return

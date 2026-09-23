@@ -15,6 +15,7 @@ import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
+import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import { localFileSrc } from '@/app/localFileSrc'
 import { prefersVideoElement } from '@/app/mediaPlayback'
 import { Pause, Play } from '@lucide/vue'
@@ -74,6 +75,7 @@ const loading = ref(false)
 const error = ref('')
 const reportStatus = ref('')
 const showMediaRules = ref(mediaOptions.value.showRules)
+const showSessionSettings = ref(false)
 const leftPlayer = ref<HTMLMediaElement | null>(null)
 const rightPlayer = ref<HTMLMediaElement | null>(null)
 const syncPlayback = ref(mediaOptions.value.syncPlayback)
@@ -304,7 +306,13 @@ const mediaSessionToolbar = computed(() =>
     swap: Boolean(leftPath.value || rightPath.value),
     reload: Boolean(leftPath.value && rightPath.value),
     play2: canPreviewMedia.value,
-  }),
+  }).map((item) => ({
+    ...item,
+    active:
+      Boolean(item.active) ||
+      (item.id === 'rules' && showMediaRules.value) ||
+      (item.id === 'sessions' && showSessionSettings.value),
+  })),
 )
 
 function persistMediaOptions(): void {
@@ -381,6 +389,8 @@ watch(
         runMediaToolbarCommand(fieldFilter.value === 'minor' ? 'all' : 'minor')
         break
       case 'session-settings':
+        openMediaSessionSettings()
+        break
       case 'rules':
         runMediaToolbarCommand('rules')
         break
@@ -589,6 +599,34 @@ function navigateMediaDifference(direction: 1 | -1): void {
     (activeMediaFieldIndex.value + direction + fields.length) % fields.length
 }
 
+function openMediaSessionSettings(): void {
+  showSessionSettings.value = true
+}
+
+function applyMediaSessionSettings(
+  payload:
+    | { kind: 'folder'; criteria: unknown; filters?: unknown }
+    | { kind: 'text'; options: unknown }
+    | { kind: 'table'; options: unknown }
+    | { kind: 'hex'; options: unknown }
+    | { kind: 'picture'; options: unknown }
+    | { kind: 'media'; options: MediaCompareOptionsState },
+): void {
+  if (payload.kind !== 'media') {
+    return
+  }
+
+  mediaOptions.value = {
+    ...mediaOptions.value,
+    ...payload.options,
+  }
+  syncPlayback.value = payload.options.syncPlayback
+  fieldFilter.value = payload.options.defaultFilter
+  showMediaRules.value = payload.options.showRules
+  saveMediaCompareOptions(mediaOptions.value)
+  showSessionSettings.value = false
+}
+
 function runMediaToolbarCommand(commandId: string): void {
   if (commandId === 'home') {
     tabs.openTab({ title: 'Home', titleKey: 'ui.home', route: '/', dirty: false })
@@ -610,6 +648,12 @@ function runMediaToolbarCommand(commandId: string): void {
 
   if (commandId === 'rules') {
     showMediaRules.value = !showMediaRules.value
+
+    return
+  }
+
+  if (commandId === 'sessions') {
+    openMediaSessionSettings()
 
     return
   }
@@ -1070,6 +1114,14 @@ function runMediaToolbarCommand(commandId: string): void {
         </section>
       </WorkbenchInspector>
     </template>
+
+    <SessionSettingsDialog
+      :open="showSessionSettings"
+      kind="media"
+      :media-options="mediaOptions"
+      @close="showSessionSettings = false"
+      @apply="applyMediaSessionSettings"
+    />
   </WorkbenchShell>
 </template>
 <style scoped>

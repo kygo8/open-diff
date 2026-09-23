@@ -139,7 +139,8 @@ function applyTableSessionSettings(
     | { kind: 'text'; options: unknown }
     | { kind: 'table'; options: TableCompareSessionOptions }
     | { kind: 'hex'; options: unknown }
-    | { kind: 'picture'; options: unknown },
+    | { kind: 'picture'; options: unknown }
+    | { kind: 'media'; options: unknown },
 ): void {
   if (payload.kind !== 'table') {
     return

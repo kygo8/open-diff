@@ -150,7 +150,8 @@ function applyTextSessionSettings(
     | { kind: 'text'; options: ReturnType<typeof currentTextSessionOptions> }
     | { kind: 'table'; options: unknown }
     | { kind: 'hex'; options: unknown }
-    | { kind: 'picture'; options: unknown },
+    | { kind: 'picture'; options: unknown }
+    | { kind: 'media'; options: unknown },
 ): void {
   if (payload.kind !== 'text') {
     return

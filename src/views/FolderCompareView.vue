@@ -3832,6 +3832,7 @@ onUnmounted(() => {
       <FolderStatusLegend
         v-if="settings.showFolderLegend"
         class="folder-status-legend-slot"
+        data-column-legend="capture-1to1-residual"
       />
 
       <section
@@ -5545,7 +5546,7 @@ onUnmounted(() => {
   top: 0;
   z-index: 1;
   min-height: 20px;
-  border-bottom: 1px solid #c0c0c0;
+  border-bottom: 1px solid #a0a0a0;
   background: #f0f0f0;
   color: #000000;
   font-size: 11px;

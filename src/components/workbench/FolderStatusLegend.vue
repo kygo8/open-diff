@@ -6,6 +6,7 @@ import { folderStatusLegendItems } from '@/app/folderStatusLegend'
 <template>
   <aside
     class="folder-status-legend"
+    data-legend-chrome="capture-1to1-residual"
     data-testid="folder-status-legend"
     :aria-label="$t('ui.legend')"
   >
@@ -40,15 +41,15 @@ import { folderStatusLegendItems } from '@/app/folderStatusLegend'
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 10px;
-  min-height: 22px;
+  gap: 4px 8px;
+  min-height: 20px;
   padding: 2px 6px;
-  border: 1px solid var(--app-border);
-  border-radius: 3px;
-  background: var(--app-surface-muted, var(--app-surface));
-  color: var(--app-text);
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #f0f0f0;
+  color: #111111;
   font-size: 11px;
-  line-height: 1.2;
+  line-height: 16px;
 }
 
 .folder-status-legend-title {

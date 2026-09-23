@@ -312,6 +312,7 @@ function applySettings(): void {
   >
     <section
       class="session-settings-dialog"
+      data-rules-depth="capture-1to1-residual"
       data-options-rules-density="capture-1to1"
       role="dialog"
       aria-modal="true"
@@ -875,6 +876,7 @@ h2 {
   gap: 4px;
   min-height: 20px;
   padding: 2px 0;
+  background: #f5f5f5;
 }
 
 .settings-tabs button {
@@ -941,6 +943,9 @@ h2 {
 
 footer {
   justify-content: flex-end;
+  gap: 6px;
+  padding-top: 2px;
+  border-top: 1px solid #d0d0d0;
 }
 
 footer button {

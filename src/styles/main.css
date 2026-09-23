@@ -4412,6 +4412,27 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] {
+  background: #f0f0f0 !important;
+}
+
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-tabs {
+  gap: 2px !important;
+  min-height: 20px !important;
+  padding: 2px !important;
+  background: #f5f5f5 !important;
+}
+
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-body {
+  gap: 2px !important;
+  background: #ffffff !important;
+}
+
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] footer {
+  gap: 6px !important;
+  border-top: 1px solid #d0d0d0 !important;
+}
+
 .session-settings-dialog .settings-body {
   gap: 4px !important;
   padding: 4px 6px !important;

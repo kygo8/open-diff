@@ -73,3 +73,21 @@ describe('options/rules dialog content depth', () => {
     expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
   })
 })
+
+describe('session rules residual depth', () => {
+  it('deepens Session Rules dialog chrome beyond #342/#333 content band', () => {
+    expect(settingsDialog).toMatch(/data-rules-depth="capture-1to1-residual"/)
+    expect(settingsDialog).toMatch(/\.settings-tabs\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(settingsDialog).toMatch(/footer\s*\{[\s\S]*?border-top:\s*1px solid #d0d0d0/)
+    expect(css).toMatch(
+      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\]\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+    expect(css).toMatch(
+      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-body\s*\{[\s\S]*?gap:\s*2px/,
+    )
+    expect(css).toMatch(
+      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-tabs\s*\{[\s\S]*?gap:\s*2px/,
+    )
+    expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
+  })
+})

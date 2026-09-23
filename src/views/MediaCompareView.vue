@@ -1034,7 +1034,7 @@ function runMediaToolbarCommand(commandId: string): void {
             <span>{{ $t('ui.left') }}</span>
             <span>{{ $t('ui.right') }}</span>
             <span>{{ $t('ui.status') }}</span>
-            <span>{{ $t('ui.importance') }}</span>
+            <span data-importance-chrome="capture-1to1">{{ $t('ui.importance') }}</span>
           </div>
           <div
             v-for="row in visibleMediaFields"
@@ -1068,6 +1068,7 @@ function runMediaToolbarCommand(commandId: string): void {
         v-if="showMediaRules"
         class="media-rules-panel"
         data-testid="media-rules-panel"
+        data-rules-density="capture-1to1"
       >
         <header>
           <strong>{{ $t('ui.importanceRules') }}</strong>
@@ -1407,20 +1408,20 @@ h1 {
 
 .media-rules-panel {
   display: grid;
-  gap: 4px 6px;
-  min-height: 20px;
-  padding: 4px 6px;
+  gap: 2px 4px;
+  min-height: 18px;
+  padding: 2px 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: var(--app-surface);
+  background: #f5f5f5;
 }
 
 .media-rules-panel header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  min-height: 20px;
+  gap: 4px;
+  min-height: 18px;
 }
 
 .media-rules-panel header button {
@@ -1447,10 +1448,10 @@ h1 {
 
 .media-rule-row {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
   align-items: center;
   gap: 4px;
-  min-height: 18px;
+  min-height: 16px;
   font-size: 11px;
   line-height: 16px;
 }

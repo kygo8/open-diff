@@ -64,7 +64,12 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*20px auto/)
   expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*20px/)
   expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?border-radius:\s*0/)
-  expect(css).toMatch(/\.folder-compare-view \.folder-filter-chrome,[\s\S]*?min-height:\s*37\.5px/)
+  expect(css).toMatch(
+    /\.folder-filter-chrome\[data-mainbar-row2='capture-1to1-residual'\][\s\S]*?min-height:\s*43\.5px/,
+  )
+  expect(css).toMatch(
+    /\.workbench-toolbar-stack:has\(\.folder-filter-chrome\[data-mainbar-row2='capture-1to1-residual'\]\)\s*\{[\s\S]*?min-height:\s*83px/,
+  )
   expect(css).toMatch(/\.folder-compare-view \.display-filters,[\s\S]*?gap:\s*2px 6px/)
   expect(css).toMatch(/\.folder-compare-view \.display-filters,[\s\S]*?min-height:\s*20px/)
   expect(folderView).toMatch(/data-testid="folder-filter-strip"/)
@@ -73,10 +78,13 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(folderView).toMatch(/data-testid="folder-filter-strip-peek"/)
   expect(folderView).toMatch(/data-filters-density="capture-1to1"/)
   expect(folderView).toMatch(/data-filters-align="capture-1to1-residual"/)
+  expect(folderView).toMatch(/data-mainbar-row2="capture-1to1-residual"/)
+  expect(folderView).toMatch(/<template #toolbar>/)
   expect(folderView).toMatch(/showFiltersPanel:/)
   expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?width:\s*59px/)
   expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
-  expect(folderView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*37\.5px/)
+  expect(folderView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*43\.5px/)
+  expect(folderView).toMatch(/background:\s*#ffffff/)
   expect(folderView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
   expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*20px/)
   expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?border-radius:\s*0/)
@@ -92,7 +100,9 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(mergeView).toMatch(/data-testid="folder-merge-filter-strip-filters"/)
   expect(mergeView).toMatch(/data-testid="folder-merge-filter-strip-peek"/)
   expect(mergeView).toMatch(/data-filters-density="capture-1to1"/)
-  expect(mergeView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*37\.5px/)
+  expect(mergeView).toMatch(/data-mainbar-row2="capture-1to1-residual"/)
+  expect(mergeView).toMatch(/<template #toolbar>/)
+  expect(mergeView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*43\.5px/)
   expect(mergeView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
 })
 
@@ -154,5 +164,18 @@ describe('folder column header legend residual', () => {
     expect(css).toMatch(
       /\.folder-status-legend\[data-legend-chrome='capture-1to1-residual'\][\s\S]*?background:\s*#f0f0f0/,
     )
+  })
+})
+
+describe('folder MainBar Filters row residual', () => {
+  it('keeps Filters strip as MainBar second row toward folder-compare capture (~83px)', () => {
+    expect(css).toMatch(
+      /\.folder-filter-chrome\[data-mainbar-row2='capture-1to1-residual'\][\s\S]*?background:\s*#ffffff/,
+    )
+    expect(css).toMatch(
+      /\.workbench-toolbar-stack:has\(\.folder-filter-chrome\[data-mainbar-row2='capture-1to1-residual'\]\)\s*\{[\s\S]*?min-height:\s*83px/,
+    )
+    expect(folderView).toMatch(/data-mainbar-row2="capture-1to1-residual"/)
+    expect(mergeView).toMatch(/data-mainbar-row2="capture-1to1-residual"/)
   })
 })

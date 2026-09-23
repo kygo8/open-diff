@@ -3790,13 +3790,29 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 11px !important;
 }
 
-.folder-compare-view .folder-filter-chrome[data-filters-align='capture-1to1-residual'],
+/* Folder Compare/Merge: Filters strip is MainBar row 2 (capture MainBar ~83px CSS). */
+.workbench-toolbar-stack:has(.folder-filter-chrome[data-mainbar-row2='capture-1to1-residual']) {
+  min-height: 83px;
+}
+
+.workbench-toolbar-stack:has(.folder-filter-chrome[data-mainbar-row2='capture-1to1-residual'])
+  .bc-session-toolbar {
+  border-bottom: 0;
+}
+
+.folder-filter-chrome[data-mainbar-row2='capture-1to1-residual'] {
+  gap: 4px 6px !important;
+  min-height: 43.5px !important;
+  padding: 0 4px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
+  background: #ffffff !important;
+}
+
 .folder-sync-view .folder-filter-chrome[data-filters-align='capture-1to1-residual'] {
   gap: 4px 6px !important;
   min-height: 37.5px !important;
 }
 
-.folder-compare-view .folder-filter-chrome,
 .folder-sync-view .folder-filter-chrome {
   min-height: 37.5px !important;
   padding: 0 4px !important;
@@ -3945,13 +3961,6 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 2px 4px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
-}
-
-.folder-merge-view .folder-filter-chrome {
-  min-height: 37.5px !important;
-  padding: 0 4px !important;
-  border-bottom: 1px solid #a0a0a0 !important;
-  background: #f0f0f0 !important;
 }
 
 /* Peek panel chrome at capture CSS scale (~20px tabs/header; undo 10px crush) */

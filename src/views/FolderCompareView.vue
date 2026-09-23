@@ -3177,11 +3177,12 @@ onUnmounted(() => {
     toolbar-test-id-prefix="folder-session-toolbar"
     @toolbar-command="runFolderToolbarCommand"
   >
-    <section class="folder-compare-view">
+    <template #toolbar>
       <section
         class="folder-filter-chrome"
         data-filters-density="capture-1to1"
         data-filters-align="capture-1to1-residual"
+        data-mainbar-row2="capture-1to1-residual"
         data-testid="folder-filter-chrome"
       >
         <div
@@ -3245,6 +3246,9 @@ onUnmounted(() => {
           </div>
         </div>
       </section>
+    </template>
+
+    <section class="folder-compare-view">
       <section
         v-show="showFolderFilters"
         class="display-filters"
@@ -5051,10 +5055,15 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 4px 6px;
-  min-height: 37.5px;
+  min-height: 43.5px;
   padding: 0 4px;
   border-bottom: 1px solid #a0a0a0;
-  background: #f0f0f0;
+  background: #ffffff;
+}
+
+.folder-filter-chrome[data-mainbar-row2='capture-1to1-residual'] {
+  min-height: 43.5px;
+  background: #ffffff;
 }
 
 .folder-filter-strip {

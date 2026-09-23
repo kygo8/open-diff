@@ -64,6 +64,11 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/:size="14"/)
     expect(pictureView).toMatch(/<Blend[\s\S]*?aria-hidden="true"/)
     expect(pictureView).toMatch(/<Tag[\s\S]*?aria-hidden="true"/)
+    expect(pictureView).toMatch(/picture-minor-banner/)
+    expect(pictureView).toMatch(/\.picture-minor-banner\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(pictureView).toMatch(
+      /\.picture-blend-panel input\[type='range'\]\s*\{[\s\S]*?height:\s*20px/,
+    )
   })
 
   it('keeps Picture toolbar/pane chrome on Hex/Table/Version rhythm', () => {
@@ -80,7 +85,7 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/\.picture-side\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(pictureView).toMatch(/\.picture-pane-grid\s*\{[\s\S]*?gap:\s*4px/)
     expect(pictureView).toMatch(/\.picture-options-panel\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(pictureView).toMatch(/\.picture-report-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(pictureView).toMatch(/\.picture-report-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
   })
 
   it('keeps Picture canvas and summary chrome flat toward the pane rhythm', () => {

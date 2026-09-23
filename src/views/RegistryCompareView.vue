@@ -850,7 +850,10 @@ function runRegistryToolbarCommand(commandId: string): void {
     toolbar-test-id-prefix="registry-session-toolbar"
     @toolbar-command="runRegistryToolbarCommand"
   >
-    <section class="registry-compare-view">
+    <section
+      class="registry-compare-view"
+      data-registry-workspace="capture-1to1-residual"
+    >
       <header class="registry-header">
         <div>
           <p class="eyebrow">{{ $t('ui.registryCompare') }}</p>
@@ -1391,7 +1394,7 @@ h1 {
 .registry-live-row button,
 .registry-live-row input {
   height: 20px;
-  min-height: 20px;
+  min-height: 18px;
   padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -1541,7 +1544,7 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0 6px;
-  min-height: 18px;
+  min-height: 16px;
   padding: 1px 6px 1px calc(8px + var(--key-depth, 0) * 14px);
   border: 0;
   border-bottom: 1px solid #a0a0a0;
@@ -1585,7 +1588,7 @@ h1 {
     minmax(220px, 1.35fr) minmax(112px, 0.7fr) minmax(150px, 1fr)
     minmax(150px, 1fr) 92px;
   min-width: 760px;
-  min-height: 18px;
+  min-height: 16px;
   padding: 0;
   border: 0;
   border-bottom: 1px solid #a0a0a0;

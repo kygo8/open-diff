@@ -3040,7 +3040,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .registry-compare-view .registry-key-row {
   gap: 0 6px !important;
-  min-height: 18px !important;
+  min-height: 16px !important;
   padding-top: 1px !important;
   padding-right: 6px !important;
   padding-bottom: 1px !important;
@@ -3049,7 +3049,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .registry-compare-view .registry-value-row {
-  min-height: 18px !important;
+  min-height: 16px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   font-size: 11px !important;
 }
@@ -4554,4 +4554,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
   min-height: 18px !important;
   font-size: 11px !important;
   line-height: 16px !important;
+}
+
+.registry-compare-view[data-registry-workspace='capture-1to1-residual'] .registry-filter-bar {
+  min-height: 18px !important;
+  padding: 2px 4px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
+  background: #f0f0f0 !important;
+}
+
+.registry-compare-view[data-registry-workspace='capture-1to1-residual'] .registry-key-row,
+.registry-compare-view[data-registry-workspace='capture-1to1-residual'] .registry-value-row {
+  min-height: 16px !important;
 }

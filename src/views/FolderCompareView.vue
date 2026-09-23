@@ -222,7 +222,7 @@ const rightFileStamp = ref<FileStamp | null>(null)
 const folderCriteria = ref<FolderCompareCriteria>(loadFolderCompareCriteria())
 const folderNameFilters = ref<FolderNameFilters>(loadFolderNameFilters())
 const showSessionSettings = ref(false)
-const showPeekPanel = ref(false)
+const showPeekPanel = ref(loadFolderDisplayFilters().showPeekPanel)
 const peekTab = ref<'left' | 'right' | 'status'>('left')
 const viewActions = useViewActionsStore()
 const folderPathNavStore = useFolderPathNavStore()
@@ -313,7 +313,7 @@ const newerViewPreset = ref<FolderNewerViewPreset | 'none'>('none')
 const loadTimeSeconds = ref<number | null>(null)
 const minorOnly = ref(false)
 const showFolderRules = ref(true)
-const showFolderFilters = ref(true)
+const showFolderFilters = ref(initialDisplayFilters.showFiltersPanel)
 const showFolderSelect = ref(false)
 const checkedRowIds = ref<Set<string>>(new Set())
 const selectNameFilter = ref('')
@@ -1121,6 +1121,8 @@ function persistDisplayFilters(): void {
     showSuppressed: showSuppressedFilters.value,
     filesOnly: filesOnlyFilter.value,
     alwaysShowFolders: alwaysShowFolders.value,
+    showFiltersPanel: showFolderFilters.value,
+    showPeekPanel: showPeekPanel.value,
   })
 }
 
@@ -1145,6 +1147,14 @@ watch(showSuppressedFilters, () => {
 })
 
 watch(filesOnlyFilter, () => {
+  persistDisplayFilters()
+})
+
+watch(showFolderFilters, () => {
+  persistDisplayFilters()
+})
+
+watch(showPeekPanel, () => {
   persistDisplayFilters()
 })
 
@@ -3171,6 +3181,7 @@ onUnmounted(() => {
       <section
         class="folder-filter-chrome"
         data-filters-density="capture-1to1"
+        data-filters-align="capture-1to1-residual"
         data-testid="folder-filter-chrome"
       >
         <div
@@ -5037,7 +5048,8 @@ onUnmounted(() => {
 .folder-filter-chrome {
   display: flex;
   align-items: center;
-  min-height: 38px;
+  gap: 4px 6px;
+  min-height: 37.5px;
   padding: 0 4px;
   border-bottom: 1px solid #a0a0a0;
   background: #f0f0f0;
@@ -5066,12 +5078,13 @@ onUnmounted(() => {
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
-  min-width: 48px;
-  max-width: 64px;
-  height: 38px;
-  padding: 1px 4px 2px;
+  width: 59px;
+  min-width: 59px;
+  max-width: 59px;
+  height: 37.5px;
+  padding: 1px 2px 2px;
   border: 0;
-  border-right: 1px solid #c9cdd3;
+  border-right: 1px solid #c0c0c0;
   background: transparent;
   color: #1a1a1a;
   font-size: 11px;
@@ -5080,7 +5093,7 @@ onUnmounted(() => {
 }
 
 .folder-filter-strip-btn:first-child {
-  border-left: 1px solid #c9cdd3;
+  border-left: 1px solid #c0c0c0;
 }
 
 .folder-filter-strip-btn:hover:not(:disabled) {
@@ -5109,15 +5122,14 @@ onUnmounted(() => {
 }
 
 .folder-filter-pattern {
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 1 1 180px;
+  min-width: 120px;
   height: 20px;
   padding: 0 6px;
-  border: 1px solid #bfc4cc;
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
   color: #111111;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 12px;
   line-height: 18px;
 }

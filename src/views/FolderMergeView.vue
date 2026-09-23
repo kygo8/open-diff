@@ -1923,6 +1923,7 @@ watch(
       <section
         class="display-filters folder-filter-chrome"
         data-filters-density="capture-1to1"
+        data-filters-align="capture-1to1-residual"
         data-testid="folder-merge-filter-strip"
       >
         <div class="folder-filter-strip">
@@ -3357,7 +3358,7 @@ h1 {
 
 .folder-filter-chrome {
   align-items: center;
-  min-height: 38px;
+  min-height: 37.5px;
   padding: 0 4px;
   border-bottom: 1px solid #a0a0a0;
   background: #f0f0f0;
@@ -3385,12 +3386,13 @@ h1 {
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
-  min-width: 48px;
-  max-width: 64px;
-  height: 38px;
+  width: 59px;
+  min-width: 59px;
+  max-width: 59px;
+  height: 37.5px;
   padding: 1px 4px 2px;
   border: 0;
-  border-right: 1px solid #c9cdd3;
+  border-right: 1px solid #c0c0c0;
   background: transparent;
   color: #1a1a1a;
   font-size: 11px;
@@ -3399,7 +3401,7 @@ h1 {
 }
 
 .folder-filter-strip-btn:first-child {
-  border-left: 1px solid #c9cdd3;
+  border-left: 1px solid #c0c0c0;
 }
 
 .folder-filter-strip-btn:hover:not(:disabled) {

@@ -11,16 +11,16 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('media compare chrome density', () => {
   it('keeps Media Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.media-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.media-compare-view \.media-path-panel\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.media-compare-view \.media-path-panel\s*\{[\s\S]*?min-height:\s*22px/)
     expect(css).toMatch(
       /\.media-compare-view \.media-path-panel input,\s*\.media-compare-view \.media-path-panel button\s*\{[\s\S]*?height:\s*20px/,
     )
     expect(css).toMatch(/\.media-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.media-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.media-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
 
     expect(mediaView).toMatch(/\.media-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mediaView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(mediaView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(mediaView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(mediaView).toMatch(/SessionPathActions/)
     expect(mediaView).toMatch(/PathMetaFooter/)
     expect(mediaView).toMatch(
@@ -81,5 +81,24 @@ describe('media compare chrome density', () => {
     expect(mediaView).toMatch(
       /\.media-path-panel input,\s*\.media-path-panel button\s*\{[\s\S]*?border-radius:\s*0/,
     )
+  })
+})
+
+describe('media path scrub chrome residual', () => {
+  it('keeps Media path and play/scrub chrome on the capture band', () => {
+    expect(mediaView).toMatch(/data-testid="media-path-chrome"/)
+    expect(mediaView).toMatch(/data-path-density="capture-1to1"/)
+    expect(mediaView).toMatch(/data-secondary-density="capture-1to1"/)
+    expect(mediaView).toMatch(/data-testid="media-scrub-chrome"/)
+    expect(mediaView).toMatch(/media-path-fields/)
+    expect(mediaView).toMatch(/media-path-meta-strip/)
+    expect(mediaView).toMatch(/\.media-path-fields\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(mediaView).toMatch(/\.media-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(mediaView).toMatch(/\.media-scrub-row\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(css).toMatch(/\.media-compare-view \.media-path-fields\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(
+      /\.media-compare-view \.media-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+    expect(mediaView).not.toMatch(/min-height:\s*6px/)
   })
 })

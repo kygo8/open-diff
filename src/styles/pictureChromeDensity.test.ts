@@ -117,9 +117,20 @@ describe('picture stage canvas density', () => {
     expect(pictureView).toMatch(/\.picture-stage\s*\{[\s\S]*?background:\s*#1c1c16/)
     expect(pictureView).toMatch(/\.picture-stage\s*\{[\s\S]*?min-height:\s*360px/)
     expect(pictureView).toMatch(/\.picture-pane-grid\s*\{[\s\S]*?gap:\s*1px/)
-    expect(pictureView).toMatch(/\.picture-tol-overlay\s*\{[\s\S]*?top:\s*8px/)
+    expect(pictureView).toMatch(/\.picture-tol-overlay\s*\{[\s\S]*?top:\s*6px/)
     expect(css).toMatch(/\.picture-compare-view \.picture-stage\s*\{[\s\S]*?background:\s*#1c1c16/)
     expect(css).toMatch(/\.picture-compare-view \.picture-pane-grid\s*\{[\s\S]*?gap:\s*1px/)
     expect(pictureView).not.toMatch(/min-height:\s*6px/)
+  })
+})
+
+describe('picture Tol residual', () => {
+  it('tightens Tol overlay residual placement and input chrome', () => {
+    expect(pictureView).toMatch(/data-tol-residual="capture-1to1"/)
+    expect(pictureView).toMatch(/\.picture-tol-overlay\s*\{[\s\S]*?top:\s*6px/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-tol-overlay[\s\S]*?top:\s*6px/)
+    expect(css).toMatch(
+      /data-tol-residual='capture-1to1'\] input\[type='number'\][\s\S]*?height:\s*20px/,
+    )
   })
 })

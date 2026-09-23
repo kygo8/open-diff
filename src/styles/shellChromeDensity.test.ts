@@ -84,6 +84,15 @@ describe('shell chrome density', () => {
     expect(workbench).toMatch(/data-shell-density="capture-1to1"/)
   })
 
+  it('keeps Session/Tools menu visible separator and enabled chrome', () => {
+    expect(source).toMatch(/data-menu-chrome="capture-1to1-residual"/)
+    expect(source).toMatch(/menuPanelEntries/)
+    expect(source).toMatch(/class="menu-separator"/)
+    expect(source).toMatch(/data-enabled/)
+    expect(source).toMatch(/\.menu-separator\s*\{[\s\S]*?background:\s*#d0d0d0/)
+    expect(source).toMatch(/menu-command\[data-enabled='false'\]/)
+  })
+
   it('keeps tab strip and sole-session frame residual capture chrome', () => {
     expect(source).toMatch(/data-tab-strip-density="capture-1to1-residual"/)
     expect(source).toMatch(

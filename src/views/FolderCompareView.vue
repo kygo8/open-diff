@@ -3976,6 +3976,7 @@ onUnmounted(() => {
         v-show="showPeekPanel"
         class="folder-peek-panel"
         data-peek-density="capture-1to1"
+        data-peek-residual="capture-1to1"
         data-testid="folder-peek-panel"
       >
         <header>
@@ -5820,6 +5821,11 @@ onUnmounted(() => {
 .in-app-context-menu button:disabled {
   cursor: default;
   opacity: 0.45;
+}
+
+.folder-peek-panel[data-peek-residual='capture-1to1'] {
+  border: 1px solid #a0a0a0;
+  background: #ffffff;
 }
 
 .folder-peek-panel {

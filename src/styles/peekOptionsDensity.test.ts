@@ -188,3 +188,11 @@ describe('folder merge Same OK / Peek residual', () => {
     expect(css).toMatch(/\.folder-merge-peek-panel[\s\S]*?border:\s*1px solid #a0a0a0/)
   })
 })
+
+describe('folder peek residual', () => {
+  it('keeps Folder Peek panel residual chrome toward capture', () => {
+    expect(folderView).toMatch(/data-peek-residual="capture-1to1"/)
+    expect(folderView).toMatch(/\.folder-peek-panel\[data-peek-residual='capture-1to1'\]/)
+    expect(css).toMatch(/\.folder-peek-panel[\s\S]*?border:\s*1px solid #a0a0a0/)
+  })
+})

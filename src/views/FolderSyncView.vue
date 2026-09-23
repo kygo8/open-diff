@@ -2068,6 +2068,7 @@ watch(
         v-if="showPeek"
         class="folder-sync-peek-panel"
         data-peek-density="capture-1to1"
+        data-peek-residual="capture-1to1"
         data-testid="folder-sync-peek-panel"
       >
         <header>

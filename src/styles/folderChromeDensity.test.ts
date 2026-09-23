@@ -6,6 +6,10 @@ import { describe, expect, it } from 'vitest'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const css = readFileSync(resolve(root, 'src/styles/main.css'), 'utf8')
 const folderView = readFileSync(resolve(root, 'src/views/FolderCompareView.vue'), 'utf8')
+const folderLegend = readFileSync(
+  resolve(root, 'src/components/workbench/FolderStatusLegend.vue'),
+  'utf8',
+)
 const syncView = readFileSync(resolve(root, 'src/views/FolderSyncView.vue'), 'utf8')
 const mergeView = readFileSync(resolve(root, 'src/views/FolderMergeView.vue'), 'utf8')
 
@@ -139,5 +143,16 @@ describe('folder compare session log chrome density', () => {
     )
     expect(folderView).not.toMatch(/height:\s*6px/)
     expect(folderView).not.toMatch(/font-size:\s*6px/)
+  })
+})
+
+describe('folder column header legend residual', () => {
+  it('keeps tree-head and legend residual chrome toward capture', () => {
+    expect(folderView).toMatch(/data-column-legend="capture-1to1-residual"/)
+    expect(folderView).toMatch(/\.tree-head\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
+    expect(folderLegend).toMatch(/data-legend-chrome="capture-1to1-residual"/)
+    expect(css).toMatch(
+      /\.folder-status-legend\[data-legend-chrome='capture-1to1-residual'\][\s\S]*?background:\s*#f0f0f0/,
+    )
   })
 })

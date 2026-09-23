@@ -1854,6 +1854,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-compare-view .tree-head {
   min-height: 20px !important;
+  border-bottom: 1px solid #a0a0a0 !important;
   background: #f0f0f0 !important;
   color: #000000 !important;
   font-size: 11px !important;
@@ -4599,4 +4600,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
   font-size: 11px !important;
   line-height: 16px !important;
+}
+
+.folder-status-legend[data-legend-chrome='capture-1to1-residual'] {
+  gap: 4px 8px !important;
+  min-height: 20px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  background: #f0f0f0 !important;
 }

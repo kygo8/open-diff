@@ -21,14 +21,14 @@ describe('registry compare chrome density', () => {
       /\.registry-compare-view \.registry-report-panel header\s*\{[\s\S]*?gap:\s*6px/,
     )
     expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(
       /\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/,
     )
 
     expect(registryView).toMatch(/\.registry-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(registryView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(registryView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(registryView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(registryView).toMatch(/SessionPathActions/)
     expect(registryView).toMatch(/PathMetaFooter/)
     expect(registryView).toMatch(/chromeKind:\s*'registry-session'/)
@@ -83,5 +83,26 @@ describe('registry compare chrome density', () => {
     expect(registryView).toMatch(
       /\.registry-filter-bar button,\s*\.registry-live-row button,\s*\.registry-live-row input\s*\{[\s\S]*?border-radius:\s*0/,
     )
+  })
+})
+
+describe('registry secondary strip density', () => {
+  it('keeps Registry secondary path-meta strip on capture band', () => {
+    expect(registryView).toMatch(/data-testid="registry-path-footers"/)
+    expect(registryView).toMatch(/data-secondary-density="capture-1to1"/)
+    expect(registryView).toMatch(/registry-secondary-strip/)
+    expect(registryView).toMatch(/\.registry-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(registryView).toMatch(/\.registry-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(registryView).toMatch(
+      /\.registry-secondary-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?gap:\s*6px/,
+    )
+    expect(css).toMatch(
+      /\.registry-compare-view \.registry-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/,
+    )
+    expect(css).toMatch(
+      /\.registry-compare-view \.registry-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/,
+    )
+    expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(registryView).not.toMatch(/min-height:\s*6px/)
   })
 })

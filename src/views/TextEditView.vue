@@ -372,6 +372,17 @@ function deleteEdit(): void {
   updateEditorText('')
 }
 
+function onTextEditEncodingSelect(option: { id: string; label: string }): void {
+  if (!document.value) {
+    return
+  }
+
+  document.value = {
+    ...document.value,
+    encoding: option.label,
+  }
+}
+
 function openTextEditSessionSettings(): void {
   showSessionSettings.value = true
 }
@@ -1008,6 +1019,7 @@ const textEditToolbarCommands = computed(() => {
         :line-ending="document?.lineEnding"
         :show-milliseconds="settings.showMillisecondsInTimestamps"
         test-id="text-edit-metadata"
+        @select-encoding="onTextEditEncodingSelect"
       />
       <span data-testid="text-edit-save-status">{{ saveStatus }}</span>
     </section>

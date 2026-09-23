@@ -80,6 +80,10 @@ const viewActions = useViewActionsStore()
 const folderSettingsPlaceholder = defaultFolderCompareCriteria()
 const fileFormats = ref(loadFileFormats())
 const selectedFormatId = ref('')
+const pathEncoding = ref('UTF-8')
+const pathFormatOptions = computed(() =>
+  fileFormats.value.map((format) => ({ id: format.id, label: format.name })),
+)
 const reportStatus = ref('')
 const result = ref<TextDiffResponse | null>(null)
 const loading = ref(false)
@@ -381,7 +385,7 @@ const lineEndingStatus = computed(
       right.value,
     )}`,
 )
-const statusBarEncoding = computed(() => `UTF-8 | ${lineEndingStatus.value}`)
+const statusBarEncoding = computed(() => `${pathEncoding.value} | ${lineEndingStatus.value}`)
 const dirtyStatus = computed(() => (dirty.value ? t('status.unsavedEdits') : t('status.noEdits')))
 const diffRows = computed(() => result.value?.lines.filter((line) => line.kind !== 'equal') ?? [])
 const activeDiffRows = computed(() =>
@@ -603,6 +607,24 @@ function applySelectedFileFormat(formatId = selectedFormatId.value): void {
   ignoreCase.value = next.ignoreCase
   ignoreLineEndings.value = next.ignoreLineEndings
   ignoreRegexInput.value = next.ignoreRegexes.join('\n')
+}
+
+function onPathFormatSelect(option: { id: string; label: string }): void {
+  if (fileFormats.value.some((format) => format.id === option.id)) {
+    applySelectedFileFormat(option.id)
+
+    return
+  }
+
+  const matched = fileFormats.value.find((format) => format.name === option.label)
+
+  if (matched) {
+    applySelectedFileFormat(matched.id)
+  }
+}
+
+function onPathEncodingSelect(option: { id: string; label: string }): void {
+  pathEncoding.value = option.label
 }
 
 function syncFormatFromPaths(): void {
@@ -1759,18 +1781,24 @@ function onVisibilityForDiskChange(): void {
           <PathMetaFooter
             :stamp="leftFileStamp"
             :format-label="pathFormatLabel"
-            encoding="UTF-8"
+            :encoding="pathEncoding"
+            :format-options="pathFormatOptions"
             :line-ending="leftPathLineEnding"
             :show-milliseconds="settings.showMillisecondsInTimestamps"
             test-id="text-left-path-footer"
+            @select-format="onPathFormatSelect"
+            @select-encoding="onPathEncodingSelect"
           />
           <PathMetaFooter
             :stamp="rightFileStamp"
             :format-label="pathFormatLabel"
-            encoding="UTF-8"
+            :encoding="pathEncoding"
+            :format-options="pathFormatOptions"
             :line-ending="rightPathLineEnding"
             :show-milliseconds="settings.showMillisecondsInTimestamps"
             test-id="text-right-path-footer"
+            @select-format="onPathFormatSelect"
+            @select-encoding="onPathEncodingSelect"
           />
         </div>
       </section>

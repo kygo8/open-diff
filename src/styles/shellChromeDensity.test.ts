@@ -84,6 +84,14 @@ describe('shell chrome density', () => {
     expect(workbench).toMatch(/data-shell-density="capture-1to1"/)
   })
 
+  it('keeps Help About dialog residual capture chrome', () => {
+    expect(source).toMatch(/data-about-chrome="capture-1to1-residual"/)
+    expect(source).toMatch(
+      /\.about-dialog\[data-about-chrome='capture-1to1-residual'\]\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+    expect(source).toMatch(/\.about-dialog button\s*\{[\s\S]*?height:\s*18px/)
+  })
+
   it('keeps Session/Tools menu visible separator and enabled chrome', () => {
     expect(source).toMatch(/data-menu-chrome="capture-1to1-residual"/)
     expect(source).toMatch(/menuPanelEntries/)

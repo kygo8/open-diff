@@ -82,7 +82,7 @@ import {
 import { aggregateFolderSelection, formatFolderSelectionLabel } from '@/app/folderSelectionStatus'
 import { useStatusBarStore } from '@/stores/statusBar'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
-import { Eye, Funnel } from '@lucide/vue'
+import { Eye, Funnel, Save, Settings } from '@lucide/vue'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useFolderPathNavStore } from '@/stores/folderPathNav'
 import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
@@ -319,7 +319,9 @@ const checkedRowIds = ref<Set<string>>(new Set())
 const selectNameFilter = ref('')
 let folderCompareGeneration = 0
 let folderWatchTimer: ReturnType<typeof setInterval> | undefined
-const rowHeight = 17
+const rowHeight = 16
+const showFolderLog = ref(true)
+const sessionLogLines = ref<string[]>([])
 const virtualViewportRows = 18
 const virtualOverscanRows = 4
 const scrollTop = ref(0)
@@ -1095,9 +1097,11 @@ watch(
         openFileCompareReportPanel()
         break
       case 'run-script':
-      case 'toggle-log':
       case 'toggle-legend':
       case 'toggle-toolbar':
+        break
+      case 'toggle-log':
+        showFolderLog.value = !showFolderLog.value
         break
     }
   },
@@ -1547,12 +1551,44 @@ function isExpanded(row: FolderTreeRow): boolean {
   return expandedDirectoryIds.value.has(row.id)
 }
 
+function formatSessionLogTimestamp(date = new Date()): string {
+  const year = String(date.getFullYear())
+  const month = String(date.getMonth() + 1)
+  const day = String(date.getDate())
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+
+  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`
+}
+
+function appendSessionLog(message: string): void {
+  sessionLogLines.value = [...sessionLogLines.value, `${formatSessionLogTimestamp()} ${message}`]
+}
+
+function saveSessionLog(): void {
+  const payload = sessionLogLines.value.join('\n')
+
+  if (!payload) {
+    return
+  }
+
+  void navigator.clipboard.writeText(payload)
+}
+
 async function runFolderCompare(): Promise<void> {
   const generation = ++folderCompareGeneration
   const startedAt = performance.now()
 
   folderCompareLoading.value = true
   folderCompareError.value = undefined
+  appendSessionLog(`${t('ui.username')}:`)
+  if (leftRoot.value) {
+    appendSessionLog(`Load ${leftRoot.value}`)
+  }
+  if (rightRoot.value) {
+    appendSessionLog(`Load ${rightRoot.value}`)
+  }
 
   try {
     const response = await compareFolderPaths({
@@ -4651,6 +4687,61 @@ onUnmounted(() => {
           </div>
         </div>
       </section>
+
+      <section
+        v-if="showFolderLog"
+        class="folder-session-log"
+        data-testid="folder-session-log"
+        data-log-density="capture-1to1"
+      >
+        <div
+          class="folder-session-log-gutter"
+          data-testid="folder-session-log-gutter"
+        >
+          <button
+            type="button"
+            class="folder-session-log-gutter-btn"
+            data-testid="folder-session-log-settings"
+            :title="$t('ui.settings')"
+            :aria-label="$t('ui.settings')"
+            @click="openFolderSessionSettings"
+          >
+            <Settings
+              :size="14"
+              :stroke-width="2"
+              absolute-stroke-width
+              aria-hidden="true"
+            />
+          </button>
+          <button
+            type="button"
+            class="folder-session-log-gutter-btn"
+            data-testid="folder-session-log-save"
+            :title="$t('ui.save')"
+            :aria-label="$t('ui.save')"
+            @click="saveSessionLog"
+          >
+            <Save
+              :size="14"
+              :stroke-width="2"
+              absolute-stroke-width
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+        <div
+          class="folder-session-log-body"
+          data-testid="folder-session-log-body"
+        >
+          <p
+            v-for="(line, index) in sessionLogLines"
+            :key="`${index}-${line}`"
+            class="folder-session-log-line"
+          >
+            {{ line }}
+          </p>
+        </div>
+      </section>
     </section>
 
     <div
@@ -4786,8 +4877,10 @@ onUnmounted(() => {
 <style scoped>
 .folder-compare-view {
   display: grid;
-  grid-template-rows: max-content max-content max-content max-content max-content minmax(0, 1fr);
-  gap: 4px;
+  grid-template-rows:
+    max-content max-content max-content max-content max-content minmax(0, 1fr)
+    max-content;
+  gap: 2px;
   height: 100%;
   padding: 2px 4px;
   overflow: hidden;
@@ -5439,18 +5532,18 @@ onUnmounted(() => {
   position: sticky;
   top: 0;
   z-index: 1;
-  min-height: 22px;
-  border-bottom: 1px solid var(--app-border);
-  background: var(--app-surface-muted);
-  color: var(--app-text-muted);
+  min-height: 20px;
+  border-bottom: 1px solid #c0c0c0;
+  background: #f0f0f0;
+  color: #000000;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 16px;
 }
 
 .tree-row {
-  min-height: 17px;
-  border-bottom: 1px solid var(--app-border);
+  min-height: 16px;
+  border-bottom: 0;
   color: var(--app-text);
   font-size: 11px;
   line-height: 14px;
@@ -5470,9 +5563,8 @@ onUnmounted(() => {
 }
 
 .tree-row.selected {
-  background: var(--app-surface-muted);
-  outline: 1px solid var(--app-accent);
-  outline-offset: -1px;
+  background: #a8cdf1;
+  outline: 0;
 }
 
 .tree-row.suppressed {
@@ -5523,6 +5615,73 @@ onUnmounted(() => {
   font-size: 11px;
   font-weight: 700;
   text-align: center;
+}
+
+.tree-head span[data-column='left-size'],
+.tree-head span[data-column='left-modified'],
+.tree-head span[data-column='right-size'],
+.tree-head span[data-column='right-modified'],
+.tree-row span[data-column='left-size'],
+.tree-row span[data-column='left-modified'],
+.tree-row span[data-column='right-size'],
+.tree-row span[data-column='right-modified'] {
+  text-align: right;
+}
+
+.folder-session-log {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  height: 96px;
+  min-height: 96px;
+  overflow: hidden;
+  border: 1px solid #c0c0c0;
+  border-radius: 0;
+  background: #e7e7e7;
+}
+
+.folder-session-log-gutter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-right: 1px solid #c0c0c0;
+  background: #d4d4d4;
+}
+
+.folder-session-log-gutter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #333333;
+  cursor: pointer;
+}
+
+.folder-session-log-gutter-btn:hover {
+  background: #c0c0c0;
+}
+
+.folder-session-log-body {
+  min-width: 0;
+  padding: 2px 6px;
+  overflow: auto;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.folder-session-log-line {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
 }
 
 .status-same strong {

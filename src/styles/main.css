@@ -1828,22 +1828,30 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 11px !important;
 }
 
-/* Folder tree row density toward capture list height */
+/* Folder tree + session log density toward capture list/log chrome */
 .folder-compare-view .folder-tree-table {
   border-radius: 0 !important;
 }
 
 .folder-compare-view .tree-head {
-  min-height: 22px !important;
+  min-height: 20px !important;
+  background: #f0f0f0 !important;
+  color: #000000 !important;
   font-size: 11px !important;
-  font-weight: 600 !important;
+  font-weight: 400 !important;
   line-height: 16px !important;
 }
 
 .folder-compare-view .tree-row {
-  min-height: 17px !important;
+  min-height: 16px !important;
+  border-bottom: 0 !important;
   font-size: 11px !important;
   line-height: 14px !important;
+}
+
+.folder-compare-view .tree-row.selected {
+  background: #a8cdf1 !important;
+  outline: 0 !important;
 }
 
 .folder-compare-view .tree-head span,
@@ -1878,6 +1886,31 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-compare-view .tree-row strong {
   font-size: 11px !important;
   text-align: center !important;
+}
+
+.folder-compare-view .folder-session-log {
+  height: 96px !important;
+  min-height: 96px !important;
+  border: 1px solid #c0c0c0 !important;
+  border-radius: 0 !important;
+  background: #e7e7e7 !important;
+}
+
+.folder-compare-view .folder-session-log-gutter {
+  gap: 6px !important;
+  padding: 4px 0 !important;
+  background: #d4d4d4 !important;
+}
+
+.folder-compare-view .folder-session-log-body {
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.folder-compare-view .folder-session-log-line {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .folder-sync-view .sync-preview-row td,

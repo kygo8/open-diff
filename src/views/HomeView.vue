@@ -1375,11 +1375,11 @@ onMounted(() => {
   display: grid;
   gap: 2px;
   justify-items: center;
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: #111827;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 12px;
-  line-height: 1.25;
+  line-height: 16px;
 }
 
 .bc-home-instructions strong {
@@ -1393,8 +1393,8 @@ onMounted(() => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 100px;
-  padding: 6px 4px 4px;
+  min-height: 124px;
+  padding: 8px 4px 6px;
   overflow: hidden;
   border: 0;
   border-radius: 0;
@@ -1427,7 +1427,7 @@ onMounted(() => {
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 12px;
   font-weight: 400;
-  line-height: 1.2;
+  line-height: 16px;
   text-align: center;
   white-space: nowrap;
   text-overflow: ellipsis;

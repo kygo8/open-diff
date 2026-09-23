@@ -30,13 +30,16 @@ describe('home chrome density', () => {
       /\.new-session-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3, minmax\(140px, 157px\)\)/,
     )
     expect(homeView).toMatch(/\.session-card-icon\s*\{[\s\S]*?width:\s*48px/)
-    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*100px/)
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*124px/)
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?border-radius:\s*0/)
     expect(homeView).toMatch(/:size="48"/)
     expect(homeView).not.toMatch(/min-height:\s*7px/)
     expect(homeView).not.toMatch(/height:\s*6px/)
     expect(homeView).not.toMatch(/height:\s*7px/)
     expect(homeView).toMatch(/\.home-title-count\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(homeView).toMatch(/\.bc-home-instructions\s*\{[\s\S]*?font-size:\s*12px/)
+    expect(homeView).toMatch(/\.bc-home-instructions\s*\{[\s\S]*?line-height:\s*16px/)
+    expect(homeView).toMatch(/\.new-session-card h3\s*\{[\s\S]*?line-height:\s*16px/)
   })
 
   it('keeps leftover workspace manager chrome dense toward Home session lists', () => {

@@ -1779,6 +1779,19 @@ html[data-show-path-bars='0'] .path-pair-bar {
   color: #111111;
 }
 
+/* Path meta MIX/EOL residual chip chrome */
+.path-meta-footer[data-path-meta-eol='capture-1to1-residual'] .path-meta-eol {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 4px !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 0 !important;
+  background: #f7f7f7 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 16px !important;
+}
+
 .bc-path-footers .path-meta-footer,
 .bc-path-footers .path-side-footer {
   gap: 10px;

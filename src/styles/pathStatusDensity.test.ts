@@ -137,3 +137,15 @@ describe('path/status strip density', () => {
     )
   })
 })
+
+describe('PathMetaFooter MIX/EOL residual', () => {
+  it('keeps EOL/MIX chip chrome at capture footer density', () => {
+    expect(pathMeta).toMatch(/data-path-meta-eol="capture-1to1-residual"/)
+    expect(pathMeta).toMatch(/data-eol-kind/)
+    expect(pathMeta).toMatch(/\.path-meta-eol\s*\{[\s\S]*?height:\s*18px/)
+    expect(pathMeta).toMatch(/\.path-meta-eol\s*\{[\s\S]*?font-weight:\s*600/)
+    expect(css).toMatch(
+      /\.path-meta-footer\[data-path-meta-eol='capture-1to1-residual'\] \.path-meta-eol[\s\S]*?height:\s*18px/,
+    )
+  })
+})

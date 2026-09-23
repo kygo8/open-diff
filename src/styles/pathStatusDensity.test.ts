@@ -66,6 +66,9 @@ describe('path/status strip density', () => {
     expect(pathMeta).toMatch(/:size="12"/)
     expect(pathMeta).toMatch(/ChevronDown/)
     expect(pathMeta).toMatch(/buildPathFooterMeta/)
+    expect(pathMeta).toMatch(/aria-haspopup="listbox"/)
+    expect(pathMeta).toMatch(/path-meta-chip-menu/)
+    expect(pathMeta).not.toMatch(/tabindex="-1"/)
     expect(css).toMatch(/\.bc-path-footers \.path-meta-chip[\s\S]*?height:\s*18px/)
   })
 

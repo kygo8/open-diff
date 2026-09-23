@@ -3658,8 +3658,16 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-sync-view .sync-setting-actions .n-button[data-testid='folder-sync-run'] {
-  height: 48px !important;
-  min-height: 48px !important;
+  width: 95.5px !important;
+  min-width: 95.5px !important;
+  height: 74.5px !important;
+  min-height: 74.5px !important;
+}
+
+.folder-sync-view .sync-setting-actions .n-button[data-testid='folder-sync-accept'],
+.folder-sync-view .sync-setting-actions .n-button[data-testid='folder-sync-cancel'] {
+  width: 95.5px !important;
+  min-width: 95.5px !important;
 }
 
 .folder-compare-view .path-side-footer,
@@ -3710,13 +3718,22 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 4px !important;
 }
 
-.folder-sync-view .sync-preview-row select,
+.folder-sync-view .sync-preview-row select {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 4px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  font-size: 11px !important;
+}
+
 .folder-sync-view .sync-reset-override,
 .folder-sync-view .sync-chrome-panel button {
-  height: 18px !important;
-  min-height: 18px !important;
+  height: 20px !important;
+  min-height: 20px !important;
   padding: 0 5px !important;
-  border-radius: 2px !important;
+  border-radius: 0 !important;
   font-size: 11px !important;
 }
 

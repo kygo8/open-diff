@@ -43,8 +43,8 @@ describe('text compare chrome density', () => {
       /\.split-pane-header,\s*\.pane-header,\s*\.metadata-header\s*\{[\s\S]*?min-height:\s*20px/,
     )
     expect(css).toMatch(/\.split-pane-header\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
-    expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?height:\s*38px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
+    expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?height:\s*37\.5px/)
     expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?font-size:\s*11px/)
   })
 
@@ -88,5 +88,18 @@ describe('text path and editor grid chrome density', () => {
     expect(css).toMatch(/\.text-compare-view \.diff-header\s*\{[\s\S]*?height:\s*18px/)
     expect(textView).not.toMatch(/min-height:\s*6px/)
     expect(textView).not.toMatch(/font-size:\s*9px/)
+  })
+})
+
+describe('text compare toolbar strip residual', () => {
+  it('keeps Text Compare MainBar command spacing on the capture band', () => {
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
+    expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?min-width:\s*56px/)
+    expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?height:\s*37\.5px/)
+    expect(css).toMatch(/\.bc-toolbar-command-group-start\s*\{[\s\S]*?margin-left:\s*6px/)
+    expect(css).toMatch(
+      /\.bc-toolbar-command-group-start\s*\{[\s\S]*?border-left:\s*1px solid #9a9a9a/,
+    )
+    expect(css).not.toMatch(/\.bc-toolbar-command-group-start\s*\{[\s\S]*?margin-left:\s*12px/)
   })
 })

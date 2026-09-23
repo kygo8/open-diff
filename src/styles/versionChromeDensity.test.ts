@@ -33,7 +33,7 @@ describe('version compare chrome density', () => {
     expect(versionView).not.toMatch(/min-height:\s*9px/)
 
     expect(layout).toMatch(/data-chrome-kind='version-session'[\s\S]*?height:\s*19\.5px/)
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
   })
 
   it('keeps Version summary/side/report/rules/row chrome on capture band', () => {

@@ -31,7 +31,7 @@ describe('session toolbar glyph polish', () => {
     expect(shell).toContain('sessionToolbarHasSeparatorBefore')
 
     expect(css).toContain('.bc-toolbar-command-group-start')
-    expect(css).toContain('margin-left: 12px')
+    expect(css).toContain('margin-left: 6px')
     expect(css).toContain('border-left: 1px solid #9a9a9a')
     expect(css).toContain('background: #ffffff')
     expect(css).toContain('background: #f0f0f0')

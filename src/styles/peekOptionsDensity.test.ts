@@ -156,3 +156,25 @@ describe('e2e animation-frame harness', () => {
     expect(tauriMock).toMatch(/ensureAnimationFrames/)
   })
 })
+
+describe('options tree depth residual', () => {
+  it('keeps Options Appearance/Toolbars/Tweaks tree depth chrome on capture band', () => {
+    expect(settingsView).toMatch(/data-options-tree-depth="capture-1to1"/)
+    expect(settingsView).toMatch(/data-tree-depth="0"/)
+    expect(settingsView).toMatch(/data-tree-depth="1"/)
+    expect(settingsView).toMatch(/id: 'appearance'/)
+    expect(settingsView).toMatch(/id: 'toolbars'/)
+    expect(settingsView).toMatch(/id: 'tweaks'/)
+    expect(settingsView).toMatch(/options-section-\$\{section\.id\}/)
+    expect(settingsView).toMatch(
+      /\.options-section-button\[data-tree-depth='1'\]\s*\{[\s\S]*?padding-left:\s*14px/,
+    )
+    expect(css).toMatch(
+      /\.settings-view \.options-section-button\[data-tree-depth='1'\]\s*\{[\s\S]*?padding-left:\s*14px/,
+    )
+    expect(css).toMatch(
+      /\.settings-view \.options-tree-group\s*\{[\s\S]*?border-bottom:\s*1px solid #e0e0e0/,
+    )
+    expect(settingsView).not.toMatch(/min-height:\s*6px/)
+  })
+})

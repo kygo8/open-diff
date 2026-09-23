@@ -90,6 +90,7 @@ export const enUS: LanguagePack = {
     'ui.bytesLoaded': 'bytes loaded',
     'ui.c': 'C',
     'ui.cancel': 'Cancel',
+    'ui.ok': 'OK',
     'ui.captureClipboard': 'Capture Clipboard',
     'ui.captureTwoClipboardTextsAndCompareThem': 'Capture two clipboard texts and compare them.',
     'ui.case': 'Case',

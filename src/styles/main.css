@@ -4529,8 +4529,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
-.session-settings-dialog .settings-tabs button,
-.session-settings-dialog footer button {
+.session-settings-dialog .settings-tabs button {
   height: 18px !important;
   min-height: 18px !important;
   border: 1px solid #a0a0a0 !important;
@@ -4609,4 +4608,28 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
   background: #f0f0f0 !important;
+}
+
+.session-settings-dialog footer button {
+  min-width: 72px !important;
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 12px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+}
+
+.settings-view .options-dialog-footer[data-options-footer='capture-1to1-residual'] {
+  gap: 6px !important;
+  border-top: 1px solid #d0d0d0 !important;
+}
+
+.settings-view .options-footer-btn {
+  min-width: 72px !important;
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 12px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
 }

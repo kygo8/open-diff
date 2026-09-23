@@ -811,7 +811,15 @@ function applySettings(): void {
         </label>
       </div>
 
-      <footer>
+      <footer data-options-footer="capture-1to1-residual">
+        <button
+          type="button"
+          class="primary"
+          data-testid="session-settings-ok"
+          @click="applySettings"
+        >
+          {{ $t('ui.ok') }}
+        </button>
         <button
           type="button"
           data-testid="session-settings-cancel"
@@ -821,7 +829,6 @@ function applySettings(): void {
         </button>
         <button
           type="button"
-          class="primary"
           data-testid="session-settings-apply"
           @click="applySettings"
         >
@@ -949,9 +956,10 @@ footer {
 }
 
 footer button {
-  height: 18px;
-  min-height: 18px;
-  padding: 0 8px;
+  min-width: 72px;
+  height: 22px;
+  min-height: 22px;
+  padding: 0 12px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   font-size: 11px;

@@ -3602,6 +3602,36 @@ function parseShortcutText(value: string): string[] {
           </div>
         </NCard>
       </div>
+
+      <footer
+        class="options-dialog-footer"
+        data-options-footer="capture-1to1-residual"
+        data-testid="options-dialog-footer"
+      >
+        <button
+          type="button"
+          data-testid="options-footer-ok"
+          class="options-footer-btn options-footer-primary"
+          @click="router.push('/')"
+        >
+          {{ $t('ui.ok') }}
+        </button>
+        <button
+          type="button"
+          data-testid="options-footer-cancel"
+          class="options-footer-btn"
+          @click="router.push('/')"
+        >
+          {{ $t('ui.cancel') }}
+        </button>
+        <button
+          type="button"
+          data-testid="options-footer-apply"
+          class="options-footer-btn"
+        >
+          {{ $t('ui.apply') }}
+        </button>
+      </footer>
     </section>
 
     <template #inspector>
@@ -4126,5 +4156,35 @@ h1 {
   font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.options-dialog-footer {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 28px;
+  padding: 4px 0 0;
+  border-top: 1px solid #d0d0d0;
+}
+
+.options-footer-btn {
+  min-width: 72px;
+  height: 22px;
+  min-height: 22px;
+  padding: 0 12px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #ffffff;
+  color: #111111;
+  font-size: 11px;
+  line-height: 16px;
+  cursor: default;
+}
+
+.options-footer-primary {
+  background: var(--app-accent, #2563eb);
+  color: #ffffff;
+  border-color: #1d4ed8;
 }
 </style>

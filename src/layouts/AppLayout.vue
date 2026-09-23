@@ -1167,6 +1167,18 @@ const statusChromePanes = computed((): StatusChromePane[] => {
     testId: pane.testId ?? `status-pane-${String(index)}`,
   }))
 })
+
+const statusBarGridStyle = computed(() => {
+  // Folder-merge capture uses fixed micro-pane widths from CSS, not equal fr columns.
+  if (statusBar.chromeKind === 'folder-merge') {
+    return undefined
+  }
+
+  return {
+    gridTemplateColumns: `repeat(${String(statusChromePanes.value.length)}, minmax(0, 1fr))`,
+  }
+})
+
 const windowTitle = computed(() => {
   if (route.path === '/') {
     return 'Home - OpenDiff'
@@ -2035,7 +2047,7 @@ const sourceSessionTypes = new Set<SessionType>([
       data-testid="status-bar"
       :data-chrome-kind="statusBar.chromeKind"
       :data-pane-count="String(statusChromePanes.length)"
-      :style="{ gridTemplateColumns: `repeat(${statusChromePanes.length}, minmax(0, 1fr))` }"
+      :style="statusBarGridStyle"
     >
       <span
         v-for="(pane, index) in statusChromePanes"
@@ -2693,7 +2705,8 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='folder-merge'] {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  /* Capture Pane0–11 widths (DPR≈2): 39 | 112 | 130 | 112 × 3 */
+  grid-template-columns: repeat(3, 39px minmax(0, 1.12fr) minmax(0, 1.3fr) minmax(0, 1.12fr));
   height: 19.5px;
   min-height: 19.5px;
   font-size: 11px;
@@ -2704,9 +2717,13 @@ const sourceSessionTypes = new Set<SessionType>([
   padding: 0 1px;
 }
 
-/* Capture folder-merge strip: stronger dividers between left/center/right pairs */
-.status-bar[data-chrome-kind='folder-merge'][data-pane-count='6'] .status-bar-pane:nth-child(2),
-.status-bar[data-chrome-kind='folder-merge'][data-pane-count='6'] .status-bar-pane:nth-child(4) {
+.status-bar[data-chrome-kind='folder-merge'] .status-bar-pane[data-testid^='status-pane-spacer'] {
+  min-width: 0;
+}
+
+/* Capture folder-merge strip: stronger dividers between left/center/right groups */
+.status-bar[data-chrome-kind='folder-merge'][data-pane-count='12'] .status-bar-pane:nth-child(4),
+.status-bar[data-chrome-kind='folder-merge'][data-pane-count='12'] .status-bar-pane:nth-child(8) {
   border-right-color: #8e8e8e;
 }
 

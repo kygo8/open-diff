@@ -63,7 +63,9 @@ describe('folder sync/merge chrome density', () => {
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?height:\s*19\.5px/,
     )
-    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-merge'\]\[data-pane-count='6'\]/)
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-merge'\]\[data-pane-count='12'\]/,
+    )
   })
 
   it('keeps Sync/Merge plan/preview/action chrome dense one more notch vs Folder Compare band', () => {

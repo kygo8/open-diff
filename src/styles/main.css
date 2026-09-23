@@ -4222,3 +4222,64 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
   line-height: 16px !important;
 }
+
+.settings-view .options-content {
+  gap: 4px !important;
+  padding: 0 !important;
+}
+
+.settings-view .options-content [class='n-card__content'] {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+}
+
+.settings-view .options-content .n-checkbox {
+  min-height: 18px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+/* Session Rules/Options dialog content chrome at capture CSS scale */
+.session-settings-dialog {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.session-settings-dialog .settings-body {
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+}
+
+.session-settings-dialog .settings-tabs button,
+.session-settings-dialog footer button {
+  height: 18px !important;
+  min-height: 18px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.session-settings-dialog .settings-body input:not([type='checkbox']),
+.session-settings-dialog .settings-body select {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+.session-settings-dialog .settings-body label {
+  gap: 6px !important;
+  min-height: 18px !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}

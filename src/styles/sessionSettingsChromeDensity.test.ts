@@ -9,6 +9,8 @@ const settingsDialog = readFileSync(
   'utf8',
 )
 const hexView = readFileSync(resolve(root, 'src/views/HexCompareView.vue'), 'utf8')
+const css = readFileSync(resolve(root, 'src/styles/main.css'), 'utf8')
+const settingsView = readFileSync(resolve(root, 'src/views/SettingsView.vue'), 'utf8')
 
 describe('session settings and hex goto chrome density', () => {
   it('keeps Session Settings dialog chrome dense toward report-panel spacing', () => {
@@ -16,13 +18,21 @@ describe('session settings and hex goto chrome density', () => {
     expect(settingsDialog).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(settingsDialog).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?gap:\s*4px/)
     expect(settingsDialog).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(settingsDialog).toMatch(
+      /\.session-settings-dialog\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
+    )
+    expect(settingsDialog).toMatch(/data-options-rules-density="capture-1to1"/)
+    expect(settingsDialog).toMatch(/\.settings-body\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(settingsDialog).toMatch(/\.settings-body\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
+    expect(settingsDialog).toMatch(/\.settings-body label\s*\{[\s\S]*?font-size:\s*11px/)
+    expect(settingsDialog).toMatch(/\.settings-tabs button\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
     expect(settingsDialog).toMatch(/h2\s*\{[\s\S]*?font-size:\s*12px/)
     expect(settingsDialog).toMatch(/\.settings-tabs button\s*\{[\s\S]*?height:\s*18px/)
     expect(settingsDialog).toMatch(/\.settings-body\s*\{[\s\S]*?gap:\s*4px/)
     expect(settingsDialog).toMatch(
       /\.settings-body input:not\(\[type='checkbox'\]\),\s*\.settings-body select\s*\{[\s\S]*?height:\s*20px/,
     )
-    expect(settingsDialog).toMatch(/\.settings-body textarea\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(settingsDialog).toMatch(/\.settings-body textarea\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(settingsDialog).toMatch(/\.settings-body textarea\s*\{[\s\S]*?border-radius:\s*0/)
     expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*18px/)
     expect(settingsDialog).not.toMatch(/box-shadow:\s*0 18px 44px/)
@@ -38,5 +48,28 @@ describe('session settings and hex goto chrome density', () => {
     expect(hexView).toMatch(/\.hex-goto-dialog footer\s*\{[\s\S]*?gap:\s*4px/)
     expect(hexView).toMatch(/\.hex-goto-dialog footer button\s*\{[\s\S]*?height:\s*18px/)
     expect(hexView).not.toMatch(/\.hex-goto-dialog\s*\{[\s\S]*?padding:\s*16px/)
+  })
+})
+
+describe('options/rules dialog content depth', () => {
+  it('deepens Options content and Session Rules dialog beyond shell chrome', () => {
+    expect(settingsView).toMatch(/data-options-content-density="capture-1to1"/)
+    expect(settingsView).toMatch(/\.options-content\s*\{[\s\S]*?gap:\s*4px/)
+    expect(settingsView).toMatch(
+      /\.options-content :deep\(\[class='n-card__content'\]\)\s*\{[\s\S]*?padding:\s*4px 6px/,
+    )
+    expect(settingsView).toMatch(
+      /\.options-content :deep\(\.n-checkbox\)\s*\{[\s\S]*?min-height:\s*18px/,
+    )
+    expect(css).toMatch(/\.settings-view \.options-content\s*\{[\s\S]*?gap:\s*4px/)
+    expect(css).toMatch(
+      /\.settings-view \.options-content \[class='n-card__content'\]\s*\{[\s\S]*?padding:\s*4px 6px/,
+    )
+    expect(css).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
+    expect(css).toMatch(/\.session-settings-dialog \.settings-body\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(css).toMatch(
+      /\.session-settings-dialog \.settings-body input:not\(\[type='checkbox'\]\)[\s\S]*?height:\s*20px/,
+    )
+    expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
   })
 })

@@ -69,6 +69,8 @@ describe('options dialog densify', () => {
     expect(css).toMatch(/\.settings-view \.n-card-header[\s\S]*?min-height:\s*20px/)
 
     expect(settingsView).toMatch(/data-options-density="capture-1to1"/)
+    expect(settingsView).toMatch(/data-options-content-density="capture-1to1"/)
+    expect(settingsView).toMatch(/\.options-content\s*\{[\s\S]*?gap:\s*4px/)
     expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*176px/)
     expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*18px/)

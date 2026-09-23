@@ -11,19 +11,19 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('hex compare chrome density', () => {
   it('keeps Hex Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.hex-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.hex-compare-view \.bc-path-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.hex-compare-view \.bc-path-row\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.hex-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*18px/)
 
     expect(hexView).toMatch(/\.hex-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(hexView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(hexView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(hexView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(hexView).toMatch(/SessionPathActions/)
     expect(hexView).toMatch(/PathMetaFooter/)
-    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(hexView).toMatch(/chromeKind:\s*'hex-session'/)
     expect(hexView).not.toMatch(/font-size:\s*9px/)
     expect(hexView).not.toMatch(/min-height:\s*9px/)
@@ -55,13 +55,13 @@ describe('hex compare chrome density', () => {
     expect(css).toMatch(
       /\.hex-compare-view \.hex-summary,[\s\S]*?\.hex-compare-view \.hex-report-panel[\s\S]*?padding:\s*4px 6px/,
     )
-    expect(css).toMatch(/\.hex-compare-view \.hex-report-panel header[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-report-panel header[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-side[\s\S]*?padding:\s*4px 6px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-summary strong\s*\{[\s\S]*?font-size:\s*12px/)
 
     expect(hexView).toMatch(/\.hex-summary\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(hexView).toMatch(/\.hex-report-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
-    expect(hexView).toMatch(/\.hex-report-panel header\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(hexView).toMatch(/\.hex-report-panel header\s*\{[\s\S]*?min-height:\s*18px/)
     expect(hexView).toMatch(/\.hex-side\s*\{[\s\S]*?padding:\s*4px 6px/)
   })
 
@@ -69,7 +69,7 @@ describe('hex compare chrome density', () => {
     expect(hexView).toMatch(/data-hex-panel-density="capture-1to1"/)
     expect(hexView).toMatch(/\.hex-rules-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?gap:\s*6px/)
-    expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?min-height:\s*18px/)
     expect(hexView).toMatch(/\.hex-rules-row\s*\{[\s\S]*?margin:\s*0/)
     expect(hexView).toMatch(/\.hex-rules-row input\[type='number'\]\s*\{[\s\S]*?height:\s*20px/)
     expect(hexView).toMatch(/\.hex-rules-row ~ button\s*\{[\s\S]*?height:\s*20px/)
@@ -78,5 +78,26 @@ describe('hex compare chrome density', () => {
       /\.hex-compare-view \.hex-rules-row input\[type='number'\][\s\S]*?height:\s*20px/,
     )
     expect(css).toMatch(/\.hex-compare-view \.hex-rules-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
+  })
+})
+
+describe('hex path and windowed grid chrome residual', () => {
+  it('keeps Hex path chrome and windowed grid on the capture band', () => {
+    expect(hexView).toMatch(/data-testid="hex-path-chrome"/)
+    expect(hexView).toMatch(/data-path-density="capture-1to1"/)
+    expect(hexView).toMatch(/data-secondary-density="capture-1to1"/)
+    expect(hexView).toMatch(/hex-path-meta-strip/)
+    expect(hexView).toMatch(
+      /\.hex-path-fields\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/,
+    )
+    expect(hexView).toMatch(/\.hex-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?grid-template-columns:\s*72px/)
+    expect(hexView).toMatch(/\.hex-byte-selected\s*\{[\s\S]*?background:\s*#a8ffff/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-path-fields\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(
+      /\.hex-compare-view \.hex-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(hexView).not.toMatch(/min-height:\s*6px/)
   })
 })

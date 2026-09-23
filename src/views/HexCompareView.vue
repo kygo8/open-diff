@@ -890,18 +890,19 @@ async function runHexSave(): Promise<void> {
       </header>
 
       <section
-        class="hex-wrap-controls"
-        data-hex-chrome-density="capture-1to1"
+        class="hex-path-chrome"
+        data-testid="hex-path-chrome"
+        data-path-density="capture-1to1"
       >
-        <label>
-          <span>{{ $t('ui.left') }} {{ $t('ui.path') }}</span>
-          <div class="path-field-row">
+        <div class="hex-path-fields">
+          <div class="path-field-row hex-path-field">
             <input
               v-model="leftPath"
               type="text"
               class="path-input"
               data-testid="hex-left-path"
               :title="leftPath"
+              :aria-label="$t('ui.left') + ' ' + $t('ui.path')"
             />
             <SessionPathActions
               browse-test-id="hex-browse-left"
@@ -910,16 +911,14 @@ async function runHexSave(): Promise<void> {
               @browse="browseHexPath('left')"
             />
           </div>
-        </label>
-        <label>
-          <span>{{ $t('ui.right') }} {{ $t('ui.path') }}</span>
-          <div class="path-field-row">
+          <div class="path-field-row hex-path-field">
             <input
               v-model="rightPath"
               type="text"
               class="path-input"
               data-testid="hex-right-path"
               :title="rightPath"
+              :aria-label="$t('ui.right') + ' ' + $t('ui.path')"
             />
             <SessionPathActions
               browse-test-id="hex-browse-right"
@@ -928,10 +927,11 @@ async function runHexSave(): Promise<void> {
               @browse="browseHexPath('right')"
             />
           </div>
-        </label>
+        </div>
         <div
-          class="bc-path-footers"
+          class="bc-path-footers hex-path-meta-strip"
           data-testid="hex-path-footers"
+          data-secondary-density="capture-1to1"
         >
           <PathMetaFooter
             :stamp="leftFileStamp"
@@ -942,6 +942,11 @@ async function runHexSave(): Promise<void> {
             test-id="hex-right-path-footer"
           />
         </div>
+      </section>
+      <section
+        class="hex-wrap-controls"
+        data-hex-chrome-density="capture-1to1"
+      >
         <label>
           <span>{{ $t('ui.viewportWidth') }}</span>
           <input
@@ -1559,13 +1564,13 @@ h2 {
 
 .hex-row {
   display: grid;
-  grid-template-columns: 84px minmax(240px, 1fr) 132px;
-  min-width: 460px;
-  min-height: 18px;
-  border-bottom: 1px solid #a0a0a0;
+  grid-template-columns: 72px minmax(200px, 1fr) 120px;
+  min-width: 420px;
+  min-height: 16px;
+  border-bottom: 1px solid #e0e0e0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 11px;
-  line-height: 16px;
+  line-height: 14px;
 }
 
 .hex-row:last-child {
@@ -1576,10 +1581,10 @@ h2 {
 .hex-bytes,
 .hex-ascii {
   min-width: 0;
-  padding: 1px 6px;
+  padding: 0 4px;
   overflow: hidden;
-  border-right: 1px solid #a0a0a0;
-  line-height: 16px;
+  border-right: 1px solid #d0d0d0;
+  line-height: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1604,8 +1609,8 @@ h2 {
 }
 
 .hex-byte-selected {
-  border-color: var(--accent, #3b82f6);
-  background: color-mix(in srgb, var(--accent, #3b82f6) 22%, transparent);
+  border-color: #00c2c7;
+  background: #a8ffff;
 }
 
 .hex-report-panel {
@@ -1756,6 +1761,54 @@ h2 {
   line-height: 16px;
 }
 
+.hex-path-chrome {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+}
+
+.hex-path-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2px;
+  min-height: 22px;
+  padding: 1px 2px;
+}
+
+.hex-path-field {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hex-path-field .path-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 20px;
+  padding: 0 4px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  font-size: 12px;
+}
+
+.hex-path-meta-strip {
+  min-height: 18px;
+  padding: 1px 4px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f0f0f0;
+}
+
+.hex-path-meta-strip :deep(.path-meta-footer) {
+  gap: 8px;
+  min-height: 16px;
+  color: #111111;
+  font-size: 11px;
+  line-height: 16px;
+}
+
 .bc-path-footers {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1766,7 +1819,7 @@ h2 {
 }
 
 .path-side-footer {
-  min-height: 20px;
+  min-height: 18px;
   margin-top: 0;
   color: var(--app-text-muted);
   font-size: 11px;

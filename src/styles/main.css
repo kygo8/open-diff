@@ -2007,16 +2007,33 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 0 !important;
 }
 
-/* Hex Compare path chrome densify toward capture (~20px path/status) */
+/* Hex Compare path + windowed grid chrome toward capture */
 .hex-compare-view {
   gap: 2px !important;
   padding: 2px 4px !important;
 }
 
+.hex-compare-view .hex-path-chrome {
+  gap: 1px !important;
+}
+
+.hex-compare-view .hex-path-fields {
+  gap: 2px !important;
+  min-height: 22px !important;
+  padding: 1px 2px !important;
+}
+
+.hex-compare-view .hex-path-field .path-input {
+  height: 20px !important;
+  padding: 0 4px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
+}
+
 .hex-compare-view .bc-path-row {
   gap: 2px !important;
-  min-height: 20px !important;
-  padding: 1px 3px !important;
+  min-height: 22px !important;
+  padding: 1px 2px !important;
 }
 
 .hex-compare-view .bc-path-row input {
@@ -2031,19 +2048,25 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 11px !important;
 }
 
-.hex-compare-view .bc-path-footers {
+.hex-compare-view .bc-path-footers,
+.hex-compare-view .hex-path-meta-strip {
   gap: 1px !important;
-  padding: 0 2px !important;
+  min-height: 18px !important;
+  padding: 1px 4px !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 0 !important;
+  background: #f0f0f0 !important;
 }
 
 .hex-compare-view .path-side-footer {
-  min-height: 20px !important;
+  min-height: 18px !important;
   margin-top: 0 !important;
+  color: #111111 !important;
   font-size: 11px !important;
   line-height: 16px !important;
 }
 
-/* Hex wrap/controls + byte rows at capture CSS scale (~18px rows; path-band controls ~20px) */
+/* Hex wrap/controls + byte rows at capture CSS scale */
 .hex-compare-view .hex-wrap-controls {
   gap: 4px 6px !important;
   min-height: 22px !important;
@@ -2072,18 +2095,24 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .hex-row {
-  min-height: 18px !important;
-  border-bottom: 1px solid #a0a0a0 !important;
+  grid-template-columns: 72px minmax(200px, 1fr) 120px !important;
+  min-height: 16px !important;
+  border-bottom: 1px solid #e0e0e0 !important;
   font-size: 11px !important;
-  line-height: 16px !important;
+  line-height: 14px !important;
 }
 
 .hex-compare-view .hex-offset,
 .hex-compare-view .hex-bytes,
 .hex-compare-view .hex-ascii {
-  padding: 1px 6px !important;
-  border-right: 1px solid #a0a0a0 !important;
-  line-height: 16px !important;
+  padding: 0 4px !important;
+  border-right: 1px solid #d0d0d0 !important;
+  line-height: 14px !important;
+}
+
+.hex-compare-view .hex-byte-selected {
+  border-color: #00c2c7 !important;
+  background: #a8ffff !important;
 }
 
 .hex-compare-view .hex-offset {

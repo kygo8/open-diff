@@ -75,7 +75,7 @@ describe('picture compare chrome density', () => {
     expect(css).toMatch(/\.picture-compare-view \.picture-controls[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.picture-compare-view \.picture-controls input[\s\S]*?height:\s*18px/)
     expect(css).toMatch(/\.picture-compare-view \.picture-side\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.picture-compare-view \.picture-pane-grid\s*\{[\s\S]*?gap:\s*4px/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-pane-grid\s*\{[\s\S]*?gap:\s*1px/)
     expect(css).toMatch(
       /\.picture-compare-view \.picture-options-panel header[\s\S]*?min-height:\s*20px/,
     )
@@ -83,7 +83,7 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/\.picture-controls\s*\{[\s\S]*?min-height:\s*20px/)
     expect(pictureView).toMatch(/\.picture-transform-tools button\s*\{[\s\S]*?height:\s*18px/)
     expect(pictureView).toMatch(/\.picture-side\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(pictureView).toMatch(/\.picture-pane-grid\s*\{[\s\S]*?gap:\s*4px/)
+    expect(pictureView).toMatch(/\.picture-pane-grid\s*\{[\s\S]*?gap:\s*1px/)
     expect(pictureView).toMatch(/\.picture-options-panel\s*\{[\s\S]*?min-height:\s*20px/)
     expect(pictureView).toMatch(/\.picture-report-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
   })
@@ -104,5 +104,22 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/\.picture-diff-region\s*\{[\s\S]*?border-radius:\s*0/)
     expect(pictureView).not.toMatch(/min\(78%, 420px\)/)
     expect(pictureView).not.toMatch(/box-shadow:\s*0 16px 42px/)
+  })
+})
+
+describe('picture stage canvas density', () => {
+  it('keeps Picture stage/quadrant canvas and Tol overlay on capture band', () => {
+    expect(pictureView).toMatch(/data-testid="picture-stage"/)
+    expect(pictureView).toMatch(/data-canvas-density="capture-1to1"/)
+    expect(pictureView).toMatch(/data-testid="picture-diff-stage"/)
+    expect(pictureView).toMatch(/picture-tol-overlay/)
+    expect(pictureView).toMatch(/data-tol-placement="stage-overlay"/)
+    expect(pictureView).toMatch(/\.picture-stage\s*\{[\s\S]*?background:\s*#1c1c16/)
+    expect(pictureView).toMatch(/\.picture-stage\s*\{[\s\S]*?min-height:\s*360px/)
+    expect(pictureView).toMatch(/\.picture-pane-grid\s*\{[\s\S]*?gap:\s*1px/)
+    expect(pictureView).toMatch(/\.picture-tol-overlay\s*\{[\s\S]*?top:\s*8px/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-stage\s*\{[\s\S]*?background:\s*#1c1c16/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-pane-grid\s*\{[\s\S]*?gap:\s*1px/)
+    expect(pictureView).not.toMatch(/min-height:\s*6px/)
   })
 })

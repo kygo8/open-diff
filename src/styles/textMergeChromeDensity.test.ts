@@ -13,14 +13,14 @@ describe('text merge chrome density', () => {
     expect(css).toMatch(/\.text-merge-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.text-merge-view \.merge-toolbar\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.text-merge-view \.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
-    expect(css).toMatch(/\.text-merge-view \.pane-header\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(css).toMatch(/\.text-merge-view \.output-editor\s*\{[\s\S]*?line-height:\s*18px/)
+    expect(css).toMatch(/\.text-merge-view \.pane-header\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.text-merge-view \.output-editor\s*\{[\s\S]*?line-height:\s*16px/)
     expect(css).toMatch(/\.text-merge-view \.output-path-input\s*\{[\s\S]*?height:\s*20px/)
 
     expect(mergeView).toMatch(/\.text-merge-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mergeView).toMatch(/\.merge-toolbar\s*\{[\s\S]*?min-height:\s*20px/)
     expect(mergeView).toMatch(/\.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
-    expect(mergeView).toMatch(/\.pane-header\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(mergeView).toMatch(/\.pane-header\s*\{[\s\S]*?min-height:\s*18px/)
     expect(mergeView).toMatch(/\.output-path-input\s*\{[\s\S]*?height:\s*20px/)
     expect(mergeView).toMatch(/chromeKind:\s*'text-session'/)
     expect(mergeView).toMatch(/session-toolbar-wrap/)
@@ -50,7 +50,7 @@ describe('text merge chrome density', () => {
 
     expect(mergeView).toMatch(/\.merge-lines li\s*\{[\s\S]*?min-height:\s*18px/)
     expect(mergeView).toMatch(/grid-template-columns:\s*36px minmax\(0, 1fr\)/)
-    expect(mergeView).toMatch(/\.output-editor\s*\{[\s\S]*?line-height:\s*18px/)
+    expect(mergeView).toMatch(/\.output-editor\s*\{[\s\S]*?line-height:\s*16px/)
   })
 })
 
@@ -67,5 +67,20 @@ describe('text merge multi-pane path chrome density', () => {
     expect(css).toMatch(/\.text-merge-view \.merge-to-chrome\s*\{[\s\S]*?min-height:\s*22px/)
     expect(css).toMatch(/\.text-merge-view \.merge-path-footers\s*\{[\s\S]*?gap:\s*2px/)
     expect(mergeView).not.toMatch(/\.merge-path-footers\s*\{[\s\S]*?gap:\s*8px/)
+  })
+})
+
+describe('text merge editor pane residual', () => {
+  it('keeps Text Merge editor pane chrome on the capture band (Clipboard swap)', () => {
+    // No dedicated Clipboard capture PNG remains drifting after #322; swap to Text Merge editor.
+    expect(mergeView).toMatch(/data-editor-chrome="capture-1to1"/)
+    expect(mergeView).toMatch(/data-editor-density="capture-1to1"/)
+    expect(mergeView).toMatch(/\.merge-grid\s*\{[\s\S]*?gap:\s*1px/)
+    expect(mergeView).toMatch(/\.output-editor\s*\{[\s\S]*?line-height:\s*16px/)
+    expect(mergeView).toMatch(/\.conflict-panel\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(css).toMatch(/\.text-merge-view \.merge-grid\s*\{[\s\S]*?gap:\s*1px/)
+    expect(css).toMatch(/\.text-merge-view \.pane-header\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.text-merge-view \.output-editor\s*\{[\s\S]*?line-height:\s*16px/)
+    expect(mergeView).not.toMatch(/min-height:\s*6px/)
   })
 })

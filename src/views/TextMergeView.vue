@@ -1197,6 +1197,8 @@ watch(
       <div
         class="merge-grid"
         data-testid="merge-four-way-grid"
+        data-editor-density="capture-1to1"
+        data-editor-chrome="capture-1to1"
       >
         <section
           v-for="pane in sourcePanes"
@@ -1530,7 +1532,7 @@ watch(
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: 2px;
+  gap: 1px;
   min-height: 0;
 }
 
@@ -1575,9 +1577,10 @@ watch(
   align-items: center;
   justify-content: space-between;
   gap: 2px;
-  min-height: 20px;
+  min-height: 18px;
   padding: 1px 3px;
   border-bottom: 1px solid var(--app-border);
+  background: #f5f5f5;
   background: var(--app-surface-muted);
 }
 
@@ -1610,14 +1613,15 @@ watch(
   width: 100%;
   min-width: 0;
   min-height: 0;
-  padding: 2px 4px;
+  padding: 1px 4px;
   border: 0;
+  border-radius: 0;
   outline: 0;
   background: var(--app-surface);
   color: var(--app-text);
   font-family: var(--font-mono);
   font-size: 11px;
-  line-height: 18px;
+  line-height: 16px;
   resize: none;
   white-space: pre;
 }
@@ -1666,6 +1670,7 @@ watch(
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+  background: #f5f5f5;
 }
 
 .conflict-panel header {

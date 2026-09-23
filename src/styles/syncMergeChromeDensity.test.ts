@@ -17,9 +17,13 @@ describe('folder sync/merge chrome density', () => {
       /\.folder-sync-view \.sync-setting-actions \.n-button[\s\S]*?height:\s*30px/,
     )
     expect(css).toMatch(/\.folder-merge-view \.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(css).toMatch(/\.folder-merge-view \.merge-to-chrome\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(
+      /\.folder-merge-view \.merge-actions \.n-button\[data-testid='folder-merge-execute-plan'\][\s\S]*?height:\s*36px/,
+    )
     expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*30px/)
 
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?min-height:\s*22px/)
@@ -46,6 +50,8 @@ describe('folder sync/merge chrome density', () => {
     expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(mergeView).toMatch(/folder-merge-to-chrome/)
+    expect(mergeView).toMatch(/\.merge-actions :deep\(\.n-button\)\s*\{[\s\S]*?height:\s*30px/)
     expect(mergeView).toMatch(/chromeKind:\s*'folder-pair'/)
 
     expect(layout).toMatch(
@@ -58,7 +64,7 @@ describe('folder sync/merge chrome density', () => {
     expect(css).toMatch(/\.folder-sync-view \.sync-preview-row select[\s\S]*?height:\s*18px/)
     expect(css).toMatch(/\.folder-sync-view \.sync-chrome-panel\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-plan-row span[\s\S]*?padding:\s*1px 4px/)
-    expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*30px/)
     expect(css).toMatch(/\.folder-merge-view \.conflict-panel li\s*\{[\s\S]*?padding:\s*2px 4px/)
 
     expect(syncView).toMatch(/\.sync-preview-row span[\s\S]*?padding:\s*1px 4px/)

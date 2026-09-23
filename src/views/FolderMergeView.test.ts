@@ -391,6 +391,26 @@ describe('FolderMergeView', () => {
     vi.useRealTimers()
   })
 
+  it('exposes Merge to Left/Right/Other chrome and mirrors left target', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+
+    expect(wrapper.find('[data-testid="folder-merge-to-chrome"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-to-other"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="folder-merge-to-left"]').setValue(true)
+    expect(
+      (wrapper.find('[data-testid="folder-merge-output-path"]').element as HTMLInputElement).value,
+    ).toBe(
+      (wrapper.find('[data-testid="folder-merge-left-path"]').element as HTMLInputElement).value,
+    )
+    expect(
+      (wrapper.find('[data-testid="folder-merge-output-path"]').element as HTMLInputElement)
+        .disabled,
+    ).toBe(true)
+  })
+
   it('filters Same OK rows and peeks a selected plan row', async () => {
     const wrapper = mountFolderMergeView()
 

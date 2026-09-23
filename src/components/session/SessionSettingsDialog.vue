@@ -22,8 +22,13 @@ import {
   defaultPictureCompareOptions,
   type PictureCompareOptionsState,
 } from '@/app/pictureCompareOptions'
+import {
+  defaultMediaCompareOptions,
+  mediaFieldFilters,
+  type MediaCompareOptionsState,
+} from '@/app/mediaCompareOptions'
 
-export type SessionSettingsKind = 'folder' | 'text' | 'table' | 'hex' | 'picture'
+export type SessionSettingsKind = 'folder' | 'text' | 'table' | 'hex' | 'picture' | 'media'
 
 const props = withDefaults(
   defineProps<{
@@ -35,6 +40,7 @@ const props = withDefaults(
     tableOptions?: TableCompareSessionOptions
     hexOptions?: HexCompareSessionOptions
     pictureOptions?: PictureCompareOptionsState
+    mediaOptions?: MediaCompareOptionsState
   }>(),
   {
     folderCriteria: () => ({
@@ -72,6 +78,7 @@ const props = withDefaults(
     }),
     hexOptions: () => defaultHexCompareSessionOptions(),
     pictureOptions: () => defaultPictureCompareOptions(),
+    mediaOptions: () => defaultMediaCompareOptions(),
   },
 )
 
@@ -83,7 +90,8 @@ const emit = defineEmits<{
       | { kind: 'text'; options: TextCompareSessionOptions }
       | { kind: 'table'; options: TableCompareSessionOptions }
       | { kind: 'hex'; options: HexCompareSessionOptions }
-      | { kind: 'picture'; options: PictureCompareOptionsState },
+      | { kind: 'picture'; options: PictureCompareOptionsState }
+      | { kind: 'media'; options: MediaCompareOptionsState },
   ]
 }>()
 
@@ -110,6 +118,7 @@ const draftHex = ref<HexCompareSessionOptions>({
   bytesPerRow: normalizeHexBytesPerRow(props.hexOptions.bytesPerRow),
 })
 const draftPicture = ref<PictureCompareOptionsState>({ ...props.pictureOptions })
+const draftMedia = ref<MediaCompareOptionsState>({ ...props.mediaOptions })
 const ignoreRegexDraft = ref(props.textOptions.ignoreRegexes.join(', '))
 const ignoredColumnsDraft = ref(props.tableOptions.ignoredColumns.join(', '))
 
@@ -123,6 +132,7 @@ watch(
       props.tableOptions,
       props.hexOptions,
       props.pictureOptions,
+      props.mediaOptions,
     ] as const,
   ([open]) => {
     if (!open) {
@@ -147,6 +157,7 @@ watch(
       bytesPerRow: normalizeHexBytesPerRow(props.hexOptions.bytesPerRow),
     }
     draftPicture.value = { ...props.pictureOptions }
+    draftMedia.value = { ...props.mediaOptions }
     ignoreRegexDraft.value = props.textOptions.ignoreRegexes.join(', ')
     ignoredColumnsDraft.value = props.tableOptions.ignoredColumns.join(', ')
     folderTab.value = 'comparison'
@@ -166,6 +177,8 @@ const titleKey = computed(() => {
       return 'ui.hexSessionSettings'
     case 'picture':
       return 'ui.pictureSessionSettings'
+    case 'media':
+      return 'ui.mediaSessionSettings'
   }
 
   return 'ui.sessionSettings'
@@ -228,6 +241,12 @@ function applySettings(): void {
         bytesPerRow: normalizeHexBytesPerRow(draftHex.value.bytesPerRow),
       },
     })
+
+    return
+  }
+
+  if (props.kind === 'media') {
+    emit('apply', { kind: 'media', options: { ...draftMedia.value } })
 
     return
   }
@@ -599,7 +618,7 @@ function applySettings(): void {
       </div>
 
       <div
-        v-else
+        v-else-if="kind === 'picture'"
         class="settings-body"
         data-testid="session-settings-picture"
       >
@@ -633,6 +652,44 @@ function applySettings(): void {
             max="255"
             data-testid="session-settings-picture-alpha-tolerance"
           />
+        </label>
+      </div>
+
+      <div
+        v-else-if="kind === 'media'"
+        class="settings-panel"
+        data-testid="session-settings-media"
+      >
+        <label class="settings-check">
+          <input
+            v-model="draftMedia.syncPlayback"
+            data-testid="session-settings-media-sync-playback"
+            type="checkbox"
+          />
+          <span>{{ $t('ui.syncPlayback') }}</span>
+        </label>
+        <label class="settings-check">
+          <input
+            v-model="draftMedia.showRules"
+            data-testid="session-settings-media-show-rules"
+            type="checkbox"
+          />
+          <span>{{ $t('ui.rules') }}</span>
+        </label>
+        <label class="settings-field">
+          <span>{{ $t('ui.filter') }}</span>
+          <select
+            v-model="draftMedia.defaultFilter"
+            data-testid="session-settings-media-default-filter"
+          >
+            <option
+              v-for="filter in mediaFieldFilters"
+              :key="filter"
+              :value="filter"
+            >
+              {{ filter }}
+            </option>
+          </select>
         </label>
       </div>
 

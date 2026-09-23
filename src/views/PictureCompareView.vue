@@ -113,7 +113,8 @@ function applyPictureSessionSettings(
     | { kind: 'text'; options: unknown }
     | { kind: 'table'; options: unknown }
     | { kind: 'hex'; options: unknown }
-    | { kind: 'picture'; options: PictureCompareOptionsState },
+    | { kind: 'picture'; options: PictureCompareOptionsState }
+    | { kind: 'media'; options: unknown },
 ): void {
   if (payload.kind !== 'picture') {
     return

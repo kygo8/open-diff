@@ -6,6 +6,7 @@ import { compareMediaFiles, saveTextFile } from '@/api/diff'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useViewActionsStore } from '@/stores/viewActions'
+import { useSettingsStore } from '@/stores/settings'
 
 const clipboardWriteText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined)
 
@@ -357,7 +358,8 @@ describe('MediaCompareView', () => {
     expect(wrapper.find('[data-testid="media-rules-panel"]').exists()).toBe(true)
     viewActions.dispatch('session-settings')
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('[data-testid="media-rules-panel"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="session-settings-dialog"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="media-rules-panel"]').exists()).toBe(true)
   })
   it('shows size/date path footers after compare', async () => {
     const wrapper = mount(MediaCompareView, {
@@ -372,5 +374,27 @@ describe('MediaCompareView', () => {
     expect(wrapper.find('[data-testid="media-path-footers"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="media-left-path-footer"]').text()).toMatch(/bytes/)
     expect(wrapper.find('[data-testid="media-right-path-footer"]').text()).toMatch(/bytes/)
+  })
+
+  it('shows Sessions in the main toolbar and opens session settings', async () => {
+    const settings = useSettingsStore()
+
+    settings.setShowSessionsInToolbar(true)
+
+    const wrapper = mount(MediaCompareView)
+    const sessionsButton = wrapper.find('[data-testid="media-session-toolbar-sessions"]')
+
+    expect(sessionsButton.exists()).toBe(true)
+    expect(sessionsButton.attributes('disabled')).toBeUndefined()
+
+    await sessionsButton.trigger('click')
+    expect(wrapper.find('[data-testid="session-settings-dialog"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="session-settings-media"]').exists()).toBe(true)
+
+    await wrapper.find('[data-testid="session-settings-media-sync-playback"]').setValue(false)
+    await wrapper.find('[data-testid="session-settings-apply"]').trigger('click')
+    expect(wrapper.find('[data-testid="session-settings-dialog"]').exists()).toBe(false)
+
+    wrapper.unmount()
   })
 })

@@ -190,7 +190,8 @@ function applyHexSessionSettings(
     | { kind: 'text'; options: unknown }
     | { kind: 'table'; options: unknown }
     | { kind: 'hex'; options: HexCompareSessionOptions }
-    | { kind: 'picture'; options: unknown },
+    | { kind: 'picture'; options: unknown }
+    | { kind: 'media'; options: unknown },
 ): void {
   if (payload.kind !== 'hex') {
     return

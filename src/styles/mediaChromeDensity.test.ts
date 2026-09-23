@@ -28,6 +28,7 @@ describe('media compare chrome density', () => {
     )
     expect(mediaView).toMatch(/chromeKind:\s*'media-session'/)
     expect(mediaView).toMatch(/sessions:\s*true/)
+    expect(mediaView).toMatch(/SessionSettingsDialog/)
     expect(mediaView).not.toMatch(/font-size:\s*9px/)
     expect(mediaView).not.toMatch(/min-height:\s*9px/)
 

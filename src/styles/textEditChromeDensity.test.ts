@@ -12,13 +12,13 @@ const phrases = readFileSync(resolve(root, 'src/app/statusBarPhrases.ts'), 'utf8
 describe('text edit chrome density', () => {
   it('keeps Text Edit path/toolbar/editor/status chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.text-edit-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.text-edit-view \.path-toolbar[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.text-edit-view \.path-toolbar[\s\S]*?min-height:\s*22px/)
     expect(css).toMatch(/\.text-edit-view \.path-input[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.text-edit-view \.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
     expect(css).toMatch(/\.text-edit-view[\s\S]*?line-height:\s*18px/)
 
     expect(editView).toMatch(/\.text-edit-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(editView).toMatch(/\.path-toolbar[\s\S]*?min-height:\s*20px/)
+    expect(editView).toMatch(/\.path-toolbar[\s\S]*?min-height:\s*22px/)
     expect(editView).toMatch(/\.path-input[\s\S]*?height:\s*20px/)
     expect(editView).toMatch(/\.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
     expect(editView).toMatch(/:deep\(textarea\)\s*\{[\s\S]*?line-height:\s*18px/)
@@ -47,5 +47,19 @@ describe('text edit chrome density', () => {
     expect(editView).toMatch(/SessionPathActions/)
     expect(editView).toMatch(/PathMetaFooter/)
     expect(editView).toMatch(/bc-path-load/)
+  })
+})
+
+describe('text edit path toolbar residual', () => {
+  it('keeps Text Edit path and toolbar chrome on the capture band', () => {
+    expect(editView).toMatch(/data-testid="text-edit-path-chrome"/)
+    expect(editView).toMatch(/data-path-density="capture-1to1"/)
+    expect(editView).toMatch(/data-secondary-density="capture-1to1"/)
+    expect(editView).toMatch(/text-edit-path-meta-strip/)
+    expect(editView).toMatch(/\.text-edit-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(editView).toMatch(/\.toolbar-button\s*\{[\s\S]*?border-radius:\s*0/)
+    expect(css).toMatch(/\.text-edit-view \.path-toolbar[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(/\.text-edit-view \.text-edit-path-meta-strip[\s\S]*?background:\s*#f0f0f0/)
+    expect(editView).not.toMatch(/min-height:\s*6px/)
   })
 })

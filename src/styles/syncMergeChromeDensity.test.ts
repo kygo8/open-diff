@@ -52,11 +52,18 @@ describe('folder sync/merge chrome density', () => {
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?min-height:\s*22px/)
     expect(mergeView).toMatch(/folder-merge-to-chrome/)
     expect(mergeView).toMatch(/\.merge-actions :deep\(\.n-button\)\s*\{[\s\S]*?height:\s*30px/)
-    expect(mergeView).toMatch(/chromeKind:\s*'folder-pair'/)
+    expect(mergeView).toMatch(/chromeKind:\s*'folder-merge'/)
+    expect(mergeView).toMatch(/centerSelection:/)
+    expect(mergeView).toMatch(/centerFreeSpace:/)
+    expect(mergeView).toMatch(/refreshMergeFreeSpace/)
 
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*19\.5px/,
     )
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?height:\s*19\.5px/,
+    )
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-merge'\]\[data-pane-count='6'\]/)
   })
 
   it('keeps Sync/Merge plan/preview/action chrome dense one more notch vs Folder Compare band', () => {

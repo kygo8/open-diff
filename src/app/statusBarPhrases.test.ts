@@ -17,7 +17,10 @@ import {
   isClipboardSessionStatusSource,
   padStatusChromePanes,
   buildFolderPairStatusPanes,
+  buildFolderMergeStatusPanes,
   FOLDER_PAIR_STATUS_PANE_COUNT,
+  FOLDER_MERGE_STATUS_PANE_COUNT,
+  isFolderMergeStatusSource,
 } from './statusBarPhrases'
 
 describe('statusBarPhrases', () => {
@@ -32,7 +35,9 @@ describe('statusBarPhrases', () => {
     expect(isEditModeStatusSource('text-patch')).toBe(false)
     expect(isFolderPairStatusSource('folder-compare')).toBe(true)
     expect(isFolderPairStatusSource('folder-sync')).toBe(true)
-    expect(isFolderPairStatusSource('folder-merge')).toBe(true)
+    expect(isFolderPairStatusSource('folder-merge')).toBe(false)
+    expect(isFolderMergeStatusSource('folder-merge')).toBe(true)
+    expect(isFolderMergeStatusSource('folder-compare')).toBe(false)
     expect(isFolderPairStatusSource('text-compare')).toBe(false)
   })
 
@@ -117,5 +122,29 @@ describe('statusBarPhrases', () => {
 
     expect(empty).toHaveLength(4)
     expect(empty.every((pane) => pane.muted)).toBe(true)
+  })
+
+  it('builds folder-merge status panes for left/center/right editing and free space', () => {
+    const panes = buildFolderMergeStatusPanes({
+      leftSelection: 'Editing disabled',
+      leftFreeSpace: '91.8 GB free on C:\\',
+      centerSelection: 'Editing disabled',
+      centerFreeSpace: '91.8 GB free on C:\\',
+      rightSelection: 'Editing disabled',
+      rightFreeSpace: '91.8 GB free on D:\\',
+    })
+
+    expect(FOLDER_MERGE_STATUS_PANE_COUNT).toBe(6)
+    expect(panes).toHaveLength(6)
+    expect(panes.map((pane) => pane.testId)).toEqual([
+      'status-pane-left-selection',
+      'status-pane-left-free',
+      'status-pane-center-selection',
+      'status-pane-center-free',
+      'status-pane-right-selection',
+      'status-pane-right-free',
+    ])
+    expect(panes[0]?.text).toBe('Editing disabled')
+    expect(panes[3]?.text).toBe('91.8 GB free on C:\\')
   })
 })

@@ -7,6 +7,7 @@ import {
   formatLoadTimePhrase,
   isEditModeStatusSource,
   isFolderPairStatusSource,
+  isFolderMergeStatusSource,
   isHexSessionStatusSource,
   isMediaSessionStatusSource,
   isPictureSessionStatusSource,
@@ -43,6 +44,10 @@ export interface StatusBarReport {
   rightSelection: string | null
   /** Folder-pair right free-space label (already localized) when known. */
   rightFreeSpace: string | null
+  /** Folder-merge center selection / editing label when known. */
+  centerSelection: string | null
+  /** Folder-merge center free-space label when known. */
+  centerFreeSpace: string | null
 }
 
 const defaultReport: StatusBarReport = {
@@ -60,6 +65,8 @@ const defaultReport: StatusBarReport = {
   leftFreeSpace: null,
   rightSelection: null,
   rightFreeSpace: null,
+  centerSelection: null,
+  centerFreeSpace: null,
 }
 
 export const useStatusBarStore = defineStore('statusBar', () => {
@@ -99,6 +106,10 @@ export const useStatusBarStore = defineStore('statusBar', () => {
   const chromeKind = computed((): StatusChromeKind => {
     if (report.value.chromeKind !== 'standard') {
       return report.value.chromeKind
+    }
+
+    if (isFolderMergeStatusSource(report.value.source)) {
+      return 'folder-merge'
     }
 
     if (isFolderPairStatusSource(report.value.source)) {

@@ -45,4 +45,22 @@ describe('status strip pixel density', () => {
       /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind\$='-session'\]\)[\s\S]*?19\.5px/,
     )
   })
+
+  it('keeps folder-merge 6-segment strip at capture height with column dividers', () => {
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?height:\s*19\.5px/,
+    )
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?line-height:\s*18px/,
+    )
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-merge'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 1px/,
+    )
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-merge'\]\[data-pane-count='6'\] \.status-bar-pane:nth-child\(2\)/,
+    )
+    expect(layout).toMatch(
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-merge'\]\)/,
+    )
+  })
 })

@@ -1933,6 +1933,7 @@ const sourceSessionTypes = new Set<SessionType>([
           v-show="showTabStrip"
           class="tab-strip"
           data-testid="tab-strip"
+          data-tab-strip-density="capture-1to1-residual"
           :data-visible="showTabStrip ? 'true' : 'false'"
         >
           <div
@@ -2507,6 +2508,20 @@ const sourceSessionTypes = new Set<SessionType>([
   overflow: auto hidden;
   border-bottom: 1px solid #a0a0a0;
   background: var(--app-panel, var(--app-canvas));
+}
+
+.tab-strip[data-tab-strip-density='capture-1to1-residual'] {
+  background: #f0f0f0;
+}
+
+.tab-strip[data-tab-strip-density='capture-1to1-residual'] .tab-chip {
+  border-right: 1px solid #d0d0d0;
+}
+
+.tab-strip[data-tab-strip-density='capture-1to1-residual'] .tab-chip.active {
+  border-bottom: 1px solid #ffffff;
+  background: #ffffff;
+  box-shadow: inset 0 -1px 0 #ffffff;
 }
 
 .tab-context-menu {

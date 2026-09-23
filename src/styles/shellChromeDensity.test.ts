@@ -83,4 +83,14 @@ describe('shell chrome density', () => {
   it('marks WorkbenchShell frame at capture-1to1 density', () => {
     expect(workbench).toMatch(/data-shell-density="capture-1to1"/)
   })
+
+  it('keeps tab strip and sole-session frame residual capture chrome', () => {
+    expect(source).toMatch(/data-tab-strip-density="capture-1to1-residual"/)
+    expect(source).toMatch(
+      /\.tab-strip\[data-tab-strip-density='capture-1to1-residual'\]\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+    expect(mainCss).toMatch(
+      /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+  })
 })

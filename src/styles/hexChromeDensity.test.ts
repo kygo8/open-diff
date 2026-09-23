@@ -101,3 +101,19 @@ describe('hex path and windowed grid chrome residual', () => {
     expect(hexView).not.toMatch(/min-height:\s*6px/)
   })
 })
+
+describe('hex goto offset chrome residual', () => {
+  it('keeps Hex Go To and offset chrome on the capture band', () => {
+    expect(hexView).toMatch(/data-testid="hex-offset-chrome"/)
+    expect(hexView).toMatch(/data-offset-density="capture-1to1"/)
+    expect(hexView).toMatch(/data-goto-density="capture-1to1"/)
+    expect(hexView).toMatch(/\.hex-offset-chrome\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(hexView).toMatch(/\.hex-offset-chrome\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(hexView).toMatch(/\.hex-goto-dialog\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(hexView).toMatch(/\.hex-goto-dialog input\s*\{[\s\S]*?height:\s*20px/)
+    expect(hexView).toMatch(/\.hex-goto-dialog footer button\s*\{[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-offset-chrome\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(/\.hex-goto-dialog footer button\s*\{[\s\S]*?height:\s*18px/)
+    expect(hexView).not.toMatch(/min-height:\s*6px/)
+  })
+})

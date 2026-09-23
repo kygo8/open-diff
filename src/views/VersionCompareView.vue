@@ -663,8 +663,9 @@ watch(
           {{ $t('ui.runDiff') }}
         </button>
         <div
-          class="bc-path-footers"
+          class="bc-path-footers version-secondary-strip"
           data-testid="version-path-footers"
+          data-secondary-density="capture-1to1"
         >
           <PathMetaFooter
             :stamp="leftFileStamp"
@@ -1289,14 +1290,35 @@ h1 {
   gap: 1px;
   width: 100%;
   margin-top: 0;
-  padding: 0 2px;
+  padding: 0;
+}
+
+.version-secondary-strip {
+  min-height: 18px;
+  padding: 1px 4px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f5f5f5;
+}
+
+.version-secondary-strip :deep(.path-meta-footer) {
+  gap: 6px;
+  min-height: 16px;
+  color: #111111;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.version-secondary-strip :deep(.path-meta-chip),
+.version-secondary-strip :deep(.path-meta-eol) {
+  display: none;
 }
 
 .path-side-footer {
-  min-height: 20px;
+  min-height: 18px;
   margin-top: 0;
   overflow: hidden;
-  color: var(--app-text-muted, #6b7280);
+  color: #111111;
   font-size: 11px;
   line-height: 16px;
   text-overflow: ellipsis;

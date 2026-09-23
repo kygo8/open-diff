@@ -18,12 +18,12 @@ describe('version compare chrome density', () => {
       /\.version-compare-view \.version-path-panel input,\s*\.version-compare-view \.version-path-panel button\s*\{[\s\S]*?height:\s*20px/,
     )
     expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
 
     expect(versionView).toMatch(/\.version-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(versionView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(versionView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(versionView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(versionView).toMatch(/SessionPathActions/)
     expect(versionView).toMatch(/PathMetaFooter/)
     expect(versionView).toMatch(/\.version-path-panel input\s*\{[\s\S]*?height:\s*20px/)
@@ -64,5 +64,26 @@ describe('version compare chrome density', () => {
     expect(versionView).toMatch(/\.version-field-row > \*\s*\{[\s\S]*?line-height:\s*16px/)
     expect(versionView).toMatch(/\.version-side dl div\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(versionView).toMatch(/\.version-rule-row\s*\{[\s\S]*?min-height:\s*18px/)
+  })
+})
+
+describe('version secondary strip density', () => {
+  it('keeps Version secondary path-meta strip on capture band', () => {
+    expect(versionView).toMatch(/data-testid="version-path-footers"/)
+    expect(versionView).toMatch(/data-secondary-density="capture-1to1"/)
+    expect(versionView).toMatch(/version-secondary-strip/)
+    expect(versionView).toMatch(/\.version-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(versionView).toMatch(/\.version-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(versionView).toMatch(
+      /\.version-secondary-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?gap:\s*6px/,
+    )
+    expect(css).toMatch(
+      /\.version-compare-view \.version-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/,
+    )
+    expect(css).toMatch(
+      /\.version-compare-view \.version-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/,
+    )
+    expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(versionView).not.toMatch(/min-height:\s*6px/)
   })
 })

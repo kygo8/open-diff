@@ -2787,7 +2787,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .version-compare-view .version-field-row {
-  min-height: 18px !important;
+  min-height: 16px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   font-size: 11px !important;
 }
@@ -2858,7 +2858,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .version-compare-view .version-rule-row {
   gap: 6px !important;
-  min-height: 18px !important;
+  min-height: 16px !important;
   font-size: 11px !important;
   line-height: 16px !important;
 }
@@ -4566,4 +4566,14 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .registry-compare-view[data-registry-workspace='capture-1to1-residual'] .registry-key-row,
 .registry-compare-view[data-registry-workspace='capture-1to1-residual'] .registry-value-row {
   min-height: 16px !important;
+}
+
+.version-compare-view[data-version-chrome='capture-1to1-residual'] .version-field-row,
+.version-compare-view[data-version-chrome='capture-1to1-residual'] .version-rule-row {
+  min-height: 16px !important;
+}
+
+.version-compare-view[data-version-chrome='capture-1to1-residual'] .version-side header {
+  min-height: 20px !important;
+  background: #f7f7f7 !important;
 }

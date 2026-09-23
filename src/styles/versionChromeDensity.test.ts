@@ -42,14 +42,14 @@ describe('version compare chrome density', () => {
     expect(css).toMatch(
       /\.version-compare-view \.version-report-panel[\s\S]*?border:\s*1px solid #a0a0a0/,
     )
-    expect(css).toMatch(/\.version-compare-view \.version-field-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.version-compare-view \.version-field-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(css).toMatch(
       /\.version-compare-view \.version-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/,
     )
     expect(css).toMatch(
       /\.version-compare-view \.version-report-panel header button[\s\S]*?height:\s*18px/,
     )
-    expect(css).toMatch(/\.version-compare-view \.version-rule-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.version-compare-view \.version-rule-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(css).toMatch(/\.version-compare-view \.version-side header[\s\S]*?min-height:\s*20px/)
 
     expect(versionView).toMatch(/data-version-chrome-density="capture-1to1"/)
@@ -58,12 +58,12 @@ describe('version compare chrome density', () => {
     expect(versionView).toMatch(/\.version-report-panel[\s\S]*?padding:\s*4px 6px/)
     expect(versionView).toMatch(/\.version-rules-panel[\s\S]*?padding:\s*4px 6px/)
     expect(versionView).toMatch(/\.version-summary-item strong\s*\{[\s\S]*?font-size:\s*12px/)
-    expect(versionView).toMatch(/\.version-field-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(versionView).toMatch(/\.version-field-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(versionView).toMatch(/\.version-field-row\s*\{[\s\S]*?font-size:\s*11px/)
     expect(versionView).toMatch(/\.version-field-row > \*\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(versionView).toMatch(/\.version-field-row > \*\s*\{[\s\S]*?line-height:\s*16px/)
     expect(versionView).toMatch(/\.version-side dl div\s*\{[\s\S]*?padding:\s*2px 6px/)
-    expect(versionView).toMatch(/\.version-rule-row\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(versionView).toMatch(/\.version-rule-row\s*\{[\s\S]*?min-height:\s*16px/)
   })
 })
 
@@ -85,5 +85,14 @@ describe('version secondary strip density', () => {
     )
     expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(versionView).not.toMatch(/min-height:\s*6px/)
+  })
+})
+
+describe('version residual', () => {
+  it('densifies version resource list and toolbar residual chrome', () => {
+    expect(versionView).toMatch(/data-version-chrome="capture-1to1-residual"/)
+    expect(css).toMatch(
+      /data-version-chrome='capture-1to1-residual'\] \.version-field-row[\s\S]*?min-height:\s*16px/,
+    )
   })
 })

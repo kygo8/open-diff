@@ -603,7 +603,10 @@ watch(
     toolbar-test-id-prefix="version-session-toolbar"
     @toolbar-command="runVersionToolbarCommand"
   >
-    <section class="version-compare-view">
+    <section
+      class="version-compare-view"
+      data-version-chrome="capture-1to1-residual"
+    >
       <header class="version-header">
         <div>
           <p class="eyebrow">{{ $t('ui.versionCompare') }}</p>
@@ -1123,7 +1126,7 @@ h1 {
     110px 140px minmax(160px, 1fr) minmax(160px, 1fr)
     98px 98px;
   min-width: 820px;
-  min-height: 18px;
+  min-height: 16px;
   border-bottom: 1px solid #a0a0a0;
   font-size: 11px;
 }
@@ -1180,7 +1183,7 @@ h1 {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 6px;
-  min-height: 18px;
+  min-height: 16px;
   font-size: 11px;
   line-height: 16px;
 }

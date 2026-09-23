@@ -1,5 +1,6 @@
 import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { useSettingsStore } from '@/stores/settings'
 import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextPatchView from './TextPatchView.vue'
@@ -329,5 +330,20 @@ describe('TextPatchView', () => {
       patch: 'diff --git a/src/main.ts b/src/main.ts',
       outputPath: 'C:/work/main.ts',
     })
+  })
+  it('shows Sessions on the main toolbar and opens session settings', async () => {
+    const settings = useSettingsStore()
+
+    settings.setShowSessionsInToolbar(true)
+
+    const wrapper = mount(TextPatchView)
+    const sessionsButton = wrapper.find('[data-testid="patch-session-toolbar-sessions"]')
+
+    expect(sessionsButton.exists()).toBe(true)
+    await sessionsButton.trigger('click')
+    expect(wrapper.find('[data-testid="session-settings-dialog"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="session-settings-patch"]').exists()).toBe(true)
+
+    wrapper.unmount()
   })
 })

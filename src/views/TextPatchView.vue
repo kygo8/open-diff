@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import {
+  loadTextPatchSessionOptions,
+  saveTextPatchSessionOptions,
+  type TextPatchSessionOptions,
+} from '@/app/textPatchSessionOptions'
 import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { applyTextPatch, applyTextPatchToFile, parseTextPatch, readTextFile } from '@/api/diff'
@@ -15,6 +20,7 @@ import { pickNativePath } from '@/app/filePicker'
 import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
 import SessionPathActions from '@/components/workbench/SessionPathActions.vue'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
+import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
 import WorkbenchToolbar from '@/components/workbench/WorkbenchToolbar.vue'
 import { useI18n } from '@/i18n'
 import { formatCompareError } from '@/app/compareError'
@@ -28,6 +34,8 @@ import type { FileStamp, PatchFile, PatchLineKind, TextPatchResponse } from '@/t
 
 const patchInput = ref('')
 const result = ref<TextPatchResponse | null>(null)
+const showSessionSettings = ref(false)
+const patchSessionOptions = ref<TextPatchSessionOptions>(loadTextPatchSessionOptions())
 const loading = ref(false)
 const error = ref('')
 const sourcePath = ref('')
@@ -105,9 +113,13 @@ const currentSectionPreview = computed(() => {
 const patchSessionToolbar = computed(() =>
   buildTextPatchToolbar({
     home: true,
+    sessions: true,
     'next-section': patchSections.value.length > 0,
     'prev-section': patchSections.value.length > 0,
-  }),
+  }).map((item) => ({
+    ...item,
+    active: Boolean(item.active) || (item.id === 'sessions' && showSessionSettings.value),
+  })),
 )
 const lineStats = computed(() => {
   const stats: Record<PatchLineKind, number> = {
@@ -425,7 +437,38 @@ function openFileInTextCompare(file: PatchFile): void {
   launchTextCompare(reconstructSidesFromFile(file))
 }
 
+function openPatchSessionSettings(): void {
+  showSessionSettings.value = true
+}
+
+function applyPatchSessionSettings(
+  payload:
+    | { kind: 'folder'; criteria: unknown; filters?: unknown }
+    | { kind: 'text'; options: unknown }
+    | { kind: 'table'; options: unknown }
+    | { kind: 'hex'; options: unknown }
+    | { kind: 'picture'; options: unknown }
+    | { kind: 'media'; options: unknown }
+    | { kind: 'version'; options: unknown }
+    | { kind: 'registry'; options: unknown }
+    | { kind: 'patch'; options: TextPatchSessionOptions },
+): void {
+  if (payload.kind !== 'patch') {
+    return
+  }
+
+  patchSessionOptions.value = { ...patchSessionOptions.value, ...payload.options }
+  saveTextPatchSessionOptions(patchSessionOptions.value)
+  showSessionSettings.value = false
+}
+
 function runPatchToolbarCommand(commandId: string): void {
+  if (commandId === 'sessions') {
+    openPatchSessionSettings()
+
+    return
+  }
+
   switch (commandId) {
     case 'home':
       goHomeFromPatch()
@@ -502,6 +545,7 @@ function lineNumber(value: number | null): string {
 <template>
   <WorkbenchShell
     class="text-patch-view"
+    :data-wrap-long-lines="patchSessionOptions.wrapLongLines ? 'true' : 'false'"
     :title="$t('ui.textPatch')"
     :eyebrow="$t('ui.patch')"
     :subtitle="subtitle"
@@ -842,6 +886,13 @@ function lineNumber(value: number | null): string {
         </section>
       </WorkbenchInspector>
     </template>
+    <SessionSettingsDialog
+      :open="showSessionSettings"
+      kind="patch"
+      :patch-options="patchSessionOptions"
+      @close="showSessionSettings = false"
+      @apply="applyPatchSessionSettings"
+    />
   </WorkbenchShell>
 </template>
 

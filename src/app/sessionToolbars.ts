@@ -138,7 +138,7 @@ export const versionCompareToolbarOrder = [
   'reload',
 ] as const
 
-export const textPatchToolbarOrder = ['home', 'next-section', 'prev-section'] as const
+export const textPatchToolbarOrder = ['home', 'sessions', 'next-section', 'prev-section'] as const
 
 export const textEditToolbarOrder = [
   'home',
@@ -382,6 +382,7 @@ const textMergeMeta: Record<(typeof textMergeToolbarOrder)[number], ToolbarMeta>
 
 const textPatchMeta: Record<(typeof textPatchToolbarOrder)[number], ToolbarMeta> = {
   home: { glyph: 'H', labelKey: 'ui.home' },
+  sessions: { glyph: 'S', labelKey: 'ui.sessions' },
   'next-section': { glyph: 'N', labelKey: 'ui.nextSection' },
   'prev-section': { glyph: 'P', labelKey: 'ui.prevSection' },
 }

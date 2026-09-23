@@ -610,7 +610,10 @@ function applyMediaSessionSettings(
     | { kind: 'table'; options: unknown }
     | { kind: 'hex'; options: unknown }
     | { kind: 'picture'; options: unknown }
-    | { kind: 'media'; options: MediaCompareOptionsState },
+    | { kind: 'media'; options: MediaCompareOptionsState }
+    | { kind: 'version'; options: unknown }
+    | { kind: 'registry'; options: unknown }
+    | { kind: 'patch'; options: unknown },
 ): void {
   if (payload.kind !== 'media') {
     return

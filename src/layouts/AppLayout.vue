@@ -2046,6 +2046,7 @@ const sourceSessionTypes = new Set<SessionType>([
       v-if="settings.showStatusBar"
       class="status-bar"
       data-testid="status-bar"
+      data-status-band="capture-1to1-residual"
       :data-chrome-kind="statusBar.chromeKind"
       :data-pane-count="String(statusChromePanes.length)"
       :style="statusBarGridStyle"
@@ -2694,12 +2695,21 @@ const sourceSessionTypes = new Set<SessionType>([
   height: 19.5px;
   min-height: 19.5px;
   padding: 0;
-  border-top: 1px solid #b8b8b8;
+  border-top: 1px solid #a0a0a0;
   background: #f0f0f0;
   color: #000000;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 11px;
   line-height: 18px;
+}
+
+.status-bar[data-status-band='capture-1to1-residual'] .status-bar-pane {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .status-bar[data-chrome-kind='folder-pair'] {
@@ -2711,7 +2721,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='folder-pair'] .status-bar-pane {
-  padding: 0 1px;
+  padding: 0 4px;
 }
 
 /* Capture folder-pair strip: stronger center divider between left/right pairs */
@@ -2729,7 +2739,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='folder-merge'] .status-bar-pane {
-  padding: 0 1px;
+  padding: 0 4px;
 }
 
 .status-bar[data-chrome-kind='folder-merge'] .status-bar-pane[data-testid^='status-pane-spacer'] {
@@ -2764,14 +2774,14 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='table-session'] .status-bar-pane,
 .status-bar[data-chrome-kind='registry-session'] .status-bar-pane,
 .status-bar[data-chrome-kind='clipboard-session'] .status-bar-pane {
-  padding: 0 1px;
+  padding: 0 4px;
 }
 
 .status-bar-pane {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 1px;
+  padding: 0 4px;
   overflow: hidden;
   border-right: 1px solid #c0c0c0;
   text-overflow: ellipsis;

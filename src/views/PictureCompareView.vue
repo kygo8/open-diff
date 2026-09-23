@@ -1182,6 +1182,7 @@ async function runPictureCompare(): Promise<void> {
             class="picture-options-panel picture-tol-overlay"
             data-picture-panel-density="capture-1to1"
             data-tol-placement="stage-overlay"
+            data-tol-residual="capture-1to1"
             data-testid="picture-tol-panel"
           >
             <header>
@@ -1834,13 +1835,19 @@ h2 {
 
 .picture-tol-overlay {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 3;
-  width: min(220px, calc(100% - 16px));
-  background: rgb(28 28 22 / 0.88) !important;
+  top: 6px;
+  left: 6px;
+  z-index: 5;
+  display: grid;
+  gap: 4px;
+  width: min(240px, calc(100% - 12px));
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: rgb(28 28 22 / 0.92);
   color: #f0f0f0;
-  box-shadow: none;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .picture-tol-overlay header,

@@ -150,6 +150,11 @@ select {
 .workbench-shell-single-session .bc-session-toolbar {
   min-height: 39.5px;
   border-bottom: 1px solid #a0a0a0;
+  background: #f0f0f0;
+}
+
+.workbench-shell-single-session[data-single-session-frame='true'] {
+  border: 0;
 }
 
 .workbench-shell-single-session .bc-toolbar-command {

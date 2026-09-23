@@ -4048,11 +4048,29 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 2px 4px !important;
 }
 
-.text-edit-view .path-toolbar,
-.text-edit-view .find-toolbar,
-.text-edit-view .metadata-row {
+.text-edit-view .text-edit-path-chrome {
+  gap: 1px !important;
+}
+
+.text-edit-view .path-toolbar {
+  gap: 4px !important;
+  min-height: 22px !important;
+  padding: 1px 2px !important;
+}
+
+.text-edit-view .find-toolbar {
   gap: 4px !important;
   min-height: 20px !important;
+}
+
+.text-edit-view .metadata-row,
+.text-edit-view .text-edit-path-meta-strip {
+  gap: 4px !important;
+  min-height: 18px !important;
+  padding: 1px 4px !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 0 !important;
+  background: #f0f0f0 !important;
 }
 
 .text-edit-view .path-input,
@@ -4066,7 +4084,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .text-edit-view .toolbar-button {
   height: 18px !important;
   padding: 0 5px !important;
-  border-radius: 2px !important;
+  border-radius: 0 !important;
   font-size: 11px !important;
 }
 

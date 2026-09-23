@@ -982,50 +982,59 @@ const textEditToolbarCommands = computed(() => {
       </div>
     </header>
 
-    <section class="path-toolbar">
-      <input
-        v-model="pathInput"
-        class="path-input"
-        data-testid="text-edit-path"
-        type="text"
-        :title="pathInput"
-        :aria-label="$t('ui.textFilePath')"
-      />
-      <SessionPathActions
-        browse-test-id="text-edit-browse"
-        save-test-id="text-edit-save"
-        :can-save="Boolean(document) && !saving"
-        @browse="browseTextEditPath"
-        @save="saveDocument"
-      />
-      <button
-        type="button"
-        class="bc-path-load"
-        data-testid="text-edit-open"
-        :disabled="loading || !pathInput"
-        :aria-label="$t('ui.open')"
-        :title="$t('ui.open')"
-        @click="openDocument"
-      >
-        {{ $t('ui.open') }}
-      </button>
-      <span
-        class="status-chip"
-        data-testid="text-edit-dirty"
-        >{{ dirtyLabel }}</span
-      >
-    </section>
+    <section
+      class="text-edit-path-chrome"
+      data-testid="text-edit-path-chrome"
+      data-path-density="capture-1to1"
+    >
+      <section class="path-toolbar">
+        <input
+          v-model="pathInput"
+          class="path-input"
+          data-testid="text-edit-path"
+          type="text"
+          :title="pathInput"
+          :aria-label="$t('ui.textFilePath')"
+        />
+        <SessionPathActions
+          browse-test-id="text-edit-browse"
+          save-test-id="text-edit-save"
+          :can-save="Boolean(document) && !saving"
+          @browse="browseTextEditPath"
+          @save="saveDocument"
+        />
+        <button
+          type="button"
+          class="bc-path-load"
+          data-testid="text-edit-open"
+          :disabled="loading || !pathInput"
+          :aria-label="$t('ui.open')"
+          :title="$t('ui.open')"
+          @click="openDocument"
+        >
+          {{ $t('ui.open') }}
+        </button>
+        <span
+          class="status-chip"
+          data-testid="text-edit-dirty"
+          >{{ dirtyLabel }}</span
+        >
+      </section>
 
-    <section class="metadata-row bc-path-footers">
-      <PathMetaFooter
-        :stamp="document?.fileStamp ?? null"
-        :encoding="document?.encoding"
-        :line-ending="document?.lineEnding"
-        :show-milliseconds="settings.showMillisecondsInTimestamps"
-        test-id="text-edit-metadata"
-        @select-encoding="onTextEditEncodingSelect"
-      />
-      <span data-testid="text-edit-save-status">{{ saveStatus }}</span>
+      <section
+        class="metadata-row bc-path-footers text-edit-path-meta-strip"
+        data-secondary-density="capture-1to1"
+      >
+        <PathMetaFooter
+          :stamp="document?.fileStamp ?? null"
+          :encoding="document?.encoding"
+          :line-ending="document?.lineEnding"
+          :show-milliseconds="settings.showMillisecondsInTimestamps"
+          test-id="text-edit-metadata"
+          @select-encoding="onTextEditEncodingSelect"
+        />
+        <span data-testid="text-edit-save-status">{{ saveStatus }}</span>
+      </section>
     </section>
 
     <section class="find-toolbar">
@@ -1241,6 +1250,20 @@ h1 {
   opacity: 0.45;
 }
 
+.text-edit-path-chrome {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.text-edit-path-meta-strip {
+  min-height: 18px;
+  padding: 1px 4px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f0f0f0;
+}
+
 .path-toolbar,
 .find-toolbar,
 .metadata-row {
@@ -1249,6 +1272,11 @@ h1 {
   gap: 4px;
   min-width: 0;
   min-height: 20px;
+}
+
+.path-toolbar {
+  min-height: 22px;
+  padding: 1px 2px;
 }
 
 .path-input,
@@ -1274,8 +1302,8 @@ h1 {
 
 .metadata-row {
   justify-content: space-between;
-  min-height: 20px;
-  color: var(--app-text-muted);
+  min-height: 18px;
+  color: #111111;
   font-size: 11px;
 }
 
@@ -1288,7 +1316,7 @@ h1 {
   height: 18px;
   padding: 0 5px;
   border: 1px solid var(--app-border);
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--app-surface);
   color: var(--app-text);
   font-size: 11px;

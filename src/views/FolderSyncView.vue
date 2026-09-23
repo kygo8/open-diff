@@ -1705,6 +1705,7 @@ watch(
             size="small"
             secondary
             data-testid="folder-sync-accept"
+            data-sync-action-density="capture-1to1"
             :disabled="previewRows.length === 0 || syncRunning"
             @click="acceptSyncPlan"
             >{{ $t('ui.accept') }}</NButton
@@ -2259,7 +2260,8 @@ watch(
 
 h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 13px;
+  line-height: 18px;
   line-height: 1.2;
 }
 
@@ -2333,7 +2335,23 @@ h1 {
 
 .sync-setting-actions {
   display: flex;
-  gap: 3px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+}
+
+.sync-setting-actions :deep(.n-button) {
+  height: 30px;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 0;
+  font-size: 12px;
+}
+
+.sync-setting-actions :deep(.n-button[data-testid='folder-sync-run']) {
+  height: 48px;
+  min-height: 48px;
 }
 
 .sync-preview,

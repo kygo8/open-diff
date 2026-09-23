@@ -3272,16 +3272,17 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 3px !important;
 }
 
-.folder-sync-view .sync-setting-actions .n-button,
-.folder-sync-view .sync-setting-actions button {
-  --n-height: 18px !important;
-  --n-padding: 0 5px !important;
-  --n-font-size: 11px !important;
+.folder-sync-view .sync-setting-actions .n-button {
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 10px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
+}
 
-  height: 18px !important;
-  min-height: 18px !important;
-  padding: 0 5px !important;
-  font-size: 11px !important;
+.folder-sync-view .sync-setting-actions .n-button[data-testid='folder-sync-run'] {
+  height: 48px !important;
+  min-height: 48px !important;
 }
 
 .folder-compare-view .path-side-footer,

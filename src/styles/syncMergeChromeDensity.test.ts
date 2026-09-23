@@ -14,7 +14,7 @@ describe('folder sync/merge chrome density', () => {
     expect(css).toMatch(/\.folder-sync-view \.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.folder-sync-view \.sync-settings input\s*,[\s\S]*?height:\s*16px/)
     expect(css).toMatch(
-      /\.folder-sync-view \.sync-setting-actions \.n-button[\s\S]*?height:\s*18px/,
+      /\.folder-sync-view \.sync-setting-actions \.n-button[\s\S]*?height:\s*30px/,
     )
     expect(css).toMatch(/\.folder-merge-view \.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
@@ -23,6 +23,12 @@ describe('folder sync/merge chrome density', () => {
 
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(syncView).toMatch(
+      /\.sync-setting-actions :deep\(\.n-button\)\s*\{[\s\S]*?height:\s*30px/,
+    )
+    expect(css).toMatch(
+      /\.folder-sync-view \.sync-setting-actions \.n-button\[data-testid='folder-sync-run'\][\s\S]*?height:\s*48px/,
+    )
     expect(syncView).toMatch(/PathMetaFooter/)
     expect(syncView).toMatch(/folder-sync-left-path-footer/)
     expect(syncView).toMatch(/folder-sync-right-path-footer/)

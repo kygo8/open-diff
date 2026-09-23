@@ -1915,9 +1915,52 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .sync-preview-row td,
 .folder-sync-view .sync-preview-head th {
-  padding-top: 2px !important;
-  padding-bottom: 2px !important;
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
   font-size: 11px !important;
+}
+
+.folder-sync-view .sync-preview-row {
+  min-height: 16px !important;
+  border-bottom: 0 !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.folder-sync-view .sync-preview-head {
+  min-height: 20px !important;
+  background: #f0f0f0 !important;
+  color: #000000 !important;
+  font-weight: 400 !important;
+}
+
+.folder-sync-view .sync-row-selected {
+  background: #a8cdf1 !important;
+}
+
+.folder-sync-view .folder-session-log {
+  height: 96px !important;
+  min-height: 96px !important;
+  border: 1px solid #c0c0c0 !important;
+  border-radius: 0 !important;
+  background: #e7e7e7 !important;
+}
+
+.folder-sync-view .folder-session-log-gutter {
+  gap: 6px !important;
+  padding: 4px 0 !important;
+  background: #d4d4d4 !important;
+}
+
+.folder-sync-view .folder-session-log-body {
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.folder-sync-view .folder-session-log-line {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Hex Compare path chrome densify toward capture (~20px path/status) */

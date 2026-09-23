@@ -1472,20 +1472,28 @@ function parseShortcutText(value: string): string[] {
       <nav
         class="options-section-nav options-section-tree"
         data-testid="options-section-nav"
+        data-options-tree-depth="capture-1to1"
         :aria-label="$t('ui.options')"
       >
         <div
           v-for="group in optionsTree"
           :key="group.groupKey"
           class="options-tree-group"
+          data-tree-depth="0"
         >
-          <p class="options-tree-group-label">{{ $t(group.groupKey) }}</p>
+          <p
+            class="options-tree-group-label"
+            data-tree-depth="0"
+          >
+            {{ $t(group.groupKey) }}
+          </p>
           <button
             v-for="section in group.items"
             :key="section.id"
             type="button"
             class="options-section-button"
             :class="{ active: optionsSection === section.id }"
+            data-tree-depth="1"
             :data-testid="`options-section-${section.id}`"
             @click="optionsSection = section.id"
           >
@@ -3701,8 +3709,15 @@ function parseShortcutText(value: string): string[] {
 
 .options-tree-group {
   display: grid;
-  gap: 2px;
+  gap: 1px;
   align-content: start;
+  padding: 0 0 2px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.options-tree-group:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .options-tree-group-label {
@@ -3714,6 +3729,10 @@ function parseShortcutText(value: string): string[] {
   font-weight: 700;
   line-height: 16px;
   text-transform: uppercase;
+}
+
+.options-section-button[data-tree-depth='1'] {
+  padding-left: 14px;
 }
 
 .options-hint {

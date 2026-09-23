@@ -76,6 +76,11 @@ const newFolderName = ref('New Folder')
 const basePath = ref('')
 const rightPath = ref('')
 const outputPath = ref('')
+const customOutputPath = ref('')
+
+type FolderMergeTarget = 'left' | 'right' | 'other'
+const mergeTarget = ref<FolderMergeTarget>('other')
+const mergeTargetLocked = computed(() => mergeTarget.value !== 'other')
 const leftFileStamp = ref<FileStamp | null>(null)
 const rightFileStamp = ref<FileStamp | null>(null)
 const baseFileStamp = ref<FileStamp | null>(null)
@@ -863,6 +868,14 @@ onMounted(() => {
   basePath.value = launch.locations.center?.uri ?? basePath.value
   rightPath.value = launch.locations.right?.uri ?? rightPath.value
   outputPath.value = launch.locations.output?.uri ?? outputPath.value
+  customOutputPath.value = outputPath.value
+  if (outputPath.value && outputPath.value === leftPath.value) {
+    mergeTarget.value = 'left'
+  } else if (outputPath.value && outputPath.value === rightPath.value) {
+    mergeTarget.value = 'right'
+  } else {
+    mergeTarget.value = 'other'
+  }
   recordFolderPathCommit()
 
   if (
@@ -1424,6 +1437,39 @@ async function refreshMergePathStamps(): Promise<void> {
   outputFileStamp.value = output
 }
 
+function applyMergeTarget(): void {
+  if (mergeTarget.value === 'left') {
+    outputPath.value = leftPath.value
+
+    return
+  }
+  if (mergeTarget.value === 'right') {
+    outputPath.value = rightPath.value
+
+    return
+  }
+  outputPath.value = customOutputPath.value
+}
+
+watch(mergeTarget, (_next, previous) => {
+  if (previous === 'other') {
+    customOutputPath.value = outputPath.value
+  }
+  applyMergeTarget()
+})
+
+watch([leftPath, rightPath], () => {
+  if (mergeTarget.value !== 'other') {
+    applyMergeTarget()
+  }
+})
+
+watch(outputPath, (value) => {
+  if (mergeTarget.value === 'other') {
+    customOutputPath.value = value
+  }
+})
+
 async function browseMergeFolderSide(side: 'left' | 'base' | 'right' | 'output'): Promise<void> {
   const selected = await pickNativePath({ directory: true })
 
@@ -1438,7 +1484,11 @@ async function browseMergeFolderSide(side: 'left' | 'base' | 'right' | 'output')
   } else if (side === 'right') {
     rightPath.value = selected
   } else {
+    if (mergeTargetLocked.value) {
+      return
+    }
     outputPath.value = selected
+    customOutputPath.value = selected
   }
 
   recordFolderPathCommit()
@@ -1939,26 +1989,62 @@ watch(
             test-id="folder-merge-right-path-footer"
           />
         </label>
-        <label>
-          <span>{{ $t('ui.outputFolder') }}</span>
-          <div class="path-field-row">
-            <input
-              v-model="outputPath"
-              class="path-input"
-              data-testid="folder-merge-output-path"
-              :title="outputPath"
-            />
-            <SessionPathActions
-              browse-test-id="folder-merge-browse-output"
-              :show-save="false"
-              @browse="browseMergeFolderSide('output')"
-            />
-          </div>
-          <PathMetaFooter
-            :stamp="outputFileStamp"
-            test-id="folder-merge-output-path-footer"
+      </section>
+
+      <section
+        class="merge-to-chrome"
+        data-testid="folder-merge-to-chrome"
+      >
+        <span class="merge-to-label">{{ $t('ui.mergeTo') }}:</span>
+        <label class="merge-to-option">
+          <input
+            v-model="mergeTarget"
+            data-testid="folder-merge-to-left"
+            type="radio"
+            value="left"
           />
+          <span>{{ $t('ui.left') }}</span>
         </label>
+        <label class="merge-to-option">
+          <input
+            v-model="mergeTarget"
+            data-testid="folder-merge-to-right"
+            type="radio"
+            value="right"
+          />
+          <span>{{ $t('ui.right') }}</span>
+        </label>
+        <label class="merge-to-option">
+          <input
+            v-model="mergeTarget"
+            data-testid="folder-merge-to-other"
+            type="radio"
+            value="other"
+          />
+          <span>{{ $t('ui.other') }}</span>
+        </label>
+        <div class="path-field-row merge-to-path">
+          <input
+            v-model="outputPath"
+            class="path-input"
+            data-testid="folder-merge-output-path"
+            :title="outputPath"
+            :disabled="mergeTargetLocked"
+            :aria-label="$t('ui.outputFolder')"
+          />
+          <SessionPathActions
+            browse-test-id="folder-merge-browse-output"
+            :show-save="false"
+            @browse="browseMergeFolderSide('output')"
+          />
+        </div>
+        <PathMetaFooter
+          :stamp="outputFileStamp"
+          test-id="folder-merge-output-path-footer"
+        />
+      </section>
+
+      <section class="merge-actions-bar">
         <div class="merge-actions">
           <NButton
             size="small"
@@ -2660,7 +2746,7 @@ h1 {
 
 .merge-paths {
   display: grid;
-  grid-template-columns: repeat(4, minmax(150px, 1fr)) auto;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
   align-items: end;
   gap: 2px;
   min-height: 22px;
@@ -2671,7 +2757,7 @@ h1 {
 }
 
 .merge-paths-no-center {
-  grid-template-columns: repeat(3, minmax(150px, 1fr)) auto;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
 }
 
 .merge-paths label {
@@ -2687,7 +2773,7 @@ h1 {
 
 .merge-paths input {
   width: 100%;
-  height: 18px;
+  height: 20px;
   padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
@@ -2699,9 +2785,81 @@ h1 {
   white-space: nowrap;
 }
 
-.merge-actions {
+.merge-to-chrome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-height: 22px;
+  padding: 2px 4px;
+  border: 1px solid var(--app-border);
+  border-top: 0;
+  border-radius: 0;
+  background: var(--app-surface);
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.merge-to-label {
+  color: var(--app-text);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.merge-to-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--app-text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.merge-to-path {
+  flex: 1 1 240px;
+  min-width: 180px;
+}
+
+.merge-to-path .path-input,
+.merge-to-path input {
+  height: 20px;
+  min-height: 20px;
+  padding: 0 4px;
+  font-size: 11px;
+}
+
+.merge-actions-bar {
   display: flex;
   justify-content: flex-end;
+  gap: 4px;
+  min-height: 30px;
+  padding: 2px 4px;
+  border: 1px solid var(--app-border);
+  border-top: 0;
+  border-radius: 0;
+  background: var(--app-surface);
+}
+
+.merge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.merge-actions :deep(.n-button) {
+  height: 30px;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 0;
+  font-size: 12px;
+}
+
+.merge-actions :deep(.n-button[data-testid='folder-merge-execute-plan']) {
+  height: 36px;
+  min-height: 36px;
 }
 
 .merge-open-status,

@@ -3375,10 +3375,27 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .merge-paths input {
-  height: 16px !important;
-  min-height: 16px !important;
-  padding: 0 3px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 4px !important;
   border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+.folder-merge-view .merge-to-chrome {
+  gap: 6px 10px !important;
+  min-height: 22px !important;
+  padding: 2px 4px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+}
+
+.folder-merge-view .merge-to-chrome .path-input,
+.folder-merge-view .merge-to-chrome input[type='text'] {
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 4px !important;
   font-size: 11px !important;
 }
 
@@ -3392,11 +3409,23 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .merge-actions {
-  gap: 3px !important;
+  gap: 4px !important;
 }
 
 .folder-merge-view .merge-actions .n-button,
-.folder-merge-view .merge-actions button,
+.folder-merge-view .merge-actions button {
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 10px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
+}
+
+.folder-merge-view .merge-actions .n-button[data-testid='folder-merge-execute-plan'] {
+  height: 36px !important;
+  min-height: 36px !important;
+}
+
 .folder-merge-view .merge-chrome-panel button {
   --n-height: 18px !important;
   --n-padding: 0 5px !important;

@@ -33,7 +33,7 @@ describe('media compare chrome density', () => {
     expect(mediaView).not.toMatch(/min-height:\s*9px/)
 
     expect(layout).toMatch(/data-chrome-kind='media-session'[\s\S]*?height:\s*19\.5px/)
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
   })
 
   it('keeps Media scrub/footer chrome on capture band', () => {

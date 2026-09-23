@@ -58,10 +58,10 @@ describe('shell chrome density', () => {
 
   it('keeps WorkbenchShell session toolbar/content frame denser', () => {
     expect(mainCss).toMatch(
-      /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/,
+      /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/,
     )
     expect(mainCss).toMatch(/\.workbench-titlebar\s*\{[\s\S]*?height:\s*22px/)
-    expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
+    expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
     expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
     expect(mainCss).toMatch(/\.workbench-inspector-stack\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mainCss).toMatch(/\.workbench-inspector-section\s*\{[\s\S]*?border-radius:\s*0/)

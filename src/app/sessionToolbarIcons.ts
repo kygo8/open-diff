@@ -193,7 +193,7 @@ export const sessionToolbarIcons: Readonly<Record<string, LucideIcon>> = {
 }
 
 /**
- * Capture MainBar spacing (~12px group gaps on folder/text shots): mark commands that
+ * Capture MainBar spacing (~6px CSS / 12px PNG group gaps on folder/text shots): mark commands that
  * start a visual group so the shell can insert separator rhythm without PNGs.
  */
 export const sessionToolbarSeparatorBeforeIds: ReadonlySet<string> = new Set([

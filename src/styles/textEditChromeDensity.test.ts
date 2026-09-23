@@ -33,7 +33,7 @@ describe('text edit chrome density', () => {
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*19\.5px/,
     )
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
   })
 
   it('keeps Text Edit chrome on capture band with Text Compare path scale', () => {

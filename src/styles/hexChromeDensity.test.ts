@@ -29,7 +29,7 @@ describe('hex compare chrome density', () => {
     expect(hexView).not.toMatch(/min-height:\s*9px/)
 
     expect(layout).toMatch(/data-chrome-kind='hex-session'[\s\S]*?height:\s*19\.5px/)
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
   })
 
   it('keeps Hex wrap/gutter/row chrome on capture band', () => {

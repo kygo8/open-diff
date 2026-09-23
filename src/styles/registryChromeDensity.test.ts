@@ -37,7 +37,7 @@ describe('registry compare chrome density', () => {
     expect(registryView).not.toMatch(/min-height:\s*9px/)
 
     expect(layout).toMatch(/data-chrome-kind='registry-session'[\s\S]*?height:\s*19\.5px/)
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
   })
 
   it('keeps Registry summary/pane/row chrome on capture band', () => {

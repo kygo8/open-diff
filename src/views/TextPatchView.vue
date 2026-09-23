@@ -903,8 +903,26 @@ function lineNumber(value: number | null): string {
 }
 
 .patch-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 4px;
   min-height: 20px;
+  padding: 1px 2px;
+}
+
+.patch-toolbar :deep(.n-button) {
+  height: 18px;
+  min-height: 18px;
+  padding: 0 5px;
+  border-radius: 0;
+  font-size: 11px;
+}
+
+.patch-toolbar .status-chip,
+.patch-toolbar [data-testid='patch-section-position'] {
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .patch-workbench-main {
@@ -1195,14 +1213,23 @@ function lineNumber(value: number | null): string {
 .path-field-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
+  min-height: 20px;
+  padding: 1px 0;
 }
 
 .path-field-row input,
 .path-field-row .path-input {
   flex: 1;
   min-width: 0;
+  height: 20px;
+  min-height: 20px;
+  padding: 0 4px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .bc-path-footers {

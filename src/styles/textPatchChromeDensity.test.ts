@@ -47,6 +47,11 @@ describe('text patch chrome density', () => {
     expect(css).toMatch(/\.text-patch-view \.patch-preview-row\s*\{[\s\S]*?min-height:\s*18px/)
 
     expect(patchView).toMatch(/\.patch-open-file\s*\{[\s\S]*?height:\s*20px/)
+    expect(patchView).toMatch(/\.path-field-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(patchView).toMatch(/\.path-field-row input[\s\S]*?height:\s*20px/)
+    expect(patchView).toMatch(/\.path-field-row input[\s\S]*?font-size:\s*12px/)
+    expect(css).toMatch(/\.text-patch-view \.path-field-row input[\s\S]*?height:\s*20px/)
+    expect(css).toMatch(/\.text-patch-view \.path-field-row input[\s\S]*?font-size:\s*12px/)
     expect(patchView).toMatch(/\.patch-section-pane-body\s*\{[\s\S]*?line-height:\s*18px/)
     expect(patchView).toMatch(/:deep\(\.patch-toolbar \.n-button\)[\s\S]*?height:\s*18px/)
   })

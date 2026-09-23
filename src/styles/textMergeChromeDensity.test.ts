@@ -84,3 +84,16 @@ describe('text merge editor pane residual', () => {
     expect(mergeView).not.toMatch(/min-height:\s*6px/)
   })
 })
+
+describe('text merge conflict chrome residual', () => {
+  it('keeps conflict panel and pane sync chrome residual toward capture', () => {
+    expect(mergeView).toMatch(/data-conflict-chrome="capture-1to1-residual"/)
+    expect(mergeView).toMatch(/data-pane-sync="capture-1to1-residual"/)
+    expect(css).toMatch(
+      /data-conflict-chrome='capture-1to1-residual'\][\s\S]*?background:\s*#f5f5f5/,
+    )
+    expect(css).toMatch(
+      /data-pane-sync='capture-1to1-residual'\] \.pane-header[\s\S]*?min-height:\s*18px/,
+    )
+  })
+})

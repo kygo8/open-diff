@@ -2112,6 +2112,7 @@ const sourceSessionTypes = new Set<SessionType>([
     >
       <section
         class="about-dialog"
+        data-about-chrome="capture-1to1-residual"
         role="dialog"
         aria-modal="true"
         :aria-label="t('ui.aboutTitle')"
@@ -2976,12 +2977,21 @@ html[data-show-sidebar='1'] .sidebar {
   background: rgb(15 23 42 / 0.45);
 }
 
+.about-dialog[data-about-chrome='capture-1to1-residual'] {
+  gap: 4px;
+  width: min(360px, 100%);
+  padding: 4px 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #f0f0f0;
+}
+
 .about-dialog {
   display: grid;
   gap: 4px;
   min-width: min(420px, 92vw);
   padding: 4px 6px;
-  border: 1px solid var(--app-border);
+  border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--panel, #ffffff);
   color: var(--text, #0f172a);

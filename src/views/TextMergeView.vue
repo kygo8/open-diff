@@ -1008,51 +1008,72 @@ watch(
           </label>
         </span>
 
-        <span class="path-field-row merge-path-field">
-          <input
-            v-model="leftPath"
-            class="output-path-input path-input"
-            data-testid="merge-left-path"
-            :title="leftPath"
-            type="text"
-            :aria-label="$t('ui.leftPath')"
-          />
-          <SessionPathActions
-            browse-test-id="merge-browse-left"
-            :show-save="false"
-            @browse="browseMergePath('left')"
-          />
-        </span>
-        <span class="path-field-row merge-path-field">
-          <input
-            v-model="centerPath"
-            class="output-path-input path-input"
-            data-testid="merge-center-path"
-            :title="centerPath"
-            type="text"
-            :aria-label="$t('ui.base')"
-          />
-          <SessionPathActions
-            browse-test-id="merge-browse-center"
-            :show-save="false"
-            @browse="browseMergePath('center')"
-          />
-        </span>
-        <span class="path-field-row merge-path-field">
-          <input
-            v-model="rightPath"
-            class="output-path-input path-input"
-            data-testid="merge-right-path"
-            :title="rightPath"
-            type="text"
-            :aria-label="$t('ui.rightPath')"
-          />
-          <SessionPathActions
-            browse-test-id="merge-browse-right"
-            :show-save="false"
-            @browse="browseMergePath('right')"
-          />
-        </span>
+        <div
+          class="merge-path-chrome"
+          data-testid="merge-path-chrome"
+          data-path-density="capture-1to1"
+        >
+          <span class="path-field-row merge-path-field">
+            <span
+              class="merge-path-swatch"
+              data-side="left"
+              aria-hidden="true"
+            />
+            <input
+              v-model="leftPath"
+              class="output-path-input path-input"
+              data-testid="merge-left-path"
+              :title="leftPath"
+              type="text"
+              :aria-label="$t('ui.leftPath')"
+            />
+            <SessionPathActions
+              browse-test-id="merge-browse-left"
+              :show-save="false"
+              @browse="browseMergePath('left')"
+            />
+          </span>
+          <span class="path-field-row merge-path-field">
+            <span
+              class="merge-path-swatch"
+              data-side="center"
+              aria-hidden="true"
+            />
+            <input
+              v-model="centerPath"
+              class="output-path-input path-input"
+              data-testid="merge-center-path"
+              :title="centerPath"
+              type="text"
+              :aria-label="$t('ui.base')"
+            />
+            <SessionPathActions
+              browse-test-id="merge-browse-center"
+              :show-save="false"
+              @browse="browseMergePath('center')"
+            />
+          </span>
+          <span class="path-field-row merge-path-field">
+            <span
+              class="merge-path-swatch"
+              data-side="right"
+              aria-hidden="true"
+            />
+            <input
+              v-model="rightPath"
+              class="output-path-input path-input"
+              data-testid="merge-right-path"
+              :title="rightPath"
+              type="text"
+              :aria-label="$t('ui.rightPath')"
+            />
+            <SessionPathActions
+              browse-test-id="merge-browse-right"
+              :show-save="false"
+              @browse="browseMergePath('right')"
+            />
+          </span>
+        </div>
         <span
           class="merge-to-chrome"
           data-testid="merge-to-chrome"
@@ -1364,14 +1385,43 @@ watch(
   white-space: nowrap;
 }
 
+.merge-path-chrome {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  width: 100%;
+  min-height: 22px;
+}
+
+.merge-path-swatch {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border: 1px solid #808080;
+  border-radius: 0;
+}
+
+.merge-path-swatch[data-side='left'] {
+  background: #00c2c7;
+}
+
+.merge-path-swatch[data-side='center'] {
+  background: #a0a0a0;
+}
+
+.merge-path-swatch[data-side='right'] {
+  background: #c55bc5;
+}
+
 .merge-path-footers {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(120px, 0.85fr);
   align-items: center;
-  gap: 8px;
+  gap: 2px;
   width: 100%;
   min-height: 20px;
-  padding: 0 2px;
+  padding: 0;
 }
 
 .bc-path-footers .path-side-footer,
@@ -1480,7 +1530,7 @@ watch(
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: 4px;
+  gap: 2px;
   min-height: 0;
 }
 
@@ -1503,7 +1553,13 @@ watch(
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
+  gap: 6px 10px;
+  min-height: 22px;
+  padding: 2px 4px;
+  border: 1px solid var(--app-border);
+  border-radius: 0;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .merge-to-option {

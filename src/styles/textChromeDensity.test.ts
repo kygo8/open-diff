@@ -12,17 +12,17 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('text compare chrome density', () => {
   it('keeps Text Compare path/status/editor chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.text-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.text-compare-view \.bc-path-row\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.text-compare-view \.text-path-chrome\s*\{[\s\S]*?min-height:\s*22px/)
     expect(css).toMatch(/\.text-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
-    expect(css).toMatch(/\.text-compare-view \.diff-header\s*\{[\s\S]*?height:\s*20px/)
+    expect(css).toMatch(/\.text-compare-view \.diff-header\s*\{[\s\S]*?height:\s*18px/)
 
-    expect(textView).toMatch(/\.text-workbench-main\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(textView).toMatch(/\.text-workbench-main\s*\{[\s\S]*?padding:\s*0/)
     expect(textView).toMatch(/\.bc-path-block\s*\{[\s\S]*?gap:\s*1px/)
     expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(textView).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(textView).toMatch(/\.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
     expect(textView).toMatch(/SessionPathActions/)
@@ -51,7 +51,7 @@ describe('text compare chrome density', () => {
   it('keeps Text Compare toolbar/gutter/header/wrap chrome on capture band', () => {
     expect(css).toMatch(/\.text-compare-view \.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
     expect(css).toMatch(/\.text-compare-view \.diff-context-input\s*\{[\s\S]*?height:\s*16px/)
-    expect(css).toMatch(/\.text-compare-view \.diff-row\s*\{[\s\S]*?36px minmax\(0, 1fr\) 36px/)
+    expect(css).toMatch(/\.text-compare-view \.diff-row\s*\{[\s\S]*?28px minmax\(0, 1fr\) 28px/)
     expect(css).toMatch(/\.text-compare-view \.gutter[\s\S]*?line-height:\s*16px/)
 
     expect(textView).toMatch(/\.text-rules-panel\s*\{[\s\S]*?padding:\s*2px 4px/)
@@ -64,5 +64,29 @@ describe('text compare chrome density', () => {
     expect(diffPanel).toMatch(/\.diff-tools\s*\{[\s\S]*?gap:\s*4px/)
     expect(diffPanel).toMatch(/\.diff-option-button\s*\{[\s\S]*?height:\s*16px/)
     expect(diffPanel).toMatch(/\.cell\s*\{[\s\S]*?line-height:\s*16px/)
+  })
+})
+
+describe('text path and editor grid chrome density', () => {
+  it('keeps Text Compare path-row and editor grid on the capture band', () => {
+    expect(textView).toMatch(/data-testid="text-path-chrome"/)
+    expect(textView).toMatch(/data-path-density="capture-1to1"/)
+    expect(textView).toMatch(/data-secondary-density="capture-1to1"/)
+    expect(textView).toMatch(/text-path-chrome/)
+    expect(textView).toMatch(/text-path-meta-strip/)
+    expect(textView).toMatch(
+      /\.text-path-chrome\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\) auto/,
+    )
+    expect(textView).toMatch(/\.text-path-chrome\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(textView).toMatch(/\.text-path-meta-strip\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(textView).toMatch(/\.text-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(css).toMatch(/\.text-compare-view \.text-path-chrome\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(
+      /\.text-compare-view \.text-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+    expect(css).toMatch(/\.text-compare-view \.diff-row\s*\{[\s\S]*?28px minmax\(0, 1fr\) 28px/)
+    expect(css).toMatch(/\.text-compare-view \.diff-header\s*\{[\s\S]*?height:\s*18px/)
+    expect(textView).not.toMatch(/min-height:\s*6px/)
+    expect(textView).not.toMatch(/font-size:\s*9px/)
   })
 })

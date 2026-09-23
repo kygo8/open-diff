@@ -1720,67 +1720,80 @@ function onVisibilityForDiskChange(): void {
           {{ $t('ui.cancel') }}
         </button>
       </section>
-      <section class="bc-path-block">
-        <div class="bc-path-row">
-          <input
-            v-model="leftPathLabel"
-            type="text"
-            class="path-input"
-            data-testid="text-left-path"
-            :title="leftPathLabel"
-            :placeholder="$t('ui.remoteUriHint')"
-          />
-          <SessionPathActions
-            browse-test-id="text-browse-left"
-            save-test-id="text-save-left"
-            :can-save="false"
-            @browse="browseTextPath('left')"
-          />
-          <input
-            v-model="rightPathLabel"
-            type="text"
-            class="path-input"
-            data-testid="text-right-path"
-            :title="rightPathLabel"
-            :placeholder="$t('ui.remoteUriHint')"
-          />
-          <SessionPathActions
-            browse-test-id="text-browse-right"
-            save-test-id="text-save-right"
-            :can-save="false"
-            @browse="browseTextPath('right')"
-          />
-          <button
-            type="button"
-            class="bc-path-load"
-            data-testid="load-text-files"
-            :disabled="loading || !leftPathLabel || !rightPathLabel"
-            :aria-label="$t('ui.loadFiles')"
-            :title="$t('ui.loadFiles')"
-            @click="loadLaunchTextFiles(leftPathLabel, rightPathLabel)"
-          >
-            <RefreshCw
-              :size="14"
-              aria-hidden="true"
+      <section
+        class="bc-path-block"
+        data-path-density="capture-1to1"
+      >
+        <div
+          class="bc-path-row text-path-chrome"
+          data-testid="text-path-chrome"
+        >
+          <span class="text-path-field">
+            <input
+              v-model="leftPathLabel"
+              type="text"
+              class="path-input"
+              data-testid="text-left-path"
+              :title="leftPathLabel"
+              :placeholder="$t('ui.remoteUriHint')"
             />
-          </button>
-          <button
-            type="button"
-            class="bc-path-swap"
-            data-testid="swap-text-paths"
-            :aria-label="$t('ui.swapPaths')"
-            :title="$t('ui.swapPaths')"
-            @click="swapPaths"
-          >
-            <ArrowLeftRight
-              :size="14"
-              aria-hidden="true"
+            <SessionPathActions
+              browse-test-id="text-browse-left"
+              save-test-id="text-save-left"
+              :can-save="false"
+              @browse="browseTextPath('left')"
             />
-          </button>
+          </span>
+          <span class="text-path-field">
+            <input
+              v-model="rightPathLabel"
+              type="text"
+              class="path-input"
+              data-testid="text-right-path"
+              :title="rightPathLabel"
+              :placeholder="$t('ui.remoteUriHint')"
+            />
+            <SessionPathActions
+              browse-test-id="text-browse-right"
+              save-test-id="text-save-right"
+              :can-save="false"
+              @browse="browseTextPath('right')"
+            />
+          </span>
+          <span class="text-path-trailing">
+            <button
+              type="button"
+              class="bc-path-load"
+              data-testid="load-text-files"
+              :disabled="loading || !leftPathLabel || !rightPathLabel"
+              :aria-label="$t('ui.loadFiles')"
+              :title="$t('ui.loadFiles')"
+              @click="loadLaunchTextFiles(leftPathLabel, rightPathLabel)"
+            >
+              <RefreshCw
+                :size="14"
+                aria-hidden="true"
+              />
+            </button>
+            <button
+              type="button"
+              class="bc-path-swap"
+              data-testid="swap-text-paths"
+              :aria-label="$t('ui.swapPaths')"
+              :title="$t('ui.swapPaths')"
+              @click="swapPaths"
+            >
+              <ArrowLeftRight
+                :size="14"
+                aria-hidden="true"
+              />
+            </button>
+          </span>
         </div>
         <div
-          class="bc-path-footers"
+          class="bc-path-footers text-path-meta-strip"
           data-testid="text-path-footers"
+          data-secondary-density="capture-1to1"
         >
           <PathMetaFooter
             :stamp="leftFileStamp"
@@ -2167,17 +2180,60 @@ function onVisibilityForDiskChange(): void {
   gap: 1px;
 }
 
+.text-path-chrome {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 2px;
+  min-height: 22px;
+  padding: 1px 2px;
+}
+
+.text-path-field {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.text-path-field .path-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.text-path-trailing {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+}
+
 .bc-path-footers {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
-  padding: 0 2px;
+  padding: 0;
+}
+
+.text-path-meta-strip {
+  min-height: 18px;
+  padding: 1px 4px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f0f0f0;
+}
+
+.text-path-meta-strip :deep(.path-meta-footer) {
+  gap: 8px;
+  min-height: 16px;
+  color: #111111;
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .path-side-footer {
-  min-height: 20px;
+  min-height: 18px;
   margin-top: 0;
-  color: var(--od-muted, #6b7280);
+  color: #111111;
   font-size: 11px;
   line-height: 16px;
 }
@@ -2215,7 +2271,7 @@ function onVisibilityForDiskChange(): void {
   gap: 2px;
   height: 100%;
   min-height: 0;
-  padding: 2px 4px;
+  padding: 0;
   overflow: hidden;
 }
 

@@ -23,7 +23,7 @@ import type {
 } from '@/types/folderMerge'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
-import { Eye, Funnel } from '@lucide/vue'
+import { Eye, Funnel, Save, Settings } from '@lucide/vue'
 import { createFolderEntry, createFolderSnapshot, pathFileStamp, saveTextFile } from '@/api/diff'
 import type { FileStamp } from '@/types/diff'
 import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
@@ -246,6 +246,7 @@ const lastSelectionAction = ref('')
 const excludedRowIds = ref<Set<string>>(new Set())
 const selectNameFilter = ref('')
 const showMergeLog = ref(true)
+const sessionLogLines = ref<string[]>([])
 const mergeOpenError = ref('')
 const mergeChromeMessage = ref('')
 
@@ -940,8 +941,42 @@ async function saveMergeFolderSnapshot(): Promise<void> {
   }
 }
 
+function formatSessionLogTimestamp(date = new Date()): string {
+  const year = String(date.getFullYear())
+  const month = String(date.getMonth() + 1)
+  const day = String(date.getDate())
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+
+  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`
+}
+
+function appendSessionLog(message: string): void {
+  sessionLogLines.value = [...sessionLogLines.value, `${formatSessionLogTimestamp()} ${message}`]
+}
+
+function saveSessionLog(): void {
+  const payload = sessionLogLines.value.join('\n')
+
+  if (!payload) {
+    return
+  }
+
+  void navigator.clipboard.writeText(payload)
+}
+
 async function buildFolderMergePlan(): Promise<void> {
   const startedAt = performance.now()
+
+  appendSessionLog(`${t('ui.username')}:`)
+  if (leftPath.value && rightPath.value) {
+    appendSessionLog(
+      `Load comparison: ${leftPath.value} <-> ${rightPath.value}${
+        basePath.value ? ` (${basePath.value})` : ''
+      }`,
+    )
+  }
 
   plan.value = await requestFolderMergePlan({
     leftRoot: leftPath.value,
@@ -2625,6 +2660,61 @@ watch(
           </li>
         </ul>
       </section>
+
+      <section
+        v-if="showMergeLog"
+        class="folder-session-log"
+        data-testid="folder-merge-session-log"
+        data-log-density="capture-1to1"
+      >
+        <div
+          class="folder-session-log-gutter"
+          data-testid="folder-merge-session-log-gutter"
+        >
+          <button
+            type="button"
+            class="folder-session-log-gutter-btn"
+            data-testid="folder-merge-session-log-settings"
+            :title="$t('ui.settings')"
+            :aria-label="$t('ui.settings')"
+            @click="showMergeFilters = true"
+          >
+            <Settings
+              :size="14"
+              :stroke-width="2"
+              absolute-stroke-width
+              aria-hidden="true"
+            />
+          </button>
+          <button
+            type="button"
+            class="folder-session-log-gutter-btn"
+            data-testid="folder-merge-session-log-save"
+            :title="$t('ui.save')"
+            :aria-label="$t('ui.save')"
+            @click="saveSessionLog"
+          >
+            <Save
+              :size="14"
+              :stroke-width="2"
+              absolute-stroke-width
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+        <div
+          class="folder-session-log-body"
+          data-testid="folder-merge-session-log-body"
+        >
+          <p
+            v-for="(line, index) in sessionLogLines"
+            :key="`${index}-${line}`"
+            class="folder-session-log-line"
+          >
+            {{ line }}
+          </p>
+        </div>
+      </section>
     </section>
 
     <template #inspector>
@@ -2676,11 +2766,11 @@ watch(
 <style scoped>
 .folder-merge-view {
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, auto);
-  gap: 4px;
+  grid-template-rows: auto auto auto minmax(0, 1fr) max-content;
+  gap: 2px;
   height: 100%;
   padding: 2px 4px;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .merge-header {
@@ -2974,9 +3064,11 @@ h1 {
     44px minmax(150px, 0.75fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(170px, 1fr)
     minmax(180px, 0.8fr) minmax(220px, 1fr) 88px;
   min-width: 1212px;
-  border-bottom: 1px solid var(--app-border);
+  min-height: 16px;
+  border-bottom: 0;
   color: var(--app-text);
   font-size: 11px;
+  line-height: 14px;
   cursor: pointer;
 }
 
@@ -2991,7 +3083,7 @@ h1 {
   overflow: hidden;
   border-right: 1px solid var(--app-border);
   font-size: 11px;
-  line-height: 16px;
+  line-height: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -3001,9 +3093,10 @@ h1 {
 }
 
 .merge-plan-head {
-  background: var(--app-surface-muted);
-  color: var(--app-text-muted);
-  font-weight: 700;
+  min-height: 20px;
+  background: #f0f0f0;
+  color: #000000;
+  font-weight: 400;
 }
 
 .merge-plan-row.conflict strong {
@@ -3138,8 +3231,64 @@ h1 {
 }
 
 .merge-plan-row.selected {
-  outline: 1px solid var(--app-accent);
-  background: color-mix(in srgb, var(--app-accent) 12%, transparent);
+  outline: 0;
+  background: #a8cdf1;
+}
+
+.folder-session-log {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  height: 96px;
+  min-height: 96px;
+  overflow: hidden;
+  border: 1px solid #c0c0c0;
+  border-radius: 0;
+  background: #e7e7e7;
+}
+
+.folder-session-log-gutter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-right: 1px solid #c0c0c0;
+  background: #d4d4d4;
+}
+
+.folder-session-log-gutter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #333333;
+  cursor: pointer;
+}
+
+.folder-session-log-gutter-btn:hover {
+  background: #c0c0c0;
+}
+
+.folder-session-log-body {
+  min-width: 0;
+  padding: 2px 6px;
+  overflow: auto;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.folder-session-log-line {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
 }
 
 .merge-chrome-panel {

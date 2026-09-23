@@ -1006,18 +1006,17 @@ watch([leftPath, rightPath], () => {
           </div>
         </label>
         <div
-          class="bc-path-footers"
+          class="bc-path-footers table-secondary-strip"
           data-testid="table-path-footers"
+          data-secondary-density="capture-1to1"
         >
           <PathMetaFooter
             :stamp="leftFileStamp"
-            :encoding="leftEncoding || undefined"
             :show-milliseconds="settings.showMillisecondsInTimestamps"
             test-id="table-left-path-footer"
           />
           <PathMetaFooter
             :stamp="rightFileStamp"
-            :encoding="rightEncoding || undefined"
             :show-milliseconds="settings.showMillisecondsInTimestamps"
             test-id="table-right-path-footer"
           />
@@ -1845,14 +1844,35 @@ h2 {
   grid-column: 1 / -1;
   gap: 1px;
   width: 100%;
-  padding: 0 2px;
+  padding: 0;
+}
+
+.table-secondary-strip {
+  min-height: 18px;
+  padding: 1px 4px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0;
+  background: #f5f5f5;
+}
+
+.table-secondary-strip :deep(.path-meta-footer) {
+  gap: 6px;
+  min-height: 16px;
+  color: #111111;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.table-secondary-strip :deep(.path-meta-chip),
+.table-secondary-strip :deep(.path-meta-eol) {
+  display: none;
 }
 
 .path-side-footer {
-  min-height: 20px;
+  min-height: 18px;
   margin-top: 0;
   overflow: hidden;
-  color: var(--app-text-muted, #6b7280);
+  color: #111111;
   font-size: 11px;
   line-height: 16px;
   text-overflow: ellipsis;

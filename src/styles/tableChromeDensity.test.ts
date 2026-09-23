@@ -14,7 +14,7 @@ describe('table compare chrome density', () => {
     expect(css).toMatch(/\.table-compare-view \.table-source-controls[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.table-compare-view \.table-source-controls input[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.table-compare-view \.table-grid-row\s*\{[\s\S]*?min-height:\s*20px/)
 
     expect(tableView).toMatch(/\.table-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
@@ -23,7 +23,7 @@ describe('table compare chrome density', () => {
     expect(tableView).toMatch(/\.table-navigation-bar button\s*\{[\s\S]*?height:\s*18px/)
     expect(tableView).toMatch(/\.table-grid-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(tableView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(tableView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(tableView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(tableView).toMatch(/SessionPathActions/)
     expect(tableView).toMatch(/PathMetaFooter/)
     expect(tableView).toMatch(/chromeKind:\s*'table-session'/)
@@ -86,5 +86,26 @@ describe('table compare chrome density', () => {
     expect(tableView).toMatch(/\.table-grid-panel header\s*\{[\s\S]*?min-height:\s*20px/)
     expect(tableView).toMatch(/\.table-column-rule\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(tableView).toMatch(/\.table-grid-cell\s*\{[\s\S]*?padding:\s*2px 6px/)
+  })
+})
+
+describe('table path-meta secondary strip density', () => {
+  it('keeps Table secondary path-meta strip on capture band', () => {
+    expect(tableView).toMatch(/data-testid="table-path-footers"/)
+    expect(tableView).toMatch(/data-secondary-density="capture-1to1"/)
+    expect(tableView).toMatch(/table-secondary-strip/)
+    expect(tableView).toMatch(/\.table-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(tableView).toMatch(/\.table-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(tableView).toMatch(
+      /\.table-secondary-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?gap:\s*6px/,
+    )
+    expect(css).toMatch(
+      /\.table-compare-view \.table-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/,
+    )
+    expect(css).toMatch(
+      /\.table-compare-view \.table-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/,
+    )
+    expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(tableView).not.toMatch(/min-height:\s*6px/)
   })
 })

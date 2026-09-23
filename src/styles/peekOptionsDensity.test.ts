@@ -178,3 +178,13 @@ describe('options tree depth residual', () => {
     expect(settingsView).not.toMatch(/min-height:\s*6px/)
   })
 })
+
+describe('folder merge Same OK / Peek residual', () => {
+  it('scales Same OK and Peek action chrome toward capture toolbar plates', () => {
+    expect(mergeView).toMatch(/data-same-ok-chrome="capture-1to1-residual"/)
+    expect(mergeView).toMatch(/data-peek-residual="capture-1to1"/)
+    expect(mergeView).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*37\.5px/)
+    expect(css).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*37\.5px/)
+    expect(css).toMatch(/\.folder-merge-peek-panel[\s\S]*?border:\s*1px solid #a0a0a0/)
+  })
+})

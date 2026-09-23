@@ -34,6 +34,21 @@ describe('table compare chrome density', () => {
     expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*38px/)
   })
 
+  it('shows Table header/report chrome under sole-session frame', () => {
+    expect(css).toMatch(
+      /\.app-shell:not\(\.app-shell-single-session\) \.table-compare-header[\s\S]*?display:\s*none/,
+    )
+    expect(css).toMatch(
+      /\.app-shell-single-session \.table-compare-header\s*\{[\s\S]*?display:\s*flex !important/,
+    )
+    expect(css).toMatch(
+      /\.app-shell-single-session \.table-compare-header \.table-report-actions \.n-button[\s\S]*?height:\s*18px/,
+    )
+    expect(tableView).toMatch(/data-table-secondary-density="capture-1to1"/)
+    expect(tableView).toMatch(/table-compare-header/)
+    expect(tableView).toMatch(/export-table-report/)
+  })
+
   it('keeps Table secondary nav/report chrome on capture band', () => {
     expect(css).toMatch(
       /\.table-compare-view \.table-navigation-bar\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,

@@ -558,4 +558,12 @@ describe('TableCompareView', () => {
       'C:/data/table-compare.txt',
     )
   })
+  it('renders table compare header and report action', () => {
+    const wrapper = mount(TableCompareView)
+
+    expect(wrapper.find('.table-compare-header').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="export-table-report"]').exists()).toBe(true)
+
+    wrapper.unmount()
+  })
 })

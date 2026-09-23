@@ -963,8 +963,12 @@ select {
 .version-header,
 .merge-header,
 .format-header,
-.profile-header,
-.table-compare-header {
+.profile-header {
+  display: none !important;
+}
+
+/* Multi-tab keeps the in-view title block hidden; sole-session shows report chrome. */
+.app-shell:not(.app-shell-single-session) .table-compare-header {
   display: none !important;
 }
 
@@ -2843,6 +2847,63 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
   background: var(--app-surface) !important;
+}
+
+.app-shell-single-session .table-compare-header {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 22px;
+  margin: 0;
+  padding: 2px 4px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #f3f3f3;
+}
+
+.app-shell-single-session .table-compare-header > div:first-child,
+.app-shell-single-session .table-compare-header .eyebrow,
+.app-shell-single-session .table-compare-header h1 {
+  display: none !important;
+}
+
+.app-shell-single-session .table-compare-header .table-summary {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 18px;
+  padding: 2px 6px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #ffffff;
+  text-align: left;
+}
+
+.app-shell-single-session .table-compare-header .table-summary strong,
+.app-shell-single-session .table-compare-header .table-summary span {
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.app-shell-single-session .table-compare-header .table-report-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 18px;
+  padding: 2px 4px;
+}
+
+.app-shell-single-session .table-compare-header .table-report-actions .n-button {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 6px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
 }
 
 .table-compare-view .table-summary,

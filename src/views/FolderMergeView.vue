@@ -2115,7 +2115,10 @@ watch(
         />
       </section>
 
-      <section class="merge-actions-bar">
+      <section
+        class="merge-actions-bar"
+        data-same-ok-chrome="capture-1to1-residual"
+      >
         <div class="merge-actions">
           <NButton
             size="small"
@@ -2539,6 +2542,7 @@ watch(
         v-if="showPeek"
         class="folder-merge-peek-panel"
         data-peek-density="capture-1to1"
+        data-peek-residual="capture-1to1"
         data-testid="folder-merge-peek-panel"
       >
         <header>
@@ -2955,6 +2959,28 @@ h1 {
   font-size: 11px;
 }
 
+.merge-actions-bar[data-same-ok-chrome='capture-1to1-residual']
+  :deep(.n-button[data-testid='folder-merge-same-ok']) {
+  width: 64.5px;
+  min-width: 64.5px;
+  height: 37.5px;
+  min-height: 37.5px;
+  padding: 0 4px;
+  border-radius: 0;
+  font-size: 11px;
+}
+
+.merge-actions-bar[data-same-ok-chrome='capture-1to1-residual']
+  :deep(.n-button[data-testid='folder-merge-peek']) {
+  width: 59px;
+  min-width: 59px;
+  height: 37.5px;
+  min-height: 37.5px;
+  padding: 0 4px;
+  border-radius: 0;
+  font-size: 11px;
+}
+
 .merge-actions-bar {
   display: flex;
   justify-content: flex-end;
@@ -3223,6 +3249,11 @@ h1 {
   .merge-summary div {
     text-align: left;
   }
+}
+
+.folder-merge-peek-panel[data-peek-residual='capture-1to1'] {
+  border: 1px solid #a0a0a0;
+  background: #ffffff;
 }
 
 .folder-merge-peek-panel {

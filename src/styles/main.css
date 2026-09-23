@@ -3826,6 +3826,28 @@ html[data-show-path-bars='0'] .path-pair-bar {
   min-height: 36px !important;
 }
 
+.folder-merge-view
+  .merge-actions-bar[data-same-ok-chrome='capture-1to1-residual']
+  .n-button[data-testid='folder-merge-same-ok'] {
+  width: 64.5px !important;
+  min-width: 64.5px !important;
+  height: 37.5px !important;
+  min-height: 37.5px !important;
+  padding: 0 4px !important;
+  font-size: 11px !important;
+}
+
+.folder-merge-view
+  .merge-actions-bar[data-same-ok-chrome='capture-1to1-residual']
+  .n-button[data-testid='folder-merge-peek'] {
+  width: 59px !important;
+  min-width: 59px !important;
+  height: 37.5px !important;
+  min-height: 37.5px !important;
+  padding: 0 4px !important;
+  font-size: 11px !important;
+}
+
 .folder-merge-view .merge-chrome-panel button {
   --n-height: 18px !important;
   --n-padding: 0 5px !important;
@@ -3899,7 +3921,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 0 !important;
   min-height: 0 !important;
   padding: 0 !important;
-  border: 1px solid #c9cdd3 !important;
+  border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
   background: #ffffff !important;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif !important;

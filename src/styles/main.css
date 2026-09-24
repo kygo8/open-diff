@@ -392,6 +392,16 @@ select {
 }
 
 .bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='next-conflict'] {
+  min-width: 86.5px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='prev-conflict'] {
+  min-width: 84.5px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
   .bc-toolbar-command[data-command-id='next-diff'] {
   min-width: 63px !important;
 }

@@ -97,3 +97,11 @@ describe('text merge conflict chrome residual', () => {
     )
   })
 })
+
+describe('text merge path meta residual', () => {
+  it('keeps Text Merge path meta footers on capture 18px band', () => {
+    expect(mergeView).toMatch(
+      /\.merge-path-footers \.path-meta-footer\s*\{[\s\S]*?min-height:\s*18px/,
+    )
+  })
+})

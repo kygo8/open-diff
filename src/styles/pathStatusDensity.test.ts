@@ -58,11 +58,11 @@ describe('path/status strip density', () => {
     expect(pathMeta).toMatch(/path-meta-size/)
     expect(pathMeta).toMatch(/path-meta-chip/)
     expect(pathMeta).toMatch(/path-meta-eol/)
-    expect(pathMeta).toMatch(/min-height:\s*20px/)
+    expect(pathMeta).toMatch(/min-height:\s*18px/)
     expect(pathMeta).toMatch(/font-size:\s*11px/)
     expect(pathMeta).toMatch(/\.path-meta-chip\s*\{[\s\S]*?height:\s*18px/)
     expect(pathMeta).toMatch(/\.path-meta-chip\s*\{[\s\S]*?padding:\s*0 4px/)
-    expect(pathMeta).toMatch(/\.path-meta-footer\s*\{[\s\S]*?gap:\s*10px/)
+    expect(pathMeta).toMatch(/\.path-meta-footer\s*\{[\s\S]*?gap:\s*6px/)
     expect(pathMeta).toMatch(/:size="12"/)
     expect(pathMeta).toMatch(/ChevronDown/)
     expect(pathMeta).toMatch(/buildPathFooterMeta/)
@@ -147,5 +147,18 @@ describe('PathMetaFooter MIX/EOL residual', () => {
     expect(css).toMatch(
       /\.path-meta-footer\[data-path-meta-eol='capture-1to1-residual'\] \.path-meta-eol[\s\S]*?height:\s*18px/,
     )
+  })
+})
+
+describe('PathMetaFooter chip spacing residual', () => {
+  it('tightens MIX/EOL/chip spacing toward capture footer density', () => {
+    expect(pathMeta).toMatch(/data-path-meta-gap="capture-1to1-residual"/)
+    expect(pathMeta).toMatch(/\.path-meta-footer\s*\{[\s\S]*?gap:\s*6px/)
+    expect(pathMeta).toMatch(/\.path-meta-footer\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(pathMeta).toMatch(/\.path-meta-chip\s*\{[\s\S]*?border:\s*1px solid transparent/)
+    expect(css).toMatch(
+      /\.path-meta-footer\[data-path-meta-gap='capture-1to1-residual'\][\s\S]*?gap:\s*6px/,
+    )
+    expect(css).toMatch(/\.bc-path-footers \.path-meta-footer[\s\S]*?gap:\s*6px/)
   })
 })

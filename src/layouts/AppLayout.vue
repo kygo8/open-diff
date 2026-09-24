@@ -2357,7 +2357,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button,
 .chrome-button {
-  height: 22px;
+  height: 21.5px;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -2367,7 +2367,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button {
   max-width: 9em;
-  height: 22px;
+  height: 21.5px;
   padding: 0 8px;
   overflow: hidden;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
@@ -3092,7 +3092,7 @@ html[data-show-sidebar='1'] .sidebar {
 }
 
 .app-shell-dense-chrome .menus button {
-  height: 22px;
+  height: 21.5px;
   padding: 0 8px;
   font-size: 12px;
 }

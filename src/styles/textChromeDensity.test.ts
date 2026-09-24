@@ -13,7 +13,7 @@ describe('text compare chrome density', () => {
   it('keeps Text Compare path/status/editor chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.text-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.text-compare-view \.text-path-chrome\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(css).toMatch(/\.text-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*20px/)
+    expect(css).toMatch(/\.text-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.text-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)

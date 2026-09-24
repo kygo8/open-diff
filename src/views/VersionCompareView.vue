@@ -969,8 +969,8 @@ h1 {
 }
 
 .version-path-panel input {
-  height: 20px;
-  min-height: 20px;
+  height: 16.5px;
+  min-height: 16.5px;
   padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;

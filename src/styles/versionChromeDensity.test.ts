@@ -11,11 +11,12 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('version compare chrome density', () => {
   it('keeps Version Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.version-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(versionView).toMatch(/\.version-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(
       /\.version-compare-view \.version-path-panel\s*\{[\s\S]*?min-height:\s*20px/,
     )
     expect(css).toMatch(
-      /\.version-compare-view \.version-path-panel input,\s*\.version-compare-view \.version-path-panel button\s*\{[\s\S]*?height:\s*20px/,
+      /\.version-compare-view \.version-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/,
     )
     expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
@@ -26,7 +27,7 @@ describe('version compare chrome density', () => {
     expect(versionView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(versionView).toMatch(/SessionPathActions/)
     expect(versionView).toMatch(/PathMetaFooter/)
-    expect(versionView).toMatch(/\.version-path-panel input\s*\{[\s\S]*?height:\s*20px/)
+    expect(versionView).toMatch(/\.version-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(versionView).toMatch(/chromeKind:\s*'version-session'/)
     expect(versionView).toMatch(/sessions:\s*true/)
     expect(versionView).not.toMatch(/font-size:\s*9px/)

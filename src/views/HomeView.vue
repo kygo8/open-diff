@@ -1334,7 +1334,7 @@ onMounted(() => {
 }
 
 .bc-selected-actions button {
-  width: 96px;
+  width: 95.5px;
   max-width: 100%;
   height: 30px;
   overflow: hidden;

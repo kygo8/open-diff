@@ -873,6 +873,7 @@ function runMediaToolbarCommand(commandId: string): void {
           class="media-scrub-row"
           data-testid="media-scrub-chrome"
           data-media-scrub-density="capture-1to1"
+          data-media-scrub-residual="capture-1to1"
         >
           <button
             type="button"
@@ -1582,7 +1583,7 @@ h1 {
 .media-players {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
+  gap: 4px;
 }
 
 .media-player-card {
@@ -1613,7 +1614,6 @@ h1 {
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #f5f5f5;
-  background: var(--app-surface);
 }
 
 .media-scrub-play {

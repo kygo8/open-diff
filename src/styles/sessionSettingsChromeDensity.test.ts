@@ -100,7 +100,7 @@ describe('options footer residual', () => {
     expect(settingsView).toMatch(/data-testid="options-footer-ok"/)
     expect(settingsView).toMatch(/data-testid="options-footer-cancel"/)
     expect(settingsView).toMatch(/data-testid="options-footer-apply"/)
-    expect(settingsView).toMatch(/\.options-footer-btn\s*\{[\s\S]*?height:\s*22px/)
+    expect(settingsView).toMatch(/\.options-footer-btn\s*\{[\s\S]*?height:\s*18px/)
     expect(settingsDialog).toMatch(/data-testid="session-settings-ok"/)
     expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*18px/)
   })

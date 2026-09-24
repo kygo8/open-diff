@@ -11,6 +11,7 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('picture compare chrome density', () => {
   it('keeps Picture Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.picture-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(
       /\.picture-compare-view \.picture-path-panel\s*\{[\s\S]*?min-height:\s*20px/,
     )

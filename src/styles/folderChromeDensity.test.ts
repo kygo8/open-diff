@@ -91,10 +91,17 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(folderView).toMatch(/:size="16"/)
   expect(syncView).toMatch(/data-testid="folder-sync-filter-strip"/)
   expect(syncView).toMatch(/data-testid="folder-sync-filter-strip-filters"/)
-  expect(syncView).toMatch(/data-testid="folder-sync-filter-strip-peek"/)
+  expect(syncView).not.toMatch(/data-testid="folder-sync-filter-strip-peek"/)
+  expect(syncView).toMatch(/data-sync-filters-place="capture-1to1-residual"/)
+  expect(syncView).toMatch(/data-sync-pattern-place="capture-1to1-residual"/)
+  expect(syncView).toMatch(/data-testid="folder-sync-filter-pattern"/)
   expect(syncView).toMatch(/data-filters-density="capture-1to1"/)
   expect(syncView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*37\.5px/)
+  expect(syncView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?background:\s*#f0f0f0/)
   expect(syncView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
+  expect(syncView).toMatch(
+    /\.sync-filter-pattern-field \.folder-filter-pattern\s*\{[\s\S]*?height:\s*19\.5px/,
+  )
   expect(mergeView).toMatch(/data-testid="folder-merge-filter-strip"/)
   expect(mergeView).toMatch(/data-testid="folder-merge-filter-pattern"/)
   expect(mergeView).toMatch(/data-testid="folder-merge-filter-strip-filters"/)
@@ -177,5 +184,19 @@ describe('folder MainBar Filters row residual', () => {
     )
     expect(folderView).toMatch(/data-mainbar-row2="capture-1to1-residual"/)
     expect(mergeView).toMatch(/data-mainbar-row2="capture-1to1-residual"/)
+  })
+})
+
+describe('folder sync Filters/Peek placement residual', () => {
+  it('keeps Peek on MainBar and pattern near Accept/Cancel with separate #f0f0f0 Filters strip', () => {
+    expect(syncView).toMatch(/buildFolderSyncToolbar/)
+    expect(css).toMatch(
+      /\.folder-sync-view \.folder-filter-chrome\[data-sync-filters-place='capture-1to1-residual'\][\s\S]*?background:\s*#f0f0f0/,
+    )
+    expect(css).toMatch(
+      /\.folder-filter-pattern\[data-sync-pattern-place='capture-1to1-residual'\][\s\S]*?height:\s*19\.5px/,
+    )
+    expect(syncView).not.toMatch(/data-mainbar-row2="capture-1to1-residual"/)
+    expect(syncView).not.toMatch(/data-testid="folder-sync-filter-strip-peek"/)
   })
 })

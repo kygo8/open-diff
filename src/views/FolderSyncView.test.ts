@@ -418,7 +418,7 @@ describe('FolderSyncView', () => {
     expect(wrapper.find('[data-testid="folder-sync-peek-panel"]').exists()).toBe(false)
   })
 
-  it('exposes Filters and Peek glyph buttons on the Filters strip', async () => {
+  it('exposes Filters on a separate strip and Peek on the MainBar toolbar', async () => {
     const wrapper = mount(FolderSyncView, {
       global: {
         stubs: {
@@ -433,12 +433,10 @@ describe('FolderSyncView', () => {
 
     expect(wrapper.find('[data-testid="folder-sync-filter-strip"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folder-sync-filter-strip-filters"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="folder-sync-filter-pattern"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="folder-sync-filter-strip-filters"]').attributes('disabled'),
-    ).toBeDefined()
-    expect(
-      wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').attributes('disabled'),
     ).toBeDefined()
 
     await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
@@ -449,14 +447,11 @@ describe('FolderSyncView', () => {
     expect(
       wrapper.find('[data-testid="folder-sync-filter-strip-filters"]').attributes('disabled'),
     ).toBeUndefined()
-    expect(
-      wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').attributes('disabled'),
-    ).toBeUndefined()
 
     await wrapper.find('[data-testid="folder-sync-filter-strip-filters"]').trigger('click')
     expect(wrapper.find('[data-testid="folder-sync-filters-panel"]').exists()).toBe(true)
 
-    await wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').trigger('click')
+    await wrapper.find('[data-testid="folder-sync-session-toolbar-peek"]').trigger('click')
     expect(wrapper.find('[data-testid="folder-sync-peek-panel"]').exists()).toBe(true)
   })
 
@@ -858,7 +853,7 @@ describe('FolderSyncView', () => {
     await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
     await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
     await flushPromises()
-    await wrapper.find('[data-testid="folder-sync-filter-strip-peek"]').trigger('click')
+    await wrapper.find('[data-testid="folder-sync-session-toolbar-peek"]').trigger('click')
 
     expect(wrapper.find('[data-testid="folder-sync-peek-path"]').text()).toContain(
       'package/app.exe',

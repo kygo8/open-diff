@@ -3820,6 +3820,22 @@ html[data-show-path-bars='0'] .path-pair-bar {
   background: #f0f0f0 !important;
 }
 
+.folder-sync-view .folder-filter-chrome[data-sync-filters-place='capture-1to1-residual'] {
+  min-height: 37.5px !important;
+  background: #f0f0f0 !important;
+}
+
+.folder-sync-view
+  .sync-filter-pattern-field
+  .folder-filter-pattern[data-sync-pattern-place='capture-1to1-residual'] {
+  height: 19.5px !important;
+  min-height: 19.5px !important;
+  padding: 0 6px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
+  line-height: 18px !important;
+}
+
 /* Folder Merge chrome densify pass 2 toward Folder Compare denser band */
 .folder-merge-view .merge-paths {
   gap: 2px !important;

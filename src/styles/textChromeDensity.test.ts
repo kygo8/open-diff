@@ -104,6 +104,15 @@ describe('text compare toolbar strip residual', () => {
   })
 })
 
+it('keeps Text Compare path meta strip on capture MIX/EOL spacing', () => {
+  expect(textView).toMatch(
+    /\.text-path-meta-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?gap:\s*6px/,
+  )
+  expect(textView).toMatch(
+    /\.text-path-meta-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?min-height:\s*18px/,
+  )
+})
+
 describe('text editor grid residual', () => {
   it('keeps TextDiffPanel gutter/header defaults on the capture editor grid', () => {
     expect(diffPanel).toMatch(/data-editor-grid="capture-1to1-residual"/)

@@ -1430,7 +1430,7 @@ watch(
 
 .bc-path-footers .path-side-footer,
 .merge-path-footers .path-meta-footer {
-  min-height: 20px;
+  min-height: 18px;
   font-size: 11px;
   line-height: 16px;
 }

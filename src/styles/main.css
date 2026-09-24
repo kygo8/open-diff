@@ -3764,7 +3764,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .text-merge-view .bc-path-footers .path-meta-footer,
 .text-merge-view .merge-path-footers .path-meta-footer {
-  min-height: 20px !important;
+  min-height: 18px !important;
   font-size: 11px !important;
   line-height: 16px !important;
 }

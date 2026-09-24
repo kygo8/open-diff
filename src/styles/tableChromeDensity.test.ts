@@ -11,6 +11,7 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('table compare chrome density', () => {
   it('keeps Table Compare path/status/controls chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.table-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(tableView).toMatch(/\.path-field-row \.path-input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(/\.table-compare-view \.table-source-controls[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.table-compare-view \.table-source-controls input[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)

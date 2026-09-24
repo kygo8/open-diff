@@ -1513,6 +1513,8 @@ h2 {
 .path-field-row .path-input {
   flex: 1;
   min-width: 0;
+  height: 16.5px;
+  min-height: 16.5px;
 }
 
 .table-source-controls label {

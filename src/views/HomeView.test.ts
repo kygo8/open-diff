@@ -86,7 +86,7 @@ describe('HomeView', () => {
     expect(source).toContain('grid-template-columns: minmax(220px, 248px) minmax(0, 1fr)')
     expect(source).toContain('grid-template-rows: 28px minmax(0, 1fr) 32px')
     expect(source).toContain('min-height: 17px')
-    expect(source).toContain('width: 96px')
+    expect(source).toContain('width: 95.5px')
     expect(source).toContain('height: 30px')
     expect(source).toContain('grid-template-columns: repeat(3, minmax(140px, 157px))')
     expect(source).not.toContain('min-height: 7px')

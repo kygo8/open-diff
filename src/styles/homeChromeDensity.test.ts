@@ -24,7 +24,7 @@ describe('home chrome density', () => {
     expect(homeView).toMatch(/\.bc-tree-row\s*\{[\s\S]*?min-height:\s*17px/)
     expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*28px/)
     expect(homeView).toMatch(/\.bc-tree-footer input\s*\{[\s\S]*?height:\s*22px/)
-    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?width:\s*96px/)
+    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?width:\s*95.5px/)
     expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?height:\s*30px/)
     expect(homeView).toMatch(
       /\.new-session-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3, minmax\(140px, 157px\)\)/,

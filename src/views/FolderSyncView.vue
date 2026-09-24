@@ -2386,10 +2386,9 @@ h1 {
 
 .sync-settings {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(220px, 326.5px) minmax(
-      160px,
-      334.5px
-    ) auto;
+  grid-template-columns:
+    minmax(180px, 1fr) minmax(180px, 1fr) minmax(220px, 326.5px) minmax(160px, 334.5px)
+    auto;
   align-items: end;
   gap: 2px;
   min-height: 22px;

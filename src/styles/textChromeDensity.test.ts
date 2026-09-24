@@ -140,5 +140,7 @@ describe('mainbar command width residual', () => {
     expect(css).toMatch(/data-command-id='format'\][\s\S]*?min-width:\s*63\.5px/)
     expect(css).toMatch(/data-command-id='next-section'\][\s\S]*?min-width:\s*85\.5px/)
     expect(css).toMatch(/data-command-id='collapse'\][\s\S]*?min-width:\s*60px/)
+    expect(css).toMatch(/data-command-id='next-conflict'\][\s\S]*?min-width:\s*86\.5px/)
+    expect(css).toMatch(/data-command-id='prev-conflict'\][\s\S]*?min-width:\s*84\.5px/)
   })
 })

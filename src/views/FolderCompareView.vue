@@ -5135,7 +5135,7 @@ onUnmounted(() => {
 .folder-filter-pattern {
   flex: 1 1 180px;
   min-width: 120px;
-  height: 20px;
+  height: 19.5px;
   padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;

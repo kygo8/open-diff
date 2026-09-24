@@ -12,6 +12,7 @@ describe('media compare chrome density', () => {
   it('keeps Media Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.media-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.media-compare-view \.media-path-panel\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(mediaView).toMatch(/\.media-path-field \.path-input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(
       /\.media-compare-view \.media-path-panel input,\s*\.media-compare-view \.media-path-panel button\s*\{[\s\S]*?height:\s*20px/,
     )

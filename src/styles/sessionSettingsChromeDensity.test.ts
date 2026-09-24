@@ -105,3 +105,23 @@ describe('options footer residual', () => {
     expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*22px/)
   })
 })
+
+describe('session rules micro residual', () => {
+  it('closes Session Rules micro-drift vs Options/About sibling chrome', () => {
+    expect(settingsDialog).toMatch(/data-rules-micro="capture-1to1-residual"/)
+    expect(settingsDialog).toMatch(/header button\s*\{[\s\S]*?height:\s*18px/)
+    expect(settingsDialog).toMatch(/header\s*\{[\s\S]*?border-bottom:\s*1px solid #d0d0d0/)
+    expect(settingsDialog).toMatch(
+      /\.settings-tabs button\.active\s*\{[\s\S]*?background:\s*#c8e4ff/,
+    )
+    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?background:\s*#ffffff/)
+    expect(css).toMatch(
+      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\]\s*\{[\s\S]*?gap:\s*2px/,
+    )
+    expect(css).toMatch(
+      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-body\s*\{[\s\S]*?padding:\s*2px 4px/,
+    )
+    expect(css).toMatch(/button\.active[\s\S]*?background:\s*#c8e4ff/)
+    expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
+  })
+})

@@ -313,6 +313,7 @@ function applySettings(): void {
     <section
       class="session-settings-dialog"
       data-rules-depth="capture-1to1-residual"
+      data-rules-micro="capture-1to1-residual"
       data-options-rules-density="capture-1to1"
       role="dialog"
       aria-modal="true"
@@ -871,6 +872,22 @@ footer {
   min-height: 20px;
 }
 
+header {
+  padding-bottom: 2px;
+  border-bottom: 1px solid #d0d0d0;
+}
+
+header button {
+  height: 18px;
+  min-height: 18px;
+  padding: 0 8px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #ffffff;
+  font-size: 11px;
+  line-height: 16px;
+}
+
 h2 {
   margin: 0;
   font-size: 12px;
@@ -896,8 +913,10 @@ h2 {
 }
 
 .settings-tabs button.active {
-  border-color: var(--app-accent, #2563eb);
-  color: var(--app-accent, #2563eb);
+  border-color: #89bdea;
+  background: #c8e4ff;
+  color: #1a1a1a;
+  box-shadow: inset 0 0 0 1px #89bdea;
 }
 
 .settings-body {
@@ -962,8 +981,11 @@ footer button {
   padding: 0 12px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
+  background: #ffffff;
+  color: #111111;
   font-size: 11px;
   line-height: 16px;
+  cursor: default;
 }
 
 button.primary {

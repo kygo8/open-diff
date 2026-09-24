@@ -5006,7 +5006,7 @@ onUnmounted(() => {
 .path-pair input {
   width: 100%;
   min-width: 0;
-  height: 20px;
+  height: 16.5px;
   padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);

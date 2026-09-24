@@ -210,15 +210,15 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > input,
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > .path-input {
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 16.5px !important;
+  min-height: 16.5px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
 }
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > button {
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 22px !important;
+  min-height: 22px !important;
   padding: 0 4px !important;
   border-radius: 0 !important;
   font-size: 11px !important;
@@ -1172,8 +1172,8 @@ select {
   flex: 1 1 auto !important;
   width: auto !important;
   min-width: 0 !important;
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 16.5px !important;
+  min-height: 16.5px !important;
   padding: 0 4px !important;
   overflow: hidden !important;
   font-size: 12px !important;
@@ -1185,8 +1185,8 @@ select {
 
 .folder-toolbar .path-pair .path-field-row > button {
   flex: 0 0 auto !important;
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 22px !important;
+  min-height: 22px !important;
   padding: 0 5px !important;
   font-size: 11px !important;
   white-space: nowrap !important;

@@ -10,13 +10,14 @@ describe('shell chrome density', () => {
     'utf8',
   )
 
-  it('keeps single-session dense chrome at 48px menu bar', () => {
-    expect(source).toMatch(/\.app-shell-dense-chrome\s*\{[\s\S]*?grid-template-rows:\s*48px/)
+  it('collapses single-session dense chrome to capture 23.5px menu row', () => {
+    expect(source).toMatch(/\.app-shell-dense-chrome\s*\{[\s\S]*?grid-template-rows:\s*23\.5px/)
     expect(source).toMatch(
-      /\.app-shell-dense-chrome \.menu-bar\s*\{[\s\S]*?grid-template-rows:\s*24px 24px/,
+      /\.app-shell-dense-chrome \.menu-bar\s*\{[\s\S]*?grid-template-rows:\s*23\.5px/,
     )
+    expect(source).toMatch(/\.app-shell-dense-chrome \.brand\s*\{[\s\S]*?display:\s*none/)
     expect(source).toMatch(
-      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*48px minmax\(0, 1fr\) 19\.5px/,
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*23\.5px minmax\(0, 1fr\) 19\.5px/,
     )
   })
 

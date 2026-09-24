@@ -3047,15 +3047,15 @@ html[data-show-sidebar='1'] .sidebar {
 }
 
 .app-shell-dense-chrome {
-  /* Title + menu only — closer to native frames without a tab strip. */
-  grid-template-rows: 48px minmax(0, 1fr) 24px;
+  /* Capture client opens on a single ~23.5px menu row (title is OS chrome). */
+  grid-template-rows: 23.5px minmax(0, 1fr) 24px;
 }
 
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-merge']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind$='-session']) {
-  /* Keep dense brand/menu at 48px; status track toward capture ~19.5px (DPR≈2). */
-  grid-template-rows: 48px minmax(0, 1fr) 19.5px;
+  /* Single capture menu row; status track toward capture ~19.5px (DPR≈2). */
+  grid-template-rows: 23.5px minmax(0, 1fr) 19.5px;
 }
 
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
@@ -3065,29 +3065,21 @@ html[data-show-sidebar='1'] .sidebar {
 }
 
 .app-shell-dense-chrome .menu-bar {
-  grid-template-rows: 24px 24px;
-  background: #f0f0f0;
+  grid-template-rows: 23.5px;
+  background: #ffffff;
 }
 
 .app-shell-dense-chrome .brand {
-  height: 24px;
-  padding: 0 8px;
-  background: transparent;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-  font-size: 12px;
-  line-height: 22px;
-}
-
-.app-shell-dense-chrome .brand :deep(svg) {
-  width: 14px;
-  height: 14px;
+  display: none;
 }
 
 .app-shell-dense-chrome .menus {
+  grid-column: 1 / -1;
+  grid-row: 1;
   gap: 0;
-  height: 24px;
+  height: 23.5px;
   padding: 0 2px;
-  border-top: 1px solid #d0d0d0;
+  border-top: 0;
   background: #ffffff;
 }
 

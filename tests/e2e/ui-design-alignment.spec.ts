@@ -34,7 +34,7 @@ for (const [name, route] of routes) {
       'data-dense-chrome',
       'true',
     )
-    await expect(page.locator('.menu-bar')).toHaveCSS('height', '48px')
+    await expect(page.locator('.menu-bar')).toHaveCSS('height', '23.5px')
     await expect(page.locator('.sidebar')).toBeHidden()
     await expect(page.locator('.status-bar')).toHaveCSS('height', '19.5px')
     await expect(page.locator('.command-bar')).toHaveCount(0)

@@ -80,7 +80,7 @@ describe('path/status strip density', () => {
       /\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*19\.5px/,
     )
     expect(layout).toMatch(
-      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*48px minmax\(0, 1fr\) 19\.5px/,
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*23\.5px minmax\(0, 1fr\) 19\.5px/,
     )
   })
 

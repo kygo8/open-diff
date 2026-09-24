@@ -976,9 +976,9 @@ footer {
 
 footer button {
   min-width: 72px;
-  height: 22px;
-  min-height: 22px;
-  padding: 0 12px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 10px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;

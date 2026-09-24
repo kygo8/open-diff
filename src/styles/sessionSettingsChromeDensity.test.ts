@@ -34,7 +34,7 @@ describe('session settings and hex goto chrome density', () => {
     )
     expect(settingsDialog).toMatch(/\.settings-body textarea\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(settingsDialog).toMatch(/\.settings-body textarea\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*22px/)
+    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*18px/)
     expect(settingsDialog).not.toMatch(/box-shadow:\s*0 18px 44px/)
     expect(settingsDialog).not.toMatch(/padding:\s*16px/)
   })
@@ -102,7 +102,7 @@ describe('options footer residual', () => {
     expect(settingsView).toMatch(/data-testid="options-footer-apply"/)
     expect(settingsView).toMatch(/\.options-footer-btn\s*\{[\s\S]*?height:\s*22px/)
     expect(settingsDialog).toMatch(/data-testid="session-settings-ok"/)
-    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*22px/)
+    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*18px/)
   })
 })
 

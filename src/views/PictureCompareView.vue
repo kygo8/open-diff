@@ -1086,6 +1086,7 @@ async function runPictureCompare(): Promise<void> {
 
       <section
         class="picture-stage"
+        data-stage-residual="capture-1to1"
         data-testid="picture-stage"
         data-canvas-density="capture-1to1"
       >
@@ -1794,20 +1795,20 @@ h2 {
   overflow: hidden;
   border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: #1c1c16;
+  background: #2e2e23;
 }
 
 .picture-stage .picture-pane-grid {
   gap: 1px;
   min-height: 0;
-  background: #1c1c16;
+  background: #2e2e23;
 }
 
 .picture-stage .picture-side {
   min-height: 0;
   padding: 2px;
   border: 0;
-  background: #1c1c16;
+  background: #2e2e23;
   color: #d8d8d8;
 }
 
@@ -1823,28 +1824,28 @@ h2 {
 .picture-stage .picture-canvas-frame {
   min-height: 0;
   border: 0;
-  background: #1c1c16;
+  background: #2e2e23;
 }
 
 .picture-diff-stage {
   position: relative;
   min-height: 0;
   overflow: hidden;
-  background: #1c1c16;
+  background: #2e2e23;
 }
 
 .picture-tol-overlay {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 4px;
+  left: 4px;
   z-index: 5;
   display: grid;
   gap: 4px;
-  width: min(240px, calc(100% - 12px));
+  width: min(240px, calc(100% - 8px));
   padding: 4px 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: rgb(28 28 22 / 0.92);
+  background: rgb(46 46 35 / 0.92);
   color: #f0f0f0;
   font-size: 11px;
   line-height: 16px;

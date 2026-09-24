@@ -114,11 +114,11 @@ describe('picture stage canvas density', () => {
     expect(pictureView).toMatch(/data-testid="picture-diff-stage"/)
     expect(pictureView).toMatch(/picture-tol-overlay/)
     expect(pictureView).toMatch(/data-tol-placement="stage-overlay"/)
-    expect(pictureView).toMatch(/\.picture-stage\s*\{[\s\S]*?background:\s*#1c1c16/)
+    expect(pictureView).toMatch(/\.picture-stage\s*\{[\s\S]*?background:\s*#2e2e23/)
     expect(pictureView).toMatch(/\.picture-stage\s*\{[\s\S]*?min-height:\s*360px/)
     expect(pictureView).toMatch(/\.picture-pane-grid\s*\{[\s\S]*?gap:\s*1px/)
-    expect(pictureView).toMatch(/\.picture-tol-overlay\s*\{[\s\S]*?top:\s*6px/)
-    expect(css).toMatch(/\.picture-compare-view \.picture-stage\s*\{[\s\S]*?background:\s*#1c1c16/)
+    expect(pictureView).toMatch(/\.picture-tol-overlay\s*\{[\s\S]*?top:\s*4px/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-stage\s*\{[\s\S]*?background:\s*#2e2e23/)
     expect(css).toMatch(/\.picture-compare-view \.picture-pane-grid\s*\{[\s\S]*?gap:\s*1px/)
     expect(pictureView).not.toMatch(/min-height:\s*6px/)
   })
@@ -127,10 +127,21 @@ describe('picture stage canvas density', () => {
 describe('picture Tol residual', () => {
   it('tightens Tol overlay residual placement and input chrome', () => {
     expect(pictureView).toMatch(/data-tol-residual="capture-1to1"/)
-    expect(pictureView).toMatch(/\.picture-tol-overlay\s*\{[\s\S]*?top:\s*6px/)
-    expect(css).toMatch(/\.picture-compare-view \.picture-tol-overlay[\s\S]*?top:\s*6px/)
+    expect(pictureView).toMatch(/\.picture-tol-overlay\s*\{[\s\S]*?top:\s*4px/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-tol-overlay[\s\S]*?top:\s*4px/)
     expect(css).toMatch(
       /data-tol-residual='capture-1to1'\] input\[type='number'\][\s\S]*?height:\s*20px/,
     )
+  })
+})
+
+describe('picture stage residual band', () => {
+  it('locks Picture stage/quadrant fill and Tol inset to capture olive dark', () => {
+    expect(pictureView).toMatch(/data-stage-residual="capture-1to1"/)
+    expect(pictureView).toMatch(/\.picture-stage\s*\{[\s\S]*?background:\s*#2e2e23/)
+    expect(pictureView).toMatch(/\.picture-tol-overlay\s*\{[\s\S]*?top:\s*4px/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-stage\s*\{[\s\S]*?background:\s*#2e2e23/)
+    expect(css).toMatch(/\.picture-compare-view \.picture-tol-overlay[\s\S]*?top:\s*4px/)
+    expect(css).toMatch(/rgb\(46 46 35 \/ 0\.92\)/)
   })
 })

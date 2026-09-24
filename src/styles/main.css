@@ -2423,30 +2423,34 @@ html[data-show-path-bars='0'] .path-pair-bar {
   min-height: 360px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
-  background: #1c1c16 !important;
+  background: #2e2e23 !important;
+}
+
+.picture-compare-view .picture-stage[data-stage-residual='capture-1to1'] {
+  background: #2e2e23 !important;
 }
 
 .picture-compare-view .picture-stage .picture-side {
   padding: 2px !important;
   border: 0 !important;
-  background: #1c1c16 !important;
+  background: #2e2e23 !important;
 }
 
 .picture-compare-view .picture-canvas-frame {
   min-height: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: #1c1c16 !important;
+  background: #2e2e23 !important;
 }
 
 .picture-compare-view .picture-tol-overlay {
-  top: 6px !important;
-  left: 6px !important;
-  width: min(240px, calc(100% - 12px)) !important;
+  top: 4px !important;
+  left: 4px !important;
+  width: min(240px, calc(100% - 8px)) !important;
   padding: 4px 6px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
-  background: rgb(28 28 22 / 0.92) !important;
+  background: rgb(46 46 35 / 0.92) !important;
 }
 
 .picture-compare-view .picture-tol-overlay[data-tol-residual='capture-1to1'] input[type='number'] {
@@ -2460,7 +2464,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .picture-compare-view .picture-diff-stage {
   min-height: 140px !important;
-  background: #1c1c16 !important;
+  background: #2e2e23 !important;
 }
 
 .picture-compare-view .picture-side {

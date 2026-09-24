@@ -12,7 +12,7 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('folder sync/merge chrome density', () => {
   it('keeps Sync/Merge path/filters/actions/status chrome dense toward Folder Compare', () => {
     expect(css).toMatch(/\.folder-sync-view \.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(css).toMatch(/\.folder-sync-view \.sync-settings input\s*,[\s\S]*?height:\s*16px/)
+    expect(css).toMatch(/\.folder-sync-view \.sync-settings input\s*,[\s\S]*?height:\s*20px/)
     expect(css).toMatch(
       /\.folder-sync-view \.sync-setting-actions \.n-button[\s\S]*?height:\s*30px/,
     )
@@ -27,6 +27,8 @@ describe('folder sync/merge chrome density', () => {
 
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(syncView).toMatch(/grid-template-columns:[\s\S]*?326\.5px/)
+    expect(syncView).toMatch(/\.sync-settings input,[\s\S]*?height:\s*20px/)
     expect(syncView).toMatch(
       /\.sync-setting-actions :deep\(\.n-button\)\s*\{[\s\S]*?height:\s*30px/,
     )
@@ -113,13 +115,13 @@ describe('folder sync tree and session log chrome density', () => {
   it('keeps Folder Sync preview rows and session log at capture CSS scale', () => {
     expect(syncView).toMatch(/data-testid="folder-sync-session-log"/)
     expect(syncView).toMatch(/data-log-density="capture-1to1"/)
-    expect(syncView).toMatch(/\.sync-preview-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(syncView).toMatch(/\.sync-preview-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(syncView).toMatch(/\.sync-preview-head\s*\{[\s\S]*?font-weight:\s*400/)
     expect(syncView).toMatch(/\.sync-row-selected\s*\{[\s\S]*?background:\s*#a8cdf1/)
     expect(syncView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
     expect(syncView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/)
     expect(syncView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?line-height:\s*14px/)
-    expect(css).toMatch(/\.folder-sync-view \.sync-preview-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.folder-sync-view \.sync-preview-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.folder-sync-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
     expect(syncView).not.toMatch(/min-height:\s*6px/)
     expect(syncView).not.toMatch(/font-size:\s*6px/)
@@ -130,12 +132,12 @@ describe('folder merge tree and session log chrome density', () => {
   it('keeps Folder Merge plan rows and session log at capture CSS scale', () => {
     expect(mergeView).toMatch(/data-testid="folder-merge-session-log"/)
     expect(mergeView).toMatch(/data-log-density="capture-1to1"/)
-    expect(mergeView).toMatch(/\.merge-plan-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(mergeView).toMatch(/\.merge-plan-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(mergeView).toMatch(/\.merge-plan-head\s*\{[\s\S]*?font-weight:\s*400/)
     expect(mergeView).toMatch(/\.merge-plan-row\.selected\s*\{[\s\S]*?background:\s*#a8cdf1/)
     expect(mergeView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
     expect(mergeView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.folder-merge-view \.merge-plan-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.folder-merge-view \.merge-plan-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.folder-merge-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
     expect(mergeView).not.toMatch(/min-height:\s*6px/)
     expect(mergeView).not.toMatch(/font-size:\s*6px/)

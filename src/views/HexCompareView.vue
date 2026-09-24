@@ -1189,6 +1189,7 @@ async function runHexSave(): Promise<void> {
       <section
         class="hex-pane-grid"
         data-hex-rows-density="capture-1to1"
+        data-hex-byte-residual="capture-1to1"
       >
         <section class="hex-side">
           <h2>{{ $t('ui.left') }} · {{ leftHex.path }}</h2>
@@ -1577,7 +1578,7 @@ h2 {
   border-bottom: 1px solid #e0e0e0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 11px;
-  line-height: 14px;
+  line-height: 16px;
 }
 
 .hex-row:last-child {
@@ -1591,7 +1592,7 @@ h2 {
   padding: 0 4px;
   overflow: hidden;
   border-right: 1px solid #d0d0d0;
-  line-height: 14px;
+  line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

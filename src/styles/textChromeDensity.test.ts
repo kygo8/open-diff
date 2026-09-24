@@ -94,7 +94,7 @@ describe('text path and editor grid chrome density', () => {
 describe('text compare toolbar strip residual', () => {
   it('keeps Text Compare MainBar command spacing on the capture band', () => {
     expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
-    expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?min-width:\s*56px/)
+    expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?min-width:\s*59px/)
     expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?height:\s*37\.5px/)
     expect(css).toMatch(/\.bc-toolbar-command-group-start\s*\{[\s\S]*?margin-left:\s*6px/)
     expect(css).toMatch(
@@ -113,6 +113,15 @@ describe('text editor grid residual', () => {
     expect(diffPanel).toMatch(/height:\s*calc\(100% - 18px\)/)
     expect(css).toMatch(
       /data-editor-grid='capture-1to1-residual'\] \.diff-header[\s\S]*?height:\s*18px/,
+    )
+  })
+})
+
+describe('mainbar command width residual', () => {
+  it('keeps session MainBar command min-width on capture 59px band', () => {
+    expect(css).toMatch(/\.bc-toolbar-command\s*\{[\s\S]*?min-width:\s*59px/)
+    expect(css).toMatch(
+      /data-mainbar-cmd='capture-1to1-residual'\] \.bc-toolbar-command[\s\S]*?min-width:\s*59px/,
     )
   })
 })

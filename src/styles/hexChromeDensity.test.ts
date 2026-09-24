@@ -13,6 +13,7 @@ describe('hex compare chrome density', () => {
     expect(css).toMatch(/\.hex-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.hex-compare-view \.bc-path-row\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.hex-compare-view \.bc-path-row input\s*\{[\s\S]*?height:\s*20px/)
+    expect(hexView).toMatch(/\.hex-path-field \.path-input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)

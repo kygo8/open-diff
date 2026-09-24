@@ -94,16 +94,16 @@ const { t } = useI18n()
   align-items: center;
   justify-content: center;
   gap: 1px;
-  width: auto;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 3px;
+  box-sizing: border-box;
+  width: 23px;
+  min-width: 23px;
+  height: 22px;
+  padding: 0;
   border: 1px solid transparent;
   border-radius: 0;
   background: transparent;
   color: #333333;
   cursor: default;
-  box-sizing: border-box;
 }
 
 .bc-path-action:hover:not(:disabled) {

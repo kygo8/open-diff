@@ -40,12 +40,19 @@ describe('path/status strip density', () => {
     expect(css).not.toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*6px/)
   })
 
+  it('sizes path action glyphs to capture 23x22', () => {
+    expect(pathActions).toMatch(/\.bc-path-action\s*\{[\s\S]*?width:\s*23px/)
+    expect(pathActions).toMatch(/\.bc-path-action\s*\{[\s\S]*?height:\s*22px/)
+    expect(css).toMatch(/\.bc-path-row \.bc-path-action[\s\S]*?width:\s*23px/)
+    expect(css).toMatch(/\.bc-path-row \.bc-path-action[\s\S]*?height:\s*22px/)
+  })
+
   it('uses icon-only browse/save path actions toward capture chrome', () => {
     expect(pathActions).toMatch(/FolderOpen/)
     expect(pathActions).toMatch(/ChevronDown/)
     expect(pathActions).toMatch(/Save/)
     expect(pathActions).toMatch(/Archive/)
-    expect(pathActions).toMatch(/height:\s*20px/)
+    expect(pathActions).toMatch(/height:\s*22px/)
     expect(pathActions).not.toMatch(/\{\{\s*t\('ui\.browse'\)\s*\}\}/)
     expect(pathPair).toMatch(/SessionPathActions/)
     expect(pathPair).not.toMatch(/\{\{\s*t\('ui\.browse'\)\s*\}\}/)

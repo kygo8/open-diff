@@ -82,6 +82,13 @@ describe('folder sync/merge chrome density', () => {
     expect(syncView).toMatch(/\.sync-preview-row span[\s\S]*?padding:\s*1px 4px/)
     expect(syncView).toMatch(/\.sync-preview-row select\s*\{[\s\S]*?height:\s*20px/)
     expect(syncView).toMatch(/data-sync-action-strip="capture-1to1-residual"/)
+    expect(syncView).toMatch(/data-sync-capture-actions="capture-1to1-residual"/)
+    expect(syncView).toMatch(
+      /\.sync-setting-actions-capture\s*\{[\s\S]*?grid-template-columns:\s*95\.5px 95\.5px/,
+    )
+    expect(syncView).toMatch(
+      /\.sync-setting-actions-capture\s*\{[\s\S]*?grid-template-rows:\s*30px 74\.5px/,
+    )
     expect(syncView).toMatch(/data-sync-override-density="capture-1to1-residual"/)
     expect(syncView).toMatch(
       /\.sync-setting-actions :deep\(\.n-button\[data-testid='folder-sync-run'\]\)\s*\{[\s\S]*?height:\s*74\.5px/,

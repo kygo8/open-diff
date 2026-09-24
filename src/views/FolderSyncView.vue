@@ -1711,75 +1711,82 @@ watch(
           class="sync-setting-actions"
           data-sync-action-strip="capture-1to1-residual"
         >
-          <NButton
-            size="small"
-            secondary
-            data-testid="folder-sync-preview"
-            :disabled="previewLoading || !leftPath || !rightPath"
-            :loading="previewLoading"
-            @click="previewSync"
-            >{{ $t('ui.preview') }}</NButton
+          <div class="sync-setting-actions-extra">
+            <NButton
+              size="small"
+              secondary
+              data-testid="folder-sync-preview"
+              :disabled="previewLoading || !leftPath || !rightPath"
+              :loading="previewLoading"
+              @click="previewSync"
+              >{{ $t('ui.preview') }}</NButton
+            >
+            <NButton
+              size="small"
+              secondary
+              data-testid="folder-sync-apply-to-all"
+              :disabled="!syncSelectedRow() || syncRunning"
+              @click="applySyncOverrideToAll"
+              >{{ $t('ui.apply') }} {{ $t('ui.all') }}</NButton
+            >
+            <NButton
+              size="small"
+              secondary
+              data-testid="folder-sync-skip-remaining"
+              :disabled="previewRows.length === 0 || syncRunning"
+              @click="skipRemainingSyncRows"
+              >{{ $t('ui.leaveAlone') }}</NButton
+            >
+            <NButton
+              size="small"
+              secondary
+              data-testid="export-folder-sync-report"
+              :disabled="previewRows.length === 0 || syncRunning"
+              @click="exportFolderSyncReport"
+              >{{ $t('ui.export') }}</NButton
+            >
+            <span
+              v-if="reportStatus"
+              data-testid="folder-sync-report-status"
+              >{{ reportStatus }}</span
+            >
+            <span
+              v-if="reportError"
+              data-testid="folder-sync-report-error"
+              >{{ reportError }}</span
+            >
+          </div>
+          <div
+            class="sync-setting-actions-capture"
+            data-sync-capture-actions="capture-1to1-residual"
           >
-          <NButton
-            size="small"
-            secondary
-            data-testid="folder-sync-accept"
-            data-sync-action-density="capture-1to1"
-            :disabled="previewRows.length === 0 || syncRunning"
-            @click="acceptSyncPlan"
-            >{{ $t('ui.accept') }}</NButton
-          >
-          <NButton
-            size="small"
-            secondary
-            data-testid="folder-sync-cancel"
-            :disabled="previewRows.length === 0 || syncRunning"
-            @click="cancelSyncOverrides"
-            >{{ $t('ui.cancel') }}</NButton
-          >
-          <NButton
-            size="small"
-            secondary
-            data-testid="folder-sync-apply-to-all"
-            :disabled="!syncSelectedRow() || syncRunning"
-            @click="applySyncOverrideToAll"
-            >{{ $t('ui.apply') }} {{ $t('ui.all') }}</NButton
-          >
-          <NButton
-            size="small"
-            secondary
-            data-testid="folder-sync-skip-remaining"
-            :disabled="previewRows.length === 0 || syncRunning"
-            @click="skipRemainingSyncRows"
-            >{{ $t('ui.leaveAlone') }}</NButton
-          >
-          <NButton
-            size="small"
-            secondary
-            data-testid="export-folder-sync-report"
-            :disabled="previewRows.length === 0 || syncRunning"
-            @click="exportFolderSyncReport"
-            >{{ $t('ui.export') }}</NButton
-          >
-          <span
-            v-if="reportStatus"
-            data-testid="folder-sync-report-status"
-            >{{ reportStatus }}</span
-          >
-          <span
-            v-if="reportError"
-            data-testid="folder-sync-report-error"
-            >{{ reportError }}</span
-          >
-          <NButton
-            size="small"
-            type="primary"
-            data-testid="folder-sync-run"
-            :disabled="!canRunSync"
-            :loading="syncRunning"
-            @click="runSync"
-            >{{ $t('ui.syncNow') }}</NButton
-          >
+            <NButton
+              size="small"
+              secondary
+              data-testid="folder-sync-accept"
+              data-sync-action-density="capture-1to1"
+              :disabled="previewRows.length === 0 || syncRunning"
+              @click="acceptSyncPlan"
+              >{{ $t('ui.accept') }}</NButton
+            >
+            <NButton
+              size="small"
+              secondary
+              data-testid="folder-sync-cancel"
+              :disabled="previewRows.length === 0 || syncRunning"
+              @click="cancelSyncOverrides"
+              >{{ $t('ui.cancel') }}</NButton
+            >
+            <NButton
+              size="small"
+              type="primary"
+              data-testid="folder-sync-run"
+              :disabled="!canRunSync"
+              :loading="syncRunning"
+              @click="runSync"
+              >{{ $t('ui.syncNow') }}</NButton
+            >
+          </div>
         </div>
       </section>
 
@@ -2428,9 +2435,25 @@ h1 {
 .sync-setting-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 30px;
+}
+
+.sync-setting-actions-extra {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
   min-height: 30px;
+}
+
+.sync-setting-actions-capture {
+  display: grid;
+  grid-template-columns: 95.5px 95.5px;
+  grid-template-rows: 30px 74.5px;
+  place-items: start stretch;
+  gap: 8px 10px;
 }
 
 .sync-setting-actions :deep(.n-button) {
@@ -2441,7 +2464,24 @@ h1 {
   font-size: 12px;
 }
 
+.sync-setting-actions-capture :deep(.n-button[data-testid='folder-sync-accept']) {
+  grid-column: 1;
+  grid-row: 1;
+  width: 95.5px;
+  min-width: 95.5px;
+}
+
+.sync-setting-actions-capture :deep(.n-button[data-testid='folder-sync-cancel']) {
+  grid-column: 2;
+  grid-row: 1;
+  width: 95.5px;
+  min-width: 95.5px;
+}
+
+.sync-setting-actions-capture :deep(.n-button[data-testid='folder-sync-run']),
 .sync-setting-actions :deep(.n-button[data-testid='folder-sync-run']) {
+  grid-column: 2;
+  grid-row: 2;
   width: 95.5px;
   min-width: 95.5px;
   height: 74.5px;

@@ -25,7 +25,9 @@ describe('status strip pixel density', () => {
     expect(layout).toMatch(
       /gridTemplateColumns: `repeat\(\$\{String\(statusChromePanes\.value\.length\)\}, minmax\(0, 1fr\)\)`/,
     )
-    expect(layout).toMatch(/chromeKind === 'folder-merge' \|\| statusBar\.chromeKind === 'text-session'/)
+    expect(layout).toMatch(
+      /chromeKind === 'folder-merge' \|\| statusBar\.chromeKind === 'text-session'/,
+    )
     expect(layout).toMatch(/buildFolderPairStatusPanes/)
     expect(layout).not.toMatch(/data-pane-count='5'/)
   })

@@ -124,4 +124,12 @@ describe('mainbar command width residual', () => {
       /data-mainbar-cmd='capture-1to1-residual'\] \.bc-toolbar-command[\s\S]*?min-width:\s*59px/,
     )
   })
+
+  it('widens longer MainBar labels to capture CSS widths', () => {
+    expect(css).toMatch(/data-command-id='diffs'\][\s\S]*?min-width:\s*69px/)
+    expect(css).toMatch(/data-command-id='structure'\][\s\S]*?min-width:\s*76px/)
+    expect(css).toMatch(/data-command-id='format'\][\s\S]*?min-width:\s*63\.5px/)
+    expect(css).toMatch(/data-command-id='next-section'\][\s\S]*?min-width:\s*85\.5px/)
+    expect(css).toMatch(/data-command-id='collapse'\][\s\S]*?min-width:\s*60px/)
+  })
 })

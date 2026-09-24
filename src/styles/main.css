@@ -345,6 +345,72 @@ select {
   min-width: 59px !important;
 }
 
+/* Longer capture MainBar labels (CSS px ≈ PNG/2) */
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='diffs'] {
+  min-width: 69px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='structure'] {
+  min-width: 76px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='same-ok'] {
+  min-width: 64.5px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='to-output'] {
+  min-width: 71.5px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='format'] {
+  min-width: 63.5px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='next-section'] {
+  min-width: 85.5px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='prev-section'] {
+  min-width: 83.5px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='favor-left'] {
+  min-width: 68.5px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='favor-right'] {
+  min-width: 77.5px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='next-diff'] {
+  min-width: 63px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='prev-diff'] {
+  min-width: 61px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='font'] {
+  min-width: 69px !important;
+}
+
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+  .bc-toolbar-command[data-command-id='collapse'] {
+  min-width: 60px !important;
+}
+
 .bc-toolbar-command {
   display: grid;
   grid-template-rows: 20px auto;

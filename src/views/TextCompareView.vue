@@ -2198,6 +2198,8 @@ function onVisibilityForDiskChange(): void {
 .text-path-field .path-input {
   flex: 1 1 auto;
   min-width: 0;
+  height: 16.5px;
+  min-height: 16.5px;
 }
 
 .text-path-trailing {

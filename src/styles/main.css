@@ -3673,7 +3673,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-merge-view .output-path-input {
-  height: 20px !important;
+  height: 16.5px !important;
   padding: 0 4px !important;
   border-radius: 0 !important;
   font-size: 12px !important;

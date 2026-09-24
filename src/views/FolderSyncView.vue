@@ -13,7 +13,7 @@ import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import WorkbenchShell from '@/components/workbench/WorkbenchShell.vue'
 import WorkbenchInspector from '@/components/workbench/WorkbenchInspector.vue'
-import { Eye, Funnel, Save, Settings } from '@lucide/vue'
+import { Funnel, Save, Settings } from '@lucide/vue'
 import { createFolderEntry, createFolderSnapshot, pathFileStamp, saveTextFile } from '@/api/diff'
 import type { FileStamp } from '@/types/diff'
 import { newFolderParentRelativePath, resolveNewFolderPaths } from '@/app/newFolderPath'
@@ -1599,21 +1599,11 @@ watch(
         class="display-filters folder-filter-chrome"
         data-filters-density="capture-1to1"
         data-filters-align="capture-1to1-residual"
+        data-sync-filters-place="capture-1to1-residual"
         data-testid="folder-sync-filter-strip"
       >
         <div class="folder-filter-strip">
           <span class="folder-filter-strip-label">{{ $t('ui.filters') }}:</span>
-          <input
-            class="folder-filter-pattern"
-            type="text"
-            data-testid="folder-sync-filter-pattern"
-            spellcheck="false"
-            autocomplete="off"
-            :value="folderFilterStripPattern"
-            :aria-label="$t('ui.filters')"
-            @change="onFolderFilterStripChange"
-            @keydown.enter.prevent="onFolderFilterStripChange"
-          />
           <div
             class="folder-filter-strip-actions"
             data-testid="folder-sync-filter-strip-actions"
@@ -1637,26 +1627,6 @@ watch(
                 aria-hidden="true"
               />
               <span>{{ $t('ui.filters') }}</span>
-            </button>
-            <button
-              type="button"
-              class="folder-filter-strip-btn"
-              :class="{ 'folder-filter-strip-btn-active': showPeek }"
-              data-testid="folder-sync-filter-strip-peek"
-              :aria-label="$t('ui.peek')"
-              :aria-pressed="showPeek ? 'true' : 'false'"
-              :title="$t('ui.peek')"
-              :disabled="previewRows.length === 0"
-              @click="toggleSyncPeekPanel()"
-            >
-              <Eye
-                class="folder-filter-strip-icon"
-                :size="16"
-                :stroke-width="2.25"
-                absolute-stroke-width
-                aria-hidden="true"
-              />
-              <span>{{ $t('ui.peek') }}</span>
             </button>
           </div>
         </div>
@@ -1721,6 +1691,21 @@ watch(
               {{ $t(option.labelKey) }}
             </option>
           </select>
+        </label>
+        <label class="sync-filter-pattern-field">
+          <span>{{ $t('ui.filters') }}</span>
+          <input
+            class="folder-filter-pattern"
+            type="text"
+            data-testid="folder-sync-filter-pattern"
+            data-sync-pattern-place="capture-1to1-residual"
+            spellcheck="false"
+            autocomplete="off"
+            :value="folderFilterStripPattern"
+            :aria-label="$t('ui.filters')"
+            @change="onFolderFilterStripChange"
+            @keydown.enter.prevent="onFolderFilterStripChange"
+          />
         </label>
         <div
           class="sync-setting-actions"
@@ -2394,7 +2379,7 @@ h1 {
 
 .sync-settings {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 180px auto;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 180px minmax(160px, 334px) auto;
   align-items: end;
   gap: 2px;
   min-height: 22px;
@@ -2402,6 +2387,19 @@ h1 {
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
+}
+
+.sync-filter-pattern-field .folder-filter-pattern {
+  width: 100%;
+  height: 19.5px;
+  min-height: 19.5px;
+  padding: 0 6px;
+  border: 1px solid #bfc4cc;
+  border-radius: 0;
+  background: #ffffff;
+  color: #111111;
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .sync-settings label {

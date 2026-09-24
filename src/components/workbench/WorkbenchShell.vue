@@ -395,6 +395,7 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
       <section
         v-if="showSessionToolbar"
         class="bc-session-toolbar"
+        data-mainbar-cmd="capture-1to1-residual"
         :class="{
           'bc-session-toolbar-glyphs-only': !settings.showToolbarLabels,
           'bc-session-toolbar-compact': !settings.largeToolbarButtons,

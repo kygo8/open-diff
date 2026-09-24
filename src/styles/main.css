@@ -2124,7 +2124,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
   min-height: 16px !important;
   border-bottom: 1px solid #e0e0e0 !important;
   font-size: 11px !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
+}
+
+.hex-compare-view .hex-pane-grid[data-hex-byte-residual='capture-1to1'] .hex-byte {
+  width: 20px !important;
+  min-width: 20px !important;
 }
 
 .hex-compare-view .hex-offset,
@@ -2132,7 +2137,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .hex-compare-view .hex-ascii {
   padding: 0 4px !important;
   border-right: 1px solid #d0d0d0 !important;
-  line-height: 14px !important;
+  line-height: 16px !important;
 }
 
 .hex-compare-view .hex-byte-selected {

@@ -2849,6 +2849,14 @@ const sourceSessionTypes = new Set<SessionType>([
   padding: 0 4px;
 }
 
+.status-bar[data-chrome-kind='text-session'] .status-bar-pane[data-testid='status-pane-edit'],
+.status-bar[data-chrome-kind='hex-session'] .status-bar-pane[data-testid='status-pane-edit'] {
+  flex: 0 0 auto;
+  width: 91.5px;
+  min-width: 91.5px;
+  max-width: 91.5px;
+}
+
 .status-bar-pane {
   display: flex;
   align-items: center;

@@ -4527,7 +4527,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .session-settings-dialog[data-rules-depth='capture-1to1-residual'] {
+  gap: 2px !important;
   background: #f0f0f0 !important;
+}
+
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'][data-rules-micro='capture-1to1-residual'] {
+  gap: 2px !important;
 }
 
 .session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-tabs {
@@ -4537,14 +4542,42 @@ html[data-show-path-bars='0'] .path-pair-bar {
   background: #f5f5f5 !important;
 }
 
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-tabs button.active {
+  border-color: #89bdea !important;
+  background: #c8e4ff !important;
+  color: #1a1a1a !important;
+  box-shadow: inset 0 0 0 1px #89bdea !important;
+}
+
 .session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-body {
   gap: 2px !important;
+  padding: 2px 4px !important;
+  background: #ffffff !important;
+}
+
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] header {
+  padding-bottom: 2px !important;
+  border-bottom: 1px solid #d0d0d0 !important;
+}
+
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] header button {
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 8px !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
   background: #ffffff !important;
 }
 
 .session-settings-dialog[data-rules-depth='capture-1to1-residual'] footer {
   gap: 6px !important;
   border-top: 1px solid #d0d0d0 !important;
+}
+
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] footer button {
+  border: 1px solid #a0a0a0 !important;
+  background: #ffffff !important;
+  color: #111111 !important;
 }
 
 .session-settings-dialog .settings-body {

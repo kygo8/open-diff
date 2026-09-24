@@ -1701,7 +1701,7 @@ h1 {
 
 .registry-secondary-strip :deep(.path-meta-footer) {
   gap: 6px;
-  min-height: 16px;
+  min-height: 18px;
   color: #111111;
   font-size: 11px;
   line-height: 16px;

@@ -102,6 +102,12 @@ describe('hex path and windowed grid chrome residual', () => {
   })
 })
 
+it('keeps Hex path meta MIX EOL gap on capture residual', () => {
+  expect(hexView).toMatch(
+    /\.hex-path-meta-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?gap:\s*6px/,
+  )
+})
+
 describe('hex goto offset chrome residual', () => {
   it('keeps Hex Go To and offset chrome on the capture band', () => {
     expect(hexView).toMatch(/data-testid="hex-offset-chrome"/)

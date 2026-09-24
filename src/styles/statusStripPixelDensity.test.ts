@@ -79,4 +79,8 @@ describe('status strip band residual', () => {
       /\.status-bar\[data-status-band='capture-1to1-residual'\] \.status-bar-pane\s*\{[\s\S]*?text-overflow:\s*ellipsis/,
     )
   })
+
+  it('keeps text/hex Insert status pane on capture 91.5px band', () => {
+    expect(layout).toMatch(/data-testid='status-pane-edit'\][\s\S]*?width:\s*91\.5px/)
+  })
 })

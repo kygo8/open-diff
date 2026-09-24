@@ -82,8 +82,9 @@ describe('home launch card band residual', () => {
       /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?min-height:\s*131px/,
     )
     expect(homeView).toMatch(
-      /\.new-session-card\[data-card-band='short'\]\s*\{[\s\S]*?min-height:\s*92px/,
+      /\.new-session-card\[data-card-band='short'\]\s*\{[\s\S]*?min-height:\s*91\.5px/,
     )
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*91\.5px/)
     expect(homeView).toMatch(/\.bc-home-instructions\s*\{[\s\S]*?min-height:\s*20px/)
     expect(homeView).toMatch(/\.bc-home-instructions\s*\{[\s\S]*?font-size:\s*12px/)
     expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*28px/)

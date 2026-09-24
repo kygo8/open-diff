@@ -1408,7 +1408,7 @@ onMounted(() => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 92px;
+  min-height: 91.5px;
   padding: 8px 4px 6px;
   overflow: hidden;
   border: 0;
@@ -1426,7 +1426,7 @@ onMounted(() => {
 }
 
 .new-session-card[data-card-band='short'] {
-  min-height: 92px;
+  min-height: 91.5px;
 }
 
 .new-session-card:hover,

@@ -3724,7 +3724,15 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-sync-view .sync-setting-actions {
-  gap: 3px !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+}
+
+.folder-sync-view .sync-setting-actions-capture {
+  display: grid !important;
+  grid-template-columns: 95.5px 95.5px !important;
+  grid-template-rows: 30px 74.5px !important;
+  gap: 8px 10px !important;
 }
 
 .folder-sync-view .sync-setting-actions .n-button {

@@ -1691,6 +1691,7 @@ const sourceSessionTypes = new Set<SessionType>([
       class="menu-bar"
       data-menu-density="capture-1to1"
       data-menu-chrome="capture-1to1-residual"
+      data-menu-sep="capture-1to1-residual"
       data-testid="menu-bar"
     >
       <button
@@ -2240,7 +2241,7 @@ const sourceSessionTypes = new Set<SessionType>([
   align-items: center;
   gap: 12px;
   min-width: 0;
-  min-height: 22px;
+  min-height: 21.5px;
   padding: 0 8px;
   overflow: hidden;
   border: 0;
@@ -2275,6 +2276,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menu-panel button:disabled,
 .menu-panel .menu-command[data-enabled='false'] {
+  background: transparent;
   color: #808080;
   cursor: default;
   opacity: 1;
@@ -2282,21 +2284,27 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menu-separator {
   height: 1px;
-  margin: 3px 4px;
+  margin: 2px 4px;
   border: 0;
-  background: #d0d0d0;
+  background: #c0c0c0;
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button {
-  height: 22px;
+  height: 21.5px;
   color: #000000;
   font-size: 12px;
   font-weight: 400;
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button.active {
-  background: #eef4ff;
+  background: #c8e4ff;
   color: #000000;
+  box-shadow: inset 0 0 0 1px #89bdea;
+}
+
+.menu-bar[data-menu-sep='capture-1to1-residual'] .menu-separator {
+  margin: 2px 4px;
+  background: #c0c0c0;
 }
 
 .brand {
@@ -2349,7 +2357,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button,
 .chrome-button {
-  height: 22px;
+  height: 21.5px;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -2359,7 +2367,7 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .menus button {
   max-width: 9em;
-  height: 22px;
+  height: 21.5px;
   padding: 0 8px;
   overflow: hidden;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
@@ -3084,7 +3092,7 @@ html[data-show-sidebar='1'] .sidebar {
 }
 
 .app-shell-dense-chrome .menus button {
-  height: 22px;
+  height: 21.5px;
   padding: 0 8px;
   font-size: 12px;
 }

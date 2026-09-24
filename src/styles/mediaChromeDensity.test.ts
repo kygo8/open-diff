@@ -130,3 +130,14 @@ describe('media scrub surface residual', () => {
     expect(css).toMatch(/\.media-compare-view \.media-players\s*\{[\s\S]*?gap:\s*4px/)
   })
 })
+
+describe('media path meta residual', () => {
+  it('keeps Media path meta MIX EOL gap on capture residual', () => {
+    expect(mediaView).toMatch(
+      /\.media-path-meta-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?gap:\s*6px/,
+    )
+    expect(mediaView).toMatch(
+      /\.media-path-meta-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?min-height:\s*18px/,
+    )
+  })
+})

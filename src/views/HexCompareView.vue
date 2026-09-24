@@ -1877,7 +1877,7 @@ h2 {
 }
 
 .hex-path-meta-strip :deep(.path-meta-footer) {
-  gap: 8px;
+  gap: 6px;
   min-height: 16px;
   color: #111111;
   font-size: 11px;

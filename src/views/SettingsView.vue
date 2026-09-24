@@ -4163,8 +4163,8 @@ h1 {
   grid-column: 1 / -1;
   justify-content: flex-end;
   gap: 6px;
-  min-height: 28px;
-  padding: 4px 0 0;
+  min-height: 22px;
+  padding: 2px 0 0;
   border-top: 1px solid #d0d0d0;
 }
 

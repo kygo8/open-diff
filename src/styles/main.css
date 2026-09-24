@@ -3784,8 +3784,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .sync-settings input,
 .folder-sync-view .sync-settings select {
-  height: 16px !important;
-  min-height: 16px !important;
+  height: 20px !important;
+  min-height: 20px !important;
   padding: 0 3px !important;
   border-radius: 2px !important;
   font-size: 11px !important;

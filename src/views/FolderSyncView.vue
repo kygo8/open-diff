@@ -2386,7 +2386,9 @@ h1 {
 
 .sync-settings {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 180px minmax(160px, 334px) auto;
+  grid-template-columns:
+    minmax(180px, 1fr) minmax(180px, 1fr) minmax(220px, 326.5px) minmax(160px, 334.5px)
+    auto;
   align-items: end;
   gap: 2px;
   min-height: 22px;
@@ -2423,7 +2425,7 @@ h1 {
 .sync-settings input,
 .sync-settings select {
   width: 100%;
-  height: 18px;
+  height: 20px;
   padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;

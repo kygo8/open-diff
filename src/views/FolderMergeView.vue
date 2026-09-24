@@ -2956,8 +2956,8 @@ h1 {
 
 .merge-to-path .path-input,
 .merge-to-path input {
-  height: 20px;
-  min-height: 20px;
+  height: 16.5px;
+  min-height: 16.5px;
   padding: 0 4px;
   font-size: 11px;
 }

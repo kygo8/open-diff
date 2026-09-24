@@ -25,7 +25,9 @@ describe('status strip pixel density', () => {
     expect(layout).toMatch(
       /gridTemplateColumns: `repeat\(\$\{String\(statusChromePanes\.value\.length\)\}, minmax\(0, 1fr\)\)`/,
     )
-    expect(layout).toMatch(/chromeKind === 'folder-merge'/)
+    expect(layout).toMatch(
+      /chromeKind === 'folder-merge' \|\| statusBar\.chromeKind === 'text-session'/,
+    )
     expect(layout).toMatch(/buildFolderPairStatusPanes/)
     expect(layout).not.toMatch(/data-pane-count='5'/)
   })
@@ -36,6 +38,9 @@ describe('status strip pixel density', () => {
     expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?font-size:\s*11px/)
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*19\.5px/,
+    )
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='text-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 391\.5px\) 91\.5px minmax\(0, 1fr\)/,
     )
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='text-session'\] \.status-bar-pane[\s\S]*?padding:\s*0 4px/,

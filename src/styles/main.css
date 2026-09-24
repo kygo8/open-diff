@@ -1792,10 +1792,15 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+.path-meta-footer[data-path-meta-gap='capture-1to1-residual'] {
+  gap: 6px !important;
+  min-height: 18px !important;
+}
+
 .bc-path-footers .path-meta-footer,
 .bc-path-footers .path-side-footer {
-  gap: 10px;
-  min-height: 20px;
+  gap: 6px;
+  min-height: 18px;
   color: #111111;
   font-size: 11px;
   line-height: 16px;
@@ -1805,7 +1810,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   height: 18px;
   min-height: 18px;
   padding: 0 4px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 0;
   background: transparent;
   font-size: 11px;

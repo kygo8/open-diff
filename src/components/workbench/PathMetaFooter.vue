@@ -132,6 +132,7 @@ onBeforeUnmount(() => {
     :class="{ 'path-side-footer-muted': isMuted }"
     data-path-meta-density="capture-1to1"
     data-path-meta-eol="capture-1to1-residual"
+    data-path-meta-gap="capture-1to1-residual"
     :data-testid="testId"
   >
     <template v-if="meta">
@@ -245,9 +246,9 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   min-width: 0;
-  min-height: 20px;
+  min-height: 18px;
   overflow: visible;
   color: #111111;
   font-size: 11px;
@@ -306,7 +307,7 @@ onBeforeUnmount(() => {
   min-height: 18px;
   padding: 0 4px;
   overflow: hidden;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 0;
   background: transparent;
   color: inherit;

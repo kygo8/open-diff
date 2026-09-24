@@ -33,7 +33,7 @@ describe('text compare chrome density', () => {
     expect(textView).not.toMatch(/min-height:\s*9px/)
 
     expect(diffPanel).toMatch(/const textDiffRowHeightPx = 18/)
-    expect(diffPanel).toMatch(/\.diff-header\s*\{[\s\S]*?height:\s*20px/)
+    expect(diffPanel).toMatch(/\.diff-header\s*\{[\s\S]*?height:\s*18px/)
     expect(diffPanel).toMatch(/\.gutter\s*\{[\s\S]*?padding:\s*0 4px/)
 
     expect(layout).toMatch(
@@ -60,7 +60,7 @@ describe('text compare chrome density', () => {
     expect(textView).toMatch(/\.text-compare-progress\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(textView).toMatch(/\.text-compare-progress button\s*\{[\s\S]*?border-radius:\s*0/)
 
-    expect(diffPanel).toMatch(/grid-template-columns:\s*36px minmax\(0, 1fr\) 36px/)
+    expect(diffPanel).toMatch(/grid-template-columns:\s*28px minmax\(0, 1fr\) 28px/)
     expect(diffPanel).toMatch(/\.diff-tools\s*\{[\s\S]*?gap:\s*4px/)
     expect(diffPanel).toMatch(/\.diff-option-button\s*\{[\s\S]*?height:\s*16px/)
     expect(diffPanel).toMatch(/\.cell\s*\{[\s\S]*?line-height:\s*16px/)
@@ -101,5 +101,18 @@ describe('text compare toolbar strip residual', () => {
       /\.bc-toolbar-command-group-start\s*\{[\s\S]*?border-left:\s*1px solid #9a9a9a/,
     )
     expect(css).not.toMatch(/\.bc-toolbar-command-group-start\s*\{[\s\S]*?margin-left:\s*12px/)
+  })
+})
+
+describe('text editor grid residual', () => {
+  it('keeps TextDiffPanel gutter/header defaults on the capture editor grid', () => {
+    expect(diffPanel).toMatch(/data-editor-grid="capture-1to1-residual"/)
+    expect(diffPanel).toMatch(/grid-template-columns:\s*28px minmax\(0, 1fr\) 28px/)
+    expect(diffPanel).toMatch(/\.diff-header\s*\{[\s\S]*?height:\s*18px/)
+    expect(diffPanel).toMatch(/\.diff-header\s*\{[\s\S]*?font-weight:\s*600/)
+    expect(diffPanel).toMatch(/height:\s*calc\(100% - 18px\)/)
+    expect(css).toMatch(
+      /data-editor-grid='capture-1to1-residual'\] \.diff-header[\s\S]*?height:\s*18px/,
+    )
   })
 })

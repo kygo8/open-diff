@@ -452,6 +452,7 @@ defineExpose({
 <template>
   <div
     class="diff-panel"
+    data-editor-grid="capture-1to1-residual"
     :class="{ 'diff-panel-word-wrap': wordWrap }"
   >
     <div class="diff-header">
@@ -652,14 +653,14 @@ defineExpose({
   grid-template-columns: 1fr 1fr auto;
   align-items: center;
   gap: 3px;
-  height: 20px;
-  border-bottom: 1px solid var(--app-border);
-  background: var(--app-surface-muted);
+  height: 18px;
+  border-bottom: 1px solid #d0d0d0;
+  background: #f5f5f5;
   color: var(--app-text-muted);
   font-size: 11px;
-  font-weight: 700;
-  padding-right: 12px;
-  padding-left: 36px;
+  font-weight: 600;
+  padding-right: 8px;
+  padding-left: 28px;
 }
 
 .diff-navigation {
@@ -750,8 +751,8 @@ defineExpose({
 }
 
 .diff-body {
-  height: calc(100% - 20px);
-  margin-right: 10px;
+  height: calc(100% - 18px);
+  margin-right: 8px;
   overflow: auto;
   font-family: var(--font-mono);
   font-size: 11px;
@@ -771,7 +772,7 @@ defineExpose({
 
 .diff-row {
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) 36px minmax(0, 1fr);
+  grid-template-columns: 28px minmax(0, 1fr) 28px minmax(0, 1fr);
   height: var(--text-diff-row-height);
   min-height: var(--text-diff-row-height);
   max-height: var(--text-diff-row-height);

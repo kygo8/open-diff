@@ -30,7 +30,7 @@ describe('status strip pixel density', () => {
       /chromeKind === 'folder-merge'[\s\S]*?chromeKind === 'folder-pair'[\s\S]*?chromeKind === 'text-session'[\s\S]*?chromeKind === 'table-session'/,
     )
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?222px 130px 221\.5px 38px 222px 130px minmax\(0, 1fr\)/,
+      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?222px 131px 222\.5px 39px 222px 131px minmax\(0, 1fr\)/,
     )
     expect(layout).toMatch(/buildFolderPairStatusPanes/)
     expect(layout).toMatch(/buildFolderSyncStatusPanes/)

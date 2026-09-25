@@ -41,7 +41,7 @@ describe('media compare chrome density', () => {
     expect(css).toMatch(/\.media-compare-view \.media-scrub-row\s*\{[\s\S]*?min-height:\s*26px/)
     expect(css).toMatch(/\.media-compare-view \.media-scrub-row\s*\{[\s\S]*?gap:\s*4px/)
     expect(css).toMatch(
-      /\.media-compare-view \.media-scrub-row\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
+      /\.media-compare-view \.media-scrub-row\s*\{[\s\S]*?border-top:\s*1px solid #c0c0c0/,
     )
     expect(css).toMatch(/\.media-compare-view \.media-scrub-row button\s*\{[\s\S]*?height:\s*26px/)
     expect(css).toMatch(/\.media-compare-view \.media-scrub-row button\s*\{[\s\S]*?border:\s*0/)
@@ -107,6 +107,7 @@ describe('media path scrub chrome residual', () => {
     expect(mediaView).toMatch(/\.media-path-fields\s*\{[\s\S]*?min-height:\s*22px/)
     expect(mediaView).toMatch(/\.media-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(mediaView).toMatch(/\.media-scrub-row\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(mediaView).toMatch(/\.media-scrub-row\s*\{[\s\S]*?border-top:\s*1px solid #c0c0c0/)
     expect(css).toMatch(/\.media-compare-view \.media-path-fields\s*\{[\s\S]*?min-height:\s*22px/)
     expect(css).toMatch(
       /\.media-compare-view \.media-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/,

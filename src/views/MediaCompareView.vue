@@ -1653,7 +1653,8 @@ h1 {
   gap: 4px;
   min-height: 26px;
   padding: 1px 4px;
-  border: 1px solid #a0a0a0;
+  border: 0;
+  border-top: 1px solid #c0c0c0;
   border-radius: 0;
   background: #f0f0f0;
 }

@@ -5555,7 +5555,7 @@ onUnmounted(() => {
   position: sticky;
   top: 0;
   z-index: 1;
-  min-height: 20px;
+  min-height: 18px;
   border-bottom: 1px solid #a0a0a0;
   background: #f0f0f0;
   color: #000000;

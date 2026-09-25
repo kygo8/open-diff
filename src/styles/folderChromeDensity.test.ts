@@ -214,3 +214,9 @@ describe('folder Diffs MainBar session width', () => {
     )
   })
 })
+
+describe('folder tree-head min-height residual', () => {
+  it('keeps Folder Compare tree-head on capture 18px band', () => {
+    expect(folderView).toMatch(/\.tree-head\s*\{[\s\S]*?min-height:\s*18px/)
+  })
+})

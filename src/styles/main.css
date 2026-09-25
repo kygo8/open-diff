@@ -2360,7 +2360,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .picture-compare-view .picture-path-panel {
   gap: 3px !important;
-  min-height: 20px !important;
+  min-height: 19.5px !important;
   padding: 1px 3px !important;
   border-radius: 0 !important;
 }

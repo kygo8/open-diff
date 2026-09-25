@@ -13,7 +13,7 @@ describe('picture compare chrome density', () => {
     expect(css).toMatch(/\.picture-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-path-panel\s*\{[\s\S]*?min-height:\s*20px/,
+      /\.picture-compare-view \.picture-path-panel\s*\{[\s\S]*?min-height:\s*19\.5px/,
     )
     expect(css).toMatch(
       /\.picture-compare-view \.picture-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/,

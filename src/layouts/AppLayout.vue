@@ -3155,7 +3155,7 @@ html[data-show-sidebar='1'] .sidebar {
 .about-dialog footer {
   display: flex;
   align-items: center;
-  min-height: 20px;
+  min-height: 18px;
 }
 
 .about-dialog header {

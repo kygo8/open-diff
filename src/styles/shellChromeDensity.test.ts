@@ -182,3 +182,11 @@ describe('menu actions width residual', () => {
     expect(source).toMatch(/data-menu-id='actions'\][\s\S]*?width:\s*54\.5px/)
   })
 })
+
+describe('about footer residual', () => {
+  const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
+
+  it('keeps About dialog footer on capture 18px band', () => {
+    expect(source).toMatch(/\.about-dialog (?:header,\s*)?footer[\s\S]*?min-height:\s*18px/)
+  })
+})

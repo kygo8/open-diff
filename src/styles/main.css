@@ -1470,7 +1470,7 @@ select {
 }
 
 .folder-filter-pattern {
-  height: 19.5px !important;
+  height: 16.5px !important;
   padding: 0 6px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
@@ -1624,7 +1624,7 @@ select {
 .split-pane-header,
 .pane-header,
 .metadata-header {
-  min-height: 20px !important;
+  min-height: 16.5px !important;
   padding: 1px 3px !important;
   border-color: #c7cbd1 !important;
   border-radius: 0 !important;
@@ -3968,8 +3968,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-view
   .sync-filter-pattern-field
   .folder-filter-pattern[data-sync-pattern-place='capture-1to1-residual'] {
-  height: 19.5px !important;
-  min-height: 19.5px !important;
+  height: 16.5px !important;
+  min-height: 16.5px !important;
   padding: 0 6px !important;
   border-radius: 0 !important;
   font-size: 12px !important;

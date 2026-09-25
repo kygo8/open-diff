@@ -5135,7 +5135,7 @@ onUnmounted(() => {
 .folder-filter-pattern {
   flex: 1 1 180px;
   min-width: 120px;
-  height: 19.5px;
+  height: 16.5px;
   padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -5160,7 +5160,7 @@ onUnmounted(() => {
 
 .manual-alignment-tools select {
   min-width: 220px;
-  height: 20px;
+  height: 16.5px;
   padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;

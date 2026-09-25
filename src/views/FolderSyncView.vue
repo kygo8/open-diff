@@ -2402,8 +2402,8 @@ h1 {
 
 .sync-filter-pattern-field .folder-filter-pattern {
   width: 100%;
-  height: 19.5px;
-  min-height: 19.5px;
+  height: 16.5px;
+  min-height: 16.5px;
   padding: 0 6px;
   border: 1px solid #bfc4cc;
   border-radius: 0;
@@ -2427,7 +2427,7 @@ h1 {
 .sync-settings input,
 .sync-settings select {
   width: 100%;
-  height: 20px;
+  height: 16.5px;
   padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;
@@ -2915,7 +2915,7 @@ h1 {
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 20px;
+  height: 16.5px;
   padding: 0 6px;
   border: 1px solid #bfc4cc;
   border-radius: 0;

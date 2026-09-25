@@ -62,7 +62,7 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(css).toMatch(/\.folder-filter-strip-btn\s*\{/)
   expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
   expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*20px auto/)
-  expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*19\.5px/)
+  expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*16\.5px/)
   expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?border-radius:\s*0/)
   expect(css).toMatch(
     /\.folder-filter-chrome\[data-mainbar-row2='capture-1to1-residual'\][\s\S]*?min-height:\s*43\.5px/,
@@ -86,7 +86,7 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(folderView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*43\.5px/)
   expect(folderView).toMatch(/background:\s*#ffffff/)
   expect(folderView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
-  expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*19\.5px/)
+  expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*16\.5px/)
   expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?border-radius:\s*0/)
   expect(folderView).toMatch(/:size="16"/)
   expect(syncView).toMatch(/data-testid="folder-sync-filter-strip"/)
@@ -100,7 +100,7 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(syncView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?background:\s*#f0f0f0/)
   expect(syncView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
   expect(syncView).toMatch(
-    /\.sync-filter-pattern-field \.folder-filter-pattern\s*\{[\s\S]*?height:\s*19\.5px/,
+    /\.sync-filter-pattern-field \.folder-filter-pattern\s*\{[\s\S]*?height:\s*16\.5px/,
   )
   expect(mergeView).toMatch(/data-testid="folder-merge-filter-strip"/)
   expect(mergeView).toMatch(/data-testid="folder-merge-filter-pattern"/)
@@ -194,7 +194,7 @@ describe('folder sync Filters/Peek placement residual', () => {
       /\.folder-sync-view \.folder-filter-chrome\[data-sync-filters-place='capture-1to1-residual'\][\s\S]*?background:\s*#f0f0f0/,
     )
     expect(css).toMatch(
-      /\.folder-filter-pattern\[data-sync-pattern-place='capture-1to1-residual'\][\s\S]*?height:\s*19\.5px/,
+      /\.folder-filter-pattern\[data-sync-pattern-place='capture-1to1-residual'\][\s\S]*?height:\s*16\.5px/,
     )
     expect(syncView).not.toMatch(/data-mainbar-row2="capture-1to1-residual"/)
     expect(syncView).not.toMatch(/data-testid="folder-sync-filter-strip-peek"/)

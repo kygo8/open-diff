@@ -166,3 +166,11 @@ describe('menu tools width residual', () => {
     expect(source).toMatch(/data-menu-id='tools'\][\s\S]*?width:\s*42\.5px/)
   })
 })
+
+describe('menu help width residual', () => {
+  const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
+
+  it('pins help menu top-level width to capture 39px', () => {
+    expect(source).toMatch(/data-menu-id='help'\][\s\S]*?width:\s*39px/)
+  })
+})

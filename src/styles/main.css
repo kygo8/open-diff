@@ -4869,7 +4869,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .settings-view .options-dialog-footer[data-options-footer='capture-1to1-residual'] {
   gap: 6px !important;
-  border-top: 1px solid #d0d0d0 !important;
+  border-top: 1px solid #c0c0c0 !important;
 }
 
 .settings-view .options-footer-btn {

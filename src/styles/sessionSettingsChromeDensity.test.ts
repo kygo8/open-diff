@@ -125,3 +125,11 @@ describe('session rules micro residual', () => {
     expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
   })
 })
+
+describe('options footer border', () => {
+  it('matches capture options footer border #c0c0c0', () => {
+    expect(css).toMatch(
+      /data-options-footer='capture-1to1-residual'\][\s\S]*?border-top:\s*1px solid #c0c0c0/,
+    )
+  })
+})

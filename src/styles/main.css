@@ -4761,7 +4761,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .session-settings-dialog[data-rules-depth='capture-1to1-residual'] footer {
   gap: 6px !important;
-  border-top: 1px solid #d0d0d0 !important;
+  border-top: 1px solid #c0c0c0 !important;
 }
 
 .session-settings-dialog[data-rules-depth='capture-1to1-residual'] footer button {

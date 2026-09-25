@@ -126,3 +126,11 @@ describe('menu session width residual', () => {
     expect(source).toMatch(/data-menu-id='session'\][\s\S]*?width:\s*55px/)
   })
 })
+
+describe('menu file width residual', () => {
+  const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
+
+  it('pins file menu top-level width to capture 31.5px', () => {
+    expect(source).toMatch(/data-menu-id='file'\][\s\S]*?width:\s*31\.5px/)
+  })
+})

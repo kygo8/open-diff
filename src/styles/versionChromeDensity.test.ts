@@ -97,3 +97,11 @@ describe('version residual', () => {
     )
   })
 })
+
+describe('version secondary strip border', () => {
+  it('matches capture path-meta border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.version-compare-view \.version-secondary-strip[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

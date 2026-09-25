@@ -1176,7 +1176,8 @@ const statusBarGridStyle = computed(() => {
     statusBar.chromeKind === 'table-session' ||
     statusBar.chromeKind === 'registry-session' ||
     statusBar.chromeKind === 'picture-session' ||
-    statusBar.chromeKind === 'media-session'
+    statusBar.chromeKind === 'media-session' ||
+    statusBar.chromeKind === 'version-session'
   ) {
     return undefined
   }
@@ -2873,6 +2874,10 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='media-session'] {
+  grid-template-columns: 294px minmax(0, 391.5px) minmax(0, 1fr);
+}
+
+.status-bar[data-chrome-kind='version-session'] {
   grid-template-columns: 294px minmax(0, 391.5px) minmax(0, 1fr);
 }
 

@@ -135,7 +135,9 @@ describe('mainbar command width residual', () => {
   })
 
   it('widens longer MainBar labels to capture CSS widths', () => {
-    expect(css).toMatch(/data-command-id='diffs'\][\s\S]*?min-width:\s*69px/)
+    expect(css).toMatch(
+      /data-mainbar-diffs='wide'\][\s\S]*?data-command-id='diffs'\][\s\S]*?min-width:\s*69px/,
+    )
     expect(css).toMatch(/data-command-id='structure'\][\s\S]*?min-width:\s*76px/)
     expect(css).toMatch(/data-command-id='format'\][\s\S]*?min-width:\s*63\.5px/)
     expect(css).toMatch(/data-command-id='next-section'\][\s\S]*?min-width:\s*85\.5px/)

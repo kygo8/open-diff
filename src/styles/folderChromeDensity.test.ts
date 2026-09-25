@@ -200,3 +200,17 @@ describe('folder sync Filters/Peek placement residual', () => {
     expect(syncView).not.toMatch(/data-testid="folder-sync-filter-strip-peek"/)
   })
 })
+
+describe('folder Diffs MainBar session width', () => {
+  const shell = readFileSync(resolve(root, 'src/components/workbench/WorkbenchShell.vue'), 'utf8')
+
+  it('keeps Diffs wide only on Folder/Text Merge MainBar sessions', () => {
+    expect(shell).toMatch(/data-mainbar-diffs/)
+    expect(css).toMatch(
+      /data-mainbar-diffs='wide'\][\s\S]*?data-command-id='diffs'\][\s\S]*?min-width:\s*69px/,
+    )
+    expect(css).not.toMatch(
+      /data-mainbar-cmd='capture-1to1-residual'\]\s*\.bc-toolbar-command\[data-command-id='diffs'\]\s*\{[\s\S]*?min-width:\s*69px/,
+    )
+  })
+})

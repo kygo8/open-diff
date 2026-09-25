@@ -346,7 +346,7 @@ select {
 }
 
 /* Longer capture MainBar labels (CSS px ≈ PNG/2) */
-.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual']
+.bc-session-toolbar[data-mainbar-cmd='capture-1to1-residual'][data-mainbar-diffs='wide']
   .bc-toolbar-command[data-command-id='diffs'] {
   min-width: 69px !important;
 }

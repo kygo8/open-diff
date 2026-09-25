@@ -1116,6 +1116,25 @@ const statusChromePanes = computed((): StatusChromePane[] => {
     })
   }
 
+  if (kind === 'text-edit-session') {
+    let editModeText = ''
+
+    if (statusBar.report.editMode === 'overwrite') {
+      editModeText = t('status.overwriteMode')
+    } else if (statusBar.report.editMode === 'insert') {
+      editModeText = t('status.insertMode')
+    }
+    const loadTimeText =
+      statusBar.report.loadTimeSeconds !== null
+        ? t('status.loadTime', { seconds: statusBar.report.loadTimeSeconds.toFixed(2) })
+        : ''
+
+    return [
+      statusPane(editModeText, 'status-pane-edit', !editModeText),
+      statusPane(loadTimeText, 'status-pane-load', !loadTimeText),
+    ]
+  }
+
   if (kind === 'text-session' || kind === 'hex-session' || kind === 'registry-session') {
     let editModeText = ''
 
@@ -1178,7 +1197,8 @@ const statusBarGridStyle = computed(() => {
     statusBar.chromeKind === 'picture-session' ||
     statusBar.chromeKind === 'media-session' ||
     statusBar.chromeKind === 'version-session' ||
-    statusBar.chromeKind === 'hex-session'
+    statusBar.chromeKind === 'hex-session' ||
+    statusBar.chromeKind === 'text-edit-session'
   ) {
     return undefined
   }
@@ -2884,6 +2904,25 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .status-bar[data-chrome-kind='hex-session'] {
   grid-template-columns: 294px 91.5px minmax(0, 1fr);
+}
+
+.status-bar[data-chrome-kind='text-edit-session'] {
+  grid-template-columns: 91.5px minmax(0, 1fr);
+  height: 19.5px;
+  min-height: 19.5px;
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.status-bar[data-chrome-kind='text-edit-session'] .status-bar-pane {
+  padding: 0 4px;
+}
+
+.status-bar[data-chrome-kind='text-edit-session'] .status-bar-pane[data-testid='status-pane-edit'] {
+  flex: 0 0 auto;
+  width: 91.5px;
+  min-width: 91.5px;
+  max-width: 91.5px;
 }
 
 .status-bar[data-chrome-kind='text-session'] .status-bar-pane[data-testid='status-pane-edit'],

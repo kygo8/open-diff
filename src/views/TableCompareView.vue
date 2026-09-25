@@ -1753,7 +1753,7 @@ h2 {
   display: grid;
   grid-template-columns: repeat(var(--visible-columns), minmax(132px, 1fr));
   min-height: 16px;
-  border-bottom: 1px solid #d0d0d0;
+  border-bottom: 1px solid #c0c0c0;
 }
 
 .table-grid-row:last-child {

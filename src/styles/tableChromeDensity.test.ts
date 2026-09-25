@@ -145,3 +145,11 @@ describe('table virtual grid row track', () => {
     )
   })
 })
+
+describe('table grid row border', () => {
+  it('matches capture grid row border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.table-compare-view \.table-grid-row\s*\{[\s\S]*?border-bottom:\s*1px solid #c0c0c0/,
+    )
+  })
+})

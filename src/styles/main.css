@@ -3534,7 +3534,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .table-compare-view .table-grid-row {
   min-height: 16px !important;
-  border-bottom: 1px solid #d0d0d0 !important;
+  border-bottom: 1px solid #c0c0c0 !important;
 }
 
 .table-compare-view[data-table-grid-density='capture-1to1-residual'] .table-grid-panel header {

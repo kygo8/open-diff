@@ -3761,7 +3761,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 2px !important;
   min-height: 18px !important;
   padding: 1px 3px !important;
-  background: #f5f5f5 !important;
+  background: #f0f0f0 !important;
 }
 
 .text-merge-view .pane-header h2 {

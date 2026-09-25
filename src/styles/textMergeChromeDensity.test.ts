@@ -113,3 +113,9 @@ describe('merge conflict li border', () => {
     )
   })
 })
+
+describe('merge pane-header fill', () => {
+  it('matches capture pane-header fill #f0f0f0', () => {
+    expect(css).toMatch(/\.text-merge-view \.pane-header\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

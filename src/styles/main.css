@@ -2394,6 +2394,17 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
+.picture-compare-view .picture-controls[data-picture-controls='stage-overlay'] {
+  position: absolute !important;
+  bottom: 4px !important;
+  left: 4px !important;
+  z-index: 4 !important;
+  width: min(560px, calc(100% - 8px)) !important;
+  border: 0 !important;
+  background: rgb(46 46 35 / 0.88) !important;
+  color: #f0f0f0 !important;
+}
+
 .picture-compare-view .picture-controls input,
 .picture-compare-view .picture-controls button,
 .picture-compare-view .picture-options-panel input,

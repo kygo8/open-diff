@@ -144,6 +144,9 @@ describe('folder merge tree and session log chrome density', () => {
     expect(mergeView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-plan-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.folder-merge-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(css).toMatch(
+      /\.folder-merge-view \.folder-session-log\s*\{[\s\S]*?background:\s*#e3e7ed/,
+    )
     expect(mergeView).not.toMatch(/min-height:\s*6px/)
     expect(mergeView).not.toMatch(/font-size:\s*6px/)
   })

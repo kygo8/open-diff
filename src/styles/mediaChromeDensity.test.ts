@@ -44,7 +44,7 @@ describe('media compare chrome density', () => {
       /\.media-compare-view \.media-scrub-row\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
     )
     expect(css).toMatch(/\.media-compare-view \.media-scrub-row button\s*\{[\s\S]*?height:\s*18px/)
-    expect(css).toMatch(/\.media-compare-view \.media-scrub\s*\{[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.media-compare-view \.media-scrub\s*\{[\s\S]*?height:\s*19\.5px/)
     expect(css).toMatch(/\.media-compare-view \.media-playback-hint\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.media-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(css).toMatch(/\.media-compare-view \.media-playback-header[\s\S]*?min-height:\s*20px/)
@@ -52,7 +52,7 @@ describe('media compare chrome density', () => {
     expect(mediaView).toMatch(/data-media-scrub-density="capture-1to1"/)
     expect(mediaView).toMatch(/\.media-scrub-row\s*\{[\s\S]*?min-height:\s*26px/)
     expect(mediaView).toMatch(/\.media-scrub-play\s*\{[\s\S]*?height:\s*18px/)
-    expect(mediaView).toMatch(/\.media-scrub\s*\{[\s\S]*?height:\s*18px/)
+    expect(mediaView).toMatch(/\.media-scrub\s*\{[\s\S]*?height:\s*19\.5px/)
     expect(mediaView).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(mediaView).toMatch(/from '@lucide\/vue'/)
     expect(mediaView).toMatch(/:size="14"/)

@@ -2715,8 +2715,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .media-compare-view .media-scrub {
-  height: 18px !important;
-  min-height: 18px !important;
+  height: 19.5px !important;
+  min-height: 19.5px !important;
 }
 
 .media-compare-view .media-scrub-row span,

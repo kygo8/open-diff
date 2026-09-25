@@ -98,6 +98,10 @@ describe('media path scrub chrome residual', () => {
     expect(mediaView).toMatch(/data-path-density="capture-1to1"/)
     expect(mediaView).toMatch(/data-secondary-density="capture-1to1"/)
     expect(mediaView).toMatch(/data-testid="media-scrub-chrome"/)
+    expect(mediaView).toMatch(/data-testid="media-scrub-chrome-right"/)
+    expect(mediaView).toMatch(
+      /media-player-card[\s\S]*?media-scrub-row[\s\S]*?<\/article>[\s\S]*?media-player-card[\s\S]*?media-scrub-row/,
+    )
     expect(mediaView).toMatch(/media-path-fields/)
     expect(mediaView).toMatch(/media-path-meta-strip/)
     expect(mediaView).toMatch(/\.media-path-fields\s*\{[\s\S]*?min-height:\s*22px/)

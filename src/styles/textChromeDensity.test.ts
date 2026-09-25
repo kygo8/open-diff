@@ -146,3 +146,11 @@ describe('mainbar command width residual', () => {
     expect(css).toMatch(/data-command-id='prev-conflict'\][\s\S]*?min-width:\s*84\.5px/)
   })
 })
+
+describe('text path-meta strip border', () => {
+  it('matches capture path-meta border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.text-compare-view \.text-path-meta-strip\s*\{[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

@@ -2688,6 +2688,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Media scrub/field rows at capture CSS scale (~18–20px; controls stay ~18px) */
 .media-compare-view .media-playback-header {
+  display: none !important;
   gap: 6px !important;
   min-height: 20px !important;
   font-size: 11px !important;

@@ -1219,7 +1219,7 @@ watchEffect(() => {
     differenceCount: includedSyncRowCount.value > 0 ? includedSyncRowCount.value : null,
     filterStatus: t('status.allRows'),
     source: 'folder-sync',
-    chromeKind: 'folder-pair',
+    chromeKind: 'folder-sync',
     leftSelection: syncSelectionLabel.value || null,
     leftFreeSpace: leftFreeSpaceLabel.value || null,
     rightSelection: syncSelectionLabel.value || null,

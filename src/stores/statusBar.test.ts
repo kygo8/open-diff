@@ -104,4 +104,18 @@ describe('useStatusBarStore', () => {
     expect(store.chromeKind).toBe('folder-pair')
     expect(store.report.leftSelection).toContain('2 file(s)')
   })
+
+  it('derives folder-sync chrome from Folder Sync sources', () => {
+    const store = useStatusBarStore()
+
+    store.reportStatus({
+      source: 'folder-sync',
+      leftSelection: '1 file(s) selected, 22 bytes',
+      leftFreeSpace: '91.8 GB free on C:\\',
+      rightSelection: '1 file(s) selected, 23 bytes',
+      rightFreeSpace: '91.8 GB free on C:\\',
+    })
+
+    expect(store.chromeKind).toBe('folder-sync')
+  })
 })

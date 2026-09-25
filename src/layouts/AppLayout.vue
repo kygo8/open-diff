@@ -64,6 +64,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import {
   buildFolderPairStatusPanes,
+  buildFolderSyncStatusPanes,
   buildFolderMergeStatusPanes,
   isEditModeStatusSource,
   isHexSessionStatusSource,
@@ -1092,6 +1093,16 @@ const localizedStatusSegments = computed(() => {
 const statusChromePanes = computed((): StatusChromePane[] => {
   const kind = statusBar.chromeKind
 
+  if (kind === 'folder-sync') {
+    return buildFolderSyncStatusPanes({
+      leftSelection: statusBar.report.leftSelection,
+      leftFreeSpace: statusBar.report.leftFreeSpace,
+      rightSelection: statusBar.report.rightSelection,
+      rightFreeSpace: statusBar.report.rightFreeSpace,
+      placeholder: t('status.panePlaceholder'),
+    })
+  }
+
   if (kind === 'folder-pair') {
     // Capture folder-pair strip is always 4 panes. Importance would be a 5th —
     // hide it from the strip until Peek (or another toggle) surfaces it.
@@ -1191,6 +1202,7 @@ const statusBarGridStyle = computed(() => {
   // Folder-merge and text-session captures use fixed micro-pane widths from CSS.
   if (
     statusBar.chromeKind === 'folder-merge' ||
+    statusBar.chromeKind === 'folder-sync' ||
     statusBar.chromeKind === 'text-session' ||
     statusBar.chromeKind === 'table-session' ||
     statusBar.chromeKind === 'registry-session' ||
@@ -2888,6 +2900,28 @@ const sourceSessionTypes = new Set<SessionType>([
   border-right-color: #8e8e8e;
 }
 
+.status-bar[data-chrome-kind='folder-sync'] {
+  /* Capture Folder Sync panes (DPR≈2): 267.5 | 267.5 | 117 | 267 | 267.5 */
+  grid-template-columns: 267.5px 267.5px 117px 267px minmax(0, 1fr);
+  height: 19.5px;
+  min-height: 19.5px;
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.status-bar[data-chrome-kind='folder-sync'] .status-bar-pane {
+  padding: 0 4px;
+}
+
+.status-bar[data-chrome-kind='folder-sync']
+  .status-bar-pane[data-testid='status-pane-sync-spacer'] {
+  padding: 0;
+}
+
+.status-bar[data-chrome-kind='folder-sync'][data-pane-count='5'] .status-bar-pane:nth-child(2) {
+  border-right-color: #8e8e8e;
+}
+
 .status-bar[data-chrome-kind='folder-merge'] {
   /* Capture Pane0–11 widths (DPR≈2): 39 | 112 | 130 | 112 × 3 */
   grid-template-columns: repeat(3, 39px minmax(0, 1.12fr) minmax(0, 1.3fr) minmax(0, 1.12fr));
@@ -3198,6 +3232,7 @@ html[data-show-sidebar='1'] .sidebar {
 }
 
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-pair']),
+.app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-sync']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-merge']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind$='-session']) {
   /* Single capture menu row; status track toward capture ~19.5px (DPR≈2). */
@@ -3205,6 +3240,7 @@ html[data-show-sidebar='1'] .sidebar {
 }
 
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
+.app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-sync']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-merge']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind$='-session']) {
   grid-template-rows: 48px minmax(0, 1fr) 19.5px;

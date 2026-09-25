@@ -8,6 +8,7 @@ import {
   isEditModeStatusSource,
   isTextEditStatusSource,
   isFolderPairStatusSource,
+  isFolderSyncStatusSource,
   isFolderMergeStatusSource,
   isHexSessionStatusSource,
   isMediaSessionStatusSource,
@@ -111,6 +112,10 @@ export const useStatusBarStore = defineStore('statusBar', () => {
 
     if (isFolderMergeStatusSource(report.value.source)) {
       return 'folder-merge'
+    }
+
+    if (isFolderSyncStatusSource(report.value.source)) {
+      return 'folder-sync'
     }
 
     if (isFolderPairStatusSource(report.value.source)) {

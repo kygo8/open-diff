@@ -47,7 +47,7 @@ describe('folder sync/merge chrome density', () => {
     expect(syncView).not.toMatch(
       /joinStatusFooterParts\(syncSelectionLabel\.value, leftFreeSpaceLabel\.value\)/,
     )
-    expect(syncView).toMatch(/chromeKind:\s*'folder-pair'/)
+    expect(syncView).toMatch(/chromeKind:\s*'folder-sync'/)
 
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mergeView).toMatch(/PathMetaFooter/)
@@ -145,5 +145,13 @@ describe('folder merge tree and session log chrome density', () => {
     expect(css).toMatch(/\.folder-merge-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
     expect(mergeView).not.toMatch(/min-height:\s*6px/)
     expect(mergeView).not.toMatch(/font-size:\s*6px/)
+  })
+})
+
+describe('folder-sync status columns residual', () => {
+  it('keeps Folder Sync status columns on capture widths', () => {
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-sync'\][\s\S]*?grid-template-columns:\s*267\.5px 267\.5px 117px 267px minmax\(0, 1fr\)/,
+    )
   })
 })

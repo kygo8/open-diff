@@ -30,7 +30,8 @@ describe('status strip pixel density', () => {
       /chromeKind === 'folder-merge'[\s\S]*?chromeKind === 'text-session'[\s\S]*?chromeKind === 'table-session'/,
     )
     expect(layout).toMatch(/buildFolderPairStatusPanes/)
-    expect(layout).not.toMatch(/data-pane-count='5'/)
+    expect(layout).toMatch(/buildFolderSyncStatusPanes/)
+    expect(layout).toMatch(/data-chrome-kind='folder-sync'\]\[data-pane-count='5'\]/)
   })
 
   it('keeps session status bars at 19.5px with shared typography', () => {

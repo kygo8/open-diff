@@ -7,6 +7,8 @@ import {
   formatLoadTimePhrase,
   isEditModeStatusSource,
   isFolderPairStatusSource,
+  isFolderSyncStatusSource,
+  buildFolderSyncStatusPanes,
   isHexSessionStatusSource,
   isMediaSessionStatusSource,
   isPictureSessionStatusSource,
@@ -34,7 +36,8 @@ describe('statusBarPhrases', () => {
     expect(isEditModeStatusSource('text-edit')).toBe(true)
     expect(isEditModeStatusSource('text-patch')).toBe(false)
     expect(isFolderPairStatusSource('folder-compare')).toBe(true)
-    expect(isFolderPairStatusSource('folder-sync')).toBe(true)
+    expect(isFolderPairStatusSource('folder-sync')).toBe(false)
+    expect(isFolderSyncStatusSource('folder-sync')).toBe(true)
     expect(isFolderPairStatusSource('folder-merge')).toBe(false)
     expect(isFolderMergeStatusSource('folder-merge')).toBe(true)
     expect(isFolderMergeStatusSource('folder-compare')).toBe(false)
@@ -155,4 +158,17 @@ describe('statusBarPhrases', () => {
     expect(panes[3]?.text).toBe('91.8 GB free on C:\\')
     expect(panes.filter((pane) => !pane.testId.startsWith('status-pane-spacer'))).toHaveLength(6)
   })
+})
+
+it('builds five folder-sync panes with a center spacer', () => {
+  const panes = buildFolderSyncStatusPanes({
+    leftSelection: '1 file(s) selected, 22 bytes',
+    leftFreeSpace: '91.8 GB free on C:\\',
+    rightSelection: '1 file(s) selected, 23 bytes',
+    rightFreeSpace: '91.8 GB free on C:\\',
+  })
+
+  expect(panes).toHaveLength(5)
+  expect(panes[2]?.testId).toBe('status-pane-sync-spacer')
+  expect(panes[2]?.muted).toBe(true)
 })

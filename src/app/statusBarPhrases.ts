@@ -9,7 +9,8 @@ const TABLE_SESSION_SOURCES = new Set(['table-compare'])
 const REGISTRY_SESSION_SOURCES = new Set(['registry-compare'])
 const CLIPBOARD_SESSION_SOURCES = new Set(['clipboard-compare'])
 const EDIT_MODE_SOURCES = new Set(['text-compare', 'text-merge', 'text-edit'])
-const FOLDER_PAIR_SOURCES = new Set(['folder-compare', 'folder-sync'])
+const FOLDER_PAIR_SOURCES = new Set(['folder-compare'])
+const FOLDER_SYNC_SOURCES = new Set(['folder-sync'])
 const FOLDER_MERGE_SOURCES = new Set(['folder-merge'])
 
 export type StatusEditMode = 'insert' | 'overwrite'
@@ -17,6 +18,7 @@ export type StatusChromeKind =
   | 'standard'
   | 'text-session'
   | 'folder-pair'
+  | 'folder-sync'
   | 'folder-merge'
   | 'hex-session'
   | 'picture-session'
@@ -41,6 +43,10 @@ export function isTextEditStatusSource(source: string): boolean {
 
 export function isFolderPairStatusSource(source: string): boolean {
   return FOLDER_PAIR_SOURCES.has(source)
+}
+
+export function isFolderSyncStatusSource(source: string): boolean {
+  return FOLDER_SYNC_SOURCES.has(source)
 }
 
 export function isFolderMergeStatusSource(source: string): boolean {
@@ -219,6 +225,40 @@ export function buildFolderPairStatusPanes(input: {
     asPane(input.rightSelection, 'status-pane-right-selection'),
     asPane(input.rightFreeSpace, 'status-pane-right-free'),
   ].slice(0, FOLDER_PAIR_STATUS_PANE_COUNT)
+}
+
+/** Capture Folder Sync status strip: select/free | spacer | select/free. */
+export const FOLDER_SYNC_STATUS_PANE_COUNT = 5
+
+/**
+ * Build the capture-aligned Folder Sync status panes
+ * (left select/free, center spacer, right select/free).
+ */
+export function buildFolderSyncStatusPanes(input: {
+  leftSelection: string | null | undefined
+  leftFreeSpace: string | null | undefined
+  rightSelection: string | null | undefined
+  rightFreeSpace: string | null | undefined
+  placeholder?: string
+}): FolderPairStatusPaneDraft[] {
+  const placeholder = input.placeholder ?? '—'
+  const asPane = (value: string | null | undefined, testId: string): FolderPairStatusPaneDraft => {
+    const text = value?.trim() ?? ''
+
+    return {
+      text: text || placeholder,
+      muted: !text,
+      testId,
+    }
+  }
+
+  return [
+    asPane(input.leftSelection, 'status-pane-left-selection'),
+    asPane(input.leftFreeSpace, 'status-pane-left-free'),
+    { text: '', muted: true, testId: 'status-pane-sync-spacer' },
+    asPane(input.rightSelection, 'status-pane-right-selection'),
+    asPane(input.rightFreeSpace, 'status-pane-right-free'),
+  ].slice(0, FOLDER_SYNC_STATUS_PANE_COUNT)
 }
 
 /** Meaningful edit/free panes for left, center, and right. */

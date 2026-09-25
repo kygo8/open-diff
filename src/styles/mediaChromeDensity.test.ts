@@ -58,6 +58,10 @@ describe('media compare chrome density', () => {
     expect(mediaView).toMatch(/:size="14"/)
     expect(mediaView).toMatch(/<Play[\s\S]*?aria-hidden="true"/)
     expect(mediaView).toMatch(/<Pause[\s\S]*?aria-hidden="true"/)
+    expect(mediaView).toMatch(/:aria-label="isPlaying \? \$t\('ui.pause'\) : \$t\('ui.play'\)"/)
+    expect(mediaView).not.toMatch(
+      /class="media-scrub-play"[\s\S]*?<span>\{\{ isPlaying \? \$t\('ui.pause'\) : \$t\('ui.play'\) \}\}<\/span>/,
+    )
   })
 
   it('keeps Media transport/pane chrome on Hex/Table/Version rhythm', () => {

@@ -25,6 +25,7 @@ export type StatusChromeKind =
   | 'table-session'
   | 'registry-session'
   | 'clipboard-session'
+  | 'text-edit-session'
 
 export function isTextSessionStatusSource(source: string): boolean {
   return TEXT_SESSION_SOURCES.has(source)
@@ -32,6 +33,10 @@ export function isTextSessionStatusSource(source: string): boolean {
 
 export function isEditModeStatusSource(source: string): boolean {
   return EDIT_MODE_SOURCES.has(source)
+}
+
+export function isTextEditStatusSource(source: string): boolean {
+  return source === 'text-edit'
 }
 
 export function isFolderPairStatusSource(source: string): boolean {

@@ -138,3 +138,11 @@ describe('hex-session status strip columns residual', () => {
     )
   })
 })
+
+describe('text-edit status strip columns residual', () => {
+  it('pins Text Edit status columns to capture widths', () => {
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='text-edit-session'\]\s*\{[\s\S]*?grid-template-columns:\s*91\.5px minmax\(0, 1fr\)/,
+    )
+  })
+})

@@ -6,6 +6,7 @@ import {
   formatImportancePhrase,
   formatLoadTimePhrase,
   isEditModeStatusSource,
+  isTextEditStatusSource,
   isFolderPairStatusSource,
   isFolderMergeStatusSource,
   isHexSessionStatusSource,
@@ -114,6 +115,10 @@ export const useStatusBarStore = defineStore('statusBar', () => {
 
     if (isFolderPairStatusSource(report.value.source)) {
       return 'folder-pair'
+    }
+
+    if (isTextEditStatusSource(report.value.source)) {
+      return 'text-edit-session'
     }
 
     if (

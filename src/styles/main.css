@@ -2229,7 +2229,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .hex-compare-view .hex-offset-chrome {
   gap: 4px 6px !important;
-  min-height: 22px !important;
+  min-height: 20px !important;
   padding: 2px 4px !important;
   border: 1px solid #d0d0d0 !important;
   border-radius: 0 !important;

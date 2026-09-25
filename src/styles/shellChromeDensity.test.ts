@@ -118,3 +118,9 @@ describe('shell chrome density', () => {
     )
   })
 })
+
+describe('menu file width residual', () => {
+  it('pins file menu top-level width to capture 31.5px', () => {
+    expect(source).toMatch(/data-menu-id='file'\][\s\S]*?width:\s*31\\.5px/)
+  })
+})

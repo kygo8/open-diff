@@ -38,6 +38,7 @@ describe('hex compare chrome density', () => {
       /\.hex-compare-view \.hex-wrap-controls\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
     )
     expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls input[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*17\.5px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-offset\s*\{[\s\S]*?background:\s*#f0f0f0/)

@@ -1481,7 +1481,7 @@ h2 {
   padding: 2px 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: var(--app-surface);
+  background: #f0f0f0;
 }
 
 .path-field-row {

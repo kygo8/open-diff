@@ -92,3 +92,11 @@ describe('patch section-nav fill', () => {
     )
   })
 })
+
+describe('patch section-nav border', () => {
+  it('matches capture section-nav border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.text-patch-view \.patch-section-nav-chrome\s*\{[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

@@ -2202,7 +2202,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .hex-row {
-  grid-template-columns: 52px minmax(200px, 1fr) 120px !important;
+  grid-template-columns: 52px minmax(200px, 1fr) 104px !important;
   min-height: 17.5px !important;
   border-bottom: 1px solid #e0e0e0 !important;
   font-size: 11px !important;

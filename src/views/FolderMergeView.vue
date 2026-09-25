@@ -3309,8 +3309,8 @@ h1 {
 .folder-session-log {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr);
-  height: 96px;
-  min-height: 96px;
+  height: 98px;
+  min-height: 98px;
   overflow: hidden;
   border: 1px solid #c0c0c0;
   border-radius: 0;

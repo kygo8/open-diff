@@ -143,10 +143,10 @@ describe('folder merge tree and session log chrome density', () => {
     expect(mergeView).toMatch(/\.merge-plan-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(mergeView).toMatch(/\.merge-plan-head\s*\{[\s\S]*?font-weight:\s*400/)
     expect(mergeView).toMatch(/\.merge-plan-row\.selected\s*\{[\s\S]*?background:\s*#a8cdf1/)
-    expect(mergeView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(mergeView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*98px/)
     expect(mergeView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-plan-row\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(css).toMatch(/\.folder-merge-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(css).toMatch(/\.folder-merge-view \.folder-session-log\s*\{[\s\S]*?height:\s*98px/)
     expect(css).toMatch(
       /\.folder-merge-view \.folder-session-log\s*\{[\s\S]*?background:\s*#e3e7ed/,
     )

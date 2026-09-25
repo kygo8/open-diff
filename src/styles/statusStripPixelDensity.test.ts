@@ -73,7 +73,7 @@ describe('status strip pixel density', () => {
       /\.status-bar\[data-chrome-kind='folder-merge'\]\[data-pane-count='12'\] \.status-bar-pane:nth-child\(4\)/,
     )
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?38px 113\.5px 131px 113\.5px 39px 113px 131px 113\.5px 39px 113px 131px minmax\(0, 1fr\)/,
+      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?38px 113\.5px 131px 113\.5px 39px 113px 131px 113\.5px 39px 113px 131px minmax\(\s*0,\s*1fr\s*\)/,
     )
     expect(layout).toMatch(
       /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-merge'\]\)/,

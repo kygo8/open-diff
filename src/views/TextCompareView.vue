@@ -2219,7 +2219,7 @@ function onVisibilityForDiskChange(): void {
 .text-path-meta-strip {
   min-height: 18px;
   padding: 1px 4px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid #c0c0c0;
   border-radius: 0;
   background: #f0f0f0;
 }

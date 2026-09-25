@@ -17,14 +17,14 @@ describe('hex compare chrome density', () => {
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.hex-compare-view \.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
-    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*17\.5px/)
 
     expect(hexView).toMatch(/\.hex-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(hexView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(hexView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(hexView).toMatch(/SessionPathActions/)
     expect(hexView).toMatch(/PathMetaFooter/)
-    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?min-height:\s*17\.5px/)
     expect(hexView).toMatch(/chromeKind:\s*'hex-session'/)
     expect(hexView).not.toMatch(/font-size:\s*9px/)
     expect(hexView).not.toMatch(/min-height:\s*9px/)
@@ -39,7 +39,7 @@ describe('hex compare chrome density', () => {
     )
     expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls input[\s\S]*?height:\s*16\.5px/)
-    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*17\.5px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-offset\s*\{[\s\S]*?background:\s*#f0f0f0/)
 
     expect(hexView).toMatch(/data-hex-chrome-density="capture-1to1"/)
@@ -98,7 +98,7 @@ describe('hex path and windowed grid chrome residual', () => {
     expect(css).toMatch(
       /\.hex-compare-view \.hex-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/,
     )
-    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*17\.5px/)
     expect(hexView).not.toMatch(/min-height:\s*6px/)
   })
 })

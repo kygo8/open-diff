@@ -1574,7 +1574,7 @@ h2 {
   display: grid;
   grid-template-columns: 52px minmax(200px, 1fr) 120px;
   min-width: 420px;
-  min-height: 16px;
+  min-height: 17.5px;
   border-bottom: 1px solid #e0e0e0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 11px;

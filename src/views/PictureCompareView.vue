@@ -2174,7 +2174,7 @@ h2 {
 }
 
 .path-side-footer {
-  min-height: 20px;
+  min-height: 18px;
   margin-top: 0;
   overflow: hidden;
   color: var(--app-text-muted, #6b7280);

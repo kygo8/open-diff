@@ -2386,7 +2386,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .path-side-footer {
-  min-height: 20px !important;
+  min-height: 18px !important;
   margin-top: 0 !important;
   font-size: 11px !important;
   line-height: 16px !important;

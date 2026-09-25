@@ -5669,7 +5669,7 @@ onUnmounted(() => {
   gap: 6px;
   padding: 4px 0;
   border-right: 1px solid #c0c0c0;
-  background: #d4d4d4;
+  background: #e3e7ed;
 }
 
 .folder-session-log-gutter-btn {

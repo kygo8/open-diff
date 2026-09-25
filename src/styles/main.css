@@ -1996,8 +1996,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-compare-view .folder-session-log {
-  height: 96px !important;
-  min-height: 96px !important;
+  height: 98px !important;
+  min-height: 98px !important;
   border: 1px solid #c0c0c0 !important;
   border-radius: 0 !important;
   background: #e3e7ed !important;

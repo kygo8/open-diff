@@ -149,12 +149,12 @@ describe('folder compare session log chrome density', () => {
   it('keeps Folder Compare session log pane at capture CSS scale', () => {
     expect(folderView).toMatch(/data-testid="folder-session-log"/)
     expect(folderView).toMatch(/data-log-density="capture-1to1"/)
-    expect(folderView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(folderView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*98px/)
     expect(folderView).toMatch(/\.folder-session-log\s*\{[\s\S]*?grid-template-columns:\s*22px/)
     expect(folderView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/)
     expect(folderView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?line-height:\s*14px/)
     expect(folderView).toMatch(/case 'toggle-log':/)
-    expect(css).toMatch(/\.folder-compare-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(css).toMatch(/\.folder-compare-view \.folder-session-log\s*\{[\s\S]*?height:\s*98px/)
     expect(css).toMatch(
       /\.folder-compare-view \.folder-session-log\s*\{[\s\S]*?background:\s*#e3e7ed/,
     )

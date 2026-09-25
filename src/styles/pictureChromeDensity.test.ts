@@ -154,3 +154,11 @@ describe('picture stage residual band', () => {
     expect(css).toMatch(/rgb\(46 46 35 \/ 0\.92\)/)
   })
 })
+
+describe('picture path footers strip', () => {
+  it('matches capture path-meta strip fill #f0f0f0', () => {
+    expect(css).toMatch(
+      /\.picture-compare-view \.bc-path-footers\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+  })
+})

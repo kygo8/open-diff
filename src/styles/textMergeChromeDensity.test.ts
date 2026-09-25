@@ -105,3 +105,11 @@ describe('text merge path meta residual', () => {
     )
   })
 })
+
+describe('merge conflict li border', () => {
+  it('matches capture conflict list item border #c0c0c0', () => {
+    expect(css).toMatch(
+      /data-conflict-chrome='capture-1to1-residual'\] li[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

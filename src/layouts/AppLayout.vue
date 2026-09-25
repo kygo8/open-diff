@@ -2885,8 +2885,8 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='folder-pair'] {
-  /* Capture Folder Compare panes (DPR≈2): 222 | 130 | 221.5 | 38 | 222 | 130 | fr */
-  grid-template-columns: 222px 130px 221.5px 38px 222px 130px minmax(0, 1fr);
+  /* Capture Folder Compare panes (DPR≈2): 222 | 131 | 222.5 | 39 | 222 | 131 | fr */
+  grid-template-columns: 222px 131px 222.5px 39px 222px 131px minmax(0, 1fr);
   height: 19.5px;
   min-height: 19.5px;
   font-size: 11px;

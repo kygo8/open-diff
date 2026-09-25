@@ -3474,7 +3474,7 @@ h1 {
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 20px;
+  height: 16.5px;
   padding: 0 6px;
   border: 1px solid #bfc4cc;
   border-radius: 0;

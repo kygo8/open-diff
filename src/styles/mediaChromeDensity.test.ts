@@ -166,3 +166,9 @@ describe('media path meta residual', () => {
     )
   })
 })
+
+describe('media side panels fill', () => {
+  it('matches capture media side/report panel fill #f0f0f0', () => {
+    expect(css).toMatch(/\.media-compare-view \.media-side[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

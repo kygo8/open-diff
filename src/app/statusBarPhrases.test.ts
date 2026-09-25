@@ -98,8 +98,8 @@ describe('statusBarPhrases', () => {
     ])
   })
 
-  it('builds exactly four folder-pair panes and never invents a 5th importance pane', () => {
-    expect(FOLDER_PAIR_STATUS_PANE_COUNT).toBe(4)
+  it('builds seven folder-pair panes with micro spacers and no importance pane', () => {
+    expect(FOLDER_PAIR_STATUS_PANE_COUNT).toBe(7)
     const panes = buildFolderPairStatusPanes({
       leftSelection: '1 file(s) selected, 22 bytes',
       leftFreeSpace: '91.8 GB free on C:\\',
@@ -107,14 +107,19 @@ describe('statusBarPhrases', () => {
       rightFreeSpace: '40.0 GB free on D:\\',
     })
 
-    expect(panes).toHaveLength(4)
+    expect(panes).toHaveLength(7)
     expect(panes.map((pane) => pane.testId)).toEqual([
       'status-pane-left-selection',
+      'status-pane-spacer-0',
       'status-pane-left-free',
+      'status-pane-spacer-center',
       'status-pane-right-selection',
+      'status-pane-spacer-1',
       'status-pane-right-free',
     ])
     expect(panes.every((pane) => pane.testId !== 'status-pane-importance')).toBe(true)
+    expect(panes[1]?.muted).toBe(true)
+    expect(panes[3]?.muted).toBe(true)
 
     const empty = buildFolderPairStatusPanes({
       leftSelection: null,
@@ -123,7 +128,7 @@ describe('statusBarPhrases', () => {
       rightFreeSpace: null,
     })
 
-    expect(empty).toHaveLength(4)
+    expect(empty).toHaveLength(7)
     expect(empty.every((pane) => pane.muted)).toBe(true)
   })
 

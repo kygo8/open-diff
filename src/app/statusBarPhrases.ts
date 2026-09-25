@@ -187,8 +187,8 @@ export function padStatusChromePanes(
   return next
 }
 
-/** Capture folder-pair status strip always uses four panes. */
-export const FOLDER_PAIR_STATUS_PANE_COUNT = 4
+/** Capture folder-pair status strip uses seven panes with micro spacers. */
+export const FOLDER_PAIR_STATUS_PANE_COUNT = 7
 
 export interface FolderPairStatusPaneDraft {
   text: string
@@ -197,9 +197,9 @@ export interface FolderPairStatusPaneDraft {
 }
 
 /**
- * Build the capture-aligned folder-pair status panes (left select/free, right select/free).
- * Importance is intentionally omitted here: a 5th pane would break the 4-pane strip, so
- * callers should hide Importance until Peek (or another toggle) surfaces it.
+ * Build the capture-aligned folder-pair status panes
+ * (select | spacer | free | center micro | select | spacer | free).
+ * Importance is intentionally omitted from the strip until Peek surfaces it.
  */
 export function buildFolderPairStatusPanes(input: {
   leftSelection: string | null | undefined
@@ -218,11 +218,19 @@ export function buildFolderPairStatusPanes(input: {
       testId,
     }
   }
+  const emptyPane = (testId: string): FolderPairStatusPaneDraft => ({
+    text: '',
+    muted: true,
+    testId,
+  })
 
   return [
     asPane(input.leftSelection, 'status-pane-left-selection'),
+    emptyPane('status-pane-spacer-0'),
     asPane(input.leftFreeSpace, 'status-pane-left-free'),
+    emptyPane('status-pane-spacer-center'),
     asPane(input.rightSelection, 'status-pane-right-selection'),
+    emptyPane('status-pane-spacer-1'),
     asPane(input.rightFreeSpace, 'status-pane-right-free'),
   ].slice(0, FOLDER_PAIR_STATUS_PANE_COUNT)
 }

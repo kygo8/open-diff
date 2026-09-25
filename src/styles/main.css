@@ -3652,7 +3652,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding-right: 8px !important;
   padding-left: 28px !important;
   border-bottom: 1px solid #d0d0d0 !important;
-  background: #f5f5f5 !important;
+  background: #f0f0f0 !important;
   font-size: 11px !important;
   font-weight: 600 !important;
 }
@@ -3691,7 +3691,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .text-compare-view .diff-panel[data-editor-grid='capture-1to1-residual'] .diff-header {
   height: 18px !important;
   border-bottom: 1px solid #d0d0d0 !important;
-  background: #f5f5f5 !important;
+  background: #f0f0f0 !important;
   font-weight: 600 !important;
   padding-right: 8px !important;
   padding-left: 28px !important;

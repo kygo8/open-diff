@@ -130,6 +130,7 @@ describe('hex byte cell residual', () => {
     expect(hexView).toMatch(/data-hex-rows-density="capture-1to1"/)
     expect(hexView).toMatch(/data-hex-byte-residual="capture-1to1"/)
     expect(hexView).toMatch(/\.hex-byte\s*\{[\s\S]*?width:\s*18px/)
+    expect(hexView).toMatch(/\.hex-byte\s*\{[\s\S]*?margin-right:\s*2px/)
     expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?line-height:\s*16px/)
     expect(hexView).toMatch(/\.hex-ascii\s*\{[\s\S]*?line-height:\s*16px/)
     expect(css).toMatch(

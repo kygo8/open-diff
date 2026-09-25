@@ -2381,8 +2381,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .picture-compare-view .bc-path-footers {
   gap: 1px !important;
-  padding: 0 2px !important;
+  min-height: 18px !important;
+  padding: 1px 4px !important;
   margin-top: 0 !important;
+  border: 1px solid #c0c0c0 !important;
+  border-radius: 0 !important;
+  background: #f0f0f0 !important;
 }
 
 .picture-compare-view .path-side-footer {

@@ -76,3 +76,11 @@ describe('text patch section nav residual', () => {
     expect(patchView).not.toMatch(/min-height:\s*6px/)
   })
 })
+
+describe('text-patch path-meta border', () => {
+  it('matches capture path-meta border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.text-patch-view \.patch-path-meta-strip[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

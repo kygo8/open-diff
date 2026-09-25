@@ -4541,7 +4541,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 1px !important;
   min-height: 18px !important;
   padding: 1px 4px !important;
-  border: 1px solid #d0d0d0 !important;
+  border: 1px solid #c0c0c0 !important;
   border-radius: 0 !important;
   background: #f0f0f0 !important;
 }

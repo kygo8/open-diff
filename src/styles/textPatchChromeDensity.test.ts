@@ -65,7 +65,7 @@ describe('text patch section nav residual', () => {
     expect(patchView).toMatch(/data-secondary-density="capture-1to1"/)
     expect(patchView).toMatch(/patch-path-meta-strip/)
     expect(patchView).toMatch(/\.patch-section-nav-chrome\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(patchView).toMatch(/\.patch-section-nav-chrome\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(patchView).toMatch(/\.patch-section-nav-chrome\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(patchView).toMatch(/\.patch-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(css).toMatch(
       /\.text-patch-view \.patch-section-nav-chrome\s*\{[\s\S]*?min-height:\s*20px/,
@@ -81,6 +81,14 @@ describe('text-patch path-meta border', () => {
   it('matches capture path-meta border #c0c0c0', () => {
     expect(css).toMatch(
       /\.text-patch-view \.patch-path-meta-strip[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})
+
+describe('patch section-nav fill', () => {
+  it('matches capture section-nav fill #f0f0f0', () => {
+    expect(css).toMatch(
+      /\.text-patch-view \.patch-section-nav-chrome\s*\{[\s\S]*?background:\s*#f0f0f0/,
     )
   })
 })

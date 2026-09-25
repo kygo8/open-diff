@@ -936,7 +936,7 @@ function lineNumber(value: number | null): string {
   padding: 1px 2px;
   border: 1px solid #d0d0d0;
   border-radius: 0;
-  background: #f5f5f5;
+  background: #f0f0f0;
 }
 
 .patch-path-meta-strip {

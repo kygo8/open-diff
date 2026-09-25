@@ -169,3 +169,11 @@ describe('PathMetaFooter chip spacing residual', () => {
     expect(css).toMatch(/\.bc-path-footers \.path-meta-footer[\s\S]*?gap:\s*6px/)
   })
 })
+
+describe('path-meta-eol border', () => {
+  it('matches capture EOL chip border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.path-meta-footer\[data-path-meta-eol='capture-1to1-residual'\] \.path-meta-eol[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

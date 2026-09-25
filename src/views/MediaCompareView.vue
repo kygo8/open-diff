@@ -1634,6 +1634,10 @@ h1 {
   min-width: 0;
 }
 
+.media-player-card > span {
+  display: none;
+}
+
 .media-player-card video,
 .media-player-card audio {
   width: 100%;

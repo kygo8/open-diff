@@ -919,120 +919,6 @@ async function runPictureCompare(): Promise<void> {
         </article>
       </section>
 
-      <section class="picture-controls">
-        <label>
-          <span>{{ $t('ui.zoom') }}</span>
-          <input
-            v-model.number="zoom"
-            type="range"
-            min="50"
-            max="200"
-            step="10"
-            data-testid="picture-zoom-control"
-          />
-        </label>
-        <label>
-          <span>{{ $t('ui.panX') }}</span>
-          <input
-            v-model.number="panX"
-            type="range"
-            min="-80"
-            max="80"
-            step="4"
-            data-testid="picture-pan-x"
-          />
-        </label>
-        <label>
-          <span>{{ $t('ui.panY') }}</span>
-          <input
-            v-model.number="panY"
-            type="range"
-            min="-80"
-            max="80"
-            step="4"
-            data-testid="picture-pan-y"
-          />
-        </label>
-        <label class="picture-toggle">
-          <input
-            v-model="showOverlay"
-            type="checkbox"
-            data-testid="picture-overlay-toggle"
-          />
-          <span>{{ $t('ui.overlay') }}</span>
-        </label>
-        <div class="picture-transform-tools">
-          <button
-            type="button"
-            data-testid="picture-rotate-counterclockwise"
-            @click="rotatePicture(-90)"
-          >
-            {{ $t('ui.rotateLeft') }}
-          </button>
-          <button
-            type="button"
-            data-testid="picture-rotate-clockwise"
-            @click="rotatePicture(90)"
-          >
-            {{ $t('ui.rotateRight') }}
-          </button>
-          <button
-            type="button"
-            data-testid="picture-flip-horizontal"
-            @click="flipHorizontal = !flipHorizontal"
-          >
-            {{ $t('ui.flipH') }}
-          </button>
-          <button
-            type="button"
-            data-testid="picture-flip-vertical"
-            @click="flipVertical = !flipVertical"
-          >
-            {{ $t('ui.flipV') }}
-          </button>
-        </div>
-        <div class="picture-alignment-controls">
-          <label>
-            <span>{{ $t('ui.offsetX') }}</span>
-            <input
-              v-model.number="alignmentOffsetX"
-              type="number"
-              min="-200"
-              max="200"
-              step="1"
-              data-testid="picture-align-x"
-            />
-          </label>
-          <label>
-            <span>{{ $t('ui.offsetY') }}</span>
-            <input
-              v-model.number="alignmentOffsetY"
-              type="number"
-              min="-200"
-              max="200"
-              step="1"
-              data-testid="picture-align-y"
-            />
-          </label>
-        </div>
-        <div
-          class="picture-pixel-preview"
-          data-testid="picture-pixel-preview"
-        >
-          <span>{{ pixelPreview?.side ?? $t('ui.noPixel') }}</span>
-          <strong data-testid="picture-pixel-coordinates">
-            {{ pixelPreview ? `${pixelPreview.x}, ${pixelPreview.y}` : '--, --' }}
-          </strong>
-          <span
-            class="picture-pixel-swatch"
-            :style="{ backgroundColor: pixelPreview?.color ?? 'transparent' }"
-          ></span>
-          <strong data-testid="picture-pixel-color">{{
-            pixelPreview?.color ?? 'rgb(--, --, --)'
-          }}</strong>
-        </div>
-      </section>
-
       <section
         v-if="showBlendPanel || blendEnabled"
         class="picture-blend-panel"
@@ -1090,6 +976,123 @@ async function runPictureCompare(): Promise<void> {
         data-testid="picture-stage"
         data-canvas-density="capture-1to1"
       >
+        <section
+          class="picture-controls"
+          data-picture-controls="stage-overlay"
+          data-testid="picture-controls-stage"
+        >
+          <label>
+            <span>{{ $t('ui.zoom') }}</span>
+            <input
+              v-model.number="zoom"
+              type="range"
+              min="50"
+              max="200"
+              step="10"
+              data-testid="picture-zoom-control"
+            />
+          </label>
+          <label>
+            <span>{{ $t('ui.panX') }}</span>
+            <input
+              v-model.number="panX"
+              type="range"
+              min="-80"
+              max="80"
+              step="4"
+              data-testid="picture-pan-x"
+            />
+          </label>
+          <label>
+            <span>{{ $t('ui.panY') }}</span>
+            <input
+              v-model.number="panY"
+              type="range"
+              min="-80"
+              max="80"
+              step="4"
+              data-testid="picture-pan-y"
+            />
+          </label>
+          <label class="picture-toggle">
+            <input
+              v-model="showOverlay"
+              type="checkbox"
+              data-testid="picture-overlay-toggle"
+            />
+            <span>{{ $t('ui.overlay') }}</span>
+          </label>
+          <div class="picture-transform-tools">
+            <button
+              type="button"
+              data-testid="picture-rotate-counterclockwise"
+              @click="rotatePicture(-90)"
+            >
+              {{ $t('ui.rotateLeft') }}
+            </button>
+            <button
+              type="button"
+              data-testid="picture-rotate-clockwise"
+              @click="rotatePicture(90)"
+            >
+              {{ $t('ui.rotateRight') }}
+            </button>
+            <button
+              type="button"
+              data-testid="picture-flip-horizontal"
+              @click="flipHorizontal = !flipHorizontal"
+            >
+              {{ $t('ui.flipH') }}
+            </button>
+            <button
+              type="button"
+              data-testid="picture-flip-vertical"
+              @click="flipVertical = !flipVertical"
+            >
+              {{ $t('ui.flipV') }}
+            </button>
+          </div>
+          <div class="picture-alignment-controls">
+            <label>
+              <span>{{ $t('ui.offsetX') }}</span>
+              <input
+                v-model.number="alignmentOffsetX"
+                type="number"
+                min="-200"
+                max="200"
+                step="1"
+                data-testid="picture-align-x"
+              />
+            </label>
+            <label>
+              <span>{{ $t('ui.offsetY') }}</span>
+              <input
+                v-model.number="alignmentOffsetY"
+                type="number"
+                min="-200"
+                max="200"
+                step="1"
+                data-testid="picture-align-y"
+              />
+            </label>
+          </div>
+          <div
+            class="picture-pixel-preview"
+            data-testid="picture-pixel-preview"
+          >
+            <span>{{ pixelPreview?.side ?? $t('ui.noPixel') }}</span>
+            <strong data-testid="picture-pixel-coordinates">
+              {{ pixelPreview ? `${pixelPreview.x}, ${pixelPreview.y}` : '--, --' }}
+            </strong>
+            <span
+              class="picture-pixel-swatch"
+              :style="{ backgroundColor: pixelPreview?.color ?? 'transparent' }"
+            ></span>
+            <strong data-testid="picture-pixel-color">{{
+              pixelPreview?.color ?? 'rgb(--, --, --)'
+            }}</strong>
+          </div>
+        </section>
         <section class="picture-pane-grid">
           <section
             class="picture-side"
@@ -1604,16 +1607,22 @@ h2 {
 }
 
 .picture-controls {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  z-index: 4;
   display: grid;
   grid-template-columns:
-    repeat(3, minmax(140px, 1fr)) auto minmax(260px, auto) minmax(180px, auto)
-    minmax(180px, auto);
+    repeat(3, minmax(120px, 1fr)) auto minmax(200px, auto) minmax(160px, auto)
+    minmax(160px, auto);
   gap: 2px 4px;
+  width: min(560px, calc(100% - 8px));
   min-height: 20px;
   padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  border: 0;
   border-radius: 0;
-  background: var(--app-surface);
+  background: rgb(46 46 35 / 0.88);
+  color: #f0f0f0;
 }
 
 .picture-controls label {
@@ -1622,7 +1631,7 @@ h2 {
 }
 
 .picture-controls span {
-  color: var(--app-text-muted);
+  color: #d8d8d8;
   font-size: 11px;
   line-height: 14px;
 }

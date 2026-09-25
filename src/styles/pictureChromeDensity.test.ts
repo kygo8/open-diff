@@ -111,6 +111,11 @@ describe('picture compare chrome density', () => {
 describe('picture stage canvas density', () => {
   it('keeps Picture stage/quadrant canvas and Tol overlay on capture band', () => {
     expect(pictureView).toMatch(/data-testid="picture-stage"/)
+    expect(pictureView).toMatch(/data-picture-controls="stage-overlay"/)
+    expect(pictureView).toMatch(/data-testid="picture-controls-stage"/)
+    expect(pictureView).toMatch(
+      /\.picture-controls\s*\{[\s\S]*?position:\s*absolute[\s\S]*?bottom:\s*4px/,
+    )
     expect(pictureView).toMatch(/data-canvas-density="capture-1to1"/)
     expect(pictureView).toMatch(/data-testid="picture-diff-stage"/)
     expect(pictureView).toMatch(/picture-tol-overlay/)

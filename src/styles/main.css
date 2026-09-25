@@ -2272,7 +2272,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .hex-offset {
-  background: #f7f7f7 !important;
+  background: #f0f0f0 !important;
   color: var(--app-text-muted) !important;
 }
 

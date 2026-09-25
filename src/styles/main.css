@@ -2729,6 +2729,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+.media-compare-view .media-playback-hint {
+  display: none !important;
+}
+
 .media-compare-view .media-players {
   gap: 4px !important;
 }

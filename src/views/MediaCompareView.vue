@@ -1693,6 +1693,7 @@ h1 {
 }
 
 .media-playback-hint {
+  display: none;
   margin: 0;
   color: var(--app-text-muted);
   font-size: 11px;

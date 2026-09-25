@@ -77,7 +77,7 @@ describe('text merge editor pane residual', () => {
     expect(mergeView).toMatch(/data-editor-density="capture-1to1"/)
     expect(mergeView).toMatch(/\.merge-grid\s*\{[\s\S]*?gap:\s*1px/)
     expect(mergeView).toMatch(/\.output-editor\s*\{[\s\S]*?line-height:\s*16px/)
-    expect(mergeView).toMatch(/\.conflict-panel\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(mergeView).toMatch(/\.conflict-panel\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(css).toMatch(/\.text-merge-view \.merge-grid\s*\{[\s\S]*?gap:\s*1px/)
     expect(css).toMatch(/\.text-merge-view \.pane-header\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.text-merge-view \.output-editor\s*\{[\s\S]*?line-height:\s*16px/)
@@ -90,7 +90,7 @@ describe('text merge conflict chrome residual', () => {
     expect(mergeView).toMatch(/data-conflict-chrome="capture-1to1-residual"/)
     expect(mergeView).toMatch(/data-pane-sync="capture-1to1-residual"/)
     expect(css).toMatch(
-      /data-conflict-chrome='capture-1to1-residual'\][\s\S]*?background:\s*#f5f5f5/,
+      /data-conflict-chrome='capture-1to1-residual'\][\s\S]*?background:\s*#f0f0f0/,
     )
     expect(css).toMatch(
       /data-pane-sync='capture-1to1-residual'\] \.pane-header[\s\S]*?min-height:\s*18px/,

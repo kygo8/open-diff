@@ -1672,7 +1672,7 @@ watch(
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
-  background: #f5f5f5;
+  background: #f0f0f0;
 }
 
 .conflict-panel header {

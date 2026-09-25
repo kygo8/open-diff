@@ -4823,7 +4823,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .version-compare-view[data-version-chrome='capture-1to1-residual'] .version-side header {
   min-height: 20px !important;
-  background: #f7f7f7 !important;
+  background: #f0f0f0 !important;
 }
 
 .text-merge-view .conflict-panel[data-conflict-chrome='capture-1to1-residual'] {

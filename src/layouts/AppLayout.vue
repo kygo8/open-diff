@@ -2929,8 +2929,11 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='folder-merge'] {
-  /* Capture Pane0–11 widths (DPR≈2): 39 | 112 | 130 | 112 × 3 */
-  grid-template-columns: repeat(3, 39px minmax(0, 1.12fr) minmax(0, 1.3fr) minmax(0, 1.12fr));
+  /* Capture Pane0–11 widths (DPR≈2): 38 | 113.5 | 131 | 113.5 | 39 | 113 | 131 | 113.5 | 39 | 113 | 131 | fr */
+  grid-template-columns: 38px 113.5px 131px 113.5px 39px 113px 131px 113.5px 39px 113px 131px minmax(
+      0,
+      1fr
+    );
   height: 19.5px;
   min-height: 19.5px;
   font-size: 11px;

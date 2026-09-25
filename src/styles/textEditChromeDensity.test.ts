@@ -64,3 +64,11 @@ describe('text edit path toolbar residual', () => {
     expect(editView).not.toMatch(/min-height:\s*6px/)
   })
 })
+
+describe('text-edit path-meta border', () => {
+  it('matches capture path-meta border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.text-edit-view \.text-edit-path-meta-strip[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

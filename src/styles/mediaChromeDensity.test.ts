@@ -14,8 +14,9 @@ describe('media compare chrome density', () => {
     expect(css).toMatch(/\.media-compare-view \.media-path-panel\s*\{[\s\S]*?min-height:\s*22px/)
     expect(mediaView).toMatch(/\.media-path-field \.path-input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(
-      /\.media-compare-view \.media-path-panel input,\s*\.media-compare-view \.media-path-panel button\s*\{[\s\S]*?height:\s*20px/,
+      /\.media-compare-view \.media-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/,
     )
+    expect(css).toMatch(/\.media-compare-view \.media-path-panel button\s*\{[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.media-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.media-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
 
@@ -99,6 +100,9 @@ describe('media path scrub chrome residual', () => {
     expect(mediaView).toMatch(/data-path-density="capture-1to1"/)
     expect(mediaView).toMatch(/data-secondary-density="capture-1to1"/)
     expect(mediaView).toMatch(/data-testid="media-scrub-chrome"/)
+    expect(css).toMatch(
+      /\.media-compare-view \.media-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/,
+    )
     expect(mediaView).toMatch(/\.media-player-card > span\s*\{[\s\S]*?display:\s*none/)
     expect(mediaView).toMatch(/\.media-playback-header\s*\{[\s\S]*?display:\s*none/)
     expect(mediaView).toMatch(/\.media-playback-hint\s*\{[\s\S]*?display:\s*none/)

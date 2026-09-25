@@ -1610,7 +1610,7 @@ h1 {
   align-items: center;
   gap: 6px;
   min-height: 18px;
-  padding: 2px 4px;
+  padding: 1px 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #f0f0f0;

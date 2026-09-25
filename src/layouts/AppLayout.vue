@@ -2372,6 +2372,13 @@ const sourceSessionTypes = new Set<SessionType>([
   padding: 0;
 }
 
+.menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='tools'] {
+  width: 42.5px;
+  min-width: 42.5px;
+  max-width: 42.5px;
+  padding: 0;
+}
+
 .brand {
   display: inline-flex;
   grid-column: 1;

@@ -39,7 +39,7 @@ describe('media compare chrome density', () => {
 
   it('keeps Media scrub/footer chrome on capture band', () => {
     expect(css).toMatch(/\.media-compare-view \.media-scrub-row\s*\{[\s\S]*?min-height:\s*18px/)
-    expect(css).toMatch(/\.media-compare-view \.media-scrub-row\s*\{[\s\S]*?gap:\s*6px/)
+    expect(css).toMatch(/\.media-compare-view \.media-scrub-row\s*\{[\s\S]*?gap:\s*4px/)
     expect(css).toMatch(
       /\.media-compare-view \.media-scrub-row\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
     )
@@ -66,7 +66,7 @@ describe('media compare chrome density', () => {
     expect(css).toMatch(/\.media-compare-view \.media-rules-panel[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.media-compare-view \.media-field-row\s*\{[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.media-compare-view \.media-rule-row\s*\{[\s\S]*?min-height:\s*16px/)
-    expect(css).toMatch(/\.media-compare-view \.media-players\s*\{[\s\S]*?gap:\s*6px/)
+    expect(css).toMatch(/\.media-compare-view \.media-players\s*\{[\s\S]*?gap:\s*4px/)
 
     expect(mediaView).toMatch(/data-media-field-density="capture-1to1"/)
     expect(mediaView).toMatch(/\.media-summary-item[\s\S]*?padding:\s*2px 4px/)
@@ -76,7 +76,7 @@ describe('media compare chrome density', () => {
     expect(mediaView).toMatch(/\.media-field-row > \*\s*\{[\s\S]*?padding:\s*2px 6px/)
     expect(mediaView).toMatch(/\.media-side dl div\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mediaView).toMatch(/\.media-rule-row\s*\{[\s\S]*?min-height:\s*16px/)
-    expect(mediaView).toMatch(/\.media-players\s*\{[\s\S]*?gap:\s*6px/)
+    expect(mediaView).toMatch(/\.media-players\s*\{[\s\S]*?gap:\s*4px/)
     expect(mediaView).toMatch(/\.media-source-pair\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mediaView).toMatch(/\.media-source-pair\s*\{[\s\S]*?border-radius:\s*0/)
     expect(mediaView).toMatch(

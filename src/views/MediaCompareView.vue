@@ -1689,6 +1689,8 @@ h1 {
   min-width: 160px;
   height: 19.5px;
   min-height: 19.5px;
+  accent-color: #808080;
+  background: #e7eaea;
 }
 
 .media-scrub-row span {

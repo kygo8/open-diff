@@ -2732,6 +2732,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .media-compare-view .media-scrub {
   height: 19.5px !important;
   min-height: 19.5px !important;
+  accent-color: #808080 !important;
+  background: #e7eaea !important;
 }
 
 .media-compare-view .media-scrub-row span {

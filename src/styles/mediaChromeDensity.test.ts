@@ -56,6 +56,7 @@ describe('media compare chrome density', () => {
     expect(mediaView).toMatch(/\.media-scrub-play\s*\{[\s\S]*?border:\s*0/)
     expect(mediaView).toMatch(/\.media-scrub-play\s*\{[\s\S]*?background:\s*transparent/)
     expect(mediaView).toMatch(/\.media-scrub\s*\{[\s\S]*?height:\s*19\.5px/)
+    expect(mediaView).toMatch(/\.media-scrub\s*\{[\s\S]*?background:\s*#e7eaea/)
     expect(mediaView).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(mediaView).toMatch(/from '@lucide\/vue'/)
     expect(mediaView).toMatch(/:size="14"/)

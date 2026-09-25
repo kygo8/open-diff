@@ -177,3 +177,11 @@ describe('path-meta-eol border', () => {
     )
   })
 })
+
+describe('path-meta-eol fill', () => {
+  it('matches capture EOL chip fill #f0f0f0', () => {
+    expect(css).toMatch(
+      /\.path-meta-footer\[data-path-meta-eol='capture-1to1-residual'\] \.path-meta-eol[\s\S]*?background:\s*#f0f0f0/,
+    )
+  })
+})

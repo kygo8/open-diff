@@ -99,6 +99,19 @@ const showSessionToolbar = computed(
 )
 const testIdPrefix = computed(() => props.toolbarTestIdPrefix ?? 'session-toolbar')
 
+const wideDiffsCommand = computed(() => {
+  const normalizedTitle = props.title.toLowerCase()
+
+  return (
+    normalizedTitle.includes('folder compare') ||
+    normalizedTitle.includes('文件夹比较') ||
+    normalizedTitle.includes('folder merge') ||
+    normalizedTitle.includes('文件夹合并') ||
+    normalizedTitle.includes('text merge') ||
+    normalizedTitle.includes('文本合并')
+  )
+})
+
 interface LegacyToolbarItem {
   id: string
   labelKey: string
@@ -396,6 +409,7 @@ function onToolbarCommand(command: SessionToolbarCommand): void {
         v-if="showSessionToolbar"
         class="bc-session-toolbar"
         data-mainbar-cmd="capture-1to1-residual"
+        :data-mainbar-diffs="wideDiffsCommand ? 'wide' : 'standard'"
         :class="{
           'bc-session-toolbar-glyphs-only': !settings.showToolbarLabels,
           'bc-session-toolbar-compact': !settings.largeToolbarButtons,

@@ -101,6 +101,9 @@ describe('media path scrub chrome residual', () => {
     expect(mediaView).toMatch(/data-secondary-density="capture-1to1"/)
     expect(mediaView).toMatch(/data-testid="media-scrub-chrome"/)
     expect(css).toMatch(
+      /\.media-compare-view \.media-path-meta-strip[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+    expect(css).toMatch(
       /\.media-compare-view \.media-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/,
     )
     expect(mediaView).toMatch(/\.media-player-card > span\s*\{[\s\S]*?display:\s*none/)

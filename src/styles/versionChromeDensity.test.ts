@@ -74,7 +74,7 @@ describe('version secondary strip density', () => {
     expect(versionView).toMatch(/data-secondary-density="capture-1to1"/)
     expect(versionView).toMatch(/version-secondary-strip/)
     expect(versionView).toMatch(/\.version-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/)
-    expect(versionView).toMatch(/\.version-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(versionView).toMatch(/\.version-secondary-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(versionView).toMatch(
       /\.version-secondary-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?gap:\s*6px/,
     )
@@ -82,7 +82,7 @@ describe('version secondary strip density', () => {
       /\.version-compare-view \.version-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/,
     )
     expect(css).toMatch(
-      /\.version-compare-view \.version-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/,
+      /\.version-compare-view \.version-secondary-strip\s*\{[\s\S]*?background:\s*#f0f0f0/,
     )
     expect(css).toMatch(/\.version-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(versionView).not.toMatch(/min-height:\s*6px/)

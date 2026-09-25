@@ -2365,7 +2365,13 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
 }
 
-.picture-compare-view .picture-path-panel input,
+.picture-compare-view .picture-path-panel input {
+  height: 16.5px !important;
+  min-height: 16.5px !important;
+  padding: 0 4px !important;
+  font-size: 12px !important;
+}
+
 .picture-compare-view .picture-path-panel button {
   height: 20px !important;
   min-height: 20px !important;

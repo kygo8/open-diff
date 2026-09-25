@@ -934,7 +934,7 @@ function lineNumber(value: number | null): string {
   gap: 4px;
   min-height: 20px;
   padding: 1px 2px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid #c0c0c0;
   border-radius: 0;
   background: #f0f0f0;
 }

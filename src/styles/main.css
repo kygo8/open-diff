@@ -2756,6 +2756,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 4px !important;
 }
 
+.media-compare-view .media-player-card > span {
+  display: none !important;
+}
+
 .media-compare-view .media-summary-item span,
 .media-compare-view .media-side header span,
 .media-compare-view .media-report-panel header span,

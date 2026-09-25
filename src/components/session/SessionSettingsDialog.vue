@@ -971,7 +971,7 @@ footer {
   justify-content: flex-end;
   gap: 6px;
   padding-top: 2px;
-  border-top: 1px solid #d0d0d0;
+  border-top: 1px solid #c0c0c0;
 }
 
 footer button {

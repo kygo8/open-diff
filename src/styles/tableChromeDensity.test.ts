@@ -96,7 +96,7 @@ describe('table path-meta secondary strip density', () => {
     expect(tableView).toMatch(/data-secondary-density="capture-1to1"/)
     expect(tableView).toMatch(/table-secondary-strip/)
     expect(tableView).toMatch(/\.table-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/)
-    expect(tableView).toMatch(/\.table-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(tableView).toMatch(/\.table-secondary-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(tableView).toMatch(
       /\.table-secondary-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?gap:\s*6px/,
     )
@@ -104,7 +104,7 @@ describe('table path-meta secondary strip density', () => {
       /\.table-compare-view \.table-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/,
     )
     expect(css).toMatch(
-      /\.table-compare-view \.table-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/,
+      /\.table-compare-view \.table-secondary-strip\s*\{[\s\S]*?background:\s*#f0f0f0/,
     )
     expect(css).toMatch(/\.table-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(tableView).not.toMatch(/min-height:\s*6px/)

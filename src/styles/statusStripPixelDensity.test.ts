@@ -146,3 +146,11 @@ describe('text-edit status strip columns residual', () => {
     )
   })
 })
+
+describe('clipboard status strip columns residual', () => {
+  it('pins Clipboard Compare status columns to capture widths', () => {
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='clipboard-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 391\.5px\) minmax\(0, 1fr\)/,
+    )
+  })
+})

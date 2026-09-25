@@ -127,6 +127,7 @@ describe('folder sync tree and session log chrome density', () => {
     expect(syncView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?line-height:\s*14px/)
     expect(css).toMatch(/\.folder-sync-view \.sync-preview-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.folder-sync-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
+    expect(css).toMatch(/\.folder-sync-view \.folder-session-log\s*\{[\s\S]*?background:\s*#e3e7ed/)
     expect(syncView).not.toMatch(/min-height:\s*6px/)
     expect(syncView).not.toMatch(/font-size:\s*6px/)
   })

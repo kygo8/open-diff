@@ -2050,7 +2050,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   min-height: 96px !important;
   border: 1px solid #c0c0c0 !important;
   border-radius: 0 !important;
-  background: #e7e7e7 !important;
+  background: #e3e7ed !important;
 }
 
 .folder-sync-view .folder-session-log-gutter {

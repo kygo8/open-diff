@@ -879,6 +879,7 @@ function runMediaToolbarCommand(commandId: string): void {
             type="button"
             class="media-scrub-play"
             data-testid="media-play-toggle"
+            :aria-label="isPlaying ? $t('ui.pause') : $t('ui.play')"
             @click="togglePlayback"
           >
             <Pause
@@ -895,7 +896,6 @@ function runMediaToolbarCommand(commandId: string): void {
               :stroke-width="2"
               aria-hidden="true"
             />
-            <span>{{ isPlaying ? $t('ui.pause') : $t('ui.play') }}</span>
           </button>
           <input
             class="media-scrub"

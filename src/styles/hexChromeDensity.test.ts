@@ -37,7 +37,7 @@ describe('hex compare chrome density', () => {
     expect(css).toMatch(
       /\.hex-compare-view \.hex-wrap-controls\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
     )
-    expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls input[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-offset\s*\{[\s\S]*?background:\s*#f7f7f7/)
@@ -45,7 +45,7 @@ describe('hex compare chrome density', () => {
     expect(hexView).toMatch(/data-hex-chrome-density="capture-1to1"/)
     expect(hexView).toMatch(/data-hex-rows-density="capture-1to1"/)
     expect(hexView).toMatch(/\.hex-wrap-controls\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
-    expect(hexView).toMatch(/\.hex-wrap-controls\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(hexView).toMatch(/\.hex-wrap-controls\s*\{[\s\S]*?min-height:\s*20px/)
     expect(hexView).toMatch(/\.hex-wrap-controls strong\s*\{[\s\S]*?height:\s*20px/)
     expect(hexView).toMatch(/\.hex-wrap-controls span\s*\{[\s\S]*?line-height:\s*16px/)
     expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?font-size:\s*11px/)

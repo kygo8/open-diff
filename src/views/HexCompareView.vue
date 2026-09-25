@@ -1477,7 +1477,7 @@ h2 {
   align-items: end;
   gap: 4px 6px;
   min-width: 0;
-  min-height: 22px;
+  min-height: 20px;
   padding: 2px 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;

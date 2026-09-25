@@ -152,3 +152,9 @@ describe('hex-offset-chrome fill', () => {
     expect(css).toMatch(/\.hex-compare-view \.hex-offset-chrome\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('hex column border', () => {
+  it('matches capture hex column separator #a0a0a0', () => {
+    expect(css).toMatch(/\.hex-compare-view \.hex-offset[\s\S]*?border-right:\s*1px solid #a0a0a0/)
+  })
+})

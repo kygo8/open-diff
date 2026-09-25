@@ -2218,7 +2218,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .hex-compare-view .hex-bytes,
 .hex-compare-view .hex-ascii {
   padding: 0 4px !important;
-  border-right: 1px solid #d0d0d0 !important;
+  border-right: 1px solid #a0a0a0 !important;
   line-height: 16px !important;
 }
 

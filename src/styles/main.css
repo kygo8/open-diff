@@ -3855,7 +3855,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-compare-view .path-side-footer,
 .folder-compare-view .path-meta-footer {
-  min-height: 20px !important;
+  min-height: 18px !important;
   margin-top: 0 !important;
   font-size: 11px !important;
   line-height: 16px !important;
@@ -3863,7 +3863,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .path-side-footer,
 .folder-sync-view .path-meta-footer {
-  min-height: 20px !important;
+  min-height: 18px !important;
   margin-top: 0 !important;
   font-size: 11px !important;
   line-height: 16px !important;
@@ -4017,7 +4017,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-merge-view .merge-path-footer,
 .folder-merge-view .path-side-footer,
 .folder-merge-view .path-meta-footer {
-  min-height: 20px !important;
+  min-height: 18px !important;
   margin-top: 0 !important;
   font-size: 11px !important;
   line-height: 16px !important;

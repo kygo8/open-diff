@@ -1688,6 +1688,7 @@ h1 {
 }
 
 .media-scrub-row span {
+  display: none;
   font-size: 11px;
   line-height: 16px;
 }

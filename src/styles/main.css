@@ -2722,8 +2722,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
   min-height: 19.5px !important;
 }
 
-.media-compare-view .media-scrub-row span,
-.media-compare-view .media-playback-hint {
+.media-compare-view .media-scrub-row span {
+  display: none !important;
   margin: 0 !important;
   font-size: 11px !important;
   line-height: 16px !important;
@@ -2731,6 +2731,9 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .media-compare-view .media-playback-hint {
   display: none !important;
+  margin: 0 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
 }
 
 .media-compare-view .media-players {

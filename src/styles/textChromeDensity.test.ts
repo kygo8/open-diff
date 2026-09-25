@@ -154,3 +154,9 @@ describe('text path-meta strip border', () => {
     )
   })
 })
+
+describe('text diff-header fill', () => {
+  it('matches capture diff-header fill #f0f0f0', () => {
+    expect(css).toMatch(/\.text-compare-view \.diff-header\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

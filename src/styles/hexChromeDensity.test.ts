@@ -121,7 +121,7 @@ describe('hex goto offset chrome residual', () => {
     expect(hexView).toMatch(/data-offset-density="capture-1to1"/)
     expect(hexView).toMatch(/data-goto-density="capture-1to1"/)
     expect(hexView).toMatch(/\.hex-offset-chrome\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(hexView).toMatch(/\.hex-offset-chrome\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(hexView).toMatch(/\.hex-offset-chrome\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(hexView).toMatch(/\.hex-goto-dialog\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(hexView).toMatch(/\.hex-goto-dialog input\s*\{[\s\S]*?height:\s*20px/)
     expect(hexView).toMatch(/\.hex-goto-dialog footer button\s*\{[\s\S]*?height:\s*18px/)

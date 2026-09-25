@@ -134,3 +134,11 @@ describe('menu file width residual', () => {
     expect(source).toMatch(/data-menu-id='file'\][\s\S]*?width:\s*31\.5px/)
   })
 })
+
+describe('menu edit width residual', () => {
+  const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
+
+  it('pins edit menu top-level width to capture 33.5px', () => {
+    expect(source).toMatch(/data-menu-id='edit'\][\s\S]*?width:\s*33\.5px/)
+  })
+})

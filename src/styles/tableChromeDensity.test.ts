@@ -121,3 +121,11 @@ describe('table grid residual', () => {
     )
   })
 })
+
+describe('table grid header fill', () => {
+  it('matches capture header fill #f0f0f0', () => {
+    expect(css).toMatch(
+      /data-table-grid-density='capture-1to1-residual'\] \.table-grid-panel header[\s\S]*?background:\s*#f0f0f0/,
+    )
+  })
+})

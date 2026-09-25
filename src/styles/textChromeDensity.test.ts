@@ -160,3 +160,11 @@ describe('text diff-header fill', () => {
     expect(css).toMatch(/\.text-compare-view \.diff-header\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('text diff-header border', () => {
+  it('matches capture diff-header border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.text-compare-view \.diff-header\s*\{[\s\S]*?border-bottom:\s*1px solid #c0c0c0/,
+    )
+  })
+})

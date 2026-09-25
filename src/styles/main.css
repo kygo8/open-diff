@@ -2626,7 +2626,14 @@ html[data-show-path-bars='0'] .path-pair-bar {
   min-height: 22px !important;
 }
 
-.media-compare-view .media-path-panel input,
+.media-compare-view .media-path-panel input {
+  height: 16.5px !important;
+  min-height: 16.5px !important;
+  padding: 0 4px !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
+}
+
 .media-compare-view .media-path-panel button {
   height: 20px !important;
   min-height: 20px !important;

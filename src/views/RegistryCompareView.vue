@@ -1310,6 +1310,8 @@ h1 {
 .path-field-row .path-input {
   flex: 1;
   min-width: 0;
+  height: 16.5px;
+  min-height: 16.5px;
 }
 
 .registry-input-panel label {

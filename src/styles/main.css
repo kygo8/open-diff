@@ -3028,6 +3028,11 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+.registry-compare-view .path-field-row .path-input {
+  height: 16.5px !important;
+  min-height: 16.5px !important;
+}
+
 .registry-compare-view .registry-input-panel textarea {
   min-height: 64px !important;
   padding: 2px 6px !important;

@@ -11,6 +11,7 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('registry compare chrome density', () => {
   it('keeps Registry Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.registry-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
+    expect(registryView).toMatch(/\.path-field-row \.path-input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(
       /\.registry-compare-view \.registry-input-panel\s*\{[\s\S]*?min-height:\s*22px/,
     )

@@ -22,11 +22,11 @@ describe('picture compare chrome density', () => {
       /\.picture-compare-view \.picture-path-panel button\s*\{[\s\S]*?height:\s*20px/,
     )
     expect(css).toMatch(/\.picture-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.picture-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.picture-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
 
     expect(pictureView).toMatch(/\.picture-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(pictureView).toMatch(/SessionPathActions/)
     expect(pictureView).toMatch(/PathMetaFooter/)
     expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/)

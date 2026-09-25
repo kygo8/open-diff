@@ -900,7 +900,7 @@ h2 {
   gap: 4px;
   min-height: 20px;
   padding: 2px 0;
-  background: #f5f5f5;
+  background: #f0f0f0;
 }
 
 .settings-tabs button {

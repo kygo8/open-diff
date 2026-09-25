@@ -60,7 +60,7 @@ describe('media compare chrome density', () => {
     expect(mediaView).toMatch(/\.media-scrub\s*\{[\s\S]*?background:\s*#e7eaea/)
     expect(mediaView).toMatch(/\.path-side-footer\s*\{[\s\S]*?line-height:\s*16px/)
     expect(mediaView).toMatch(/from '@lucide\/vue'/)
-    expect(mediaView).toMatch(/:size="14"/)
+    expect(mediaView).toMatch(/:size="12"/)
     expect(mediaView).toMatch(/<Play[\s\S]*?aria-hidden="true"/)
     expect(mediaView).toMatch(/<Pause[\s\S]*?aria-hidden="true"/)
     expect(mediaView).toMatch(/:aria-label="isPlaying \? \$t\('ui.pause'\) : \$t\('ui.play'\)"/)

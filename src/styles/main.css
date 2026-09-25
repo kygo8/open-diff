@@ -3815,6 +3815,11 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 11px !important;
 }
 
+.folder-sync-view .path-field-row .path-input {
+  height: 16.5px !important;
+  min-height: 16.5px !important;
+}
+
 .folder-sync-view .sync-setting-actions {
   align-items: flex-start !important;
   gap: 6px !important;

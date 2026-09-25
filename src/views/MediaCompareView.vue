@@ -1640,8 +1640,8 @@ h1 {
 .media-scrub {
   flex: 1;
   min-width: 160px;
-  height: 18px;
-  min-height: 18px;
+  height: 19.5px;
+  min-height: 19.5px;
 }
 
 .media-scrub-row span {

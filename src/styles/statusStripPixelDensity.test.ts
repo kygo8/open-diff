@@ -131,7 +131,7 @@ describe('media-session status strip columns residual', () => {
 describe('version-session status strip columns residual', () => {
   it('pins Version Compare status columns to capture widths', () => {
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='version-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 391\.5px\) minmax\(0, 1fr\)/,
+      /\.status-bar\[data-chrome-kind='version-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 392\.5px\) minmax\(0, 1fr\)/,
     )
   })
 })

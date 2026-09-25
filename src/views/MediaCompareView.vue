@@ -1620,8 +1620,8 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  height: 18px;
-  min-height: 18px;
+  height: 26px;
+  min-height: 26px;
   padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;

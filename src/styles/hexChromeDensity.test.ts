@@ -92,7 +92,7 @@ describe('hex path and windowed grid chrome residual', () => {
       /\.hex-path-fields\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/,
     )
     expect(hexView).toMatch(/\.hex-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
-    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?grid-template-columns:\s*72px/)
+    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?grid-template-columns:\s*52px/)
     expect(hexView).toMatch(/\.hex-byte-selected\s*\{[\s\S]*?background:\s*#a8ffff/)
     expect(css).toMatch(/\.hex-compare-view \.hex-path-fields\s*\{[\s\S]*?min-height:\s*22px/)
     expect(css).toMatch(

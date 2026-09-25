@@ -1592,7 +1592,7 @@ select {
 .report-head,
 .table-grid-header,
 .metadata-grid-heading {
-  background: #f7f7f7 !important;
+  background: #f0f0f0 !important;
   color: #111111 !important;
   font-weight: 400 !important;
 }

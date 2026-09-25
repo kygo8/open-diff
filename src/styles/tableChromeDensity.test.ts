@@ -129,3 +129,11 @@ describe('table grid header fill', () => {
     )
   })
 })
+
+describe('table secondary strip border', () => {
+  it('matches capture path-meta border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.table-compare-view \.table-secondary-strip[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

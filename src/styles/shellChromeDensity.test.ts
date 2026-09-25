@@ -118,3 +118,9 @@ describe('shell chrome density', () => {
     )
   })
 })
+
+describe('menu session width residual', () => {
+  it('pins session menu top-level width to capture 55px', () => {
+    expect(source).toMatch(/data-menu-id='session'\][\s\S]*?width:\s*55px/)
+  })
+})

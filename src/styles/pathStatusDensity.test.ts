@@ -65,9 +65,9 @@ describe('path/status strip density', () => {
     expect(pathMeta).toMatch(/path-meta-size/)
     expect(pathMeta).toMatch(/path-meta-chip/)
     expect(pathMeta).toMatch(/path-meta-eol/)
-    expect(pathMeta).toMatch(/min-height:\s*18px/)
+    expect(pathMeta).toMatch(/min-height:\s*16px/)
     expect(pathMeta).toMatch(/font-size:\s*11px/)
-    expect(pathMeta).toMatch(/\.path-meta-chip\s*\{[\s\S]*?height:\s*18px/)
+    expect(pathMeta).toMatch(/\.path-meta-chip\s*\{[\s\S]*?height:\s*16px/)
     expect(pathMeta).toMatch(/\.path-meta-chip\s*\{[\s\S]*?padding:\s*0 4px/)
     expect(pathMeta).toMatch(/\.path-meta-footer\s*\{[\s\S]*?gap:\s*6px/)
     expect(pathMeta).toMatch(/:size="12"/)
@@ -76,7 +76,7 @@ describe('path/status strip density', () => {
     expect(pathMeta).toMatch(/aria-haspopup="listbox"/)
     expect(pathMeta).toMatch(/path-meta-chip-menu/)
     expect(pathMeta).not.toMatch(/tabindex="-1"/)
-    expect(css).toMatch(/\.bc-path-footers \.path-meta-chip[\s\S]*?height:\s*18px/)
+    expect(css).toMatch(/\.bc-path-footers \.path-meta-chip[\s\S]*?height:\s*16px/)
   })
 
   it('keeps shared status strip near capture ~19.5px CSS height', () => {
@@ -149,10 +149,10 @@ describe('PathMetaFooter MIX/EOL residual', () => {
   it('keeps EOL/MIX chip chrome at capture footer density', () => {
     expect(pathMeta).toMatch(/data-path-meta-eol="capture-1to1-residual"/)
     expect(pathMeta).toMatch(/data-eol-kind/)
-    expect(pathMeta).toMatch(/\.path-meta-eol\s*\{[\s\S]*?height:\s*18px/)
+    expect(pathMeta).toMatch(/\.path-meta-eol\s*\{[\s\S]*?height:\s*16px/)
     expect(pathMeta).toMatch(/\.path-meta-eol\s*\{[\s\S]*?font-weight:\s*600/)
     expect(css).toMatch(
-      /\.path-meta-footer\[data-path-meta-eol='capture-1to1-residual'\] \.path-meta-eol[\s\S]*?height:\s*18px/,
+      /\.path-meta-footer\[data-path-meta-eol='capture-1to1-residual'\] \.path-meta-eol[\s\S]*?height:\s*16px/,
     )
   })
 })
@@ -161,7 +161,7 @@ describe('PathMetaFooter chip spacing residual', () => {
   it('tightens MIX/EOL/chip spacing toward capture footer density', () => {
     expect(pathMeta).toMatch(/data-path-meta-gap="capture-1to1-residual"/)
     expect(pathMeta).toMatch(/\.path-meta-footer\s*\{[\s\S]*?gap:\s*6px/)
-    expect(pathMeta).toMatch(/\.path-meta-footer\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(pathMeta).toMatch(/\.path-meta-footer\s*\{[\s\S]*?min-height:\s*16px/)
     expect(pathMeta).toMatch(/\.path-meta-chip\s*\{[\s\S]*?border:\s*1px solid transparent/)
     expect(css).toMatch(
       /\.path-meta-footer\[data-path-meta-gap='capture-1to1-residual'\][\s\S]*?gap:\s*6px/,

@@ -248,7 +248,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 6px;
   min-width: 0;
-  min-height: 18px;
+  min-height: 16px;
   overflow: visible;
   color: #111111;
   font-size: 11px;
@@ -270,8 +270,8 @@ onBeforeUnmount(() => {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  height: 18px;
-  min-height: 18px;
+  height: 16px;
+  min-height: 16px;
   padding: 0 4px;
   border: 1px solid #d0d0d0;
   border-radius: 0;
@@ -303,8 +303,8 @@ onBeforeUnmount(() => {
   gap: 2px;
   min-width: 0;
   max-width: 14em;
-  height: 18px;
-  min-height: 18px;
+  height: 16px;
+  min-height: 16px;
   padding: 0 4px;
   overflow: hidden;
   border: 1px solid transparent;

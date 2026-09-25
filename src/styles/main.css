@@ -1863,8 +1863,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Path meta MIX/EOL residual chip chrome */
 .path-meta-footer[data-path-meta-eol='capture-1to1-residual'] .path-meta-eol {
-  height: 18px !important;
-  min-height: 18px !important;
+  height: 16px !important;
+  min-height: 16px !important;
   padding: 0 4px !important;
   border: 1px solid #d0d0d0 !important;
   border-radius: 0 !important;
@@ -1876,21 +1876,21 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .path-meta-footer[data-path-meta-gap='capture-1to1-residual'] {
   gap: 6px !important;
-  min-height: 18px !important;
+  min-height: 16px !important;
 }
 
 .bc-path-footers .path-meta-footer,
 .bc-path-footers .path-side-footer {
   gap: 6px;
-  min-height: 18px;
+  min-height: 16px;
   color: #111111;
   font-size: 11px;
   line-height: 16px;
 }
 
 .bc-path-footers .path-meta-chip {
-  height: 18px;
-  min-height: 18px;
+  height: 16px;
+  min-height: 16px;
   padding: 0 4px;
   border: 1px solid transparent;
   border-radius: 0;

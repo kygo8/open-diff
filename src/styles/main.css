@@ -3795,7 +3795,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   padding: 2px 4px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
-  background: #f5f5f5 !important;
+  background: #f0f0f0 !important;
 }
 
 .text-merge-view .merge-path-chrome {

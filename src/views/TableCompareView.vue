@@ -1857,7 +1857,7 @@ h2 {
   padding: 1px 4px;
   border: 1px solid #d0d0d0;
   border-radius: 0;
-  background: #f5f5f5;
+  background: #f0f0f0;
 }
 
 .table-secondary-strip :deep(.path-meta-footer) {

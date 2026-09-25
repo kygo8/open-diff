@@ -158,3 +158,11 @@ describe('hex column border', () => {
     expect(css).toMatch(/\.hex-compare-view \.hex-offset[\s\S]*?border-right:\s*1px solid #a0a0a0/)
   })
 })
+
+describe('hex-offset-chrome border', () => {
+  it('matches capture offset chrome border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.hex-compare-view \.hex-offset-chrome\s*\{[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

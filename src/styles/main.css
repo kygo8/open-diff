@@ -2056,7 +2056,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .folder-sync-view .folder-session-log-gutter {
   gap: 6px !important;
   padding: 4px 0 !important;
-  background: #d4d4d4 !important;
+  background: #e3e7ed !important;
 }
 
 .folder-sync-view .folder-session-log-body {

@@ -840,6 +840,48 @@ function runMediaToolbarCommand(commandId: string): void {
             >
               {{ $t('ui.noMediaPreview') }}
             </p>
+            <div
+              class="media-scrub-row"
+              data-testid="media-scrub-chrome"
+              data-media-scrub-density="capture-1to1"
+              data-media-scrub-residual="capture-1to1"
+            >
+              <button
+                type="button"
+                class="media-scrub-play"
+                data-testid="media-play-toggle"
+                :aria-label="isPlaying ? $t('ui.pause') : $t('ui.play')"
+                @click="togglePlayback"
+              >
+                <Pause
+                  v-if="isPlaying"
+                  class="media-scrub-icon"
+                  :size="14"
+                  :stroke-width="2"
+                  aria-hidden="true"
+                />
+                <Play
+                  v-else
+                  class="media-scrub-icon"
+                  :size="14"
+                  :stroke-width="2"
+                  aria-hidden="true"
+                />
+              </button>
+              <input
+                class="media-scrub"
+                type="range"
+                min="0"
+                :max="playbackDuration || 1"
+                step="0.05"
+                :value="playbackPosition"
+                data-testid="media-scrub"
+                @input="onScrubInput"
+              />
+              <span data-testid="media-clock"
+                >{{ formatClock(playbackPosition) }} / {{ formatClock(playbackDuration) }}</span
+              >
+            </div>
           </article>
           <article class="media-player-card">
             <span>{{ $t('ui.right') }}</span>
@@ -867,49 +909,49 @@ function runMediaToolbarCommand(commandId: string): void {
             >
               {{ $t('ui.noMediaPreview') }}
             </p>
+            <div
+              class="media-scrub-row"
+              data-testid="media-scrub-chrome-right"
+              data-media-scrub-density="capture-1to1"
+              data-media-scrub-residual="capture-1to1"
+            >
+              <button
+                type="button"
+                class="media-scrub-play"
+                data-testid="media-play-toggle-right"
+                :aria-label="isPlaying ? $t('ui.pause') : $t('ui.play')"
+                @click="togglePlayback"
+              >
+                <Pause
+                  v-if="isPlaying"
+                  class="media-scrub-icon"
+                  :size="14"
+                  :stroke-width="2"
+                  aria-hidden="true"
+                />
+                <Play
+                  v-else
+                  class="media-scrub-icon"
+                  :size="14"
+                  :stroke-width="2"
+                  aria-hidden="true"
+                />
+              </button>
+              <input
+                class="media-scrub"
+                type="range"
+                min="0"
+                :max="playbackDuration || 1"
+                step="0.05"
+                :value="playbackPosition"
+                data-testid="media-scrub-right"
+                @input="onScrubInput"
+              />
+              <span data-testid="media-clock-right"
+                >{{ formatClock(playbackPosition) }} / {{ formatClock(playbackDuration) }}</span
+              >
+            </div>
           </article>
-        </div>
-        <div
-          class="media-scrub-row"
-          data-testid="media-scrub-chrome"
-          data-media-scrub-density="capture-1to1"
-          data-media-scrub-residual="capture-1to1"
-        >
-          <button
-            type="button"
-            class="media-scrub-play"
-            data-testid="media-play-toggle"
-            :aria-label="isPlaying ? $t('ui.pause') : $t('ui.play')"
-            @click="togglePlayback"
-          >
-            <Pause
-              v-if="isPlaying"
-              class="media-scrub-icon"
-              :size="14"
-              :stroke-width="2"
-              aria-hidden="true"
-            />
-            <Play
-              v-else
-              class="media-scrub-icon"
-              :size="14"
-              :stroke-width="2"
-              aria-hidden="true"
-            />
-          </button>
-          <input
-            class="media-scrub"
-            type="range"
-            min="0"
-            :max="playbackDuration || 1"
-            step="0.05"
-            :value="playbackPosition"
-            data-testid="media-scrub"
-            @input="onScrubInput"
-          />
-          <span data-testid="media-clock"
-            >{{ formatClock(playbackPosition) }} / {{ formatClock(playbackDuration) }}</span
-          >
         </div>
         <p class="media-playback-hint">{{ $t('ui.mediaPlaybackHint') }}</p>
       </section>

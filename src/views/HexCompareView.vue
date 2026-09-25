@@ -1572,7 +1572,7 @@ h2 {
 
 .hex-row {
   display: grid;
-  grid-template-columns: 72px minmax(200px, 1fr) 120px;
+  grid-template-columns: 52px minmax(200px, 1fr) 120px;
   min-width: 420px;
   min-height: 16px;
   border-bottom: 1px solid #e0e0e0;

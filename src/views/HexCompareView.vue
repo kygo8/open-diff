@@ -1613,7 +1613,7 @@ h2 {
   color: inherit;
   font: inherit;
   cursor: pointer;
-  margin-right: 4px;
+  margin-right: 2px;
 }
 
 .hex-byte-selected {

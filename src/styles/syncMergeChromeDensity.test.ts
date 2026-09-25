@@ -151,7 +151,7 @@ describe('folder merge tree and session log chrome density', () => {
 describe('folder-sync status columns residual', () => {
   it('keeps Folder Sync status columns on capture widths', () => {
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-sync'\][\s\S]*?grid-template-columns:\s*267\.5px 267\.5px 117px 267px minmax\(0, 1fr\)/,
+      /\.status-bar\[data-chrome-kind='folder-sync'\][\s\S]*?grid-template-columns:\s*266\.5px 268\.5px 118px 268px minmax\(0, 1fr\)/,
     )
   })
 })

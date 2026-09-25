@@ -2907,8 +2907,8 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='folder-sync'] {
-  /* Capture Folder Sync panes (DPR≈2): 267.5 | 267.5 | 117 | 267 | 267.5 */
-  grid-template-columns: 267.5px 267.5px 117px 267px minmax(0, 1fr);
+  /* Capture Folder Sync panes (DPR≈2): 266.5 | 268.5 | 118 | 268 | fr */
+  grid-template-columns: 266.5px 268.5px 118px 268px minmax(0, 1fr);
   height: 19.5px;
   min-height: 19.5px;
   font-size: 11px;

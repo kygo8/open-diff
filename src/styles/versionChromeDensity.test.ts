@@ -105,3 +105,11 @@ describe('version secondary strip border', () => {
     )
   })
 })
+
+describe('version-side header fill', () => {
+  it('matches capture version side header fill #f0f0f0', () => {
+    expect(css).toMatch(
+      /data-version-chrome='capture-1to1-residual'\] \.version-side header[\s\S]*?background:\s*#f0f0f0/,
+    )
+  })
+})

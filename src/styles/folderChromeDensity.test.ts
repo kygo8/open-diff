@@ -156,6 +156,9 @@ describe('folder compare session log chrome density', () => {
     expect(folderView).toMatch(/case 'toggle-log':/)
     expect(css).toMatch(/\.folder-compare-view \.folder-session-log\s*\{[\s\S]*?height:\s*96px/)
     expect(css).toMatch(
+      /\.folder-compare-view \.folder-session-log\s*\{[\s\S]*?background:\s*#e3e7ed/,
+    )
+    expect(css).toMatch(
       /\.folder-compare-view \.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/,
     )
     expect(folderView).not.toMatch(/height:\s*6px/)

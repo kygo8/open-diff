@@ -93,7 +93,7 @@ describe('registry secondary strip density', () => {
     expect(registryView).toMatch(/data-secondary-density="capture-1to1"/)
     expect(registryView).toMatch(/registry-secondary-strip/)
     expect(registryView).toMatch(/\.registry-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/)
-    expect(registryView).toMatch(/\.registry-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(registryView).toMatch(/\.registry-secondary-strip\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(registryView).toMatch(
       /\.registry-secondary-strip :deep\(\.path-meta-footer\)\s*\{[\s\S]*?gap:\s*6px/,
     )
@@ -101,7 +101,7 @@ describe('registry secondary strip density', () => {
       /\.registry-compare-view \.registry-secondary-strip\s*\{[\s\S]*?min-height:\s*18px/,
     )
     expect(css).toMatch(
-      /\.registry-compare-view \.registry-secondary-strip\s*\{[\s\S]*?background:\s*#f5f5f5/,
+      /\.registry-compare-view \.registry-secondary-strip\s*\{[\s\S]*?background:\s*#f0f0f0/,
     )
     expect(css).toMatch(/\.registry-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(registryView).not.toMatch(/min-height:\s*6px/)

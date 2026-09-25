@@ -1170,7 +1170,11 @@ const statusChromePanes = computed((): StatusChromePane[] => {
 
 const statusBarGridStyle = computed(() => {
   // Folder-merge and text-session captures use fixed micro-pane widths from CSS.
-  if (statusBar.chromeKind === 'folder-merge' || statusBar.chromeKind === 'text-session') {
+  if (
+    statusBar.chromeKind === 'folder-merge' ||
+    statusBar.chromeKind === 'text-session' ||
+    statusBar.chromeKind === 'table-session'
+  ) {
     return undefined
   }
 
@@ -2851,6 +2855,10 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .status-bar[data-chrome-kind='text-session'] {
   grid-template-columns: 294px minmax(0, 391.5px) 91.5px minmax(0, 1fr);
+}
+
+.status-bar[data-chrome-kind='table-session'] {
+  grid-template-columns: 294px minmax(0, 391.5px) minmax(0, 1fr);
 }
 
 .status-bar[data-chrome-kind='text-session'] .status-bar-pane[data-testid='status-pane-edit'],

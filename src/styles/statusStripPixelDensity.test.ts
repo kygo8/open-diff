@@ -25,8 +25,9 @@ describe('status strip pixel density', () => {
     expect(layout).toMatch(
       /gridTemplateColumns: `repeat\(\$\{String\(statusChromePanes\.value\.length\)\}, minmax\(0, 1fr\)\)`/,
     )
+    expect(layout).toMatch(/chromeKind === 'table-session'/)
     expect(layout).toMatch(
-      /chromeKind === 'folder-merge' \|\| statusBar\.chromeKind === 'text-session'/,
+      /chromeKind === 'folder-merge'[\s\S]*?chromeKind === 'text-session'[\s\S]*?chromeKind === 'table-session'/,
     )
     expect(layout).toMatch(/buildFolderPairStatusPanes/)
     expect(layout).not.toMatch(/data-pane-count='5'/)
@@ -87,5 +88,13 @@ describe('status strip band residual', () => {
 
   it('keeps text/hex Insert status pane on capture 91.5px band', () => {
     expect(layout).toMatch(/data-testid='status-pane-edit'\][\s\S]*?width:\s*91\.5px/)
+  })
+})
+
+describe('table status strip columns residual', () => {
+  it('pins Table Compare status columns to capture widths', () => {
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='table-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 391\.5px\) minmax\(0, 1fr\)/,
+    )
   })
 })

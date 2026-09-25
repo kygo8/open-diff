@@ -1591,7 +1591,7 @@ h2 {
   min-width: 0;
   padding: 0 4px;
   overflow: hidden;
-  border-right: 1px solid #d0d0d0;
+  border-right: 1px solid #a0a0a0;
   line-height: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;

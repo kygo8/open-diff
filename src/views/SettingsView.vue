@@ -4165,7 +4165,7 @@ h1 {
   gap: 6px;
   min-height: 22px;
   padding: 2px 0 0;
-  border-top: 1px solid #d0d0d0;
+  border-top: 1px solid #c0c0c0;
 }
 
 .options-footer-btn {

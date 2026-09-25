@@ -2707,9 +2707,11 @@ html[data-show-path-bars='0'] .path-pair-bar {
   gap: 4px !important;
   height: 26px !important;
   min-height: 26px !important;
-  padding: 0 6px !important;
-  border: 1px solid #a0a0a0 !important;
+  padding: 0 2px !important;
+  border: 0 !important;
   border-radius: 0 !important;
+  background: transparent !important;
+  color: #606060 !important;
   font-size: 11px !important;
   line-height: 16px !important;
 }

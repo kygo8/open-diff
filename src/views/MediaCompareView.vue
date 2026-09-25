@@ -1622,11 +1622,11 @@ h1 {
   gap: 4px;
   height: 26px;
   min-height: 26px;
-  padding: 0 6px;
-  border: 1px solid #a0a0a0;
+  padding: 0 2px;
+  border: 0;
   border-radius: 0;
-  background: #ffffff;
-  color: #111111;
+  background: transparent;
+  color: #606060;
   font: inherit;
   font-size: 11px;
   line-height: 16px;

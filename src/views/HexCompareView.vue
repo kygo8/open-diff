@@ -1605,7 +1605,7 @@ h2 {
 .hex-byte {
   display: inline-flex;
   justify-content: center;
-  width: 20px;
+  width: 18px;
   padding: 0;
   border: 1px solid transparent;
   border-radius: 0;

@@ -2210,8 +2210,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .hex-pane-grid[data-hex-byte-residual='capture-1to1'] .hex-byte {
-  width: 20px !important;
-  min-width: 20px !important;
+  width: 18px !important;
+  min-width: 18px !important;
 }
 
 .hex-compare-view .hex-offset,

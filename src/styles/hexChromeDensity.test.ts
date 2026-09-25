@@ -129,10 +129,12 @@ describe('hex byte cell residual', () => {
   it('keeps Hex byte/ascii cell chrome on the capture grid band', () => {
     expect(hexView).toMatch(/data-hex-rows-density="capture-1to1"/)
     expect(hexView).toMatch(/data-hex-byte-residual="capture-1to1"/)
-    expect(hexView).toMatch(/\.hex-byte\s*\{[\s\S]*?width:\s*20px/)
+    expect(hexView).toMatch(/\.hex-byte\s*\{[\s\S]*?width:\s*18px/)
     expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?line-height:\s*16px/)
     expect(hexView).toMatch(/\.hex-ascii\s*\{[\s\S]*?line-height:\s*16px/)
-    expect(css).toMatch(/\.hex-compare-view \.hex-byte[\s\S]*?width:\s*20px/)
+    expect(css).toMatch(
+      /data-hex-byte-residual='capture-1to1'\] \.hex-byte\s*\{[\s\S]*?width:\s*18px/,
+    )
     expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?line-height:\s*16px/)
     expect(hexView).not.toMatch(/min-height:\s*6px/)
   })

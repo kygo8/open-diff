@@ -1606,7 +1606,7 @@ h1 {
 }
 
 .media-playback-header {
-  display: flex;
+  display: none;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;

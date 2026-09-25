@@ -2980,7 +2980,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='text-session'] {
-  grid-template-columns: 294px minmax(0, 391.5px) 91.5px minmax(0, 1fr);
+  grid-template-columns: 294px minmax(0, 392.5px) 91.5px minmax(0, 1fr);
 }
 
 .status-bar[data-chrome-kind='table-session'] {

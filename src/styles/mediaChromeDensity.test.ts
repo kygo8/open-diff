@@ -132,11 +132,11 @@ describe('media rules importance strip residual', () => {
   it('keeps Media rules/importance strip on the capture band', () => {
     expect(mediaView).toMatch(/data-rules-density="capture-1to1"/)
     expect(mediaView).toMatch(/data-importance-chrome="capture-1to1"/)
-    expect(mediaView).toMatch(/\.media-rules-panel\s*\{[\s\S]*?background:\s*#f5f5f5/)
+    expect(mediaView).toMatch(/\.media-rules-panel\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(mediaView).toMatch(/\.media-rules-panel\s*\{[\s\S]*?min-height:\s*18px/)
     expect(mediaView).toMatch(/\.media-rule-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(css).toMatch(
-      /\.media-compare-view \.media-rules-panel\s*\{[\s\S]*?background:\s*#f5f5f5/,
+      /\.media-compare-view \.media-rules-panel\s*\{[\s\S]*?background:\s*#f0f0f0/,
     )
     expect(css).toMatch(/\.media-compare-view \.media-rule-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(mediaView).not.toMatch(/min-height:\s*6px/)
@@ -144,7 +144,7 @@ describe('media rules importance strip residual', () => {
 })
 
 describe('media scrub surface residual', () => {
-  it('keeps Media scrub strip on capture #f5f5f5 without surface override', () => {
+  it('keeps Media scrub strip on capture #f0f0f0 without surface override', () => {
     expect(mediaView).toMatch(/data-media-scrub-residual="capture-1to1"/)
     expect(mediaView).toMatch(/\.media-scrub-row\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(mediaView).not.toMatch(

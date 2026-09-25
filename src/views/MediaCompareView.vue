@@ -1456,7 +1456,7 @@ h1 {
   padding: 2px 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: #f5f5f5;
+  background: #f0f0f0;
 }
 
 .media-rules-panel header {

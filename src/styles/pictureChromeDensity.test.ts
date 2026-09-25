@@ -16,7 +16,10 @@ describe('picture compare chrome density', () => {
       /\.picture-compare-view \.picture-path-panel\s*\{[\s\S]*?min-height:\s*20px/,
     )
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-path-panel input,\s*\.picture-compare-view \.picture-path-panel button\s*\{[\s\S]*?height:\s*20px/,
+      /\.picture-compare-view \.picture-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/,
+    )
+    expect(css).toMatch(
+      /\.picture-compare-view \.picture-path-panel button\s*\{[\s\S]*?height:\s*20px/,
     )
     expect(css).toMatch(/\.picture-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.picture-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
@@ -26,7 +29,7 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*20px/)
     expect(pictureView).toMatch(/SessionPathActions/)
     expect(pictureView).toMatch(/PathMetaFooter/)
-    expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*20px/)
+    expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(pictureView).toMatch(/chromeKind:\s*'picture-session'/)
     expect(pictureView).not.toMatch(/font-size:\s*9px/)
     expect(pictureView).not.toMatch(/min-height:\s*9px/)

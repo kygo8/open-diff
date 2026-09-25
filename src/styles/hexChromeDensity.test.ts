@@ -146,3 +146,9 @@ describe('hex byte cell residual', () => {
     expect(hexView).not.toMatch(/min-height:\s*6px/)
   })
 })
+
+describe('hex-offset-chrome fill', () => {
+  it('matches capture offset chrome fill #f0f0f0', () => {
+    expect(css).toMatch(/\.hex-compare-view \.hex-offset-chrome\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

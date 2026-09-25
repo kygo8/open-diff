@@ -1681,9 +1681,9 @@ h2 {
   gap: 4px 6px;
   min-height: 20px;
   padding: 2px 4px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid #c0c0c0;
   border-radius: 0;
-  background: #f5f5f5;
+  background: #f0f0f0;
 }
 
 .hex-offset-chrome label {

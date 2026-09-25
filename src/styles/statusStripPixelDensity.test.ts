@@ -7,7 +7,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 
 describe('status strip pixel density', () => {
-  it('keeps folder-pair 4-segment strip at 20px with capture-like separators', () => {
+  it('keeps folder-pair 7-segment strip at 20px with capture-like separators', () => {
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*19\.5px/,
     )
@@ -19,7 +19,7 @@ describe('status strip pixel density', () => {
     )
     expect(layout).toMatch(/\.status-bar-pane\s*\{[\s\S]*?border-right:\s*1px solid #c0c0c0/)
     expect(layout).toMatch(
-      /data-pane-count='4'\] \.status-bar-pane:nth-child\(2\)[\s\S]*?border-right-color:\s*#8e8e8e/,
+      /data-pane-count='7'\] \.status-bar-pane:nth-child\(3\)[\s\S]*?border-right-color:\s*#8e8e8e/,
     )
     expect(layout).toMatch(/const statusBarGridStyle = computed/)
     expect(layout).toMatch(
@@ -27,11 +27,15 @@ describe('status strip pixel density', () => {
     )
     expect(layout).toMatch(/chromeKind === 'table-session'/)
     expect(layout).toMatch(
-      /chromeKind === 'folder-merge'[\s\S]*?chromeKind === 'text-session'[\s\S]*?chromeKind === 'table-session'/,
+      /chromeKind === 'folder-merge'[\s\S]*?chromeKind === 'folder-pair'[\s\S]*?chromeKind === 'text-session'[\s\S]*?chromeKind === 'table-session'/,
+    )
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?222px 130px 221\.5px 38px 222px 130px minmax\(0, 1fr\)/,
     )
     expect(layout).toMatch(/buildFolderPairStatusPanes/)
     expect(layout).toMatch(/buildFolderSyncStatusPanes/)
     expect(layout).toMatch(/data-chrome-kind='folder-sync'\]\[data-pane-count='5'\]/)
+    expect(layout).toMatch(/data-chrome-kind='folder-pair'\]\[data-pane-count='7'\]/)
   })
 
   it('keeps session status bars at 19.5px with shared typography', () => {

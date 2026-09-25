@@ -1017,8 +1017,8 @@ describe('AppLayout command palette', () => {
     const status = wrapper.find('[data-testid="status-bar"]')
 
     expect(status.attributes('data-chrome-kind')).toBe('folder-pair')
-    expect(status.attributes('data-pane-count')).toBe('4')
-    expect(status.findAll('.status-bar-pane')).toHaveLength(4)
+    expect(status.attributes('data-pane-count')).toBe('7')
+    expect(status.findAll('.status-bar-pane')).toHaveLength(7)
     expect(status.find('[data-testid="status-pane-left-selection"]').text()).toContain('22 bytes')
     expect(status.find('[data-testid="status-pane-left-free"]').text()).toContain('91.8 GB')
     expect(status.find('[data-testid="status-pane-right-selection"]').text()).toContain('23 bytes')
@@ -1041,7 +1041,7 @@ describe('AppLayout command palette', () => {
 
     const status = wrapper.find('[data-testid="status-bar"]')
 
-    expect(status.findAll('.status-bar-pane')).toHaveLength(4)
+    expect(status.findAll('.status-bar-pane')).toHaveLength(7)
     expect(status.find('[data-testid="status-pane-left-selection"]').attributes('data-muted')).toBe(
       'true',
     )
@@ -1080,7 +1080,7 @@ describe('AppLayout command palette', () => {
     )
   })
 
-  it('caps folder-pair at 4 panes when importance would add a 5th', async () => {
+  it('keeps folder-pair at 7 panes when importance would otherwise add a pane', async () => {
     const wrapper = mountAppLayout()
     const statusBar = useStatusBarStore()
 
@@ -1098,8 +1098,8 @@ describe('AppLayout command palette', () => {
 
     const status = wrapper.find('[data-testid="status-bar"]')
 
-    expect(status.attributes('data-pane-count')).toBe('4')
-    expect(status.findAll('.status-bar-pane')).toHaveLength(4)
+    expect(status.attributes('data-pane-count')).toBe('7')
+    expect(status.findAll('.status-bar-pane')).toHaveLength(7)
     expect(status.find('[data-testid="status-pane-importance"]').exists()).toBe(false)
     expect(status.find('[data-testid="status-pane-left-selection"]').text()).toContain('22 bytes')
     expect(status.find('[data-testid="status-pane-left-free"]').text()).toContain('91.8 GB')

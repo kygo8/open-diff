@@ -1104,8 +1104,8 @@ const statusChromePanes = computed((): StatusChromePane[] => {
   }
 
   if (kind === 'folder-pair') {
-    // Capture folder-pair strip is always 4 panes. Importance would be a 5th —
-    // hide it from the strip until Peek (or another toggle) surfaces it.
+    // Capture folder-pair strip is 7 panes with micro spacers. Importance stays
+    // off the strip until Peek (or another toggle) surfaces it.
     return buildFolderPairStatusPanes({
       leftSelection: statusBar.report.leftSelection,
       leftFreeSpace: statusBar.report.leftFreeSpace,
@@ -1203,6 +1203,7 @@ const statusBarGridStyle = computed(() => {
   if (
     statusBar.chromeKind === 'folder-merge' ||
     statusBar.chromeKind === 'folder-sync' ||
+    statusBar.chromeKind === 'folder-pair' ||
     statusBar.chromeKind === 'text-session' ||
     statusBar.chromeKind === 'table-session' ||
     statusBar.chromeKind === 'registry-session' ||
@@ -2884,7 +2885,8 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .status-bar[data-chrome-kind='folder-pair'] {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Capture Folder Compare panes (DPR≈2): 222 | 130 | 221.5 | 38 | 222 | 130 | fr */
+  grid-template-columns: 222px 130px 221.5px 38px 222px 130px minmax(0, 1fr);
   height: 19.5px;
   min-height: 19.5px;
   font-size: 11px;
@@ -2895,8 +2897,12 @@ const sourceSessionTypes = new Set<SessionType>([
   padding: 0 4px;
 }
 
-/* Capture folder-pair strip: stronger center divider between left/right pairs */
-.status-bar[data-chrome-kind='folder-pair'][data-pane-count='4'] .status-bar-pane:nth-child(2) {
+.status-bar[data-chrome-kind='folder-pair'] .status-bar-pane[data-testid^='status-pane-spacer'] {
+  padding: 0;
+}
+
+/* Capture folder-pair strip: stronger divider before center micro spacer */
+.status-bar[data-chrome-kind='folder-pair'][data-pane-count='7'] .status-bar-pane:nth-child(3) {
   border-right-color: #8e8e8e;
 }
 

@@ -874,7 +874,7 @@ footer {
 
 header {
   padding-bottom: 2px;
-  border-bottom: 1px solid #d0d0d0;
+  border-bottom: 1px solid #c0c0c0;
 }
 
 header button {

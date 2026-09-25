@@ -1582,7 +1582,7 @@ watch(
   min-height: 18px;
   padding: 1px 3px;
   border-bottom: 1px solid var(--app-border);
-  background: #f5f5f5;
+  background: #f0f0f0;
   background: var(--app-surface-muted);
 }
 

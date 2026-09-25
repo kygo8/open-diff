@@ -1679,7 +1679,7 @@ h2 {
   flex-wrap: wrap;
   align-items: end;
   gap: 4px 6px;
-  min-height: 22px;
+  min-height: 20px;
   padding: 2px 4px;
   border: 1px solid #d0d0d0;
   border-radius: 0;

@@ -856,14 +856,14 @@ function runMediaToolbarCommand(commandId: string): void {
                 <Pause
                   v-if="isPlaying"
                   class="media-scrub-icon"
-                  :size="14"
+                  :size="12"
                   :stroke-width="2"
                   aria-hidden="true"
                 />
                 <Play
                   v-else
                   class="media-scrub-icon"
-                  :size="14"
+                  :size="12"
                   :stroke-width="2"
                   aria-hidden="true"
                 />
@@ -925,14 +925,14 @@ function runMediaToolbarCommand(commandId: string): void {
                 <Pause
                   v-if="isPlaying"
                   class="media-scrub-icon"
-                  :size="14"
+                  :size="12"
                   :stroke-width="2"
                   aria-hidden="true"
                 />
                 <Play
                   v-else
                   class="media-scrub-icon"
-                  :size="14"
+                  :size="12"
                   :stroke-width="2"
                   aria-hidden="true"
                 />

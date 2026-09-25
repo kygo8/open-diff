@@ -3990,8 +3990,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .merge-paths input {
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 16.5px !important;
+  min-height: 16.5px !important;
   padding: 0 4px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
@@ -4008,8 +4008,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-merge-view .merge-to-chrome .path-input,
 .folder-merge-view .merge-to-chrome input[type='text'] {
-  height: 20px !important;
-  min-height: 20px !important;
+  height: 16.5px !important;
+  min-height: 16.5px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }

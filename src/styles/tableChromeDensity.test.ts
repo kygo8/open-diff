@@ -161,3 +161,9 @@ describe('table grid cell border', () => {
     )
   })
 })
+
+describe('dense-data-table th fill', () => {
+  it('matches capture dense table header fill #f0f0f0', () => {
+    expect(css).toMatch(/\.dense-data-table th[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

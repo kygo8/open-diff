@@ -1609,7 +1609,7 @@ h1 {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  min-height: 20px;
+  min-height: 18px;
   padding: 2px 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;

@@ -2690,7 +2690,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .media-compare-view .media-scrub-row {
   gap: 6px !important;
-  min-height: 20px !important;
+  min-height: 18px !important;
   padding: 2px 4px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;

@@ -137,3 +137,11 @@ describe('table secondary strip border', () => {
     )
   })
 })
+
+describe('table virtual grid row track', () => {
+  it('locks virtual row track to capture 16px', () => {
+    expect(css).toMatch(
+      /\.table-compare-view \.table-virtual-grid\s*\{[\s\S]*?grid-template-rows:\s*repeat\(var\(--visible-rows\), 16px\)/,
+    )
+  })
+})

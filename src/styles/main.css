@@ -3529,7 +3529,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .table-compare-view .table-virtual-grid {
-  grid-template-rows: repeat(var(--visible-rows), 20px) !important;
+  grid-template-rows: repeat(var(--visible-rows), 16px) !important;
 }
 
 .table-compare-view .table-grid-row {

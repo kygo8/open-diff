@@ -153,3 +153,11 @@ describe('table grid row border', () => {
     )
   })
 })
+
+describe('table grid cell border', () => {
+  it('matches capture grid cell border #c0c0c0', () => {
+    expect(css).toMatch(
+      /data-table-grid-density='capture-1to1-residual'\] \.table-grid-cell[\s\S]*?border-right:\s*1px solid #c0c0c0/,
+    )
+  })
+})

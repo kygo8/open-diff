@@ -1608,7 +1608,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-height: 18px;
   padding: 1px 4px;
   border: 1px solid #a0a0a0;

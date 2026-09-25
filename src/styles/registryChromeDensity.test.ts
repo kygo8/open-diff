@@ -119,3 +119,11 @@ describe('registry workspace residual', () => {
     )
   })
 })
+
+describe('registry secondary strip border', () => {
+  it('matches capture path-meta border #c0c0c0', () => {
+    expect(css).toMatch(
+      /\.registry-compare-view \.registry-secondary-strip[\s\S]*?border:\s*1px solid #c0c0c0/,
+    )
+  })
+})

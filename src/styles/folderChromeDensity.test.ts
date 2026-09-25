@@ -29,7 +29,7 @@ describe('folder chrome density', () => {
     expect(folderView).toMatch(/PathMetaFooter/)
     expect(folderView).toMatch(/folder-left-path-footer/)
     expect(folderView).toMatch(/folder-right-path-footer/)
-    expect(css).toMatch(/\.folder-compare-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.folder-compare-view \.path-meta-footer[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.folder-compare-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
     expect(folderView).toMatch(/\.path-pair input\s*\{[\s\S]*?height:\s*16\.5px/)
     expect(folderView).toMatch(/\.path-pair input\s*\{[\s\S]*?border-radius:\s*0/)
@@ -218,5 +218,13 @@ describe('folder Diffs MainBar session width', () => {
 describe('folder tree-head min-height residual', () => {
   it('keeps Folder Compare tree-head on capture 18px band', () => {
     expect(folderView).toMatch(/\.tree-head\s*\{[\s\S]*?min-height:\s*18px/)
+  })
+})
+
+describe('folder path meta residual', () => {
+  it('keeps Folder Compare/Sync/Merge path meta footers on capture 18px band', () => {
+    expect(css).toMatch(/\.folder-compare-view \.path-meta-footer[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.folder-sync-view \.path-meta-footer[\s\S]*?min-height:\s*18px/)
+    expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*18px/)
   })
 })

@@ -24,7 +24,7 @@ describe('folder sync/merge chrome density', () => {
     expect(css).toMatch(
       /\.folder-merge-view \.merge-actions \.n-button\[data-testid='folder-merge-execute-plan'\][\s\S]*?height:\s*36px/,
     )
-    expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*30px/)
 
@@ -42,7 +42,7 @@ describe('folder sync/merge chrome density', () => {
     expect(syncView).toMatch(/PathMetaFooter/)
     expect(syncView).toMatch(/folder-sync-left-path-footer/)
     expect(syncView).toMatch(/folder-sync-right-path-footer/)
-    expect(css).toMatch(/\.folder-sync-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.folder-sync-view \.path-meta-footer[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.folder-sync-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
     expect(syncView).not.toMatch(
       /joinStatusFooterParts\(syncSelectionLabel\.value, leftFreeSpaceLabel\.value\)/,
@@ -53,7 +53,7 @@ describe('folder sync/merge chrome density', () => {
     expect(mergeView).toMatch(/PathMetaFooter/)
     expect(mergeView).toMatch(/folder-merge-left-path-footer/)
     expect(mergeView).toMatch(/folder-merge-output-path-footer/)
-    expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
     expect(mergeView).toMatch(/\.merge-paths\s*\{[\s\S]*?min-height:\s*22px/)
     expect(mergeView).toMatch(/folder-merge-to-chrome/)

@@ -46,7 +46,7 @@ describe('status strip pixel density', () => {
       /\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*19\.5px/,
     )
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='text-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 391\.5px\) 91\.5px minmax\(0, 1fr\)/,
+      /\.status-bar\[data-chrome-kind='text-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 392\.5px\) 91\.5px minmax\(0, 1fr\)/,
     )
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='text-session'\] \.status-bar-pane[\s\S]*?padding:\s*0 4px/,

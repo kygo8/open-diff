@@ -99,7 +99,7 @@ describe('status strip band residual', () => {
 describe('table status strip columns residual', () => {
   it('pins Table Compare status columns to capture widths', () => {
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='table-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 391\.5px\) minmax\(0, 1fr\)/,
+      /\.status-bar\[data-chrome-kind='table-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 392\.5px\) minmax\(0, 1fr\)/,
     )
   })
 })

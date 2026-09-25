@@ -1748,6 +1748,7 @@ const sourceSessionTypes = new Set<SessionType>([
             :aria-expanded="activeMenu === menu.id"
             aria-haspopup="menu"
             :data-testid="`menu-${menu.id}`"
+            :data-menu-id="menu.id"
             @click="toggleApplicationMenu(menu.id)"
           >
             {{ t(menu.titleKey) }}
@@ -2334,6 +2335,13 @@ const sourceSessionTypes = new Set<SessionType>([
 .menu-bar[data-menu-sep='capture-1to1-residual'] .menu-separator {
   margin: 2px 4px;
   background: #c0c0c0;
+}
+
+.menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='session'] {
+  width: 55px;
+  min-width: 55px;
+  max-width: 55px;
+  padding: 0;
 }
 
 .brand {

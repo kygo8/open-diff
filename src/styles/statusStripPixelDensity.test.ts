@@ -130,3 +130,11 @@ describe('version-session status strip columns residual', () => {
     )
   })
 })
+
+describe('hex-session status strip columns residual', () => {
+  it('pins Hex Compare status columns to capture widths', () => {
+    expect(layout).toMatch(
+      /\.status-bar\[data-chrome-kind='hex-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px 91\.5px minmax\(0, 1fr\)/,
+    )
+  })
+})

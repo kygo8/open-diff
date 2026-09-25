@@ -4339,6 +4339,11 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 12px !important;
 }
 
+.text-edit-view .path-input {
+  height: 16.5px !important;
+  min-height: 16.5px !important;
+}
+
 .text-edit-view .toolbar-button {
   height: 18px !important;
   padding: 0 5px !important;

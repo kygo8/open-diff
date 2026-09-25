@@ -13,13 +13,13 @@ describe('text edit chrome density', () => {
   it('keeps Text Edit path/toolbar/editor/status chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.text-edit-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.text-edit-view \.path-toolbar[\s\S]*?min-height:\s*22px/)
-    expect(css).toMatch(/\.text-edit-view \.path-input[\s\S]*?height:\s*20px/)
+    expect(css).toMatch(/\.text-edit-view \.path-input[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(/\.text-edit-view \.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
     expect(css).toMatch(/\.text-edit-view[\s\S]*?line-height:\s*18px/)
 
     expect(editView).toMatch(/\.text-edit-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(editView).toMatch(/\.path-toolbar[\s\S]*?min-height:\s*22px/)
-    expect(editView).toMatch(/\.path-input[\s\S]*?height:\s*20px/)
+    expect(editView).toMatch(/\.path-input[\s\S]*?height:\s*16\.5px/)
     expect(editView).toMatch(/\.toolbar-button\s*\{[\s\S]*?height:\s*18px/)
     expect(editView).toMatch(/:deep\(textarea\)\s*\{[\s\S]*?line-height:\s*18px/)
     expect(editView).toMatch(/source:\s*'text-edit'/)
@@ -28,6 +28,7 @@ describe('text edit chrome density', () => {
     expect(editView).toMatch(/SessionPathActions/)
     expect(editView).toMatch(/PathMetaFooter/)
     expect(editView).not.toMatch(/\.path-input[^}]*height:\s*16px/)
+    expect(editView).toMatch(/\.path-input[\s\S]*?height:\s*16\.5px/)
 
     expect(phrases).toMatch(/EDIT_MODE_SOURCES[\s\S]*?'text-edit'/)
     expect(layout).toMatch(
@@ -39,7 +40,7 @@ describe('text edit chrome density', () => {
   it('keeps Text Edit chrome on capture band with Text Compare path scale', () => {
     expect(css).toMatch(/\.text-edit-view \.syntax-language-bar\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.text-edit-view \.find-input[\s\S]*?height:\s*20px/)
-    expect(css).toMatch(/\.text-edit-view \.path-input[\s\S]*?height:\s*20px/)
+    expect(css).toMatch(/\.text-edit-view \.path-input[\s\S]*?height:\s*16\.5px/)
 
     expect(editView).toMatch(/\.syntax-language-bar\s*\{[\s\S]*?min-height:\s*20px/)
     expect(editView).toMatch(/\.find-input[\s\S]*?height:\s*20px/)

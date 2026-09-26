@@ -1282,7 +1282,7 @@ select {
   align-items: center !important;
   min-height: 18px !important;
   padding: 0 0 2px !important;
-  border-bottom: 1px solid #d4d7dc !important;
+  border-bottom: 1px solid #c0c0c0 !important;
 }
 
 .file-compare-report-header strong {

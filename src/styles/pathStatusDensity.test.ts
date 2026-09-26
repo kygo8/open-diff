@@ -185,3 +185,11 @@ describe('path-meta-eol fill', () => {
     )
   })
 })
+
+describe('folder path-pair fill', () => {
+  it('matches capture folder path-pair fill #f0f0f0', () => {
+    expect(css).toMatch(
+      /\.app-shell-single-session \.folder-toolbar \.path-pair\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+  })
+})

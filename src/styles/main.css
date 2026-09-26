@@ -192,7 +192,7 @@ select {
   min-height: 20px !important;
   padding: 0 1px !important;
   border-bottom: 1px solid #a0a0a0 !important;
-  background: #f3f3f3 !important;
+  background: #f0f0f0 !important;
 }
 
 .app-shell-single-session .folder-toolbar .path-pair > label {

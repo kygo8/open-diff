@@ -59,3 +59,9 @@ describe('report dialog chrome density', () => {
     expect(reportsView).toMatch(/\.report-error,\s*\.report-empty\s*\{[\s\S]*?padding:\s*2px 4px/)
   })
 })
+
+describe('report-scope fill', () => {
+  it('matches capture report-scope fill #f0f0f0', () => {
+    expect(css).toMatch(/\.file-compare-report-scope\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

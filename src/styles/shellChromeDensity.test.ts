@@ -218,3 +218,11 @@ describe('workbench-toolbar fill', () => {
     )
   })
 })
+
+describe('panel border-color', () => {
+  const mainCss = readFileSync(resolve(__dirname, './main.css'), 'utf8')
+
+  it('matches capture panel border-color #c0c0c0', () => {
+    expect(mainCss).toMatch(/\.profile-detail-panel \{[\s\S]*?border-color:\s*#c0c0c0/)
+  })
+})

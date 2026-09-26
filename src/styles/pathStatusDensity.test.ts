@@ -193,3 +193,10 @@ describe('folder path-pair fill', () => {
     )
   })
 })
+
+describe('path-meta-eol base chrome', () => {
+  it('matches capture EOL chip base fill and border', () => {
+    expect(pathMeta).toMatch(/\.path-meta-eol\s*\{[\s\S]*?border:\s*1px solid #c0c0c0/)
+    expect(pathMeta).toMatch(/\.path-meta-eol\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

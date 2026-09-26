@@ -168,3 +168,10 @@ describe('text diff-header border', () => {
     )
   })
 })
+
+describe('diff-header base chrome', () => {
+  it('matches capture diff-header base fill and border', () => {
+    expect(diffPanel).toMatch(/\.diff-header\s*\{[\s\S]*?border-bottom:\s*1px solid #c0c0c0/)
+    expect(diffPanel).toMatch(/\.diff-header\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

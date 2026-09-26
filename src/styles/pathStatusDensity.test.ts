@@ -212,3 +212,9 @@ describe('path-pair-bar fill', () => {
     expect(css).toMatch(/\.path-pair-bar\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('path actions fill', () => {
+  it('matches capture path action fill #f0f0f0', () => {
+    expect(pathActions).toMatch(/background:\s*#f0f0f0/)
+  })
+})

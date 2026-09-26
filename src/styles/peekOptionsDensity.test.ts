@@ -196,3 +196,9 @@ describe('folder peek residual', () => {
     expect(css).toMatch(/\.folder-peek-panel[\s\S]*?border:\s*1px solid #a0a0a0/)
   })
 })
+
+describe('peek-tab fill', () => {
+  it('matches capture peek-tab fill #f0f0f0', () => {
+    expect(css).toMatch(/\.peek-tab\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

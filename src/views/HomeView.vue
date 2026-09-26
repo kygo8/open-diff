@@ -1172,7 +1172,7 @@ onMounted(() => {
   min-width: 0;
   min-height: 0;
   border-right: 1px solid #b9bec7;
-  background: #e3e9f2;
+  background: #e3e7ed;
 }
 
 .bc-session-tree header {

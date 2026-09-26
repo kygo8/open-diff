@@ -1099,7 +1099,7 @@ select {
 .table-navigation-bar,
 .format-detail-panel,
 .profile-detail-panel {
-  border-color: #bfc4cc !important;
+  border-color: #c0c0c0 !important;
   border-radius: 0 !important;
   background: #f0f0f0 !important;
   color: #111111 !important;

@@ -190,3 +190,13 @@ describe('about footer residual', () => {
     expect(source).toMatch(/\.about-dialog (?:header,\s*)?footer[\s\S]*?min-height:\s*18px/)
   })
 })
+
+describe('pane-header fill', () => {
+  const mainCss = readFileSync(resolve(__dirname, './main.css'), 'utf8')
+
+  it('matches capture pane-header fill #f0f0f0', () => {
+    expect(mainCss).toMatch(
+      /\.split-pane-header,\s*\.pane-header,\s*\.metadata-header\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+  })
+})

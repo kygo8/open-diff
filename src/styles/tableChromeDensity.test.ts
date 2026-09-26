@@ -167,3 +167,11 @@ describe('dense-data-table th fill', () => {
     expect(css).toMatch(/\.dense-data-table th[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('table-compare-header fill', () => {
+  it('matches capture table header fill #f0f0f0', () => {
+    expect(css).toMatch(
+      /\.app-shell-single-session \.table-compare-header\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+  })
+})

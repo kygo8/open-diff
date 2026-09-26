@@ -1555,7 +1555,7 @@ select {
 .table-controls input,
 .format-detail-panel input,
 .profile-detail-panel input {
-  border: 1px solid #bfc4cc !important;
+  border: 1px solid #c0c0c0 !important;
   border-radius: 0 !important;
   background: #ffffff !important;
   color: #111111 !important;

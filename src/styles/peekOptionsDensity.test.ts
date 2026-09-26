@@ -216,3 +216,9 @@ describe('peek-column fill', () => {
     expect(css).toMatch(/\.peek-column\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('peek button fill', () => {
+  it('matches capture peek button fill #f0f0f0', () => {
+    expect(css).toMatch(/\.folder-peek-panel header button,[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

@@ -206,3 +206,9 @@ describe('bc-path-row fill', () => {
     expect(css).toMatch(/\.bc-path-row\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('path-pair-bar fill', () => {
+  it('matches capture path-pair-bar fill #f0f0f0', () => {
+    expect(css).toMatch(/\.path-pair-bar\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

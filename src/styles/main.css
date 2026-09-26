@@ -907,7 +907,7 @@ select {
   grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr) auto;
   min-height: 20px;
   padding: 0 1px;
-  background: #f3f3f3;
+  background: #f0f0f0;
 }
 
 .path-pair-field {

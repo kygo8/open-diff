@@ -98,3 +98,9 @@ describe('home main fill', () => {
     expect(homeView).toMatch(/\.bc-home-main\s*\{[\s\S]*?background:\s*#f9f9f9/)
   })
 })
+
+describe('home tree fill', () => {
+  it('matches capture home session-tree fill #e3e7ed', () => {
+    expect(homeView).toMatch(/\.bc-session-tree\s*\{[\s\S]*?background:\s*#e3e7ed/)
+  })
+})

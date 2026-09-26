@@ -91,3 +91,10 @@ describe('home launch card band residual', () => {
     expect(homeView).not.toMatch(/min-height:\s*6px/)
   })
 })
+
+describe('home main fill', () => {
+  it('matches capture home main fill #f9f9f9', () => {
+    expect(homeView).toMatch(/\.bc-home-workspace\s*\{[\s\S]*?background:\s*#f9f9f9/)
+    expect(homeView).toMatch(/\.bc-home-main\s*\{[\s\S]*?background:\s*#f9f9f9/)
+  })
+})

@@ -1163,7 +1163,7 @@ onMounted(() => {
 
   /* home.png tree ~241 CSS px at DPR 2; avoid prior 140–170 crush. */
   grid-template-columns: minmax(220px, 248px) minmax(0, 1fr);
-  background: #ffffff;
+  background: #f9f9f9;
 }
 
 .bc-session-tree {
@@ -1282,7 +1282,7 @@ onMounted(() => {
   min-width: 0;
   min-height: 0;
   overflow: auto;
-  background: #ffffff;
+  background: #f9f9f9;
 }
 
 .bc-selected-session {

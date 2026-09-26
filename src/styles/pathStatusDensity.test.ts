@@ -200,3 +200,9 @@ describe('path-meta-eol base chrome', () => {
     expect(pathMeta).toMatch(/\.path-meta-eol\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('bc-path-row fill', () => {
+  it('matches capture bc-path-row fill #f0f0f0', () => {
+    expect(css).toMatch(/\.bc-path-row\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

@@ -1307,7 +1307,7 @@ select {
 .file-compare-report-row select {
   height: 20px !important;
   padding: 0 4px !important;
-  border: 1px solid #bfc4cc !important;
+  border: 1px solid #c0c0c0 !important;
   border-radius: 2px !important;
   background: #ffffff !important;
   color: #111111 !important;

@@ -2415,6 +2415,27 @@ html[data-show-path-bars='0'] .path-pair-bar {
   color: #f0f0f0 !important;
 }
 
+.picture-compare-view .picture-zoom-mode-btn {
+  width: 22px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 0 !important;
+  background: #fdfdfd !important;
+  font-size: 10px !important;
+  line-height: 16px !important;
+}
+
+.picture-compare-view .picture-zoom-mode-btn-active {
+  background: #cce4f7 !important;
+}
+
+.picture-compare-view .picture-fit-glyph {
+  width: 12px !important;
+  height: 12px !important;
+}
+
 .picture-compare-view .picture-controls input,
 .picture-compare-view .picture-controls button,
 .picture-compare-view .picture-options-panel input,

@@ -1605,7 +1605,7 @@ select {
 .report-row,
 .metadata-grid > *,
 .table-grid-cell {
-  border-color: #d4d7dc !important;
+  border-color: #c0c0c0 !important;
 }
 
 .diff-row.modified,

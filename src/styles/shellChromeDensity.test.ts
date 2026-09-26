@@ -200,3 +200,11 @@ describe('pane-header fill', () => {
     )
   })
 })
+
+describe('app-border token', () => {
+  const mainCss = readFileSync(resolve(__dirname, './main.css'), 'utf8')
+
+  it('matches capture border token #c0c0c0', () => {
+    expect(mainCss).toMatch(/--app-border:\s*#c0c0c0/)
+  })
+})

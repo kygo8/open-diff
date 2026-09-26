@@ -234,3 +234,9 @@ describe('folder path meta residual', () => {
     expect(css).toMatch(/\.folder-merge-view \.path-meta-footer[\s\S]*?min-height:\s*18px/)
   })
 })
+
+describe('dense cell border', () => {
+  it('matches capture dense cell border #c0c0c0', () => {
+    expect(css).toMatch(/\.dense-data-table td,[\s\S]*?border-color:\s*#c0c0c0/)
+  })
+})

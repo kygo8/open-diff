@@ -166,3 +166,9 @@ describe('hex-offset-chrome border', () => {
     )
   })
 })
+
+describe('hex offset chrome border', () => {
+  it('matches capture hex offset border #c0c0c0', () => {
+    expect(hexView).toMatch(/border-bottom:\s*1px solid #c0c0c0/)
+  })
+})

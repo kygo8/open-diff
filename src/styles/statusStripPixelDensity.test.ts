@@ -159,3 +159,11 @@ describe('clipboard status strip columns residual', () => {
     )
   })
 })
+
+describe('app-status fill', () => {
+  const css = readFileSync(resolve(root, 'src/styles/main.css'), 'utf8')
+
+  it('matches capture status token fill #f0f0f0', () => {
+    expect(css).toMatch(/--app-status:\s*#f0f0f0/)
+  })
+})

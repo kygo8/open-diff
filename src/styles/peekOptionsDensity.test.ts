@@ -202,3 +202,11 @@ describe('peek-tab fill', () => {
     expect(css).toMatch(/\.peek-tab\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('folder peek-column base fill', () => {
+  it('matches capture peek-column base fill #f0f0f0 in session views', () => {
+    expect(folderView).toMatch(/\.peek-column\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(syncView).toMatch(/\.peek-column\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(mergeView).toMatch(/\.peek-column\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

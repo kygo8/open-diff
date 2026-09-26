@@ -108,7 +108,7 @@ const { t } = useI18n()
 
 .bc-path-action:hover:not(:disabled) {
   border-color: #a0a0a0;
-  background: #f3f3f3;
+  background: #f0f0f0;
 }
 
 .bc-path-action:disabled {

@@ -218,3 +218,9 @@ describe('path input border', () => {
     expect(css).toMatch(/\.picture-path-panel input,[\s\S]*?border:\s*1px solid #c0c0c0/)
   })
 })
+
+describe('path actions fill', () => {
+  it('matches capture path action fill #f0f0f0', () => {
+    expect(pathActions).toMatch(/background:\s*#f0f0f0/)
+  })
+})

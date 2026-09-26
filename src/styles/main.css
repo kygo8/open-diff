@@ -1269,7 +1269,7 @@ select {
   gap: 4px !important;
   width: min(340px, 100%) !important;
   padding: 4px 6px !important;
-  border: 1px solid #bfc4cc !important;
+  border: 1px solid #c0c0c0 !important;
   border-radius: 2px !important;
   background: #ffffff !important;
   color: #111111 !important;

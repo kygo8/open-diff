@@ -208,3 +208,13 @@ describe('app-border token', () => {
     expect(mainCss).toMatch(/--app-border:\s*#c0c0c0/)
   })
 })
+
+describe('workbench-toolbar fill', () => {
+  const mainCss = readFileSync(resolve(__dirname, './main.css'), 'utf8')
+
+  it('matches capture workbench-toolbar fill #f0f0f0', () => {
+    expect(mainCss).toMatch(
+      /\.workbench-toolbar,\s*\.path-pair-bar\s*\{[\s\S]*?background:\s*#f0f0f0/,
+    )
+  })
+})

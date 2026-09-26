@@ -1349,7 +1349,7 @@ select {
   gap: 4px !important;
   min-height: 20px !important;
   padding-top: 2px !important;
-  border-top: 1px solid #d4d7dc !important;
+  border-top: 1px solid #c0c0c0 !important;
 }
 
 .file-compare-report-footer .n-button {

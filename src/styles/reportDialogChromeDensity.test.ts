@@ -85,3 +85,9 @@ describe('report-header border', () => {
     )
   })
 })
+
+describe('report-footer border', () => {
+  it('matches capture report-footer border #c0c0c0', () => {
+    expect(css).toMatch(/\.file-compare-report-footer\s*\{[\s\S]*?border-top:\s*1px solid #c0c0c0/)
+  })
+})

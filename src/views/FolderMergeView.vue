@@ -3476,7 +3476,7 @@ h1 {
   min-width: 0;
   height: 16.5px;
   padding: 0 6px;
-  border: 1px solid #bfc4cc;
+  border: 1px solid #c0c0c0;
   border-radius: 0;
   background: #ffffff;
   color: #111111;

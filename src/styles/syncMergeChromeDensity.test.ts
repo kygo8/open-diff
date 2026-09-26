@@ -165,3 +165,10 @@ describe('folder-sync status columns residual', () => {
     )
   })
 })
+
+describe('sync merge border base', () => {
+  it('matches capture session chrome border #c0c0c0', () => {
+    expect(syncView).toMatch(/border:\s*1px solid #c0c0c0/)
+    expect(mergeView).toMatch(/border:\s*1px solid #c0c0c0/)
+  })
+})

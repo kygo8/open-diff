@@ -77,3 +77,9 @@ describe('report-panel border', () => {
     expect(css).toMatch(/\.file-compare-report-panel\s*\{[\s\S]*?border:\s*1px solid #c0c0c0/)
   })
 })
+
+describe('report-row select border', () => {
+  it('matches capture report-row select border #c0c0c0', () => {
+    expect(css).toMatch(/\.file-compare-report-row select\s*\{[\s\S]*?border:\s*1px solid #c0c0c0/)
+  })
+})

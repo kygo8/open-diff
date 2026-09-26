@@ -654,8 +654,8 @@ defineExpose({
   align-items: center;
   gap: 3px;
   height: 18px;
-  border-bottom: 1px solid #d0d0d0;
-  background: #f5f5f5;
+  border-bottom: 1px solid #c0c0c0;
+  background: #f0f0f0;
   color: var(--app-text-muted);
   font-size: 11px;
   font-weight: 600;

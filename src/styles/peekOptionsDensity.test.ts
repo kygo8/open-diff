@@ -202,3 +202,9 @@ describe('peek-tab fill', () => {
     expect(css).toMatch(/\.peek-tab\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('peek-column fill', () => {
+  it('matches capture peek-column fill #f0f0f0', () => {
+    expect(css).toMatch(/\.peek-column\s*\{[\s\S]*?background:\s*#f0f0f0/)
+  })
+})

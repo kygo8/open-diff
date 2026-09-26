@@ -65,3 +65,9 @@ describe('report-scope fill', () => {
     expect(css).toMatch(/\.file-compare-report-scope\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('report-scope border', () => {
+  it('matches capture report-scope border #c0c0c0', () => {
+    expect(css).toMatch(/\.file-compare-report-scope\s*\{[\s\S]*?border:\s*1px solid #c0c0c0/)
+  })
+})

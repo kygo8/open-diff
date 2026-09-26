@@ -1319,7 +1319,7 @@ select {
   gap: 2px !important;
   margin: 0 !important;
   padding: 2px 4px !important;
-  border: 1px solid #d4d7dc !important;
+  border: 1px solid #c0c0c0 !important;
   border-radius: 2px !important;
   background: #f0f0f0 !important;
 }

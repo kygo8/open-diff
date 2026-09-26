@@ -212,3 +212,9 @@ describe('path-pair-bar fill', () => {
     expect(css).toMatch(/\.path-pair-bar\s*\{[\s\S]*?background:\s*#f0f0f0/)
   })
 })
+
+describe('path input border', () => {
+  it('matches capture path input border #c0c0c0', () => {
+    expect(css).toMatch(/\.picture-path-panel input,[\s\S]*?border:\s*1px solid #c0c0c0/)
+  })
+})

@@ -28,10 +28,22 @@ import { useViewActionsStore } from '@/stores/viewActions'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
 import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vue'
-import { Blend, CircleGauge, Tag } from '@lucide/vue'
+import { Blend, CircleGauge, Expand, Tag } from '@lucide/vue'
 
 const settings = useSettingsStore()
 const zoom = ref(100)
+const zoomMode = ref<'fit' | 'one-to-one' | 'custom'>('fit')
+
+function setPictureZoomOneToOne(): void {
+  zoomMode.value = 'one-to-one'
+  zoom.value = 100
+}
+
+function setPictureZoomFit(): void {
+  zoomMode.value = 'fit'
+  zoom.value = 100
+}
+
 const panX = ref(0)
 const panY = ref(0)
 const showOverlay = ref(true)
@@ -981,16 +993,46 @@ async function runPictureCompare(): Promise<void> {
           data-picture-controls="stage-overlay"
           data-testid="picture-controls-stage"
         >
-          <label>
-            <span>{{ $t('ui.zoom') }}</span>
-            <input
-              v-model.number="zoom"
-              type="range"
-              min="50"
-              max="200"
-              step="10"
-              data-testid="picture-zoom-control"
-            />
+          <label class="picture-zoom-overlay-label">
+            <span data-testid="picture-zoom-overlay-caption">{{ $t('ui.zoom') }}: {{ zoom }}%</span>
+            <div class="picture-zoom-overlay-row">
+              <input
+                v-model.number="zoom"
+                type="range"
+                min="50"
+                max="200"
+                step="10"
+                data-testid="picture-zoom-control"
+                @input="zoomMode = 'custom'"
+              />
+              <div class="picture-zoom-mode-tools">
+                <button
+                  type="button"
+                  class="picture-zoom-mode-btn"
+                  :class="{ 'picture-zoom-mode-btn-active': zoomMode === 'one-to-one' }"
+                  data-testid="picture-zoom-one-to-one"
+                  :title="$t('ui.oneToOne')"
+                  @click="setPictureZoomOneToOne"
+                >
+                  {{ $t('ui.oneToOne') }}
+                </button>
+                <button
+                  type="button"
+                  class="picture-zoom-mode-btn"
+                  :class="{ 'picture-zoom-mode-btn-active': zoomMode === 'fit' }"
+                  data-testid="picture-zoom-fit"
+                  :title="$t('ui.fit')"
+                  @click="setPictureZoomFit"
+                >
+                  <Expand
+                    class="picture-fit-glyph"
+                    :size="12"
+                    :stroke-width="2"
+                    aria-hidden="true"
+                  />
+                </button>
+              </div>
+            </div>
           </label>
           <label>
             <span>{{ $t('ui.panX') }}</span>
@@ -1199,7 +1241,9 @@ async function runPictureCompare(): Promise<void> {
                 />
                 {{ $t('ui.tol') }}
               </h2>
-              <span>{{ $t('ui.rgbTolerance') }}</span>
+              <span data-testid="picture-tolerance-caption"
+                >{{ $t('ui.tolerance') }}: {{ rgbTolerance }}</span
+              >
             </header>
             <label>
               <span>{{ $t('ui.rgbTolerance') }}</span>
@@ -2186,5 +2230,57 @@ h2 {
 
 .path-side-footer-muted {
   color: #9ca3af;
+}
+
+.picture-zoom-overlay-label {
+  display: grid;
+  gap: 2px;
+}
+
+.picture-zoom-overlay-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+}
+
+.picture-zoom-mode-tools {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.picture-zoom-mode-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #fdfdfd;
+  color: #111111;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 16px;
+  cursor: default;
+}
+
+.picture-zoom-mode-btn + .picture-zoom-mode-btn {
+  border-left: 0;
+}
+
+.picture-zoom-mode-btn-active {
+  background: #cce4f7;
+}
+
+.picture-fit-glyph {
+  display: block;
+  width: 12px;
+  height: 12px;
+  color: #111111;
 }
 </style>

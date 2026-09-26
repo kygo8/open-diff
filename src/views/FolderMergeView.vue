@@ -3494,7 +3494,7 @@ h1 {
   min-width: 0;
   padding: 2px 4px;
   border: 1px solid #dfe3e8;
-  background: #fafafa;
+  background: #f0f0f0;
 }
 
 .peek-column > strong {

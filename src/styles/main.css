@@ -2312,8 +2312,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .hex-side {
-  gap: 4px !important;
-  padding: 4px 6px !important;
+  gap: 0 !important;
+  padding: 1px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
 }

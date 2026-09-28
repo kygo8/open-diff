@@ -61,13 +61,13 @@ describe('hex compare chrome density', () => {
       /\.hex-compare-view \.hex-summary,[\s\S]*?\.hex-compare-view \.hex-report-panel[\s\S]*?padding:\s*4px 6px/,
     )
     expect(css).toMatch(/\.hex-compare-view \.hex-report-panel header[\s\S]*?min-height:\s*18px/)
-    expect(css).toMatch(/\.hex-compare-view \.hex-side[\s\S]*?padding:\s*4px 6px/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-side[\s\S]*?padding:\s*1px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-summary strong\s*\{[\s\S]*?font-size:\s*12px/)
 
     expect(hexView).toMatch(/\.hex-summary\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(hexView).toMatch(/\.hex-report-panel\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(hexView).toMatch(/\.hex-report-panel header\s*\{[\s\S]*?min-height:\s*18px/)
-    expect(hexView).toMatch(/\.hex-side\s*\{[\s\S]*?padding:\s*4px 6px/)
+    expect(hexView).toMatch(/\.hex-side\s*\{[\s\S]*?padding:\s*1px/)
   })
 
   it('keeps Hex rules strip chrome on the session-panel band', () => {
@@ -237,5 +237,13 @@ describe('hex offset column fill', () => {
   it('matches Hex offset column fill to capture #ffffff', () => {
     expect(hexView).toMatch(/\.hex-offset\s*\{[\s\S]*?background:\s*#ffffff/)
     expect(css).toMatch(/\.hex-compare-view \.hex-offset\s*\{[\s\S]*?background:\s*#ffffff/)
+  })
+})
+
+describe('hex side padding residual', () => {
+  it('tightens Hex side padding to capture 1px band', () => {
+    expect(hexView).toMatch(/\.hex-side\s*\{[\s\S]*?padding:\s*1px/)
+    expect(hexView).toMatch(/\.hex-side\s*\{[\s\S]*?gap:\s*0/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-side\s*\{[\s\S]*?padding:\s*1px/)
   })
 })

@@ -1565,9 +1565,9 @@ h2 {
 
 .hex-side {
   display: grid;
-  gap: 4px;
+  gap: 0;
   min-width: 0;
-  padding: 4px 6px;
+  padding: 1px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface);

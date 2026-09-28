@@ -694,6 +694,7 @@ function lineNumber(value: number | null): string {
         >
           <PathMetaFooter
             :stamp="sourceFileStamp"
+            format-label="Patch"
             :encoding="sourceEncoding"
             :line-ending="sourceLineEnding"
             test-id="patch-source-path-footer"

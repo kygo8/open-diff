@@ -100,3 +100,9 @@ describe('patch section-nav border', () => {
     )
   })
 })
+
+describe('patch path meta format chip', () => {
+  it('shows Text Patch path meta format chip as Patch', () => {
+    expect(patchView).toMatch(/format-label="Patch"/)
+  })
+})

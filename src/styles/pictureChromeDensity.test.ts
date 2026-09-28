@@ -239,3 +239,11 @@ describe('picture side heading residual', () => {
     )
   })
 })
+
+describe('picture zoom active border', () => {
+  it('matches Picture zoom mode active border to capture #005499', () => {
+    expect(pictureView).toMatch(
+      /\.picture-zoom-mode-btn-active\s*\{[\s\S]*?border-color:\s*#005499/,
+    )
+  })
+})

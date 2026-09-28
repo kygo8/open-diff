@@ -2477,6 +2477,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .picture-zoom-mode-btn-active {
+  border-color: #005499 !important;
   background: #cce4f7 !important;
 }
 

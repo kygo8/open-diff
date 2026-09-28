@@ -2332,6 +2332,7 @@ h2 {
 }
 
 .picture-zoom-mode-btn-active {
+  border-color: #005499;
   background: #cce4f7;
 }
 

@@ -907,11 +907,13 @@ function runRegistryToolbarCommand(commandId: string): void {
         >
           <PathMetaFooter
             :stamp="leftFileStamp"
+            format-label="Registry"
             :show-milliseconds="settings.showMillisecondsInTimestamps"
             test-id="registry-left-path-footer"
           />
           <PathMetaFooter
             :stamp="rightFileStamp"
+            format-label="Registry"
             :show-milliseconds="settings.showMillisecondsInTimestamps"
             test-id="registry-right-path-footer"
           />

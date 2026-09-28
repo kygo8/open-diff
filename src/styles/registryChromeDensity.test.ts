@@ -127,3 +127,9 @@ describe('registry secondary strip border', () => {
     )
   })
 })
+
+describe('registry path meta format chip', () => {
+  it('shows Registry path meta format chip as Registry', () => {
+    expect(registryView).toMatch(/format-label="Registry"/)
+  })
+})

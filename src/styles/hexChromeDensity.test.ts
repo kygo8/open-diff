@@ -44,7 +44,7 @@ describe('hex compare chrome density', () => {
     )
     expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls input[\s\S]*?height:\s*16\.5px/)
     expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?min-height:\s*17\.5px/)
-    expect(css).toMatch(/\.hex-compare-view \.hex-offset\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-offset\s*\{[\s\S]*?background:\s*#ffffff/)
 
     expect(hexView).toMatch(/data-hex-chrome-density="capture-1to1"/)
     expect(hexView).toMatch(/data-hex-rows-density="capture-1to1"/)
@@ -53,7 +53,7 @@ describe('hex compare chrome density', () => {
     expect(hexView).toMatch(/\.hex-wrap-controls strong\s*\{[\s\S]*?height:\s*20px/)
     expect(hexView).toMatch(/\.hex-wrap-controls span\s*\{[\s\S]*?line-height:\s*16px/)
     expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(hexView).toMatch(/\.hex-offset\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(hexView).toMatch(/\.hex-offset\s*\{[\s\S]*?background:\s*#ffffff/)
   })
 
   it('keeps Hex summary/report/side chrome on capture band', () => {
@@ -230,5 +230,12 @@ describe('hex selection fill', () => {
   it('matches Hex byte selection fill to capture #9dddff', () => {
     expect(hexView).toMatch(/\.hex-byte-selected\s*\{[\s\S]*?background:\s*#9dddff/)
     expect(css).toMatch(/\.hex-compare-view \.hex-byte-selected\s*\{[\s\S]*?background:\s*#9dddff/)
+  })
+})
+
+describe('hex offset column fill', () => {
+  it('matches Hex offset column fill to capture #ffffff', () => {
+    expect(hexView).toMatch(/\.hex-offset\s*\{[\s\S]*?background:\s*#ffffff/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-offset\s*\{[\s\S]*?background:\s*#ffffff/)
   })
 })

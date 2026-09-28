@@ -1627,7 +1627,7 @@ h2 {
 }
 
 .hex-offset {
-  background: #f0f0f0;
+  background: #ffffff;
   color: var(--app-text-muted);
 }
 

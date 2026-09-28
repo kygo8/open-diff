@@ -2280,7 +2280,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .hex-compare-view .hex-offset {
-  background: #f0f0f0 !important;
+  background: #ffffff !important;
   color: var(--app-text-muted) !important;
 }
 

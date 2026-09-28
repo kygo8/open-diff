@@ -1573,6 +1573,10 @@ h2 {
   background: var(--app-surface);
 }
 
+.hex-side > h2 {
+  display: none;
+}
+
 .hex-viewport {
   display: flex;
   flex-direction: column;

@@ -210,3 +210,10 @@ describe('hex empty-area hatch', () => {
     )
   })
 })
+
+describe('hex side heading residual', () => {
+  it('hides Hex side pane headings toward capture path-only chrome', () => {
+    expect(hexView).toMatch(/\.hex-side > h2\s*\{[\s\S]*?display:\s*none/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-side > h2\s*\{[\s\S]*?display:\s*none/)
+  })
+})

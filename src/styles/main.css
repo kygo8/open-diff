@@ -2432,7 +2432,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
   left: 4px !important;
   z-index: 4 !important;
   grid-template-columns: minmax(0, 1fr) !important;
-  width: min(260px, calc(100% - 8px)) !important;
+  width: min(120px, calc(100% - 8px)) !important;
   border: 0 !important;
   background: rgb(46 46 35 / 0.88) !important;
   color: #f0f0f0 !important;

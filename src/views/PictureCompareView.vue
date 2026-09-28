@@ -1696,7 +1696,7 @@ h2 {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 2px 4px;
-  width: min(260px, calc(100% - 8px));
+  width: min(120px, calc(100% - 8px));
   min-height: 20px;
   padding: 2px 4px;
   border: 0;

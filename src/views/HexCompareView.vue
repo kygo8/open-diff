@@ -935,10 +935,12 @@ async function runHexSave(): Promise<void> {
         >
           <PathMetaFooter
             :stamp="leftFileStamp"
+            format-label="Everything Else"
             test-id="hex-left-path-footer"
           />
           <PathMetaFooter
             :stamp="rightFileStamp"
+            format-label="Everything Else"
             test-id="hex-right-path-footer"
           />
         </div>

@@ -247,3 +247,9 @@ describe('hex side padding residual', () => {
     expect(css).toMatch(/\.hex-compare-view \.hex-side\s*\{[\s\S]*?padding:\s*1px/)
   })
 })
+
+describe('hex path meta format chip', () => {
+  it('shows Hex path meta format chip as capture Everything Else', () => {
+    expect(hexView).toMatch(/format-label="Everything Else"/)
+  })
+})

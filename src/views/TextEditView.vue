@@ -1027,6 +1027,7 @@ const textEditToolbarCommands = computed(() => {
       >
         <PathMetaFooter
           :stamp="document?.fileStamp ?? null"
+          format-label="Everything Else"
           :encoding="document?.encoding"
           :line-ending="document?.lineEnding"
           :show-milliseconds="settings.showMillisecondsInTimestamps"

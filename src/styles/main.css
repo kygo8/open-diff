@@ -2608,6 +2608,10 @@ html[data-show-path-bars='0'] .path-pair-bar {
   background: #2e2e23 !important;
 }
 
+.picture-compare-view .picture-stage .picture-side h2 {
+  display: none !important;
+}
+
 .picture-compare-view .picture-canvas-frame {
   min-height: 0 !important;
   border: 0 !important;

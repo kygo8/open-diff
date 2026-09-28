@@ -1929,12 +1929,7 @@ h2 {
 }
 
 .picture-stage .picture-side h2 {
-  margin: 0;
-  padding: 0 2px;
-  color: #d0d0d0;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 14px;
+  display: none;
 }
 
 .picture-stage .picture-canvas-frame {

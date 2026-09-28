@@ -230,3 +230,12 @@ describe('picture stage overlay width', () => {
     )
   })
 })
+
+describe('picture side heading residual', () => {
+  it('hides Picture stage side headings toward capture path-only chrome', () => {
+    expect(pictureView).toMatch(/\.picture-stage \.picture-side h2\s*\{[\s\S]*?display:\s*none/)
+    expect(css).toMatch(
+      /\.picture-compare-view \.picture-stage \.picture-side h2\s*\{[\s\S]*?display:\s*none/,
+    )
+  })
+})

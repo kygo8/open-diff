@@ -253,3 +253,13 @@ describe('hex path meta format chip', () => {
     expect(hexView).toMatch(/format-label="Everything Else"/)
   })
 })
+
+describe('hex byte diff text', () => {
+  it('styles Hex byte diffs as capture red text without pink fill', () => {
+    expect(hexView).toMatch(/\.hex-byte-different\s*\{[\s\S]*?background:\s*transparent/)
+    expect(hexView).toMatch(/\.hex-byte-different\s*\{[\s\S]*?color:\s*#e00000/)
+    expect(css).toMatch(
+      /\.hex-compare-view \.hex-byte-different\s*\{[\s\S]*?background:\s*transparent/,
+    )
+  })
+})

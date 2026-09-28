@@ -2230,6 +2230,12 @@ html[data-show-path-bars='0'] .path-pair-bar {
   line-height: 16px !important;
 }
 
+.hex-compare-view .hex-byte-different {
+  background: transparent !important;
+  color: #e00000 !important;
+  font-weight: 700 !important;
+}
+
 .hex-compare-view .hex-byte-selected {
   border-color: #00c2c7 !important;
   background: #9dddff !important;

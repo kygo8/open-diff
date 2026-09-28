@@ -1680,8 +1680,8 @@ h2 {
 }
 
 .hex-byte-different {
-  background: var(--diff-modified-bg);
-  color: var(--diff-modified-fg);
+  background: transparent;
+  color: #e00000;
   font-weight: 700;
 }
 

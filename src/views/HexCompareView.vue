@@ -1647,7 +1647,7 @@ h2 {
 
 .hex-byte-selected {
   border-color: #00c2c7;
-  background: #a8ffff;
+  background: #9dddff;
 }
 
 .hex-report-panel {

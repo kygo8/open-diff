@@ -99,7 +99,7 @@ describe('hex path and windowed grid chrome residual', () => {
     expect(hexView).toMatch(
       /\.hex-row\s*\{[\s\S]*?grid-template-columns:\s*68px minmax\(200px, 1fr\) 104px/,
     )
-    expect(hexView).toMatch(/\.hex-byte-selected\s*\{[\s\S]*?background:\s*#a8ffff/)
+    expect(hexView).toMatch(/\.hex-byte-selected\s*\{[\s\S]*?background:\s*#9dddff/)
     expect(css).toMatch(/\.hex-compare-view \.hex-path-fields\s*\{[\s\S]*?min-height:\s*22px/)
     expect(css).toMatch(
       /\.hex-compare-view \.hex-path-meta-strip\s*\{[\s\S]*?background:\s*#f0f0f0/,
@@ -222,5 +222,12 @@ describe('hex row border residual', () => {
   it('drops Hex row borders toward capture unbroken grid', () => {
     expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?border-bottom:\s*0/)
     expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?border-bottom:\s*0/)
+  })
+})
+
+describe('hex selection fill', () => {
+  it('matches Hex byte selection fill to capture #9dddff', () => {
+    expect(hexView).toMatch(/\.hex-byte-selected\s*\{[\s\S]*?background:\s*#9dddff/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-byte-selected\s*\{[\s\S]*?background:\s*#9dddff/)
   })
 })

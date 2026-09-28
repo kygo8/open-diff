@@ -2232,7 +2232,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .hex-compare-view .hex-byte-selected {
   border-color: #00c2c7 !important;
-  background: #a8ffff !important;
+  background: #9dddff !important;
 }
 
 .hex-compare-view .hex-offset-chrome {

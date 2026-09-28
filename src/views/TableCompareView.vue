@@ -79,6 +79,14 @@ const rightFileStamp = ref<FileStamp | null>(null)
 const leftEncoding = ref('')
 const rightEncoding = ref('')
 const tableFormat = ref<NonNullable<TableCompareRequest['format']>>('csv')
+
+const tableFormatLabel = computed(() => {
+  if (tableFormat.value === 'csv') return 'CSV'
+  if (tableFormat.value === 'tsv') return 'TSV'
+  if (tableFormat.value === 'xlsx' || tableFormat.value === 'xls') return 'Excel'
+
+  return 'Everything Else'
+})
 const leftSheet = ref('')
 const rightSheet = ref('')
 const leftSheets = ref<string[]>([])
@@ -1015,11 +1023,13 @@ watch([leftPath, rightPath], () => {
         >
           <PathMetaFooter
             :stamp="leftFileStamp"
+            :format-label="tableFormatLabel"
             :show-milliseconds="settings.showMillisecondsInTimestamps"
             test-id="table-left-path-footer"
           />
           <PathMetaFooter
             :stamp="rightFileStamp"
+            :format-label="tableFormatLabel"
             :show-milliseconds="settings.showMillisecondsInTimestamps"
             test-id="table-right-path-footer"
           />

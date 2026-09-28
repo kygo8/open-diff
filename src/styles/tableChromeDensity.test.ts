@@ -175,3 +175,10 @@ describe('table-compare-header fill', () => {
     )
   })
 })
+
+describe('table path meta format chip', () => {
+  it('shows Table path meta format chip from active table format', () => {
+    expect(tableView).toMatch(/:format-label="tableFormatLabel"/)
+    expect(tableView).toMatch(/tableFormatLabel = computed/)
+  })
+})

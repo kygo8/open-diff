@@ -154,8 +154,9 @@ describe('hex-offset-chrome fill', () => {
 })
 
 describe('hex column border', () => {
-  it('matches capture hex column separator #a0a0a0', () => {
-    expect(css).toMatch(/\.hex-compare-view \.hex-offset[\s\S]*?border-right:\s*1px solid #a0a0a0/)
+  it('drops Hex column separators toward capture unbroken grid', () => {
+    expect(hexView).toMatch(/\.hex-offset,[\s\S]*?\.hex-ascii \{[\s\S]*?border-right:\s*0/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-offset[\s\S]*?border-right:\s*0/)
   })
 })
 

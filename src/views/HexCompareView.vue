@@ -1197,6 +1197,7 @@ async function runHexSave(): Promise<void> {
             ref="leftViewport"
             class="hex-viewport"
             data-testid="left-hex-viewport"
+            data-hex-empty-hatch="capture-1to1"
             @scroll="syncHexScroll('left', $event)"
           >
             <div
@@ -1243,6 +1244,11 @@ async function runHexSave(): Promise<void> {
                 {{ pair.left?.ascii ?? '' }}
               </span>
             </div>
+            <div
+              class="hex-empty-hatch"
+              data-testid="hex-empty-hatch"
+              aria-hidden="true"
+            />
           </div>
         </section>
 
@@ -1252,6 +1258,7 @@ async function runHexSave(): Promise<void> {
             ref="rightViewport"
             class="hex-viewport"
             data-testid="right-hex-viewport"
+            data-hex-empty-hatch="capture-1to1"
             @scroll="syncHexScroll('right', $event)"
           >
             <div
@@ -1284,6 +1291,10 @@ async function runHexSave(): Promise<void> {
               </span>
               <span class="hex-ascii">{{ pair.right?.ascii ?? '' }}</span>
             </div>
+            <div
+              class="hex-empty-hatch"
+              aria-hidden="true"
+            />
           </div>
         </section>
       </section>
@@ -1563,19 +1574,33 @@ h2 {
 }
 
 .hex-viewport {
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
   max-height: none;
   overflow: auto;
   border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: var(--app-bg);
+  background: #ffffff;
+}
+
+.hex-empty-hatch {
+  flex: 1 1 auto;
+  min-height: 48px;
+  background-color: #ffffff;
+  background-image:
+    repeating-linear-gradient(45deg, transparent 0 7px, #e6e6e6 7px 8px),
+    repeating-linear-gradient(-45deg, transparent 0 7px, #e6e6e6 7px 8px);
 }
 
 .hex-row {
   display: grid;
   grid-template-columns: 68px minmax(200px, 1fr) 104px;
+  flex: 0 0 auto;
   min-width: 420px;
   min-height: 17.5px;
   border-bottom: 1px solid #c0c0c0;
+  background: #ffffff;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 11px;
   line-height: 16px;

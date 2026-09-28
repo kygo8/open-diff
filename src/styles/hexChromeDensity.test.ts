@@ -194,3 +194,19 @@ describe('hex offset column width', () => {
     expect(hexView).toMatch(/grid-template-columns:\s*68px minmax\(200px, 1fr\) 104px/)
   })
 })
+
+describe('hex empty-area hatch', () => {
+  it('fills Hex empty viewport with capture cross-hatch chrome', () => {
+    expect(hexView).toMatch(/data-hex-empty-hatch="capture-1to1"/)
+    expect(hexView).toMatch(/class="hex-empty-hatch"/)
+    expect(hexView).toMatch(
+      /repeating-linear-gradient\(45deg,\s*transparent 0 7px,\s*#e6e6e6 7px 8px\)/,
+    )
+    expect(hexView).toMatch(
+      /repeating-linear-gradient\(-45deg,\s*transparent 0 7px,\s*#e6e6e6 7px 8px\)/,
+    )
+    expect(css).toMatch(
+      /data-hex-empty-hatch='capture-1to1'\] \.hex-empty-hatch[\s\S]*?#e6e6e6 7px 8px/,
+    )
+  })
+})

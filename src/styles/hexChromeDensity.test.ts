@@ -169,7 +169,7 @@ describe('hex-offset-chrome border', () => {
 
 describe('hex offset chrome border', () => {
   it('matches capture hex offset border #c0c0c0', () => {
-    expect(hexView).toMatch(/border-bottom:\s*1px solid #c0c0c0/)
+    expect(hexView).toMatch(/\.hex-offset-chrome\s*\{[\s\S]*?border:\s*1px solid #c0c0c0/)
   })
 })
 
@@ -215,5 +215,12 @@ describe('hex side heading residual', () => {
   it('hides Hex side pane headings toward capture path-only chrome', () => {
     expect(hexView).toMatch(/\.hex-side > h2\s*\{[\s\S]*?display:\s*none/)
     expect(css).toMatch(/\.hex-compare-view \.hex-side > h2\s*\{[\s\S]*?display:\s*none/)
+  })
+})
+
+describe('hex row border residual', () => {
+  it('drops Hex row borders toward capture unbroken grid', () => {
+    expect(hexView).toMatch(/\.hex-row\s*\{[\s\S]*?border-bottom:\s*0/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-row\s*\{[\s\S]*?border-bottom:\s*0/)
   })
 })

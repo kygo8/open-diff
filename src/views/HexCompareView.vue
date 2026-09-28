@@ -1603,7 +1603,7 @@ h2 {
   flex: 0 0 auto;
   min-width: 420px;
   min-height: 17.5px;
-  border-bottom: 1px solid #c0c0c0;
+  border-bottom: 0;
   background: #ffffff;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 11px;

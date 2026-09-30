@@ -18,51 +18,142 @@ pub struct ScriptCommand {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum ScriptCommandKind {
-    Load { paths: Vec<String> },
-    Filter { patterns: Vec<String> },
-    Compare { options: Vec<String> },
-    TextReport { output: String },
-    FolderReport { output: String },
-    FileReport { output: String },
-    HexReport { output: String },
-    TableReport { output: String },
-    PictureReport { output: String },
-    VersionReport { output: String },
-    RegistryReport { output: String },
-    MediaReport { output: String },
-    Log { message: String },
+    Load {
+        paths: Vec<String>,
+    },
+    Filter {
+        patterns: Vec<String>,
+    },
+    Compare {
+        options: Vec<String>,
+    },
+    TextReport {
+        output: String,
+    },
+    FolderReport {
+        output: String,
+    },
+    FileReport {
+        output: String,
+    },
+    HexReport {
+        output: String,
+    },
+    TableReport {
+        output: String,
+    },
+    PictureReport {
+        output: String,
+    },
+    VersionReport {
+        output: String,
+    },
+    RegistryReport {
+        output: String,
+    },
+    MediaReport {
+        output: String,
+    },
+    Log {
+        message: String,
+    },
     Beep,
-    Option { key: String, value: String },
-    Select { query: String },
-    Copy { source: String, destination: String },
-    CopyTo { destination: String },
-    Move { source: String, destination: String },
-    MoveTo { destination: String },
-    Delete { path: String },
-    Rename { from: String, to: String },
-    Touch { path: String },
-    Mkdir { path: String },
-    Attrib { path: String, readonly: bool },
-    Expand { path: Option<String> },
-    Collapse { path: Option<String> },
-    Snapshot { output: String },
-    Sync { strategy: Option<String> },
-    Criteria { tokens: Vec<String> },
-    FolderSyncReport { output: String },
-    FolderMergeReport { output: String },
-    ArchiveReport { output: String },
+    Option {
+        key: String,
+        value: String,
+    },
+    Select {
+        query: String,
+    },
+    Copy {
+        source: String,
+        destination: String,
+    },
+    CopyTo {
+        destination: String,
+    },
+    Move {
+        source: String,
+        destination: String,
+    },
+    MoveTo {
+        destination: String,
+    },
+    Delete {
+        path: String,
+    },
+    Rename {
+        from: String,
+        to: String,
+    },
+    Touch {
+        path: String,
+    },
+    Mkdir {
+        path: String,
+    },
+    Attrib {
+        path: String,
+        readonly: bool,
+    },
+    Expand {
+        path: Option<String>,
+    },
+    Collapse {
+        path: Option<String>,
+    },
+    Snapshot {
+        output: String,
+    },
+    Sync {
+        strategy: Option<String>,
+    },
+    Criteria {
+        tokens: Vec<String>,
+    },
+    FolderSyncReport {
+        output: String,
+    },
+    FolderMergeReport {
+        output: String,
+    },
+    ArchiveReport {
+        output: String,
+    },
     Exit,
-    View { mode: String },
-    Align { mode: String },
-    Wait { milliseconds: u64 },
-    If { condition: String },
+    View {
+        mode: String,
+    },
+    Align {
+        mode: String,
+    },
+    Wait {
+        milliseconds: u64,
+    },
+    Prompt {
+        message: String,
+        default: Option<String>,
+    },
+    If {
+        condition: String,
+    },
     Else,
     EndIf,
-    Call { path: String },
-    Include { path: String },
-    Rem { message: String },
-    Cd { path: String },
-    Unsupported { name: String },
+    Call {
+        path: String,
+    },
+    Include {
+        path: String,
+    },
+    Rem {
+        message: String,
+    },
+    Cd {
+        path: String,
+    },
+    Unsupported {
+        name: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -999,6 +1090,53 @@ where
                     state.logs.push("stopped".to_owned());
                 }
             }
+            ScriptCommandKind::Prompt { message, default } => {
+                let message =
+                    expand_script_variables(message, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?;
+                let default = match default {
+                    Some(value) => Some(
+                        expand_script_variables(value, &execution.variables).map_err(|error| {
+                            execution_error(
+                                command,
+                                format!("{} at line {}", error.message, error.line),
+                            )
+                        })?,
+                    ),
+                    None => None,
+                };
+                let env_key = format!(
+                    "OPEN_DIFF_SCRIPT_PROMPT_{}",
+                    message
+                        .chars()
+                        .map(|ch| {
+                            if ch.is_ascii_alphanumeric() {
+                                ch.to_ascii_uppercase()
+                            } else {
+                                '_'
+                            }
+                        })
+                        .collect::<String>()
+                );
+                let answer = std::env::var(&env_key)
+                    .ok()
+                    .filter(|value| !value.is_empty())
+                    .or(default.clone())
+                    .unwrap_or_default();
+                state
+                    .options
+                    .retain(|option| !option.key.eq_ignore_ascii_case("prompt"));
+                state.options.push(ScriptOption {
+                    key: "prompt".to_owned(),
+                    value: answer.clone(),
+                });
+                state.logs.push(format!("prompt: {message} => {answer}"));
+                state.file_operations.push(format!("PROMPT {message}"));
+            }
             ScriptCommandKind::Exit => {
                 state.exited = true;
             }
@@ -1422,7 +1560,8 @@ fn script_command_log_status(command: &ScriptCommandKind) -> LogStatus {
         | ScriptCommandKind::Exit
         | ScriptCommandKind::View { .. }
         | ScriptCommandKind::Align { .. }
-        | ScriptCommandKind::Wait { .. } => LogStatus::Info,
+        | ScriptCommandKind::Wait { .. }
+        | ScriptCommandKind::Prompt { .. } => LogStatus::Info,
         _ => LogStatus::Succeeded,
     }
 }
@@ -1467,6 +1606,7 @@ impl ScriptCommandKind {
             ScriptCommandKind::View { .. } => "VIEW",
             ScriptCommandKind::Align { .. } => "ALIGN",
             ScriptCommandKind::Wait { .. } => "WAIT",
+            ScriptCommandKind::Prompt { .. } => "PROMPT",
             ScriptCommandKind::If { .. } => "IF",
             ScriptCommandKind::Else => "ELSE",
             ScriptCommandKind::EndIf => "ENDIF",
@@ -1946,6 +2086,14 @@ fn parse_command(
                 .map_err(|_| parse_error(line, format!("invalid PAUSE duration: {}", args[0])))?;
             Ok(ScriptCommandKind::Wait { milliseconds })
         }
+        "PROMPT" => {
+            if args.is_empty() {
+                return Err(parse_error(line, "PROMPT requires a message"));
+            }
+            let message = args[0].clone();
+            let default = args.get(1).cloned();
+            Ok(ScriptCommandKind::Prompt { message, default })
+        }
         "SNAPSHOT" => {
             parse_single_output_command(line, args, |output| ScriptCommandKind::Snapshot { output })
         }
@@ -2085,6 +2233,7 @@ pub fn supported_script_commands() -> &'static [&'static str] {
         "MD",
         "ECHO",
         "PAUSE",
+        "PROMPT",
         "ATTRIB",
         "EXPAND",
         "COLLAPSE",
@@ -2873,9 +3022,64 @@ fn parse_single_output_command(
     Ok(build(args[0].clone()))
 }
 
+fn split_condition_on_keyword(condition: &str, keyword: &str) -> Option<(String, String)> {
+    let upper_keyword = format!(" {keyword} ");
+    let haystack = condition.to_ascii_uppercase();
+    let needle = upper_keyword.to_ascii_uppercase();
+    let mut depth = 0usize;
+    let bytes = condition.as_bytes();
+    let hay = haystack.as_bytes();
+    let needle_bytes = needle.as_bytes();
+    let mut i = 0usize;
+    while i + needle_bytes.len() <= hay.len() {
+        match bytes[i] as char {
+            '(' => depth += 1,
+            ')' => depth = depth.saturating_sub(1),
+            _ => {}
+        }
+        if depth == 0 && hay[i..].starts_with(needle_bytes) {
+            let left = condition[..i].trim().to_owned();
+            let right = condition[i + needle_bytes.len()..].trim().to_owned();
+            if !left.is_empty() && !right.is_empty() {
+                return Some((left, right));
+            }
+        }
+        i += 1;
+    }
+    None
+}
+
 fn evaluate_script_if_condition(condition: &str, state: &ScriptRuntimeState) -> bool {
     let trimmed = condition.trim();
+    if trimmed.is_empty() {
+        return false;
+    }
+
+    if let Some(inner) = trimmed
+        .strip_prefix('(')
+        .and_then(|value| value.strip_suffix(')'))
+    {
+        // Only unwrap matching outer parentheses when they wrap the whole expression.
+        if balanced_parentheses(inner) {
+            return evaluate_script_if_condition(inner, state);
+        }
+    }
+
+    if let Some((left, right)) = split_condition_on_keyword(trimmed, "OR") {
+        return evaluate_script_if_condition(&left, state)
+            || evaluate_script_if_condition(&right, state);
+    }
+
+    if let Some((left, right)) = split_condition_on_keyword(trimmed, "AND") {
+        return evaluate_script_if_condition(&left, state)
+            && evaluate_script_if_condition(&right, state);
+    }
+
     let lower = trimmed.to_ascii_lowercase();
+    if lower.starts_with("not ") {
+        return !evaluate_script_if_condition(trimmed[4..].trim(), state);
+    }
+
     match lower.as_str() {
         "true" | "1" | "yes" => true,
         "false" | "0" | "no" => false,
@@ -2895,6 +3099,10 @@ fn evaluate_script_if_condition(condition: &str, state: &ScriptRuntimeState) -> 
             .as_ref()
             .map(|value| !value.is_empty())
             .unwrap_or(false),
+        "prompted" => state
+            .options
+            .iter()
+            .any(|option| option.key.eq_ignore_ascii_case("prompt")),
         other if other.starts_with("exists ") => {
             let path = trimmed[7..].trim().trim_matches('"');
             std::path::Path::new(path).exists()
@@ -2911,6 +3119,23 @@ fn evaluate_script_if_condition(condition: &str, state: &ScriptRuntimeState) -> 
             false
         }
     }
+}
+
+fn balanced_parentheses(value: &str) -> bool {
+    let mut depth = 0isize;
+    for ch in value.chars() {
+        match ch {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth < 0 {
+                    return false;
+                }
+            }
+            _ => {}
+        }
+    }
+    depth == 0
 }
 
 fn tokenize_script_line(raw_line: &str, line: usize) -> Result<Vec<String>, ScriptParseError> {
@@ -3098,6 +3323,80 @@ mod tests {
         assert!(supported_script_commands().contains(&"MKDIR"));
         assert!(supported_script_commands().contains(&"ECHO"));
         assert!(supported_script_commands().contains(&"PAUSE"));
+        assert!(supported_script_commands().contains(&"PROMPT"));
+    }
+
+    #[test]
+    fn if_condition_supports_and_or_not_and_parentheses() {
+        let state = ScriptRuntimeState {
+            last_compare: Some(ScriptCompareSummary {
+                compared: 2,
+                different: 1,
+            }),
+            ..ScriptRuntimeState::default()
+        };
+        assert!(evaluate_script_if_condition(
+            "different AND compared",
+            &state
+        ));
+        assert!(!evaluate_script_if_condition("equal AND compared", &state));
+        assert!(evaluate_script_if_condition("equal OR different", &state));
+        assert!(!evaluate_script_if_condition("NOT different", &state));
+        assert!(evaluate_script_if_condition(
+            "(equal OR different) AND compared",
+            &state
+        ));
+        assert!(!evaluate_script_if_condition(
+            "NOT (different OR equal)",
+            &state
+        ));
+    }
+
+    #[test]
+    fn prompt_stores_default_answer_for_noninteractive_runs() {
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script("PROMPT \"Name?\" guest\n").expect("prompt should parse");
+        assert!(matches!(
+            &script.commands[0].kind,
+            ScriptCommandKind::Prompt { message, default }
+                if message == "Name?" && default.as_deref() == Some("guest")
+        ));
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext {
+                mode: ScriptExecutionMode::Silent,
+                ..ScriptExecutionContext::default()
+            },
+            &mut NoopCompare,
+            &mut NoopReport,
+        )
+        .expect("prompt should run");
+        assert!(result
+            .state
+            .options
+            .iter()
+            .any(|option| option.key == "prompt" && option.value == "guest"));
+        assert!(result
+            .state
+            .logs
+            .iter()
+            .any(|line| line.contains("prompt: Name? => guest")));
+        assert!(evaluate_script_if_condition("prompted", &result.state));
     }
 
     #[test]

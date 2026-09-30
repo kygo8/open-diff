@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
   applyManualAlignments,
+  folderManualAlignmentsStorageKey,
+  loadManualAlignmentsForRoots,
   mergeAlignedOrphans,
   removeManualAlignment,
+  saveManualAlignmentsForRoots,
   upsertManualAlignment,
   type AlignableFolderRow,
 } from './folderManualAlignments'
@@ -75,5 +78,33 @@ describe('folderManualAlignments', () => {
     expect(next.some((row) => row.relativePath === 'notes.md')).toBe(false)
     expect(next.some((row) => row.relativePath === 'extra-right.md')).toBe(false)
     expect(mergeAlignedOrphans(rows[0], rows[1]).id).toContain('align-')
+  })
+
+  it('persists Align With pairs per compare roots', () => {
+    const storage = {
+      store: {} as Record<string, string>,
+      getItem(key: string) {
+        return this.store[key] ?? null
+      },
+      setItem(key: string, value: string) {
+        this.store[key] = value
+      },
+    }
+
+    saveManualAlignmentsForRoots(
+      '/left',
+      '/right',
+      [{ leftRelativePath: 'a.md', rightRelativePath: 'b.md' }],
+      storage,
+    )
+
+    expect(storage.store[folderManualAlignmentsStorageKey]).toContain('a.md')
+    expect(loadManualAlignmentsForRoots('/left', '/right', storage)).toEqual([
+      { leftRelativePath: 'a.md', rightRelativePath: 'b.md' },
+    ])
+    expect(loadManualAlignmentsForRoots('/other', '/right', storage)).toEqual([])
+
+    saveManualAlignmentsForRoots('/left', '/right', [], storage)
+    expect(loadManualAlignmentsForRoots('/left', '/right', storage)).toEqual([])
   })
 })

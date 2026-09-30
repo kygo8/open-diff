@@ -31,8 +31,10 @@ import {
 } from '@/app/folderNameFilters'
 import {
   applyManualAlignments,
+  loadManualAlignmentsForRoots,
   mergeAlignedOrphans,
   removeManualAlignment,
+  saveManualAlignmentsForRoots,
   upsertManualAlignment,
   type ManualAlignmentPair,
 } from '@/app/folderManualAlignments'
@@ -1658,8 +1660,8 @@ function applyFolderCompareResponse(response: FolderCompareResponse): void {
   )
   const nextRootKey = `${response.leftRoot}|${response.rightRoot}`
 
-  if (alignmentRootKey.value && alignmentRootKey.value !== nextRootKey) {
-    manualAlignments.value = []
+  if (!alignmentRootKey.value || alignmentRootKey.value !== nextRootKey) {
+    manualAlignments.value = loadManualAlignmentsForRoots(response.leftRoot, response.rightRoot)
   }
 
   const previousExpanded = expandedDirectoryIds.value
@@ -1847,6 +1849,7 @@ function alignSelectedWithTarget(): void {
     leftSide.relativePath,
     rightSide.relativePath,
   )
+  saveManualAlignmentsForRoots(leftRoot.value, rightRoot.value, manualAlignments.value)
   alignmentRootKey.value = `${leftRoot.value}|${rightRoot.value}`
   rows.value = rows.value
     .filter((row) => row.id !== leftSide.id && row.id !== rightSide.id)
@@ -1874,6 +1877,7 @@ function breakSelectedAlignment(): void {
     leftRelative,
     rightRelative,
   )
+  saveManualAlignmentsForRoots(leftRoot.value, rightRoot.value, manualAlignments.value)
 
   const leftOnly: FolderTreeRow = {
     id: `${selected.id}-left`,

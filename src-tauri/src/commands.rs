@@ -61,6 +61,7 @@ pub struct TableCompareChangedCell {
     pub left_value: Option<String>,
     pub right_value: Option<String>,
     pub status: String,
+    pub important: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
@@ -653,7 +654,7 @@ pub fn compare_table_csv(
     right: String,
 ) -> Result<TableCompareResponse, AppErrorPayload> {
     compare_table(
-        left, right, None, None, None, None, None, None, None, None, None, None, None,
+        left, right, None, None, None, None, None, None, None, None, None, None, None, None, None,
     )
 }
 
@@ -673,6 +674,8 @@ pub fn compare_table(
     delimiter: Option<String>,
     ignore_case: Option<bool>,
     first_row_is_header: Option<bool>,
+    numeric_tolerance: Option<f64>,
+    date_time_tolerance_seconds: Option<i64>,
 ) -> Result<TableCompareResponse, AppErrorPayload> {
     let ignore_case = ignore_case.unwrap_or(true);
     let first_row_is_header = first_row_is_header.unwrap_or(true);
@@ -728,8 +731,16 @@ pub fn compare_table(
             case_sensitive: !ignore_case,
         },
     );
-    let row_diffs =
-        table_core::compare_aligned_rows(&projected_left, &projected_right, &alignments);
+    let comparison_options = table_core::TableComparisonOptions {
+        numeric_tolerance: numeric_tolerance.filter(|value| value.is_finite() && *value >= 0.0),
+        date_time_tolerance_seconds: date_time_tolerance_seconds.filter(|value| *value >= 0),
+    };
+    let row_diffs = table_core::compare_aligned_rows_with_options(
+        &projected_left,
+        &projected_right,
+        &alignments,
+        &comparison_options,
+    );
     let changed_cells = row_diffs
         .iter()
         .flat_map(|row| {
@@ -742,6 +753,7 @@ pub fn compare_table(
                     left_value: cell.left.as_ref().map(table_cell_value_to_text),
                     right_value: cell.right.as_ref().map(table_cell_value_to_text),
                     status: table_diff_status_label(&cell.status),
+                    important: cell.important,
                 })
         })
         .collect::<Vec<_>>();
@@ -6832,6 +6844,8 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
         )
         .expect("valid tsv inputs should compare");
 
@@ -6849,6 +6863,36 @@ mod tests {
             .column_mappings
             .iter()
             .all(|mapping| mapping.left_column.as_deref() != Some("note")));
+        assert!(response.changed_cells[0].important);
+    }
+
+    #[test]
+    fn compare_table_marks_numeric_and_date_diffs_within_tolerance_unimportant() {
+        let response = compare_table(
+            "id,amount,when\n1,12.00,2026-06-27T12:00:00Z\n".to_owned(),
+            "id,amount,when\n1,12.04,2026-06-27T12:00:30Z\n".to_owned(),
+            Some("csv".to_owned()),
+            None,
+            None,
+            None,
+            None,
+            Some(vec![0]),
+            None,
+            None,
+            None,
+            None,
+            None,
+            Some(0.05),
+            Some(60),
+        )
+        .expect("valid csv inputs should compare");
+
+        assert_eq!(response.summary.changed_cell_count, 2);
+        assert!(
+            response.changed_cells.iter().all(|cell| !cell.important),
+            "tolerance should mark numeric and date diffs unimportant: {:?}",
+            response.changed_cells
+        );
     }
 
     #[test]
@@ -7460,6 +7504,8 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
         )
         .expect("html tables should compare");
 
@@ -7492,6 +7538,8 @@ mod tests {
             None,
             None,
             Some(vec![0]),
+            None,
+            None,
             None,
             None,
             None,
@@ -7541,6 +7589,8 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
         )
         .expect("excel sheets should pair by name");
 
@@ -7567,6 +7617,8 @@ mod tests {
             Some("Flags".to_owned()),
             Some("Flags".to_owned()),
             Some(vec![0]),
+            None,
+            None,
             None,
             None,
             None,
@@ -7613,6 +7665,8 @@ mod tests {
             None,
             None,
             None,
+            None,
+            None,
         )
         .expect("html tables should pair by name");
 
@@ -7634,6 +7688,8 @@ mod tests {
             Some("pets".to_owned()),
             Some("pets".to_owned()),
             Some(vec![0]),
+            None,
+            None,
             None,
             None,
             None,

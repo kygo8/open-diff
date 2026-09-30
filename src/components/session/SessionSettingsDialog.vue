@@ -93,6 +93,8 @@ const props = withDefaults(
       ignoredColumns: [],
       ignoreCase: true,
       firstRowIsHeader: true,
+      numericTolerance: '',
+      dateTimeToleranceSeconds: '',
     }),
     hexOptions: () => defaultHexCompareSessionOptions(),
     pictureOptions: () => defaultPictureCompareOptions(),
@@ -630,6 +632,26 @@ function applySettings(): void {
             data-testid="session-settings-table-ignore-case"
           />
           <span>{{ $t('ui.tableIgnoreCaseDefault') }}</span>
+        </label>
+        <label class="stack">
+          <span>{{ $t('ui.tableNumericTolerance') }}</span>
+          <input
+            v-model="draftTable.numericTolerance"
+            type="text"
+            inputmode="decimal"
+            data-testid="session-settings-table-numeric-tolerance"
+            :placeholder="$t('ui.tableNumericToleranceHint')"
+          />
+        </label>
+        <label class="stack">
+          <span>{{ $t('ui.tableDateTimeToleranceSeconds') }}</span>
+          <input
+            v-model="draftTable.dateTimeToleranceSeconds"
+            type="text"
+            inputmode="numeric"
+            data-testid="session-settings-table-date-tolerance"
+            :placeholder="$t('ui.tableDateTimeToleranceHint')"
+          />
         </label>
       </div>
 

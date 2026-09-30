@@ -114,6 +114,8 @@ export function compareTable(request: TableCompareRequest): Promise<TableCompare
     delimiter: request.delimiter,
     ignoreCase: request.ignoreCase !== false,
     firstRowIsHeader: request.firstRowIsHeader !== false,
+    numericTolerance: request.numericTolerance,
+    dateTimeToleranceSeconds: request.dateTimeToleranceSeconds,
   })
 }
 

@@ -122,6 +122,10 @@ export interface TableCompareRequest {
   delimiter?: string
   ignoreCase?: boolean
   firstRowIsHeader?: boolean
+  /** Absolute numeric delta treated as unimportant when set. */
+  numericTolerance?: number
+  /** Absolute date-time delta in seconds treated as unimportant when set. */
+  dateTimeToleranceSeconds?: number
 }
 
 export interface TableCompareColumn {
@@ -148,6 +152,8 @@ export interface TableCompareChangedCell {
   leftValue?: string
   rightValue?: string
   status: string
+  /** False when numeric/date tolerance treats the cell change as unimportant. */
+  important?: boolean
 }
 
 export interface TableCompareResponse {

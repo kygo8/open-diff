@@ -776,6 +776,13 @@ fn table_cell_value_to_report_text(value: &TableCellValue) -> String {
     }
 }
 
+fn table_cell_date_time_text(value: &TableCellValue) -> Option<&str> {
+    match value {
+        TableCellValue::DateTime(text) | TableCellValue::Text(text) => Some(text.as_str()),
+        _ => None,
+    }
+}
+
 fn date_time_difference_is_within_tolerance(
     left: &Option<TableCellValue>,
     right: &Option<TableCellValue>,
@@ -785,16 +792,20 @@ fn date_time_difference_is_within_tolerance(
         return false;
     };
 
-    let (Some(TableCellValue::DateTime(left)), Some(TableCellValue::DateTime(right))) =
-        (left, right)
-    else {
+    let (Some(left), Some(right)) = (left, right) else {
+        return false;
+    };
+    let (Some(left_text), Some(right_text)) = (
+        table_cell_date_time_text(left),
+        table_cell_date_time_text(right),
+    ) else {
         return false;
     };
 
-    let Some(left_seconds) = parse_table_date_time_seconds(left) else {
+    let Some(left_seconds) = parse_table_date_time_seconds(left_text) else {
         return false;
     };
-    let Some(right_seconds) = parse_table_date_time_seconds(right) else {
+    let Some(right_seconds) = parse_table_date_time_seconds(right_text) else {
         return false;
     };
 
@@ -1943,6 +1954,60 @@ mod tests {
         assert_eq!(diff[0].status, TableDiffStatus::Modified);
         assert_eq!(diff[0].cells[1].status, TableDiffStatus::Modified);
         assert!(!diff[0].cells[1].important);
+    }
+
+    #[test]
+    fn marks_csv_style_text_date_differences_within_tolerance_as_unimportant() {
+        let left = TableSheet {
+            name: "Inventory".to_owned(),
+            index: 0,
+            columns: vec![
+                TableColumn {
+                    index: 0,
+                    name: "SKU".to_owned(),
+                },
+                TableColumn {
+                    index: 1,
+                    name: "Updated At".to_owned(),
+                },
+            ],
+            rows: vec![TableRow {
+                index: 0,
+                cells: vec![
+                    TableCell {
+                        row_index: 0,
+                        column_index: 0,
+                        value: TableCellValue::Text("A-001".to_owned()),
+                    },
+                    TableCell {
+                        row_index: 0,
+                        column_index: 1,
+                        value: TableCellValue::Text("2026-06-27T12:00:00Z".to_owned()),
+                    },
+                ],
+            }],
+        };
+        let mut right = left.clone();
+        right.rows[0].cells[1].value = TableCellValue::Text("2026-06-27T12:00:30Z".to_owned());
+        let alignments = align_rows_by_key_columns(
+            &left,
+            &right,
+            &RowAlignmentOptions {
+                key_column_indices: vec![0],
+                case_sensitive: true,
+            },
+        );
+        let diffs = compare_aligned_rows_with_options(
+            &left,
+            &right,
+            &alignments,
+            &TableComparisonOptions {
+                numeric_tolerance: None,
+                date_time_tolerance_seconds: Some(60),
+            },
+        );
+        assert_eq!(diffs[0].cells[1].status, TableDiffStatus::Modified);
+        assert!(!diffs[0].cells[1].important);
     }
 
     #[test]

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { listen, type UnlistenFn } from '@tauri-apps/api/event'
 import { exportFolderCompareReport, exportTextCompareReport } from '@/api/diff'
 import { revealPathInOs } from '@/api/integration'
-import { runScript, stopScript } from '@/api/script'
+import { answerScriptPrompt, runScript, stopScript } from '@/api/script'
 import { playCompareCompleteBeep } from '@/app/compareCompleteNotify'
 import { useSettingsStore } from '@/stores/settings'
 import { useTabsStore } from '@/stores/tabs'
@@ -61,6 +62,47 @@ const router = useRouter()
 const scriptRunning = ref(false)
 const selectedSampleId = ref(sampleScripts[0]?.id ?? 'text-report')
 const viewActions = useViewActionsStore()
+const scriptPromptVisible = ref(false)
+const scriptPromptId = ref(0)
+const scriptPromptMessage = ref('')
+const scriptPromptAnswer = ref('')
+let scriptPromptUnlisten: UnlistenFn | undefined
+
+onMounted(() => {
+  void listen<{ id: number; message: string; default?: string | null }>(
+    'script-prompt-request',
+    (event) => {
+      scriptPromptId.value = event.payload.id
+      scriptPromptMessage.value = event.payload.message
+      scriptPromptAnswer.value = event.payload.default ?? ''
+      scriptPromptVisible.value = true
+    },
+  ).then((unlisten) => {
+    scriptPromptUnlisten = unlisten
+  })
+})
+
+onBeforeUnmount(() => {
+  scriptPromptUnlisten?.()
+  scriptPromptUnlisten = undefined
+})
+
+async function submitScriptPrompt(cancelled: boolean): Promise<void> {
+  const id = scriptPromptId.value
+  const value = scriptPromptAnswer.value
+
+  scriptPromptVisible.value = false
+
+  try {
+    await answerScriptPrompt({
+      id,
+      value: cancelled ? undefined : value,
+      cancelled,
+    })
+  } catch (event) {
+    error.value = String(event)
+  }
+}
 
 function initialReportKind(): ReportKind {
   if (lastCompare.text) {
@@ -608,6 +650,52 @@ function fillFromLastCompare(): void {
       </WorkbenchInspector>
     </template>
   </WorkbenchShell>
+
+  <div
+    v-if="scriptPromptVisible"
+    class="script-prompt-overlay"
+    data-testid="script-prompt-overlay"
+  >
+    <section
+      class="script-prompt-dialog"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="$t('ui.scriptPromptTitle')"
+      data-testid="script-prompt-dialog"
+    >
+      <header>
+        <h2>{{ $t('ui.scriptPromptTitle') }}</h2>
+        <p data-testid="script-prompt-message">{{ scriptPromptMessage }}</p>
+      </header>
+      <label>
+        <span>{{ $t('ui.scriptPromptAnswer') }}</span>
+        <input
+          v-model="scriptPromptAnswer"
+          type="text"
+          data-testid="script-prompt-input"
+          @keydown.enter.prevent="submitScriptPrompt(false)"
+        />
+      </label>
+      <footer>
+        <button
+          type="button"
+          class="secondary-action"
+          data-testid="script-prompt-cancel"
+          @click="submitScriptPrompt(true)"
+        >
+          {{ $t('ui.cancel') }}
+        </button>
+        <button
+          type="button"
+          class="primary-action"
+          data-testid="script-prompt-ok"
+          @click="submitScriptPrompt(false)"
+        >
+          {{ $t('ui.ok') }}
+        </button>
+      </footer>
+    </section>
+  </div>
 </template>
 
 <style scoped>
@@ -763,5 +851,64 @@ function fillFromLastCompare(): void {
   font-size: 12px;
   line-height: 1.45;
   overflow-wrap: anywhere;
+}
+
+.script-prompt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--app-canvas) 55%, transparent);
+}
+
+.script-prompt-dialog {
+  display: grid;
+  gap: 8px;
+  width: min(420px, calc(100vw - 24px));
+  padding: 10px 12px;
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
+  box-shadow: 0 8px 24px color-mix(in srgb, #000000 25%, transparent);
+}
+
+.script-prompt-dialog header {
+  display: grid;
+  gap: 4px;
+}
+
+.script-prompt-dialog h2 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.script-prompt-dialog p {
+  margin: 0;
+  color: var(--app-text-muted);
+  white-space: pre-wrap;
+}
+
+.script-prompt-dialog label {
+  display: grid;
+  gap: 4px;
+}
+
+.script-prompt-dialog label span {
+  color: var(--app-text-muted);
+  font-size: 11px;
+}
+
+.script-prompt-dialog input {
+  min-height: 28px;
+  padding: 4px 6px;
+  border: 1px solid var(--app-border);
+  background: var(--app-canvas);
+  color: inherit;
+}
+
+.script-prompt-dialog footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
 }
 </style>

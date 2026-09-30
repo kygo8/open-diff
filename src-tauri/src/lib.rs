@@ -77,6 +77,7 @@ pub fn run() {
             commands::unregister_unix_shell_integration,
             commands::rename_folder_entry,
             commands::run_script,
+            commands::answer_script_prompt,
             commands::stop_script,
             commands::save_hex_edits,
             commands::save_remote_profile,

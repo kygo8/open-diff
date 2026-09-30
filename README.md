@@ -263,7 +263,7 @@ Before creating a release tag, make sure the version is synchronized across:
 These items stay unimplemented and are labeled as such in the UI:
 
 - Hardened / production OAuth for Dropbox/OneDrive (Remote Profiles open a browser authorize URL from a user-supplied client id and accept a pasted redirect URL or access token; no bundled app secrets). Dropbox API v2 and Microsoft Graph list/read/upload accept the stored access token; not production-hardened. S3, FTPS, and SVN remotes are available; not production-hardened.
-- Remaining advanced legacy script dialect corners (fully interactive GUI prompts and vendor-specific verbs). Nested IF with AND/OR/NOT/parentheses and non-interactive PROMPT (default or OPEN_DIFF_SCRIPT_PROMPT_* env) are shipped; LOAD/COMPARE/REPORT, file verbs, IF/ELSE/ENDIF, CALL/INCLUDE, REM/CD, aliases, samples, a run log, and Stop remain available.
+- Remaining advanced legacy script dialect corners (vendor-specific verbs). Nested IF with AND/OR/NOT/parentheses, non-interactive PROMPT (default or OPEN_DIFF_SCRIPT_PROMPT_* env), and interactive GUI PROMPT in the Script session are shipped; LOAD/COMPARE/REPORT, file verbs, IF/ELSE/ENDIF, CALL/INCLUDE, REM/CD, aliases, samples, a run log, and Stop remain available.
 - Niche report layouts beyond the shipped HTML/side-by-side HTML/text/JSON/XML/CSV/Markdown/TSV/YAML exports.
 
 ## Typical Use Cases

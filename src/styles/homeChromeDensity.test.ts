@@ -116,3 +116,20 @@ describe('home session-tree footer fill', () => {
     expect(homeView).toMatch(/\.bc-tree-footer\s*\{[\s\S]*?background:\s*#fdfdfd/)
   })
 })
+
+describe('home launch cream', () => {
+  it('paints Folder launch-card icons with capture cream/gold gradient', () => {
+    expect(homeView).toMatch(
+      /data-session-type='folder-compare'\] \.session-card-icon[\s\S]*?background:\s*linear-gradient\(180deg,\s*#fff6e0/,
+    )
+    expect(homeView).toMatch(
+      /data-session-type='folder-compare'\] \.session-card-icon[\s\S]*?#db8f39/,
+    )
+    expect(homeView).toMatch(
+      /data-session-type='folder-merge'\] \.session-card-icon[\s\S]*?#ffe0b0/,
+    )
+    expect(homeView).toMatch(
+      /data-session-type='folder-sync'\] \.session-card-icon[\s\S]*?color:\s*#b66600/,
+    )
+  })
+})

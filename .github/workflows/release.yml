@@ -483,7 +483,7 @@ jobs:
         run: corepack enable
 
       - name: Setup Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v2
         with:
           toolchain: stable
           target: ${{ matrix.rust-target }}

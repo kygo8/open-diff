@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  applyLiveRegistryKey,
   applyLiveRegistryValue,
   applyTextPatch,
   applyTextPatchToFile,
@@ -493,6 +494,18 @@ describe('diff api', () => {
       name: 'Theme',
       kind: 'REG_SZ',
       data: 'dark',
+    })
+  })
+
+  it('applies a live registry key create through the Tauri command', async () => {
+    await applyLiveRegistryKey({
+      targetKey: 'HKCU\\Software\\OpenDiff\\Tree',
+      action: 'create',
+    })
+
+    expect(invoke).toHaveBeenCalledWith('apply_live_registry_key', {
+      targetKey: 'HKCU\\Software\\OpenDiff\\Tree',
+      action: 'create',
     })
   })
 

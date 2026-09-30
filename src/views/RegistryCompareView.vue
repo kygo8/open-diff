@@ -7,6 +7,7 @@ import {
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import {
+  applyLiveRegistryKey,
   applyLiveRegistryValue,
   compareRegistryExports,
   compareRegistryHiveFiles,
@@ -68,6 +69,7 @@ const registryOptions = ref<RegistryCompareOptionsState>(loadRegistryCompareOpti
 const valueFilter = ref<RegistryValueFilter>(registryOptions.value.defaultFilter)
 const collapsedKeyPaths = ref<Set<string>>(new Set())
 const selectedKeyPath = ref<string>()
+const newRegistryKeyName = ref('')
 const selectedValueKey = ref<string>()
 const lastApplyAction = ref('')
 const liveQueryKey = ref('')
@@ -377,6 +379,67 @@ async function applySelectedValue(source: 'left' | 'right'): Promise<void> {
     }
 
     lastApplyAction.value = t(statusKey, { name: current.name })
+  } catch (event) {
+    lastApplyAction.value = String(event)
+    liveQueryError.value = String(event)
+  }
+}
+
+async function createSelectedRegistryKey(): Promise<void> {
+  const parent = selectedKeyPath.value?.trim()
+  const child = newRegistryKeyName.value.trim()
+
+  if (!parent || !child) {
+    lastApplyAction.value = t('ui.newRegistryKeyName')
+
+    return
+  }
+
+  const targetKey = `${parent}/${child}`.replaceAll('/', '\\')
+
+  if (!policy.isWindows) {
+    lastApplyAction.value = t('status.registryKeyCreated', { key: targetKey })
+    newRegistryKeyName.value = ''
+
+    return
+  }
+
+  try {
+    const result = await applyLiveRegistryKey({
+      targetKey,
+      action: 'create',
+    })
+
+    lastApplyAction.value = t('status.registryKeyCreated', { key: result.targetKey })
+    newRegistryKeyName.value = ''
+  } catch (event) {
+    lastApplyAction.value = String(event)
+    liveQueryError.value = String(event)
+  }
+}
+
+async function deleteSelectedRegistryKey(): Promise<void> {
+  const path = selectedKeyPath.value?.trim()
+
+  if (!path) {
+    return
+  }
+
+  const targetKey = path.replaceAll('/', '\\')
+
+  if (!policy.isWindows) {
+    lastApplyAction.value = t('status.registryKeyDeleted', { key: targetKey })
+
+    return
+  }
+
+  try {
+    const result = await applyLiveRegistryKey({
+      targetKey,
+      action: 'delete',
+    })
+
+    lastApplyAction.value = t('status.registryKeyDeleted', { key: result.targetKey })
   } catch (event) {
     lastApplyAction.value = String(event)
     liveQueryError.value = String(event)
@@ -1000,6 +1063,31 @@ function runRegistryToolbarCommand(commandId: string): void {
           @click="applySelectedValue('right')"
         >
           {{ $t('ui.applyRightValue') }}
+        </button>
+        <label class="registry-new-key">
+          <span>{{ $t('ui.newRegistryKeyName') }}</span>
+          <input
+            v-model="newRegistryKeyName"
+            type="text"
+            data-testid="registry-new-key-name"
+            :placeholder="$t('ui.newRegistryKeyName')"
+          />
+        </label>
+        <button
+          type="button"
+          data-testid="registry-create-key"
+          :disabled="!selectedKeyPath || !newRegistryKeyName.trim()"
+          @click="createSelectedRegistryKey"
+        >
+          {{ $t('ui.createRegistryKey') }}
+        </button>
+        <button
+          type="button"
+          data-testid="registry-delete-key"
+          :disabled="!selectedKeyPath"
+          @click="deleteSelectedRegistryKey"
+        >
+          {{ $t('ui.deleteRegistryKey') }}
         </button>
         <span
           v-if="!policy.isWindows"
@@ -1729,5 +1817,26 @@ h1 {
 
 .path-side-footer-muted {
   color: #9ca3af;
+}
+
+.registry-new-key {
+  display: inline-grid;
+  align-items: center;
+  gap: 2px;
+}
+
+.registry-new-key span {
+  color: var(--app-text-muted);
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.registry-new-key input {
+  min-width: 140px;
+  min-height: 24px;
+  padding: 2px 4px;
+  border: 1px solid var(--app-border);
+  background: var(--app-canvas);
+  color: inherit;
 }
 </style>

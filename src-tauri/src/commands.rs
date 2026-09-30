@@ -265,6 +265,13 @@ pub struct ApplyLiveRegistryValueResponse {
     pub action: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ApplyLiveRegistryKeyResponse {
+    pub target_key: String,
+    pub action: String,
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct RegistryKeyNode {
@@ -3401,12 +3408,59 @@ pub fn apply_live_registry_value(
     let action = match &op {
         registry_core::RegistryWriteOp::Set { .. } => "set",
         registry_core::RegistryWriteOp::Delete { .. } => "delete",
+        registry_core::RegistryWriteOp::CreateKey { .. }
+        | registry_core::RegistryWriteOp::DeleteKey { .. } => {
+            unreachable!("value write path only emits set/delete")
+        }
     };
     registry_core::apply_live_registry_write(&op).map_err(registry_error)?;
     Ok(ApplyLiveRegistryValueResponse {
         target_key,
         name,
         action: action.to_owned(),
+    })
+}
+
+#[tauri::command]
+pub fn apply_live_registry_key(
+    target_key: String,
+    action: String,
+) -> Result<ApplyLiveRegistryKeyResponse, AppErrorPayload> {
+    let parsed = registry_core::parse_registry_key_path(&target_key).map_err(registry_error)?;
+    if parsed.path.trim().is_empty() {
+        return Err(AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.app.unknown.title",
+            "registry key path must not be empty",
+        ));
+    }
+    let normalized = action.trim().to_ascii_lowercase();
+    let op = match normalized.as_str() {
+        "create" | "create-key" | "createkey" => registry_core::RegistryWriteOp::CreateKey {
+            hive: parsed.hive,
+            key_path: parsed.path,
+        },
+        "delete" | "delete-key" | "deletekey" => registry_core::RegistryWriteOp::DeleteKey {
+            hive: parsed.hive,
+            key_path: parsed.path,
+        },
+        _ => {
+            return Err(AppErrorPayload::new(
+                AppErrorCode::Unknown,
+                "error.app.unknown.title",
+                format!("unsupported registry key action: {action}"),
+            ))
+        }
+    };
+    let action_label = match &op {
+        registry_core::RegistryWriteOp::CreateKey { .. } => "create-key",
+        registry_core::RegistryWriteOp::DeleteKey { .. } => "delete-key",
+        _ => unreachable!("key write path only emits create/delete key"),
+    };
+    registry_core::apply_live_registry_write(&op).map_err(registry_error)?;
+    Ok(ApplyLiveRegistryKeyResponse {
+        target_key,
+        action: action_label.to_owned(),
     })
 }
 
@@ -8058,6 +8112,19 @@ mod tests {
                 None,
             )
             .expect_err("live compare should refuse off Windows");
+            assert!(error.debug_message.to_ascii_lowercase().contains("windows"));
+        }
+    }
+
+    #[test]
+    fn apply_live_registry_key_reports_non_windows_honestly() {
+        #[cfg(not(windows))]
+        {
+            let error = apply_live_registry_key(
+                r"HKCU\Software\OpenDiff\Tree".to_owned(),
+                "create".to_owned(),
+            )
+            .expect_err("live key write should fail off Windows");
             assert!(error.debug_message.to_ascii_lowercase().contains("windows"));
         }
     }

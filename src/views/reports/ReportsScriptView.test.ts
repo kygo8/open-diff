@@ -2,6 +2,10 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ReportsScriptView from './ReportsScriptView.vue'
+
+vi.mock('@tauri-apps/api/event', () => ({
+  listen: vi.fn().mockResolvedValue(() => undefined),
+}))
 import { exportFolderCompareReport, exportTextCompareReport } from '@/api/diff'
 import { runScript, stopScript, type ScriptRunResponse } from '@/api/script'
 import { reportExportsStorageKey, saveRecentReportExports } from '@/app/reportExports'
@@ -32,6 +36,7 @@ vi.mock('@/api/script', () => ({
     cancelled: false,
   }),
   stopScript: vi.fn().mockResolvedValue(true),
+  answerScriptPrompt: vi.fn().mockResolvedValue(true),
 }))
 
 describe('ReportsScriptView', () => {

@@ -802,6 +802,8 @@ export const enUS: LanguagePack = {
     'ui.script': 'Script',
     'ui.scriptPath': 'Script file',
     'ui.scriptSource': 'Script source',
+    'ui.scriptPromptTitle': 'Script prompt',
+    'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
       'Full legacy scripting is not implemented. Supported commands run; known gaps fail as unsupported.',
     'ui.scriptingSupported':

@@ -800,6 +800,8 @@ export const jaJP: LanguagePack = {
     'ui.script': 'スクリプト',
     'ui.scriptPath': 'スクリプトファイル',
     'ui.scriptSource': 'スクリプトソース',
+    'ui.scriptPromptTitle': 'Script prompt',
+    'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
       '完全なレガシースクリプト言語は未実装です。対応コマンドは実行され、既知の欠落は unsupported を返します。',
     'ui.scriptingSupported':

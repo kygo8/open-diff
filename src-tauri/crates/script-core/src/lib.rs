@@ -174,12 +174,54 @@ pub struct ScriptVariables {
     pub selection: Option<String>,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+/// Interactive PROMPT callback used by Visible script runs (GUI / host).
+/// Silent mode never invokes this; unit tests may inject a mock.
+pub type ScriptPromptCallback =
+    dyn Fn(String, Option<String>) -> Result<Option<String>, String> + Send + Sync;
+
+#[derive(Clone)]
+pub struct ScriptPromptHandler {
+    callback: std::sync::Arc<ScriptPromptCallback>,
+}
+
+impl ScriptPromptHandler {
+    pub fn new<F>(callback: F) -> Self
+    where
+        F: Fn(String, Option<String>) -> Result<Option<String>, String> + Send + Sync + 'static,
+    {
+        Self {
+            callback: std::sync::Arc::new(callback),
+        }
+    }
+
+    pub fn ask(&self, message: String, default: Option<String>) -> Result<Option<String>, String> {
+        (self.callback)(message, default)
+    }
+}
+
+impl std::fmt::Debug for ScriptPromptHandler {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("ScriptPromptHandler(..)")
+    }
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScriptExecutionContext {
     pub variables: ScriptVariables,
     pub mode: ScriptExecutionMode,
+    /// When set and mode is Visible, PROMPT asks the host UI (after env override).
+    #[serde(skip)]
+    pub prompt_handler: Option<ScriptPromptHandler>,
 }
+
+impl PartialEq for ScriptExecutionContext {
+    fn eq(&self, other: &Self) -> bool {
+        self.variables == other.variables && self.mode == other.mode
+    }
+}
+
+impl Eq for ScriptExecutionContext {}
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -1122,20 +1164,44 @@ where
                         })
                         .collect::<String>()
                 );
-                let answer = std::env::var(&env_key)
+                let env_answer = std::env::var(&env_key)
                     .ok()
-                    .filter(|value| !value.is_empty())
-                    .or(default.clone())
-                    .unwrap_or_default();
-                state
-                    .options
-                    .retain(|option| !option.key.eq_ignore_ascii_case("prompt"));
-                state.options.push(ScriptOption {
-                    key: "prompt".to_owned(),
-                    value: answer.clone(),
-                });
-                state.logs.push(format!("prompt: {message} => {answer}"));
-                state.file_operations.push(format!("PROMPT {message}"));
+                    .filter(|value| !value.is_empty());
+                let answer = if let Some(value) = env_answer {
+                    Some(value)
+                } else if execution.mode == ScriptExecutionMode::Visible {
+                    if let Some(handler) = &execution.prompt_handler {
+                        match handler.ask(message.clone(), default.clone()) {
+                            Ok(Some(value)) => Some(value),
+                            Ok(None) => {
+                                state.cancelled = true;
+                                state.logs.push("prompt cancelled".to_owned());
+                                state
+                                    .file_operations
+                                    .push(format!("PROMPT {message} (cancelled)"));
+                                None
+                            }
+                            Err(reason) => {
+                                return Err(execution_error(command, reason));
+                            }
+                        }
+                    } else {
+                        Some(default.clone().unwrap_or_default())
+                    }
+                } else {
+                    Some(default.clone().unwrap_or_default())
+                };
+                if let Some(answer) = answer {
+                    state
+                        .options
+                        .retain(|option| !option.key.eq_ignore_ascii_case("prompt"));
+                    state.options.push(ScriptOption {
+                        key: "prompt".to_owned(),
+                        value: answer.clone(),
+                    });
+                    state.logs.push(format!("prompt: {message} => {answer}"));
+                    state.file_operations.push(format!("PROMPT {message}"));
+                }
             }
             ScriptCommandKind::Exit => {
                 state.exited = true;
@@ -3397,6 +3463,91 @@ mod tests {
             .iter()
             .any(|line| line.contains("prompt: Name? => guest")));
         assert!(evaluate_script_if_condition("prompted", &result.state));
+    }
+
+    #[test]
+    fn prompt_uses_visible_handler_when_no_env_override() {
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script("PROMPT \"City?\" nowhere\n").expect("prompt should parse");
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext {
+                mode: ScriptExecutionMode::Visible,
+                prompt_handler: Some(ScriptPromptHandler::new(|message, default| {
+                    assert_eq!(message, "City?");
+                    assert_eq!(default.as_deref(), Some("nowhere"));
+                    Ok(Some("Oslo".to_owned()))
+                })),
+                ..ScriptExecutionContext::default()
+            },
+            &mut NoopCompare,
+            &mut NoopReport,
+        )
+        .expect("interactive prompt should run");
+        assert!(result
+            .state
+            .options
+            .iter()
+            .any(|option| option.key == "prompt" && option.value == "Oslo"));
+        assert!(result
+            .state
+            .logs
+            .iter()
+            .any(|line| line.contains("prompt: City? => Oslo")));
+    }
+
+    #[test]
+    fn prompt_cancel_from_handler_stops_script() {
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script("PROMPT \"Halt?\"\nLOG after\n").expect("prompt should parse");
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext {
+                mode: ScriptExecutionMode::Visible,
+                prompt_handler: Some(ScriptPromptHandler::new(|_, _| Ok(None))),
+                ..ScriptExecutionContext::default()
+            },
+            &mut NoopCompare,
+            &mut NoopReport,
+        )
+        .expect("cancelled prompt should not error");
+        assert!(result.state.cancelled);
+        assert!(result
+            .state
+            .logs
+            .iter()
+            .any(|line| line.contains("prompt cancelled")));
+        assert!(!result.state.logs.iter().any(|line| line.contains("after")));
     }
 
     #[test]

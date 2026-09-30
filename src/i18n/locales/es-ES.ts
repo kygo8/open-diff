@@ -816,6 +816,8 @@ export const esES: LanguagePack = {
     'ui.script': 'Script',
     'ui.scriptPath': 'Archivo de script',
     'ui.scriptSource': 'Origen del script',
+    'ui.scriptPromptTitle': 'Script prompt',
+    'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
       'El lenguaje de scripts heredado completo no está implementado. Los comandos admitidos se ejecutan; las lagunas conocidas devuelven unsupported.',
     'ui.scriptingSupported':

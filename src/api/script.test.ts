@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { runScript, stopScript } from './script'
+import { answerScriptPrompt, runScript, stopScript } from './script'
 import { invoke } from '@tauri-apps/api/core'
 
 vi.mock('@tauri-apps/api/core', () => ({
@@ -45,5 +45,15 @@ describe('script api', () => {
     vi.mocked(invoke).mockResolvedValueOnce(true)
     await expect(stopScript()).resolves.toBe(true)
     expect(invoke).toHaveBeenCalledWith('stop_script')
+  })
+
+  it('answers an interactive script prompt through the Tauri command', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce(true)
+    await expect(answerScriptPrompt({ id: 7, value: 'Oslo', cancelled: false })).resolves.toBe(true)
+    expect(invoke).toHaveBeenCalledWith('answer_script_prompt', {
+      id: 7,
+      value: 'Oslo',
+      cancelled: false,
+    })
   })
 })

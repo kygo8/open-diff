@@ -820,6 +820,8 @@ export const deDE: LanguagePack = {
     'ui.script': 'Skript',
     'ui.scriptPath': 'Skriptdatei',
     'ui.scriptSource': 'Skriptquelle',
+    'ui.scriptPromptTitle': 'Script prompt',
+    'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
       'Die vollständige Legacy-Skriptsprache ist nicht implementiert. Unterstützte Befehle laufen; bekannte Lücken liefern unsupported.',
     'ui.scriptingSupported':

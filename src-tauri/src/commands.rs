@@ -19,10 +19,14 @@ use std::fs;
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
 use std::path::{Component, Path, PathBuf};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Condvar, Mutex};
+use std::time::{Duration, Instant};
 use table_core::{
     ColumnMapping, ColumnMappingSource, RowAlignmentOptions, TableCellValue, TableDiffStatus,
     TableParseError, TableSheet, TableWorkbook,
 };
+use tauri::{AppHandle, Emitter};
 #[cfg(any(windows, test))]
 use version_core::{
     NativeVersionInfoReader, VersionDiffStatistics, VersionDocument, VersionFieldStatus,
@@ -2060,15 +2064,146 @@ pub struct ScriptRunResponse {
     pub cancelled: bool,
 }
 
-#[tauri::command]
-pub fn run_script(
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ScriptPromptRequestEvent {
+    pub id: u64,
+    pub message: String,
+    pub default: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum ScriptPromptReply {
+    Answer(String),
+    Cancelled,
+}
+
+struct ScriptPromptPending {
+    id: u64,
+    reply: Option<ScriptPromptReply>,
+}
+
+struct ScriptPromptBridge {
+    pending: Mutex<Option<ScriptPromptPending>>,
+    ready: Condvar,
+}
+
+impl ScriptPromptBridge {
+    fn new() -> Self {
+        Self {
+            pending: Mutex::new(None),
+            ready: Condvar::new(),
+        }
+    }
+}
+
+static SCRIPT_PROMPT_BRIDGE: std::sync::LazyLock<ScriptPromptBridge> =
+    std::sync::LazyLock::new(ScriptPromptBridge::new);
+static SCRIPT_PROMPT_NEXT_ID: AtomicU64 = AtomicU64::new(1);
+
+fn ask_script_prompt_blocking(
+    app: &AppHandle,
+    message: String,
+    default: Option<String>,
+) -> Result<Option<String>, String> {
+    let id = SCRIPT_PROMPT_NEXT_ID.fetch_add(1, Ordering::SeqCst);
+    {
+        let mut guard = SCRIPT_PROMPT_BRIDGE
+            .pending
+            .lock()
+            .map_err(|_| "script prompt lock poisoned".to_owned())?;
+        // Wait briefly if another prompt is still open (should not happen for one script).
+        let start = Instant::now();
+        while guard.is_some() {
+            if start.elapsed() > Duration::from_secs(30) {
+                return Err("another script prompt is still pending".to_owned());
+            }
+            let (next, _) = SCRIPT_PROMPT_BRIDGE
+                .ready
+                .wait_timeout(guard, Duration::from_millis(100))
+                .map_err(|_| "script prompt wait failed".to_owned())?;
+            guard = next;
+            if script_core::script_stop_requested() {
+                return Ok(None);
+            }
+        }
+        *guard = Some(ScriptPromptPending { id, reply: None });
+    }
+
+    app.emit(
+        "script-prompt-request",
+        ScriptPromptRequestEvent {
+            id,
+            message,
+            default,
+        },
+    )
+    .map_err(|error| format!("failed to emit script prompt: {error}"))?;
+
+    let deadline = Instant::now() + Duration::from_secs(3600);
+    loop {
+        if script_core::script_stop_requested() {
+            let mut guard = SCRIPT_PROMPT_BRIDGE
+                .pending
+                .lock()
+                .map_err(|_| "script prompt lock poisoned".to_owned())?;
+            if guard.as_ref().is_some_and(|pending| pending.id == id) {
+                *guard = None;
+                SCRIPT_PROMPT_BRIDGE.ready.notify_all();
+            }
+            return Ok(None);
+        }
+
+        let guard = SCRIPT_PROMPT_BRIDGE
+            .pending
+            .lock()
+            .map_err(|_| "script prompt lock poisoned".to_owned())?;
+        if let Some(pending) = guard.as_ref() {
+            if pending.id == id {
+                if let Some(reply) = pending.reply.clone() {
+                    drop(guard);
+                    let mut clear = SCRIPT_PROMPT_BRIDGE
+                        .pending
+                        .lock()
+                        .map_err(|_| "script prompt lock poisoned".to_owned())?;
+                    *clear = None;
+                    SCRIPT_PROMPT_BRIDGE.ready.notify_all();
+                    return Ok(match reply {
+                        ScriptPromptReply::Answer(value) => Some(value),
+                        ScriptPromptReply::Cancelled => None,
+                    });
+                }
+            }
+        }
+
+        if Instant::now() >= deadline {
+            let mut clear = SCRIPT_PROMPT_BRIDGE
+                .pending
+                .lock()
+                .map_err(|_| "script prompt lock poisoned".to_owned())?;
+            if clear.as_ref().is_some_and(|pending| pending.id == id) {
+                *clear = None;
+                SCRIPT_PROMPT_BRIDGE.ready.notify_all();
+            }
+            return Err("script prompt timed out".to_owned());
+        }
+
+        let (_guard, _) = SCRIPT_PROMPT_BRIDGE
+            .ready
+            .wait_timeout(guard, Duration::from_millis(200))
+            .map_err(|_| "script prompt wait failed".to_owned())?;
+    }
+}
+
+fn run_script_with_context(
     source: String,
     path: Option<String>,
+    execution: script_core::ScriptExecutionContext,
 ) -> Result<ScriptRunResponse, AppErrorPayload> {
     let result = if let Some(path) = path.filter(|value| !value.trim().is_empty()) {
-        script_core::run_script_file(&path, script_core::ScriptExecutionContext::default())
+        script_core::run_script_file(&path, execution)
     } else {
-        script_core::run_script_source(&source, script_core::ScriptExecutionContext::default())
+        script_core::run_script_source(&source, execution)
     }
     .map_err(|error| {
         AppErrorPayload::new(
@@ -2090,8 +2225,71 @@ pub fn run_script(
 }
 
 #[tauri::command]
+pub async fn run_script(
+    app: AppHandle,
+    source: String,
+    path: Option<String>,
+) -> Result<ScriptRunResponse, AppErrorPayload> {
+    let app_for_prompt = app.clone();
+    let execution = script_core::ScriptExecutionContext {
+        mode: script_core::ScriptExecutionMode::Visible,
+        prompt_handler: Some(script_core::ScriptPromptHandler::new(
+            move |message, default| ask_script_prompt_blocking(&app_for_prompt, message, default),
+        )),
+        ..script_core::ScriptExecutionContext::default()
+    };
+
+    tauri::async_runtime::spawn_blocking(move || run_script_with_context(source, path, execution))
+        .await
+        .map_err(|error| {
+            AppErrorPayload::new(
+                AppErrorCode::Unknown,
+                "error.app.unknown.title",
+                format!("script task failed: {error}"),
+            )
+        })?
+}
+
+#[tauri::command]
+pub fn answer_script_prompt(
+    id: u64,
+    value: Option<String>,
+    cancelled: bool,
+) -> Result<bool, AppErrorPayload> {
+    let mut guard = SCRIPT_PROMPT_BRIDGE.pending.lock().map_err(|_| {
+        AppErrorPayload::new(
+            AppErrorCode::Unknown,
+            "error.app.unknown.title",
+            "script prompt lock poisoned",
+        )
+    })?;
+    let Some(pending) = guard.as_mut() else {
+        return Ok(false);
+    };
+    if pending.id != id {
+        return Ok(false);
+    }
+    pending.reply = Some(if cancelled {
+        ScriptPromptReply::Cancelled
+    } else {
+        ScriptPromptReply::Answer(value.unwrap_or_default())
+    });
+    SCRIPT_PROMPT_BRIDGE.ready.notify_all();
+    Ok(true)
+}
+
+#[tauri::command]
 pub fn stop_script() -> Result<bool, AppErrorPayload> {
     script_core::request_script_stop();
+    // Unblock a waiting prompt so Stop can finish the script task.
+    if let Ok(mut guard) = SCRIPT_PROMPT_BRIDGE.pending.lock() {
+        if let Some(pending) = guard.as_mut() {
+            if pending.reply.is_none() {
+                pending.reply = Some(ScriptPromptReply::Cancelled);
+            }
+        }
+        SCRIPT_PROMPT_BRIDGE.ready.notify_all();
+    }
     Ok(true)
 }
 
@@ -7320,7 +7518,9 @@ mod tests {
             report.display()
         );
 
-        let response = run_script(source, None).expect("script should run");
+        let response =
+            run_script_with_context(source, None, script_core::ScriptExecutionContext::default())
+                .expect("script should run");
 
         assert_eq!(response.reports_written, 1);
         assert!(response.different >= 1);
@@ -7948,8 +8148,12 @@ mod tests {
 
     #[test]
     fn run_script_unknown_command_fails_clearly() {
-        let error = run_script("NOPE left right\n".to_owned(), None)
-            .expect_err("unknown script command should fail");
+        let error = run_script_with_context(
+            "NOPE left right\n".to_owned(),
+            None,
+            script_core::ScriptExecutionContext::default(),
+        )
+        .expect_err("unknown script command should fail");
 
         assert!(error
             .debug_message

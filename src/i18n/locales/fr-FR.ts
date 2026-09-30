@@ -816,6 +816,8 @@ export const frFR: LanguagePack = {
     'ui.script': 'Script',
     'ui.scriptPath': 'Fichier de script',
     'ui.scriptSource': 'Source du script',
+    'ui.scriptPromptTitle': 'Script prompt',
+    'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
       'Le langage de script hérité complet n’est pas implémenté. Les commandes prises en charge s’exécutent ; les lacunes connues renvoient unsupported.',
     'ui.scriptingSupported':

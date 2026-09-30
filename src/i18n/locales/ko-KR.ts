@@ -796,6 +796,8 @@ export const koKR: LanguagePack = {
     'ui.script': '스크립트',
     'ui.scriptPath': '스크립트 파일',
     'ui.scriptSource': '스크립트 소스',
+    'ui.scriptPromptTitle': 'Script prompt',
+    'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
       '전체 레거시 스크립트 언어는 구현되지 않았습니다. 지원 명령은 실행되고, 알려진 공백은 unsupported를 반환합니다.',
     'ui.scriptingSupported':

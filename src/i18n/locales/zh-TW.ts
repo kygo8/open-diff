@@ -784,6 +784,8 @@ export const zhTW: LanguagePack = {
     'ui.script': '指令碼',
     'ui.scriptPath': '指令碼檔案',
     'ui.scriptSource': '指令碼來源',
+    'ui.scriptPromptTitle': '指令碼提示',
+    'ui.scriptPromptAnswer': '回答',
     'ui.scriptingNotImplemented':
       '完整遺留指令碼語言尚未實作。已支援的命令會真正執行；已知缺口以 unsupported 回傳。',
     'ui.scriptingSupported':

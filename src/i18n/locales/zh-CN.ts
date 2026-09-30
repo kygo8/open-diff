@@ -783,6 +783,8 @@ export const zhCN: LanguagePack = {
     'ui.script': '脚本',
     'ui.scriptPath': '脚本文件',
     'ui.scriptSource': '脚本源',
+    'ui.scriptPromptTitle': '脚本提示',
+    'ui.scriptPromptAnswer': '回答',
     'ui.scriptingNotImplemented':
       '完整遗留脚本语言尚未实现。已支持的命令会真正执行；已知缺口以 unsupported 返回。',
     'ui.scriptingSupported':

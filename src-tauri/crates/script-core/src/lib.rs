@@ -134,6 +134,9 @@ pub enum ScriptCommandKind {
         message: String,
         default: Option<String>,
     },
+    Message {
+        message: String,
+    },
     If {
         condition: String,
     },
@@ -177,7 +180,7 @@ pub struct ScriptVariables {
 /// Interactive PROMPT callback used by Visible script runs (GUI / host).
 /// Silent mode never invokes this; unit tests may inject a mock.
 pub type ScriptPromptCallback =
-    dyn Fn(String, Option<String>) -> Result<Option<String>, String> + Send + Sync;
+    dyn Fn(String, Option<String>, &str) -> Result<Option<String>, String> + Send + Sync;
 
 #[derive(Clone)]
 pub struct ScriptPromptHandler {
@@ -187,15 +190,23 @@ pub struct ScriptPromptHandler {
 impl ScriptPromptHandler {
     pub fn new<F>(callback: F) -> Self
     where
-        F: Fn(String, Option<String>) -> Result<Option<String>, String> + Send + Sync + 'static,
+        F: Fn(String, Option<String>, &str) -> Result<Option<String>, String>
+            + Send
+            + Sync
+            + 'static,
     {
         Self {
             callback: std::sync::Arc::new(callback),
         }
     }
 
-    pub fn ask(&self, message: String, default: Option<String>) -> Result<Option<String>, String> {
-        (self.callback)(message, default)
+    pub fn ask(
+        &self,
+        message: String,
+        default: Option<String>,
+        kind: &str,
+    ) -> Result<Option<String>, String> {
+        (self.callback)(message, default, kind)
     }
 }
 
@@ -1171,7 +1182,7 @@ where
                     Some(value)
                 } else if execution.mode == ScriptExecutionMode::Visible {
                     if let Some(handler) = &execution.prompt_handler {
-                        match handler.ask(message.clone(), default.clone()) {
+                        match handler.ask(message.clone(), default.clone(), "prompt") {
                             Ok(Some(value)) => Some(value),
                             Ok(None) => {
                                 state.cancelled = true;
@@ -1202,6 +1213,25 @@ where
                     state.logs.push(format!("prompt: {message} => {answer}"));
                     state.file_operations.push(format!("PROMPT {message}"));
                 }
+            }
+            ScriptCommandKind::Message { message } => {
+                let message =
+                    expand_script_variables(message, &execution.variables).map_err(|error| {
+                        execution_error(
+                            command,
+                            format!("{} at line {}", error.message, error.line),
+                        )
+                    })?;
+                if execution.mode == ScriptExecutionMode::Visible {
+                    if let Some(handler) = &execution.prompt_handler {
+                        match handler.ask(message.clone(), None, "message") {
+                            Ok(Some(_)) | Ok(None) => {}
+                            Err(reason) => return Err(execution_error(command, reason)),
+                        }
+                    }
+                }
+                state.logs.push(format!("message: {message}"));
+                state.file_operations.push(format!("MESSAGE {message}"));
             }
             ScriptCommandKind::Exit => {
                 state.exited = true;
@@ -1627,7 +1657,8 @@ fn script_command_log_status(command: &ScriptCommandKind) -> LogStatus {
         | ScriptCommandKind::View { .. }
         | ScriptCommandKind::Align { .. }
         | ScriptCommandKind::Wait { .. }
-        | ScriptCommandKind::Prompt { .. } => LogStatus::Info,
+        | ScriptCommandKind::Prompt { .. }
+        | ScriptCommandKind::Message { .. } => LogStatus::Info,
         _ => LogStatus::Succeeded,
     }
 }
@@ -1673,6 +1704,7 @@ impl ScriptCommandKind {
             ScriptCommandKind::Align { .. } => "ALIGN",
             ScriptCommandKind::Wait { .. } => "WAIT",
             ScriptCommandKind::Prompt { .. } => "PROMPT",
+            ScriptCommandKind::Message { .. } => "MESSAGE",
             ScriptCommandKind::If { .. } => "IF",
             ScriptCommandKind::Else => "ELSE",
             ScriptCommandKind::EndIf => "ENDIF",
@@ -2152,13 +2184,24 @@ fn parse_command(
                 .map_err(|_| parse_error(line, format!("invalid PAUSE duration: {}", args[0])))?;
             Ok(ScriptCommandKind::Wait { milliseconds })
         }
-        "PROMPT" => {
+        "PROMPT" | "INPUT" => {
             if args.is_empty() {
                 return Err(parse_error(line, "PROMPT requires a message"));
             }
             let message = args[0].clone();
             let default = args.get(1).cloned();
             Ok(ScriptCommandKind::Prompt { message, default })
+        }
+        "MESSAGE" => {
+            if args.is_empty() {
+                return Err(parse_error(line, "MESSAGE requires a message"));
+            }
+            if args.len() > 1 {
+                return Err(parse_error(line, "MESSAGE accepts only a message"));
+            }
+            Ok(ScriptCommandKind::Message {
+                message: args[0].clone(),
+            })
         }
         "SNAPSHOT" => {
             parse_single_output_command(line, args, |output| ScriptCommandKind::Snapshot { output })
@@ -2300,6 +2343,8 @@ pub fn supported_script_commands() -> &'static [&'static str] {
         "ECHO",
         "PAUSE",
         "PROMPT",
+        "INPUT",
+        "MESSAGE",
         "ATTRIB",
         "EXPAND",
         "COLLAPSE",
@@ -3488,7 +3533,8 @@ mod tests {
             &script,
             ScriptExecutionContext {
                 mode: ScriptExecutionMode::Visible,
-                prompt_handler: Some(ScriptPromptHandler::new(|message, default| {
+                prompt_handler: Some(ScriptPromptHandler::new(|message, default, kind| {
+                    assert_eq!(kind, "prompt");
                     assert_eq!(message, "City?");
                     assert_eq!(default.as_deref(), Some("nowhere"));
                     Ok(Some("Oslo".to_owned()))
@@ -3534,7 +3580,7 @@ mod tests {
             &script,
             ScriptExecutionContext {
                 mode: ScriptExecutionMode::Visible,
-                prompt_handler: Some(ScriptPromptHandler::new(|_, _| Ok(None))),
+                prompt_handler: Some(ScriptPromptHandler::new(|_, _, _| Ok(None))),
                 ..ScriptExecutionContext::default()
             },
             &mut NoopCompare,
@@ -3548,6 +3594,71 @@ mod tests {
             .iter()
             .any(|line| line.contains("prompt cancelled")));
         assert!(!result.state.logs.iter().any(|line| line.contains("after")));
+    }
+
+    #[test]
+    fn parses_input_as_prompt_alias_and_runs_message() {
+        struct NoopCompare;
+        impl ScriptCompareEngine for NoopCompare {
+            fn compare(
+                &mut self,
+                _request: ScriptCompareRequest,
+            ) -> Result<ScriptCompareSummary, String> {
+                Ok(ScriptCompareSummary::default())
+            }
+        }
+        struct NoopReport;
+        impl ScriptReportEngine for NoopReport {
+            fn write_report(&mut self, _request: ScriptReportRequest) -> Result<(), String> {
+                Ok(())
+            }
+        }
+
+        let script = parse_script("INPUT \"City?\" Paris\nMESSAGE \"Ready\"\n")
+            .expect("input/message should parse");
+        assert!(matches!(
+            &script.commands[0].kind,
+            ScriptCommandKind::Prompt { message, default }
+                if message == "City?" && default.as_deref() == Some("Paris")
+        ));
+        assert!(matches!(
+            &script.commands[1].kind,
+            ScriptCommandKind::Message { message } if message == "Ready"
+        ));
+
+        let result = execute_automation_script(
+            &script,
+            ScriptExecutionContext {
+                mode: ScriptExecutionMode::Visible,
+                prompt_handler: Some(ScriptPromptHandler::new(|message, default, kind| {
+                    if message == "City?" {
+                        assert_eq!(kind, "prompt");
+                        assert_eq!(default.as_deref(), Some("Paris"));
+                        Ok(Some("Lyon".to_owned()))
+                    } else {
+                        assert_eq!(kind, "message");
+                        assert_eq!(message, "Ready");
+                        Ok(Some(String::new()))
+                    }
+                })),
+                ..ScriptExecutionContext::default()
+            },
+            &mut NoopCompare,
+            &mut NoopReport,
+        )
+        .expect("input/message should run");
+        assert!(result
+            .state
+            .options
+            .iter()
+            .any(|option| option.key == "prompt" && option.value == "Lyon"));
+        assert!(result
+            .state
+            .logs
+            .iter()
+            .any(|line| line.contains("message: Ready")));
+        assert!(supported_script_commands().contains(&"INPUT"));
+        assert!(supported_script_commands().contains(&"MESSAGE"));
     }
 
     #[test]

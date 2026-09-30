@@ -783,6 +783,7 @@ export const zhCN: LanguagePack = {
     'ui.script': '脚本',
     'ui.scriptPath': '脚本文件',
     'ui.scriptSource': '脚本源',
+    'ui.scriptMessageTitle': '脚本消息',
     'ui.scriptPromptTitle': '脚本提示',
     'ui.scriptPromptAnswer': '回答',
     'ui.scriptingNotImplemented':

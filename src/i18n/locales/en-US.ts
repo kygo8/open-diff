@@ -802,6 +802,7 @@ export const enUS: LanguagePack = {
     'ui.script': 'Script',
     'ui.scriptPath': 'Script file',
     'ui.scriptSource': 'Script source',
+    'ui.scriptMessageTitle': 'Script message',
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':

@@ -796,6 +796,7 @@ export const koKR: LanguagePack = {
     'ui.script': '스크립트',
     'ui.scriptPath': '스크립트 파일',
     'ui.scriptSource': '스크립트 소스',
+    'ui.scriptMessageTitle': 'Script message',
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':

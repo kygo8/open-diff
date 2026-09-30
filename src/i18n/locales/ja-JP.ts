@@ -800,6 +800,7 @@ export const jaJP: LanguagePack = {
     'ui.script': 'スクリプト',
     'ui.scriptPath': 'スクリプトファイル',
     'ui.scriptSource': 'スクリプトソース',
+    'ui.scriptMessageTitle': 'Script message',
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':

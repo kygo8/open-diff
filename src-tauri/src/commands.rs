@@ -2070,6 +2070,8 @@ pub struct ScriptPromptRequestEvent {
     pub id: u64,
     pub message: String,
     pub default: Option<String>,
+    /// "prompt" for PROMPT/INPUT, "message" for MESSAGE.
+    pub kind: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -2105,6 +2107,7 @@ fn ask_script_prompt_blocking(
     app: &AppHandle,
     message: String,
     default: Option<String>,
+    kind: &str,
 ) -> Result<Option<String>, String> {
     let id = SCRIPT_PROMPT_NEXT_ID.fetch_add(1, Ordering::SeqCst);
     {
@@ -2136,6 +2139,7 @@ fn ask_script_prompt_blocking(
             id,
             message,
             default,
+            kind: kind.to_owned(),
         },
     )
     .map_err(|error| format!("failed to emit script prompt: {error}"))?;
@@ -2234,7 +2238,9 @@ pub async fn run_script(
     let execution = script_core::ScriptExecutionContext {
         mode: script_core::ScriptExecutionMode::Visible,
         prompt_handler: Some(script_core::ScriptPromptHandler::new(
-            move |message, default| ask_script_prompt_blocking(&app_for_prompt, message, default),
+            move |message, default, kind| {
+                ask_script_prompt_blocking(&app_for_prompt, message, default, kind)
+            },
         )),
         ..script_core::ScriptExecutionContext::default()
     };

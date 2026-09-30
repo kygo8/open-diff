@@ -820,6 +820,7 @@ export const deDE: LanguagePack = {
     'ui.script': 'Skript',
     'ui.scriptPath': 'Skriptdatei',
     'ui.scriptSource': 'Skriptquelle',
+    'ui.scriptMessageTitle': 'Script message',
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':

@@ -66,19 +66,23 @@ const scriptPromptVisible = ref(false)
 const scriptPromptId = ref(0)
 const scriptPromptMessage = ref('')
 const scriptPromptAnswer = ref('')
+const scriptPromptKind = ref<'prompt' | 'message'>('prompt')
 let scriptPromptUnlisten: UnlistenFn | undefined
 
 onMounted(() => {
   try {
-    void listen<{ id: number; message: string; default?: string | null }>(
-      'script-prompt-request',
-      (event) => {
-        scriptPromptId.value = event.payload.id
-        scriptPromptMessage.value = event.payload.message
-        scriptPromptAnswer.value = event.payload.default ?? ''
-        scriptPromptVisible.value = true
-      },
-    )
+    void listen<{
+      id: number
+      message: string
+      default?: string | null
+      kind?: string
+    }>('script-prompt-request', (event) => {
+      scriptPromptId.value = event.payload.id
+      scriptPromptMessage.value = event.payload.message
+      scriptPromptAnswer.value = event.payload.default ?? ''
+      scriptPromptKind.value = event.payload.kind === 'message' ? 'message' : 'prompt'
+      scriptPromptVisible.value = true
+    })
       .then((unlisten) => {
         scriptPromptUnlisten = unlisten
       })
@@ -668,14 +672,22 @@ function fillFromLastCompare(): void {
       class="script-prompt-dialog"
       role="dialog"
       aria-modal="true"
-      :aria-label="$t('ui.scriptPromptTitle')"
+      :aria-label="
+        scriptPromptKind === 'message' ? $t('ui.scriptMessageTitle') : $t('ui.scriptPromptTitle')
+      "
       data-testid="script-prompt-dialog"
     >
       <header>
-        <h2>{{ $t('ui.scriptPromptTitle') }}</h2>
+        <h2>
+          {{
+            scriptPromptKind === 'message'
+              ? $t('ui.scriptMessageTitle')
+              : $t('ui.scriptPromptTitle')
+          }}
+        </h2>
         <p data-testid="script-prompt-message">{{ scriptPromptMessage }}</p>
       </header>
-      <label>
+      <label v-if="scriptPromptKind === 'prompt'">
         <span>{{ $t('ui.scriptPromptAnswer') }}</span>
         <input
           v-model="scriptPromptAnswer"
@@ -686,6 +698,7 @@ function fillFromLastCompare(): void {
       </label>
       <footer>
         <button
+          v-if="scriptPromptKind === 'prompt'"
           type="button"
           class="secondary-action"
           data-testid="script-prompt-cancel"

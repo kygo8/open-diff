@@ -1935,6 +1935,10 @@ pub fn export_folder_compare_report(
             let report = folder_report_to_unified(&model, &left_root, &right_root);
             report_core::render_yaml_report(&report)
         }
+        "html-print" | "print-html" | "print" => {
+            let report = folder_report_to_unified(&model, &left_root, &right_root);
+            report_core::render_print_html_report(&report)
+        }
         "html-side-by-side" | "side-by-side" | "html-sxs" => {
             let report = folder_report_to_unified(&model, &left_root, &right_root);
             report_core::render_side_by_side_html_report(&report)
@@ -5744,6 +5748,7 @@ fn write_rendered_report(
         "markdown" | "md" => report_core::render_markdown_report(report),
         "tsv" | "tab" => report_core::render_tsv_report(report),
         "yaml" | "yml" => report_core::render_yaml_report(report),
+        "html-print" | "print-html" | "print" => report_core::render_print_html_report(report),
         "html-side-by-side" | "side-by-side" | "html-sxs" => {
             report_core::render_side_by_side_html_report(report)
         }

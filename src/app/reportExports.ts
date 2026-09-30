@@ -84,7 +84,7 @@ export function reportFileExtension(format: ReportExportFormat): string {
 export const reportPreferencesStorageKey = 'open-diff-report-preferences'
 
 export type ReportPreferenceFormat =
-  'html' | 'html-side-by-side' | 'text' | 'json' | 'csv' | 'markdown' | 'xml'
+  'html' | 'html-side-by-side' | 'html-print' | 'text' | 'json' | 'csv' | 'markdown' | 'xml'
 
 export type ReportPreferenceKind = 'text' | 'folder'
 
@@ -104,6 +104,7 @@ export interface ReportPreferences {
 const reportPreferenceFormats: readonly ReportPreferenceFormat[] = [
   'html',
   'html-side-by-side',
+  'html-print',
   'text',
   'json',
   'csv',

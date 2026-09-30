@@ -237,6 +237,8 @@ export const jaJP: LanguagePack = {
     'ui.viewPatch': 'パッチを表示...',
     'ui.histogram': 'Histogram',
     'ui.html': 'HTML',
+    'ui.htmlPrint': 'Print HTML',
+    'ui.reportFormatHtmlPrint': 'Print HTML',
     'ui.htmlSideBySide': 'Side-by-side HTML',
     'ui.history': 'History',
     'ui.home': 'Home',

@@ -722,6 +722,8 @@ export const zhTW: LanguagePack = {
     'ui.chunkLength': 'Chunk length',
     'ui.delimiter': 'Delimiter',
     'ui.html': 'HTML',
+    'ui.htmlPrint': '列印 HTML',
+    'ui.reportFormatHtmlPrint': '列印 HTML',
     'ui.htmlSideBySide': '並排 HTML',
     'ui.keyColumns': 'Key columns',
     'ui.offset': 'Offset',

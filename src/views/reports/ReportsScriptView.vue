@@ -142,7 +142,7 @@ async function runExport(): Promise<void> {
 
     if (reportFormat.value === 'text') {
       extension = 'txt'
-    } else if (reportFormat.value === 'html-side-by-side') {
+    } else if (reportFormat.value === 'html-side-by-side' || reportFormat.value === 'html-print') {
       extension = 'html'
     }
 
@@ -499,6 +499,7 @@ function fillFromLastCompare(): void {
             >
               <option value="html">{{ $t('ui.html') }}</option>
               <option value="html-side-by-side">{{ $t('ui.htmlSideBySide') }}</option>
+              <option value="html-print">{{ $t('ui.htmlPrint') }}</option>
               <option value="text">{{ $t('ui.text') }}</option>
               <option value="json">{{ $t('ui.exportJson') }}</option>
               <option value="csv">{{ $t('ui.csv') }}</option>

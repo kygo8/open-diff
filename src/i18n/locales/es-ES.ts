@@ -750,6 +750,8 @@ export const esES: LanguagePack = {
     'ui.chunkLength': 'Chunk length',
     'ui.delimiter': 'Delimiter',
     'ui.html': 'HTML',
+    'ui.htmlPrint': 'Print HTML',
+    'ui.reportFormatHtmlPrint': 'Print HTML',
     'ui.htmlSideBySide': 'Side-by-side HTML',
     'ui.keyColumns': 'Key columns',
     'ui.offset': 'Offset',

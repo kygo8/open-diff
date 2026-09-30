@@ -98,6 +98,7 @@ pub enum CliTextMergeFavor {
 pub struct CliOpenOptions {
     pub center: Option<String>,
     pub output: Option<String>,
+    pub title: Option<String>,
     pub left_readonly: bool,
     pub right_readonly: bool,
     pub readonly: bool,
@@ -273,6 +274,7 @@ pub fn cli_help_text() -> String {
         "                         table-compare, hex-compare, picture-compare,".to_owned(),
         "                         registry-compare, media-compare, version-compare".to_owned(),
         "      --fv <type>        alias for --session (accepts spaced names)".to_owned(),
+        "      --title <text>     set the session / window title".to_owned(),
         "      --left <path>      left side path (or positional)".to_owned(),
         "      --right <path>     right side path (or positional)".to_owned(),
         "      --center <path>    center/base path for merge sessions".to_owned(),
@@ -983,6 +985,17 @@ fn parse_open_compare(args: Vec<String>) -> Result<CliInvocation, CliParseError>
             Some("left-readonly") | Some("leftreadonly") => options.left_readonly = true,
             Some("right-readonly") | Some("rightreadonly") => options.right_readonly = true,
             Some("silent") => options.silent = true,
+            Some("title") => {
+                index += 1;
+                let value = args
+                    .get(index)
+                    .ok_or_else(|| usage_error("open --title requires a value"))?;
+                options.title = Some(value.clone());
+            }
+            Some(switch) if switch.starts_with("title=") => {
+                let value = switch.split_once('=').map(|(_, value)| value).unwrap_or("");
+                options.title = Some(value.to_owned());
+            }
             Some("favor-left") | Some("favorleft") => {
                 options.favor = Some(CliTextMergeFavor::Left);
             }
@@ -1537,6 +1550,7 @@ mod tests {
                 route: "/merge/text".to_owned(),
                 options: CliOpenOptions {
                     center: Some("B.txt".to_owned()),
+                    title: None,
                     output: Some("O.txt".to_owned()),
                     left_readonly: true,
                     right_readonly: true,
@@ -1598,6 +1612,28 @@ mod tests {
         );
 
         assert!(help.contains("--fv <type>"));
+        assert!(help.contains("--title <text>"));
+    }
+
+    #[test]
+    fn parses_open_title_switch() {
+        let parsed = parse_cli_args([
+            "open-diff",
+            "open",
+            "--session",
+            "text-compare",
+            "--title",
+            "Release Notes",
+            "left.txt",
+            "right.txt",
+        ])
+        .expect("title open should parse");
+        match parsed.command {
+            CliCommand::OpenCompare { options, .. } => {
+                assert_eq!(options.title.as_deref(), Some("Release Notes"));
+            }
+            other => panic!("unexpected command: {other:?}"),
+        }
     }
 
     #[test]

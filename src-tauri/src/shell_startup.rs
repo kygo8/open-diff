@@ -29,6 +29,8 @@ pub struct ShellCompareLaunchPayload {
     pub right_read_only: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub favor: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
 }
 
 pub fn prepare_shell_startup(args: impl IntoIterator<Item = String>) -> ShellStartupDecision {
@@ -85,6 +87,7 @@ pub fn prepare_shell_startup(args: impl IntoIterator<Item = String>) -> ShellSta
                 left_read_only: options.left_readonly || options.readonly,
                 right_read_only: options.right_readonly || options.readonly,
                 favor,
+                title: options.title,
             };
             if let Err(error) = write_open_compare_launch(&payload) {
                 eprintln!("Open Diff: failed to stage open compare launch: {error}");
@@ -118,6 +121,7 @@ fn write_shell_compare_launch(action: &ShellCompareAction) -> Result<(), String>
         left_read_only: false,
         right_read_only: false,
         favor: None,
+        title: None,
     };
     write_open_compare_launch(&payload)
 }
@@ -144,12 +148,14 @@ fn encode_shell_compare_launch(payload: &ShellCompareLaunchPayload) -> String {
         || payload.left_read_only
         || payload.right_read_only
         || payload.favor.is_some()
+        || payload.title.is_some()
     {
         lines.push(escape_launch_line(payload.center.as_deref().unwrap_or("")));
         lines.push(escape_launch_line(payload.output.as_deref().unwrap_or("")));
         lines.push(if payload.left_read_only { "1" } else { "0" }.to_owned());
         lines.push(if payload.right_read_only { "1" } else { "0" }.to_owned());
         lines.push(escape_launch_line(payload.favor.as_deref().unwrap_or("")));
+        lines.push(escape_launch_line(payload.title.as_deref().unwrap_or("")));
     }
     format!("{}\n", lines.join("\n"))
 }
@@ -171,6 +177,7 @@ fn parse_shell_compare_launch(raw: &str) -> Result<ShellCompareLaunchPayload, St
         .map(|value| value.trim() == "1")
         .unwrap_or(false);
     let favor_raw = lines.next().map(unescape_launch_line);
+    let title_raw = lines.next().map(unescape_launch_line);
 
     Ok(ShellCompareLaunchPayload {
         left,
@@ -182,6 +189,7 @@ fn parse_shell_compare_launch(raw: &str) -> Result<ShellCompareLaunchPayload, St
         left_read_only,
         right_read_only,
         favor: favor_raw.filter(|value| !value.is_empty()),
+        title: title_raw.filter(|value| !value.is_empty()),
     })
 }
 

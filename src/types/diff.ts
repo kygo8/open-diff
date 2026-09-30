@@ -495,6 +495,16 @@ export interface ApplyLiveRegistryValueResponse {
   action: 'set' | 'delete'
 }
 
+export interface ApplyLiveRegistryKeyRequest {
+  targetKey: string
+  action: 'create' | 'delete'
+}
+
+export interface ApplyLiveRegistryKeyResponse {
+  targetKey: string
+  action: 'create-key' | 'delete-key'
+}
+
 export interface VersionCompareRequest {
   leftPath: string
   rightPath: string

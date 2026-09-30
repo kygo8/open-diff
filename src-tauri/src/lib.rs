@@ -24,6 +24,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::apply_live_registry_value,
+            commands::apply_live_registry_key,
             commands::apply_text_patch,
             commands::apply_text_patch_to_file,
             commands::check_text_file_changed,

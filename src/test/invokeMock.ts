@@ -169,6 +169,11 @@ export function invokeResponse(command: string, args: Record<string, unknown> = 
         tree: [],
         summary: { added: 0, deleted: 0, modified: 0, same: 0 },
       }
+    case 'apply_live_registry_key':
+      return {
+        targetKey: args.targetKey ?? '',
+        action: args.action === 'delete' ? 'delete-key' : 'create-key',
+      }
     case 'apply_live_registry_value':
       return {
         targetKey: args.targetKey ?? '',

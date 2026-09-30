@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -769,6 +769,10 @@ pub trait NativeRegistryWriter {
     ) -> RegistryResult<()>;
 
     fn delete_value(&self, hive: RegistryHive, path: &str, name: &str) -> RegistryResult<()>;
+
+    fn create_key(&self, hive: RegistryHive, path: &str) -> RegistryResult<()>;
+
+    fn delete_key(&self, hive: RegistryHive, path: &str) -> RegistryResult<()>;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -783,6 +787,14 @@ pub enum RegistryWriteOp {
         hive: RegistryHive,
         key_path: String,
         name: String,
+    },
+    CreateKey {
+        hive: RegistryHive,
+        key_path: String,
+    },
+    DeleteKey {
+        hive: RegistryHive,
+        key_path: String,
     },
 }
 
@@ -802,6 +814,8 @@ pub fn apply_registry_write(
             key_path,
             name,
         } => writer.delete_value(*hive, key_path, name),
+        RegistryWriteOp::CreateKey { hive, key_path } => writer.create_key(*hive, key_path),
+        RegistryWriteOp::DeleteKey { hive, key_path } => writer.delete_key(*hive, key_path),
     }
 }
 
@@ -885,6 +899,7 @@ fn live_value_name(name: &str) -> &str {
 #[derive(Debug, Default)]
 pub struct MemoryNativeRegistryWriter {
     values: std::cell::RefCell<BTreeMap<String, RegistryValue>>,
+    keys: std::cell::RefCell<BTreeSet<String>>,
 }
 
 impl MemoryNativeRegistryWriter {
@@ -904,6 +919,13 @@ impl MemoryNativeRegistryWriter {
             .get(&registry_value_id(hive, &path, name))
             .cloned()
     }
+
+    pub fn has_key(&self, hive: RegistryHive, path: impl AsRef<str>) -> bool {
+        self.keys.borrow().contains(&registry_key_id(
+            hive,
+            &normalize_registry_path(path.as_ref()),
+        ))
+    }
 }
 
 impl NativeRegistryWriter for MemoryNativeRegistryWriter {
@@ -915,6 +937,7 @@ impl NativeRegistryWriter for MemoryNativeRegistryWriter {
         data: &RegistryValueData,
     ) -> RegistryResult<()> {
         let path = normalize_registry_path(path);
+        self.keys.borrow_mut().insert(registry_key_id(hive, &path));
         let value = RegistryValue::new(hive, &path, name, data.clone());
         self.values.borrow_mut().insert(
             registry_value_id(value.hive, &value.key_path, &value.name),
@@ -928,6 +951,36 @@ impl NativeRegistryWriter for MemoryNativeRegistryWriter {
         self.values
             .borrow_mut()
             .remove(&registry_value_id(hive, &path, name));
+        Ok(())
+    }
+
+    fn create_key(&self, hive: RegistryHive, path: &str) -> RegistryResult<()> {
+        let path = normalize_registry_path(path);
+        if path.is_empty() {
+            return Err(RegistryError::Parse(
+                "create key requires a non-empty path".to_owned(),
+            ));
+        }
+        self.keys.borrow_mut().insert(registry_key_id(hive, &path));
+        Ok(())
+    }
+
+    fn delete_key(&self, hive: RegistryHive, path: &str) -> RegistryResult<()> {
+        let path = normalize_registry_path(path);
+        if path.is_empty() {
+            return Err(RegistryError::Parse(
+                "delete key requires a non-empty path".to_owned(),
+            ));
+        }
+        let key_id = registry_key_id(hive, &path);
+        let key_prefix = format!("{key_id}/");
+        self.keys
+            .borrow_mut()
+            .retain(|id| !(id == &key_id || id.starts_with(&key_prefix)));
+        // Values use "{key_id}/{name}" ids.
+        self.values
+            .borrow_mut()
+            .retain(|id, _| !(id.starts_with(&format!("{key_id}/")) || id == &key_id));
         Ok(())
     }
 }
@@ -1041,9 +1094,37 @@ impl NativeRegistryWriter for WindowsNativeRegistryWriter {
             Err(error) => Err(RegistryError::Backend(error.to_string())),
         }
     }
+
+    fn create_key(&self, hive: RegistryHive, path: &str) -> RegistryResult<()> {
+        let win_path = windows_key_path(path);
+        if win_path.is_empty() {
+            return Err(RegistryError::Parse(
+                "create key requires a non-empty path".to_owned(),
+            ));
+        }
+        let root = predefined_key(hive);
+        root.create_subkey_with_flags(&win_path, winreg::enums::KEY_WRITE)
+            .map(|_| ())
+            .map_err(|error| RegistryError::Backend(error.to_string()))
+    }
+
+    fn delete_key(&self, hive: RegistryHive, path: &str) -> RegistryResult<()> {
+        let win_path = windows_key_path(path);
+        if win_path.is_empty() {
+            return Err(RegistryError::Parse(
+                "delete key requires a non-empty path".to_owned(),
+            ));
+        }
+        let root = predefined_key(hive);
+        match root.delete_subkey_all(&win_path) {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(RegistryError::Backend(error.to_string())),
+        }
+    }
 }
 
-/// Apply a set or delete against the live Windows registry. Non-Windows hosts
+/// Apply a set/delete value or create/delete key against the live Windows registry. Non-Windows hosts
 /// return a clear unsupported error so CI stays honest.
 pub fn apply_live_registry_write(op: &RegistryWriteOp) -> RegistryResult<()> {
     #[cfg(windows)]
@@ -1361,6 +1442,44 @@ mod tests {
         .unwrap();
         assert!(writer
             .get_value(RegistryHive::CurrentUser, "Software/OpenDiff", "Theme")
+            .is_none());
+    }
+
+    #[test]
+    fn memory_registry_writer_creates_and_deletes_keys() {
+        let writer = MemoryNativeRegistryWriter::new();
+        apply_registry_write(
+            &writer,
+            &RegistryWriteOp::CreateKey {
+                hive: RegistryHive::CurrentUser,
+                key_path: "Software/OpenDiff/Tree".to_owned(),
+            },
+        )
+        .unwrap();
+        assert!(writer.has_key(RegistryHive::CurrentUser, "Software/OpenDiff/Tree"));
+
+        apply_registry_write(
+            &writer,
+            &RegistryWriteOp::Set {
+                hive: RegistryHive::CurrentUser,
+                key_path: "Software/OpenDiff/Tree".to_owned(),
+                name: "Flag".to_owned(),
+                data: RegistryValueData::Dword(1),
+            },
+        )
+        .unwrap();
+
+        apply_registry_write(
+            &writer,
+            &RegistryWriteOp::DeleteKey {
+                hive: RegistryHive::CurrentUser,
+                key_path: "Software/OpenDiff/Tree".to_owned(),
+            },
+        )
+        .unwrap();
+        assert!(!writer.has_key(RegistryHive::CurrentUser, "Software/OpenDiff/Tree"));
+        assert!(writer
+            .get_value(RegistryHive::CurrentUser, "Software/OpenDiff/Tree", "Flag")
             .is_none());
     }
 

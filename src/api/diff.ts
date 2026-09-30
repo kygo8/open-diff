@@ -35,6 +35,8 @@ import type {
   RegistryCompareResponse,
   ApplyLiveRegistryValueRequest,
   ApplyLiveRegistryValueResponse,
+  ApplyLiveRegistryKeyRequest,
+  ApplyLiveRegistryKeyResponse,
   RenameFolderEntryRequest,
   TextMergeRequest,
   TextMergeResponse,
@@ -371,6 +373,15 @@ export function applyLiveRegistryValue(
     name: request.name,
     kind: request.kind,
     data: request.data,
+  })
+}
+
+export function applyLiveRegistryKey(
+  request: ApplyLiveRegistryKeyRequest,
+): Promise<ApplyLiveRegistryKeyResponse> {
+  return invoke<ApplyLiveRegistryKeyResponse>('apply_live_registry_key', {
+    targetKey: request.targetKey,
+    action: request.action,
   })
 }
 

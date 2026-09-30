@@ -1443,6 +1443,15 @@ onMounted(() => {
   place-items: center;
 }
 
+.new-session-card[data-session-type='folder-compare'] .session-card-icon,
+.new-session-card[data-session-type='folder-merge'] .session-card-icon,
+.new-session-card[data-session-type='folder-sync'] .session-card-icon {
+  border: 1px solid #a07840;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #fff6e0 0%, #ffe0b0 42%, #db8f39 100%);
+  color: #b66600;
+}
+
 .new-session-card h3 {
   max-width: 100%;
   margin: 0;

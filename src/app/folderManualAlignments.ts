@@ -109,3 +109,145 @@ export function applyManualAlignments(
 
   return next
 }
+
+export const folderManualAlignmentsStorageKey = 'open-diff-folder-manual-alignments'
+
+export type FolderManualAlignmentsStore = Record<string, ManualAlignmentPair[]>
+
+export function folderCompareAlignmentRootKey(leftRoot: string, rightRoot: string): string {
+  return `${leftRoot.trim()}|${rightRoot.trim()}`
+}
+
+function normalizeManualAlignmentPairs(value: unknown): ManualAlignmentPair[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  const seen = new Set<string>()
+  const next: ManualAlignmentPair[] = []
+
+  for (const item of value) {
+    if (typeof item !== 'object' || item === null) {
+      continue
+    }
+
+    const record = item as Partial<ManualAlignmentPair>
+    const leftRelativePath =
+      typeof record.leftRelativePath === 'string' ? record.leftRelativePath.trim() : ''
+    const rightRelativePath =
+      typeof record.rightRelativePath === 'string' ? record.rightRelativePath.trim() : ''
+
+    if (!leftRelativePath || !rightRelativePath) {
+      continue
+    }
+
+    const key = `${leftRelativePath}<=>${rightRelativePath}`
+
+    if (seen.has(key)) {
+      continue
+    }
+
+    seen.add(key)
+    next.push({ leftRelativePath, rightRelativePath })
+  }
+
+  return next
+}
+
+export function loadFolderManualAlignmentsStore(
+  storage: Pick<Storage, 'getItem'> = localStorage,
+): FolderManualAlignmentsStore {
+  try {
+    const raw = storage.getItem(folderManualAlignmentsStorageKey)
+
+    if (!raw) {
+      return {}
+    }
+
+    const parsed = JSON.parse(raw) as unknown
+
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+      return {}
+    }
+
+    const store: FolderManualAlignmentsStore = {}
+
+    for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
+      if (!key.trim()) {
+        continue
+      }
+
+      const pairs = normalizeManualAlignmentPairs(value)
+
+      if (pairs.length > 0) {
+        store[key] = pairs
+      }
+    }
+
+    return store
+  } catch {
+    return {}
+  }
+}
+
+export function saveFolderManualAlignmentsStore(
+  store: FolderManualAlignmentsStore,
+  storage: Pick<Storage, 'setItem'> = localStorage,
+): void {
+  const normalized: FolderManualAlignmentsStore = {}
+
+  for (const [key, value] of Object.entries(store)) {
+    const pairs = normalizeManualAlignmentPairs(value)
+
+    if (pairs.length > 0) {
+      normalized[key] = pairs
+    }
+  }
+
+  storage.setItem(folderManualAlignmentsStorageKey, JSON.stringify(normalized))
+}
+
+export function loadManualAlignmentsForRoots(
+  leftRoot: string,
+  rightRoot: string,
+  storage: Pick<Storage, 'getItem'> = localStorage,
+): ManualAlignmentPair[] {
+  const key = folderCompareAlignmentRootKey(leftRoot, rightRoot)
+
+  if (!key || key === '|') {
+    return []
+  }
+
+  const store = loadFolderManualAlignmentsStore(storage)
+
+  return store[key] ?? []
+}
+
+export function saveManualAlignmentsForRoots(
+  leftRoot: string,
+  rightRoot: string,
+  pairs: readonly ManualAlignmentPair[],
+  storage: Pick<Storage, 'getItem' | 'setItem'> = localStorage,
+): void {
+  const key = folderCompareAlignmentRootKey(leftRoot, rightRoot)
+
+  if (!key || key === '|') {
+    return
+  }
+
+  const store = loadFolderManualAlignmentsStore(storage)
+  const nextStore: FolderManualAlignmentsStore = { ...store }
+  const normalized = normalizeManualAlignmentPairs(pairs)
+
+  if (normalized.length === 0) {
+    const { [key]: _removed, ...rest } = nextStore
+
+    void _removed
+    saveFolderManualAlignmentsStore(rest, storage)
+
+    return
+  }
+
+  nextStore[key] = normalized
+  saveFolderManualAlignmentsStore(nextStore, storage)
+}

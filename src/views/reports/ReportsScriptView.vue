@@ -69,17 +69,25 @@ const scriptPromptAnswer = ref('')
 let scriptPromptUnlisten: UnlistenFn | undefined
 
 onMounted(() => {
-  void listen<{ id: number; message: string; default?: string | null }>(
-    'script-prompt-request',
-    (event) => {
-      scriptPromptId.value = event.payload.id
-      scriptPromptMessage.value = event.payload.message
-      scriptPromptAnswer.value = event.payload.default ?? ''
-      scriptPromptVisible.value = true
-    },
-  ).then((unlisten) => {
-    scriptPromptUnlisten = unlisten
-  })
+  try {
+    void listen<{ id: number; message: string; default?: string | null }>(
+      'script-prompt-request',
+      (event) => {
+        scriptPromptId.value = event.payload.id
+        scriptPromptMessage.value = event.payload.message
+        scriptPromptAnswer.value = event.payload.default ?? ''
+        scriptPromptVisible.value = true
+      },
+    )
+      .then((unlisten) => {
+        scriptPromptUnlisten = unlisten
+      })
+      .catch(() => {
+        // Unit tests and non-Tauri hosts have no event IPC.
+      })
+  } catch {
+    // listen() can throw synchronously when Tauri IPC is unavailable.
+  }
 })
 
 onBeforeUnmount(() => {

@@ -23,6 +23,10 @@ import RemoteProfileView from './RemoteProfileView.vue'
 import ReportsScriptView from './reports/ReportsScriptView.vue'
 import { readClipboardTextSource } from '@/app/clipboardSource'
 
+vi.mock('@tauri-apps/api/event', () => ({
+  listen: vi.fn().mockResolvedValue(() => undefined),
+}))
+
 vi.mock('@tauri-apps/api/core', async () => {
   const helper = await import('@/test/invokeMock')
 

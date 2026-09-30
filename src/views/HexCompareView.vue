@@ -1243,7 +1243,18 @@ async function runHexSave(): Promise<void> {
                 class="hex-ascii"
                 data-testid="hex-ascii-pane"
               >
-                {{ pair.left?.ascii ?? '' }}
+                <span
+                  v-for="cell in pair.left?.cells ?? []"
+                  :key="`left-ascii-${cell.offset}`"
+                  class="hex-ascii-cell"
+                  :class="{ 'hex-ascii-different': cell.different }"
+                  :data-testid="
+                    cell.different
+                      ? `left-hex-ascii-diff-${formatOffset(cell.offset)}`
+                      : `left-hex-ascii-${formatOffset(cell.offset)}`
+                  "
+                  >{{ cell.ascii }}</span
+                >
               </span>
             </div>
             <div
@@ -1291,7 +1302,23 @@ async function runHexSave(): Promise<void> {
                   {{ cell.hex }}
                 </button>
               </span>
-              <span class="hex-ascii">{{ pair.right?.ascii ?? '' }}</span>
+              <span
+                class="hex-ascii"
+                data-testid="hex-ascii-pane-right"
+              >
+                <span
+                  v-for="cell in pair.right?.cells ?? []"
+                  :key="`right-ascii-${cell.offset}`"
+                  class="hex-ascii-cell"
+                  :class="{ 'hex-ascii-different': cell.different }"
+                  :data-testid="
+                    cell.different
+                      ? `right-hex-ascii-diff-${formatOffset(cell.offset)}`
+                      : `right-hex-ascii-${formatOffset(cell.offset)}`
+                  "
+                  >{{ cell.ascii }}</span
+                >
+              </span>
             </div>
             <div
               class="hex-empty-hatch"
@@ -1687,6 +1714,22 @@ h2 {
 
 .hex-ascii {
   border-right: 0;
+}
+
+.hex-ascii-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7px;
+  height: 16px;
+  padding: 0;
+  line-height: 16px;
+}
+
+.hex-ascii-different {
+  background: #ffe3e3;
+  color: #e00000;
+  font-weight: 700;
 }
 
 @media (width <= 760px) {

@@ -458,6 +458,11 @@ describe('HexCompareView', () => {
     expect(wrapper.find('[data-testid="hex-ascii-pane"]').exists()).toBe(true)
     expect(wrapper.findAll('[data-testid="hex-row"]')).toHaveLength(1)
     expect(wrapper.find('[data-testid="hex-byte-pane"]').text()).toContain('41424344')
+    expect(wrapper.find('[data-testid="left-hex-ascii-diff-00000001"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="left-hex-ascii-diff-00000001"]').classes()).toContain(
+      'hex-ascii-different',
+    )
+    expect(wrapper.find('[data-testid="left-hex-ascii-00000000"]').exists()).toBe(true)
   })
 
   it('keeps left and right hex viewports synchronized', async () => {

@@ -263,3 +263,15 @@ describe('hex byte diff text', () => {
     )
   })
 })
+
+describe('hex ascii cell diff', () => {
+  it('highlights Hex ASCII diffs with capture light-red cell fill', () => {
+    expect(hexView).toMatch(/class="hex-ascii-cell"/)
+    expect(hexView).toMatch(/hex-ascii-different/)
+    expect(hexView).toMatch(/\.hex-ascii-different\s*\{[\s\S]*?background:\s*#ffe3e3/)
+    expect(hexView).toMatch(/\.hex-ascii-different\s*\{[\s\S]*?color:\s*#e00000/)
+    expect(css).toMatch(
+      /\.hex-compare-view \.hex-ascii-different\s*\{[\s\S]*?background:\s*#ffe3e3/,
+    )
+  })
+})

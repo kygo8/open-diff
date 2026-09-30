@@ -2236,6 +2236,22 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-weight: 700 !important;
 }
 
+.hex-compare-view .hex-ascii-cell {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 7px !important;
+  height: 16px !important;
+  padding: 0 !important;
+  line-height: 16px !important;
+}
+
+.hex-compare-view .hex-ascii-different {
+  background: #ffe3e3 !important;
+  color: #e00000 !important;
+  font-weight: 700 !important;
+}
+
 .hex-compare-view .hex-byte-selected {
   border-color: #00c2c7 !important;
   background: #9dddff !important;

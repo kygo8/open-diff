@@ -944,6 +944,15 @@ async function runHexSave(): Promise<void> {
             test-id="hex-right-path-footer"
           />
         </div>
+        <button
+          type="button"
+          class="hex-run-diff"
+          data-testid="run-hex-compare"
+          :disabled="loading"
+          @click="runHexCompare()"
+        >
+          {{ $t('ui.runDiff') }}
+        </button>
       </section>
       <section
         class="hex-wrap-controls"
@@ -974,14 +983,6 @@ async function runHexSave(): Promise<void> {
         <strong data-testid="hex-diff-ranges">{{
           $t('status.ranges', { count: diffRangeCount })
         }}</strong>
-        <button
-          type="button"
-          data-testid="run-hex-compare"
-          :disabled="loading"
-          @click="runHexCompare()"
-        >
-          {{ $t('ui.runDiff') }}
-        </button>
         <div
           class="hex-offset-chrome"
           data-testid="hex-offset-chrome"
@@ -1507,6 +1508,18 @@ h2 {
 
 .hex-summary span {
   color: var(--app-text-muted);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.hex-run-diff {
+  height: 18px;
+  min-height: 18px;
+  margin: 2px 0 0;
+  padding: 0 8px;
+  border: 1px solid #a0a0a0;
+  border-radius: 0;
+  background: #f0f0f0;
   font-size: 11px;
   line-height: 16px;
 }

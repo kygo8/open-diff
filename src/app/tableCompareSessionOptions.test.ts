@@ -27,6 +27,8 @@ describe('tableCompareSessionOptions', () => {
         ignoredColumns: ['col-a', ''],
         ignoreCase: true,
         firstRowIsHeader: false,
+        numericTolerance: '0.05',
+        dateTimeToleranceSeconds: '60',
       },
       storage,
     )
@@ -38,6 +40,8 @@ describe('tableCompareSessionOptions', () => {
       ignoredColumns: ['col-a'],
       ignoreCase: true,
       firstRowIsHeader: false,
+      numericTolerance: '0.05',
+      dateTimeToleranceSeconds: '60',
     })
   })
 
@@ -64,6 +68,8 @@ describe('tableCompareSessionOptions', () => {
       ignoredColumns: ['x'],
       ignoreCase: true,
       firstRowIsHeader: true,
+      numericTolerance: '',
+      dateTimeToleranceSeconds: '',
     })
   })
 })

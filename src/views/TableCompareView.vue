@@ -52,6 +52,8 @@ interface VirtualGridCell {
   testId: string
   text: string
   rightText?: string
+  diffStatus?: string
+  important?: boolean
 }
 
 interface VirtualGridRow {
@@ -67,6 +69,7 @@ interface VirtualGridColumn {
 interface TableCellLocation {
   key: string
   text: string
+  important?: boolean
 }
 
 const settings = useSettingsStore()
@@ -96,6 +99,9 @@ const keyColumnsInput = ref(initialTableOptions.keyColumns)
 const delimiterInput = ref(initialTableOptions.delimiter)
 const ignoreCase = ref(initialTableOptions.ignoreCase)
 const firstRowIsHeader = ref(initialTableOptions.firstRowIsHeader)
+
+const numericToleranceInput = ref(initialTableOptions.numericTolerance)
+const dateTimeToleranceSecondsInput = ref(initialTableOptions.dateTimeToleranceSeconds)
 const showSessionSettings = ref(false)
 const suppressSessionOptionRecompare = ref(false)
 const viewActions = useViewActionsStore()
@@ -130,6 +136,8 @@ function currentTableSessionOptions(): TableCompareSessionOptions {
     ignoredColumns: [...ignoredColumnKeys.value],
     ignoreCase: ignoreCase.value,
     firstRowIsHeader: firstRowIsHeader.value,
+    numericTolerance: numericToleranceInput.value,
+    dateTimeToleranceSeconds: dateTimeToleranceSecondsInput.value,
   }
 }
 
@@ -163,6 +171,8 @@ function applyTableSessionSettings(
   ignoredColumnKeys.value = [...payload.options.ignoredColumns]
   ignoreCase.value = payload.options.ignoreCase
   firstRowIsHeader.value = payload.options.firstRowIsHeader
+  numericToleranceInput.value = payload.options.numericTolerance
+  dateTimeToleranceSecondsInput.value = payload.options.dateTimeToleranceSeconds
   persistTableSessionOptions()
   suppressSessionOptionRecompare.value = false
   showSessionSettings.value = false
@@ -177,7 +187,15 @@ function applyTableSessionSettings(
 }
 
 watch(
-  [keyColumnsInput, delimiterInput, ignoredColumnKeys, ignoreCase, firstRowIsHeader],
+  [
+    keyColumnsInput,
+    delimiterInput,
+    ignoredColumnKeys,
+    ignoreCase,
+    firstRowIsHeader,
+    numericToleranceInput,
+    dateTimeToleranceSecondsInput,
+  ],
   () => {
     persistTableSessionOptions()
     maybeRecompareOnSessionOptionsChange()
@@ -481,6 +499,21 @@ const sheetSelectionSummary = computed(() => {
   })
 })
 
+function parseOptionalNonNegativeNumber(raw: string): number | undefined {
+  const trimmed = raw.trim()
+
+  if (!trimmed) {
+    return undefined
+  }
+  const value = Number(trimmed)
+
+  if (!Number.isFinite(value) || value < 0) {
+    return undefined
+  }
+
+  return value
+}
+
 function parseKeyColumnIndices(): number[] {
   return keyColumnsInput.value
     .split(',')
@@ -558,15 +591,27 @@ function rowsFromResult(
   result: TableCompareResponse,
   columns: VirtualGridColumn[],
 ): VirtualGridRow[] {
+  const changedByCell = new Map(
+    result.changedCells.map(
+      (cell) => [`${String(cell.rowIndex)}:${String(cell.columnIndex)}`, cell] as const,
+    ),
+  )
+
   return result.rows.map((row) => ({
     key: `row-${String(row.index + 1)}`,
-    cells: columns.map((column, columnIndex) => ({
-      key: `cell-${String(row.index + 1)}-${column.key}`,
-      columnKey: column.key,
-      testId: `table-grid-cell-${column.key}`,
-      text: row.leftCells[columnIndex] ?? '',
-      rightText: row.rightCells[columnIndex] ?? '',
-    })),
+    cells: columns.map((column, columnIndex) => {
+      const changed = changedByCell.get(`${String(row.index)}:${String(columnIndex)}`)
+
+      return {
+        key: `cell-${String(row.index + 1)}-${column.key}`,
+        columnKey: column.key,
+        testId: `table-grid-cell-${column.key}`,
+        text: row.leftCells[columnIndex] ?? '',
+        rightText: row.rightCells[columnIndex] ?? '',
+        diffStatus: changed?.status,
+        important: changed?.important,
+      }
+    }),
   }))
 }
 
@@ -582,6 +627,7 @@ function changedCellsFromResult(
     return {
       key: `row-${String(cell.rowIndex + 1)}-${columnKey}`,
       text: `${leftValue} -> ${rightValue}`,
+      important: cell.important !== false,
     }
   })
 }
@@ -684,6 +730,8 @@ async function runTableCompare(): Promise<void> {
       delimiter: delimiterInput.value || undefined,
       ignoreCase: ignoreCase.value,
       firstRowIsHeader: firstRowIsHeader.value,
+      numericTolerance: parseOptionalNonNegativeNumber(numericToleranceInput.value),
+      dateTimeToleranceSeconds: parseOptionalNonNegativeNumber(dateTimeToleranceSecondsInput.value),
     })
     const columns = columnsFromResult(result)
 
@@ -1131,6 +1179,26 @@ watch([leftPath, rightPath], () => {
           />
           <span>{{ $t('ui.tableIgnoreCaseDefault') }}</span>
         </label>
+        <label>
+          <span>{{ $t('ui.tableNumericTolerance') }}</span>
+          <input
+            v-model="numericToleranceInput"
+            type="text"
+            inputmode="decimal"
+            data-testid="table-numeric-tolerance"
+            :placeholder="$t('ui.tableNumericToleranceHint')"
+          />
+        </label>
+        <label>
+          <span>{{ $t('ui.tableDateTimeToleranceSeconds') }}</span>
+          <input
+            v-model="dateTimeToleranceSecondsInput"
+            type="text"
+            inputmode="numeric"
+            data-testid="table-date-time-tolerance"
+            :placeholder="$t('ui.tableDateTimeToleranceHint')"
+          />
+        </label>
       </section>
 
       <section class="column-map-controls">
@@ -1300,7 +1368,16 @@ watch([leftPath, rightPath], () => {
                     v-for="cell in row.cells"
                     :key="cell.key"
                     class="table-grid-cell"
+                    :class="{
+                      'table-grid-cell-diff': Boolean(cell.diffStatus),
+                      'table-grid-cell-unimportant':
+                        Boolean(cell.diffStatus) && cell.important === false,
+                    }"
                     :data-column-key="cell.columnKey"
+                    :data-diff-status="cell.diffStatus || undefined"
+                    :data-important="
+                      cell.diffStatus ? (cell.important === false ? 'false' : 'true') : undefined
+                    "
                     data-testid="table-grid-cell"
                   >
                     <span :data-testid="cell.testId">{{ cell.text }}</span>
@@ -1330,7 +1407,16 @@ watch([leftPath, rightPath], () => {
                     v-for="cell in row.cells"
                     :key="cell.key"
                     class="table-grid-cell"
+                    :class="{
+                      'table-grid-cell-diff': Boolean(cell.diffStatus),
+                      'table-grid-cell-unimportant':
+                        Boolean(cell.diffStatus) && cell.important === false,
+                    }"
                     :data-column-key="cell.columnKey"
+                    :data-diff-status="cell.diffStatus || undefined"
+                    :data-important="
+                      cell.diffStatus ? (cell.important === false ? 'false' : 'true') : undefined
+                    "
                   >
                     {{ cell.rightText ?? cell.text }}
                   </span>
@@ -1783,6 +1869,15 @@ h2 {
 
 .table-grid-cell:last-child {
   border-right: 0;
+}
+
+.table-grid-cell-diff {
+  background: var(--diff-modified-bg, #fff2cc);
+}
+
+.table-grid-cell-unimportant {
+  background: var(--diff-unimportant-bg, #f0f0f0);
+  color: var(--diff-unimportant-fg, #666666);
 }
 
 .column-map-table {

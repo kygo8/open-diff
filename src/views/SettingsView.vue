@@ -2411,6 +2411,30 @@ function parseShortcutText(value: string): string[] {
             />
             <span>{{ $t('ui.tableIgnoreCaseDefault') }}</span>
           </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.tableNumericTolerance') }}</span>
+            <input
+              v-model="tableCompareDefaultsDraft.numericTolerance"
+              class="auto-save-limit-input"
+              data-testid="table-numeric-tolerance-default"
+              type="text"
+              inputmode="decimal"
+              :placeholder="$t('ui.tableNumericToleranceHint')"
+              @change="persistTableCompareDefaultsDraft"
+            />
+          </label>
+          <label class="auto-save-limit-row">
+            <span>{{ $t('ui.tableDateTimeToleranceSeconds') }}</span>
+            <input
+              v-model="tableCompareDefaultsDraft.dateTimeToleranceSeconds"
+              class="auto-save-limit-input"
+              data-testid="table-date-time-tolerance-default"
+              type="text"
+              inputmode="numeric"
+              :placeholder="$t('ui.tableDateTimeToleranceHint')"
+              @change="persistTableCompareDefaultsDraft"
+            />
+          </label>
           <p class="options-hint">{{ $t('ui.tableCompareOptionsHint') }}</p>
         </NCard>
 

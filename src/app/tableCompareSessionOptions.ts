@@ -8,6 +8,10 @@ export interface TableCompareSessionOptions {
   ignoreCase: boolean
   /** When true (default), the first delimited row is treated as column names. */
   firstRowIsHeader: boolean
+  /** Absolute numeric delta treated as unimportant; empty means off. */
+  numericTolerance: string
+  /** Absolute date-time delta in seconds treated as unimportant; empty means off. */
+  dateTimeToleranceSeconds: string
 }
 
 export function defaultTableCompareSessionOptions(): TableCompareSessionOptions {
@@ -17,6 +21,8 @@ export function defaultTableCompareSessionOptions(): TableCompareSessionOptions 
     ignoredColumns: [],
     ignoreCase: true,
     firstRowIsHeader: true,
+    numericTolerance: '',
+    dateTimeToleranceSeconds: '',
   }
 }
 
@@ -44,6 +50,9 @@ export function loadTableCompareSessionOptions(
       ignoredColumns,
       ignoreCase: parsed.ignoreCase !== false,
       firstRowIsHeader: parsed.firstRowIsHeader !== false,
+      numericTolerance: typeof parsed.numericTolerance === 'string' ? parsed.numericTolerance : '',
+      dateTimeToleranceSeconds:
+        typeof parsed.dateTimeToleranceSeconds === 'string' ? parsed.dateTimeToleranceSeconds : '',
     }
   } catch {
     return defaultTableCompareSessionOptions()
@@ -62,6 +71,8 @@ export function saveTableCompareSessionOptions(
       ignoredColumns: state.ignoredColumns.filter((item) => item.trim().length > 0),
       ignoreCase: state.ignoreCase,
       firstRowIsHeader: state.firstRowIsHeader,
+      numericTolerance: state.numericTolerance.trim(),
+      dateTimeToleranceSeconds: state.dateTimeToleranceSeconds.trim(),
     }),
   )
 }

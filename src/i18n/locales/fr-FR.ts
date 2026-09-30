@@ -816,6 +816,7 @@ export const frFR: LanguagePack = {
     'ui.script': 'Script',
     'ui.scriptPath': 'Fichier de script',
     'ui.scriptSource': 'Source du script',
+    'ui.scriptMessageTitle': 'Script message',
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':

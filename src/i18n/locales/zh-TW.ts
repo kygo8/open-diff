@@ -784,6 +784,7 @@ export const zhTW: LanguagePack = {
     'ui.script': '指令碼',
     'ui.scriptPath': '指令碼檔案',
     'ui.scriptSource': '指令碼來源',
+    'ui.scriptMessageTitle': '指令碼訊息',
     'ui.scriptPromptTitle': '指令碼提示',
     'ui.scriptPromptAnswer': '回答',
     'ui.scriptingNotImplemented':

@@ -20,6 +20,8 @@ describe('scriptCommands', () => {
     expect(supportedScriptCommands).toContain('COLLAPSE')
     expect(supportedScriptCommands).toContain('MOVE')
     expect(supportedScriptCommands).toContain('PROMPT')
+    expect(supportedScriptCommands).toContain('INPUT')
+    expect(supportedScriptCommands).toContain('MESSAGE')
     expect(supportedScriptCommands).toContain('MOVETO')
     expect(formatCommandList(supportedScriptCommands)).not.toMatch(/Beyond|BC5?|Scooter/i)
   })

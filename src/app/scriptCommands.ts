@@ -47,6 +47,8 @@ export const supportedScriptCommands = [
   'SLEEP',
   'PAUSE',
   'PROMPT',
+  'INPUT',
+  'MESSAGE',
   'EXPAND-ALL',
   'COLLAPSE-ALL',
   'MERGE',

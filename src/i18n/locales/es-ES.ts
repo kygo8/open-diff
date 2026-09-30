@@ -816,6 +816,7 @@ export const esES: LanguagePack = {
     'ui.script': 'Script',
     'ui.scriptPath': 'Archivo de script',
     'ui.scriptSource': 'Origen del script',
+    'ui.scriptMessageTitle': 'Script message',
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':

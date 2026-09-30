@@ -1512,7 +1512,7 @@ h2 {
 }
 
 .hex-wrap-controls {
-  display: grid;
+  display: none;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: 4px 6px;

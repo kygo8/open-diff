@@ -275,3 +275,10 @@ describe('hex ascii cell diff', () => {
     )
   })
 })
+
+describe('hex wrap-controls hide', () => {
+  it('hides Hex wrap-controls strip toward capture path-to-grid chrome', () => {
+    expect(hexView).toMatch(/\.hex-wrap-controls\s*\{[\s\S]*?display:\s*none/)
+    expect(css).toMatch(/\.hex-compare-view \.hex-wrap-controls\s*\{[\s\S]*?display:\s*none/)
+  })
+})

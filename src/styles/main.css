@@ -2182,6 +2182,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* Hex wrap/controls + byte rows at capture CSS scale */
 .hex-compare-view .hex-wrap-controls {
+  display: none !important;
   gap: 4px 6px !important;
   min-height: 20px !important;
   padding: 2px 4px !important;

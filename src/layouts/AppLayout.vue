@@ -167,6 +167,16 @@ onMounted(() => {
         autoRun: true,
         favor,
       })
+
+      if (launch.title?.trim()) {
+        try {
+          const { getCurrentWindow } = await import('@tauri-apps/api/window')
+
+          await getCurrentWindow().setTitle(launch.title.trim())
+        } catch {
+          // Web/dev hosts may lack the window API.
+        }
+      }
       const opened = tabs.openTab({
         title,
         route: launch.route,

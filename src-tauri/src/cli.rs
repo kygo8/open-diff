@@ -296,6 +296,9 @@ fn main() {
                 if let Some(favor) = result.options.favor {
                     println!("favor: {favor:?}");
                 }
+                if let Some(title) = &result.options.title {
+                    println!("title: {title}");
+                }
             }
             std::process::exit(cli_exit_code_value(result.exit_code));
         }

@@ -55,6 +55,7 @@ export interface ShellCompareLaunchPayload {
   leftReadOnly?: boolean
   rightReadOnly?: boolean
   favor?: 'left' | 'right'
+  title?: string
 }
 
 export function takeShellCompareLaunch(): Promise<ShellCompareLaunchPayload | null> {

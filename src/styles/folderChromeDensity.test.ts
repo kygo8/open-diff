@@ -88,7 +88,7 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(folderView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
   expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*16\.5px/)
   expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?border-radius:\s*0/)
-  expect(folderView).toMatch(/:size="16"/)
+  expect(folderView).toMatch(/:size="14"/)
   expect(syncView).toMatch(/data-testid="folder-sync-filter-strip"/)
   expect(syncView).toMatch(/data-testid="folder-sync-filter-strip-filters"/)
   expect(syncView).not.toMatch(/data-testid="folder-sync-filter-strip-peek"/)

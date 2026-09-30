@@ -263,6 +263,7 @@ const versionFilterOptions = versionFieldFilters.map((value) => ({
 const reportFormatOptions: { value: ReportPreferenceFormat; labelKey: string }[] = [
   { value: 'html', labelKey: 'ui.reportFormatHtml' },
   { value: 'html-side-by-side', labelKey: 'ui.reportFormatHtmlSideBySide' },
+  { value: 'html-print', labelKey: 'ui.reportFormatHtmlPrint' },
   { value: 'text', labelKey: 'ui.reportFormatText' },
   { value: 'json', labelKey: 'ui.reportFormatJson' },
   { value: 'csv', labelKey: 'ui.reportFormatCsv' },

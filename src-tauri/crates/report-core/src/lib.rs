@@ -161,6 +161,64 @@ pub fn render_html_report(report: &UnifiedReport) -> String {
     html
 }
 
+/// Print-oriented HTML: compact type, page-break friendly sections, @media print rules.
+pub fn render_print_html_report(report: &UnifiedReport) -> String {
+    let title = escape_html(&report.title);
+    let mut html = String::new();
+
+    html.push_str("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">");
+    html.push_str("<title>");
+    html.push_str(&title);
+    html.push_str("</title>");
+    html.push_str("<style>");
+    html.push_str(
+        "body{font-family:Georgia,\"Times New Roman\",serif;margin:16px;color:#111;font-size:12pt;line-height:1.35}         h1{font-size:18pt;margin:0 0 8px}h2{font-size:13pt;margin:16px 0 6px;page-break-after:avoid}         dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0 0 12px}         dt{font-weight:700}dd{margin:0}         table{width:100%;border-collapse:collapse;margin-top:4px;page-break-inside:auto}         tr{page-break-inside:avoid}th,td{border:1px solid #999;padding:4px 6px;text-align:left;vertical-align:top}         th{background:#eee}.status-different{font-weight:700}         @media print{body{margin:0}a{color:inherit;text-decoration:none}         thead{display:table-header-group}h1,h2{page-break-after:avoid}}",
+    );
+    html.push_str("</style></head><body>");
+    html.push_str("<h1>");
+    html.push_str(&title);
+    html.push_str("</h1>");
+    html.push_str("<dl><dt>Generated At</dt><dd>");
+    html.push_str(&escape_html(&report.metadata.generated_at));
+    html.push_str("</dd>");
+    push_optional_metadata(
+        &mut html,
+        "Left Source",
+        report.metadata.left_source.as_deref(),
+    );
+    push_optional_metadata(
+        &mut html,
+        "Right Source",
+        report.metadata.right_source.as_deref(),
+    );
+    html.push_str("</dl>");
+
+    for section in &report.sections {
+        html.push_str("<section><h2>");
+        html.push_str(&escape_html(&section.title));
+        html.push_str("</h2><table><thead><tr><th>Label</th><th>Left</th><th>Right</th><th>Status</th></tr></thead><tbody>");
+
+        for row in &section.rows {
+            html.push_str("<tr><td>");
+            html.push_str(&escape_html(&row.label));
+            html.push_str("</td><td>");
+            html.push_str(&escape_html(row.left.as_deref().unwrap_or("")));
+            html.push_str("</td><td>");
+            html.push_str(&escape_html(row.right.as_deref().unwrap_or("")));
+            html.push_str("</td><td class=\"");
+            html.push_str(row_status_class(&row.status));
+            html.push_str("\">");
+            html.push_str(row_status_label(&row.status));
+            html.push_str("</td></tr>");
+        }
+
+        html.push_str("</tbody></table></section>");
+    }
+
+    html.push_str("</body></html>");
+    html
+}
+
 /// Two-pane HTML report with left/right columns instead of a dense table.
 pub fn render_side_by_side_html_report(report: &UnifiedReport) -> String {
     let title = escape_html(&report.title);
@@ -797,6 +855,34 @@ mod tests {
         assert!(html.contains("Context"));
         assert!(html.contains("&lt;old&gt;"));
         assert!(!html.contains("<old>"));
+    }
+
+    #[test]
+    fn renders_print_html_report_with_print_media_rules() {
+        let report = UnifiedReport::new(
+            ReportKind::Text,
+            "Print Me",
+            ReportMetadata {
+                generated_at: "2026-09-30T10:00:00Z".to_owned(),
+                left_source: Some("left.txt".to_owned()),
+                right_source: Some("right.txt".to_owned()),
+            },
+        )
+        .with_section(ReportSection {
+            kind: ReportSectionKind::Differences,
+            title: "Differences".to_owned(),
+            rows: vec![ReportRow {
+                label: "L1".to_owned(),
+                left: Some("a".to_owned()),
+                right: Some("b".to_owned()),
+                status: ReportRowStatus::Different,
+            }],
+        });
+
+        let html = render_print_html_report(&report);
+        assert!(html.contains("@media print"));
+        assert!(html.contains("page-break-inside:avoid"));
+        assert!(html.contains("<title>Print Me</title>"));
     }
 
     #[test]

@@ -721,6 +721,8 @@ export const zhCN: LanguagePack = {
     'ui.chunkLength': '块长度',
     'ui.delimiter': '分隔符',
     'ui.html': 'HTML',
+    'ui.htmlPrint': '打印 HTML',
+    'ui.reportFormatHtmlPrint': '打印 HTML',
     'ui.htmlSideBySide': '并排 HTML',
     'ui.keyColumns': '关键列',
     'ui.offset': '偏移',

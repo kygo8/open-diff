@@ -28,6 +28,7 @@ function withProjectEslintParsers<T>(run: () => T): T {
     ) => string
   }
   const originalResolve = moduleWithResolve._resolveFilename.bind(Module)
+
   moduleWithResolve._resolveFilename = (request, parent, isMain, options) => {
     if (request === 'espree') {
       return localEspree

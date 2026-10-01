@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs'
+import Module from 'node:module'
 import { createRequire } from 'node:module'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -8,6 +9,41 @@ import { enUS } from './locales/en-US'
 
 const require = createRequire(import.meta.url)
 const vueFiles = listVueFiles(resolve(process.cwd(), 'src'))
+
+/**
+ * Prefer package-local espree / eslint-scope over Debian /usr/share/nodejs
+ * stubs whose `.version` is the non-semver string "main". Those stubs break
+ * vue-eslint-parser's getNewestEspree / getNewest eslint-scope semver.lte.
+ */
+function withProjectEslintParsers<T>(run: () => T): T {
+  const parserRequire = createRequire(require.resolve('vue-eslint-parser'))
+  const localEspree = parserRequire.resolve('espree')
+  const localScope = parserRequire.resolve('eslint-scope')
+  const moduleWithResolve = Module as typeof Module & {
+    _resolveFilename: (
+      request: string,
+      parent: NodeJS.Module | undefined,
+      isMain: boolean,
+      options?: unknown,
+    ) => string
+  }
+  const originalResolve = moduleWithResolve._resolveFilename.bind(Module)
+  moduleWithResolve._resolveFilename = (request, parent, isMain, options) => {
+    if (request === 'espree') {
+      return localEspree
+    }
+    if (request === 'eslint-scope') {
+      return localScope
+    }
+
+    return originalResolve(request, parent, isMain, options)
+  }
+  try {
+    return run()
+  } finally {
+    moduleWithResolve._resolveFilename = originalResolve
+  }
+}
 
 const visibleAttributeNames = [
   'aria-label',
@@ -82,10 +118,12 @@ describe('English UI resources', () => {
 
 function findHardcodedTemplateText(filePath: string): string[] {
   const source = extractTemplateSource(readFileSync(resolve(process.cwd(), filePath), 'utf8'))
-  const templateBody = parseForESLint(source, {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-  }).ast.templateBody
+  const templateBody = withProjectEslintParsers(() =>
+    parseForESLint(source, {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    }),
+  ).ast.templateBody
   const textNodeMatches: string[] = []
   const attributeMatches: string[] = []
 

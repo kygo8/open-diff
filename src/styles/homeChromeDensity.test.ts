@@ -133,3 +133,18 @@ describe('home launch cream', () => {
     )
   })
 })
+
+describe('home launch card band height lock', () => {
+  it('locks Home launch card bands to capture heights without inherited line-box stretch', () => {
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?height:\s*91\.5px/)
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?line-height:\s*1/)
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?font-size:\s*12px/)
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?align-self:\s*start/)
+    expect(homeView).toMatch(
+      /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?height:\s*131px/,
+    )
+    expect(homeView).toMatch(
+      /\.new-session-card\[data-card-band='short'\]\s*\{[\s\S]*?height:\s*91\.5px/,
+    )
+  })
+})

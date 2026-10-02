@@ -1408,6 +1408,7 @@ onMounted(() => {
   width: 100%;
   min-width: 0;
   max-width: 100%;
+  height: 91.5px;
   min-height: 91.5px;
   padding: 8px 4px 6px;
   overflow: hidden;
@@ -1415,17 +1416,22 @@ onMounted(() => {
   border-radius: 0;
   background: transparent;
   color: #111827;
+  font-size: 12px;
+  line-height: 1;
   cursor: pointer;
   justify-items: center;
   align-content: start;
+  align-self: start;
   box-sizing: border-box;
 }
 
 .new-session-card[data-card-band='tall'] {
+  height: 131px;
   min-height: 131px;
 }
 
 .new-session-card[data-card-band='short'] {
+  height: 91.5px;
   min-height: 91.5px;
 }
 

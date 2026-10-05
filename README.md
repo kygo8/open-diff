@@ -222,6 +222,16 @@ Build desktop bundles:
 corepack pnpm tauri:build
 ```
 
+Linux also ships an AppImage (portable, no install) plus deb/rpm packages with
+AppStream metainfo so software centers show **OpenDiff** instead of a package
+artifact name:
+
+```bash
+corepack pnpm tauri:build:linux:appimage
+corepack pnpm tauri:build:linux:deb
+corepack pnpm tauri:build:linux:rpm
+```
+
 ## Quality Checks
 
 Run the full local quality gate before opening a pull request:

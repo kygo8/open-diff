@@ -4897,14 +4897,17 @@ onUnmounted(() => {
 </template>
 <style scoped>
 .folder-compare-view {
-  display: grid;
-  grid-template-rows:
-    max-content max-content max-content max-content max-content minmax(0, 1fr)
-    max-content;
+  display: flex;
+  flex-direction: column;
   gap: 2px;
   height: 100%;
+  min-height: 0;
   padding: 2px 4px;
   overflow: hidden;
+}
+
+.folder-compare-view > :not(.folder-tree-table) {
+  flex: 0 0 auto;
 }
 
 .folder-toolbar {
@@ -5533,6 +5536,7 @@ onUnmounted(() => {
 
 .folder-tree-table {
   position: relative;
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
   border: 1px solid var(--app-border);

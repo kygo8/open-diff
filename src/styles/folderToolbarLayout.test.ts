@@ -18,9 +18,9 @@ describe('folder toolbar narrow layout CSS', () => {
       /@media \(width <= 1100px\)\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)\s*!important/,
     )
     expect(view).toContain('min-height: min-content')
-    expect(view).toMatch(
-      /grid-template-rows:\s*max-content max-content max-content max-content max-content minmax\(0, 1fr\)\s*max-content/,
-    )
+    expect(view).toMatch(/display:\s*flex/)
+    expect(view).toMatch(/flex-direction:\s*column/)
+    expect(view).toMatch(/\.folder-tree-table\s*\{[\s\S]*?flex:\s*1 1 auto[\s\S]*?overflow:\s*auto/)
     expect(view).toMatch(
       /@media \(width <= 1100px\)[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/,
     )

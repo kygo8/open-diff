@@ -44,12 +44,17 @@ interface TauriConfig {
       }
     }
     linux?: {
+      appimage?: {
+        bundleMediaFramework?: boolean
+        files?: Record<string, string>
+      }
       deb?: {
         depends?: string[]
         recommends?: string[]
         provides?: string[]
         section?: string
         priority?: string
+        desktopTemplate?: string
         files?: Record<string, string>
       }
       rpm?: {
@@ -58,6 +63,7 @@ interface TauriConfig {
         provides?: string[]
         release?: string
         epoch?: number
+        desktopTemplate?: string
         files?: Record<string, string>
       }
     }
@@ -202,9 +208,17 @@ describe('packagingConfig', () => {
     ])
     expect(config.bundle.linux?.deb?.recommends).toEqual(['xdg-utils'])
     expect(config.bundle.linux?.deb?.provides).toEqual(['open-diff'])
+    expect(config.bundle.targets).toEqual(expect.arrayContaining(['deb', 'rpm', 'appimage']))
+    expect(config.bundle.linux?.deb?.desktopTemplate).toBe('bundle/linux/open-diff.desktop')
     expect(config.bundle.linux?.deb?.files).toEqual({
       '/usr/share/doc/open-diff/README.md': '../README.md',
       '/usr/share/doc/open-diff/LICENSE': '../LICENSE',
+      '/usr/share/metainfo/io.github.kygo8.open-diff.metainfo.xml':
+        'bundle/linux/io.github.kygo8.open-diff.metainfo.xml',
+    })
+    expect(config.bundle.linux?.appimage?.files).toEqual({
+      '/usr/share/metainfo/io.github.kygo8.open-diff.metainfo.xml':
+        'bundle/linux/io.github.kygo8.open-diff.metainfo.xml',
     })
 
     const iconPath = resolve(process.cwd(), 'src-tauri/icons/icon.png')
@@ -237,9 +251,12 @@ describe('packagingConfig', () => {
     expect(config.bundle.linux?.rpm?.depends).toEqual(['webkit2gtk4.1', 'gtk3', 'librsvg2'])
     expect(config.bundle.linux?.rpm?.recommends).toEqual(['xdg-utils'])
     expect(config.bundle.linux?.rpm?.provides).toEqual(['open-diff'])
+    expect(config.bundle.linux?.rpm?.desktopTemplate).toBe('bundle/linux/open-diff.desktop')
     expect(config.bundle.linux?.rpm?.files).toEqual({
       '/usr/share/doc/open-diff/README.md': '../README.md',
       '/usr/share/doc/open-diff/LICENSE': '../LICENSE',
+      '/usr/share/metainfo/io.github.kygo8.open-diff.metainfo.xml':
+        'bundle/linux/io.github.kygo8.open-diff.metainfo.xml',
     })
   })
 
@@ -252,5 +269,18 @@ describe('packagingConfig', () => {
     expect(manifest.scripts['tauri:build:linux:rpm']).toBe('bash scripts/linux/package-rpm.sh')
     expect(script).toContain('set -euo pipefail')
     expect(script).toContain('corepack pnpm tauri build --bundles rpm')
+  })
+
+  it('exposes a Linux AppImage bundle script for portable releases', () => {
+    const manifest = JSON.parse(
+      readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'),
+    ) as PackageManifest
+    const script = readFileSync(resolve(process.cwd(), 'scripts/linux/package-appimage.sh'), 'utf8')
+
+    expect(manifest.scripts['tauri:build:linux:appimage']).toBe(
+      'bash scripts/linux/package-appimage.sh',
+    )
+    expect(script).toContain('set -euo pipefail')
+    expect(script).toContain('corepack pnpm tauri build --bundles appimage')
   })
 })

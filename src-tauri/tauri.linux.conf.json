@@ -1,6 +1,6 @@
 {
   "bundle": {
-    "targets": ["deb", "rpm"],
+    "targets": ["deb", "rpm", "appimage"],
     "category": "DeveloperTool",
     "icon": ["icons/icon.png"],
     "shortDescription": "Professional file and folder comparison tool",
@@ -19,8 +19,10 @@
         "priority": "optional",
         "files": {
           "/usr/share/doc/open-diff/README.md": "../README.md",
-          "/usr/share/doc/open-diff/LICENSE": "../LICENSE"
-        }
+          "/usr/share/doc/open-diff/LICENSE": "../LICENSE",
+          "/usr/share/metainfo/io.github.kygo8.open-diff.metainfo.xml": "bundle/linux/io.github.kygo8.open-diff.metainfo.xml"
+        },
+        "desktopTemplate": "bundle/linux/open-diff.desktop"
       },
       "rpm": {
         "depends": ["webkit2gtk4.1", "gtk3", "librsvg2"],
@@ -30,7 +32,15 @@
         "epoch": 0,
         "files": {
           "/usr/share/doc/open-diff/README.md": "../README.md",
-          "/usr/share/doc/open-diff/LICENSE": "../LICENSE"
+          "/usr/share/doc/open-diff/LICENSE": "../LICENSE",
+          "/usr/share/metainfo/io.github.kygo8.open-diff.metainfo.xml": "bundle/linux/io.github.kygo8.open-diff.metainfo.xml"
+        },
+        "desktopTemplate": "bundle/linux/open-diff.desktop"
+      },
+      "appimage": {
+        "bundleMediaFramework": false,
+        "files": {
+          "/usr/share/metainfo/io.github.kygo8.open-diff.metainfo.xml": "bundle/linux/io.github.kygo8.open-diff.metainfo.xml"
         }
       }
     }

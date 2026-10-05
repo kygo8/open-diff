@@ -40,7 +40,8 @@
     "tauri:build:linux:deb": "bash scripts/linux/package-deb.sh",
     "tauri:build:linux:rpm": "bash scripts/linux/package-rpm.sh",
     "tauri:build:macos": "bash scripts/macos/package-macos.sh",
-    "tauri:portable:windows": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/windows/package-portable.ps1"
+    "tauri:portable:windows": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/windows/package-portable.ps1",
+    "tauri:build:linux:appimage": "bash scripts/linux/package-appimage.sh"
   },
   "dependencies": {
     "@lucide/vue": "1.31.0",

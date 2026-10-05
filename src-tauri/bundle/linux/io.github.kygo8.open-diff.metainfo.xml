@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.kygo8.open-diff</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <name>OpenDiff</name>
+  <summary>Professional file and folder comparison tool</summary>
+  <description>
+    <p>
+      OpenDiff compares text, folders, tables, images, binary, archives, media,
+      registry, and version resources with scriptable workflows across Windows,
+      macOS, and Linux.
+    </p>
+  </description>
+  <url type="homepage">https://github.com/kygo8/open-diff</url>
+  <url type="bugtracker">https://github.com/kygo8/open-diff/issues</url>
+  <developer id="io.github.kygo8">
+    <name>Open Diff Contributors</name>
+  </developer>
+  <launchable type="desktop-id">OpenDiff.desktop</launchable>
+  <provides>
+    <binary>open-diff-app</binary>
+    <binary>open-diff-cli</binary>
+  </provides>
+  <categories>
+    <category>Development</category>
+    <category>Utility</category>
+  </categories>
+  <content_rating type="oars-1.1" />
+</component>

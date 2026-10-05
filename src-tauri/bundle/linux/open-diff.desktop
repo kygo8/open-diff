@@ -1,0 +1,13 @@
+[Desktop Entry]
+Categories={{categories}}
+{{#if comment}}
+Comment={{comment}}
+{{/if}}
+Exec={{exec}} %F
+Icon={{icon}}
+Name=OpenDiff
+Terminal=false
+Type=Application
+StartupNotify=true
+StartupWMClass=open-diff-app
+MimeType=text/plain;inode/directory;application/octet-stream;

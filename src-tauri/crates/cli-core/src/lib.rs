@@ -247,8 +247,33 @@ where
         "open" => parse_open_compare(args.collect()),
         "sync-preview" | "sync" => parse_sync_preview(args.collect()),
         "merge-text" => parse_merge_text(args.collect()),
-        unknown => Err(usage_error(format!("unknown command: {unknown}"))),
+        unknown => parse_bare_open_compare(unknown, args.collect()),
     }
+}
+
+/// Accept `open-diff-app LEFT RIGHT` (and optional open switches) without an `open` verb.
+fn parse_bare_open_compare(first: &str, rest: Vec<String>) -> Result<CliInvocation, CliParseError> {
+    if normalized_switch(first).is_some() {
+        return Err(usage_error(format!("unknown command: {first}")));
+    }
+
+    let mut open_args = Vec::with_capacity(rest.len() + 1);
+    open_args.push(first.to_owned());
+    open_args.extend(rest);
+    let path_count = open_args.len();
+    let first_path = open_args[0].clone();
+    parse_open_compare(open_args).map_err(|error| {
+        // Prefer the open-compare usage when paths were clearly intended; otherwise keep
+        // the unknown-command wording for bare typos like `open-diff-cli foobar`.
+        if path_count >= 2 {
+            error
+        } else {
+            CliParseError {
+                message: format!("unknown command: {first_path}"),
+                exit_code: error.exit_code,
+            }
+        }
+    })
 }
 
 pub fn cli_exit_code_value(exit_code: CliExitCode) -> i32 {
@@ -269,6 +294,7 @@ pub fn cli_help_text() -> String {
         "  script <script-path>".to_owned(),
         "  open-session <store-root> <name>".to_owned(),
         "  open [options] <left> <right>".to_owned(),
+        "  <left> <right>         same as open (GUI / desktop %F handoff)".to_owned(),
         "      --session <type>   folder-compare, folder-sync, folder-merge,".to_owned(),
         "                         text-compare, text-merge, text-edit, text-patch,".to_owned(),
         "                         table-compare, hex-compare, picture-compare,".to_owned(),
@@ -1412,6 +1438,22 @@ mod tests {
                 name: "team/demo".to_owned(),
             }
         );
+
+        let bare = parse_cli_args(["open-diff-app", "left.txt", "right.txt"])
+            .expect("bare left/right should parse as open");
+        assert_eq!(
+            bare.command,
+            CliCommand::OpenCompare {
+                session_type: "text-compare".to_owned(),
+                left: "left.txt".to_owned(),
+                right: "right.txt".to_owned(),
+                route: "/compare/text".to_owned(),
+                options: CliOpenOptions::default(),
+            }
+        );
+
+        let bare_unknown = parse_cli_args(["open-diff-cli", "not-a-command"]);
+        assert!(bare_unknown.is_err());
 
         let open = parse_cli_args([
             "open-diff-cli",

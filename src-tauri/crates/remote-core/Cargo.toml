@@ -11,6 +11,13 @@ logging-core = { path = "../logging-core" }
 serde.workspace = true
 serde_json.workspace = true
 sha2 = "0.10"
-ssh2 = "0.9.5"
 suppaftp = { version = "6.3.0", default-features = false, features = ["native-tls", "deprecated"] }
 ureq = "2.12.1"
+
+# macOS release DMGs must not depend on Homebrew libssl via libssh2.
+[target.'cfg(target_os = "macos")'.dependencies]
+ssh2 = { version = "0.9.5", features = ["vendored-openssl"] }
+
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+ssh2 = "0.9.5"
+

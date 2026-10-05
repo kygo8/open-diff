@@ -2362,59 +2362,51 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='session'] {
-  width: 55px;
   min-width: 55px;
-  max-width: 55px;
-  padding: 0;
+  max-width: none;
+  padding: 0 8px;
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='file'] {
-  width: 31.5px;
   min-width: 31.5px;
-  max-width: 31.5px;
-  padding: 0;
+  max-width: none;
+  padding: 0 8px;
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='edit'] {
-  width: 33.5px;
   min-width: 33.5px;
-  max-width: 33.5px;
-  padding: 0;
+  max-width: none;
+  padding: 0 8px;
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='search'] {
-  width: 50.5px;
   min-width: 50.5px;
-  max-width: 50.5px;
-  padding: 0;
+  max-width: none;
+  padding: 0 8px;
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='view'] {
-  width: 39.5px;
   min-width: 39.5px;
-  max-width: 39.5px;
-  padding: 0;
+  max-width: none;
+  padding: 0 8px;
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='tools'] {
-  width: 42.5px;
   min-width: 42.5px;
-  max-width: 42.5px;
-  padding: 0;
+  max-width: none;
+  padding: 0 8px;
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='help'] {
-  width: 39px;
   min-width: 39px;
-  max-width: 39px;
-  padding: 0;
+  max-width: none;
+  padding: 0 8px;
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button[data-menu-id='actions'] {
-  width: 54.5px;
   min-width: 54.5px;
-  max-width: 54.5px;
-  padding: 0;
+  max-width: none;
+  padding: 0 8px;
 }
 
 .brand {

@@ -122,64 +122,64 @@ describe('shell chrome density', () => {
 describe('menu session width residual', () => {
   const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
 
-  it('pins session menu top-level width to capture 55px', () => {
-    expect(source).toMatch(/data-menu-id='session'\][\s\S]*?width:\s*55px/)
+  it('pins session menu top-level min-width to capture 55px', () => {
+    expect(source).toMatch(/data-menu-id='session'\][\s\S]*?min-width:\s*55px/)
   })
 })
 
 describe('menu file width residual', () => {
   const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
 
-  it('pins file menu top-level width to capture 31.5px', () => {
-    expect(source).toMatch(/data-menu-id='file'\][\s\S]*?width:\s*31\.5px/)
+  it('pins file menu top-level min-width to capture 31.5px', () => {
+    expect(source).toMatch(/data-menu-id='file'\][\s\S]*?min-width:\s*31\.5px/)
   })
 })
 
 describe('menu edit width residual', () => {
   const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
 
-  it('pins edit menu top-level width to capture 33.5px', () => {
-    expect(source).toMatch(/data-menu-id='edit'\][\s\S]*?width:\s*33\.5px/)
+  it('pins edit menu top-level min-width to capture 33.5px', () => {
+    expect(source).toMatch(/data-menu-id='edit'\][\s\S]*?min-width:\s*33\.5px/)
   })
 })
 
 describe('menu search width residual', () => {
   const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
 
-  it('pins search menu top-level width to capture 50.5px', () => {
-    expect(source).toMatch(/data-menu-id='search'\][\s\S]*?width:\s*50\.5px/)
+  it('pins search menu top-level min-width to capture 50.5px', () => {
+    expect(source).toMatch(/data-menu-id='search'\][\s\S]*?min-width:\s*50\.5px/)
   })
 })
 
 describe('menu view width residual', () => {
   const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
 
-  it('pins view menu top-level width to capture 39.5px', () => {
-    expect(source).toMatch(/data-menu-id='view'\][\s\S]*?width:\s*39\.5px/)
+  it('pins view menu top-level min-width to capture 39.5px', () => {
+    expect(source).toMatch(/data-menu-id='view'\][\s\S]*?min-width:\s*39\.5px/)
   })
 })
 
 describe('menu tools width residual', () => {
   const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
 
-  it('pins tools menu top-level width to capture 42.5px', () => {
-    expect(source).toMatch(/data-menu-id='tools'\][\s\S]*?width:\s*42\.5px/)
+  it('pins tools menu top-level min-width to capture 42.5px', () => {
+    expect(source).toMatch(/data-menu-id='tools'\][\s\S]*?min-width:\s*42\.5px/)
   })
 })
 
 describe('menu help width residual', () => {
   const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
 
-  it('pins help menu top-level width to capture 39px', () => {
-    expect(source).toMatch(/data-menu-id='help'\][\s\S]*?width:\s*39px/)
+  it('pins help menu top-level min-width to capture 39px', () => {
+    expect(source).toMatch(/data-menu-id='help'\][\s\S]*?min-width:\s*39px/)
   })
 })
 
 describe('menu actions width residual', () => {
   const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
 
-  it('pins actions menu top-level width to capture 54.5px', () => {
-    expect(source).toMatch(/data-menu-id='actions'\][\s\S]*?width:\s*54\.5px/)
+  it('pins actions menu top-level min-width to capture 54.5px', () => {
+    expect(source).toMatch(/data-menu-id='actions'\][\s\S]*?min-width:\s*54\.5px/)
   })
 })
 
@@ -248,5 +248,18 @@ describe('about width residual', () => {
 
   it('pins About dialog min-width to capture 360px band', () => {
     expect(source).toMatch(/\.about-dialog\s*\{[\s\S]*?min-width:\s*min\(360px/)
+  })
+})
+
+describe('menu label truncation remnant', () => {
+  const source = readFileSync(resolve(__dirname, '../layouts/AppLayout.vue'), 'utf8')
+
+  it('lets Session/File menu labels grow past capture min widths', () => {
+    expect(source).toMatch(
+      /data-menu-id='file'\][\s\S]*?min-width:\s*31\.5px[\s\S]*?max-width:\s*none[\s\S]*?padding:\s*0 8px/,
+    )
+    expect(source).toMatch(
+      /data-menu-id='session'\][\s\S]*?min-width:\s*55px[\s\S]*?max-width:\s*none/,
+    )
   })
 })

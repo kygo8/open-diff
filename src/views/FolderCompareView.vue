@@ -87,6 +87,7 @@ import SessionSettingsDialog from '@/components/session/SessionSettingsDialog.vu
 import { Eye, Funnel, Save, Settings } from '@lucide/vue'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useFolderPathNavStore } from '@/stores/folderPathNav'
+import { loadFolderPathMru, rememberFolderPathPair, saveFolderPathMru } from '@/app/folderPathMru'
 import { useFolderMenuSelectionStore } from '@/stores/folderMenuSelection'
 import {
   createFolderPathNavStack,
@@ -230,6 +231,7 @@ const viewActions = useViewActionsStore()
 const folderPathNavStore = useFolderPathNavStore()
 const folderMenuSelection = useFolderMenuSelectionStore()
 const folderPathNavStack = ref(createFolderPathNavStack<FolderPathPair>())
+const folderPathMru = ref<string[]>(loadFolderPathMru())
 let applyingFolderPathHistory = false
 
 function currentFolderPathPair(): FolderPathPair {
@@ -254,6 +256,19 @@ function recordFolderPathCommit(): void {
     folderPathPairsEqual,
   )
   publishFolderPathNavCapabilities()
+}
+
+function persistFolderPathMru(left: string, right: string): void {
+  folderPathMru.value = rememberFolderPathPair(folderPathMru.value, left, right)
+  saveFolderPathMru(folderPathMru.value)
+}
+
+function onFolderPathEnter(): void {
+  recordFolderPathCommit()
+  if (!leftRoot.value.trim() || !rightRoot.value.trim() || folderCompareLoading.value) {
+    return
+  }
+  void runFolderCompare()
 }
 
 function applyFolderPathPair(pair: FolderPathPair): void {
@@ -1624,6 +1639,7 @@ async function runFolderCompare(): Promise<void> {
       leftRoot: response.leftRoot,
       rightRoot: response.rightRoot,
     })
+    persistFolderPathMru(response.leftRoot, response.rightRoot)
     void notifyCompareComplete(
       settings.notifyOnCompareComplete,
       t('ui.notifyOnCompareComplete'),
@@ -3297,6 +3313,7 @@ onUnmounted(() => {
                 type="text"
                 class="path-input"
                 data-testid="folder-left-root"
+                list="folder-path-mru"
                 autocomplete="off"
                 spellcheck="false"
                 :title="leftRoot"
@@ -3304,7 +3321,7 @@ onUnmounted(() => {
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'left')"
                 @contextmenu="openPathContextMenu($event, 'left')"
-                @keydown.enter.prevent="recordFolderPathCommit"
+                @keydown.enter.prevent="onFolderPathEnter"
                 @change="recordFolderPathCommit"
               />
               <SessionPathActions
@@ -3341,6 +3358,7 @@ onUnmounted(() => {
                 type="text"
                 class="path-input"
                 data-testid="folder-right-root"
+                list="folder-path-mru"
                 autocomplete="off"
                 spellcheck="false"
                 :title="rightRoot"
@@ -3348,7 +3366,7 @@ onUnmounted(() => {
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'right')"
                 @contextmenu="openPathContextMenu($event, 'right')"
-                @keydown.enter.prevent="recordFolderPathCommit"
+                @keydown.enter.prevent="onFolderPathEnter"
                 @change="recordFolderPathCommit"
               />
               <SessionPathActions
@@ -3377,6 +3395,13 @@ onUnmounted(() => {
               test-id="folder-right-path-footer"
             />
           </label>
+          <datalist id="folder-path-mru">
+            <option
+              v-for="path in folderPathMru"
+              :key="path"
+              :value="path"
+            />
+          </datalist>
         </div>
 
         <div

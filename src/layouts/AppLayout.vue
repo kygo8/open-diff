@@ -2177,6 +2177,12 @@ const sourceSessionTypes = new Set<SessionType>([
         </header>
         <p>{{ t('ui.aboutVersion', { version: APP_VERSION }) }}</p>
         <p>{{ t('ui.aboutLicense') }}</p>
+        <p
+          class="about-hint"
+          data-testid="about-hint"
+        >
+          {{ t('ui.aboutHint') }}
+        </p>
         <p>
           <button
             type="button"
@@ -3209,6 +3215,12 @@ html[data-show-sidebar='1'] .sidebar {
 
 .about-dialog footer {
   justify-content: flex-end;
+}
+
+.about-hint {
+  color: var(--app-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .about-dialog p {

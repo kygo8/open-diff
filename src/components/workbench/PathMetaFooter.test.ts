@@ -71,4 +71,17 @@ describe('PathMetaFooter chip menus', () => {
     )
     wrapper.unmount()
   })
+
+  it('hints when no path metadata is available', () => {
+    const wrapper = mountFooter({
+      stamp: null,
+      formatLabel: undefined,
+      encoding: undefined,
+      lineEnding: undefined,
+    })
+
+    expect(wrapper.attributes('title')).toContain('Choose a path')
+    expect(wrapper.text()).toContain('—')
+    wrapper.unmount()
+  })
 })

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { mount, type VueWrapper } from '@vue/test-utils'
+import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import AppLayout from './AppLayout.vue'
@@ -198,6 +198,41 @@ describe('AppLayout command palette', () => {
     expect(wrapper.find('[data-testid="about-dialog"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="about-dialog"]').text()).toContain('About Open Diff')
     expect(wrapper.find('[data-testid="about-dialog"]').text()).toContain('1.3.1')
+  })
+
+  it('labels Help menus plainly and explains About for first-time users', async () => {
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-help"]').trigger('click')
+    expect(wrapper.find('[data-testid="menu-command-help.contents"]').text()).toContain(
+      'Documentation',
+    )
+    expect(wrapper.find('[data-testid="menu-command-help.contextHelp"]').text()).toContain(
+      'Help for This View',
+    )
+
+    await wrapper.find('[data-testid="menu-command-help.about"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="about-hint"]').text()).toContain(
+      'compares files and folders',
+    )
+    expect(wrapper.find('[data-testid="about-open-homepage"]').text()).toContain('Documentation')
+  })
+
+  it('shows a plain idle differences phrase instead of ≠ -', async () => {
+    const wrapper = mountAppLayout()
+    const statusBar = useStatusBarStore()
+
+    statusBar.reportStatus({
+      source: 'text-compare',
+      comparisonStatus: 'Ready',
+      differenceCount: null,
+    })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="status-bar"]').text()).toContain('Differences: —')
+    expect(wrapper.find('[data-testid="status-bar"]').text()).not.toContain('≠ -')
   })
 
   it('shows Session Actions Edit Search View Tools Help on Folder Compare', () => {

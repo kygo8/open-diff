@@ -95,7 +95,7 @@ export function formatDifferenceCountPhrase(
 
   if (isPictureSessionStatusSource(source)) {
     if (differenceCount === null) {
-      return '≠ -'
+      return 'Differences: —'
     }
 
     if (differenceCount === 0) {
@@ -114,7 +114,7 @@ export function formatDifferenceCountPhrase(
   }
 
   if (differenceCount === null) {
-    return '≠ -'
+    return 'Differences: —'
   }
 
   if (differenceCount === 1) {

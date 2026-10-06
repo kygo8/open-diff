@@ -46,6 +46,7 @@ import { elapsedSecondsSince } from '@/app/statusBarPhrases'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
+import { formatCompareError } from '@/app/compareError'
 
 interface FlatRegistryKeyNode extends RegistryKeyNode {
   depth: number
@@ -170,6 +171,91 @@ const selectedValue = computed(() =>
     (value) => `${value.keyPath}::${value.name}` === selectedValueKey.value,
   ),
 )
+const compareNeedsBothExports = computed(
+  () => !leftExport.value.trim() || !rightExport.value.trim(),
+)
+const hasRegistryResult = computed(() => registryTree.value.length > 0)
+const registryAreIdentical = computed(() => {
+  if (!hasRegistryResult.value) {
+    return false
+  }
+
+  const summary = registrySummary.value
+
+  return summary.added === 0 && summary.removed === 0 && summary.modified === 0
+})
+const registryEmptyStateMessage = computed(() => {
+  if (hasRegistryResult.value) {
+    return ''
+  }
+
+  if (leftExport.value.trim() && rightExport.value.trim()) {
+    return t('ui.registryEmptyReadyHint')
+  }
+
+  return t('ui.registryEmptyCompareHint')
+})
+const compareExportsTip = computed(() =>
+  compareNeedsBothExports.value ? t('ui.registryNeedsBothExports') : t('ui.runDiff'),
+)
+const compareNeedsBothHiveFiles = computed(
+  () => !leftHivePath.value.trim() || !rightHivePath.value.trim(),
+)
+const compareHiveTip = computed(() =>
+  compareNeedsBothHiveFiles.value ? t('ui.compareNeedsBothFiles') : t('ui.compareHiveFiles'),
+)
+
+function readErrorStringField(record: Record<string, unknown>, ...keys: string[]): string {
+  for (const key of keys) {
+    const value = record[key]
+
+    if (typeof value === 'string' && value.length > 0) {
+      return value
+    }
+  }
+
+  return ''
+}
+
+function formatRegistryCompareError(event: unknown): string {
+  if (event && typeof event === 'object') {
+    const record = event as Record<string, unknown>
+    const messageKey = readErrorStringField(record, 'messageKey', 'message_key')
+
+    if (messageKey.startsWith('error.registry.')) {
+      const params =
+        record.params && typeof record.params === 'object'
+          ? (record.params as Record<string, string | number>)
+          : {}
+      const message = t(messageKey, params)
+      const suggestionKey = readErrorStringField(record, 'suggestionKey', 'suggestion_key')
+
+      if (suggestionKey) {
+        return `${message} ${t(suggestionKey, params)}`.trim()
+      }
+
+      return message
+    }
+  }
+
+  return formatCompareError(event, t)
+}
+
+function onRegistryExportCtrlEnter(): void {
+  if (compareNeedsBothExports.value || loading.value) {
+    return
+  }
+
+  void runRegistryCompare()
+}
+
+function onHivePathEnter(): void {
+  if (compareNeedsBothHiveFiles.value || hiveCompareLoading.value) {
+    return
+  }
+
+  void runHiveFileCompare()
+}
 
 function flattenRegistryKeys(
   nodes: RegistryKeyNode[],
@@ -272,6 +358,10 @@ watchEffect(() => {
 })
 
 async function runRegistryCompare(): Promise<void> {
+  if (compareNeedsBothExports.value) {
+    return
+  }
+
   const startedAt = performance.now()
 
   loading.value = true
@@ -287,7 +377,7 @@ async function runRegistryCompare(): Promise<void> {
     applyRegistryResult(result)
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
-    error.value = String(event)
+    error.value = formatRegistryCompareError(event)
   } finally {
     loading.value = false
   }
@@ -315,7 +405,7 @@ async function loadLaunchRegistryExports(leftPath: string, rightPath: string): P
     rightName.value = fileNameFromPath(rightFile.path)
     await runRegistryCompare()
   } catch (event) {
-    error.value = String(event)
+    error.value = formatRegistryCompareError(event)
     loading.value = false
   }
 }
@@ -527,7 +617,7 @@ async function runLiveRegistryCompare(): Promise<void> {
     applyRegistryResult(result)
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
-    error.value = String(event)
+    error.value = formatRegistryCompareError(event)
   } finally {
     liveCompareLoading.value = false
   }
@@ -559,7 +649,7 @@ async function runHiveFileCompare(): Promise<void> {
     applyRegistryResult(result)
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
-    error.value = String(event)
+    error.value = formatRegistryCompareError(event)
   } finally {
     hiveCompareLoading.value = false
   }
@@ -606,7 +696,7 @@ async function exportRegistryReport(): Promise<void> {
     })
     reportStatus.value = outputPath
   } catch (event) {
-    error.value = String(event)
+    error.value = formatRegistryCompareError(event)
   }
 }
 
@@ -929,10 +1019,18 @@ function runRegistryToolbarCommand(commandId: string): void {
       </header>
 
       <p
+        v-if="registryAreIdentical"
         class="empty"
-        data-testid="registry-export-hint"
+        data-testid="registry-identical-hint"
       >
-        {{ $t('ui.registryExportHint') }}
+        {{ $t('ui.registryIdenticalHint') }}
+      </p>
+      <p
+        v-else-if="!hasRegistryResult && !error"
+        class="empty"
+        data-testid="registry-empty-hint"
+      >
+        {{ registryEmptyStateMessage }}
       </p>
       <p
         class="registry-maturity"
@@ -946,6 +1044,9 @@ function runRegistryToolbarCommand(commandId: string): void {
           <textarea
             v-model="leftExport"
             data-testid="registry-left-export"
+            :placeholder="$t('ui.registryExportPlaceholder')"
+            @keydown.ctrl.enter.prevent="onRegistryExportCtrlEnter"
+            @keydown.meta.enter.prevent="onRegistryExportCtrlEnter"
           />
         </label>
         <label>
@@ -953,12 +1054,16 @@ function runRegistryToolbarCommand(commandId: string): void {
           <textarea
             v-model="rightExport"
             data-testid="registry-right-export"
+            :placeholder="$t('ui.registryExportPlaceholder')"
+            @keydown.ctrl.enter.prevent="onRegistryExportCtrlEnter"
+            @keydown.meta.enter.prevent="onRegistryExportCtrlEnter"
           />
         </label>
         <button
           type="button"
           data-testid="run-registry-compare"
-          :disabled="loading"
+          :disabled="loading || compareNeedsBothExports"
+          :title="compareExportsTip"
           @click="runRegistryCompare"
         >
           {{ $t('ui.runDiff') }}
@@ -1251,7 +1356,9 @@ function runRegistryToolbarCommand(commandId: string): void {
                 data-testid="registry-hive-left-path"
                 type="text"
                 class="path-input"
-                :title="leftHivePath"
+                :title="leftHivePath || $t('ui.remoteUriHint')"
+                :placeholder="$t('ui.textPathPlaceholder')"
+                @keydown.enter.prevent="onHivePathEnter"
               />
               <SessionPathActions
                 browse-test-id="registry-hive-browse-left"
@@ -1268,7 +1375,9 @@ function runRegistryToolbarCommand(commandId: string): void {
                 data-testid="registry-hive-right-path"
                 type="text"
                 class="path-input"
-                :title="rightHivePath"
+                :title="rightHivePath || $t('ui.remoteUriHint')"
+                :placeholder="$t('ui.textPathPlaceholder')"
+                @keydown.enter.prevent="onHivePathEnter"
               />
               <SessionPathActions
                 browse-test-id="registry-hive-browse-right"
@@ -1289,7 +1398,8 @@ function runRegistryToolbarCommand(commandId: string): void {
           <button
             type="button"
             data-testid="registry-hive-compare"
-            :disabled="hiveCompareLoading || !leftHivePath || !rightHivePath"
+            :disabled="hiveCompareLoading || compareNeedsBothHiveFiles"
+            :title="compareHiveTip"
             @click="runHiveFileCompare"
           >
             {{ $t('ui.compareHiveFiles') }}

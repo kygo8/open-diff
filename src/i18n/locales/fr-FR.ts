@@ -1004,6 +1004,14 @@ export const frFR: LanguagePack = {
       'Appuyez sur Entrée ou cliquez sur Comparer pour comparer ces fichiers multimédias.',
     'ui.mediaIdenticalHint':
       'Ces fichiers multimédias correspondent. Aucune différence de métadonnées à afficher.',
+    'ui.registryEmptyCompareHint':
+      'Collez les exports .reg gauche et droit (ou comparez les ruches / clés en direct ci-dessous), puis cliquez sur Comparer.',
+    'ui.registryEmptyReadyHint':
+      'Appuyez sur Ctrl+Entrée ou cliquez sur Comparer pour comparer ces exports du Registre.',
+    'ui.registryIdenticalHint':
+      'Ces exports du Registre correspondent. Aucune différence de clé ou de valeur à afficher.',
+    'ui.registryNeedsBothExports': "Collez d'abord les deux exports .reg (gauche et droit).",
+    'ui.registryExportPlaceholder': 'Collez un export .reg ici',
     'ui.textPatchSourceTextPlaceholder':
       "Collez le texte du fichier d'origine pour Appliquer le correctif",
     'ui.applyPatchHint': "Prévisualise le texte corrigé en mémoire (n'écrit pas de fichier).",

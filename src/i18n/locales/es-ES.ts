@@ -994,6 +994,14 @@ export const esES: LanguagePack = {
       'Pulse Intro o haga clic en Comparar para comparar estos archivos multimedia.',
     'ui.mediaIdenticalHint':
       'Estos archivos multimedia coinciden. No hay diferencias de metadatos que mostrar.',
+    'ui.registryEmptyCompareHint':
+      'Pegue exportaciones .reg izquierda y derecha (o compare archivos hive / claves en vivo abajo) y luego haga clic en Comparar.',
+    'ui.registryEmptyReadyHint':
+      'Pulse Ctrl+Intro o haga clic en Comparar para comparar estas exportaciones del registro.',
+    'ui.registryIdenticalHint':
+      'Estas exportaciones del registro coinciden. No hay diferencias de claves o valores que mostrar.',
+    'ui.registryNeedsBothExports': 'Pegue primero ambas exportaciones .reg (izquierda y derecha).',
+    'ui.registryExportPlaceholder': 'Pegue aquí una exportación .reg',
     'ui.textPatchSourceTextPlaceholder': 'Pegue el texto del archivo original para Aplicar parche',
     'ui.applyPatchHint': 'Previsualiza el texto parcheado en memoria (no escribe un archivo).',
     'ui.applyToFileHint':

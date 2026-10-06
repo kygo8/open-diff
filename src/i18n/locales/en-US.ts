@@ -971,6 +971,14 @@ export const enUS: LanguagePack = {
       'Choose left and right media files with Browse (or paste paths), then click Compare.',
     'ui.mediaEmptyReadyHint': 'Press Enter or click Compare to compare these media files.',
     'ui.mediaIdenticalHint': 'These media files match. No metadata differences to show.',
+    'ui.registryEmptyCompareHint':
+      'Paste left and right .reg exports (or compare hive files / live keys below), then click Compare.',
+    'ui.registryEmptyReadyHint':
+      'Press Ctrl+Enter or click Compare to compare these registry exports.',
+    'ui.registryIdenticalHint':
+      'These registry exports match. No key or value differences to show.',
+    'ui.registryNeedsBothExports': 'Paste both left and right .reg exports first.',
+    'ui.registryExportPlaceholder': 'Paste a .reg export here',
     'ui.textPatchSourceTextPlaceholder': 'Paste the original file text for Apply Patch',
     'ui.applyPatchHint': 'Preview the patched text in memory (does not write a file).',
     'ui.applyToFileHint':

@@ -911,6 +911,13 @@ export const enUS: LanguagePack = {
     'ui.textIdenticalHint': 'These files match. No differences to show.',
     'ui.compareNeedsBothFiles': 'Choose both left and right files first.',
     'ui.loadFilesNeedsBothPaths': 'Choose both left and right paths first.',
+    'ui.folderSyncEmptyCompareHint':
+      'Choose left and right folders with Browse (or paste paths), then click Preview.',
+    'ui.folderSyncEmptyReadyHint': 'Click Preview to see what Sync Now will copy or delete.',
+    'ui.folderSyncNothingToDo':
+      'Nothing to sync. Folders already match, or filters hid every change.',
+    'ui.folderSyncNeedsBothFolders': 'Choose both left and right folders first.',
+    'ui.folderSyncNeedsPreview': 'Preview the sync plan before running Sync Now.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

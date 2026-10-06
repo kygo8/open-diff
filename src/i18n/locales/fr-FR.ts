@@ -929,6 +929,14 @@ export const frFR: LanguagePack = {
     'ui.textIdenticalHint': 'Ces fichiers sont identiques. Aucune différence.',
     'ui.compareNeedsBothFiles': "Choisissez d'abord les fichiers gauche et droit.",
     'ui.loadFilesNeedsBothPaths': "Choisissez d'abord les deux chemins.",
+    'ui.folderSyncEmptyCompareHint':
+      'Choisissez les dossiers gauche et droit avec Parcourir (ou collez des chemins), puis cliquez sur Aperçu.',
+    'ui.folderSyncEmptyReadyHint':
+      'Cliquez sur Aperçu pour voir ce que Sync Now copiera ou supprimera.',
+    'ui.folderSyncNothingToDo':
+      'Rien à synchroniser. Les dossiers correspondent déjà, ou des filtres ont tout masqué.',
+    'ui.folderSyncNeedsBothFolders': "Choisissez d'abord les dossiers gauche et droit.",
+    'ui.folderSyncNeedsPreview': "Prévisualisez le plan de sync avant d'exécuter Sync Now.",
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

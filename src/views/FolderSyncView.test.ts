@@ -118,6 +118,103 @@ describe('FolderSyncView', () => {
     })
   })
 
+  it('shows a friendly empty state and path placeholders before preview', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading', 'title'],
+            emits: ['click'],
+            template:
+              '<button :disabled="disabled" :title="title" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.find('[data-testid="folder-sync-empty-state"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-sync-empty-state"]').text()).toContain(
+      'Choose left and right folders',
+    )
+    expect(
+      wrapper.find('[data-testid="folder-sync-left-path"]').attributes('placeholder'),
+    ).toContain('Browse or paste a folder path')
+    expect(wrapper.find('[data-testid="folder-sync-run"]').attributes('title')).toContain(
+      'both left and right folders',
+    )
+    expect(wrapper.find('[data-testid="folder-sync-preview"]').attributes('title')).toContain(
+      'both left and right folders',
+    )
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/a')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/b')
+    expect(wrapper.find('[data-testid="folder-sync-run"]').attributes('title')).toContain(
+      'Preview the sync plan',
+    )
+    expect(wrapper.find('[data-testid="folder-sync-empty-state"]').text()).toContain(
+      'Click Preview',
+    )
+  })
+
+  it('previews on Enter when both folder paths are set', async () => {
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/deploy/package')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/deploy/prod')
+    await wrapper.find('[data-testid="folder-sync-left-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(previewFolderSync).toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="folder-sync-preview-panel"]').exists()).toBe(true)
+  })
+
+  it('explains when a preview finds nothing to sync', async () => {
+    vi.mocked(previewFolderSync).mockResolvedValueOnce({
+      name: 'Update Both',
+      leftRoot: 'D:/a',
+      rightRoot: 'D:/b',
+      strategy: 'updateBoth',
+      rows: [],
+      summary: {
+        total: 0,
+        copy: 0,
+        delete: 0,
+        leave: 0,
+        conflict: 0,
+      },
+    })
+    const wrapper = mount(FolderSyncView, {
+      global: {
+        stubs: {
+          NButton: {
+            props: ['disabled', 'loading'],
+            emits: ['click'],
+            template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          },
+        },
+      },
+    })
+
+    await wrapper.find('[data-testid="folder-sync-left-path"]').setValue('D:/a')
+    await wrapper.find('[data-testid="folder-sync-right-path"]').setValue('D:/b')
+    await wrapper.find('[data-testid="folder-sync-preview"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-sync-empty-state"]').text()).toContain(
+      'Nothing to sync',
+    )
+  })
+
   it('configures folder paths, strategy, preview, and run status', async () => {
     const wrapper = mount(FolderSyncView, {
       global: {

@@ -904,6 +904,14 @@ export const koKR: LanguagePack = {
     'ui.textIdenticalHint': '이 파일은 같습니다. 차이가 없습니다.',
     'ui.compareNeedsBothFiles': '왼쪽과 오른쪽 파일을 먼저 선택하세요.',
     'ui.loadFilesNeedsBothPaths': '왼쪽과 오른쪽 경로를 먼저 선택하세요.',
+    'ui.folderSyncEmptyCompareHint':
+      '찾아보기로 왼쪽·오른쪽 폴더를 선택하거나 경로를 붙여넣은 다음 미리보기를 클릭하세요.',
+    'ui.folderSyncEmptyReadyHint':
+      '미리보기를 클릭해 지금 동기화가 복사하거나 삭제할 내용을 확인하세요.',
+    'ui.folderSyncNothingToDo':
+      '동기화할 항목이 없습니다. 폴더가 이미 같거나 필터가 모두 숨겼습니다.',
+    'ui.folderSyncNeedsBothFolders': '왼쪽과 오른쪽 폴더를 먼저 선택하세요.',
+    'ui.folderSyncNeedsPreview': '지금 동기화 전에 미리보기로 계획을 확인하세요.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

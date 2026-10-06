@@ -1002,6 +1002,14 @@ export const esES: LanguagePack = {
       'Estas exportaciones del registro coinciden. No hay diferencias de claves o valores que mostrar.',
     'ui.registryNeedsBothExports': 'Pegue primero ambas exportaciones .reg (izquierda y derecha).',
     'ui.registryExportPlaceholder': 'Pegue aquí una exportación .reg',
+    'ui.versionEmptyCompareHint':
+      'Elija los archivos de programa izquierdo y derecho con Examinar (o pegue rutas) y luego haga clic en Comparar.',
+    'ui.versionEmptyReadyHint':
+      'Pulse Intro o haga clic en Comparar para comparar estos recursos de versión.',
+    'ui.versionIdenticalHint':
+      'Estos archivos de programa coinciden. No hay diferencias de recursos de versión que mostrar.',
+    'ui.versionCompareWindowsOnly':
+      'La lectura nativa de recursos de versión solo está disponible en Windows. Aún puede elegir rutas aquí; la comparación explicará si esta plataforma no puede leerlas.',
     'ui.textPatchSourceTextPlaceholder': 'Pegue el texto del archivo original para Aplicar parche',
     'ui.applyPatchHint': 'Previsualiza el texto parcheado en memoria (no escribe un archivo).',
     'ui.applyToFileHint':

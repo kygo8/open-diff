@@ -971,6 +971,12 @@ export const koKR: LanguagePack = {
       '이 레지스트리 내보내기는 일치합니다. 표시할 키 또는 값 차이가 없습니다.',
     'ui.registryNeedsBothExports': '먼저 좌우 .reg 내보내기를 모두 붙여넣으세요.',
     'ui.registryExportPlaceholder': '.reg 내보내기를 여기에 붙여넣으세요',
+    'ui.versionEmptyCompareHint':
+      '찾아보기로 좌우 프로그램 파일을 선택하거나 경로를 붙여넣은 다음 비교를 클릭하세요.',
+    'ui.versionEmptyReadyHint': 'Enter를 누르거나 비교를 클릭하여 이 버전 리소스를 비교하세요.',
+    'ui.versionIdenticalHint': '이 프로그램 파일은 일치합니다. 표시할 버전 리소스 차이가 없습니다.',
+    'ui.versionCompareWindowsOnly':
+      '네이티브 버전 리소스 읽기는 Windows에서만 사용할 수 있습니다. 여기서 경로를 선택할 수는 있으며, 이 플랫폼에서 읽을 수 없으면 비교 시 안내합니다.',
     'ui.textPatchSourceTextPlaceholder': '패치 적용을 위해 원본 파일 텍스트를 붙여넣으세요',
     'ui.applyPatchHint': '메모리에서 패치된 텍스트를 미리 봅니다(파일에 쓰지 않음).',
     'ui.applyToFileHint': '패치 결과를 대상 파일에 씁니다(대상이 비어 있으면 원본에 씀).',

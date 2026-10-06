@@ -1,6 +1,7 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useSettingsStore } from '@/stores/settings'
+import { usePolicyStore } from '@/stores/policy'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import VersionCompareView from './VersionCompareView.vue'
 import { compareVersionFiles, saveTextFile } from '@/api/diff'
@@ -142,6 +143,112 @@ describe('VersionCompareView', () => {
     expect(
       wrapper.find('[data-testid="version-session-toolbar-rules"]').attributes('disabled'),
     ).toBeUndefined()
+    expect(wrapper.find('[data-testid="version-empty-hint"]').text()).toContain('Browse')
+    expect(wrapper.find('[data-testid="version-left-path"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="run-version-compare"]').attributes('title')).toContain(
+      'left and right files first',
+    )
+    expect(wrapper.find('[data-testid="run-version-compare"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-testid="version-windows-only"]').exists()).toBe(true)
+  })
+
+  it('shows a ready hint after both paths are set', async () => {
+    const wrapper = mount(VersionCompareView)
+
+    await wrapper.find('[data-testid="version-left-path"]').setValue('C:/apps/left.exe')
+    await wrapper.find('[data-testid="version-right-path"]').setValue('C:/apps/right.exe')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="version-empty-hint"]').text()).toContain('Compare')
+    expect(
+      wrapper.find('[data-testid="run-version-compare"]').attributes('disabled'),
+    ).toBeUndefined()
+  })
+
+  it('compares version files on Enter when both paths are set', async () => {
+    const wrapper = mount(VersionCompareView)
+
+    await wrapper.find('[data-testid="version-left-path"]').setValue('C:/apps/left.exe')
+    await wrapper.find('[data-testid="version-right-path"]').setValue('C:/apps/right.exe')
+    await wrapper.find('[data-testid="version-right-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(compareVersionFiles).toHaveBeenCalledWith({
+      leftPath: 'C:/apps/left.exe',
+      rightPath: 'C:/apps/right.exe',
+    })
+    expect(wrapper.find('[data-testid="version-empty-hint"]').exists()).toBe(false)
+  })
+
+  it('shows an identical hint when version resources match', async () => {
+    vi.mocked(compareVersionFiles).mockResolvedValueOnce({
+      left: {
+        name: 'same.exe',
+        fileType: 'Application',
+        targetOs: 'Windows 32-bit',
+        fileVersion: '1.0.0.0',
+        productVersion: '1.0.0.0',
+      },
+      right: {
+        name: 'same.exe',
+        fileType: 'Application',
+        targetOs: 'Windows 32-bit',
+        fileVersion: '1.0.0.0',
+        productVersion: '1.0.0.0',
+      },
+      fields: [
+        {
+          group: 'Fixed Info',
+          field: 'FileVersion',
+          left: '1.0.0.0',
+          right: '1.0.0.0',
+          status: 'unchanged',
+        },
+      ],
+      summary: { added: 0, removed: 0, modified: 0, unchanged: 1 },
+    })
+
+    const wrapper = mount(VersionCompareView)
+
+    await wrapper.find('[data-testid="version-left-path"]').setValue('C:/apps/a.exe')
+    await wrapper.find('[data-testid="version-right-path"]').setValue('C:/apps/b.exe')
+    await wrapper.find('[data-testid="run-version-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="version-identical-hint"]').text()).toContain('match')
+  })
+
+  it('maps unsupported-platform failures to a plain suggestion', async () => {
+    vi.mocked(compareVersionFiles).mockRejectedValueOnce({
+      code: 'app.unknown',
+      messageKey: 'error.version.unsupportedPlatform.message',
+      suggestionKey: 'error.version.unsupportedPlatform.suggestion',
+      params: {},
+      debugMessage: 'native version resource reading is only available on Windows',
+    })
+
+    const wrapper = mount(VersionCompareView)
+
+    await wrapper.find('[data-testid="version-left-path"]').setValue('C:/apps/a.exe')
+    await wrapper.find('[data-testid="version-right-path"]').setValue('C:/apps/b.exe')
+    await wrapper.find('[data-testid="run-version-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="version-compare-error"]').text()).toContain(
+      'only available on Windows',
+    )
+  })
+
+  it('hides the Windows-only note when running on Windows', () => {
+    const policy = usePolicyStore()
+
+    policy.os = 'windows'
+
+    const wrapper = mount(VersionCompareView)
+
+    expect(wrapper.find('[data-testid="version-windows-only"]').exists()).toBe(false)
   })
 
   it('filters minor differences and toggles importance rules', async () => {

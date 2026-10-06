@@ -933,6 +933,11 @@ export const zhTW: LanguagePack = {
     'ui.registryIdenticalHint': '這些登錄檔匯出一致。沒有機碼或值差異。',
     'ui.registryNeedsBothExports': '請先貼上左右兩側的 .reg 匯出。',
     'ui.registryExportPlaceholder': '在此貼上 .reg 匯出',
+    'ui.versionEmptyCompareHint': '用瀏覽選擇左右程式檔案（或貼上路徑），然後按比較。',
+    'ui.versionEmptyReadyHint': '按 Enter 或按比較以比較這些版本資源。',
+    'ui.versionIdenticalHint': '這些程式檔案一致。沒有版本資源差異。',
+    'ui.versionCompareWindowsOnly':
+      '原生版本資源讀取僅在 Windows 上可用。仍可在此選擇路徑；若目前平台無法讀取，比較會說明原因。',
     'ui.textPatchSourceTextPlaceholder': '貼上原始檔案文字以套用修補',
     'ui.applyPatchHint': '在記憶體中預覽修補後的文字（不寫入檔案）。',
     'ui.applyToFileHint': '將修補結果寫入目標檔案（若目標為空則寫入來源）。',

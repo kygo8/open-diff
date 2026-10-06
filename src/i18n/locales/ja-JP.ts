@@ -976,6 +976,13 @@ export const jaJP: LanguagePack = {
       'These registry exports match. No key or value differences to show.',
     'ui.registryNeedsBothExports': 'Paste both left and right .reg exports first.',
     'ui.registryExportPlaceholder': 'Paste a .reg export here',
+    'ui.versionEmptyCompareHint':
+      'Choose left and right program files with Browse (or paste paths), then click Compare.',
+    'ui.versionEmptyReadyHint': 'Press Enter or click Compare to compare these version resources.',
+    'ui.versionIdenticalHint':
+      'These program files match. No version-resource differences to show.',
+    'ui.versionCompareWindowsOnly':
+      'Native version resource reading is only available on Windows. You can still choose paths here; compare will explain if this platform cannot read them.',
     'ui.textPatchSourceTextPlaceholder': 'Paste the original file text for Apply Patch',
     'ui.applyPatchHint': 'Preview the patched text in memory (does not write a file).',
     'ui.applyToFileHint':

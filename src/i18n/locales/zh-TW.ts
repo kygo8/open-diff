@@ -740,6 +740,14 @@ export const zhTW: LanguagePack = {
     'ui.archiveCompare': '壓縮檔比較',
     'ui.archivePathHint':
       '資料夾或 ZIP/TAR/7z 壓縮檔。也支援快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path、svn://profile/id/path',
+    'ui.archiveSessionPathHint': '用「壓縮檔…」選擇 ZIP、TAR 或 7z。另一側仍可使用一般資料夾。',
+    'ui.archivePathPlaceholder': '瀏覽或貼上壓縮檔路徑（ZIP、TAR 或 7z）',
+    'ui.archiveEmptyCompareHint': '用「壓縮檔…」選擇左右壓縮檔（或貼上路徑），然後按比較。',
+    'ui.archiveEmptyReadyHint': '按比較以掃描這些壓縮檔。',
+    'ui.archiveCompareNoItems': '壓縮檔內沒有可顯示的檔案。兩側可能為空，或篩選隱藏了全部內容。',
+    'ui.compareNeedsBothArchives': '請先選擇左右兩個壓縮檔。',
+    'ui.leftArchive': '左側壓縮檔',
+    'ui.rightArchive': '右側壓縮檔',
     'ui.applyToFile': '套用到檔案',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -764,7 +772,7 @@ export const zhTW: LanguagePack = {
     'ui.oauthHelperHint':
       '在瀏覽器開啟提供商授權頁（權杖回應，無需用戶端祕密）。登入後將重新導向網址（或存取權杖）貼到下方，然後儲存設定檔。',
     'ui.exportMergeReport': '匯出合併報告',
-    'ui.archiveSessionStatus': '壓縮檔比對工作階段 — 支援 ZIP/TAR/7z，複製時解壓到資料夾',
+    'ui.archiveSessionStatus': '壓縮檔比對 — 選擇 ZIP、TAR 或 7z。複製時會解壓到資料夾。',
     'ui.oauthAccessToken': '存取權杖',
     'ui.oauthTokenHint':
       '貼上 Dropbox API 或 Microsoft Graph 存取權杖。主機可填 dropbox / onedrive。或使用「開啟授權網址」並貼上重新導向網址。',
@@ -954,7 +962,7 @@ export const zhTW: LanguagePack = {
     'ui.browseArchive': '壓縮檔…',
     'ui.archiveSide': '壓縮檔',
     'ui.snapshotSide': '快照',
-    'status.notAnArchivePath': '不是 ZIP/TAR/7z 壓縮檔：{path}',
+    'status.notAnArchivePath': '此檔案不是支援的壓縮檔（ZIP、TAR 或 7z）：{path}',
     'status.attributesChangedBulk': '已變更 {count} 項屬性 -> {state}',
     'status.renamedBulkPaths': '已重新命名 {count} 項 -> {path}',
     'ui.registryMaturityNote':

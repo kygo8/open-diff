@@ -756,6 +756,17 @@ export const jaJP: LanguagePack = {
     'ui.archiveCompare': 'アーカイブ比較',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
+    'ui.archiveSessionPathHint':
+      'アーカイブ…で ZIP / TAR / 7z を選びます。もう一方は通常のフォルダーでも構いません。',
+    'ui.archivePathPlaceholder': 'アーカイブのパスを参照または貼り付け（ZIP、TAR、または 7z）',
+    'ui.archiveEmptyCompareHint':
+      'アーカイブ…で左右のアーカイブを選ぶかパスを貼り付けてから、比較をクリックします。',
+    'ui.archiveEmptyReadyHint': '比較をクリックしてこれらのアーカイブをスキャンします。',
+    'ui.archiveCompareNoItems':
+      'これらのアーカイブ内に表示するファイルがありません。両方空か、フィルターですべて隠れている可能性があります。',
+    'ui.compareNeedsBothArchives': '先に左右両方のアーカイブを選んでください。',
+    'ui.leftArchive': '左アーカイブ',
+    'ui.rightArchive': '右アーカイブ',
     'ui.applyToFile': 'ファイルに適用',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -780,7 +791,8 @@ export const jaJP: LanguagePack = {
     'ui.oauthHelperHint':
       'ブラウザでプロバイダーの認可ページを開きます（トークン応答、クライアントシークレット不要）。サインイン後、リダイレクト URL（またはアクセストークン）を下に貼り付けてプロファイルを保存してください。',
     'ui.exportMergeReport': 'マージレポートをエクスポート',
-    'ui.archiveSessionStatus': 'アーカイブ比較セッション — ZIP/TAR/7z、コピー時にフォルダーへ展開',
+    'ui.archiveSessionStatus':
+      'アーカイブ比較 — ZIP / TAR / 7z を選びます。コピーするとフォルダーへ展開されます。',
     'ui.oauthAccessToken': 'アクセストークン',
     'ui.oauthTokenHint':
       'Dropbox API または Microsoft Graph のアクセストークンを貼り付けます。ホストは dropbox / onedrive のままで構いません。ブラウザ OAuth は同梱せず、アプリコンソールまたはデバイスコードフローで取得したトークンを使います。',
@@ -1000,7 +1012,7 @@ export const jaJP: LanguagePack = {
     'ui.browseArchive': 'Archive…',
     'ui.archiveSide': 'Archive',
     'ui.snapshotSide': 'スナップショット',
-    'status.notAnArchivePath': 'Not a ZIP/TAR/7z archive: {path}',
+    'status.notAnArchivePath': '対応アーカイブ（ZIP、TAR、または 7z）ではありません: {path}',
     'status.attributesChangedBulk': 'Attributes changed on {count} items -> {state}',
     'status.renamedBulkPaths': 'Renamed {count} items -> {path}',
     'ui.registryMaturityNote':

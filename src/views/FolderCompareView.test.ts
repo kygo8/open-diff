@@ -1281,6 +1281,76 @@ describe('FolderCompareView', () => {
     expect(wrapper.find('[data-testid="folder-archive-session-status"]').exists()).toBe(true)
   })
 
+  it('guides first-time Archive Compare users with archive-aware empty chrome', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'archive-ux',
+      source: 'home',
+      sessionType: 'archive-compare',
+      title: 'Archive Compare',
+      route: '/compare/folder',
+      locations: {},
+      autoRun: false,
+    })
+    const wrapper = mountFolderCompareView()
+
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="folder-archive-session-status"]').text()).toContain(
+      'ZIP, TAR, or 7z',
+    )
+    expect(wrapper.find('[data-testid="folder-empty-state"]').text()).toContain(
+      'Choose left and right archives',
+    )
+    expect(wrapper.find('[data-testid="folder-left-root"]').attributes('placeholder')).toContain(
+      'archive path',
+    )
+    expect(wrapper.find('[data-testid="folder-path-hint"]').text()).toContain('Archive…')
+    expect(wrapper.text()).toContain('Left archive')
+    expect(wrapper.text()).toContain('Right archive')
+    expect(wrapper.find('[data-testid="run-folder-compare"]').attributes('title')).toContain(
+      'both left and right archives',
+    )
+  })
+
+  it('prompts Compare when both archive paths are set', async () => {
+    useSessionLaunchStore().setPendingLaunch({
+      id: 'archive-ready',
+      source: 'home',
+      sessionType: 'archive-compare',
+      title: 'Archive Compare',
+      route: '/compare/folder',
+      locations: {},
+      autoRun: false,
+    })
+    const wrapper = mountFolderCompareView()
+
+    await wrapper.vm.$nextTick()
+
+    await wrapper.find('[data-testid="folder-left-root"]').setValue('/tmp/left.zip')
+    await wrapper.find('[data-testid="folder-right-root"]').setValue('/tmp/right.7z')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="folder-empty-state"]').text()).toContain(
+      'Click Compare to scan these archives',
+    )
+  })
+
+  it('rejects unsupported Archive… picks with a plain supported-formats message', async () => {
+    vi.mocked(pickNativePath).mockResolvedValueOnce('/tmp/notes.rar')
+    const wrapper = mountFolderCompareView()
+
+    await wrapper.find('[data-testid="folder-browse-archive-left"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-compare-error"]').text()).toContain(
+      'not a supported archive',
+    )
+    expect(wrapper.find('[data-testid="folder-compare-error"]').text()).toContain('.rar')
+    expect(
+      (wrapper.find('[data-testid="folder-left-root"]').element as HTMLInputElement).value,
+    ).toBe('')
+  })
+
   it('disables copy into archive sides while leaving extract-to-folder enabled', async () => {
     const wrapper = mountFolderCompareView()
 

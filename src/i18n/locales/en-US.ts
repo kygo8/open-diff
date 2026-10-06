@@ -755,11 +755,23 @@ export const enUS: LanguagePack = {
     'session.summary.textMerge': 'Combine left, right, and a base file into one result',
     'session.summary.textPatch': 'Review and apply a patch file',
     'session.summary.versionCompare': 'Compare version info inside program files',
-    'session.summary.archiveCompare': 'Compare ZIP/TAR/7z sides and copy files out into a folder',
+    'session.summary.archiveCompare':
+      'Compare ZIP, TAR, or 7z archives and copy files out into a folder',
     'session.summary.script': 'Run automation scripts to load, compare, report, and stop a session',
     'ui.archiveCompare': 'Archive Compare',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
+    'ui.archiveSessionPathHint':
+      'Use Archive… to pick a ZIP, TAR, or 7z file. You can still mix with a regular folder on the other side.',
+    'ui.archivePathPlaceholder': 'Browse or paste an archive path (ZIP, TAR, or 7z)',
+    'ui.archiveEmptyCompareHint':
+      'Choose left and right archives with Archive… (or paste paths), then click Compare.',
+    'ui.archiveEmptyReadyHint': 'Click Compare to scan these archives.',
+    'ui.archiveCompareNoItems':
+      'No files to show inside these archives. Both may be empty, or filters hid everything.',
+    'ui.compareNeedsBothArchives': 'Choose both left and right archives first.',
+    'ui.leftArchive': 'Left archive',
+    'ui.rightArchive': 'Right archive',
     'ui.applyToFile': 'Apply to File',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -785,7 +797,7 @@ export const enUS: LanguagePack = {
       'Opens the provider authorize page in your browser (token response, no client secret). After sign-in, paste the redirect URL (or the access token) below, then Save the profile.',
     'ui.exportMergeReport': 'Export merge report',
     'ui.archiveSessionStatus':
-      'Archive Compare session — ZIP/TAR/7z sides with extract-on-copy into folders',
+      'Archive Compare — pick ZIP, TAR, or 7z files. Copy extracts files into a folder.',
     'ui.oauthAccessToken': 'Access token',
     'ui.oauthTokenHint':
       'Paste a Dropbox API or Microsoft Graph access token, or use Open authorize URL with your app client id and paste the redirect URL. Host may be left as dropbox / onedrive.',
@@ -1002,7 +1014,7 @@ export const enUS: LanguagePack = {
     'ui.browseArchive': 'Archive…',
     'ui.archiveSide': 'Archive',
     'ui.snapshotSide': 'Snapshot',
-    'status.notAnArchivePath': 'Not a ZIP/TAR/7z archive: {path}',
+    'status.notAnArchivePath': 'That file is not a supported archive (ZIP, TAR, or 7z): {path}',
     'status.attributesChangedBulk': 'Attributes changed on {count} items -> {state}',
     'status.renamedBulkPaths': 'Renamed {count} items -> {path}',
     'ui.registryMaturityNote':

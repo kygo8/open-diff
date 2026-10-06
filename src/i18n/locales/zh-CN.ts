@@ -739,6 +739,14 @@ export const zhCN: LanguagePack = {
     'ui.archiveCompare': '压缩包比较',
     'ui.archivePathHint':
       '文件夹或 ZIP/TAR/7z 压缩包。也支持快照 JSON，或 sftp://profile/id/path、webdav://profile/id/path、s3://profile/id/path、svn://profile/id/path',
+    'ui.archiveSessionPathHint': '用“压缩包…”选择 ZIP、TAR 或 7z。另一侧仍可使用普通文件夹。',
+    'ui.archivePathPlaceholder': '浏览或粘贴压缩包路径（ZIP、TAR 或 7z）',
+    'ui.archiveEmptyCompareHint': '用“压缩包…”选择左右压缩包（或粘贴路径），然后点比较。',
+    'ui.archiveEmptyReadyHint': '点比较以扫描这些压缩包。',
+    'ui.archiveCompareNoItems': '压缩包内没有可显示的文件。两侧可能为空，或筛选隐藏了全部内容。',
+    'ui.compareNeedsBothArchives': '请先选择左右两个压缩包。',
+    'ui.leftArchive': '左侧压缩包',
+    'ui.rightArchive': '右侧压缩包',
     'ui.applyToFile': '应用到文件',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -763,7 +771,7 @@ export const zhCN: LanguagePack = {
     'ui.oauthHelperHint':
       '在浏览器中打开提供商授权页（令牌响应，无需客户端密钥）。登录后把回调网址（或访问令牌）粘贴到下方，然后保存配置。',
     'ui.exportMergeReport': '导出合并报告',
-    'ui.archiveSessionStatus': '压缩包对比会话 — 支持 ZIP/TAR/7z，复制时解压到文件夹',
+    'ui.archiveSessionStatus': '压缩包对比 — 选择 ZIP、TAR 或 7z。复制时会解压到文件夹。',
     'ui.oauthAccessToken': '访问令牌',
     'ui.oauthTokenHint':
       '粘贴 Dropbox API 或 Microsoft Graph 访问令牌，或使用「打开授权网址」并粘贴回调网址。主机可填写 dropbox / onedrive。',
@@ -952,7 +960,7 @@ export const zhCN: LanguagePack = {
     'ui.browseArchive': '压缩包…',
     'ui.archiveSide': '压缩包',
     'ui.snapshotSide': '快照',
-    'status.notAnArchivePath': '不是 ZIP/TAR/7z 压缩包：{path}',
+    'status.notAnArchivePath': '该文件不是支持的压缩包（ZIP、TAR 或 7z）：{path}',
     'status.attributesChangedBulk': '已更改 {count} 项属性 -> {state}',
     'status.renamedBulkPaths': '已重命名 {count} 项 -> {path}',
     'ui.registryMaturityNote':

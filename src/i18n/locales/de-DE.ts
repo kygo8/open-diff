@@ -774,6 +774,17 @@ export const deDE: LanguagePack = {
     'ui.archiveCompare': 'Archivvergleich',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
+    'ui.archiveSessionPathHint':
+      'Mit Archiv… eine ZIP-, TAR- oder 7z-Datei wählen. Die andere Seite darf ein normaler Ordner sein.',
+    'ui.archivePathPlaceholder': 'Archivpfad durchsuchen oder einfügen (ZIP, TAR oder 7z)',
+    'ui.archiveEmptyCompareHint':
+      'Wählen Sie mit Archiv… linkes und rechtes Archiv (oder Pfade einfügen), dann Vergleichen.',
+    'ui.archiveEmptyReadyHint': 'Klicken Sie auf Vergleichen, um diese Archive zu scannen.',
+    'ui.archiveCompareNoItems':
+      'Keine Dateien in diesen Archiven. Beide können leer sein, oder Filter haben alles ausgeblendet.',
+    'ui.compareNeedsBothArchives': 'Wählen Sie zuerst beide Archive (links und rechts).',
+    'ui.leftArchive': 'Linkes Archiv',
+    'ui.rightArchive': 'Rechtes Archiv',
     'ui.applyToFile': 'Auf Datei anwenden',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -800,7 +811,7 @@ export const deDE: LanguagePack = {
       'Öffnet die Anbieter-Autorisierungsseite im Browser (Token-Antwort, kein Client-Geheimnis). Nach der Anmeldung die Weiterleitungs-URL (oder das Zugriffstoken) unten einfügen und das Profil speichern.',
     'ui.exportMergeReport': 'Merge-Bericht exportieren',
     'ui.archiveSessionStatus':
-      'Archivvergleich — ZIP/TAR/7z-Seiten mit Extraktion beim Kopieren in Ordner',
+      'Archivvergleich — ZIP-, TAR- oder 7z-Dateien wählen. Kopieren extrahiert in einen Ordner.',
     'ui.oauthAccessToken': 'Zugriffstoken',
     'ui.oauthTokenHint':
       'Dropbox-API- oder Microsoft-Graph-Zugriffstoken einfügen. Host kann dropbox / onedrive bleiben. Vollständiges Browser-OAuth ist nicht gebündelt; Token aus App-Konsole oder Gerätecode-Flow verwenden.',
@@ -1042,7 +1053,8 @@ export const deDE: LanguagePack = {
     'ui.browseArchive': 'Archive…',
     'ui.archiveSide': 'Archive',
     'ui.snapshotSide': 'Snapshot',
-    'status.notAnArchivePath': 'Not a ZIP/TAR/7z archive: {path}',
+    'status.notAnArchivePath':
+      'Diese Datei ist kein unterstütztes Archiv (ZIP, TAR oder 7z): {path}',
     'status.attributesChangedBulk': 'Attributes changed on {count} items -> {state}',
     'status.renamedBulkPaths': 'Renamed {count} items -> {path}',
     'ui.registryMaturityNote':

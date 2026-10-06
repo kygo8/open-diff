@@ -770,6 +770,17 @@ export const frFR: LanguagePack = {
     'ui.archiveCompare': 'Comparaison d’archives',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
+    'ui.archiveSessionPathHint':
+      'Utilisez Archive… pour choisir un fichier ZIP, TAR ou 7z. L’autre côté peut rester un dossier.',
+    'ui.archivePathPlaceholder': 'Parcourir ou coller un chemin d’archive (ZIP, TAR ou 7z)',
+    'ui.archiveEmptyCompareHint':
+      'Choisissez les archives gauche et droite avec Archive… (ou collez les chemins), puis cliquez sur Comparer.',
+    'ui.archiveEmptyReadyHint': 'Cliquez sur Comparer pour analyser ces archives.',
+    'ui.archiveCompareNoItems':
+      'Aucun fichier à afficher dans ces archives. Les deux peuvent être vides, ou des filtres ont tout masqué.',
+    'ui.compareNeedsBothArchives': "Choisissez d'abord les archives gauche et droite.",
+    'ui.leftArchive': 'Archive gauche',
+    'ui.rightArchive': 'Archive droite',
     'ui.applyToFile': 'Appliquer au fichier',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -796,7 +807,7 @@ export const frFR: LanguagePack = {
       'Ouvre la page d’autorisation du fournisseur dans le navigateur (réponse jeton, sans secret client). Après connexion, collez l’URL de redirection (ou le jeton d’accès) ci-dessous, puis enregistrez le profil.',
     'ui.exportMergeReport': 'Exporter le rapport de fusion',
     'ui.archiveSessionStatus':
-      'Session Archive Compare — côtés ZIP/TAR/7z avec extraction à la copie vers un dossier',
+      'Comparaison d’archives — choisissez ZIP, TAR ou 7z. La copie extrait vers un dossier.',
     'ui.oauthAccessToken': "Jeton d'accès",
     'ui.oauthTokenHint':
       "Collez un jeton d'accès Dropbox API ou Microsoft Graph. L'hôte peut rester dropbox / onedrive. L'OAuth navigateur complet n'est pas inclus ; utilisez un jeton de la console d'application ou du flux code appareil.",
@@ -1038,7 +1049,8 @@ export const frFR: LanguagePack = {
     'ui.browseArchive': 'Archive…',
     'ui.archiveSide': 'Archive',
     'ui.snapshotSide': 'Instantané',
-    'status.notAnArchivePath': 'Not a ZIP/TAR/7z archive: {path}',
+    'status.notAnArchivePath':
+      'Ce fichier n’est pas une archive prise en charge (ZIP, TAR ou 7z) : {path}',
     'status.attributesChangedBulk': 'Attributes changed on {count} items -> {state}',
     'status.renamedBulkPaths': 'Renamed {count} items -> {path}',
     'ui.registryMaturityNote':

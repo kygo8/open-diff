@@ -591,19 +591,35 @@ const folderEmptyStateMessage = computed(() => {
   const right = rightRoot.value.trim()
   const comparedCurrent =
     Boolean(alignmentRootKey.value) && alignmentRootKey.value === `${left}|${right}`
+  const archive = archiveSessionActive.value
 
   if (comparedCurrent) {
-    return t('ui.folderCompareNoItems')
+    return archive ? t('ui.archiveCompareNoItems') : t('ui.folderCompareNoItems')
   }
 
   if (left && right) {
-    return t('ui.folderEmptyReadyHint')
+    return archive ? t('ui.archiveEmptyReadyHint') : t('ui.folderEmptyReadyHint')
   }
 
-  return t('ui.folderEmptyCompareHint')
+  return archive ? t('ui.archiveEmptyCompareHint') : t('ui.folderEmptyCompareHint')
 })
 
 const compareNeedsBothFolders = computed(() => !leftRoot.value.trim() || !rightRoot.value.trim())
+const folderPathPlaceholderText = computed(() =>
+  archiveSessionActive.value ? t('ui.archivePathPlaceholder') : t('ui.folderPathPlaceholder'),
+)
+const folderSidePathHint = computed(() =>
+  archiveSessionActive.value ? t('ui.archiveSessionPathHint') : t('ui.archivePathHint'),
+)
+const leftFolderLabel = computed(() =>
+  archiveSessionActive.value ? t('ui.leftArchive') : t('ui.leftFolder'),
+)
+const rightFolderLabel = computed(() =>
+  archiveSessionActive.value ? t('ui.rightArchive') : t('ui.rightFolder'),
+)
+const compareNeedsBothTip = computed(() =>
+  archiveSessionActive.value ? t('ui.compareNeedsBothArchives') : t('ui.compareNeedsBothFolders'),
+)
 
 const visibleRows = computed(() =>
   rows.value.filter(
@@ -3326,7 +3342,7 @@ onUnmounted(() => {
       <header class="folder-toolbar">
         <div class="path-pair">
           <label>
-            <span>{{ $t('ui.leftFolder') }}</span>
+            <span>{{ leftFolderLabel }}</span>
             <div class="path-field-row">
               <input
                 v-model="leftRoot"
@@ -3336,8 +3352,8 @@ onUnmounted(() => {
                 list="folder-path-mru"
                 autocomplete="off"
                 spellcheck="false"
-                :placeholder="$t('ui.folderPathPlaceholder')"
-                :title="leftRoot || $t('ui.folderPathPlaceholder')"
+                :placeholder="folderPathPlaceholderText"
+                :title="leftRoot || folderPathPlaceholderText"
                 @focus="focusedPathSide = 'left'"
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'left')"
@@ -3372,7 +3388,7 @@ onUnmounted(() => {
             />
           </label>
           <label>
-            <span>{{ $t('ui.rightFolder') }}</span>
+            <span>{{ rightFolderLabel }}</span>
             <div class="path-field-row">
               <input
                 v-model="rightRoot"
@@ -3382,8 +3398,8 @@ onUnmounted(() => {
                 list="folder-path-mru"
                 autocomplete="off"
                 spellcheck="false"
-                :placeholder="$t('ui.folderPathPlaceholder')"
-                :title="rightRoot || $t('ui.folderPathPlaceholder')"
+                :placeholder="folderPathPlaceholderText"
+                :title="rightRoot || folderPathPlaceholderText"
                 @focus="focusedPathSide = 'right'"
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'right')"
@@ -3477,7 +3493,7 @@ onUnmounted(() => {
           class="archive-path-hint"
           data-testid="folder-path-hint"
         >
-          {{ $t('ui.archivePathHint') }}
+          {{ folderSidePathHint }}
         </p>
         <fieldset
           v-show="showFolderRules"
@@ -3598,7 +3614,7 @@ onUnmounted(() => {
             data-testid="run-folder-compare"
             :disabled="folderCompareLoading || !leftRoot || !rightRoot"
             :loading="folderCompareLoading"
-            :title="compareNeedsBothFolders ? $t('ui.compareNeedsBothFolders') : $t('ui.compare')"
+            :title="compareNeedsBothFolders ? compareNeedsBothTip : $t('ui.compare')"
             @click="runFolderCompare"
             >{{ $t('ui.compare') }}</NButton
           >

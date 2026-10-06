@@ -905,6 +905,9 @@ export const zhTW: LanguagePack = {
     'ui.hexEmptyReadyHint': '按 Enter 或點比較以逐位元組比較。',
     'ui.hexIdenticalHint': '在此視窗中這些檔案一致。沒有位元組差異。',
     'ui.hexFilteredEmptyHint': '此檢視沒有不同位元組。關閉「僅差異」可查看相同位元組。',
+    'ui.pictureEmptyCompareHint': '用瀏覽選擇左右影像（或貼上路徑），然後按比較。',
+    'ui.pictureEmptyReadyHint': '按 Enter 或點比較以比較這些影像。',
+    'ui.pictureIdenticalHint': '這些影像一致。沒有像素差異。',
     'ui.registryExportHint':
       '可比較匯出的 .reg、離線 REGF 登錄檔（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比較即時 HKLM/HKCU 鍵。',
     'ui.nextConflict': '下一衝突',

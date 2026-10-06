@@ -80,6 +80,73 @@ describe('PictureCompareView', () => {
     })
   })
 
+  it('shows a friendly empty state and path placeholders before compare', async () => {
+    const wrapper = mount(PictureCompareView)
+
+    expect(wrapper.find('[data-testid="picture-empty-hint"]').text()).toContain(
+      'Choose left and right images',
+    )
+    expect(wrapper.find('[data-testid="picture-left-path"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="run-picture-compare"]').attributes('title')).toContain(
+      'both left and right files',
+    )
+
+    await wrapper.find('[data-testid="picture-left-path"]').setValue('C:/images/left.png')
+    await wrapper.find('[data-testid="picture-right-path"]').setValue('C:/images/right.png')
+    expect(wrapper.find('[data-testid="picture-empty-hint"]').text()).toContain('Compare')
+    expect(
+      wrapper.find('[data-testid="run-picture-compare"]').attributes('disabled'),
+    ).toBeUndefined()
+  })
+
+  it('compares on Enter when both image paths are set', async () => {
+    const wrapper = mount(PictureCompareView)
+
+    await wrapper.find('[data-testid="picture-left-path"]').setValue('C:/images/left-fixture.png')
+    await wrapper.find('[data-testid="picture-right-path"]').setValue('C:/images/right-fixture.png')
+    await wrapper.find('[data-testid="picture-left-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(comparePictureFiles).toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="left-picture-img"]').exists()).toBe(true)
+  })
+
+  it('explains when compared images have no pixel differences', async () => {
+    vi.mocked(comparePictureFiles).mockResolvedValueOnce({
+      left: {
+        name: 'left.png',
+        format: 'PNG',
+        dimensions: '2 x 1',
+        colorDepth: '32-bit',
+      },
+      right: {
+        name: 'right.png',
+        format: 'PNG',
+        dimensions: '2 x 1',
+        colorDepth: '32-bit',
+      },
+      statistics: {
+        totalPixels: 2,
+        differentPixels: 0,
+        differenceRatio: 0,
+      },
+      metadataRows: [],
+    })
+
+    const wrapper = mount(PictureCompareView)
+
+    await wrapper.find('[data-testid="picture-left-path"]').setValue('C:/images/left.png')
+    await wrapper.find('[data-testid="picture-right-path"]').setValue('C:/images/right.png')
+    await wrapper.find('[data-testid="run-picture-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="picture-identical-hint"]').text()).toContain(
+      'These images match',
+    )
+  })
+
   it('runs a real picture comparison request and renders returned pixel statistics', async () => {
     const wrapper = mount(PictureCompareView)
 

@@ -24,6 +24,7 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatCompareError } from '@/app/compareError'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
@@ -100,6 +101,29 @@ const loadTimeSeconds = ref<number | null>(null)
 const statusBar = useStatusBarStore()
 const leftImageSrc = computed(() => (compared.value ? localFileSrc(leftPath.value) : ''))
 const rightImageSrc = computed(() => (compared.value ? localFileSrc(rightPath.value) : ''))
+
+const compareNeedsBothFiles = computed(() => !leftPath.value.trim() || !rightPath.value.trim())
+
+const picturesAreIdentical = computed(
+  () => compared.value && pictureStatistics.value.differentPixels === 0,
+)
+
+const pictureEmptyStateMessage = computed(() => {
+  if (leftPath.value.trim() && rightPath.value.trim()) {
+    return t('ui.pictureEmptyReadyHint')
+  }
+
+  return t('ui.pictureEmptyCompareHint')
+})
+
+function onPicturePathEnter(): void {
+  if (compareNeedsBothFiles.value || loading.value) {
+    return
+  }
+
+  void runPictureCompare()
+}
+
 const overlayStyle = computed(() => {
   const rect = pictureStatistics.value.boundingRect
 
@@ -661,7 +685,7 @@ async function exportPictureReport(): Promise<void> {
     })
     reportStatus.value = outputPath
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 
@@ -685,6 +709,10 @@ watchEffect(() => {
 })
 
 async function runPictureCompare(): Promise<void> {
+  if (compareNeedsBothFiles.value) {
+    return
+  }
+
   const startedAt = performance.now()
 
   loading.value = true
@@ -704,7 +732,7 @@ async function runPictureCompare(): Promise<void> {
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     await refreshPicturePathStamps()
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }
@@ -742,7 +770,9 @@ async function runPictureCompare(): Promise<void> {
               type="text"
               class="path-input"
               data-testid="picture-left-path"
-              :title="leftPath"
+              :title="leftPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
+              @keydown.enter.prevent="onPicturePathEnter"
             />
             <SessionPathActions
               browse-test-id="picture-browse-left"
@@ -760,7 +790,9 @@ async function runPictureCompare(): Promise<void> {
               type="text"
               class="path-input"
               data-testid="picture-right-path"
-              :title="rightPath"
+              :title="rightPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
+              @keydown.enter.prevent="onPicturePathEnter"
             />
             <SessionPathActions
               browse-test-id="picture-browse-right"
@@ -773,7 +805,8 @@ async function runPictureCompare(): Promise<void> {
         <button
           type="button"
           data-testid="run-picture-compare"
-          :disabled="loading"
+          :disabled="loading || compareNeedsBothFiles"
+          :title="compareNeedsBothFiles ? $t('ui.compareNeedsBothFiles') : $t('ui.runDiff')"
           @click="runPictureCompare"
         >
           {{ $t('ui.runDiff') }}
@@ -805,11 +838,18 @@ async function runPictureCompare(): Promise<void> {
         {{ error }}
       </p>
       <p
+        v-else-if="picturesAreIdentical"
+        class="empty"
+        data-testid="picture-identical-hint"
+      >
+        {{ $t('ui.pictureIdenticalHint') }}
+      </p>
+      <p
         v-else-if="!compared"
         class="empty"
         data-testid="picture-empty-hint"
       >
-        {{ $t('ui.emptyCompareHint') }}
+        {{ pictureEmptyStateMessage }}
       </p>
 
       <section

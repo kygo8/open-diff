@@ -32,6 +32,7 @@ import {
 import { folderSnapshotOutputPath } from '@/app/snapshotPath'
 import { collectExpandablePrefixes, isPathHiddenByCollapse } from '@/app/folderPathGroups'
 import { buildFolderSyncToolbar, pathBaseName, syncPathPairTitle } from '@/app/sessionToolbars'
+import { formatCompareError } from '@/app/compareError'
 import { useI18n } from '@/i18n'
 import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
@@ -170,6 +171,7 @@ const leftFreeSpaceLabel = ref('')
 const rightFreeSpaceLabel = ref('')
 const selectedStrategy = ref<FolderSyncStrategy>(loadFolderSyncSessionOptions().strategy)
 const previewName = ref('')
+const lastPreviewedRoots = ref('')
 const previewLoading = ref(false)
 const previewError = ref<string>()
 const syncRunning = ref(false)
@@ -270,6 +272,39 @@ const selectedStrategyLabel = computed(() =>
   ),
 )
 const canRunSync = computed(() => previewRows.value.length > 0 && !syncRunning.value)
+const syncNeedsBothFolders = computed(() => !leftPath.value.trim() || !rightPath.value.trim())
+const folderSyncEmptyStateMessage = computed(() => {
+  const left = leftPath.value.trim()
+  const right = rightPath.value.trim()
+  const previewedCurrent =
+    Boolean(lastPreviewedRoots.value) && lastPreviewedRoots.value === `${left}|${right}`
+
+  if (previewedCurrent) {
+    return t('ui.folderSyncNothingToDo')
+  }
+
+  if (left && right) {
+    return t('ui.folderSyncEmptyReadyHint')
+  }
+
+  return t('ui.folderSyncEmptyCompareHint')
+})
+
+function onFolderSyncPathEnter(): void {
+  recordFolderPathCommit()
+
+  if (
+    !leftPath.value.trim() ||
+    !rightPath.value.trim() ||
+    previewLoading.value ||
+    syncRunning.value
+  ) {
+    return
+  }
+
+  void previewSync()
+}
+
 const overriddenRowCount = computed(
   () => previewRows.value.filter((row) => row.overrideAction !== row.plannedAction).length,
 )
@@ -782,6 +817,7 @@ async function previewSync(options?: { keepRunStatus?: boolean }): Promise<void>
     })
 
     previewName.value = response.name
+    lastPreviewedRoots.value = `${leftPath.value}|${rightPath.value}`
     previewRows.value = response.rows.map(syncPreviewResponseRowToViewRow)
     leftPath.value = response.leftRoot
     rightPath.value = response.rightRoot
@@ -807,7 +843,7 @@ async function previewSync(options?: { keepRunStatus?: boolean }): Promise<void>
       lastIncludedSyncTotal.value = null
     }
   } catch (error) {
-    previewError.value = error instanceof Error ? error.message : String(error)
+    previewError.value = formatCompareError(error, t)
   } finally {
     previewLoading.value = false
   }
@@ -904,7 +940,7 @@ async function executeSyncNow(): Promise<void> {
     })
     await previewSync({ keepRunStatus: true })
   } catch (error) {
-    syncRunError.value = error instanceof Error ? error.message : String(error)
+    syncRunError.value = formatCompareError(error, t)
   } finally {
     syncRunning.value = false
   }
@@ -1640,8 +1676,9 @@ watch(
               v-model="leftPath"
               class="path-input"
               data-testid="folder-sync-left-path"
-              :title="leftPath"
-              @keydown.enter.prevent="recordFolderPathCommit"
+              :placeholder="$t('ui.folderPathPlaceholder')"
+              :title="leftPath || $t('ui.folderPathPlaceholder')"
+              @keydown.enter.prevent="onFolderSyncPathEnter"
               @change="recordFolderPathCommit"
             />
             <SessionPathActions
@@ -1662,8 +1699,9 @@ watch(
               v-model="rightPath"
               class="path-input"
               data-testid="folder-sync-right-path"
-              :title="rightPath"
-              @keydown.enter.prevent="recordFolderPathCommit"
+              :placeholder="$t('ui.folderPathPlaceholder')"
+              :title="rightPath || $t('ui.folderPathPlaceholder')"
+              @keydown.enter.prevent="onFolderSyncPathEnter"
               @change="recordFolderPathCommit"
             />
             <SessionPathActions
@@ -1718,6 +1756,9 @@ watch(
               data-testid="folder-sync-preview"
               :disabled="previewLoading || !leftPath || !rightPath"
               :loading="previewLoading"
+              :title="
+                syncNeedsBothFolders ? $t('ui.folderSyncNeedsBothFolders') : $t('ui.previewSync')
+              "
               @click="previewSync"
               >{{ $t('ui.preview') }}</NButton
             >
@@ -1783,6 +1824,13 @@ watch(
               data-testid="folder-sync-run"
               :disabled="!canRunSync"
               :loading="syncRunning"
+              :title="
+                syncNeedsBothFolders
+                  ? $t('ui.folderSyncNeedsBothFolders')
+                  : !canRunSync
+                    ? $t('ui.folderSyncNeedsPreview')
+                    : $t('ui.syncNow')
+              "
               @click="runSync"
               >{{ $t('ui.syncNow') }}</NButton
             >
@@ -1915,6 +1963,14 @@ watch(
           >{{ lastSelectionAction }}</span
         >
       </section>
+
+      <div
+        v-if="previewRows.length === 0 && !previewLoading"
+        class="folder-sync-empty-state"
+        data-testid="folder-sync-empty-state"
+      >
+        {{ folderSyncEmptyStateMessage }}
+      </div>
 
       <section
         v-if="previewRows.length > 0"
@@ -2319,6 +2375,19 @@ watch(
   </WorkbenchShell>
 </template>
 <style scoped>
+.folder-sync-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  padding: 24px 16px;
+  border: 1px dashed #c0c0c0;
+  color: #444444;
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .folder-sync-view {
   display: grid;
   grid-template-rows: max-content max-content max-content minmax(0, 1fr) max-content;

@@ -928,6 +928,14 @@ export const esES: LanguagePack = {
     'ui.textIdenticalHint': 'Estos archivos coinciden. No hay diferencias.',
     'ui.compareNeedsBothFiles': 'Elija primero ambos archivos (izquierda y derecha).',
     'ui.loadFilesNeedsBothPaths': 'Elija primero ambas rutas.',
+    'ui.folderSyncEmptyCompareHint':
+      'Elija las carpetas izquierda y derecha con Examinar (o pegue rutas) y luego haga clic en Vista previa.',
+    'ui.folderSyncEmptyReadyHint':
+      'Haga clic en Vista previa para ver qué copiará o eliminará Sync Now.',
+    'ui.folderSyncNothingToDo':
+      'Nada que sincronizar. Las carpetas ya coinciden, o los filtros ocultaron todo.',
+    'ui.folderSyncNeedsBothFolders': 'Elija primero ambas carpetas (izquierda y derecha).',
+    'ui.folderSyncNeedsPreview': 'Obtenga una vista previa del plan antes de ejecutar Sync Now.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

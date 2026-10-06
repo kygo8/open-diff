@@ -883,6 +883,11 @@ export const zhTW: LanguagePack = {
     'ui.textIdenticalHint': '這些檔案相同，沒有差異。',
     'ui.compareNeedsBothFiles': '請先選擇左右兩個檔案。',
     'ui.loadFilesNeedsBothPaths': '請先選擇左右兩條路徑。',
+    'ui.folderSyncEmptyCompareHint': '用瀏覽選擇左右資料夾（或貼上路徑），然後按預覽。',
+    'ui.folderSyncEmptyReadyHint': '按預覽以查看「立即同步」將複製或刪除的內容。',
+    'ui.folderSyncNothingToDo': '無需同步。兩側已一致，或篩選隱藏了全部變更。',
+    'ui.folderSyncNeedsBothFolders': '請先選擇左右兩個資料夾。',
+    'ui.folderSyncNeedsPreview': '請先預覽同步計畫，再按立即同步。',
     'ui.registryExportHint':
       '可比較匯出的 .reg、離線 REGF 登錄檔（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比較即時 HKLM/HKCU 鍵。',
     'ui.nextConflict': '下一衝突',

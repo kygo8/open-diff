@@ -881,6 +881,11 @@ export const zhCN: LanguagePack = {
     'ui.textIdenticalHint': '这些文件相同，没有差异。',
     'ui.compareNeedsBothFiles': '请先选择左右两个文件。',
     'ui.loadFilesNeedsBothPaths': '请先选择左右两条路径。',
+    'ui.folderSyncEmptyCompareHint': '用浏览选择左右文件夹（或粘贴路径），然后点预览。',
+    'ui.folderSyncEmptyReadyHint': '点预览以查看“立即同步”将复制或删除的内容。',
+    'ui.folderSyncNothingToDo': '无需同步。两侧已一致，或筛选隐藏了全部更改。',
+    'ui.folderSyncNeedsBothFolders': '请先选择左右两个文件夹。',
+    'ui.folderSyncNeedsPreview': '请先预览同步计划，再点立即同步。',
     'ui.registryExportHint':
       '可比较导出的 .reg、离线 REGF 配置单元（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比较实时 HKLM/HKCU 键。',
     'ui.nextConflict': '下一冲突',

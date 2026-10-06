@@ -933,6 +933,15 @@ export const deDE: LanguagePack = {
     'ui.textIdenticalHint': 'Diese Dateien stimmen überein. Keine Unterschiede.',
     'ui.compareNeedsBothFiles': 'Wählen Sie zuerst beide Dateien (links und rechts).',
     'ui.loadFilesNeedsBothPaths': 'Wählen Sie zuerst beide Pfade (links und rechts).',
+    'ui.folderSyncEmptyCompareHint':
+      'Wählen Sie linke und rechte Ordner mit Durchsuchen (oder fügen Sie Pfade ein), dann auf Vorschau klicken.',
+    'ui.folderSyncEmptyReadyHint':
+      'Klicken Sie auf Vorschau, um zu sehen, was Sync Now kopieren oder löschen wird.',
+    'ui.folderSyncNothingToDo':
+      'Nichts zu synchronisieren. Ordner stimmen überein, oder Filter haben alles ausgeblendet.',
+    'ui.folderSyncNeedsBothFolders': 'Wählen Sie zuerst beide Ordner (links und rechts).',
+    'ui.folderSyncNeedsPreview':
+      'Zeigen Sie den Sync-Plan in der Vorschau, bevor Sie Sync Now ausführen.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

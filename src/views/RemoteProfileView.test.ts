@@ -50,6 +50,19 @@ describe('RemoteProfileView', () => {
     vi.mocked(deleteRemoteProfile).mockRejectedValue(new Error('no backend'))
   })
 
+  it('shows a plain Profiles page hint and empty state', async () => {
+    const wrapper = mount(RemoteProfileView, {
+      global: { plugins: [createPinia()] },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Save remote servers')
+    expect(wrapper.find('[data-testid="remote-profiles-empty"]').text()).toContain(
+      'No profiles yet',
+    )
+  })
+
   it('loads persisted local profiles and does not invent demo hosts', async () => {
     saveLocalRemoteProfiles([
       {

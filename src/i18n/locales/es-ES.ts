@@ -154,7 +154,7 @@ export const esES: LanguagePack = {
     'ui.extensions': 'Extensiones',
     'ui.field': 'Campo',
     'ui.file': 'Archivo',
-    'ui.fileFormats': 'Formatos de archivo...',
+    'ui.fileFormats': 'Formatos de archivo',
     'ui.fileNames': 'Nombres de archivos',
     'ui.fileVersion': 'Versión del archivo',
     'ui.find': 'Encontrar',
@@ -204,7 +204,7 @@ export const esES: LanguagePack = {
     'ui.saveWorkspaceAs': 'Guardar espacio de trabajo como...',
     'ui.closeTab': 'Cerrar pestaña',
     'ui.exit': 'Salir',
-    'ui.options': 'Opciones...',
+    'ui.options': 'Opciones',
     'ui.exportSettings': 'Exportar configuración...',
     'ui.importSettings': 'Importar configuración...',
     'ui.restoreFactoryDefaults': 'Restaurar valores de fábrica...',
@@ -244,9 +244,24 @@ export const esES: LanguagePack = {
     'ui.m': 'M',
     'ui.manage': 'Administrar',
     'ui.manageMatchingRulesDefaultViewsAndRuleReferences':
-      'Administre reglas coincidentes, vistas predeterminadas y referencias de reglas.',
+      'Elija cómo se abren los tipos de archivo y qué vista de comparación usan.',
     'ui.manageRemoteEndpointsAndCredentialReferences':
-      'Administre puntos finales remotos y referencias de credenciales.',
+      'Agregue o edite servidores remotos y cuentas en la nube guardados.',
+    'ui.optionsPageSubtitle':
+      'Valores predeterminados de la aplicación. La configuración de sesión cambia reglas solo de la sesión abierta.',
+    'ui.optionsClusterHint':
+      'Los formatos controlan cómo se abren los archivos. Los perfiles son conexiones remotas. Los informes definen la exportación. Las reglas por sesión están en Configuración de sesión.',
+    'ui.optionsAutoSaveHint':
+      'Los cambios se guardan al editar. Restaurar valores de fábrica está en Ajustes.',
+    'ui.formatDefinitionsHint':
+      'Reglas con nombre que asocian extensiones a vistas Texto, Hex, Tabla y otras.',
+    'ui.connectionProfilesHint':
+      'Extremos SFTP, nube y otros remotos usados por las rutas de comparación de carpetas.',
+    'ui.fileFormatsPageHint':
+      'Los formatos deciden qué vista de comparación abre cada tipo de archivo. Guarde tras editar.',
+    'ui.remoteProfilesPageHint':
+      'Guarde servidores remotos y cuentas en la nube y elíjalos al examinar rutas de carpetas.',
+    'ui.remoteProfilesEmpty': 'Aún no hay perfiles. Pulse Nuevo para agregar SFTP, FTP o nube.',
     'ui.manualMappingsOverrideAutomaticNameMatches':
       'Las asignaciones manuales anulan las coincidencias automáticas de nombres.',
     'ui.mediaCompare': 'Comparación de medios',
@@ -303,7 +318,7 @@ export const esES: LanguagePack = {
     'ui.productVersion': 'Versión del producto',
     'ui.profileCountLabel': 'perfiles',
     'ui.profileDetails': 'Detalles del perfil',
-    'ui.profiles': 'Perfiles...',
+    'ui.profiles': 'Perfiles',
     'ui.profileStore': 'Tienda de perfiles',
     'ui.protocol': 'Protocolo',
     'ui.quickCompare': 'Comparación rápida',
@@ -1437,7 +1452,7 @@ export const esES: LanguagePack = {
     'ui.reportIncludeIdentical': 'Incluir elementos idénticos en informes de carpeta',
     'ui.reportIncludeIdenticalHint':
       'Si está desactivado, el informe omite filas con estado Igual.',
-    'ui.reportIncludeOrphans': 'Incluir huérfanos en informes de carpeta',
+    'ui.reportIncludeOrphans': 'Incluir elementos solo en un lado en informes de carpetas',
     'ui.reportIncludeOrphansHint':
       'Si está desactivado, el informe omite filas solo izquierda y solo derecha.',
     'ui.showMillisecondsInTimestamps': 'Mostrar milisegundos en marcas de tiempo',

@@ -618,8 +618,8 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
 <template>
   <WorkbenchShell
     :title="$t('ui.remoteProfiles')"
-    :eyebrow="$t('ui.remote')"
-    :subtitle="profileSummary"
+    :eyebrow="$t('ui.options')"
+    :subtitle="$t('ui.remoteProfilesPageHint')"
     :inspector-label="$t('ui.remoteProfileInspector')"
   >
     <section class="remote-profile-view">
@@ -643,7 +643,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
       </p>
       <header class="profile-header">
         <div>
-          <p class="eyebrow">{{ $t('ui.settings') }}</p>
+          <p class="eyebrow">{{ $t('ui.options') }}</p>
           <h1>{{ $t('ui.remoteProfiles') }}</h1>
         </div>
         <div class="profile-count">
@@ -671,6 +671,13 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
             class="profile-list"
             data-testid="remote-profile-list"
           >
+            <p
+              v-if="sortedProfiles.length === 0"
+              class="profile-empty"
+              data-testid="remote-profiles-empty"
+            >
+              {{ $t('ui.remoteProfilesEmpty') }}
+            </p>
             <button
               v-for="profile in sortedProfiles"
               :key="profile.id"
@@ -1091,6 +1098,14 @@ button:disabled {
 
 button:hover:not(:disabled) {
   background: var(--app-surface-muted);
+}
+
+.profile-empty {
+  margin: 0;
+  padding: 8px 6px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .profile-list {

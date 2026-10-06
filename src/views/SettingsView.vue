@@ -1461,9 +1461,9 @@ function parseShortcutText(value: string): string[] {
 
 <template>
   <WorkbenchShell
-    :title="$t('ui.settings')"
-    :eyebrow="$t('ui.policy')"
-    :subtitle="$t('ui.manageMatchingRulesDefaultViewsAndRuleReferences')"
+    :title="$t('ui.options')"
+    :eyebrow="$t('ui.settings')"
+    :subtitle="$t('ui.optionsPageSubtitle')"
     :inspector-label="$t('ui.settingsInspector')"
   >
     <section
@@ -1508,6 +1508,18 @@ function parseShortcutText(value: string): string[] {
         data-testid="options-content"
         data-options-content-density="capture-1to1"
       >
+        <p
+          class="options-hint options-cluster-hint"
+          data-testid="options-cluster-hint"
+        >
+          {{ $t('ui.optionsClusterHint') }}
+        </p>
+        <p
+          class="options-hint"
+          data-testid="options-autosave-hint"
+        >
+          {{ $t('ui.optionsAutoSaveHint') }}
+        </p>
         <NCard
           v-show="optionsSection === 'appearance'"
           :title="$t('ui.appearance')"
@@ -3101,7 +3113,7 @@ function parseShortcutText(value: string): string[] {
           <div class="settings-row">
             <div>
               <strong>{{ $t('ui.formatDefinitions') }}</strong>
-              <span>{{ $t('ui.manageMatchingRulesDefaultViewsAndRuleReferences') }}</span>
+              <span>{{ $t('ui.formatDefinitionsHint') }}</span>
             </div>
             <NButton
               size="small"
@@ -3265,7 +3277,7 @@ function parseShortcutText(value: string): string[] {
           >
             <div>
               <strong>{{ $t('ui.connectionProfiles') }}</strong>
-              <span>{{ $t('ui.manageRemoteEndpointsAndCredentialReferences') }}</span>
+              <span>{{ $t('ui.connectionProfilesHint') }}</span>
             </div>
             <NButton
               size="small"

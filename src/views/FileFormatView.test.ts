@@ -12,6 +12,14 @@ describe('FileFormatView', () => {
     localStorage.removeItem(fileFormatsStorageKey)
   })
 
+  it('shows a plain Formats page hint for first-time users', () => {
+    const wrapper = mount(FileFormatView)
+
+    expect(wrapper.find('[data-testid="file-formats-page-hint"]').text()).toContain(
+      'compare view opens',
+    )
+  })
+
   it('renders built-in file formats and selected format details', () => {
     const wrapper = mount(FileFormatView)
 

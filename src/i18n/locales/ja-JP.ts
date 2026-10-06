@@ -172,7 +172,7 @@ export const jaJP: LanguagePack = {
     'ui.extensions': 'Extensions',
     'ui.field': 'Field',
     'ui.file': 'File',
-    'ui.fileFormats': 'File Formats...',
+    'ui.fileFormats': 'ファイル形式',
     'ui.fileNames': 'File Names',
     'ui.fileVersion': 'File Version',
     'ui.files': 'Files',
@@ -228,7 +228,7 @@ export const jaJP: LanguagePack = {
     'ui.saveWorkspaceAs': 'ワークスペースに名前を付けて保存...',
     'ui.closeTab': 'タブを閉じる',
     'ui.exit': '終了',
-    'ui.options': 'オプション...',
+    'ui.options': 'オプション',
     'ui.exportSettings': '設定をエクスポート...',
     'ui.importSettings': '設定をインポート...',
     'ui.restoreFactoryDefaults': '工場出荷時の設定に戻す...',
@@ -281,9 +281,25 @@ export const jaJP: LanguagePack = {
     'ui.manage': 'Manage',
     'ui.manual': 'Manual',
     'ui.manageMatchingRulesDefaultViewsAndRuleReferences':
-      'Manage matching rules, default views, and rule references.',
+      'ファイル種類の開き方と使う比較ビューを選びます。',
     'ui.manageRemoteEndpointsAndCredentialReferences':
-      'Manage remote endpoints and credential references.',
+      '保存済みのリモートサーバーやクラウドアカウントを追加・編集します。',
+    'ui.optionsPageSubtitle':
+      'アプリ全体の既定値です。セッション設定は開いているセッションのルールだけを変更します。',
+    'ui.optionsClusterHint':
+      '形式はファイルの開き方、プロファイルはリモート接続、レポートは書き出し既定です。セッションごとの比較ルールはセッション設定にあります。',
+    'ui.optionsAutoSaveHint':
+      '編集するとすぐ保存されます。工場出荷時の既定に戻すはTweaksにあります。',
+    'ui.formatDefinitionsHint':
+      '拡張子をテキスト・Hex・表などのビューに対応付ける名前付きルールです。',
+    'ui.connectionProfilesHint':
+      'フォルダー比較パスで使う保存済み SFTP・クラウドなどのリモート端点です。',
+    'ui.fileFormatsPageHint':
+      '形式はファイル種類ごとにどの比較ビューを開くかを決めます。定義を編集したら保存してください。',
+    'ui.remoteProfilesPageHint':
+      'リモートサーバーやクラウドアカウントを保存し、フォルダー比較パスの参照時に選びます。',
+    'ui.remoteProfilesEmpty':
+      'プロファイルがありません。新規で SFTP / FTP / クラウドを追加してください。',
     'ui.manualMappingsOverrideAutomaticNameMatches':
       'Manual mappings override automatic name matches.',
     'ui.media': 'Media',
@@ -362,7 +378,7 @@ export const jaJP: LanguagePack = {
     'ui.productVersion': 'Product Version',
     'ui.profileCountLabel': 'profiles',
     'ui.profileDetails': 'Profile Details',
-    'ui.profiles': 'Profiles...',
+    'ui.profiles': 'プロファイル',
     'ui.profileStore': 'Profile store',
     'ui.protocol': 'Protocol',
     'ui.quickCompare': 'Quick Compare',
@@ -1399,7 +1415,7 @@ export const jaJP: LanguagePack = {
     'ui.reportIncludeIdentical': 'フォルダーレポートに同一項目を含める',
     'ui.reportIncludeIdenticalHint':
       'オフにすると、同一の行をフォルダー比較レポートから省略します。',
-    'ui.reportIncludeOrphans': 'フォルダーレポートに孤立項目を含める',
+    'ui.reportIncludeOrphans': 'フォルダーレポートに片側のみの項目を含める',
     'ui.reportIncludeOrphansHint':
       'オフにすると、左のみ／右のみの行をフォルダー比較レポートから省略します。',
     'ui.showMillisecondsInTimestamps': 'タイムスタンプにミリ秒を表示',

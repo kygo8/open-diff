@@ -174,7 +174,7 @@ export const enUS: LanguagePack = {
     'ui.extensions': 'Extensions',
     'ui.field': 'Field',
     'ui.file': 'File',
-    'ui.fileFormats': 'File Formats...',
+    'ui.fileFormats': 'File Formats',
     'ui.fileNames': 'File Names',
     'ui.fileVersion': 'File Version',
     'ui.files': 'Files',
@@ -230,7 +230,7 @@ export const enUS: LanguagePack = {
     'ui.saveWorkspaceAs': 'Save Workspace As...',
     'ui.closeTab': 'Close Tab',
     'ui.exit': 'Exit',
-    'ui.options': 'Options...',
+    'ui.options': 'Options',
     'ui.exportSettings': 'Export Settings...',
     'ui.importSettings': 'Import Settings...',
     'ui.restoreFactoryDefaults': 'Restore Factory Defaults...',
@@ -283,9 +283,24 @@ export const enUS: LanguagePack = {
     'ui.manage': 'Manage',
     'ui.manual': 'Manual',
     'ui.manageMatchingRulesDefaultViewsAndRuleReferences':
-      'Manage matching rules, default views, and rule references.',
+      'Choose how file types open and which compare view they use.',
     'ui.manageRemoteEndpointsAndCredentialReferences':
-      'Manage remote endpoints and credential references.',
+      'Add or edit saved remote servers and cloud accounts.',
+    'ui.optionsPageSubtitle':
+      'App-wide defaults. Session Settings change rules for the open session only.',
+    'ui.optionsClusterHint':
+      'Formats control how files open. Profiles are remote connections. Reports set export defaults. Per-session compare rules are in Session Settings.',
+    'ui.optionsAutoSaveHint': 'Changes save as you edit. Restore factory defaults is under Tweaks.',
+    'ui.formatDefinitionsHint':
+      'Named rules that match extensions to Text, Hex, Table, and other views.',
+    'ui.connectionProfilesHint':
+      'Saved SFTP, cloud, and other remote endpoints used by Folder Compare paths.',
+    'ui.fileFormatsPageHint':
+      'Formats decide which compare view opens for each file type. Save after editing a definition.',
+    'ui.remoteProfilesPageHint':
+      'Save remote servers and cloud accounts, then pick them when browsing Folder Compare paths.',
+    'ui.remoteProfilesEmpty':
+      'No profiles yet. Click New to add an SFTP, FTP, or cloud connection.',
     'ui.manualMappingsOverrideAutomaticNameMatches':
       'Manual mappings override automatic name matches.',
     'ui.media': 'Media',
@@ -365,7 +380,7 @@ export const enUS: LanguagePack = {
     'ui.productVersion': 'Product Version',
     'ui.profileCountLabel': 'profiles',
     'ui.profileDetails': 'Profile Details',
-    'ui.profiles': 'Profiles...',
+    'ui.profiles': 'Profiles',
     'ui.profileStore': 'Profile store',
     'ui.protocol': 'Protocol',
     'ui.quickCompare': 'Quick Compare',
@@ -1407,7 +1422,7 @@ export const enUS: LanguagePack = {
     'ui.reportIncludeIdentical': 'Include identical items in folder reports',
     'ui.reportIncludeIdenticalHint':
       'When off, Folder Compare report exports omit rows that compare as Same.',
-    'ui.reportIncludeOrphans': 'Include orphans in folder reports',
+    'ui.reportIncludeOrphans': 'Include only-on-one-side items in folder reports',
     'ui.reportIncludeOrphansHint':
       'When off, Folder Compare report exports omit left-only and right-only rows.',
     'ui.showMillisecondsInTimestamps': 'Show milliseconds in timestamps',

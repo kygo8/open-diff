@@ -315,8 +315,14 @@ function setImportStatus(key: string, params: Record<string, string | number> = 
   <section class="file-format-view">
     <header class="format-header">
       <div>
-        <p class="eyebrow">{{ $t('ui.settings') }}</p>
+        <p class="eyebrow">{{ $t('ui.options') }}</p>
         <h1>{{ $t('ui.fileFormats') }}</h1>
+        <p
+          class="page-hint"
+          data-testid="file-formats-page-hint"
+        >
+          {{ $t('ui.fileFormatsPageHint') }}
+        </p>
       </div>
       <div class="format-count">
         <strong>{{ formats.length }}</strong>
@@ -529,6 +535,13 @@ function setImportStatus(key: string, params: Record<string, string | number> = 
   align-items: flex-start;
   justify-content: space-between;
   gap: 4px;
+}
+
+.page-hint {
+  margin: 4px 0 0;
+  color: var(--app-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .eyebrow {

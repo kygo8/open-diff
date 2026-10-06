@@ -333,7 +333,7 @@ export const frFR: LanguagePack = {
     'ui.rootPath': 'Chemin racine',
     'ui.rotateLeft': 'Faire pivoter à gauche',
     'ui.rotateRight': 'Faire pivoter à droite',
-    'ui.runDiff': 'Exécuter la comparaison',
+    'ui.runDiff': 'Comparer',
     'ui.runSync': 'Exécuter la synchronisation',
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
@@ -920,6 +920,15 @@ export const frFR: LanguagePack = {
     'ui.folderCompareNoItems':
       'Aucun fichier ou dossier à afficher. Les deux côtés peuvent être vides, ou des filtres ont tout masqué.',
     'ui.compareNeedsBothFolders': "Choisissez d'abord les dossiers gauche et droit.",
+    'ui.textPathPlaceholder': 'Parcourir ou coller un chemin de fichier',
+    'ui.textEmptyCompareHint':
+      'Choisissez les fichiers gauche et droit avec Parcourir (ou collez des chemins), puis cliquez sur Comparer.',
+    'ui.textEmptyPathsReadyHint':
+      'Appuyez sur Entrée ou Chargez pour ouvrir et comparer ces fichiers.',
+    'ui.textEmptyReadyHint': 'Cliquez sur Comparer pour voir les différences.',
+    'ui.textIdenticalHint': 'Ces fichiers sont identiques. Aucune différence.',
+    'ui.compareNeedsBothFiles': "Choisissez d'abord les fichiers gauche et droit.",
+    'ui.loadFilesNeedsBothPaths': "Choisissez d'abord les deux chemins.",
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

@@ -327,9 +327,57 @@ describe('TextCompareView', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-testid="text-workbench"]').exists()).toBe(true)
-    expect(wrapper.find('.empty').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="text-empty-state"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="text-empty-state"]').text()).toContain(
+      'Choose left and right files',
+    )
+    expect(wrapper.find('[data-testid="text-left-path"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="run-diff"]').text()).toBe('Compare')
+    expect(wrapper.find('[data-testid="load-text-files"]').attributes('title')).toContain(
+      'both left and right paths',
+    )
     expect(wrapper.text()).not.toContain('line one')
     expect(wrapper.text()).not.toContain('line two')
+  })
+
+  it('guides the user when both paths are set but files are not loaded yet', async () => {
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="text-left-path"]').setValue('D:/left.txt')
+    await wrapper.find('[data-testid="text-right-path"]').setValue('D:/right.txt')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="text-empty-state"]').text()).toContain(
+      'Press Enter or click Load',
+    )
+    expect(wrapper.find('[data-testid="load-text-files"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('loads and compares files when Enter is pressed in a path field', async () => {
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="text-left-path"]').setValue('D:/left.txt')
+    await wrapper.find('[data-testid="text-right-path"]').setValue('D:/right.txt')
+    await wrapper.find('[data-testid="text-left-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(readTextFile).toHaveBeenCalledWith('D:/left.txt')
+    expect(readTextFile).toHaveBeenCalledWith('D:/right.txt')
+    expect(diffText).toHaveBeenCalled()
+  })
+
+  it('shows an identical-files hint when the compare finds no differences', async () => {
+    const wrapper = mountTextCompareView()
+
+    await wrapper.find('[data-testid="run-diff"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="text-identical-hint"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="text-identical-hint"]').text()).toContain(
+      'These files match',
+    )
   })
 
   it('applies selected file format rules to text compare options', async () => {

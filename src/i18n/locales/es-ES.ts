@@ -333,7 +333,7 @@ export const esES: LanguagePack = {
     'ui.rootPath': 'Ruta raíz',
     'ui.rotateLeft': 'Girar a la izquierda',
     'ui.rotateRight': 'Girar a la derecha',
-    'ui.runDiff': 'Ejecutar diferencia',
+    'ui.runDiff': 'Comparar',
     'ui.runSync': 'Ejecutar sincronización',
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
@@ -920,6 +920,14 @@ export const esES: LanguagePack = {
     'ui.folderCompareNoItems':
       'No hay archivos o carpetas que mostrar. Ambos lados pueden estar vacíos, o los filtros ocultaron todo.',
     'ui.compareNeedsBothFolders': 'Elija primero ambas carpetas (izquierda y derecha).',
+    'ui.textPathPlaceholder': 'Examinar o pegar una ruta de archivo',
+    'ui.textEmptyCompareHint':
+      'Elija los archivos izquierdo y derecho con Examinar (o pegue rutas) y luego haga clic en Comparar.',
+    'ui.textEmptyPathsReadyHint': 'Pulse Intro o Cargar para abrir y comparar estos archivos.',
+    'ui.textEmptyReadyHint': 'Haga clic en Comparar para ver las diferencias.',
+    'ui.textIdenticalHint': 'Estos archivos coinciden. No hay diferencias.',
+    'ui.compareNeedsBothFiles': 'Elija primero ambos archivos (izquierda y derecha).',
+    'ui.loadFilesNeedsBothPaths': 'Elija primero ambas rutas.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

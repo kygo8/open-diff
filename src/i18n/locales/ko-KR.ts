@@ -324,7 +324,7 @@ export const koKR: LanguagePack = {
     'ui.rootPath': '루트 경로',
     'ui.rotateLeft': '왼쪽으로 회전',
     'ui.rotateRight': '오른쪽으로 회전',
-    'ui.runDiff': 'Diff 실행',
+    'ui.runDiff': '비교',
     'ui.runSync': '동기화 실행',
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
@@ -896,6 +896,14 @@ export const koKR: LanguagePack = {
     'ui.folderCompareNoItems':
       '표시할 파일이나 폴더가 없습니다. 양쪽이 비어 있거나 필터가 모두 숨겼을 수 있습니다.',
     'ui.compareNeedsBothFolders': '왼쪽과 오른쪽 폴더를 먼저 선택하세요.',
+    'ui.textPathPlaceholder': '파일을 찾아보거나 경로를 붙여넣으세요',
+    'ui.textEmptyCompareHint':
+      '찾아보기로 왼쪽·오른쪽 파일을 선택하거나 경로를 붙여넣은 다음 비교를 클릭하세요.',
+    'ui.textEmptyPathsReadyHint': 'Enter 또는 로드를 눌러 이 파일을 열고 비교하세요.',
+    'ui.textEmptyReadyHint': '비교를 클릭해 차이를 보세요.',
+    'ui.textIdenticalHint': '이 파일은 같습니다. 차이가 없습니다.',
+    'ui.compareNeedsBothFiles': '왼쪽과 오른쪽 파일을 먼저 선택하세요.',
+    'ui.loadFilesNeedsBothPaths': '왼쪽과 오른쪽 경로를 먼저 선택하세요.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

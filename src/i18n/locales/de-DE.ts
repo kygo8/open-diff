@@ -337,7 +337,7 @@ export const deDE: LanguagePack = {
     'ui.rootPath': 'Root-Pfad',
     'ui.rotateLeft': 'Nach links drehen',
     'ui.rotateRight': 'Nach rechts drehen',
-    'ui.runDiff': 'Führen Sie Diff aus',
+    'ui.runDiff': 'Vergleichen',
     'ui.runSync': 'Führen Sie die Synchronisierung aus',
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
@@ -924,6 +924,15 @@ export const deDE: LanguagePack = {
     'ui.folderCompareNoItems':
       'Keine Dateien oder Ordner anzuzeigen. Beide Seiten können leer sein, oder Filter haben alles ausgeblendet.',
     'ui.compareNeedsBothFolders': 'Wählen Sie zuerst beide Ordner (links und rechts).',
+    'ui.textPathPlaceholder': 'Datei durchsuchen oder Pfad einfügen',
+    'ui.textEmptyCompareHint':
+      'Wählen Sie linke und rechte Dateien mit Durchsuchen (oder fügen Sie Pfade ein), dann auf Vergleichen klicken.',
+    'ui.textEmptyPathsReadyHint':
+      'Drücken Sie Enter oder Laden, um diese Dateien zu öffnen und zu vergleichen.',
+    'ui.textEmptyReadyHint': 'Klicken Sie auf Vergleichen, um Unterschiede zu sehen.',
+    'ui.textIdenticalHint': 'Diese Dateien stimmen überein. Keine Unterschiede.',
+    'ui.compareNeedsBothFiles': 'Wählen Sie zuerst beide Dateien (links und rechts).',
+    'ui.loadFilesNeedsBothPaths': 'Wählen Sie zuerst beide Pfade (links und rechts).',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

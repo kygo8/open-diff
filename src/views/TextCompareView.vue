@@ -395,6 +395,37 @@ const diffRows = computed(() => result.value?.lines.filter((line) => line.kind !
 const activeDiffRows = computed(() =>
   diffRows.value.filter((line) => !ignoredDiffKeys.value.has(diffKey(line))),
 )
+const textEmptyStateMessage = computed(() => {
+  if (left.value.trim() || right.value.trim()) {
+    return t('ui.textEmptyReadyHint')
+  }
+
+  if (leftPathLabel.value.trim() && rightPathLabel.value.trim()) {
+    return t('ui.textEmptyPathsReadyHint')
+  }
+
+  return t('ui.textEmptyCompareHint')
+})
+
+const compareNeedsBothFiles = computed(
+  () => !leftPathLabel.value.trim() || !rightPathLabel.value.trim(),
+)
+
+const textFilesAreIdentical = computed(
+  () => Boolean(result.value) && activeDiffRows.value.length === 0,
+)
+
+function onTextPathEnter(): void {
+  const leftPath = leftPathLabel.value.trim()
+  const rightPath = rightPathLabel.value.trim()
+
+  if (!leftPath || !rightPath || loading.value) {
+    return
+  }
+
+  void loadLaunchTextFiles(leftPath, rightPath)
+}
+
 const ignoredDiffCount = computed(() =>
   Math.max(0, diffRows.value.length - activeDiffRows.value.length),
 )
@@ -1693,6 +1724,7 @@ function onVisibilityForDiskChange(): void {
           type="primary"
           :loading="loading"
           data-testid="run-diff"
+          :title="$t('ui.runDiff')"
           @click="runDiff"
           >{{ $t('ui.runDiff') }}</NButton
         >
@@ -1734,8 +1766,9 @@ function onVisibilityForDiskChange(): void {
               type="text"
               class="path-input"
               data-testid="text-left-path"
-              :title="leftPathLabel"
-              :placeholder="$t('ui.remoteUriHint')"
+              :title="leftPathLabel || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
+              @keydown.enter.prevent="onTextPathEnter"
             />
             <SessionPathActions
               browse-test-id="text-browse-left"
@@ -1750,8 +1783,9 @@ function onVisibilityForDiskChange(): void {
               type="text"
               class="path-input"
               data-testid="text-right-path"
-              :title="rightPathLabel"
-              :placeholder="$t('ui.remoteUriHint')"
+              :title="rightPathLabel || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
+              @keydown.enter.prevent="onTextPathEnter"
             />
             <SessionPathActions
               browse-test-id="text-browse-right"
@@ -1767,7 +1801,7 @@ function onVisibilityForDiskChange(): void {
               data-testid="load-text-files"
               :disabled="loading || !leftPathLabel || !rightPathLabel"
               :aria-label="$t('ui.loadFiles')"
-              :title="$t('ui.loadFiles')"
+              :title="compareNeedsBothFiles ? $t('ui.loadFilesNeedsBothPaths') : $t('ui.loadFiles')"
               @click="loadLaunchTextFiles(leftPathLabel, rightPathLabel)"
             >
               <RefreshCw
@@ -1932,6 +1966,13 @@ function onVisibilityForDiskChange(): void {
         >{{ error }}</NAlert
       >
 
+      <div
+        v-if="textFilesAreIdentical"
+        class="empty"
+        data-testid="text-identical-hint"
+      >
+        {{ $t('ui.textIdenticalHint') }}
+      </div>
       <TextDiffPanel
         v-if="result"
         ref="textDiffPanelRef"
@@ -1941,8 +1982,9 @@ function onVisibilityForDiskChange(): void {
       <div
         v-else
         class="empty"
+        data-testid="text-empty-state"
       >
-        {{ $t('ui.emptyCompareHint') }}
+        {{ textEmptyStateMessage }}
       </div>
     </section>
 

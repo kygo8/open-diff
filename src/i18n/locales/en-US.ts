@@ -403,7 +403,7 @@ export const enUS: LanguagePack = {
     'ui.rootPath': 'Root Path',
     'ui.rotateLeft': 'Rotate Left',
     'ui.rotateRight': 'Rotate Right',
-    'ui.runDiff': 'Run Diff',
+    'ui.runDiff': 'Compare',
     'ui.runSync': 'Run Sync',
     'ui.runTheSampleComparisonToRenderTheCustomDiffView':
       'Choose left and right paths, then click Compare.',
@@ -903,6 +903,14 @@ export const enUS: LanguagePack = {
     'ui.folderCompareNoItems':
       'No files or folders to show. Both sides may be empty, or filters hid everything.',
     'ui.compareNeedsBothFolders': 'Choose both left and right folders first.',
+    'ui.textPathPlaceholder': 'Browse or paste a file path',
+    'ui.textEmptyCompareHint':
+      'Choose left and right files with Browse (or paste paths), then click Compare.',
+    'ui.textEmptyPathsReadyHint': 'Press Enter or click Load to open and compare these files.',
+    'ui.textEmptyReadyHint': 'Click Compare to see differences.',
+    'ui.textIdenticalHint': 'These files match. No differences to show.',
+    'ui.compareNeedsBothFiles': 'Choose both left and right files first.',
+    'ui.loadFilesNeedsBothPaths': 'Choose both left and right paths first.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

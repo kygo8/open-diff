@@ -1018,6 +1018,14 @@ export const deDE: LanguagePack = {
       'Diese Registry-Exporte stimmen überein. Keine Schlüssel- oder Wertunterschiede anzuzeigen.',
     'ui.registryNeedsBothExports': 'Fügen Sie zuerst beide .reg-Exporte (links und rechts) ein.',
     'ui.registryExportPlaceholder': 'Hier einen .reg-Export einfügen',
+    'ui.versionEmptyCompareHint':
+      'Wählen Sie linke und rechte Programmdateien mit Durchsuchen (oder fügen Sie Pfade ein), dann auf Vergleichen klicken.',
+    'ui.versionEmptyReadyHint':
+      'Drücken Sie Enter oder klicken Sie auf Vergleichen, um diese Versionsressourcen zu vergleichen.',
+    'ui.versionIdenticalHint':
+      'Diese Programmdateien stimmen überein. Keine Versionsressourcen-Unterschiede anzuzeigen.',
+    'ui.versionCompareWindowsOnly':
+      'Das Lesen nativer Versionsressourcen ist nur unter Windows verfügbar. Sie können hier trotzdem Pfade wählen; Vergleich erklärt, falls diese Plattform sie nicht lesen kann.',
     'ui.textPatchSourceTextPlaceholder': 'Originaltextdatei für „Patch anwenden“ einfügen',
     'ui.applyPatchHint': 'Zeigt den gepatchten Text im Speicher an (schreibt keine Datei).',
     'ui.applyToFileHint': 'Schreibt das Ergebnis in die Zieldatei (oder Quelle, wenn Ziel leer).',

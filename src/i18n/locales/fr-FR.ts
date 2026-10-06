@@ -1012,6 +1012,14 @@ export const frFR: LanguagePack = {
       'Ces exports du Registre correspondent. Aucune différence de clé ou de valeur à afficher.',
     'ui.registryNeedsBothExports': "Collez d'abord les deux exports .reg (gauche et droit).",
     'ui.registryExportPlaceholder': 'Collez un export .reg ici',
+    'ui.versionEmptyCompareHint':
+      'Choisissez les fichiers programme gauche et droit avec Parcourir (ou collez des chemins), puis cliquez sur Comparer.',
+    'ui.versionEmptyReadyHint':
+      'Appuyez sur Entrée ou cliquez sur Comparer pour comparer ces ressources de version.',
+    'ui.versionIdenticalHint':
+      'Ces fichiers programme correspondent. Aucune différence de ressources de version à afficher.',
+    'ui.versionCompareWindowsOnly':
+      "La lecture native des ressources de version n'est disponible que sous Windows. Vous pouvez quand même choisir des chemins ici ; la comparaison expliquera si cette plate-forme ne peut pas les lire.",
     'ui.textPatchSourceTextPlaceholder':
       "Collez le texte du fichier d'origine pour Appliquer le correctif",
     'ui.applyPatchHint': "Prévisualise le texte corrigé en mémoire (n'écrit pas de fichier).",

@@ -931,6 +931,11 @@ export const zhCN: LanguagePack = {
     'ui.registryIdenticalHint': '这些注册表导出一致。没有键或值差异。',
     'ui.registryNeedsBothExports': '请先粘贴左右两侧的 .reg 导出。',
     'ui.registryExportPlaceholder': '在此粘贴 .reg 导出',
+    'ui.versionEmptyCompareHint': '用浏览选择左右程序文件（或粘贴路径），然后点比较。',
+    'ui.versionEmptyReadyHint': '按 Enter 或点比较以比较这些版本资源。',
+    'ui.versionIdenticalHint': '这些程序文件一致。没有版本资源差异。',
+    'ui.versionCompareWindowsOnly':
+      '本机版本资源读取仅在 Windows 上可用。仍可在此选择路径；若当前平台无法读取，比较会说明原因。',
     'ui.textPatchSourceTextPlaceholder': '粘贴原始文件文本以应用补丁',
     'ui.applyPatchHint': '在内存中预览修补后的文本（不写入文件）。',
     'ui.applyToFileHint': '将修补结果写入目标文件（若目标为空则写入源文件）。',

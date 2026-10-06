@@ -35,8 +35,10 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore } from '@/stores/settings'
+import { usePolicyStore } from '@/stores/policy'
 
 const settings = useSettingsStore()
+const policy = usePolicyStore()
 const versionStatuses: VersionFieldStatus[] = ['added', 'removed', 'modified', 'unchanged']
 
 const emptyVersionSide: VersionSideSummary = {
@@ -154,6 +156,32 @@ const minorDifferenceCount = computed(
     versionFields.value.filter(
       (field) => field.status !== 'unchanged' && !fieldIsImportant(field.field),
     ).length,
+)
+
+const compareNeedsBothFiles = computed(() => !leftPath.value.trim() || !rightPath.value.trim())
+const hasVersionResult = computed(() => versionFields.value.length > 0)
+const versionsAreIdentical = computed(() => {
+  if (!hasVersionResult.value) {
+    return false
+  }
+
+  const summary = versionSummary.value
+
+  return summary.added === 0 && summary.removed === 0 && summary.modified === 0
+})
+const versionEmptyStateMessage = computed(() => {
+  if (hasVersionResult.value) {
+    return ''
+  }
+
+  if (leftPath.value.trim() && rightPath.value.trim()) {
+    return t('ui.versionEmptyReadyHint')
+  }
+
+  return t('ui.versionEmptyCompareHint')
+})
+const compareVersionTip = computed(() =>
+  compareNeedsBothFiles.value ? t('ui.compareNeedsBothFiles') : t('ui.runDiff'),
 )
 
 const versionSessionToolbar = computed(() =>
@@ -544,22 +572,70 @@ async function exportVersionReport(): Promise<void> {
   }
 }
 
+function readErrorStringField(record: Record<string, unknown>, ...keys: string[]): string {
+  for (const key of keys) {
+    const value = record[key]
+
+    if (typeof value === 'string' && value.length > 0) {
+      return value
+    }
+  }
+
+  return ''
+}
+
+function formatVersionCompareError(event: unknown): string {
+  if (event && typeof event === 'object') {
+    const record = event as Record<string, unknown>
+    const messageKey = readErrorStringField(record, 'messageKey', 'message_key')
+
+    if (messageKey.startsWith('error.version.')) {
+      const params =
+        record.params && typeof record.params === 'object'
+          ? (record.params as Record<string, string | number>)
+          : {}
+      const message = t(messageKey, params)
+      const suggestionKey = readErrorStringField(record, 'suggestionKey', 'suggestion_key')
+
+      if (suggestionKey) {
+        return `${message} ${t(suggestionKey, params)}`.trim()
+      }
+
+      return message
+    }
+  }
+
+  return formatCompareError(event, t)
+}
+
+function onVersionPathEnter(): void {
+  if (compareNeedsBothFiles.value || loading.value) {
+    return
+  }
+
+  void runVersionCompare()
+}
+
 async function runVersionCompare(): Promise<void> {
+  if (compareNeedsBothFiles.value) {
+    return
+  }
+
   const startedAt = performance.now()
 
   loading.value = true
   error.value = ''
   try {
     const result = await compareVersionFiles({
-      leftPath: leftPath.value,
-      rightPath: rightPath.value,
+      leftPath: leftPath.value.trim(),
+      rightPath: rightPath.value.trim(),
     })
 
     applyVersionResult(result)
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     await refreshVersionPathStamps()
   } catch (event) {
-    error.value = formatCompareError(event, t)
+    error.value = formatVersionCompareError(event)
     await refreshVersionPathStamps()
   } finally {
     loading.value = false
@@ -629,7 +705,9 @@ watch(
               type="text"
               class="path-input"
               data-testid="version-left-path"
-              :title="leftPath"
+              :title="leftPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
+              @keydown.enter.prevent="onVersionPathEnter"
             />
             <SessionPathActions
               browse-test-id="version-browse-left"
@@ -647,7 +725,9 @@ watch(
               type="text"
               class="path-input"
               data-testid="version-right-path"
-              :title="rightPath"
+              :title="rightPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
+              @keydown.enter.prevent="onVersionPathEnter"
             />
             <SessionPathActions
               browse-test-id="version-browse-right"
@@ -660,7 +740,8 @@ watch(
         <button
           type="button"
           data-testid="run-version-compare"
-          :disabled="loading"
+          :disabled="loading || compareNeedsBothFiles"
+          :title="compareVersionTip"
           @click="runVersionCompare"
         >
           {{ $t('ui.runDiff') }}
@@ -690,6 +771,27 @@ watch(
         data-testid="version-compare-error"
       >
         {{ error }}
+      </p>
+      <p
+        v-else-if="versionsAreIdentical"
+        class="empty"
+        data-testid="version-identical-hint"
+      >
+        {{ $t('ui.versionIdenticalHint') }}
+      </p>
+      <p
+        v-else-if="!hasVersionResult"
+        class="empty"
+        data-testid="version-empty-hint"
+      >
+        {{ versionEmptyStateMessage }}
+      </p>
+      <p
+        v-if="!policy.isWindows"
+        class="version-platform-note"
+        data-testid="version-windows-only"
+      >
+        {{ $t('ui.versionCompareWindowsOnly') }}
       </p>
 
       <section class="version-summary-grid">
@@ -1000,6 +1102,16 @@ h1 {
 
 .version-path-panel button:disabled {
   opacity: 0.65;
+}
+
+.version-platform-note {
+  margin: 0;
+  padding: 4px 6px;
+  border: 1px dashed var(--app-border, #a0a0a0);
+  border-radius: 0;
+  color: var(--app-text-muted);
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .version-error {

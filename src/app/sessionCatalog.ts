@@ -178,7 +178,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     type: 'archive-compare',
     title: 'Archive Compare',
     titleKey: 'ui.archiveCompare',
-    summary: 'Opens Folder Compare for ZIP/TAR/7z sides with extract-on-copy into a folder',
+    summary: 'Compare ZIP, TAR, or 7z archives and copy files out into a folder',
     summaryKey: 'session.summary.archiveCompare',
     priority: 'P2',
     implemented: true,

@@ -752,6 +752,17 @@ export const koKR: LanguagePack = {
     'ui.archiveCompare': '아카이브 비교',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
+    'ui.archiveSessionPathHint':
+      '아카이브…로 ZIP, TAR 또는 7z 파일을 고르세요. 다른 쪽은 일반 폴더여도 됩니다.',
+    'ui.archivePathPlaceholder': '아카이브 경로를 찾아보거나 붙여넣기 (ZIP, TAR 또는 7z)',
+    'ui.archiveEmptyCompareHint':
+      '아카이브…로 왼쪽·오른쪽 아카이브를 고르거나 경로를 붙여넣은 뒤 비교를 클릭하세요.',
+    'ui.archiveEmptyReadyHint': '비교를 클릭해 이 아카이브를 스캔하세요.',
+    'ui.archiveCompareNoItems':
+      '이 아카이브 안에 표시할 파일이 없습니다. 양쪽이 비었거나 필터가 모두 숨겼을 수 있습니다.',
+    'ui.compareNeedsBothArchives': '먼저 왼쪽과 오른쪽 아카이브를 모두 선택하세요.',
+    'ui.leftArchive': '왼쪽 아카이브',
+    'ui.rightArchive': '오른쪽 아카이브',
     'ui.applyToFile': '파일에 적용',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -776,7 +787,8 @@ export const koKR: LanguagePack = {
     'ui.oauthHelperHint':
       '브라우저에서 공급자 권한 페이지를 엽니다(토큰 응답, 클라이언트 비밀 없음). 로그인 후 리디렉션 URL(또는 액세스 토큰)을 아래에 붙여넣고 프로필을 저장하세요.',
     'ui.exportMergeReport': '병합 보고서 내보내기',
-    'ui.archiveSessionStatus': '아카이브 비교 세션 — ZIP/TAR/7z, 복사 시 폴더로 추출',
+    'ui.archiveSessionStatus':
+      '아카이브 비교 — ZIP, TAR 또는 7z를 고르세요. 복사 시 폴더로 추출됩니다.',
     'ui.oauthAccessToken': '액세스 토큰',
     'ui.oauthTokenHint':
       'Dropbox API 또는 Microsoft Graph 액세스 토큰을 붙여넣으세요. 호스트는 dropbox / onedrive로 둘 수 있습니다. 브라우저 OAuth는 포함되지 않으며 앱 콘솔 또는 디바이스 코드 흐름에서 받은 토큰을 사용합니다.',
@@ -993,7 +1005,7 @@ export const koKR: LanguagePack = {
     'ui.browseArchive': 'Archive…',
     'ui.archiveSide': 'Archive',
     'ui.snapshotSide': '스냅샷',
-    'status.notAnArchivePath': 'Not a ZIP/TAR/7z archive: {path}',
+    'status.notAnArchivePath': '지원하는 아카이브(ZIP, TAR, 7z)가 아닙니다: {path}',
     'status.attributesChangedBulk': 'Attributes changed on {count} items -> {state}',
     'status.renamedBulkPaths': 'Renamed {count} items -> {path}',
     'ui.registryMaturityNote':

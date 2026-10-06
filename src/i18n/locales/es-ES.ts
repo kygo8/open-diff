@@ -769,6 +769,17 @@ export const esES: LanguagePack = {
     'ui.archiveCompare': 'Comparar archivos',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
+    'ui.archiveSessionPathHint':
+      'Use Archivo… para elegir un ZIP, TAR o 7z. El otro lado puede ser una carpeta normal.',
+    'ui.archivePathPlaceholder': 'Examinar o pegar una ruta de archivo (ZIP, TAR o 7z)',
+    'ui.archiveEmptyCompareHint':
+      'Elija los archivos izquierdo y derecho con Archivo… (o pegue rutas) y luego Compare.',
+    'ui.archiveEmptyReadyHint': 'Haga clic en Comparar para analizar estos archivos.',
+    'ui.archiveCompareNoItems':
+      'No hay archivos que mostrar dentro de estos archivos. Ambos pueden estar vacíos, o los filtros ocultaron todo.',
+    'ui.compareNeedsBothArchives': 'Elija primero ambos archivos (izquierda y derecha).',
+    'ui.leftArchive': 'Archivo izquierdo',
+    'ui.rightArchive': 'Archivo derecho',
     'ui.applyToFile': 'Aplicar al archivo',
     'ui.difftool': 'difftool',
     'ui.mergetool': 'mergetool',
@@ -796,7 +807,7 @@ export const esES: LanguagePack = {
       'Abre la página de autorización del proveedor en el navegador (respuesta con token, sin secreto de cliente). Tras iniciar sesión, pegue la URL de redirección (o el token de acceso) abajo y guarde el perfil.',
     'ui.exportMergeReport': 'Exportar informe de combinación',
     'ui.archiveSessionStatus':
-      'Sesión Archive Compare — lados ZIP/TAR/7z con extracción al copiar a una carpeta',
+      'Comparar archivos — elija ZIP, TAR o 7z. Copiar extrae a una carpeta.',
     'ui.oauthAccessToken': 'Token de acceso',
     'ui.oauthTokenHint':
       'Pegue un token de acceso de Dropbox API o Microsoft Graph. El host puede dejarse como dropbox / onedrive. OAuth completo del navegador no está incluido; use un token de la consola de la app o del flujo de código de dispositivo.',
@@ -1027,7 +1038,7 @@ export const esES: LanguagePack = {
     'ui.browseArchive': 'Archive…',
     'ui.archiveSide': 'Archive',
     'ui.snapshotSide': 'Instantánea',
-    'status.notAnArchivePath': 'Not a ZIP/TAR/7z archive: {path}',
+    'status.notAnArchivePath': 'Ese archivo no es un archivo compatible (ZIP, TAR o 7z): {path}',
     'status.attributesChangedBulk': 'Attributes changed on {count} items -> {state}',
     'status.renamedBulkPaths': 'Renamed {count} items -> {path}',
     'ui.registryMaturityNote':

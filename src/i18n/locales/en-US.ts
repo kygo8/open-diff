@@ -324,7 +324,8 @@ export const enUS: LanguagePack = {
     'ui.openSuggestedView': 'Open Suggested View',
     'ui.openTextMerge': 'Open Text Merge',
     'ui.openWith': 'Open With',
-    'ui.orphans': 'Orphans',
+    'ui.orphans': 'Only on one side',
+    'ui.orphansHint': 'Files or folders that exist on only the left or only the right',
     'ui.orClickSessionIconToBegin': 'Or pick a card below.',
     'ui.outputFolder': 'Output folder',
     'ui.outputHasConflictMarkers': 'Output has conflict markers',
@@ -895,6 +896,13 @@ export const enUS: LanguagePack = {
       'Click a comparison type below to get started, or open a saved session when you have one.',
     'ui.sessionHistoryEmpty': 'No recent sessions. Choose a comparison type to begin.',
     'ui.emptyCompareHint': 'Choose left and right paths, then click Compare.',
+    'ui.folderPathPlaceholder': 'Browse or paste a folder path',
+    'ui.folderEmptyCompareHint':
+      'Choose left and right folders with the folder button (or paste paths), then click Compare.',
+    'ui.folderEmptyReadyHint': 'Click Compare to scan these folders.',
+    'ui.folderCompareNoItems':
+      'No files or folders to show. Both sides may be empty, or filters hid everything.',
+    'ui.compareNeedsBothFolders': 'Choose both left and right folders first.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -1092,7 +1100,7 @@ export const enUS: LanguagePack = {
     'ui.selectAllFiles': 'Select All Files',
     'ui.selectSame': 'Select Same',
     'ui.selectDifferent': 'Select Different',
-    'ui.selectOrphans': 'Select Orphans',
+    'ui.selectOrphans': 'Select only on one side',
     'ui.selectNewer': 'Select Newer',
     'ui.showOrphans': 'Show Orphans',
     'ui.showNoOrphans': 'Show No Orphans',

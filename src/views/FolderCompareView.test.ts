@@ -653,6 +653,50 @@ describe('FolderCompareView', () => {
     expect(wrapper.text()).not.toContain('D:/workspace/left')
     expect(wrapper.findAll('[data-testid="folder-row"]')).toHaveLength(0)
     expect(wrapper.find('[data-testid="folder-empty-state"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-empty-state"]').text()).toContain(
+      'Choose left and right folders',
+    )
+    expect(wrapper.find('[data-testid="folder-left-root"]').attributes('placeholder')).toContain(
+      'Browse or paste',
+    )
+    expect(wrapper.find('[data-testid="run-folder-compare"]').attributes('title')).toContain(
+      'both left and right',
+    )
+    expect(wrapper.text()).toContain('Only on one side')
+  })
+
+  it('guides the user when both paths are set but compare has not run', async () => {
+    const wrapper = mountFolderCompareView()
+
+    await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/left')
+    await wrapper.find('[data-testid="folder-right-root"]').setValue('D:/right')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="folder-empty-state"]').text()).toContain(
+      'Click Compare to scan these folders',
+    )
+    expect(
+      wrapper.find('[data-testid="run-folder-compare"]').attributes('disabled'),
+    ).toBeUndefined()
+  })
+
+  it('explains an empty result after a successful compare', async () => {
+    vi.mocked(compareFolderPaths).mockResolvedValueOnce({
+      leftRoot: 'D:/left',
+      rightRoot: 'D:/right',
+      rows: [],
+      summary: { total: 0, same: 0, different: 0, leftOnly: 0, rightOnly: 0 },
+    })
+    const wrapper = mountFolderCompareView()
+
+    await wrapper.find('[data-testid="folder-left-root"]').setValue('D:/left')
+    await wrapper.find('[data-testid="folder-right-root"]').setValue('D:/right')
+    await wrapper.find('[data-testid="run-folder-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-empty-state"]').text()).toContain(
+      'No files or folders to show',
+    )
   })
 
   it('runs a real folder comparison request and renders returned rows', async () => {

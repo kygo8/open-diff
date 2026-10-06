@@ -267,7 +267,8 @@ export const koKR: LanguagePack = {
     'ui.openSuggestedView': '추천 보기 열기',
     'ui.openTextMerge': '텍스트 병합 열기',
     'ui.openWith': '다음으로 열기',
-    'ui.orphans': '고아',
+    'ui.orphans': '한쪽에만 있음',
+    'ui.orphansHint': '왼쪽 또는 오른쪽에만 있는 파일이나 폴더',
     'ui.outputFolder': '출력 폴더',
     'ui.outputHasConflictMarkers': '출력에 충돌 마커가 있습니다.',
     'ui.overlay': '씌우다',
@@ -888,6 +889,13 @@ export const koKR: LanguagePack = {
     'ui.homeEmptySelectedHint': '아래 비교 유형을 클릭해 시작하거나, 저장된 세션을 여세요.',
     'ui.sessionHistoryEmpty': 'No recent sessions. Choose a comparison type to begin.',
     'ui.emptyCompareHint': 'Choose left and right paths, then click Compare.',
+    'ui.folderPathPlaceholder': '폴더를 찾아보거나 경로를 붙여넣으세요',
+    'ui.folderEmptyCompareHint':
+      '폴더 버튼으로 왼쪽·오른쪽 폴더를 선택하거나 경로를 붙여넣은 다음 비교를 클릭하세요.',
+    'ui.folderEmptyReadyHint': '비교를 클릭해 이 폴더를 검사하세요.',
+    'ui.folderCompareNoItems':
+      '표시할 파일이나 폴더가 없습니다. 양쪽이 비어 있거나 필터가 모두 숨겼을 수 있습니다.',
+    'ui.compareNeedsBothFolders': '왼쪽과 오른쪽 폴더를 먼저 선택하세요.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

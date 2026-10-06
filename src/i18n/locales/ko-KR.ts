@@ -924,6 +924,10 @@ export const koKR: LanguagePack = {
       '병합할 항목이 없습니다. 폴더가 이미 계획과 같거나 필터가 모두 숨겼습니다.',
     'ui.folderMergeNeedsFolders': '왼쪽·기준·오른쪽 폴더를 먼저 선택하세요.',
     'ui.folderMergeNeedsPlan': '출력으로 병합하기 전에 병합 계획을 만드세요.',
+    'ui.tableEmptyCompareHint':
+      '찾아보기로 왼쪽·오른쪽 표 파일을 선택하거나 경로를 붙여넣은 다음 비교를 클릭하세요.',
+    'ui.tableEmptyReadyHint': 'Enter를 누르거나 비교를 클릭해 불러와 비교하세요.',
+    'ui.tableIdenticalHint': '표가 일치합니다. 셀 차이가 없습니다.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -989,7 +993,7 @@ export const koKR: LanguagePack = {
     'status.sectionPosition': 'Section {index} of {total}',
     'ui.openSelectedInTextCompare': 'Open Selected in Text Compare',
     'ui.section': 'Section',
-    'ui.keyColumnsHint': 'Comma-separated column indices (0-based)',
+    'ui.keyColumnsHint': '키 열 번호를 쉼표로 구분 (첫 열은 0)',
     'ui.rgbTolerance': 'RGB 허용치',
     'ui.compareAlpha': '알파 비교',
     'ui.alphaTolerance': '알파 허용치',

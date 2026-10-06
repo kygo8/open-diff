@@ -896,6 +896,9 @@ export const zhCN: LanguagePack = {
     'ui.folderMergeNothingToDo': '无需合并。文件夹已与计划一致，或筛选隐藏了全部更改。',
     'ui.folderMergeNeedsFolders': '请先选择左、基准、右三个文件夹。',
     'ui.folderMergeNeedsPlan': '请先生成合并计划，再点合并到输出。',
+    'ui.tableEmptyCompareHint': '用浏览选择左右表格文件（或粘贴路径），然后点比较。',
+    'ui.tableEmptyReadyHint': '按 Enter 或点比较以加载并比较。',
+    'ui.tableIdenticalHint': '这些表格一致。没有单元格差异。',
     'ui.registryExportHint':
       '可比较导出的 .reg、离线 REGF 配置单元（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比较实时 HKLM/HKCU 键。',
     'ui.nextConflict': '下一冲突',
@@ -961,7 +964,7 @@ export const zhCN: LanguagePack = {
     'status.sectionPosition': '第 {index} / {total} 节',
     'ui.openSelectedInTextCompare': '在文本比较中打开所选',
     'ui.section': '节',
-    'ui.keyColumnsHint': '逗号分隔的列索引（从 0 开始）',
+    'ui.keyColumnsHint': '关键列编号，逗号分隔（第一列为 0）',
     'ui.rgbTolerance': 'RGB 容差',
     'ui.compareAlpha': '比较 Alpha',
     'ui.alphaTolerance': 'Alpha 容差',

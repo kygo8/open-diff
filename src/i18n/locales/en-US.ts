@@ -931,6 +931,10 @@ export const enUS: LanguagePack = {
       'Nothing to merge. Folders already match the plan, or filters hid every change.',
     'ui.folderMergeNeedsFolders': 'Choose left, base, and right folders first.',
     'ui.folderMergeNeedsPlan': 'Build a merge plan before running Merge to Output.',
+    'ui.tableEmptyCompareHint':
+      'Choose left and right table files with Browse (or paste paths), then click Compare.',
+    'ui.tableEmptyReadyHint': 'Press Enter or click Compare to load and compare these tables.',
+    'ui.tableIdenticalHint': 'These tables match. No cell differences to show.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -997,7 +1001,7 @@ export const enUS: LanguagePack = {
     'status.sectionPosition': 'Section {index} of {total}',
     'ui.openSelectedInTextCompare': 'Open Selected in Text Compare',
     'ui.section': 'Section',
-    'ui.keyColumnsHint': 'Comma-separated column indices (0-based)',
+    'ui.keyColumnsHint': 'Key columns as numbers, comma-separated (first column is 0)',
     'ui.rgbTolerance': 'RGB Tolerance',
     'ui.compareAlpha': 'Compare Alpha',
     'ui.alphaTolerance': 'Alpha Tolerance',

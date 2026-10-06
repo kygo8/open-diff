@@ -950,6 +950,10 @@ export const esES: LanguagePack = {
       'Nada que fusionar. Las carpetas ya coinciden con el plan, o los filtros ocultaron todo.',
     'ui.folderMergeNeedsFolders': 'Elija primero las carpetas izquierda, base y derecha.',
     'ui.folderMergeNeedsPlan': 'Cree un plan de fusión antes de ejecutar Combinar a salida.',
+    'ui.tableEmptyCompareHint':
+      'Elija los archivos de tabla izquierdo y derecho con Examinar (o pegue rutas) y luego haga clic en Comparar.',
+    'ui.tableEmptyReadyHint': 'Pulse Intro o haga clic en Comparar para cargar y comparar.',
+    'ui.tableIdenticalHint': 'Estas tablas coinciden. No hay diferencias de celdas.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -1015,7 +1019,7 @@ export const esES: LanguagePack = {
     'status.sectionPosition': 'Section {index} of {total}',
     'ui.openSelectedInTextCompare': 'Open Selected in Text Compare',
     'ui.section': 'Section',
-    'ui.keyColumnsHint': 'Comma-separated column indices (0-based)',
+    'ui.keyColumnsHint': 'Columnas clave como números, separadas por comas (la primera es 0)',
     'ui.rgbTolerance': 'Tolerancia RGB',
     'ui.compareAlpha': 'Comparar Alfa',
     'ui.alphaTolerance': 'Tolerancia Alfa',

@@ -898,6 +898,9 @@ export const zhTW: LanguagePack = {
     'ui.folderMergeNothingToDo': '無需合併。資料夾已與計畫一致，或篩選隱藏了全部變更。',
     'ui.folderMergeNeedsFolders': '請先選擇左、基準、右三個資料夾。',
     'ui.folderMergeNeedsPlan': '請先產生合併計畫，再按合併到輸出。',
+    'ui.tableEmptyCompareHint': '用瀏覽選擇左右表格檔案（或貼上路徑），然後按比較。',
+    'ui.tableEmptyReadyHint': '按 Enter 或點比較以載入並比較。',
+    'ui.tableIdenticalHint': '這些表格一致。沒有儲存格差異。',
     'ui.registryExportHint':
       '可比較匯出的 .reg、離線 REGF 登錄檔（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比較即時 HKLM/HKCU 鍵。',
     'ui.nextConflict': '下一衝突',
@@ -963,7 +966,7 @@ export const zhTW: LanguagePack = {
     'status.sectionPosition': '第 {index} / {total} 節',
     'ui.openSelectedInTextCompare': '在文字比較中開啟所選',
     'ui.section': '節',
-    'ui.keyColumnsHint': '逗號分隔的欄索引（從 0 開始）',
+    'ui.keyColumnsHint': '鍵欄編號，逗號分隔（第一欄為 0）',
     'ui.rgbTolerance': 'RGB 容差',
     'ui.compareAlpha': '比較 Alpha',
     'ui.alphaTolerance': 'Alpha 容差',

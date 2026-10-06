@@ -254,7 +254,7 @@ export const zhTW: LanguagePack = {
     'ui.onedrive': 'OneDrive',
     'ui.open': '開啟',
     'ui.openAll': '全部開啟',
-    'ui.openATextFileToBeginEditing': '開啟文字檔開始編輯',
+    'ui.openATextFileToBeginEditing': '瀏覽或貼上路徑，然後按開啟開始編輯',
     'ui.openClipboard': '開啟剪貼簿',
     'ui.openSuggestedView': '開啟建議檢視',
     'ui.openTextMerge': '開啟文字合併',
@@ -908,6 +908,9 @@ export const zhTW: LanguagePack = {
     'ui.pictureEmptyCompareHint': '用瀏覽選擇左右影像（或貼上路徑），然後按比較。',
     'ui.pictureEmptyReadyHint': '按 Enter 或點比較以比較這些影像。',
     'ui.pictureIdenticalHint': '這些影像一致。沒有像素差異。',
+    'ui.textEditEmptyHint': '用瀏覽選擇檔案（或貼上路徑），然後按開啟。',
+    'ui.textEditEmptyReadyHint': '按 Enter 或點開啟以載入此檔案。',
+    'ui.textEditNeedsPath': '請先選擇檔案路徑。',
     'ui.registryExportHint':
       '可比較匯出的 .reg、離線 REGF 登錄檔（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比較即時 HKLM/HKCU 鍵。',
     'ui.nextConflict': '下一衝突',

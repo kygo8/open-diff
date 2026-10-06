@@ -9,6 +9,7 @@ import { useTabsStore } from '@/stores/tabs'
 import { useSettingsStore, type FontFamilyId } from '@/stores/settings'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatCompareError } from '@/app/compareError'
 import {
   applyOverwriteTyping,
   isInsertToggleKey,
@@ -99,6 +100,28 @@ const fileTitle = computed(() => {
 const dirty = computed(() => editorText.value !== savedText.value)
 const dirtyLabel = computed(() => (dirty.value ? t('status.unsavedChanges') : t('status.saved')))
 
+const openNeedsPath = computed(() => !pathInput.value.trim())
+
+const textEditEmptyStateMessage = computed(() => {
+  if (document.value) {
+    return ''
+  }
+
+  if (pathInput.value.trim()) {
+    return t('ui.textEditEmptyReadyHint')
+  }
+
+  return t('ui.textEditEmptyHint')
+})
+
+function onTextEditPathEnter(): void {
+  if (openNeedsPath.value || loading.value) {
+    return
+  }
+
+  void openDocument()
+}
+
 watchEffect(() => {
   let comparisonStatus = t('status.noDocumentLoaded')
 
@@ -177,13 +200,17 @@ async function browseTextEditPath(): Promise<void> {
 }
 
 async function openDocument(): Promise<void> {
+  if (!pathInput.value.trim()) {
+    return
+  }
+
   const startedAt = performance.now()
 
   loading.value = true
   error.value = ''
 
   try {
-    const result = await readTextFile(pathInput.value)
+    const result = await readTextFile(pathInput.value.trim())
 
     document.value = result
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
@@ -194,7 +221,7 @@ async function openDocument(): Promise<void> {
     setSaveStatus('status.loaded')
     currentFindIndex.value = 0
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }
@@ -237,7 +264,7 @@ async function saveDocument(): Promise<void> {
       count: result.bytesWritten,
     })
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     saving.value = false
   }
@@ -993,8 +1020,10 @@ const textEditToolbarCommands = computed(() => {
           class="path-input"
           data-testid="text-edit-path"
           type="text"
-          :title="pathInput"
+          :title="pathInput || $t('ui.remoteUriHint')"
+          :placeholder="$t('ui.textPathPlaceholder')"
           :aria-label="$t('ui.textFilePath')"
+          @keydown.enter.prevent="onTextEditPathEnter"
         />
         <SessionPathActions
           browse-test-id="text-edit-browse"
@@ -1007,9 +1036,9 @@ const textEditToolbarCommands = computed(() => {
           type="button"
           class="bc-path-load"
           data-testid="text-edit-open"
-          :disabled="loading || !pathInput"
+          :disabled="loading || openNeedsPath"
           :aria-label="$t('ui.open')"
-          :title="$t('ui.open')"
+          :title="openNeedsPath ? $t('ui.textEditNeedsPath') : $t('ui.open')"
           @click="openDocument"
         >
           {{ $t('ui.open') }}
@@ -1027,7 +1056,7 @@ const textEditToolbarCommands = computed(() => {
       >
         <PathMetaFooter
           :stamp="document?.fileStamp ?? null"
-          format-label="Everything Else"
+          :format-label="$t('ui.text')"
           :encoding="document?.encoding"
           :line-ending="document?.lineEnding"
           :show-milliseconds="settings.showMillisecondsInTimestamps"
@@ -1092,9 +1121,18 @@ const textEditToolbarCommands = computed(() => {
     <NAlert
       v-if="error"
       type="error"
+      data-testid="text-edit-error"
       :bordered="false"
       >{{ error }}</NAlert
     >
+
+    <p
+      v-if="!document && !error"
+      class="empty"
+      data-testid="text-edit-empty-hint"
+    >
+      {{ textEditEmptyStateMessage }}
+    </p>
 
     <div
       ref="editorHostRef"

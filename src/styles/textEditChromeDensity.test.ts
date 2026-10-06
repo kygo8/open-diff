@@ -74,7 +74,7 @@ describe('text-edit path-meta border', () => {
 })
 
 describe('text edit path meta format chip', () => {
-  it('shows Text Edit path meta format chip as Everything Else', () => {
-    expect(editView).toMatch(/format-label="Everything Else"/)
+  it('shows Text Edit path meta format chip as Text', () => {
+    expect(editView).toMatch(/:format-label="\$t\('ui\.text'\)"/)
   })
 })

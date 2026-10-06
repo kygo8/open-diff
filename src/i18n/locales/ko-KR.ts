@@ -262,7 +262,7 @@ export const koKR: LanguagePack = {
     'ui.onedrive': 'OneDrive',
     'ui.open': '열기',
     'ui.openAll': '모두 열기',
-    'ui.openATextFileToBeginEditing': '편집을 시작하려면 텍스트 파일을 여세요.',
+    'ui.openATextFileToBeginEditing': '찾아보거나 경로를 붙여넣은 다음 열기로 편집을 시작하세요',
     'ui.openClipboard': '클립보드 열기',
     'ui.openSuggestedView': '추천 보기 열기',
     'ui.openTextMerge': '텍스트 병합 열기',
@@ -938,6 +938,9 @@ export const koKR: LanguagePack = {
       '찾아보기로 왼쪽·오른쪽 이미지를 선택하거나 경로를 붙여넣은 다음 비교를 클릭하세요.',
     'ui.pictureEmptyReadyHint': 'Enter를 누르거나 비교를 클릭해 이미지를 비교하세요.',
     'ui.pictureIdenticalHint': '이미지가 일치합니다. 픽셀 차이가 없습니다.',
+    'ui.textEditEmptyHint': '찾아보기로 파일을 선택하거나 경로를 붙여넣은 다음 열기를 클릭하세요.',
+    'ui.textEditEmptyReadyHint': 'Enter를 누르거나 열기를 클릭해 이 파일을 불러오세요.',
+    'ui.textEditNeedsPath': '먼저 파일 경로를 선택하세요.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

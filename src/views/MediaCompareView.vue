@@ -85,6 +85,64 @@ const isPlaying = ref(false)
 const statusBar = useStatusBarStore()
 const loadTimeSeconds = ref<number | null>(null)
 
+const compareNeedsBothFiles = computed(() => !leftPath.value.trim() || !rightPath.value.trim())
+const mediaAreIdentical = computed(
+  () =>
+    mediaFields.value.length > 0 &&
+    mediaFields.value.every((field) => field.status === 'unchanged'),
+)
+const mediaEmptyStateMessage = computed(() => {
+  if (leftPath.value.trim() && rightPath.value.trim()) {
+    return t('ui.mediaEmptyReadyHint')
+  }
+
+  return t('ui.mediaEmptyCompareHint')
+})
+
+function onMediaPathEnter(): void {
+  if (compareNeedsBothFiles.value || loading.value) {
+    return
+  }
+
+  void runMediaCompare()
+}
+
+function readErrorStringField(record: Record<string, unknown>, ...keys: string[]): string {
+  for (const key of keys) {
+    const value = record[key]
+
+    if (typeof value === 'string' && value.length > 0) {
+      return value
+    }
+  }
+
+  return ''
+}
+
+function formatMediaCompareError(event: unknown): string {
+  if (event && typeof event === 'object') {
+    const record = event as Record<string, unknown>
+    const messageKey = readErrorStringField(record, 'messageKey', 'message_key')
+
+    if (messageKey.startsWith('error.media.')) {
+      const params =
+        record.params && typeof record.params === 'object'
+          ? (record.params as Record<string, string | number>)
+          : {}
+      const message = t(messageKey, params)
+      const suggestionKey = readErrorStringField(record, 'suggestionKey', 'suggestion_key')
+
+      if (suggestionKey) {
+        return `${message} ${t(suggestionKey, params)}`.trim()
+      }
+
+      return message
+    }
+  }
+
+  return formatCompareError(event, t)
+}
+
 onMounted(() => {
   const launch = sessionLaunch.consumeLaunch('/compare/media')
 
@@ -206,21 +264,25 @@ async function exportMediaReport(): Promise<void> {
 }
 
 async function runMediaCompare(): Promise<void> {
+  if (compareNeedsBothFiles.value) {
+    return
+  }
+
   const startedAt = performance.now()
 
   loading.value = true
   error.value = ''
   try {
     const result = await compareMediaFiles({
-      leftPath: leftPath.value,
-      rightPath: rightPath.value,
+      leftPath: leftPath.value.trim(),
+      rightPath: rightPath.value.trim(),
     })
 
     applyMediaResult(result)
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
     await refreshMediaPathStamps()
   } catch (event) {
-    error.value = formatCompareError(event, t)
+    error.value = formatMediaCompareError(event)
   } finally {
     loading.value = false
   }
@@ -739,9 +801,10 @@ function runMediaToolbarCommand(commandId: string): void {
               type="text"
               class="path-input"
               data-testid="media-left-path"
-              :title="leftPath"
-              :placeholder="$t('ui.remoteUriHint')"
+              :title="leftPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
               :aria-label="$t('ui.left') + ' ' + $t('ui.path')"
+              @keydown.enter.prevent="onMediaPathEnter"
             />
             <SessionPathActions
               browse-test-id="media-browse-left"
@@ -756,9 +819,10 @@ function runMediaToolbarCommand(commandId: string): void {
               type="text"
               class="path-input"
               data-testid="media-right-path"
-              :title="rightPath"
-              :placeholder="$t('ui.remoteUriHint')"
+              :title="rightPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
               :aria-label="$t('ui.right') + ' ' + $t('ui.path')"
+              @keydown.enter.prevent="onMediaPathEnter"
             />
             <SessionPathActions
               browse-test-id="media-browse-right"
@@ -771,7 +835,8 @@ function runMediaToolbarCommand(commandId: string): void {
             type="button"
             class="media-path-run"
             data-testid="run-media-compare"
-            :disabled="loading"
+            :disabled="loading || compareNeedsBothFiles"
+            :title="compareNeedsBothFiles ? $t('ui.compareNeedsBothFiles') : $t('ui.runDiff')"
             @click="runMediaCompare"
           >
             {{ $t('ui.runDiff') }}
@@ -964,11 +1029,18 @@ function runMediaToolbarCommand(commandId: string): void {
         {{ error }}
       </p>
       <p
+        v-else-if="mediaAreIdentical"
+        class="empty"
+        data-testid="media-identical-hint"
+      >
+        {{ $t('ui.mediaIdenticalHint') }}
+      </p>
+      <p
         v-else-if="mediaFields.length === 0"
         class="empty"
         data-testid="media-empty-hint"
       >
-        {{ $t('ui.emptyCompareHint') }}
+        {{ mediaEmptyStateMessage }}
       </p>
 
       <section class="media-summary-grid">

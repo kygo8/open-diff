@@ -988,6 +988,12 @@ export const esES: LanguagePack = {
     'ui.clipboardUnavailableError': 'El acceso al portapapeles no está disponible en este entorno.',
     'ui.clipboardReadFailedError':
       'No se pudo leer el texto del portapapeles. Compruebe el permiso e inténtelo de nuevo.',
+    'ui.mediaEmptyCompareHint':
+      'Elija los archivos multimedia izquierdo y derecho con Examinar (o pegue rutas) y luego haga clic en Comparar.',
+    'ui.mediaEmptyReadyHint':
+      'Pulse Intro o haga clic en Comparar para comparar estos archivos multimedia.',
+    'ui.mediaIdenticalHint':
+      'Estos archivos multimedia coinciden. No hay diferencias de metadatos que mostrar.',
     'ui.textPatchSourceTextPlaceholder': 'Pegue el texto del archivo original para Aplicar parche',
     'ui.applyPatchHint': 'Previsualiza el texto parcheado en memoria (no escribe un archivo).',
     'ui.applyToFileHint':

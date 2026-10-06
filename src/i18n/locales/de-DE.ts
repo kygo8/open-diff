@@ -1004,6 +1004,12 @@ export const deDE: LanguagePack = {
       'Der Zugriff auf die Zwischenablage ist in dieser Umgebung nicht verfügbar.',
     'ui.clipboardReadFailedError':
       'Zwischenablagetext konnte nicht gelesen werden. Prüfen Sie die Berechtigung und versuchen Sie es erneut.',
+    'ui.mediaEmptyCompareHint':
+      'Wählen Sie linke und rechte Mediendateien mit Durchsuchen (oder fügen Sie Pfade ein), dann auf Vergleichen klicken.',
+    'ui.mediaEmptyReadyHint':
+      'Drücken Sie Enter oder klicken Sie auf Vergleichen, um diese Mediendateien zu vergleichen.',
+    'ui.mediaIdenticalHint':
+      'Diese Mediendateien stimmen überein. Keine Metadatenunterschiede anzuzeigen.',
     'ui.textPatchSourceTextPlaceholder': 'Originaltextdatei für „Patch anwenden“ einfügen',
     'ui.applyPatchHint': 'Zeigt den gepatchten Text im Speicher an (schreibt keine Datei).',
     'ui.applyToFileHint': 'Schreibt das Ergebnis in die Zieldatei (oder Quelle, wenn Ziel leer).',

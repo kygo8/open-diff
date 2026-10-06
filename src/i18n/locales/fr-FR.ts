@@ -998,6 +998,12 @@ export const frFR: LanguagePack = {
       "L'accès au presse-papiers n'est pas disponible dans cet environnement.",
     'ui.clipboardReadFailedError':
       "Impossible de lire le texte du presse-papiers. Vérifiez l'autorisation et réessayez.",
+    'ui.mediaEmptyCompareHint':
+      'Choisissez les fichiers multimédias gauche et droit avec Parcourir (ou collez des chemins), puis cliquez sur Comparer.',
+    'ui.mediaEmptyReadyHint':
+      'Appuyez sur Entrée ou cliquez sur Comparer pour comparer ces fichiers multimédias.',
+    'ui.mediaIdenticalHint':
+      'Ces fichiers multimédias correspondent. Aucune différence de métadonnées à afficher.',
     'ui.textPatchSourceTextPlaceholder':
       "Collez le texte du fichier d'origine pour Appliquer le correctif",
     'ui.applyPatchHint': "Prévisualise le texte corrigé en mémoire (n'écrit pas de fichier).",

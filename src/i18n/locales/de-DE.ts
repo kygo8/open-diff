@@ -977,6 +977,11 @@ export const deDE: LanguagePack = {
     'ui.pictureEmptyReadyHint':
       'Drücken Sie Enter oder klicken Sie auf Vergleichen, um diese Bilder zu vergleichen.',
     'ui.pictureIdenticalHint': 'Diese Bilder stimmen überein. Keine Pixelunterschiede.',
+    'ui.textEditEmptyHint':
+      'Wählen Sie eine Datei mit Durchsuchen (oder fügen Sie einen Pfad ein), dann auf Öffnen klicken.',
+    'ui.textEditEmptyReadyHint':
+      'Drücken Sie Enter oder klicken Sie auf Öffnen, um diese Datei zu laden.',
+    'ui.textEditNeedsPath': 'Wählen Sie zuerst einen Dateipfad.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

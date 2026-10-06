@@ -74,6 +74,37 @@ describe('TextEditView', () => {
     ).toBeUndefined()
   })
 
+  it('shows a friendly empty state and path placeholder before open', async () => {
+    const wrapper = mountTextEditView()
+
+    expect(wrapper.find('[data-testid="text-edit-empty-hint"]').text()).toContain(
+      'Choose a file with Browse',
+    )
+    expect(wrapper.find('[data-testid="text-edit-path"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="text-edit-open"]').attributes('title')).toContain(
+      'file path first',
+    )
+    expect(wrapper.text()).toContain('Text')
+
+    await wrapper.find('[data-testid="text-edit-path"]').setValue('D:/workspace/notes.txt')
+    expect(wrapper.find('[data-testid="text-edit-empty-hint"]').text()).toContain('Open')
+    expect(wrapper.find('[data-testid="text-edit-open"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('opens the file on Enter when a path is set', async () => {
+    const wrapper = mountTextEditView()
+
+    await wrapper.find('[data-testid="text-edit-path"]').setValue('D:/workspace/notes.txt')
+    await wrapper.find('[data-testid="text-edit-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(readTextFile).toHaveBeenCalledWith('D:/workspace/notes.txt')
+    expect(wrapper.find('[data-testid="text-edit-empty-hint"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="text-edit-editor"]').element).toBeTruthy()
+  })
+
   it('opens a text file and shows metadata for the loaded document', async () => {
     const wrapper = mountTextEditView()
 

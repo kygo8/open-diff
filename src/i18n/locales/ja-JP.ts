@@ -318,7 +318,7 @@ export const jaJP: LanguagePack = {
     'ui.off': 'Off',
     'ui.open': 'Open',
     'ui.openAll': 'Open All',
-    'ui.openATextFileToBeginEditing': 'Open a text file to begin editing',
+    'ui.openATextFileToBeginEditing': 'Browse or paste a path, then Open to begin editing',
     'ui.openClipboard': 'Open Clipboard',
     'ui.openSuggestedView': 'Open Suggested View',
     'ui.openTextMerge': 'Open Text Merge',
@@ -945,6 +945,9 @@ export const jaJP: LanguagePack = {
       'Choose left and right images with Browse (or paste paths), then click Compare.',
     'ui.pictureEmptyReadyHint': 'Press Enter or click Compare to compare these images.',
     'ui.pictureIdenticalHint': 'These images match. No pixel differences to show.',
+    'ui.textEditEmptyHint': 'Choose a file with Browse (or paste a path), then click Open.',
+    'ui.textEditEmptyReadyHint': 'Press Enter or click Open to load this file.',
+    'ui.textEditNeedsPath': 'Choose a file path first.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

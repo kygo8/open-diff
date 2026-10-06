@@ -253,7 +253,7 @@ export const zhCN: LanguagePack = {
     'ui.onedrive': 'OneDrive',
     'ui.open': '打开',
     'ui.openAll': '全部打开',
-    'ui.openATextFileToBeginEditing': '打开文本文件开始编辑',
+    'ui.openATextFileToBeginEditing': '浏览或粘贴路径，然后点打开开始编辑',
     'ui.openClipboard': '打开剪贴板',
     'ui.openSuggestedView': '打开建议视图',
     'ui.openTextMerge': '打开文本合并',
@@ -906,6 +906,9 @@ export const zhCN: LanguagePack = {
     'ui.pictureEmptyCompareHint': '用浏览选择左右图像（或粘贴路径），然后点比较。',
     'ui.pictureEmptyReadyHint': '按 Enter 或点比较以比较这些图像。',
     'ui.pictureIdenticalHint': '这些图像一致。没有像素差异。',
+    'ui.textEditEmptyHint': '用浏览选择文件（或粘贴路径），然后点打开。',
+    'ui.textEditEmptyReadyHint': '按 Enter 或点打开以加载此文件。',
+    'ui.textEditNeedsPath': '请先选择文件路径。',
     'ui.registryExportHint':
       '可比较导出的 .reg、离线 REGF 配置单元（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比较实时 HKLM/HKCU 键。',
     'ui.nextConflict': '下一冲突',

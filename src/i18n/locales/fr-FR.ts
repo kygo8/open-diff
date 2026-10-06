@@ -271,7 +271,7 @@ export const frFR: LanguagePack = {
     'ui.onedrive': 'OneDrive',
     'ui.open': 'Ouvrir',
     'ui.openAll': 'Tout ouvrir',
-    'ui.openATextFileToBeginEditing': "Ouvrez un fichier texte pour commencer l'édition",
+    'ui.openATextFileToBeginEditing': 'Parcourir ou coller un chemin, puis Ouvrir pour modifier',
     'ui.openClipboard': 'Ouvrir le Presse-papiers',
     'ui.openSuggestedView': 'Ouvrir la vue suggérée',
     'ui.openTextMerge': 'Ouvrir la fusion de texte',
@@ -970,6 +970,11 @@ export const frFR: LanguagePack = {
     'ui.pictureEmptyReadyHint':
       'Appuyez sur Entrée ou cliquez sur Comparer pour comparer ces images.',
     'ui.pictureIdenticalHint': 'Ces images correspondent. Aucune différence de pixel.',
+    'ui.textEditEmptyHint':
+      'Choisissez un fichier avec Parcourir (ou collez un chemin), puis cliquez sur Ouvrir.',
+    'ui.textEditEmptyReadyHint':
+      'Appuyez sur Entrée ou cliquez sur Ouvrir pour charger ce fichier.',
+    'ui.textEditNeedsPath': "Choisissez d'abord un chemin de fichier.",
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

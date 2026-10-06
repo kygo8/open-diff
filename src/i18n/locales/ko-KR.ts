@@ -889,8 +889,9 @@ export const koKR: LanguagePack = {
     'ui.installUnixShellIntegration': '셸 통합 설치',
     'ui.removeUnixShellIntegration': '셸 통합 제거',
     'ui.unixShellHint':
-      'Linux에는 .desktop 다른 앱으로 열기 항목을, macOS에는 shell-compare 도우미와 Open With 앱 스텁을 설치합니다. CLI --shell-compare를 재사용합니다.',
-    'ui.unixShellCliHint': 'CLI도 사용 가능: open-diff-cli shell-compare [--select-left] <path>',
+      'Linux에서는 다른 앱으로 열기를, macOS에서는 도우미를 추가해 파일 관리자에서 비교할 수 있습니다.',
+    'ui.unixShellCliHint':
+      '터미널: open-diff-cli left right   또는   open-diff-cli shell-compare [--select-left] <path>   또는   open-diff-cli --help',
     'ui.registerShellExtension': '탐색기 컨텍스트 메뉴 설치',
     'ui.installExplorerContextMenu': '탐색기 컨텍스트 메뉴 설치',
     'ui.removeExplorerContextMenu': '탐색기 컨텍스트 메뉴 제거',
@@ -899,7 +900,7 @@ export const koKR: LanguagePack = {
     'status.shellUnregisterScriptGenerated':
       'Windows only. Unregister script generated but not applied.',
     'ui.windowsOnly': 'Windows 전용',
-    'ui.shellExtensionHint': '선택한 파일과 폴더에 대해 탐색기에 Open Diff를 추가합니다.',
+    'ui.shellExtensionHint': '탐색기에 Open Diff로 비교와 왼쪽 선택 후 비교를 추가합니다.',
     'ui.policyRemoteDisabled': '관리자 정책으로 원격 프로필이 비활성화되었습니다.',
     'ui.policyPasswordsDisabled': '관리자 정책으로 비밀번호 저장이 비활성화되었습니다.',
     'status.shellRegistered': 'Windows 탐색기 컨텍스트 메뉴가 설치되었습니다',
@@ -1193,7 +1194,8 @@ export const koKR: LanguagePack = {
     'ui.textEditingHint': 'Default wrap applies when opening new text compare and edit sessions.',
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
-    'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.shellOptionsHint':
+      '탐색기나 파일 관리자가 Open Diff에서 경로를 열게 합니다. 터미널에서는 open-diff-cli --help 또는 open-diff-cli left.txt right.txt를 시도하세요.',
     'ui.backupRetentionCount': '번호 지정 백업 유지',
     'ui.commandsVisibility': '명령',
     'ui.commandsVisibilityHint':

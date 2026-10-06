@@ -15,6 +15,9 @@ describe('unix shell integration scripts', () => {
     expect(script).toContain('MimeType=')
     expect(script).toContain('inode/directory')
     expect(script).toContain('Actions=SelectLeft')
+    expect(script).toContain('Compare files or folders')
+    expect(script).toContain('open-diff-cli --help')
+    expect(script).not.toContain('via shell-compare')
   })
 
   it('uninstalls the linux desktop entry', () => {

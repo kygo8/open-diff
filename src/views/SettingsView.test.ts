@@ -57,6 +57,17 @@ describe('SettingsView', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true)
   })
 
+  it('surfaces CLI help tips on the Shell options card', async () => {
+    const wrapper = mount(SettingsView)
+
+    await wrapper.find('[data-testid="options-section-shell"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-shell-card"]').isVisible()).toBe(true)
+    expect(wrapper.find('[data-testid="shell-cli-hint"]').text()).toContain('open-diff-cli --help')
+    expect(wrapper.find('[data-testid="options-shell-card"]').text()).toContain(
+      'left.txt right.txt',
+    )
+  })
+
   it('explains Options vs Session Settings without Policy jargon', () => {
     const wrapper = mount(SettingsView)
 

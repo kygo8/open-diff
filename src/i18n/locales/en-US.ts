@@ -901,14 +901,15 @@ export const enUS: LanguagePack = {
     'ui.installUnixShellIntegration': 'Install shell integration',
     'ui.removeUnixShellIntegration': 'Remove shell integration',
     'ui.unixShellHint':
-      'Installs a .desktop Open With entry on Linux, or a shell-compare helper + Open With app stub on macOS. Reuses CLI --shell-compare.',
-    'ui.unixShellCliHint': 'Also available: open-diff-cli shell-compare [--select-left] <path>',
+      'Adds Open With on Linux, or a helper app on macOS, so you can compare from the file manager.',
+    'ui.unixShellCliHint':
+      'From a terminal: open-diff-cli left right   or   open-diff-cli shell-compare [--select-left] <path>   or   open-diff-cli --help',
     'ui.registerShellExtension': 'Install Explorer context menu',
     'ui.installExplorerContextMenu': 'Install Explorer context menu',
     'ui.removeExplorerContextMenu': 'Remove Explorer context menu',
     'ui.windowsOnly': 'Windows only',
     'ui.shellExtensionHint':
-      'Adds Compare with Open Diff and Select Left File/Folder for Compare to Explorer.',
+      'Adds Compare with Open Diff and Select Left for Compare to File Explorer.',
     'ui.shellExtensionFlowHint':
       'Select two items and choose Compare, or Select Left then Compare on the other side.',
     'ui.policyRemoteDisabled': 'Remote profiles are disabled by administrator policy.',
@@ -1208,7 +1209,8 @@ export const enUS: LanguagePack = {
       'Default wrap and first-difference scrolling apply when opening new text sessions.',
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
-    'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.shellOptionsHint':
+      'Let File Explorer or your file manager open paths in Open Diff. From a terminal, try open-diff-cli --help or open-diff-cli left.txt right.txt.',
     'ui.backupRetentionCount': 'Keep numbered backups',
     'ui.commandsVisibility': 'Commands',
     'ui.commandsVisibilityHint':

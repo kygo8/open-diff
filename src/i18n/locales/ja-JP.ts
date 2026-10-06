@@ -898,8 +898,9 @@ export const jaJP: LanguagePack = {
     'ui.installUnixShellIntegration': 'シェル連携をインストール',
     'ui.removeUnixShellIntegration': 'シェル連携を削除',
     'ui.unixShellHint':
-      'Linux では .desktop の「別のアプリで開く」を、macOS では shell-compare ヘルパーと Open With 用アプリをインストールします。CLI --shell-compare を再利用します。',
-    'ui.unixShellCliHint': 'CLI も利用可: open-diff-cli shell-compare [--select-left] <path>',
+      'Linux では「別のアプリで開く」、macOS ではヘルパーを追加し、ファイルマネージャから比較できます。',
+    'ui.unixShellCliHint':
+      'ターミナル: open-diff-cli left right   または   open-diff-cli shell-compare [--select-left] <path>   または   open-diff-cli --help',
     'ui.registerShellExtension': 'エクスプローラーのコンテキストメニューをインストール',
     'ui.installExplorerContextMenu': 'エクスプローラーのコンテキストメニューをインストール',
     'ui.removeExplorerContextMenu': 'エクスプローラーのコンテキストメニューを削除',
@@ -908,8 +909,7 @@ export const jaJP: LanguagePack = {
     'status.shellUnregisterScriptGenerated':
       'Windows only. Unregister script generated but not applied.',
     'ui.windowsOnly': 'Windows のみ',
-    'ui.shellExtensionHint':
-      '選択したファイルとフォルダーに対してエクスプローラーへ Open Diff を追加します。',
+    'ui.shellExtensionHint': 'エクスプローラーに Open Diff で比較と左側を選んで比較を追加します。',
     'ui.policyRemoteDisabled': '管理者ポリシーによりリモートプロファイルは無効です。',
     'ui.policyPasswordsDisabled': '管理者ポリシーによりパスワードの保存は無効です。',
     'status.shellRegistered':
@@ -1207,7 +1207,8 @@ export const jaJP: LanguagePack = {
     'ui.textEditingHint': 'Default wrap applies when opening new text compare and edit sessions.',
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
-    'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.shellOptionsHint':
+      'エクスプローラーやファイルマネージャから Open Diff でパスを開けます。ターミナルでは open-diff-cli --help または open-diff-cli left.txt right.txt を試してください。',
     'ui.backupRetentionCount': '番号付きバックアップを保持',
     'ui.commandsVisibility': 'コマンド',
     'ui.commandsVisibilityHint':

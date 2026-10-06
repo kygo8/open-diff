@@ -865,14 +865,14 @@ export const zhTW: LanguagePack = {
     'ui.installUnixShellIntegration': '安裝殼層整合',
     'ui.removeUnixShellIntegration': '移除殼層整合',
     'ui.unixShellHint':
-      '在 Linux 安裝 .desktop「以其他程式開啟」項目；在 macOS 安裝 shell-compare 助手與 Open With 應用程式。複用 CLI --shell-compare。',
-    'ui.unixShellCliHint': '也可使用：open-diff-cli shell-compare [--select-left] <path>',
+      '在 Linux 新增「以其他程式開啟」，或在 macOS 安裝助手，以便從檔案管理員比較。',
+    'ui.unixShellCliHint':
+      '終端機可用：open-diff-cli left right   或   open-diff-cli shell-compare [--select-left] <path>   或   open-diff-cli --help',
     'ui.registerShellExtension': '安裝檔案總管右鍵功能表',
     'ui.installExplorerContextMenu': '安裝檔案總管右鍵功能表',
     'ui.removeExplorerContextMenu': '移除檔案總管右鍵功能表',
     'ui.windowsOnly': '僅限 Windows',
-    'ui.shellExtensionHint':
-      '在檔案總管加入「使用 Open Diff 比較」與「選擇左側檔案/資料夾以便比較」。',
+    'ui.shellExtensionHint': '在檔案總管新增「以 Open Diff 比較」與「選擇左側以便比較」。',
     'ui.shellExtensionFlowHint': '可同時選取兩項後比較，或先選擇左側，再對另一側執行比較。',
     'ui.policyRemoteDisabled': '系統管理員原則已停用遠端設定。',
     'ui.policyPasswordsDisabled': '系統管理員原則已禁止儲存密碼。',
@@ -1141,7 +1141,8 @@ export const zhTW: LanguagePack = {
     'ui.textEditingHint': '開啟新的文字比較與編輯工作階段時套用預設換行。',
     'ui.openWithHint': '啟用的應用程式會出現在資料夾比較的「開啟方式」操作中。',
     'ui.applicationName': '應用程式名稱',
-    'ui.shellOptionsHint': '註冊 shell 整合，讓作業系統可用 OpenDiff 開啟路徑。',
+    'ui.shellOptionsHint':
+      '讓檔案總管或檔案管理員在 Open Diff 開啟路徑。終端機可試 open-diff-cli --help 或 open-diff-cli left.txt right.txt。',
     'ui.backupRetentionCount': '保留編號備份數量',
     'ui.commandsVisibility': '命令',
     'ui.commandsVisibilityHint':

@@ -33,7 +33,7 @@ Type=Application
 Version=1.0
 Name=Compare with ${PRODUCT_NAME}
 GenericName=File Compare
-Comment=Open paths with ${PRODUCT_NAME} via shell-compare
+Comment=Compare files or folders with ${PRODUCT_NAME}
 Exec="${exec_path}" --shell-compare %f
 Icon=utilities-file-compare
 Terminal=false
@@ -54,4 +54,4 @@ if command -v update-desktop-database >/dev/null 2>&1; then
 fi
 
 echo "Installed $desktop"
-echo "CLI: open-diff-cli shell-compare [--select-left] <path>"
+echo "Try: open-diff-cli --help   or   open-diff-cli left right   or   open-diff-cli shell-compare [--select-left] <path>"

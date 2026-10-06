@@ -913,8 +913,9 @@ export const frFR: LanguagePack = {
     'ui.installUnixShellIntegration': 'Installer l’intégration shell',
     'ui.removeUnixShellIntegration': 'Supprimer l’intégration shell',
     'ui.unixShellHint':
-      'Installe une entrée .desktop Ouvrir avec sous Linux, ou un assistant shell-compare et une app Ouvrir avec sous macOS. Réutilise CLI --shell-compare.',
-    'ui.unixShellCliHint': 'Aussi disponible : open-diff-cli shell-compare [--select-left] <path>',
+      'Ajoute Ouvrir avec sous Linux, ou un assistant sous macOS, pour comparer depuis le gestionnaire de fichiers.',
+    'ui.unixShellCliHint':
+      'Depuis un terminal : open-diff-cli left right   ou   open-diff-cli shell-compare [--select-left] <path>   ou   open-diff-cli --help',
     'ui.registerShellExtension': 'Installer le menu contextuel Explorateur',
     'ui.installExplorerContextMenu': 'Installer le menu contextuel Explorateur',
     'ui.removeExplorerContextMenu': 'Supprimer le menu contextuel Explorateur',
@@ -925,7 +926,7 @@ export const frFR: LanguagePack = {
       'Windows only. Unregister script generated but not applied.',
     'ui.windowsOnly': 'Windows uniquement',
     'ui.shellExtensionHint':
-      'Ajoute Open Diff à l’Explorateur pour les fichiers et dossiers sélectionnés.',
+      'Ajoute Comparer avec Open Diff et Sélectionner à gauche pour comparer dans l’Explorateur.',
     'ui.policyRemoteDisabled':
       'Les profils distants sont désactivés par la stratégie d’administration.',
     'ui.policyPasswordsDisabled':
@@ -1248,7 +1249,8 @@ export const frFR: LanguagePack = {
     'ui.textEditingHint': 'Default wrap applies when opening new text compare and edit sessions.',
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
-    'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.shellOptionsHint':
+      'Permet à l’Explorateur ou au gestionnaire de fichiers d’ouvrir des chemins dans Open Diff. En terminal : open-diff-cli --help ou open-diff-cli left.txt right.txt.',
     'ui.backupRetentionCount': 'Conserver les sauvegardes numérotées',
     'ui.commandsVisibility': 'Commandes',
     'ui.commandsVisibilityHint':

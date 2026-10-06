@@ -942,6 +942,14 @@ export const esES: LanguagePack = {
     'ui.textMergeNoConflictsHint':
       'Sin conflictos. Revise la salida y haga clic en Guardar salida.',
     'ui.textMergeWorkspaceHint': 'Combine izquierda, derecha y base opcional en un archivo',
+    'ui.folderMergeEmptyCompareHint':
+      'Elija las carpetas izquierda, base y derecha con Examinar (o pegue rutas) y luego haga clic en Crear plan.',
+    'ui.folderMergeEmptyReadyHint':
+      'Haga clic en Crear plan para ver qué se copiará a la carpeta de salida.',
+    'ui.folderMergeNothingToDo':
+      'Nada que fusionar. Las carpetas ya coinciden con el plan, o los filtros ocultaron todo.',
+    'ui.folderMergeNeedsFolders': 'Elija primero las carpetas izquierda, base y derecha.',
+    'ui.folderMergeNeedsPlan': 'Cree un plan de fusión antes de ejecutar Combinar a salida.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

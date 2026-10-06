@@ -892,6 +892,12 @@ export const zhTW: LanguagePack = {
     'ui.textMergeEmptyReadyHint': '按 Enter 或點載入檔案以合併。',
     'ui.textMergeNoConflictsHint': '無衝突。檢查輸出後按儲存輸出。',
     'ui.textMergeWorkspaceHint': '將左右與可選基準合併為一個檔案',
+    'ui.folderMergeEmptyCompareHint':
+      '用瀏覽選擇左、基準、右資料夾（或貼上路徑），然後按產生計畫。',
+    'ui.folderMergeEmptyReadyHint': '按產生計畫以查看將複製到輸出資料夾的內容。',
+    'ui.folderMergeNothingToDo': '無需合併。資料夾已與計畫一致，或篩選隱藏了全部變更。',
+    'ui.folderMergeNeedsFolders': '請先選擇左、基準、右三個資料夾。',
+    'ui.folderMergeNeedsPlan': '請先產生合併計畫，再按合併到輸出。',
     'ui.registryExportHint':
       '可比較匯出的 .reg、離線 REGF 登錄檔（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比較即時 HKLM/HKCU 鍵。',
     'ui.nextConflict': '下一衝突',

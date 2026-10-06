@@ -974,6 +974,20 @@ export const esES: LanguagePack = {
     'ui.textPatchEmptyParsedHint': 'Este parche no tiene secciones de archivo que mostrar.',
     'ui.textPatchNeedsPatch': 'Pegue o abra un parche primero.',
     'ui.textPatchNeedsSource': 'Elija primero un archivo de origen.',
+    'ui.clipboardEmptyCaptureHint':
+      'Copie texto y haga clic en Capturar portapapeles. Capture de nuevo el otro lado.',
+    'ui.clipboardEmptySecondHint':
+      'Capture un segundo texto del portapapeles (o seleccione dos entradas del historial) y luego Comparar seleccionados.',
+    'ui.clipboardEmptyReadyHint':
+      'Haga clic en Comparar seleccionados para comparar los dos textos del portapapeles.',
+    'ui.clipboardIdenticalHint':
+      'Estos textos del portapapeles coinciden. No hay diferencias que mostrar.',
+    'ui.clipboardNeedsTwoEntries': 'Capture y seleccione primero dos textos del portapapeles.',
+    'ui.clipboardEmptyError':
+      'El portapapeles está vacío. Copie texto primero y luego haga clic en Capturar.',
+    'ui.clipboardUnavailableError': 'El acceso al portapapeles no está disponible en este entorno.',
+    'ui.clipboardReadFailedError':
+      'No se pudo leer el texto del portapapeles. Compruebe el permiso e inténtelo de nuevo.',
     'ui.textPatchSourceTextPlaceholder': 'Pegue el texto del archivo original para Aplicar parche',
     'ui.applyPatchHint': 'Previsualiza el texto parcheado en memoria (no escribe un archivo).',
     'ui.applyToFileHint':

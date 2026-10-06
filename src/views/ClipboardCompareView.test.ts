@@ -3,14 +3,20 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ClipboardCompareView from './ClipboardCompareView.vue'
 import { diffText } from '@/api/diff'
-import { readClipboardTextSource } from '@/app/clipboardSource'
+import type * as clipboardSource from '@/app/clipboardSource'
+import { ClipboardSourceError, readClipboardTextSource } from '@/app/clipboardSource'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { useViewActionsStore } from '@/stores/viewActions'
 
-vi.mock('@/app/clipboardSource', () => ({
-  readClipboardTextSource: vi.fn(),
-}))
+vi.mock('@/app/clipboardSource', async (importOriginal) => {
+  const actual = await importOriginal<typeof clipboardSource>()
+
+  return {
+    ...actual,
+    readClipboardTextSource: vi.fn(),
+  }
+})
 
 vi.mock('@/api/diff', () => ({
   diffText: vi.fn().mockResolvedValue({
@@ -28,11 +34,18 @@ function mountClipboardCompareView(): VueWrapper {
     global: {
       stubs: {
         NButton: {
-          props: ['disabled', 'loading'],
+          props: {
+            disabled: { type: Boolean, default: false },
+            loading: { type: Boolean, default: false },
+            title: { type: String, default: undefined },
+            type: { type: String, default: undefined },
+            size: { type: String, default: undefined },
+          },
           emits: ['click'],
-          template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          template:
+            '<button :disabled="disabled" :title="title" @click="$emit(\'click\')"><slot /></button>',
         },
-        NAlert: { template: '<div><slot /></div>' },
+        NAlert: { template: '<div data-testid="clipboard-compare-error"><slot /></div>' },
         TextDiffPanel: {
           props: {
             lines: {
@@ -69,6 +82,70 @@ describe('ClipboardCompareView', () => {
     })
     vi.mocked(readClipboardTextSource).mockReset()
     vi.mocked(diffText).mockClear()
+  })
+
+  it('shows a friendly empty state and disabled Compare tip', () => {
+    const wrapper = mountClipboardCompareView()
+
+    expect(wrapper.find('[data-testid="clipboard-empty-hint"]').text()).toContain(
+      'Capture Clipboard',
+    )
+    expect(wrapper.find('[data-testid="clipboard-compare"]').attributes('title')).toContain(
+      'two clipboard texts first',
+    )
+    expect(wrapper.find('[data-testid="clipboard-compare"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('shows a ready hint after two captures are selected', async () => {
+    vi.mocked(readClipboardTextSource)
+      .mockResolvedValueOnce({ kind: 'clipboard-text', title: 'Clipboard Text', text: 'alpha' })
+      .mockResolvedValueOnce({ kind: 'clipboard-text', title: 'Clipboard Text', text: 'beta' })
+
+    const wrapper = mountClipboardCompareView()
+
+    await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
+    await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="clipboard-empty-hint"]').text()).toContain(
+      'Compare Selected',
+    )
+    expect(wrapper.find('[data-testid="clipboard-compare"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('maps an empty clipboard capture to a plain error', async () => {
+    vi.mocked(readClipboardTextSource).mockRejectedValueOnce(
+      new ClipboardSourceError('clipboard-empty', 'Clipboard does not contain text.'),
+    )
+
+    const wrapper = mountClipboardCompareView()
+
+    await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="clipboard-compare-error"]').text()).toContain(
+      'Clipboard is empty',
+    )
+  })
+
+  it('shows an identical hint when the two clipboard texts match', async () => {
+    vi.mocked(readClipboardTextSource)
+      .mockResolvedValueOnce({ kind: 'clipboard-text', title: 'Clipboard Text', text: 'alpha' })
+      .mockResolvedValueOnce({ kind: 'clipboard-text', title: 'Clipboard Text', text: 'beta' })
+    vi.mocked(diffText).mockResolvedValueOnce({
+      lines: [],
+      stats: { added: 0, deleted: 0, modified: 0, equal: 1 },
+    })
+
+    const wrapper = mountClipboardCompareView()
+
+    await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
+    await wrapper.find('[data-testid="clipboard-capture"]').trigger('click')
+    await wrapper.find('[data-testid="clipboard-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="clipboard-identical-hint"]').text()).toContain('match')
+    expect(wrapper.find('[data-testid="clipboard-diff-panel"]').exists()).toBe(false)
   })
 
   it('captures unique clipboard text entries into history', async () => {

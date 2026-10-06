@@ -982,6 +982,22 @@ export const frFR: LanguagePack = {
     'ui.textPatchEmptyParsedHint': "Ce correctif n'a aucune section de fichier à afficher.",
     'ui.textPatchNeedsPatch': "Collez ou ouvrez d'abord un correctif.",
     'ui.textPatchNeedsSource': "Choisissez d'abord un fichier source.",
+    'ui.clipboardEmptyCaptureHint':
+      "Copiez du texte, puis cliquez sur Capturer le presse-papiers. Capturez à nouveau l'autre côté.",
+    'ui.clipboardEmptySecondHint':
+      "Capturez un second texte du presse-papiers (ou sélectionnez deux entrées d'historique), puis Comparer la sélection.",
+    'ui.clipboardEmptyReadyHint':
+      'Cliquez sur Comparer la sélection pour comparer les deux textes du presse-papiers.',
+    'ui.clipboardIdenticalHint':
+      'Ces textes du presse-papiers correspondent. Aucune différence à afficher.',
+    'ui.clipboardNeedsTwoEntries':
+      "Capturez et sélectionnez d'abord deux textes du presse-papiers.",
+    'ui.clipboardEmptyError':
+      "Le presse-papiers est vide. Copiez d'abord du texte, puis cliquez sur Capturer.",
+    'ui.clipboardUnavailableError':
+      "L'accès au presse-papiers n'est pas disponible dans cet environnement.",
+    'ui.clipboardReadFailedError':
+      "Impossible de lire le texte du presse-papiers. Vérifiez l'autorisation et réessayez.",
     'ui.textPatchSourceTextPlaceholder':
       "Collez le texte du fichier d'origine pour Appliquer le correctif",
     'ui.applyPatchHint': "Prévisualise le texte corrigé en mémoire (n'écrit pas de fichier).",

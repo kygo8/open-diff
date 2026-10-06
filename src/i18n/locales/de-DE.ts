@@ -989,6 +989,21 @@ export const deDE: LanguagePack = {
     'ui.textPatchEmptyParsedHint': 'Dieser Patch enthält keine anzuzeigenden Dateiabschnitte.',
     'ui.textPatchNeedsPatch': 'Fügen Sie zuerst einen Patch ein oder öffnen Sie einen.',
     'ui.textPatchNeedsSource': 'Wählen Sie zuerst eine Quelldatei.',
+    'ui.clipboardEmptyCaptureHint':
+      'Kopieren Sie Text und klicken Sie auf Zwischenablage erfassen. Erfassen Sie die andere Seite erneut.',
+    'ui.clipboardEmptySecondHint':
+      'Erfassen Sie einen zweiten Zwischenablagetext (oder wählen Sie zwei Historieneinträge), dann Ausgewählte vergleichen.',
+    'ui.clipboardEmptyReadyHint':
+      'Klicken Sie auf Ausgewählte vergleichen, um die beiden Zwischenablagetexte zu vergleichen.',
+    'ui.clipboardIdenticalHint':
+      'Diese Zwischenablagetexte stimmen überein. Keine Unterschiede anzuzeigen.',
+    'ui.clipboardNeedsTwoEntries': 'Erfassen und wählen Sie zuerst zwei Zwischenablagetexte.',
+    'ui.clipboardEmptyError':
+      'Die Zwischenablage ist leer. Kopieren Sie zuerst Text und klicken Sie dann auf Erfassen.',
+    'ui.clipboardUnavailableError':
+      'Der Zugriff auf die Zwischenablage ist in dieser Umgebung nicht verfügbar.',
+    'ui.clipboardReadFailedError':
+      'Zwischenablagetext konnte nicht gelesen werden. Prüfen Sie die Berechtigung und versuchen Sie es erneut.',
     'ui.textPatchSourceTextPlaceholder': 'Originaltextdatei für „Patch anwenden“ einfügen',
     'ui.applyPatchHint': 'Zeigt den gepatchten Text im Speicher an (schreibt keine Datei).',
     'ui.applyToFileHint': 'Schreibt das Ergebnis in die Zieldatei (oder Quelle, wenn Ziel leer).',

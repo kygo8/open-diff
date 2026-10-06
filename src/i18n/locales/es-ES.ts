@@ -968,6 +968,17 @@ export const esES: LanguagePack = {
       'Elija un archivo con Examinar (o pegue una ruta) y luego haga clic en Abrir.',
     'ui.textEditEmptyReadyHint': 'Pulse Intro o haga clic en Abrir para cargar este archivo.',
     'ui.textEditNeedsPath': 'Elija primero una ruta de archivo.',
+    'ui.textPatchEmptyHint':
+      'Pegue un diff unificado o abra un archivo .patch/.diff y luego haga clic en Analizar parche.',
+    'ui.textPatchEmptyReadyHint': 'Haga clic en Analizar parche para previsualizar los cambios.',
+    'ui.textPatchEmptyParsedHint': 'Este parche no tiene secciones de archivo que mostrar.',
+    'ui.textPatchNeedsPatch': 'Pegue o abra un parche primero.',
+    'ui.textPatchNeedsSource': 'Elija primero un archivo de origen.',
+    'ui.textPatchSourceTextPlaceholder': 'Pegue el texto del archivo original para Aplicar parche',
+    'ui.applyPatchHint': 'Previsualiza el texto parcheado en memoria (no escribe un archivo).',
+    'ui.applyToFileHint':
+      'Escribe el resultado en el archivo de destino (o el origen si el destino está vacío).',
+    'ui.openPatchFile': 'Abrir parche…',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

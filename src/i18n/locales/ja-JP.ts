@@ -948,6 +948,17 @@ export const jaJP: LanguagePack = {
     'ui.textEditEmptyHint': 'Choose a file with Browse (or paste a path), then click Open.',
     'ui.textEditEmptyReadyHint': 'Press Enter or click Open to load this file.',
     'ui.textEditNeedsPath': 'Choose a file path first.',
+    'ui.textPatchEmptyHint':
+      'Paste a unified diff or open a .patch/.diff file, then click Parse Patch.',
+    'ui.textPatchEmptyReadyHint': 'Click Parse Patch to preview the changes.',
+    'ui.textPatchEmptyParsedHint': 'This patch has no file sections to show.',
+    'ui.textPatchNeedsPatch': 'Paste or open a patch first.',
+    'ui.textPatchNeedsSource': 'Choose a source file first.',
+    'ui.textPatchSourceTextPlaceholder': 'Paste the original file text for Apply Patch',
+    'ui.applyPatchHint': 'Preview the patched text in memory (does not write a file).',
+    'ui.applyToFileHint':
+      'Write the patched result to the target file (or source if target is empty).',
+    'ui.openPatchFile': 'Open Patch…',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

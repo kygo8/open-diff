@@ -982,6 +982,17 @@ export const deDE: LanguagePack = {
     'ui.textEditEmptyReadyHint':
       'Drücken Sie Enter oder klicken Sie auf Öffnen, um diese Datei zu laden.',
     'ui.textEditNeedsPath': 'Wählen Sie zuerst einen Dateipfad.',
+    'ui.textPatchEmptyHint':
+      'Fügen Sie einen Unified Diff ein oder öffnen Sie eine .patch/.diff-Datei, und klicken Sie dann auf Patch analysieren.',
+    'ui.textPatchEmptyReadyHint':
+      'Klicken Sie auf Patch analysieren, um die Änderungen anzuzeigen.',
+    'ui.textPatchEmptyParsedHint': 'Dieser Patch enthält keine anzuzeigenden Dateiabschnitte.',
+    'ui.textPatchNeedsPatch': 'Fügen Sie zuerst einen Patch ein oder öffnen Sie einen.',
+    'ui.textPatchNeedsSource': 'Wählen Sie zuerst eine Quelldatei.',
+    'ui.textPatchSourceTextPlaceholder': 'Originaltextdatei für „Patch anwenden“ einfügen',
+    'ui.applyPatchHint': 'Zeigt den gepatchten Text im Speicher an (schreibt keine Datei).',
+    'ui.applyToFileHint': 'Schreibt das Ergebnis in die Zieldatei (oder Quelle, wenn Ziel leer).',
+    'ui.openPatchFile': 'Patch öffnen…',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

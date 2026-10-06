@@ -148,7 +148,7 @@ describe('session UI to command linkage', () => {
     const wrapper = mountView(TextCompareView)
 
     assertNoDemoData(wrapper)
-    expect(wrapper.text()).toContain('Choose left and right paths, then click Compare.')
+    expect(wrapper.text()).toContain('Choose left and right files with Browse')
     expect(wrapper.text()).not.toContain('sample comparison')
     await wrapper.find('[data-testid="ignore-whitespace"]').setValue(true)
     await wrapper.find('[data-testid="ignore-case"]').setValue(true)

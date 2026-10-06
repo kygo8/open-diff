@@ -964,6 +964,10 @@ export const jaJP: LanguagePack = {
     'ui.clipboardEmptyError': 'Clipboard is empty. Copy some text first, then click Capture.',
     'ui.clipboardUnavailableError': 'Clipboard access is unavailable in this environment.',
     'ui.clipboardReadFailedError': 'Could not read clipboard text. Check permission and try again.',
+    'ui.mediaEmptyCompareHint':
+      'Choose left and right media files with Browse (or paste paths), then click Compare.',
+    'ui.mediaEmptyReadyHint': 'Press Enter or click Compare to compare these media files.',
+    'ui.mediaIdenticalHint': 'These media files match. No metadata differences to show.',
     'ui.textPatchSourceTextPlaceholder': 'Paste the original file text for Apply Patch',
     'ui.applyPatchHint': 'Preview the patched text in memory (does not write a file).',
     'ui.applyToFileHint':

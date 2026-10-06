@@ -133,6 +133,95 @@ describe('MediaCompareView', () => {
     })
   })
 
+  it('shows a friendly empty state, path placeholders, and disabled Compare tip', async () => {
+    const wrapper = mount(MediaCompareView)
+
+    expect(wrapper.find('[data-testid="media-empty-hint"]').text()).toContain('Browse')
+    expect(wrapper.find('[data-testid="media-left-path"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="media-right-path"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="run-media-compare"]').attributes('title')).toContain(
+      'left and right files first',
+    )
+    expect(wrapper.find('[data-testid="run-media-compare"]').attributes('disabled')).toBeDefined()
+
+    await wrapper.find('[data-testid="media-left-path"]').setValue('C:/music/left.mp3')
+    await wrapper.find('[data-testid="media-right-path"]').setValue('C:/music/right.mp3')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="media-empty-hint"]').text()).toContain('Compare')
+    expect(wrapper.find('[data-testid="run-media-compare"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('compares media files on Enter when both paths are set', async () => {
+    const wrapper = mount(MediaCompareView)
+
+    await wrapper.find('[data-testid="media-left-path"]').setValue('C:/music/left.mp3')
+    await wrapper.find('[data-testid="media-right-path"]').setValue('C:/music/right.mp3')
+    await wrapper.find('[data-testid="media-right-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(compareMediaFiles).toHaveBeenCalledWith({
+      leftPath: 'C:/music/left.mp3',
+      rightPath: 'C:/music/right.mp3',
+    })
+    expect(wrapper.find('[data-testid="media-empty-hint"]').exists()).toBe(false)
+  })
+
+  it('shows an identical hint when metadata fields all match', async () => {
+    vi.mocked(compareMediaFiles).mockResolvedValueOnce({
+      left: {
+        name: 'same.mp3',
+        container: 'MP3',
+        duration: '00:01.000',
+        stream: { codec: 'MP3', sampleRate: '44.1 kHz', channels: '2', bitrate: '320' },
+      },
+      right: {
+        name: 'same.mp3',
+        container: 'MP3',
+        duration: '00:01.000',
+        stream: { codec: 'MP3', sampleRate: '44.1 kHz', channels: '2', bitrate: '320' },
+      },
+      fields: [
+        { field: 'Title', left: 'Song', right: 'Song', status: 'unchanged' },
+        { field: 'Artist', left: 'Aster', right: 'Aster', status: 'unchanged' },
+      ],
+      summary: { added: 0, removed: 0, modified: 0, unchanged: 2 },
+    })
+
+    const wrapper = mount(MediaCompareView)
+
+    await wrapper.find('[data-testid="media-left-path"]').setValue('C:/music/a.mp3')
+    await wrapper.find('[data-testid="media-right-path"]').setValue('C:/music/b.mp3')
+    await wrapper.find('[data-testid="run-media-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="media-identical-hint"]').text()).toContain('match')
+  })
+
+  it('maps unsupported media read failures to a plain suggestion', async () => {
+    vi.mocked(compareMediaFiles).mockRejectedValueOnce({
+      code: 'file.readFailed',
+      messageKey: 'error.media.readFailed.message',
+      suggestionKey: 'error.media.readFailed.suggestion',
+      params: { path: 'C:/music/bad.xyz' },
+      debugMessage: 'unsupported container',
+    })
+
+    const wrapper = mount(MediaCompareView)
+
+    await wrapper.find('[data-testid="media-left-path"]').setValue('C:/music/bad.xyz')
+    await wrapper.find('[data-testid="media-right-path"]').setValue('C:/music/ok.mp3')
+    await wrapper.find('[data-testid="run-media-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="media-compare-error"]').text()).toContain('Could not read')
+    expect(wrapper.find('[data-testid="media-compare-error"]').text()).toContain('MP3')
+  })
+
   it('starts empty without demo media tags', () => {
     const wrapper = mount(MediaCompareView)
 

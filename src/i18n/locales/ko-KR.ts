@@ -959,6 +959,10 @@ export const koKR: LanguagePack = {
     'ui.clipboardUnavailableError': '이 환경에서는 클립보드에 접근할 수 없습니다.',
     'ui.clipboardReadFailedError':
       '클립보드 텍스트를 읽을 수 없습니다. 권한을 확인한 후 다시 시도하세요.',
+    'ui.mediaEmptyCompareHint':
+      '찾아보기로 좌우 미디어 파일을 선택하거나 경로를 붙여넣은 다음 비교를 클릭하세요.',
+    'ui.mediaEmptyReadyHint': 'Enter를 누르거나 비교를 클릭하여 이 미디어 파일을 비교하세요.',
+    'ui.mediaIdenticalHint': '이 미디어 파일은 일치합니다. 표시할 메타데이터 차이가 없습니다.',
     'ui.textPatchSourceTextPlaceholder': '패치 적용을 위해 원본 파일 텍스트를 붙여넣으세요',
     'ui.applyPatchHint': '메모리에서 패치된 텍스트를 미리 봅니다(파일에 쓰지 않음).',
     'ui.applyToFileHint': '패치 결과를 대상 파일에 씁니다(대상이 비어 있으면 원본에 씀).',

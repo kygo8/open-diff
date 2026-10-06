@@ -2554,6 +2554,12 @@ function parseShortcutText(value: string): string[] {
           data-testid="options-shell-card"
         >
           <p class="options-hint">{{ $t('ui.shellOptionsHint') }}</p>
+          <p
+            class="options-hint"
+            data-testid="shell-cli-hint"
+          >
+            {{ $t('ui.unixShellCliHint') }}
+          </p>
           <div class="integration-config">
             <label>
               <span>{{ $t('ui.executablePath') }}</span>
@@ -2561,12 +2567,14 @@ function parseShortcutText(value: string): string[] {
                 v-model="executablePath"
                 type="text"
                 data-testid="shell-executable-path"
+                :placeholder="$t('ui.executablePath')"
               />
             </label>
             <div class="settings-row shell-extension-row">
               <div>
                 <strong>{{ $t('ui.windowsShell') }}</strong>
                 <span>{{ $t('ui.shellExtensionHint') }}</span>
+                <span>{{ $t('ui.shellExtensionFlowHint') }}</span>
               </div>
               <NSpace>
                 <NButton

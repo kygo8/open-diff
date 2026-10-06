@@ -913,8 +913,9 @@ export const esES: LanguagePack = {
     'ui.installUnixShellIntegration': 'Instalar integración de shell',
     'ui.removeUnixShellIntegration': 'Quitar integración de shell',
     'ui.unixShellHint':
-      'Instala una entrada .desktop Abrir con en Linux, o un ayudante shell-compare y una app Abrir con en macOS. Reutiliza CLI --shell-compare.',
-    'ui.unixShellCliHint': 'También disponible: open-diff-cli shell-compare [--select-left] <path>',
+      'Añade Abrir con en Linux, o un ayudante en macOS, para comparar desde el administrador de archivos.',
+    'ui.unixShellCliHint':
+      'Desde una terminal: open-diff-cli left right   o   open-diff-cli shell-compare [--select-left] <path>   o   open-diff-cli --help',
     'ui.registerShellExtension': 'Instalar menú contextual del Explorador',
     'ui.installExplorerContextMenu': 'Instalar menú contextual del Explorador',
     'ui.removeExplorerContextMenu': 'Quitar menú contextual del Explorador',
@@ -925,7 +926,7 @@ export const esES: LanguagePack = {
       'Windows only. Unregister script generated but not applied.',
     'ui.windowsOnly': 'Solo Windows',
     'ui.shellExtensionHint':
-      'Añade Open Diff al Explorador para archivos y carpetas seleccionados.',
+      'Añade Comparar con Open Diff y Seleccionar izquierda para comparar en el Explorador.',
     'ui.policyRemoteDisabled':
       'Los perfiles remotos están deshabilitados por la directiva de administrador.',
     'ui.policyPasswordsDisabled':
@@ -1233,7 +1234,8 @@ export const esES: LanguagePack = {
     'ui.textEditingHint': 'Default wrap applies when opening new text compare and edit sessions.',
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
-    'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.shellOptionsHint':
+      'Permite que el Explorador o el administrador de archivos abran rutas en Open Diff. En terminal: open-diff-cli --help o open-diff-cli left.txt right.txt.',
     'ui.backupRetentionCount': 'Conservar copias de seguridad numeradas',
     'ui.commandsVisibility': 'Comandos',
     'ui.commandsVisibilityHint':

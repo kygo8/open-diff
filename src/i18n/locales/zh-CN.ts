@@ -864,14 +864,14 @@ export const zhCN: LanguagePack = {
     'ui.installUnixShellIntegration': '安装外壳集成',
     'ui.removeUnixShellIntegration': '移除外壳集成',
     'ui.unixShellHint':
-      'Linux 安装 .desktop Open With 条目；macOS 安装 shell-compare 助手与 Open With 应用桩。复用 CLI --shell-compare。',
-    'ui.unixShellCliHint': '也可使用：open-diff-cli shell-compare [--select-left] <path>',
+      '在 Linux 添加“用其他应用打开”，或在 macOS 安装助手，以便从文件管理器比较。',
+    'ui.unixShellCliHint':
+      '终端可用：open-diff-cli left right   或   open-diff-cli shell-compare [--select-left] <path>   或   open-diff-cli --help',
     'ui.registerShellExtension': '安装资源管理器右键菜单',
     'ui.installExplorerContextMenu': '安装资源管理器右键菜单',
     'ui.removeExplorerContextMenu': '移除资源管理器右键菜单',
     'ui.windowsOnly': '仅 Windows',
-    'ui.shellExtensionHint':
-      '在资源管理器中添加“使用 Open Diff 比较”和“选择左侧文件/文件夹以便比较”。',
+    'ui.shellExtensionHint': '在资源管理器中添加“用 Open Diff 比较”和“选择左侧以便比较”。',
     'ui.shellExtensionFlowHint': '可同时选中两项后比较，或先选择左侧，再对另一侧执行比较。',
     'ui.policyRemoteDisabled': '管理员策略已禁用远程配置。',
     'ui.policyPasswordsDisabled': '管理员策略已禁止保存密码。',
@@ -1139,7 +1139,8 @@ export const zhCN: LanguagePack = {
     'ui.textEditingHint': '打开新的文本比较和编辑会话时应用默认换行。',
     'ui.openWithHint': '启用的应用程序会出现在文件夹比较的“打开方式”操作中。',
     'ui.applicationName': '应用程序名称',
-    'ui.shellOptionsHint': '注册 shell 集成，以便操作系统用 OpenDiff 打开路径。',
+    'ui.shellOptionsHint':
+      '让资源管理器或文件管理器在 Open Diff 中打开路径。终端可试 open-diff-cli --help 或 open-diff-cli left.txt right.txt。',
     'ui.backupRetentionCount': '保留编号备份数量',
     'ui.commandsVisibility': '命令',
     'ui.commandsVisibilityHint':

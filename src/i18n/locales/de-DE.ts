@@ -918,8 +918,9 @@ export const deDE: LanguagePack = {
     'ui.installUnixShellIntegration': 'Shell-Integration installieren',
     'ui.removeUnixShellIntegration': 'Shell-Integration entfernen',
     'ui.unixShellHint':
-      'Installiert einen .desktop Open-With-Eintrag unter Linux oder einen shell-compare-Helfer plus Open-With-App-Stub unter macOS. Nutzt CLI --shell-compare.',
-    'ui.unixShellCliHint': 'Auch verfügbar: open-diff-cli shell-compare [--select-left] <path>',
+      'Fügt unter Linux „Öffnen mit“ hinzu oder installiert unter macOS einen Helfer zum Vergleichen aus dem Dateimanager.',
+    'ui.unixShellCliHint':
+      'Im Terminal: open-diff-cli left right   oder   open-diff-cli shell-compare [--select-left] <path>   oder   open-diff-cli --help',
     'ui.registerShellExtension': 'Explorer-Kontextmenü installieren',
     'ui.installExplorerContextMenu': 'Explorer-Kontextmenü installieren',
     'ui.removeExplorerContextMenu': 'Explorer-Kontextmenü entfernen',
@@ -927,7 +928,7 @@ export const deDE: LanguagePack = {
       'Windows only. Unregister script generated but not applied.',
     'ui.windowsOnly': 'Nur Windows',
     'ui.shellExtensionHint':
-      'Fügt „Compare with Open Diff“ und „Select Left File/Folder for Compare“ im Explorer hinzu.',
+      'Fügt „Mit Open Diff vergleichen“ und „Links zum Vergleichen wählen“ im Explorer hinzu.',
     'ui.shellExtensionFlowHint':
       'Zwei Elemente auswählen und Compare wählen, oder zuerst Select Left und dann Compare auf der anderen Seite.',
     'ui.policyRemoteDisabled':
@@ -1249,7 +1250,8 @@ export const deDE: LanguagePack = {
     'ui.textEditingHint': 'Default wrap applies when opening new text compare and edit sessions.',
     'ui.openWithHint': 'Enabled applications appear in Folder Compare Open With actions.',
     'ui.applicationName': 'Application name',
-    'ui.shellOptionsHint': 'Register shell integration so the OS can open paths in OpenDiff.',
+    'ui.shellOptionsHint':
+      'Explorer oder Dateimanager sollen Pfade in Open Diff öffnen. Im Terminal: open-diff-cli --help oder open-diff-cli left.txt right.txt.',
     'ui.backupRetentionCount': 'Nummerierte Sicherungen behalten',
     'ui.commandsVisibility': 'Befehle',
     'ui.commandsVisibilityHint':

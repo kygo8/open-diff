@@ -254,7 +254,7 @@ where
 /// Accept `open-diff-app LEFT RIGHT` (and optional open switches) without an `open` verb.
 fn parse_bare_open_compare(first: &str, rest: Vec<String>) -> Result<CliInvocation, CliParseError> {
     if normalized_switch(first).is_some() {
-        return Err(usage_error(format!("unknown command: {first}")));
+        return Err(usage_error(unknown_command_message(first)));
     }
 
     let mut open_args = Vec::with_capacity(rest.len() + 1);
@@ -269,11 +269,21 @@ fn parse_bare_open_compare(first: &str, rest: Vec<String>) -> Result<CliInvocati
             error
         } else {
             CliParseError {
-                message: format!("unknown command: {first_path}"),
+                message: unknown_command_message(&first_path),
                 exit_code: error.exit_code,
             }
         }
     })
+}
+
+fn unknown_command_message(command: &str) -> String {
+    format!(
+        "Unknown command `{command}`. Compare two paths with `open-diff-cli left right`, or run `open-diff-cli --help`."
+    )
+}
+
+fn with_help_hint(message: impl Into<String>) -> String {
+    format!("{} Run `open-diff-cli --help` for usage.", message.into())
 }
 
 pub fn cli_exit_code_value(exit_code: CliExitCode) -> i32 {
@@ -282,7 +292,16 @@ pub fn cli_exit_code_value(exit_code: CliExitCode) -> i32 {
 
 pub fn cli_help_text() -> String {
     let mut lines = vec![
+        "Open Diff command-line helper".to_owned(),
+        String::new(),
+        "Quick start:".to_owned(),
+        "  open-diff-cli left.txt right.txt     open two paths in the app".to_owned(),
+        "  open-diff-cli compare a.txt b.txt    compare text files in the terminal".to_owned(),
+        "  open-diff-cli compare-folders A B    compare folders in the terminal".to_owned(),
+        String::new(),
         "Usage: open-diff-cli <command> [args]".to_owned(),
+        "       open-diff-cli <left> <right>     same as open (desktop file handoff)".to_owned(),
+        String::new(),
         "Commands:".to_owned(),
         "  compare [--quiet] <left> <right>".to_owned(),
         "  compare-folders [--quiet] <left> <right>".to_owned(),
@@ -294,7 +313,6 @@ pub fn cli_help_text() -> String {
         "  script <script-path>".to_owned(),
         "  open-session <store-root> <name>".to_owned(),
         "  open [options] <left> <right>".to_owned(),
-        "  <left> <right>         same as open (GUI / desktop %F handoff)".to_owned(),
         "      --session <type>   folder-compare, folder-sync, folder-merge,".to_owned(),
         "                         text-compare, text-merge, text-edit, text-patch,".to_owned(),
         "                         table-compare, hex-compare, picture-compare,".to_owned(),
@@ -315,6 +333,11 @@ pub fn cli_help_text() -> String {
         "  sync-preview|sync [--quiet] <left> <right>".to_owned(),
         "  merge-text --automerge [--favor-left|--favor-right] <base> <left> <right> [output]"
             .to_owned(),
+        String::new(),
+        "Desktop / file manager:".to_owned(),
+        "  Install shell integration from Options → Shell, or pass two paths so the".to_owned(),
+        "  app opens them (Linux .desktop Exec uses %F for selected files).".to_owned(),
+        String::new(),
         "Switches accept --name, -name, or /name forms.".to_owned(),
         "Exit codes:".to_owned(),
     ];
@@ -753,7 +776,9 @@ fn parse_shell_compare(args: Vec<String>) -> Result<CliInvocation, CliParseError
     }
 
     let Some(path) = path else {
-        return Err(usage_error("shell-compare requires PATH"));
+        return Err(usage_error(with_help_hint(
+            "shell-compare needs a path, for example: open-diff-cli shell-compare notes.txt",
+        )));
     };
 
     Ok(CliInvocation {
@@ -810,7 +835,9 @@ fn parse_svn_diff_config(args: Vec<String>) -> Result<CliInvocation, CliParseErr
 
 fn parse_script_file(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
     if args.len() != 1 {
-        return Err(usage_error("script requires SCRIPT_PATH"));
+        return Err(usage_error(with_help_hint(
+            "script needs a script file path",
+        )));
     }
 
     Ok(CliInvocation {
@@ -898,7 +925,9 @@ fn parse_compare_files(args: Vec<String>) -> Result<CliInvocation, CliParseError
         }
     }
     if positionals.len() != 2 {
-        return Err(usage_error("compare requires LEFT and RIGHT paths"));
+        return Err(usage_error(with_help_hint(
+            "compare needs two paths, for example: open-diff-cli compare left.txt right.txt",
+        )));
     }
 
     Ok(CliInvocation {
@@ -926,7 +955,7 @@ fn parse_compare_folders(args: Vec<String>) -> Result<CliInvocation, CliParseErr
         }
     }
     if positionals.len() != 2 {
-        return Err(usage_error("compare-folders requires LEFT and RIGHT paths"));
+        return Err(usage_error(with_help_hint("compare-folders needs two folder paths, for example: open-diff-cli compare-folders left right")));
     }
 
     Ok(CliInvocation {
@@ -1044,14 +1073,16 @@ fn parse_open_compare(args: Vec<String>) -> Result<CliInvocation, CliParseError>
 
     if left.is_none() && right.is_none() {
         if positionals.len() != 2 {
-            return Err(usage_error(
-                "open requires LEFT and RIGHT paths (or --left/--right)",
-            ));
+            return Err(usage_error(with_help_hint(
+                "open needs two paths, for example: open-diff-cli open left.txt right.txt",
+            )));
         }
         left = Some(positionals[0].clone());
         right = Some(positionals[1].clone());
     } else if left.is_none() || right.is_none() {
-        return Err(usage_error("open requires both --left and --right"));
+        return Err(usage_error(with_help_hint(
+            "open needs both --left and --right paths",
+        )));
     } else if !positionals.is_empty() {
         return Err(usage_error(
             "open does not accept extra positional paths with --left/--right",
@@ -1090,7 +1121,9 @@ fn parse_sync_preview(args: Vec<String>) -> Result<CliInvocation, CliParseError>
         }
     }
     if positionals.len() != 2 {
-        return Err(usage_error("sync-preview requires LEFT and RIGHT paths"));
+        return Err(usage_error(with_help_hint(
+            "sync-preview needs two folder paths",
+        )));
     }
 
     Ok(CliInvocation {
@@ -1236,7 +1269,9 @@ pub fn preview_folder_sync_cli(
 
 fn parse_open_session(args: Vec<String>) -> Result<CliInvocation, CliParseError> {
     if args.len() != 2 {
-        return Err(usage_error("open-session requires STORE_ROOT and NAME"));
+        return Err(usage_error(with_help_hint(
+            "open-session needs a store root and session name",
+        )));
     }
 
     Ok(CliInvocation {
@@ -1354,9 +1389,37 @@ fn session_type_label(session_type: &session_core::SessionType) -> &'static str 
 
 fn runtime_error(error: impl std::fmt::Debug) -> CliRuntimeError {
     CliRuntimeError {
-        message: format!("{error:?}"),
+        message: plain_runtime_error_message(&format!("{error:?}")),
         exit_code: CliExitCode::IoError,
     }
+}
+
+fn plain_runtime_error_message(raw: &str) -> String {
+    if let Some(inner) = raw
+        .strip_prefix("NotFound(")
+        .and_then(|value| value.strip_suffix(')'))
+    {
+        let path = inner.trim().trim_matches('"');
+        return format!("Path could not be found: {path}");
+    }
+
+    if let Some(inner) = raw
+        .strip_prefix("Io(")
+        .and_then(|value| value.strip_suffix(')'))
+    {
+        let detail = inner.trim().trim_matches('"');
+        return format!("Could not read or write a file: {detail}");
+    }
+
+    if raw.contains("UnsupportedEncoding") {
+        return "That file uses an unsupported text encoding.".to_owned();
+    }
+
+    if raw.len() > 180 {
+        return format!("{}...", &raw[..177]);
+    }
+
+    raw.to_owned()
 }
 
 fn merge_options_for_favor(favor: Option<CliTextMergeFavor>) -> merge_core::TextMergeOptions {
@@ -1558,12 +1621,25 @@ mod tests {
     #[test]
     fn parses_open_session_flags_and_help_text() {
         let help = cli_help_text();
+        assert!(help.contains("Quick start:"));
+        assert!(help.contains("open-diff-cli left.txt right.txt"));
         assert!(help.contains("open [options]"));
         assert!(help.contains("--center <path>"));
         assert!(help.contains("--left-readonly"));
+        assert!(help.contains("Desktop / file manager:"));
+        assert!(!help.contains("%F handoff"));
         assert!(help.contains("Exit codes:"));
         assert!(help.contains("0 success"));
         assert!(help.contains("1 differences detected"));
+
+        let bare_unknown = parse_cli_args(["open-diff-cli", "not-a-command"]).expect_err("typo");
+        assert!(bare_unknown.message.contains("Unknown command"));
+        assert!(bare_unknown.message.contains("--help"));
+
+        let compare_usage =
+            parse_cli_args(["open-diff-cli", "compare"]).expect_err("compare needs paths");
+        assert!(compare_usage.message.contains("two paths"));
+        assert!(compare_usage.message.contains("--help"));
 
         let open = parse_cli_args([
             "open-diff-cli",
@@ -1922,7 +1998,8 @@ mod tests {
             .expect_err("missing right path should fail");
 
         assert_eq!(error.exit_code, CliExitCode::UsageError);
-        assert!(error.message.contains("compare requires"));
+        assert!(error.message.contains("two paths"));
+        assert!(error.message.contains("--help"));
     }
 
     #[test]

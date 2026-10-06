@@ -908,6 +908,8 @@ export const frFR: LanguagePack = {
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',
     'ui.noSavedSessionsYet': 'No saved sessions yet. Open a comparison, then save it here.',
+    'ui.homeEmptySelectedHint':
+      'Cliquez sur un type de comparaison ci-dessous pour commencer, ou ouvrez une session enregistrée.',
     'ui.sessionHistoryEmpty': 'No recent sessions. Choose a comparison type to begin.',
     'ui.emptyCompareHint': 'Choose left and right paths, then click Compare.',
     'ui.registryExportHint':

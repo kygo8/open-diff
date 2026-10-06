@@ -908,6 +908,8 @@ export const esES: LanguagePack = {
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',
     'ui.noSavedSessionsYet': 'No saved sessions yet. Open a comparison, then save it here.',
+    'ui.homeEmptySelectedHint':
+      'Haga clic en un tipo de comparación abajo para empezar, o abra una sesión guardada.',
     'ui.sessionHistoryEmpty': 'No recent sessions. Choose a comparison type to begin.',
     'ui.emptyCompareHint': 'Choose left and right paths, then click Compare.',
     'ui.registryExportHint':

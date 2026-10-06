@@ -867,6 +867,7 @@ export const zhTW: LanguagePack = {
     'ui.howToStart': '怎麼開始',
     'ui.neverOpened': '尚未開啟',
     'ui.noSavedSessionsYet': '還沒有已儲存的工作階段。先做一次比較，再按儲存。',
+    'ui.homeEmptySelectedHint': '點擊下方比較類型開始，或開啟已儲存的工作階段。',
     'ui.sessionHistoryEmpty': '還沒有最近工作階段。先選一種比較方式開始。',
     'ui.emptyCompareHint': '選擇左右兩側路徑，然後按比較。',
     'ui.registryExportHint':

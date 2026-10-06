@@ -103,7 +103,7 @@ export const jaJP: LanguagePack = {
     'ui.clipboardText': 'Clipboard text',
     'ui.clipboardEntryTitle': 'クリップボード {index}',
     'ui.cli': 'CLI',
-    'ui.cliReportsAndRepeatableComparisonJobs': 'CLI, reports, and repeatable comparison jobs',
+    'ui.cliReportsAndRepeatableComparisonJobs': 'レポートの書き出し、または自動化スクリプトの実行',
     'ui.close': 'Close',
     'ui.closeAll': 'Close All',
     'ui.closeOthers': '他を閉じる',
@@ -455,7 +455,7 @@ export const jaJP: LanguagePack = {
     'ui.size': 'Size',
     'ui.source': 'Source',
     'ui.sources': 'Sources',
-    'ui.scriptCli': 'Script / CLI',
+    'ui.scriptCli': 'スクリプト',
     'ui.state': 'State',
     'ui.status': 'Status',
     'ui.strategy': 'Strategy',
@@ -752,7 +752,7 @@ export const jaJP: LanguagePack = {
     'session.summary.textPatch': 'Review and apply a patch file',
     'session.summary.versionCompare': 'Compare version info inside program files',
     'session.summary.archiveCompare': 'Compare ZIP/TAR/7z sides and copy files out into a folder',
-    'session.summary.script': 'Run automation scripts to load, compare, report, and stop a session',
+    'session.summary.script': 'スクリプトで読み込み・比較・レポート出力・停止を行います',
     'ui.archiveCompare': 'アーカイブ比較',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
@@ -819,7 +819,19 @@ export const jaJP: LanguagePack = {
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
-      '完全なレガシースクリプト言語は未実装です。対応コマンドは実行され、既知の欠落は unsupported を返します。',
+      'サンプルを選ぶかコマンドを編集してから、スクリプトの実行をクリックします。',
+    'ui.scriptEmptyHint':
+      'サンプルを選ぶかコマンドを貼り付けてから、スクリプトの実行をクリックします。',
+    'ui.scriptPathPlaceholder': 'スクリプトファイルのパス（任意）',
+    'ui.scriptSourcePlaceholder':
+      'LOAD、COMPARE、TEXT-REPORT などのコマンド — または上のサンプルを選択',
+    'ui.runScriptNeedsSource': '先にスクリプトを入力または読み込んでください。',
+    'ui.scriptCommandDocsHint':
+      '使えるコマンドは以下です。サンプルは LOAD → COMPARE → REPORT の流れを示します。',
+    'ui.scriptLogExecuted': '実行したコマンド: {count}',
+    'ui.scriptLogCompared': '比較: {count}',
+    'ui.scriptLogDifferent': '差分あり: {count}',
+    'ui.scriptLogReports': '書いたレポート: {count}',
     'ui.scriptingSupported':
       '対応: LOAD、FILTER、COMPARE、REPORT、FILE-REPORT、HEX-REPORT、TABLE-REPORT、PICTURE-REPORT、VERSION-REPORT、REGISTRY-REPORT、MEDIA-REPORT、LOG、BEEP、OPTION、SELECT、COPY、COPYTO、MOVE、MOVETO、DELETE、RENAME、TOUCH、ATTRIB、EXPAND、COLLAPSE、SNAPSHOT、SYNC、CRITERIA、TEXT-REPORT、FOLDER-REPORT。',
     'ui.scriptingUnsupported': 'なし。',

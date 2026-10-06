@@ -518,7 +518,7 @@ export const koKR: LanguagePack = {
     'ui.added': '추가됨',
     'ui.automation': '자동화',
     'ui.cli': 'CLI',
-    'ui.cliReportsAndRepeatableComparisonJobs': 'CLI, 보고서 및 반복 가능한 비교 작업',
+    'ui.cliReportsAndRepeatableComparisonJobs': '보고서를 내보내거나 자동화 스크립트를 실행합니다',
     'ui.commonAncestor': '공통 조상',
     'ui.directory': '디렉터리',
     'ui.draft': '초안',
@@ -562,7 +562,7 @@ export const koKR: LanguagePack = {
     'ui.same': '동일',
     'ui.settingsInspector': '설정 검사기',
     'ui.shell': '셸',
-    'ui.scriptCli': '스크립트 / CLI',
+    'ui.scriptCli': '스크립트',
     'ui.tableCompareInspector': '테이블 비교 검사기',
     'ui.textCompareInspector': '텍스트 비교 검사기',
     'ui.textMergeInspector': '텍스트 병합 검사기',
@@ -748,7 +748,7 @@ export const koKR: LanguagePack = {
     'ui.sheetSelectionSummary':
       '{leftCount} left / {rightCount} right · {leftSheet} vs {rightSheet}',
     'session.summary.archiveCompare': 'Compare ZIP/TAR/7z sides and copy files out into a folder',
-    'session.summary.script': 'Run automation scripts to load, compare, report, and stop a session',
+    'session.summary.script': '스크립트로 파일을 불러오고 비교·보고서 작성 후 중지합니다',
     'ui.archiveCompare': '아카이브 비교',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
@@ -815,7 +815,18 @@ export const koKR: LanguagePack = {
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
-      '전체 레거시 스크립트 언어는 구현되지 않았습니다. 지원 명령은 실행되고, 알려진 공백은 unsupported를 반환합니다.',
+      '샘플 스크립트를 고르거나 명령을 편집한 뒤 스크립트 실행을 누르세요.',
+    'ui.scriptEmptyHint': '샘플 스크립트를 고르거나 명령을 붙여넣은 뒤 스크립트 실행을 클릭하세요.',
+    'ui.scriptPathPlaceholder': '선택적 스크립트 파일 경로',
+    'ui.scriptSourcePlaceholder':
+      'LOAD, COMPARE, TEXT-REPORT 같은 스크립트 명령 — 또는 위에서 샘플을 고르세요',
+    'ui.runScriptNeedsSource': '먼저 스크립트를 입력하거나 불러오세요.',
+    'ui.scriptCommandDocsHint':
+      '아래는 사용 가능한 명령입니다. 샘플은 LOAD → COMPARE → REPORT 흐름을 보여 줍니다.',
+    'ui.scriptLogExecuted': '실행한 명령: {count}',
+    'ui.scriptLogCompared': '비교함: {count}',
+    'ui.scriptLogDifferent': '다름: {count}',
+    'ui.scriptLogReports': '작성한 보고서: {count}',
     'ui.scriptingSupported':
       '지원: LOAD, FILTER, COMPARE, REPORT, FILE-REPORT, HEX-REPORT, TABLE-REPORT, PICTURE-REPORT, VERSION-REPORT, REGISTRY-REPORT, MEDIA-REPORT, LOG, BEEP, OPTION, SELECT, COPY, COPYTO, MOVE, MOVETO, DELETE, RENAME, TOUCH, ATTRIB, EXPAND, COLLAPSE, SNAPSHOT, SYNC, CRITERIA, TEXT-REPORT, FOLDER-REPORT.',
     'ui.scriptingUnsupported': '없음.',

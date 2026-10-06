@@ -5,6 +5,7 @@ import { exportFolderCompareReport, exportTextCompareReport } from '@/api/diff'
 import { revealPathInOs } from '@/api/integration'
 import { answerScriptPrompt, runScript, stopScript } from '@/api/script'
 import { playCompareCompleteBeep } from '@/app/compareCompleteNotify'
+import { formatCompareError } from '@/app/compareError'
 import { useSettingsStore } from '@/stores/settings'
 import { useTabsStore } from '@/stores/tabs'
 import { useRouter } from 'vue-router'
@@ -62,6 +63,16 @@ const router = useRouter()
 const scriptRunning = ref(false)
 const selectedSampleId = ref(sampleScripts[0]?.id ?? 'text-report')
 const viewActions = useViewActionsStore()
+const scriptSourceIsEmpty = computed(() => !scriptSource.value.trim())
+const runScriptDisabled = computed(() => scriptRunning.value || scriptSourceIsEmpty.value)
+const runScriptTip = computed(() =>
+  scriptSourceIsEmpty.value ? t('ui.runScriptNeedsSource') : t('ui.runScript'),
+)
+const showScriptEmptyHint = computed(
+  () => scriptLog.value.length === 0 && !scriptResult.value && !error.value,
+)
+const hasUnsupportedCommands = computed(() => unsupportedCommandsLabel.trim().length > 0)
+
 const scriptPromptVisible = ref(false)
 const scriptPromptId = ref(0)
 const scriptPromptMessage = ref('')
@@ -112,7 +123,7 @@ async function submitScriptPrompt(cancelled: boolean): Promise<void> {
       cancelled,
     })
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 
@@ -189,7 +200,7 @@ async function runExport(): Promise<void> {
       }
     }
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
     jobs.value = recordRecentReportExport(jobs.value, {
       name: t('ui.export'),
       type: reportFormat.value.toUpperCase(),
@@ -225,11 +236,15 @@ async function stopCurrentScript(): Promise<void> {
     await stopScript()
     scriptLog.value = [...scriptLog.value, t('ui.scriptStopped')]
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 
 async function runCurrentScript(): Promise<void> {
+  if (scriptSourceIsEmpty.value || scriptRunning.value) {
+    return
+  }
+
   scriptRunning.value = true
   error.value = ''
   scriptResult.value = ''
@@ -242,10 +257,10 @@ async function runCurrentScript(): Promise<void> {
     })
 
     const lines = [
-      `executed=${String(response.executed)}`,
-      `compared=${String(response.compared)}`,
-      `different=${String(response.different)}`,
-      `reports=${String(response.reportsWritten)}`,
+      t('ui.scriptLogExecuted', { count: response.executed }),
+      t('ui.scriptLogCompared', { count: response.compared }),
+      t('ui.scriptLogDifferent', { count: response.different }),
+      t('ui.scriptLogReports', { count: response.reportsWritten }),
       ...(response.cancelled ? [t('ui.scriptStopped')] : []),
       ...response.logs,
     ]
@@ -273,7 +288,7 @@ async function runCurrentScript(): Promise<void> {
       void router.push('/')
     }
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
     jobs.value = recordRecentReportExport(jobs.value, {
       name: t('ui.runScript'),
       type: 'SCRIPT',
@@ -445,7 +460,7 @@ function fillFromLastCompare(): void {
           :disabled="running"
           @click="runExport"
         >
-          {{ $t('ui.runDiff') }}
+          {{ $t('ui.saveReport') }}
         </button>
         <button
           type="button"
@@ -458,7 +473,8 @@ function fillFromLastCompare(): void {
           type="button"
           class="primary"
           data-testid="run-script"
-          :disabled="scriptRunning"
+          :disabled="runScriptDisabled"
+          :title="runScriptTip"
           @click="runCurrentScript"
         >
           {{ $t('ui.runScript') }}
@@ -582,6 +598,12 @@ function fillFromLastCompare(): void {
           <strong>{{ $t('ui.scriptCli') }}</strong>
           <span>{{ $t('ui.scriptingNotImplemented') }}</span>
         </header>
+        <p
+          class="script-docs-hint"
+          data-testid="script-docs-hint"
+        >
+          {{ $t('ui.scriptCommandDocsHint') }}
+        </p>
         <section
           class="script-command-lists"
           data-testid="script-command-lists"
@@ -590,7 +612,7 @@ function fillFromLastCompare(): void {
             <strong>{{ $t('ui.scriptingSupportedCommands') }}</strong>
             <p data-testid="script-supported-commands">{{ supportedCommandsLabel }}</p>
           </div>
-          <div>
+          <div v-if="hasUnsupportedCommands">
             <strong>{{ $t('ui.scriptingUnsupportedCommands') }}</strong>
             <p data-testid="script-unsupported-commands">{{ unsupportedCommandsLabel }}</p>
           </div>
@@ -617,13 +639,24 @@ function fillFromLastCompare(): void {
             v-model="scriptPath"
             type="text"
             data-testid="script-path"
+            :placeholder="$t('ui.scriptPathPlaceholder')"
+            :title="scriptPath || $t('ui.scriptPathPlaceholder')"
           />
         </label>
         <textarea
           v-model="scriptSource"
           data-testid="script-source"
-          :placeholder="$t('ui.scriptSource')"
+          :placeholder="$t('ui.scriptSourcePlaceholder')"
+          @keydown.ctrl.enter.prevent="runCurrentScript"
+          @keydown.meta.enter.prevent="runCurrentScript"
         />
+        <p
+          v-if="showScriptEmptyHint"
+          class="script-empty-hint"
+          data-testid="script-empty-hint"
+        >
+          {{ $t('ui.scriptEmptyHint') }}
+        </p>
         <pre
           v-if="scriptLog.length > 0"
           data-testid="script-run-log"
@@ -771,10 +804,16 @@ function fillFromLastCompare(): void {
 }
 
 .report-error,
-.report-empty {
+.report-empty,
+.script-empty-hint,
+.script-docs-hint {
   padding: 2px 4px;
   color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.script-docs-hint {
+  margin: 0;
 }
 
 .report-table {

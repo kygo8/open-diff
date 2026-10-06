@@ -25,6 +25,7 @@ import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useTabsStore } from '@/stores/tabs'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatCompareError } from '@/app/compareError'
 import { useViewActionsStore } from '@/stores/viewActions'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/i18n'
@@ -423,6 +424,43 @@ const tableDifferenceSummary = computed(() => {
 
   return `${String(activeDifferenceIndex.value + 1)} / ${String(tableDifferenceCells.value.length)}`
 })
+
+const compareNeedsBothFiles = computed(
+  () =>
+    !(
+      (leftPath.value.trim() && rightPath.value.trim()) ||
+      (leftCsv.value.trim() && rightCsv.value.trim())
+    ),
+)
+
+const tablesAreIdentical = computed(
+  () => comparedRows.value !== null && tableDifferenceCells.value.length === 0,
+)
+
+const tableEmptyStateMessage = computed(() => {
+  if (leftPath.value.trim() && rightPath.value.trim()) {
+    return t('ui.tableEmptyReadyHint')
+  }
+
+  return t('ui.tableEmptyCompareHint')
+})
+
+const showTableEmptyHint = computed(
+  () =>
+    !loading.value && !error.value && comparedRows.value === null && visibleRowCount.value === 0,
+)
+
+function onTablePathEnter(): void {
+  const left = leftPath.value.trim()
+  const right = rightPath.value.trim()
+
+  if (!left || !right || loading.value) {
+    return
+  }
+
+  void loadLaunchTables(left, right)
+}
+
 const columnMappings = computed<ColumnMappingModel[]>(() => {
   const usedLeft = new Set<string>()
   const usedRight = new Set<string>()
@@ -704,6 +742,10 @@ watchEffect(() => {
 })
 
 async function runTableCompare(): Promise<void> {
+  if (compareNeedsBothFiles.value) {
+    return
+  }
+
   const startedAt = performance.now()
 
   loading.value = true
@@ -756,7 +798,7 @@ async function runTableCompare(): Promise<void> {
     manualLeftColumn.value = result.leftColumns[0]?.name ?? ''
     manualRightColumn.value = result.rightColumns[0]?.name ?? ''
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     loading.value = false
   }
@@ -794,7 +836,7 @@ async function loadLaunchTables(nextLeftPath: string, nextRightPath: string): Pr
     rightEncoding.value = rightFile.encoding
     await runTableCompare()
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
     loading.value = false
   }
 }
@@ -888,7 +930,7 @@ async function exportTableReport(): Promise<void> {
     })
     reportStatus.value = outputPath
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   }
 }
 
@@ -1036,7 +1078,9 @@ watch([leftPath, rightPath], () => {
               type="text"
               class="path-input"
               data-testid="table-left-path"
-              :title="leftPath"
+              :title="leftPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
+              @keydown.enter.prevent="onTablePathEnter"
             />
             <SessionPathActions
               browse-test-id="table-browse-left"
@@ -1054,7 +1098,9 @@ watch([leftPath, rightPath], () => {
               type="text"
               class="path-input"
               data-testid="table-right-path"
-              :title="rightPath"
+              :title="rightPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
+              @keydown.enter.prevent="onTablePathEnter"
             />
             <SessionPathActions
               browse-test-id="table-browse-right"
@@ -1289,7 +1335,8 @@ watch([leftPath, rightPath], () => {
           <button
             type="button"
             data-testid="run-table-compare"
-            :disabled="loading"
+            :disabled="loading || compareNeedsBothFiles"
+            :title="compareNeedsBothFiles ? $t('ui.compareNeedsBothFiles') : $t('ui.runDiff')"
             @click="runTableCompare"
           >
             {{ $t('ui.runDiff') }}
@@ -1312,11 +1359,18 @@ watch([leftPath, rightPath], () => {
           {{ error }}
         </p>
         <p
-          v-else-if="visibleRowCount === 0"
+          v-else-if="tablesAreIdentical"
+          class="empty"
+          data-testid="table-identical-hint"
+        >
+          {{ $t('ui.tableIdenticalHint') }}
+        </p>
+        <p
+          v-else-if="showTableEmptyHint"
           class="empty"
           data-testid="table-empty-hint"
         >
-          {{ $t('ui.emptyCompareHint') }}
+          {{ tableEmptyStateMessage }}
         </p>
         <div class="table-column-rules">
           <label

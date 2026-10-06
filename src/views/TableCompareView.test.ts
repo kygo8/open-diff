@@ -69,6 +69,11 @@ vi.mock('@/api/diff', () => ({
   ),
 }))
 
+async function fillTablePaths(wrapper: VueWrapper): Promise<void> {
+  await wrapper.find('[data-testid="table-left-path"]').setValue('C:/data/left.csv')
+  await wrapper.find('[data-testid="table-right-path"]').setValue('C:/data/right.csv')
+}
+
 function mountTableCompareView(): VueWrapper {
   return mount(TableCompareView, {
     global: {
@@ -159,6 +164,75 @@ describe('TableCompareView', () => {
     ).toBe('')
   })
 
+  it('shows a friendly empty state and path placeholders before compare', async () => {
+    const wrapper = mountTableCompareView()
+
+    expect(wrapper.find('[data-testid="table-empty-hint"]').text()).toContain(
+      'Choose left and right table files',
+    )
+    expect(wrapper.find('[data-testid="table-left-path"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="run-table-compare"]').attributes('title')).toContain(
+      'both left and right files',
+    )
+    expect(wrapper.find('[data-testid="table-key-columns"]').attributes('placeholder')).toContain(
+      'first column is 0',
+    )
+
+    await fillTablePaths(wrapper)
+    expect(wrapper.find('[data-testid="table-empty-hint"]').text()).toContain('Compare')
+    expect(wrapper.find('[data-testid="run-table-compare"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('loads and compares on Enter when both file paths are set', async () => {
+    const wrapper = mountTableCompareView()
+
+    await fillTablePaths(wrapper)
+    await wrapper.find('[data-testid="table-left-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(readTextFile).toHaveBeenCalled()
+    expect(compareTable).toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="table-grid-cell-quantity"]').exists()).toBe(true)
+  })
+
+  it('explains when compared tables have no cell differences', async () => {
+    vi.mocked(compareTable).mockResolvedValueOnce({
+      leftColumns: [{ side: 'left', name: 'SKU' }],
+      rightColumns: [{ side: 'right', name: 'SKU' }],
+      columnMappings: [{ leftColumn: 'SKU', rightColumn: 'SKU', source: 'Automatic' }],
+      rows: [
+        {
+          index: 0,
+          leftCells: ['A-1'],
+          rightCells: ['A-1'],
+          status: 'Equal',
+        },
+      ],
+      changedCells: [],
+      summary: {
+        rowCount: 1,
+        changedRowCount: 0,
+        changedCellCount: 0,
+      },
+      leftSheets: [],
+      rightSheets: [],
+      leftSheet: '',
+      rightSheet: '',
+    })
+
+    const wrapper = mountTableCompareView()
+
+    await fillTablePaths(wrapper)
+    await wrapper.find('[data-testid="run-table-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="table-identical-hint"]').text()).toContain(
+      'These tables match',
+    )
+  })
+
   it('runs a table comparison with format, keys, and mappings', async () => {
     const wrapper = mountTableCompareView()
 
@@ -216,6 +290,7 @@ describe('TableCompareView', () => {
   it('passes ignored columns and manual mappings to the backend', async () => {
     const wrapper = mountTableCompareView()
 
+    await fillTablePaths(wrapper)
     await wrapper.find('[data-testid="run-table-compare"]').trigger('click')
     await wrapper.vm.$nextTick()
     await wrapper.find('[data-testid="manual-left-column"]').setValue('SKU')
@@ -269,6 +344,7 @@ describe('TableCompareView', () => {
   it('searches compared table cells and navigates to the next difference', async () => {
     const wrapper = mountTableCompareView()
 
+    await fillTablePaths(wrapper)
     await wrapper.find('[data-testid="run-table-compare"]').trigger('click')
     await wrapper.vm.$nextTick()
 
@@ -315,6 +391,7 @@ describe('TableCompareView', () => {
   it('navigates differences from the Table session toolbar', async () => {
     const wrapper = mountTableCompareView()
 
+    await fillTablePaths(wrapper)
     await wrapper.find('[data-testid="run-table-compare"]').trigger('click')
     await wrapper.vm.$nextTick()
     await wrapper.find('[data-testid="table-session-toolbar-next-diff"]').trigger('click')
@@ -515,6 +592,7 @@ describe('TableCompareView', () => {
   it('persists key and ignore column choices and sends them on compare', async () => {
     const wrapper = mountTableCompareView()
 
+    await fillTablePaths(wrapper)
     await wrapper.find('[data-testid="run-table-compare"]').trigger('click')
     await wrapper.vm.$nextTick()
 

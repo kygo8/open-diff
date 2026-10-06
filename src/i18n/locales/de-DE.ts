@@ -959,6 +959,11 @@ export const deDE: LanguagePack = {
     'ui.folderMergeNeedsFolders': 'Wählen Sie zuerst linke, Basis- und rechte Ordner.',
     'ui.folderMergeNeedsPlan':
       'Erstellen Sie einen Merge-Plan, bevor Sie Merge zur Ausgabe ausführen.',
+    'ui.tableEmptyCompareHint':
+      'Wählen Sie linke und rechte Tabellendateien mit Durchsuchen (oder fügen Sie Pfade ein), dann auf Vergleichen klicken.',
+    'ui.tableEmptyReadyHint':
+      'Drücken Sie Enter oder klicken Sie auf Vergleichen, um zu laden und zu vergleichen.',
+    'ui.tableIdenticalHint': 'Diese Tabellen stimmen überein. Keine Zellunterschiede.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -1024,7 +1029,7 @@ export const deDE: LanguagePack = {
     'status.sectionPosition': 'Section {index} of {total}',
     'ui.openSelectedInTextCompare': 'Open Selected in Text Compare',
     'ui.section': 'Section',
-    'ui.keyColumnsHint': 'Comma-separated column indices (0-based)',
+    'ui.keyColumnsHint': 'Schlüsselspalten als Zahlen, kommagetrennt (erste Spalte ist 0)',
     'ui.rgbTolerance': 'RGB-Toleranz',
     'ui.compareAlpha': 'Alpha vergleichen',
     'ui.alphaTolerance': 'Alpha-Toleranz',

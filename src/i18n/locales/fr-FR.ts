@@ -952,6 +952,11 @@ export const frFR: LanguagePack = {
       'Rien à fusionner. Les dossiers correspondent déjà au plan, ou des filtres ont tout masqué.',
     'ui.folderMergeNeedsFolders': "Choisissez d'abord les dossiers gauche, base et droit.",
     'ui.folderMergeNeedsPlan': "Créez un plan de fusion avant d'exécuter Fusion vers la sortie.",
+    'ui.tableEmptyCompareHint':
+      'Choisissez les fichiers de table gauche et droit avec Parcourir (ou collez des chemins), puis cliquez sur Comparer.',
+    'ui.tableEmptyReadyHint':
+      'Appuyez sur Entrée ou cliquez sur Comparer pour charger et comparer.',
+    'ui.tableIdenticalHint': 'Ces tables correspondent. Aucune différence de cellule.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -1017,7 +1022,7 @@ export const frFR: LanguagePack = {
     'status.sectionPosition': 'Section {index} of {total}',
     'ui.openSelectedInTextCompare': 'Open Selected in Text Compare',
     'ui.section': 'Section',
-    'ui.keyColumnsHint': 'Comma-separated column indices (0-based)',
+    'ui.keyColumnsHint': 'Colonnes clés en numéros, séparées par des virgules (la première est 0)',
     'ui.rgbTolerance': 'Tolérance RVB',
     'ui.compareAlpha': 'Comparer Alpha',
     'ui.alphaTolerance': 'Tolérance Alpha',

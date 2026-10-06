@@ -935,6 +935,12 @@ export const enUS: LanguagePack = {
       'Choose left and right table files with Browse (or paste paths), then click Compare.',
     'ui.tableEmptyReadyHint': 'Press Enter or click Compare to load and compare these tables.',
     'ui.tableIdenticalHint': 'These tables match. No cell differences to show.',
+    'ui.hexEmptyCompareHint':
+      'Choose left and right files with Browse (or paste paths), then click Compare.',
+    'ui.hexEmptyReadyHint': 'Press Enter or click Compare to compare these files byte by byte.',
+    'ui.hexIdenticalHint': 'These files match in this window. No byte differences to show.',
+    'ui.hexFilteredEmptyHint':
+      'No different bytes in this view. Turn off Differences only to see matching bytes.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

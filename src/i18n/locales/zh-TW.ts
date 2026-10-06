@@ -901,6 +901,10 @@ export const zhTW: LanguagePack = {
     'ui.tableEmptyCompareHint': '用瀏覽選擇左右表格檔案（或貼上路徑），然後按比較。',
     'ui.tableEmptyReadyHint': '按 Enter 或點比較以載入並比較。',
     'ui.tableIdenticalHint': '這些表格一致。沒有儲存格差異。',
+    'ui.hexEmptyCompareHint': '用瀏覽選擇左右檔案（或貼上路徑），然後按比較。',
+    'ui.hexEmptyReadyHint': '按 Enter 或點比較以逐位元組比較。',
+    'ui.hexIdenticalHint': '在此視窗中這些檔案一致。沒有位元組差異。',
+    'ui.hexFilteredEmptyHint': '此檢視沒有不同位元組。關閉「僅差異」可查看相同位元組。',
     'ui.registryExportHint':
       '可比較匯出的 .reg、離線 REGF 登錄檔（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比較即時 HKLM/HKCU 鍵。',
     'ui.nextConflict': '下一衝突',

@@ -954,6 +954,12 @@ export const esES: LanguagePack = {
       'Elija los archivos de tabla izquierdo y derecho con Examinar (o pegue rutas) y luego haga clic en Comparar.',
     'ui.tableEmptyReadyHint': 'Pulse Intro o haga clic en Comparar para cargar y comparar.',
     'ui.tableIdenticalHint': 'Estas tablas coinciden. No hay diferencias de celdas.',
+    'ui.hexEmptyCompareHint':
+      'Elija los archivos izquierdo y derecho con Examinar (o pegue rutas) y luego haga clic en Comparar.',
+    'ui.hexEmptyReadyHint': 'Pulse Intro o haga clic en Comparar para comparar byte a byte.',
+    'ui.hexIdenticalHint': 'Estos archivos coinciden en esta ventana. No hay diferencias de bytes.',
+    'ui.hexFilteredEmptyHint':
+      'No hay bytes diferentes en esta vista. Desactive Solo diferencias para ver bytes coincidentes.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

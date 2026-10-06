@@ -899,6 +899,10 @@ export const zhCN: LanguagePack = {
     'ui.tableEmptyCompareHint': '用浏览选择左右表格文件（或粘贴路径），然后点比较。',
     'ui.tableEmptyReadyHint': '按 Enter 或点比较以加载并比较。',
     'ui.tableIdenticalHint': '这些表格一致。没有单元格差异。',
+    'ui.hexEmptyCompareHint': '用浏览选择左右文件（或粘贴路径），然后点比较。',
+    'ui.hexEmptyReadyHint': '按 Enter 或点比较以逐字节比较。',
+    'ui.hexIdenticalHint': '在此窗口中这些文件一致。没有字节差异。',
+    'ui.hexFilteredEmptyHint': '此视图没有不同字节。关闭“仅差异”可查看相同字节。',
     'ui.registryExportHint':
       '可比较导出的 .reg、离线 REGF 配置单元（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比较实时 HKLM/HKCU 键。',
     'ui.nextConflict': '下一冲突',

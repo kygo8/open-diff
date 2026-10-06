@@ -928,6 +928,12 @@ export const koKR: LanguagePack = {
       '찾아보기로 왼쪽·오른쪽 표 파일을 선택하거나 경로를 붙여넣은 다음 비교를 클릭하세요.',
     'ui.tableEmptyReadyHint': 'Enter를 누르거나 비교를 클릭해 불러와 비교하세요.',
     'ui.tableIdenticalHint': '표가 일치합니다. 셀 차이가 없습니다.',
+    'ui.hexEmptyCompareHint':
+      '찾아보기로 왼쪽·오른쪽 파일을 선택하거나 경로를 붙여넣은 다음 비교를 클릭하세요.',
+    'ui.hexEmptyReadyHint': 'Enter를 누르거나 비교를 클릭해 바이트 단위로 비교하세요.',
+    'ui.hexIdenticalHint': '이 창에서 파일이 일치합니다. 바이트 차이가 없습니다.',
+    'ui.hexFilteredEmptyHint':
+      '이 보기에 다른 바이트가 없습니다. 차이만 보기를 끄면 일치하는 바이트를 볼 수 있습니다.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

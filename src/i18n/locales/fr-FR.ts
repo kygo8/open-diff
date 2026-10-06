@@ -957,6 +957,14 @@ export const frFR: LanguagePack = {
     'ui.tableEmptyReadyHint':
       'Appuyez sur Entrée ou cliquez sur Comparer pour charger et comparer.',
     'ui.tableIdenticalHint': 'Ces tables correspondent. Aucune différence de cellule.',
+    'ui.hexEmptyCompareHint':
+      'Choisissez les fichiers gauche et droit avec Parcourir (ou collez des chemins), puis cliquez sur Comparer.',
+    'ui.hexEmptyReadyHint':
+      'Appuyez sur Entrée ou cliquez sur Comparer pour comparer octet par octet.',
+    'ui.hexIdenticalHint':
+      "Ces fichiers correspondent dans cette fenêtre. Aucune différence d'octets.",
+    'ui.hexFilteredEmptyHint':
+      'Aucun octet différent dans cette vue. Désactivez Différences uniquement pour voir les octets identiques.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

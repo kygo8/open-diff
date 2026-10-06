@@ -937,6 +937,13 @@ export const frFR: LanguagePack = {
       'Rien à synchroniser. Les dossiers correspondent déjà, ou des filtres ont tout masqué.',
     'ui.folderSyncNeedsBothFolders': "Choisissez d'abord les dossiers gauche et droit.",
     'ui.folderSyncNeedsPreview': "Prévisualisez le plan de sync avant d'exécuter Sync Now.",
+    'ui.textMergeEmptyCompareHint':
+      'Choisissez les fichiers gauche et droit avec Parcourir (base optionnelle), puis cliquez sur Charger les fichiers.',
+    'ui.textMergeEmptyReadyHint':
+      'Appuyez sur Entrée ou cliquez sur Charger les fichiers pour fusionner.',
+    'ui.textMergeNoConflictsHint':
+      'Aucun conflit. Vérifiez la sortie, puis cliquez sur Enregistrer la sortie.',
+    'ui.textMergeWorkspaceHint': 'Fusionnez gauche, droite et base optionnelle en un fichier',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

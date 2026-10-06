@@ -918,6 +918,11 @@ export const enUS: LanguagePack = {
       'Nothing to sync. Folders already match, or filters hid every change.',
     'ui.folderSyncNeedsBothFolders': 'Choose both left and right folders first.',
     'ui.folderSyncNeedsPreview': 'Preview the sync plan before running Sync Now.',
+    'ui.textMergeEmptyCompareHint':
+      'Choose left and right files with Browse (optional base), then click Load Files.',
+    'ui.textMergeEmptyReadyHint': 'Press Enter or click Load Files to merge these files.',
+    'ui.textMergeNoConflictsHint': 'No conflicts. Review the output, then click Save Output.',
+    'ui.textMergeWorkspaceHint': 'Merge left, right, and optional base into one file',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

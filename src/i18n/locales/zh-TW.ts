@@ -888,6 +888,10 @@ export const zhTW: LanguagePack = {
     'ui.folderSyncNothingToDo': '無需同步。兩側已一致，或篩選隱藏了全部變更。',
     'ui.folderSyncNeedsBothFolders': '請先選擇左右兩個資料夾。',
     'ui.folderSyncNeedsPreview': '請先預覽同步計畫，再按立即同步。',
+    'ui.textMergeEmptyCompareHint': '用瀏覽選擇左右檔案（基準可選），然後按載入檔案。',
+    'ui.textMergeEmptyReadyHint': '按 Enter 或點載入檔案以合併。',
+    'ui.textMergeNoConflictsHint': '無衝突。檢查輸出後按儲存輸出。',
+    'ui.textMergeWorkspaceHint': '將左右與可選基準合併為一個檔案',
     'ui.registryExportHint':
       '可比較匯出的 .reg、離線 REGF 登錄檔（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比較即時 HKLM/HKCU 鍵。',
     'ui.nextConflict': '下一衝突',

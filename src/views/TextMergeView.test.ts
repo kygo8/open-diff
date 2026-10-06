@@ -77,6 +77,62 @@ describe('TextMergeView', () => {
     expect(outputEditorValue(wrapper)).not.toContain('timeout = 45')
   })
 
+  it('shows a friendly empty state and path placeholders before load', async () => {
+    const wrapper = mount(TextMergeView)
+
+    expect(wrapper.find('[data-testid="text-merge-empty-hint"]').text()).toContain(
+      'Choose left and right files',
+    )
+    expect(wrapper.find('[data-testid="merge-left-path"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="load-text-merge"]').attributes('title')).toContain(
+      'both left and right paths',
+    )
+    expect(wrapper.text()).toContain('Merge left, right, and optional base')
+
+    await wrapper.find('[data-testid="merge-left-path"]').setValue('left.txt')
+    await wrapper.find('[data-testid="merge-right-path"]').setValue('right.txt')
+    expect(wrapper.find('[data-testid="text-merge-empty-hint"]').text()).toContain('Load Files')
+    expect(wrapper.find('[data-testid="load-text-merge"]').attributes('title')).toContain(
+      'Load Files',
+    )
+  })
+
+  it('loads the merge on Enter when both file paths are set', async () => {
+    const wrapper = mount(TextMergeView)
+
+    await wrapper.find('[data-testid="merge-left-path"]').setValue('left.txt')
+    await wrapper.find('[data-testid="merge-right-path"]').setValue('right.txt')
+    await wrapper.find('[data-testid="merge-left-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(mergeTextFiles).toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="merge-conflict-status"]').text()).toContain('1 conflict')
+  })
+
+  it('explains when a merge finds no conflicts', async () => {
+    vi.mocked(mergeTextFiles).mockResolvedValueOnce({
+      leftPath: 'left.txt',
+      rightPath: 'right.txt',
+      centerPath: 'base.txt',
+      outputPath: 'out.txt',
+      leftText: 'same\n',
+      rightText: 'same\n',
+      centerText: 'same\n',
+      outputText: 'same\n',
+      conflicts: [],
+    })
+    const wrapper = mount(TextMergeView)
+
+    await wrapper.find('[data-testid="merge-left-path"]').setValue('left.txt')
+    await wrapper.find('[data-testid="merge-right-path"]').setValue('right.txt')
+    await wrapper.find('[data-testid="load-text-merge"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="text-merge-no-conflicts"]').text()).toContain('No conflicts')
+  })
+
   it('loads a real three-way merge from launch paths', async () => {
     useSessionLaunchStore().setPendingLaunch({
       id: 'merge-launch',

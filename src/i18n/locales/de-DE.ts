@@ -972,6 +972,11 @@ export const deDE: LanguagePack = {
       'Diese Dateien stimmen in diesem Fenster überein. Keine Byte-Unterschiede.',
     'ui.hexFilteredEmptyHint':
       'Keine unterschiedlichen Bytes in dieser Ansicht. Deaktivieren Sie Nur Unterschiede, um übereinstimmende Bytes zu sehen.',
+    'ui.pictureEmptyCompareHint':
+      'Wählen Sie linke und rechte Bilder mit Durchsuchen (oder fügen Sie Pfade ein), dann auf Vergleichen klicken.',
+    'ui.pictureEmptyReadyHint':
+      'Drücken Sie Enter oder klicken Sie auf Vergleichen, um diese Bilder zu vergleichen.',
+    'ui.pictureIdenticalHint': 'Diese Bilder stimmen überein. Keine Pixelunterschiede.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -1049,7 +1054,7 @@ export const deDE: LanguagePack = {
     'ui.tol': 'Tol',
     'ui.range': 'Range',
     'ui.blend': 'Blend',
-    'ui.meta': 'Meta',
+    'ui.meta': 'Metadaten',
     'ui.colors': 'Farben',
     'ui.tweaks': 'Feineinstellungen',
 

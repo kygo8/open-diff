@@ -934,6 +934,10 @@ export const koKR: LanguagePack = {
     'ui.hexIdenticalHint': '이 창에서 파일이 일치합니다. 바이트 차이가 없습니다.',
     'ui.hexFilteredEmptyHint':
       '이 보기에 다른 바이트가 없습니다. 차이만 보기를 끄면 일치하는 바이트를 볼 수 있습니다.',
+    'ui.pictureEmptyCompareHint':
+      '찾아보기로 왼쪽·오른쪽 이미지를 선택하거나 경로를 붙여넣은 다음 비교를 클릭하세요.',
+    'ui.pictureEmptyReadyHint': 'Enter를 누르거나 비교를 클릭해 이미지를 비교하세요.',
+    'ui.pictureIdenticalHint': '이미지가 일치합니다. 픽셀 차이가 없습니다.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -1011,7 +1015,7 @@ export const koKR: LanguagePack = {
     'ui.tol': 'Tol',
     'ui.range': 'Range',
     'ui.blend': 'Blend',
-    'ui.meta': 'Meta',
+    'ui.meta': '메타데이터',
     'ui.colors': '색상',
     'ui.tweaks': '세부 설정',
 

@@ -903,6 +903,9 @@ export const zhCN: LanguagePack = {
     'ui.hexEmptyReadyHint': '按 Enter 或点比较以逐字节比较。',
     'ui.hexIdenticalHint': '在此窗口中这些文件一致。没有字节差异。',
     'ui.hexFilteredEmptyHint': '此视图没有不同字节。关闭“仅差异”可查看相同字节。',
+    'ui.pictureEmptyCompareHint': '用浏览选择左右图像（或粘贴路径），然后点比较。',
+    'ui.pictureEmptyReadyHint': '按 Enter 或点比较以比较这些图像。',
+    'ui.pictureIdenticalHint': '这些图像一致。没有像素差异。',
     'ui.registryExportHint':
       '可比较导出的 .reg、离线 REGF 配置单元（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比较实时 HKLM/HKCU 键。',
     'ui.nextConflict': '下一冲突',

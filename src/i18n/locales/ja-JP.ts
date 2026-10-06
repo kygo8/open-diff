@@ -941,6 +941,10 @@ export const jaJP: LanguagePack = {
     'ui.hexIdenticalHint': 'These files match in this window. No byte differences to show.',
     'ui.hexFilteredEmptyHint':
       'No different bytes in this view. Turn off Differences only to see matching bytes.',
+    'ui.pictureEmptyCompareHint':
+      'Choose left and right images with Browse (or paste paths), then click Compare.',
+    'ui.pictureEmptyReadyHint': 'Press Enter or click Compare to compare these images.',
+    'ui.pictureIdenticalHint': 'These images match. No pixel differences to show.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -1018,7 +1022,7 @@ export const jaJP: LanguagePack = {
     'ui.tol': 'Tol',
     'ui.range': 'Range',
     'ui.blend': 'Blend',
-    'ui.meta': 'Meta',
+    'ui.meta': 'Metadata',
     'ui.colors': '色',
     'ui.tweaks': '調整',
 

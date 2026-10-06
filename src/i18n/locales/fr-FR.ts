@@ -965,6 +965,11 @@ export const frFR: LanguagePack = {
       "Ces fichiers correspondent dans cette fenêtre. Aucune différence d'octets.",
     'ui.hexFilteredEmptyHint':
       'Aucun octet différent dans cette vue. Désactivez Différences uniquement pour voir les octets identiques.',
+    'ui.pictureEmptyCompareHint':
+      'Choisissez les images gauche et droite avec Parcourir (ou collez des chemins), puis cliquez sur Comparer.',
+    'ui.pictureEmptyReadyHint':
+      'Appuyez sur Entrée ou cliquez sur Comparer pour comparer ces images.',
+    'ui.pictureIdenticalHint': 'Ces images correspondent. Aucune différence de pixel.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',
@@ -1042,7 +1047,7 @@ export const frFR: LanguagePack = {
     'ui.tol': 'Tol',
     'ui.range': 'Range',
     'ui.blend': 'Blend',
-    'ui.meta': 'Meta',
+    'ui.meta': 'Métadonnées',
     'ui.colors': 'Couleurs',
     'ui.tweaks': 'Réglages',
 

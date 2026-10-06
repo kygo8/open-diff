@@ -263,6 +263,23 @@ describe('HomeView', () => {
     expect(wrapper.find('.workbench-shell').attributes('data-compact')).toBe('true')
   })
 
+  it('shows a friendly empty selected-session hint instead of Untitled', () => {
+    const wrapper = mountHomeView()
+    const empty = wrapper.find('[data-testid="home-empty-selected"]')
+
+    expect(empty.exists()).toBe(true)
+    expect(empty.text()).toContain('Choose a comparison workspace')
+    expect(empty.text()).toContain('Click a comparison type below to get started')
+    expect(wrapper.find('.bc-selected-title').text()).not.toContain('Untitled')
+    expect(wrapper.find('[data-testid="home-open-selected"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-session-type="folder-compare"]').attributes('title')).toContain(
+      'Compare two folders',
+    )
+    expect(wrapper.find('[data-session-type="text-compare"]').attributes('title')).toContain(
+      'Compare two text files',
+    )
+  })
+
   it('enables Edit for a selected saved session and renames it', async () => {
     seedSampleSessions()
     const wrapper = mountHomeView()

@@ -563,6 +563,10 @@ const canEditSelected = computed(() => {
   return Boolean(session && !session.metadata.locked)
 })
 
+const canOpenSelected = computed(() => Boolean(selectedSavedSession.value))
+
+const hasSelectedSavedSession = computed(() => Boolean(selectedSavedSession.value))
+
 const canRemoveSelected = computed(() => {
   const session = selectedSavedSession.value
 
@@ -614,13 +618,11 @@ function removeSelectedFromTree(): void {
 }
 
 function openSelectedPreview(): void {
-  if (selectedSavedSession.value) {
-    openSavedSession(selectedSavedSession.value)
-
+  if (!selectedSavedSession.value) {
     return
   }
 
-  openSession(quickStartEntries.value[0])
+  openSavedSession(selectedSavedSession.value)
 }
 
 onMounted(() => {
@@ -759,7 +761,7 @@ onMounted(() => {
         <section class="bc-selected-session">
           <div class="bc-selected-title">
             <FolderOpen :size="28" />
-            <div>
+            <div v-if="hasSelectedSavedSession">
               <strong :title="selectedSessionPreview.name">{{
                 selectedSessionPreview.name
               }}</strong>
@@ -770,11 +772,19 @@ onMounted(() => {
                 selectedSessionPreview.rightPath
               }}</span>
             </div>
+            <div
+              v-else
+              data-testid="home-empty-selected"
+            >
+              <strong>{{ $t('ui.chooseAComparisonWorkspace') }}</strong>
+              <span>{{ $t('ui.homeEmptySelectedHint') }}</span>
+            </div>
           </div>
           <div class="bc-selected-actions">
             <button
               type="button"
               data-testid="home-open-selected"
+              :disabled="!canOpenSelected"
               @click="openSelectedPreview"
             >
               {{ $t('ui.open') }}
@@ -839,6 +849,7 @@ onMounted(() => {
               data-testid="home-new-session-card"
               :data-session-type="entry.type"
               :data-card-band="homeCardBand(entry.type)"
+              :title="$t(entry.summaryKey)"
               tabindex="0"
               @click="openSession(entry)"
               @keydown.enter="openSession(entry)"

@@ -865,6 +865,7 @@ export const zhCN: LanguagePack = {
     'ui.howToStart': '怎么开始',
     'ui.neverOpened': '尚未打开',
     'ui.noSavedSessionsYet': '还没有已保存的会话。先做一次比较，再点保存。',
+    'ui.homeEmptySelectedHint': '点击下方比较类型开始，或打开已保存的会话。',
     'ui.sessionHistoryEmpty': '还没有最近会话。先选一种比较方式开始。',
     'ui.emptyCompareHint': '选择左右两侧路径，然后点比较。',
     'ui.registryExportHint':

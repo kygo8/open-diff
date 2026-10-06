@@ -885,6 +885,7 @@ export const koKR: LanguagePack = {
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',
     'ui.noSavedSessionsYet': 'No saved sessions yet. Open a comparison, then save it here.',
+    'ui.homeEmptySelectedHint': '아래 비교 유형을 클릭해 시작하거나, 저장된 세션을 여세요.',
     'ui.sessionHistoryEmpty': 'No recent sessions. Choose a comparison type to begin.',
     'ui.emptyCompareHint': 'Choose left and right paths, then click Compare.',
     'ui.registryExportHint':

@@ -891,6 +891,8 @@ export const enUS: LanguagePack = {
     'ui.howToStart': 'How to start',
     'ui.neverOpened': 'Never opened',
     'ui.noSavedSessionsYet': 'No saved sessions yet. Open a comparison, then save it here.',
+    'ui.homeEmptySelectedHint':
+      'Click a comparison type below to get started, or open a saved session when you have one.',
     'ui.sessionHistoryEmpty': 'No recent sessions. Choose a comparison type to begin.',
     'ui.emptyCompareHint': 'Choose left and right paths, then click Compare.',
     'ui.registryExportHint':

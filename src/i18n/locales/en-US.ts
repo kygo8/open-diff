@@ -92,7 +92,8 @@ export const enUS: LanguagePack = {
     'ui.cancel': 'Cancel',
     'ui.ok': 'OK',
     'ui.captureClipboard': 'Capture Clipboard',
-    'ui.captureTwoClipboardTextsAndCompareThem': 'Capture two clipboard texts and compare them.',
+    'ui.captureTwoClipboardTextsAndCompareThem':
+      'Copy text, click Capture Clipboard for each side, then click Compare Selected.',
     'ui.case': 'Case',
     'ui.change': 'Change',
     'ui.changeRules': 'Change rules',
@@ -956,6 +957,16 @@ export const enUS: LanguagePack = {
     'ui.textPatchEmptyParsedHint': 'This patch has no file sections to show.',
     'ui.textPatchNeedsPatch': 'Paste or open a patch first.',
     'ui.textPatchNeedsSource': 'Choose a source file first.',
+    'ui.clipboardEmptyCaptureHint':
+      'Copy some text, then click Capture Clipboard. Capture again for the other side.',
+    'ui.clipboardEmptySecondHint':
+      'Capture a second clipboard text (or select two history entries), then Compare Selected.',
+    'ui.clipboardEmptyReadyHint': 'Click Compare Selected to compare the two clipboard texts.',
+    'ui.clipboardIdenticalHint': 'These clipboard texts match. No differences to show.',
+    'ui.clipboardNeedsTwoEntries': 'Capture and select two clipboard texts first.',
+    'ui.clipboardEmptyError': 'Clipboard is empty. Copy some text first, then click Capture.',
+    'ui.clipboardUnavailableError': 'Clipboard access is unavailable in this environment.',
+    'ui.clipboardReadFailedError': 'Could not read clipboard text. Check permission and try again.',
     'ui.textPatchSourceTextPlaceholder': 'Paste the original file text for Apply Patch',
     'ui.applyPatchHint': 'Preview the patched text in memory (does not write a file).',
     'ui.applyToFileHint':

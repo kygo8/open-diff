@@ -947,6 +947,18 @@ export const koKR: LanguagePack = {
     'ui.textPatchEmptyParsedHint': '이 패치에 표시할 파일 구간이 없습니다.',
     'ui.textPatchNeedsPatch': '먼저 패치를 붙여넣거나 여세요.',
     'ui.textPatchNeedsSource': '먼저 원본 파일을 선택하세요.',
+    'ui.clipboardEmptyCaptureHint':
+      '텍스트를 복사한 다음 클립보드 캡처를 클릭하세요. 다른 쪽도 다시 캡처하세요.',
+    'ui.clipboardEmptySecondHint':
+      '두 번째 클립보드 텍스트를 캡처하거나 기록에서 두 항목을 선택한 다음 선택 항목 비교를 클릭하세요.',
+    'ui.clipboardEmptyReadyHint': '선택 항목 비교를 클릭하여 두 클립보드 텍스트를 비교하세요.',
+    'ui.clipboardIdenticalHint': '이 클립보드 텍스트는 일치합니다. 표시할 차이가 없습니다.',
+    'ui.clipboardNeedsTwoEntries': '먼저 클립보드 텍스트 두 개를 캡처하고 선택하세요.',
+    'ui.clipboardEmptyError':
+      '클립보드가 비어 있습니다. 먼저 텍스트를 복사한 다음 캡처를 클릭하세요.',
+    'ui.clipboardUnavailableError': '이 환경에서는 클립보드에 접근할 수 없습니다.',
+    'ui.clipboardReadFailedError':
+      '클립보드 텍스트를 읽을 수 없습니다. 권한을 확인한 후 다시 시도하세요.',
     'ui.textPatchSourceTextPlaceholder': '패치 적용을 위해 원본 파일 텍스트를 붙여넣으세요',
     'ui.applyPatchHint': '메모리에서 패치된 텍스트를 미리 봅니다(파일에 쓰지 않음).',
     'ui.applyToFileHint': '패치 결과를 대상 파일에 씁니다(대상이 비어 있으면 원본에 씀).',

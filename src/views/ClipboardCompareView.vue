@@ -2,7 +2,8 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { diffText } from '@/api/diff'
-import { readClipboardTextSource } from '@/app/clipboardSource'
+import { ClipboardSourceError, readClipboardTextSource } from '@/app/clipboardSource'
+import { formatCompareError } from '@/app/compareError'
 import { buildClipboardCompareToolbar, pathPairTitle } from '@/app/sessionToolbars'
 import TextDiffPanel from '@/components/diff/TextDiffPanel.vue'
 import PathMetaFooter from '@/components/workbench/PathMetaFooter.vue'
@@ -42,6 +43,34 @@ const historyCount = computed(() => t('status.capturedCount', { count: history.v
 const canCompare = computed(() => leftEntryId.value !== null && rightEntryId.value !== null)
 const leftEntry = computed(() => history.value.find((entry) => entry.id === leftEntryId.value))
 const rightEntry = computed(() => history.value.find((entry) => entry.id === rightEntryId.value))
+const differenceCount = computed(() => {
+  if (!result.value) {
+    return null
+  }
+
+  const { added, deleted, modified } = result.value.stats
+
+  return added + deleted + modified
+})
+const clipboardsAreIdentical = computed(() => result.value !== null && differenceCount.value === 0)
+const clipboardEmptyStateMessage = computed(() => {
+  if (result.value) {
+    return ''
+  }
+
+  if (canCompare.value) {
+    return t('ui.clipboardEmptyReadyHint')
+  }
+
+  if (history.value.length === 1 || leftEntryId.value !== null || rightEntryId.value !== null) {
+    return t('ui.clipboardEmptySecondHint')
+  }
+
+  return t('ui.clipboardEmptyCaptureHint')
+})
+const compareSelectedTip = computed(() =>
+  canCompare.value ? t('ui.compareSelected') : t('ui.clipboardNeedsTwoEntries'),
+)
 const leftClipboardStamp = computed(() =>
   leftEntry.value ? { size: leftEntry.value.characterCount, modifiedAtMs: 0 } : null,
 )
@@ -86,13 +115,9 @@ watchEffect(() => {
     comparisonStatus = t('status.compared')
   }
 
-  const differenceCount = result.value
-    ? result.value.stats.added + result.value.stats.deleted + result.value.stats.modified
-    : null
-
   statusBar.reportStatus({
     comparisonStatus,
-    differenceCount,
+    differenceCount: differenceCount.value,
     filterStatus: t('status.allRows'),
     source: 'clipboard-compare',
     chromeKind: 'clipboard-session',
@@ -133,10 +158,7 @@ async function captureClipboard(): Promise<void> {
 
     rightEntryId.value ??= entry.id
   } catch (event) {
-    error.value =
-      typeof event === 'object' && event !== null && 'message' in event
-        ? String(event.message)
-        : String(event)
+    error.value = formatClipboardCaptureError(event)
   } finally {
     loading.value = false
   }
@@ -160,7 +182,7 @@ async function compareClipboardHistory(): Promise<void> {
       algorithm: 'myers',
     })
   } catch (event) {
-    error.value = String(event)
+    error.value = formatCompareError(event, t)
   } finally {
     comparing.value = false
   }
@@ -201,6 +223,22 @@ function selectionLabel(entry: ClipboardHistoryEntry): string {
 
 function countLines(text: string): number {
   return text.length === 0 ? 0 : text.split('\n').length
+}
+
+function formatClipboardCaptureError(event: unknown): string {
+  if (event instanceof ClipboardSourceError) {
+    if (event.code === 'clipboard-empty') {
+      return t('ui.clipboardEmptyError')
+    }
+
+    if (event.code === 'clipboard-unavailable') {
+      return t('ui.clipboardUnavailableError')
+    }
+
+    return t('ui.clipboardReadFailedError')
+  }
+
+  return formatCompareError(event, t)
 }
 
 function setCaptureStatus(key: string, params: Record<string, string | number> = {}): void {
@@ -283,6 +321,7 @@ watch(
           size="small"
           :disabled="!canCompare"
           :loading="comparing"
+          :title="compareSelectedTip"
           data-testid="clipboard-compare"
           @click="compareClipboardHistory"
           >{{ $t('ui.compareSelected') }}</NButton
@@ -326,6 +365,7 @@ watch(
         v-if="error"
         type="error"
         :bordered="false"
+        data-testid="clipboard-compare-error"
         >{{ error }}</NAlert
       >
 
@@ -364,15 +404,23 @@ watch(
         </aside>
 
         <section class="diff-pane">
+          <p
+            v-if="clipboardsAreIdentical"
+            class="empty"
+            data-testid="clipboard-identical-hint"
+          >
+            {{ $t('ui.clipboardIdenticalHint') }}
+          </p>
           <TextDiffPanel
-            v-if="result"
+            v-else-if="result"
             :lines="result.lines"
           />
           <div
-            v-else
+            v-else-if="!error"
             class="empty"
+            data-testid="clipboard-empty-hint"
           >
-            {{ $t('ui.captureTwoClipboardTextsAndCompareThem') }}
+            {{ clipboardEmptyStateMessage }}
           </div>
         </section>
       </section>

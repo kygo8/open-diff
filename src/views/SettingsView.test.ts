@@ -57,6 +57,43 @@ describe('SettingsView', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true)
   })
 
+  it('explains Options vs Session Settings without Policy jargon', () => {
+    const wrapper = mount(SettingsView)
+
+    expect(wrapper.text()).toContain('App-wide defaults')
+    expect(wrapper.text()).toContain('Session Settings')
+    expect(wrapper.find('[data-testid="options-cluster-hint"]').text()).toContain('Formats control')
+    expect(wrapper.find('[data-testid="options-autosave-hint"]').text()).toContain('Tweaks')
+    expect(wrapper.find('[data-testid="options-cluster-hint"]').exists()).toBe(true)
+    expect(wrapper.text()).not.toContain('rule references')
+    expect(wrapper.text()).not.toContain('credential references')
+  })
+
+  it('uses plain Formats and Profiles card copy', async () => {
+    const wrapper = mount(SettingsView)
+
+    await wrapper.find('[data-testid="options-section-formats"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-formats-card"]').text()).toContain(
+      'Named rules that match extensions',
+    )
+
+    await wrapper.find('[data-testid="options-section-profiles"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-profiles-card"]').text()).toContain(
+      'remote endpoints',
+    )
+    expect(wrapper.find('[data-testid="options-profiles-card"]').text()).not.toContain(
+      'credential references',
+    )
+
+    await wrapper.find('[data-testid="options-section-reports"]').trigger('click')
+    expect(wrapper.find('[data-testid="options-reports-card"]').text()).toContain(
+      'only-on-one-side',
+    )
+    expect(wrapper.find('[data-testid="options-reports-card"]').text()).not.toMatch(
+      /Include orphans/i,
+    )
+  })
+
   it('switches options sections and persists the auto-save limit', async () => {
     const wrapper = mountSettingsView()
     const settings = useSettingsStore()

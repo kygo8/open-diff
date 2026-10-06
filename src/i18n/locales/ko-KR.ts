@@ -150,7 +150,7 @@ export const koKR: LanguagePack = {
     'ui.extensions': '확장',
     'ui.field': '필드',
     'ui.file': '파일',
-    'ui.fileFormats': '파일 형식...',
+    'ui.fileFormats': '파일 형식',
     'ui.fileNames': '파일 이름',
     'ui.fileVersion': '파일 버전',
     'ui.find': '찾다',
@@ -198,7 +198,7 @@ export const koKR: LanguagePack = {
     'ui.saveWorkspaceAs': '작업 공간을 다른 이름으로 저장...',
     'ui.closeTab': '탭 닫기',
     'ui.exit': '종료',
-    'ui.options': '옵션...',
+    'ui.options': '옵션',
     'ui.exportSettings': '설정 내보내기...',
     'ui.importSettings': '설정 가져오기...',
     'ui.restoreFactoryDefaults': '공장 기본값 복원...',
@@ -237,8 +237,20 @@ export const koKR: LanguagePack = {
     'ui.m': 'M',
     'ui.manage': '관리하다',
     'ui.manageMatchingRulesDefaultViewsAndRuleReferences':
-      '일치 규칙, 기본 보기 및 규칙 참조를 관리합니다.',
-    'ui.manageRemoteEndpointsAndCredentialReferences': '원격 끝점 및 자격 증명 참조를 관리합니다.',
+      '파일 형식을 어떻게 열고 어떤 비교 보기를 쓸지 정합니다.',
+    'ui.manageRemoteEndpointsAndCredentialReferences':
+      '저장된 원격 서버와 클라우드 계정을 추가하거나 편집합니다.',
+    'ui.optionsPageSubtitle': '앱 전역 기본값입니다. 세션 설정은 열린 세션의 규칙만 바꿉니다.',
+    'ui.optionsClusterHint':
+      '형식은 파일 열기 방식을, 프로필은 원격 연결을, 보고서는 내보내기 기본값을 다룹니다. 세션별 비교 규칙은 세션 설정에 있습니다.',
+    'ui.optionsAutoSaveHint': '편집하면 바로 저장됩니다. 공장 기본값 복원은 미세 조정에 있습니다.',
+    'ui.formatDefinitionsHint': '확장자를 텍스트·헥스·표 등 보기에 연결하는 이름 있는 규칙입니다.',
+    'ui.connectionProfilesHint': '폴더 비교 경로에 쓰는 저장된 SFTP·클라우드 등 원격 끝점입니다.',
+    'ui.fileFormatsPageHint':
+      '형식은 파일 종류마다 어떤 비교 보기를 열지 정합니다. 정의를 바꾼 뒤 저장하세요.',
+    'ui.remoteProfilesPageHint':
+      '원격 서버와 클라우드 계정을 저장한 뒤 폴더 비교 경로를 찾을 때 고르세요.',
+    'ui.remoteProfilesEmpty': '프로필이 없습니다. 새로 만들기로 SFTP·FTP·클라우드를 추가하세요.',
     'ui.manualMappingsOverrideAutomaticNameMatches': '수동 매핑은 자동 이름 일치를 재정의합니다.',
     'ui.mediaCompare': '미디어 비교',
     'ui.mergeConflicts': '병합 충돌',
@@ -294,7 +306,7 @@ export const koKR: LanguagePack = {
     'ui.productVersion': '제품 버전',
     'ui.profileCountLabel': '프로필',
     'ui.profileDetails': '프로필 세부정보',
-    'ui.profiles': '프로필...',
+    'ui.profiles': '프로필',
     'ui.profileStore': '프로필 스토어',
     'ui.protocol': '규약',
     'ui.quickCompare': '빠른 비교',
@@ -1383,7 +1395,7 @@ export const koKR: LanguagePack = {
     'ui.profilePassiveFtpHint': '여기에 저장하는 새 FTP / FTPS 프로필에 적용됩니다.',
     'ui.reportIncludeIdentical': '폴더 보고서에 동일 항목 포함',
     'ui.reportIncludeIdenticalHint': '끄면 폴더 비교 보고서에서 동일 행을 생략합니다.',
-    'ui.reportIncludeOrphans': '폴더 보고서에 고아 항목 포함',
+    'ui.reportIncludeOrphans': '폴더 보고서에 한쪽에만 있는 항목 포함',
     'ui.reportIncludeOrphansHint':
       '끄면 폴더 비교 보고서에서 왼쪽 전용/오른쪽 전용 행을 생략합니다.',
     'ui.showMillisecondsInTimestamps': '타임스탬프에 밀리초 표시',

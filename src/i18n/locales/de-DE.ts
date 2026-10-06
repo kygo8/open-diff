@@ -158,7 +158,7 @@ export const deDE: LanguagePack = {
     'ui.extensions': 'Erweiterungen',
     'ui.field': 'Feld',
     'ui.file': 'Datei',
-    'ui.fileFormats': 'Dateiformate...',
+    'ui.fileFormats': 'Dateiformate',
     'ui.fileNames': 'Dateinamen',
     'ui.fileVersion': 'Dateiversion',
     'ui.find': 'Finden',
@@ -207,7 +207,7 @@ export const deDE: LanguagePack = {
     'ui.saveWorkspaceAs': 'Arbeitsbereich speichern unter...',
     'ui.closeTab': 'Tab schließen',
     'ui.exit': 'Beenden',
-    'ui.options': 'Optionen...',
+    'ui.options': 'Optionen',
     'ui.exportSettings': 'Einstellungen exportieren...',
     'ui.importSettings': 'Einstellungen importieren...',
     'ui.restoreFactoryDefaults': 'Werkseinstellungen wiederherstellen...',
@@ -247,9 +247,25 @@ export const deDE: LanguagePack = {
     'ui.m': 'M',
     'ui.manage': 'Verwalten',
     'ui.manageMatchingRulesDefaultViewsAndRuleReferences':
-      'Verwalten Sie übereinstimmende Regeln, Standardansichten und Regelverweise.',
+      'Festlegen, wie Dateitypen geöffnet werden und welche Vergleichsansicht sie nutzen.',
     'ui.manageRemoteEndpointsAndCredentialReferences':
-      'Verwalten Sie Remote-Endpunkte und Anmeldeinformationsreferenzen.',
+      'Gespeicherte Remote-Server und Cloud-Konten hinzufügen oder bearbeiten.',
+    'ui.optionsPageSubtitle':
+      'App-weite Vorgaben. Sitzungseinstellungen ändern Regeln nur für die geöffnete Sitzung.',
+    'ui.optionsClusterHint':
+      'Formate steuern, wie Dateien öffnen. Profile sind Remote-Verbindungen. Berichte setzen Exportvorgaben. Vergleichsregeln pro Sitzung stehen in den Sitzungseinstellungen.',
+    'ui.optionsAutoSaveHint':
+      'Änderungen werden beim Bearbeiten gespeichert. Werkseinstellungen wiederherstellen liegt unter Tweaks.',
+    'ui.formatDefinitionsHint':
+      'Benannte Regeln, die Erweiterungen Text-, Hex-, Tabellen- und anderen Ansichten zuordnen.',
+    'ui.connectionProfilesHint':
+      'Gespeicherte SFTP-, Cloud- und andere Remote-Endpunkte für Ordnervergleichspfad.',
+    'ui.fileFormatsPageHint':
+      'Formate entscheiden, welche Vergleichsansicht für jeden Dateityp öffnet. Nach dem Bearbeiten speichern.',
+    'ui.remoteProfilesPageHint':
+      'Remote-Server und Cloud-Konten speichern und dann beim Durchsuchen von Ordnervergleichspfaden wählen.',
+    'ui.remoteProfilesEmpty':
+      'Noch keine Profile. Neu klicken, um SFTP, FTP oder Cloud hinzuzufügen.',
     'ui.manualMappingsOverrideAutomaticNameMatches':
       'Manuelle Zuordnungen haben Vorrang vor automatischen Namensübereinstimmungen.',
     'ui.mediaCompare': 'Medienvergleich',
@@ -307,7 +323,7 @@ export const deDE: LanguagePack = {
     'ui.productVersion': 'Produktversion',
     'ui.profileCountLabel': 'Profile',
     'ui.profileDetails': 'Profildetails',
-    'ui.profiles': 'Profile...',
+    'ui.profiles': 'Profile',
     'ui.profileStore': 'Profilspeicher',
     'ui.protocol': 'Protokoll',
     'ui.quickCompare': 'Schnellvergleich',
@@ -1449,7 +1465,7 @@ export const deDE: LanguagePack = {
     'ui.reportIncludeIdentical': 'Identische Einträge in Ordnerberichten',
     'ui.reportIncludeIdenticalHint':
       'Wenn aus, lässt der Ordnervergleichsbericht Zeilen mit Status Gleich weg.',
-    'ui.reportIncludeOrphans': 'Verwaiste Einträge in Ordnerberichten',
+    'ui.reportIncludeOrphans': 'Nur-auf-einer-Seite-Einträge in Ordnerberichten einschließen',
     'ui.reportIncludeOrphansHint':
       'Wenn aus, lässt der Ordnervergleichsbericht nur-links- und nur-rechts-Zeilen weg.',
     'ui.showMillisecondsInTimestamps': 'Millisekunden in Zeitstempeln anzeigen',

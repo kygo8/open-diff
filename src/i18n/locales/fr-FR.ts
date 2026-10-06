@@ -155,7 +155,7 @@ export const frFR: LanguagePack = {
     'ui.extensions': 'Rallonges',
     'ui.field': 'Champ',
     'ui.file': 'Fichier',
-    'ui.fileFormats': 'Formats de fichier...',
+    'ui.fileFormats': 'Formats de fichier',
     'ui.fileNames': 'Noms de fichiers',
     'ui.fileVersion': 'Version du fichier',
     'ui.find': 'Trouver',
@@ -204,7 +204,7 @@ export const frFR: LanguagePack = {
     'ui.saveWorkspaceAs': 'Enregistrer l’espace de travail sous...',
     'ui.closeTab': 'Fermer l’onglet',
     'ui.exit': 'Quitter',
-    'ui.options': 'Options...',
+    'ui.options': 'Options',
     'ui.exportSettings': 'Exporter les paramètres...',
     'ui.importSettings': 'Importer les paramètres...',
     'ui.restoreFactoryDefaults': 'Restaurer les paramètres d’usine...',
@@ -244,9 +244,24 @@ export const frFR: LanguagePack = {
     'ui.m': 'M',
     'ui.manage': 'Gérer',
     'ui.manageMatchingRulesDefaultViewsAndRuleReferences':
-      'Gérez les règles de correspondance, les vues par défaut et les références aux règles.',
+      'Choisir comment les types de fichiers s’ouvrent et quelle vue de comparaison utiliser.',
     'ui.manageRemoteEndpointsAndCredentialReferences':
-      'Gérez les points de terminaison distants et les références d’informations d’identification.',
+      'Ajouter ou modifier des serveurs distants et comptes cloud enregistrés.',
+    'ui.optionsPageSubtitle':
+      'Valeurs par défaut de l’application. Les paramètres de session changent les règles de la session ouverte uniquement.',
+    'ui.optionsClusterHint':
+      'Les formats contrôlent l’ouverture des fichiers. Les profils sont des connexions distantes. Les rapports définissent l’export. Les règles de comparaison de session sont dans Paramètres de session.',
+    'ui.optionsAutoSaveHint':
+      'Les modifications sont enregistrées à l’édition. Restaurer les défauts d’usine se trouve sous Ajustements.',
+    'ui.formatDefinitionsHint':
+      'Règles nommées qui associent les extensions aux vues Texte, Hex, Tableau, etc.',
+    'ui.connectionProfilesHint':
+      'Points de terminaison SFTP, cloud et autres utilisés par les chemins de comparaison de dossiers.',
+    'ui.fileFormatsPageHint':
+      'Les formats décident quelle vue de comparaison ouvre chaque type de fichier. Enregistrez après modification.',
+    'ui.remoteProfilesPageHint':
+      'Enregistrez serveurs distants et comptes cloud, puis choisissez-les en parcourant les chemins de dossiers.',
+    'ui.remoteProfilesEmpty': 'Aucun profil. Cliquez sur Nouveau pour ajouter SFTP, FTP ou cloud.',
     'ui.manualMappingsOverrideAutomaticNameMatches':
       'Les mappages manuels remplacent les correspondances de noms automatiques.',
     'ui.mediaCompare': 'Comparaison des médias',
@@ -303,7 +318,7 @@ export const frFR: LanguagePack = {
     'ui.productVersion': 'Version du produit',
     'ui.profileCountLabel': 'profils',
     'ui.profileDetails': 'Détails du profil',
-    'ui.profiles': 'Profils...',
+    'ui.profiles': 'Profils',
     'ui.profileStore': 'Magasin de profils',
     'ui.protocol': 'Protocole',
     'ui.quickCompare': 'Comparaison rapide',
@@ -1452,7 +1467,8 @@ export const frFR: LanguagePack = {
     'ui.reportIncludeIdentical': 'Inclure les éléments identiques dans les rapports de dossier',
     'ui.reportIncludeIdenticalHint':
       'Si désactivé, les exports de rapport omettent les lignes Identique.',
-    'ui.reportIncludeOrphans': 'Inclure les orphelins dans les rapports de dossier',
+    'ui.reportIncludeOrphans':
+      'Inclure les éléments présents d’un seul côté dans les rapports de dossiers',
     'ui.reportIncludeOrphansHint':
       'Si désactivé, les exports omettent les lignes gauche seulement et droite seulement.',
     'ui.showMillisecondsInTimestamps': 'Afficher les millisecondes dans les horodatages',

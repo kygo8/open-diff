@@ -59,9 +59,10 @@ function mountFolderMergeView(): VueWrapper {
     global: {
       stubs: {
         NButton: {
-          props: ['disabled', 'loading'],
+          props: ['disabled', 'loading', 'title'],
           emits: ['click'],
-          template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+          template:
+            '<button :disabled="disabled" :title="title" @click="$emit(\'click\')"><slot /></button>',
         },
       },
     },
@@ -99,6 +100,62 @@ describe('FolderMergeView', () => {
     })
     vi.mocked(buildFolderMergePlan).mockResolvedValue(createMergePlanResponse())
     vi.mocked(executeFolderMergePlan).mockResolvedValue(createMergeExecutionResponse())
+  })
+
+  it('shows a friendly empty state and path placeholders before build', async () => {
+    const wrapper = mountFolderMergeView()
+
+    expect(wrapper.find('[data-testid="folder-merge-empty-state"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="folder-merge-empty-state"]').text()).toContain(
+      'Choose left, base, and right folders',
+    )
+    expect(
+      wrapper.find('[data-testid="folder-merge-left-path"]').attributes('placeholder'),
+    ).toContain('Browse or paste a folder path')
+    expect(wrapper.find('[data-testid="folder-merge-build-plan"]').attributes('title')).toContain(
+      'left, base, and right folders',
+    )
+    expect(wrapper.find('[data-testid="folder-merge-execute-plan"]').attributes('title')).toContain(
+      'left, base, and right folders',
+    )
+
+    await fillMergePaths(wrapper)
+    expect(wrapper.find('[data-testid="folder-merge-empty-state"]').text()).toContain('Build Plan')
+    expect(
+      wrapper.find('[data-testid="folder-merge-build-plan"]').attributes('disabled'),
+    ).toBeUndefined()
+    expect(wrapper.find('[data-testid="folder-merge-execute-plan"]').attributes('title')).toContain(
+      'Build a merge plan',
+    )
+  })
+
+  it('builds the merge plan on Enter when all folder paths are set', async () => {
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-left-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(buildFolderMergePlan).toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="folder-merge-plan"]').exists()).toBe(true)
+  })
+
+  it('explains when a merge plan finds nothing to do', async () => {
+    vi.mocked(buildFolderMergePlan).mockResolvedValueOnce({
+      ...createMergePlanResponse(),
+      rows: [],
+      summary: { actions: 0, automatic: 0, conflicts: 0 },
+    })
+
+    const wrapper = mountFolderMergeView()
+
+    await fillMergePaths(wrapper)
+    await wrapper.find('[data-testid="folder-merge-build-plan"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="folder-merge-empty-state"]').text()).toContain(
+      'Nothing to merge',
+    )
   })
 
   it('renders left, base, right, and output folder inputs', () => {

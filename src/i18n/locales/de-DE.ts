@@ -950,6 +950,15 @@ export const deDE: LanguagePack = {
       'Keine Konflikte. Prüfen Sie die Ausgabe und klicken Sie auf Ausgabe speichern.',
     'ui.textMergeWorkspaceHint':
       'Linke, rechte und optionale Basisdatei zu einer Datei zusammenführen',
+    'ui.folderMergeEmptyCompareHint':
+      'Wählen Sie linke, Basis- und rechte Ordner mit Durchsuchen (oder fügen Sie Pfade ein), dann auf Plan erstellen klicken.',
+    'ui.folderMergeEmptyReadyHint':
+      'Klicken Sie auf Plan erstellen, um zu sehen, was in den Ausgabeordner kopiert wird.',
+    'ui.folderMergeNothingToDo':
+      'Nichts zu mergen. Ordner entsprechen dem Plan, oder Filter haben alles ausgeblendet.',
+    'ui.folderMergeNeedsFolders': 'Wählen Sie zuerst linke, Basis- und rechte Ordner.',
+    'ui.folderMergeNeedsPlan':
+      'Erstellen Sie einen Merge-Plan, bevor Sie Merge zur Ausgabe ausführen.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

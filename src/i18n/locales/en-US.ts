@@ -923,6 +923,14 @@ export const enUS: LanguagePack = {
     'ui.textMergeEmptyReadyHint': 'Press Enter or click Load Files to merge these files.',
     'ui.textMergeNoConflictsHint': 'No conflicts. Review the output, then click Save Output.',
     'ui.textMergeWorkspaceHint': 'Merge left, right, and optional base into one file',
+    'ui.folderMergeEmptyCompareHint':
+      'Choose left, base, and right folders with Browse (or paste paths), then click Build Plan.',
+    'ui.folderMergeEmptyReadyHint':
+      'Click Build Plan to see what will copy into the output folder.',
+    'ui.folderMergeNothingToDo':
+      'Nothing to merge. Folders already match the plan, or filters hid every change.',
+    'ui.folderMergeNeedsFolders': 'Choose left, base, and right folders first.',
+    'ui.folderMergeNeedsPlan': 'Build a merge plan before running Merge to Output.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

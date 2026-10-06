@@ -890,6 +890,12 @@ export const zhCN: LanguagePack = {
     'ui.textMergeEmptyReadyHint': '按 Enter 或点加载文件以合并。',
     'ui.textMergeNoConflictsHint': '无冲突。检查输出后点保存输出。',
     'ui.textMergeWorkspaceHint': '将左右与可选基准合并为一个文件',
+    'ui.folderMergeEmptyCompareHint':
+      '用浏览选择左、基准、右文件夹（或粘贴路径），然后点生成计划。',
+    'ui.folderMergeEmptyReadyHint': '点生成计划以查看将复制到输出文件夹的内容。',
+    'ui.folderMergeNothingToDo': '无需合并。文件夹已与计划一致，或筛选隐藏了全部更改。',
+    'ui.folderMergeNeedsFolders': '请先选择左、基准、右三个文件夹。',
+    'ui.folderMergeNeedsPlan': '请先生成合并计划，再点合并到输出。',
     'ui.registryExportHint':
       '可比较导出的 .reg、离线 REGF 配置单元（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比较实时 HKLM/HKCU 键。',
     'ui.nextConflict': '下一冲突',

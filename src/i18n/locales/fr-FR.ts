@@ -944,6 +944,14 @@ export const frFR: LanguagePack = {
     'ui.textMergeNoConflictsHint':
       'Aucun conflit. Vérifiez la sortie, puis cliquez sur Enregistrer la sortie.',
     'ui.textMergeWorkspaceHint': 'Fusionnez gauche, droite et base optionnelle en un fichier',
+    'ui.folderMergeEmptyCompareHint':
+      'Choisissez les dossiers gauche, base et droit avec Parcourir (ou collez des chemins), puis cliquez sur Créer le plan.',
+    'ui.folderMergeEmptyReadyHint':
+      'Cliquez sur Créer le plan pour voir ce qui sera copié dans le dossier de sortie.',
+    'ui.folderMergeNothingToDo':
+      'Rien à fusionner. Les dossiers correspondent déjà au plan, ou des filtres ont tout masqué.',
+    'ui.folderMergeNeedsFolders': "Choisissez d'abord les dossiers gauche, base et droit.",
+    'ui.folderMergeNeedsPlan': "Créez un plan de fusion avant d'exécuter Fusion vers la sortie.",
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

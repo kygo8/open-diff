@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatCompareError } from '@/app/compareError'
 import { fetchPathVolumeInfo, formatFreeSpaceQuantity } from '@/app/diskFreeSpace'
 import { useRouter } from 'vue-router'
 import { useTabsStore } from '@/stores/tabs'
@@ -94,6 +95,9 @@ const plan = ref<FolderMergePlanResponse>()
 const execution = ref<FolderMergeExecutionResponse>()
 const mergeExecuting = ref(false)
 const mergeExecutionError = ref<string>()
+const mergePlanError = ref('')
+const planBuilding = ref(false)
+const lastPlannedRoots = ref('')
 const reportStatus = ref('')
 const reportError = ref('')
 const router = useRouter()
@@ -288,8 +292,41 @@ const visiblePlanRows = computed(() =>
   ),
 )
 const canBuildMergePlan = computed(() =>
-  Boolean(leftPath.value && basePath.value && rightPath.value),
+  Boolean(leftPath.value.trim() && basePath.value.trim() && rightPath.value.trim()),
 )
+
+const mergeNeedsFolders = computed(() => !canBuildMergePlan.value)
+
+const folderMergeEmptyStateMessage = computed(() => {
+  const left = leftPath.value.trim()
+  const base = basePath.value.trim()
+  const right = rightPath.value.trim()
+  const roots = `${left}|${base}|${right}`
+  const plannedCurrent = Boolean(lastPlannedRoots.value) && lastPlannedRoots.value === roots
+
+  if (plannedCurrent && planRows.value.length === 0) {
+    return t('ui.folderMergeNothingToDo')
+  }
+
+  if (left && base && right) {
+    return t('ui.folderMergeEmptyReadyHint')
+  }
+
+  return t('ui.folderMergeEmptyCompareHint')
+})
+
+const showFolderMergeEmptyHint = computed(() => !planBuilding.value && planRows.value.length === 0)
+
+function onFolderMergePathEnter(): void {
+  recordFolderPathCommit()
+
+  if (!canBuildMergePlan.value || planBuilding.value || mergeExecuting.value) {
+    return
+  }
+
+  void buildFolderMergePlan()
+}
+
 const mergeSessionToolbar = computed(() =>
   buildFolderMergeToolbar({
     home: true,
@@ -974,7 +1011,14 @@ function saveSessionLog(): void {
 }
 
 async function buildFolderMergePlan(): Promise<void> {
+  if (!canBuildMergePlan.value || planBuilding.value) {
+    return
+  }
+
   const startedAt = performance.now()
+
+  planBuilding.value = true
+  mergePlanError.value = ''
 
   appendSessionLog(`${t('ui.username')}:`)
   if (leftPath.value && rightPath.value) {
@@ -985,29 +1029,40 @@ async function buildFolderMergePlan(): Promise<void> {
     )
   }
 
-  plan.value = await requestFolderMergePlan({
-    leftRoot: leftPath.value,
-    baseRoot: basePath.value,
-    rightRoot: rightPath.value,
-    outputRoot: outputPath.value,
-    archiveExtensions: [...settings.archiveExtensions],
-    filters: { ...folderNameFilters.value },
-  })
+  try {
+    plan.value = await requestFolderMergePlan({
+      leftRoot: leftPath.value,
+      baseRoot: basePath.value,
+      rightRoot: rightPath.value,
+      outputRoot: outputPath.value,
+      archiveExtensions: [...settings.archiveExtensions],
+      filters: { ...folderNameFilters.value },
+    })
 
-  loadTimeSeconds.value = elapsedSecondsSince(startedAt)
-  execution.value = undefined
-  mergeExecutionError.value = undefined
-  reportStatus.value = ''
-  reportError.value = ''
-  collapsedPrefixes.value = new Set()
-  checkedRowIds.value = new Set()
-  excludedRowIds.value = new Set()
-  mergeActionOverrides.value = []
-  pendingMergeSafetyRows.value = []
-  lastSelectionAction.value = ''
-  mergeOpenError.value = ''
-  if (plan.value.rows.length > 0) {
-    selectedPlanRowId.value = plan.value.rows[0].id
+    lastPlannedRoots.value = `${leftPath.value.trim()}|${basePath.value.trim()}|${rightPath.value.trim()}`
+    execution.value = undefined
+    mergeExecutionError.value = undefined
+    reportStatus.value = ''
+    reportError.value = ''
+    collapsedPrefixes.value = new Set()
+    checkedRowIds.value = new Set()
+    excludedRowIds.value = new Set()
+    mergeActionOverrides.value = []
+    pendingMergeSafetyRows.value = []
+    lastSelectionAction.value = ''
+    mergeOpenError.value = ''
+    if (plan.value.rows.length > 0) {
+      selectedPlanRowId.value = plan.value.rows[0].id
+    } else {
+      selectedPlanRowId.value = ''
+    }
+  } catch (error) {
+    mergePlanError.value = formatCompareError(error, t)
+    plan.value = undefined
+    lastPlannedRoots.value = ''
+  } finally {
+    loadTimeSeconds.value = elapsedSecondsSince(startedAt)
+    planBuilding.value = false
   }
 }
 
@@ -1240,7 +1295,7 @@ async function executeMergeNow(): Promise<void> {
       overrides: currentMergeOverrides(),
     })
   } catch (error) {
-    mergeExecutionError.value = error instanceof Error ? error.message : String(error)
+    mergeExecutionError.value = formatCompareError(error, t)
   } finally {
     mergeExecuting.value = false
   }
@@ -2001,8 +2056,9 @@ watch(
               v-model="leftPath"
               class="path-input"
               data-testid="folder-merge-left-path"
-              :title="leftPath"
-              @keydown.enter.prevent="recordFolderPathCommit"
+              :title="leftPath || $t('ui.folderPathPlaceholder')"
+              :placeholder="$t('ui.folderPathPlaceholder')"
+              @keydown.enter.prevent="onFolderMergePathEnter"
               @change="recordFolderPathCommit"
             />
             <SessionPathActions
@@ -2026,8 +2082,9 @@ watch(
               v-model="basePath"
               class="path-input"
               data-testid="folder-merge-base-path"
-              :title="basePath"
-              @keydown.enter.prevent="recordFolderPathCommit"
+              :title="basePath || $t('ui.folderPathPlaceholder')"
+              :placeholder="$t('ui.folderPathPlaceholder')"
+              @keydown.enter.prevent="onFolderMergePathEnter"
               @change="recordFolderPathCommit"
             />
             <SessionPathActions
@@ -2048,8 +2105,9 @@ watch(
               v-model="rightPath"
               class="path-input"
               data-testid="folder-merge-right-path"
-              :title="rightPath"
-              @keydown.enter.prevent="recordFolderPathCommit"
+              :title="rightPath || $t('ui.folderPathPlaceholder')"
+              :placeholder="$t('ui.folderPathPlaceholder')"
+              @keydown.enter.prevent="onFolderMergePathEnter"
               @change="recordFolderPathCommit"
             />
             <SessionPathActions
@@ -2102,7 +2160,8 @@ watch(
             v-model="outputPath"
             class="path-input"
             data-testid="folder-merge-output-path"
-            :title="outputPath"
+            :title="outputPath || $t('ui.folderPathPlaceholder')"
+            :placeholder="$t('ui.folderPathPlaceholder')"
             :disabled="mergeTargetLocked"
             :aria-label="$t('ui.outputFolder')"
           />
@@ -2127,6 +2186,9 @@ watch(
             size="small"
             type="primary"
             data-testid="folder-merge-build-plan"
+            :disabled="!canBuildMergePlan || planBuilding"
+            :loading="planBuilding"
+            :title="mergeNeedsFolders ? $t('ui.folderMergeNeedsFolders') : $t('ui.buildPlan')"
             @click="buildFolderMergePlan"
             >{{ $t('ui.buildPlan') }}</NButton
           >
@@ -2171,6 +2233,13 @@ watch(
             data-testid="folder-merge-execute-plan"
             :disabled="!hasPlan || mergeExecuting"
             :loading="mergeExecuting"
+            :title="
+              mergeNeedsFolders
+                ? $t('ui.folderMergeNeedsFolders')
+                : !hasPlan
+                  ? $t('ui.folderMergeNeedsPlan')
+                  : undefined
+            "
             @click="runFolderMerge"
             >{{ $t('ui.merge') }} -> {{ $t('ui.output') }}</NButton
           >
@@ -2414,6 +2483,21 @@ watch(
           >{{ lastSelectionAction }}</span
         >
       </section>
+
+      <p
+        v-if="showFolderMergeEmptyHint"
+        class="empty"
+        data-testid="folder-merge-empty-state"
+      >
+        {{ folderMergeEmptyStateMessage }}
+      </p>
+      <p
+        v-if="mergePlanError"
+        class="empty merge-plan-error"
+        data-testid="folder-merge-plan-error"
+      >
+        {{ mergePlanError }}
+      </p>
 
       <section
         v-if="hasPlan"
@@ -3504,5 +3588,9 @@ h1 {
   font-size: 11px;
   font-weight: 600;
   line-height: 14px;
+}
+
+.merge-plan-error {
+  color: var(--error-color, #b42318);
 }
 </style>

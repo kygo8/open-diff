@@ -886,6 +886,10 @@ export const zhCN: LanguagePack = {
     'ui.folderSyncNothingToDo': '无需同步。两侧已一致，或筛选隐藏了全部更改。',
     'ui.folderSyncNeedsBothFolders': '请先选择左右两个文件夹。',
     'ui.folderSyncNeedsPreview': '请先预览同步计划，再点立即同步。',
+    'ui.textMergeEmptyCompareHint': '用浏览选择左右文件（基准可选），然后点加载文件。',
+    'ui.textMergeEmptyReadyHint': '按 Enter 或点加载文件以合并。',
+    'ui.textMergeNoConflictsHint': '无冲突。检查输出后点保存输出。',
+    'ui.textMergeWorkspaceHint': '将左右与可选基准合并为一个文件',
     'ui.registryExportHint':
       '可比较导出的 .reg、离线 REGF 配置单元（SYSTEM/SOFTWARE/NTUSER.DAT），或在 Windows 上比较实时 HKLM/HKCU 键。',
     'ui.nextConflict': '下一冲突',

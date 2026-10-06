@@ -936,6 +936,12 @@ export const esES: LanguagePack = {
       'Nada que sincronizar. Las carpetas ya coinciden, o los filtros ocultaron todo.',
     'ui.folderSyncNeedsBothFolders': 'Elija primero ambas carpetas (izquierda y derecha).',
     'ui.folderSyncNeedsPreview': 'Obtenga una vista previa del plan antes de ejecutar Sync Now.',
+    'ui.textMergeEmptyCompareHint':
+      'Elija los archivos izquierdo y derecho con Examinar (base opcional) y luego haga clic en Cargar archivos.',
+    'ui.textMergeEmptyReadyHint': 'Pulse Intro o haga clic en Cargar archivos para fusionar.',
+    'ui.textMergeNoConflictsHint':
+      'Sin conflictos. Revise la salida y haga clic en Guardar salida.',
+    'ui.textMergeWorkspaceHint': 'Combine izquierda, derecha y base opcional en un archivo',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

@@ -942,6 +942,14 @@ export const deDE: LanguagePack = {
     'ui.folderSyncNeedsBothFolders': 'Wählen Sie zuerst beide Ordner (links und rechts).',
     'ui.folderSyncNeedsPreview':
       'Zeigen Sie den Sync-Plan in der Vorschau, bevor Sie Sync Now ausführen.',
+    'ui.textMergeEmptyCompareHint':
+      'Wählen Sie linke und rechte Dateien mit Durchsuchen (optional Basis), dann auf Dateien laden klicken.',
+    'ui.textMergeEmptyReadyHint':
+      'Drücken Sie Enter oder klicken Sie auf Dateien laden, um zu mergen.',
+    'ui.textMergeNoConflictsHint':
+      'Keine Konflikte. Prüfen Sie die Ausgabe und klicken Sie auf Ausgabe speichern.',
+    'ui.textMergeWorkspaceHint':
+      'Linke, rechte und optionale Basisdatei zu einer Datei zusammenführen',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

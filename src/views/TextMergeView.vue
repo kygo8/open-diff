@@ -30,6 +30,7 @@ import {
 } from '@/app/textEditMode'
 import { useStatusBarStore } from '@/stores/statusBar'
 import { elapsedSecondsSince } from '@/app/statusBarPhrases'
+import { formatCompareError } from '@/app/compareError'
 
 type MergePaneId = 'left' | 'base' | 'right' | 'output'
 type MergeSource = 'left' | 'base' | 'right'
@@ -119,6 +120,8 @@ const saveStatusParams = ref<Record<string, string | number>>({})
 const saving = ref(false)
 const reportStatus = ref('')
 const loading = ref(false)
+const mergeError = ref('')
+const lastLoadedRoots = ref('')
 const loadTimeSeconds = ref<number | null>(null)
 const conflicts = ref<MergeConflict[]>([])
 const conflictPolicy = ref<ConflictPolicy>('markConflict')
@@ -405,12 +408,39 @@ function setSaveStatus(key: string, params: Record<string, string | number> = {}
   saveStatusParams.value = params
 }
 
+const mergeNeedsBothPaths = computed(() => !leftPath.value.trim() || !rightPath.value.trim())
+
+const mergeLoadedCurrent = computed(() => {
+  const roots = `${leftPath.value.trim()}|${rightPath.value.trim()}|${centerPath.value.trim()}`
+
+  return Boolean(lastLoadedRoots.value) && lastLoadedRoots.value === roots
+})
+
+const mergeEmptyStateMessage = computed(() => {
+  if (leftPath.value.trim() && rightPath.value.trim()) {
+    return t('ui.textMergeEmptyReadyHint')
+  }
+
+  return t('ui.textMergeEmptyCompareHint')
+})
+
+const showMergeEmptyHint = computed(() => !loading.value && outputLines.value.length === 0)
+
+function onMergePathEnter(): void {
+  if (mergeNeedsBothPaths.value || loading.value) {
+    return
+  }
+
+  void loadMerge()
+}
+
 async function loadMerge(): Promise<void> {
-  if (!leftPath.value || !rightPath.value) {
+  if (!leftPath.value.trim() || !rightPath.value.trim()) {
     return
   }
 
   loading.value = true
+  mergeError.value = ''
   const mergeStartedAt = performance.now()
 
   try {
@@ -446,6 +476,12 @@ async function loadMerge(): Promise<void> {
     activeConflictIndex.value = 0
     await nextTick()
     scrollPanesToCurrentConflict()
+    lastLoadedRoots.value = `${leftPath.value.trim()}|${rightPath.value.trim()}|${centerPath.value.trim()}`
+  } catch (error) {
+    mergeError.value = formatCompareError(error, t)
+    conflicts.value = []
+    outputLines.value = []
+    lastLoadedRoots.value = ''
   } finally {
     loadTimeSeconds.value = elapsedSecondsSince(mergeStartedAt)
     await refreshMergePathStamps()
@@ -865,7 +901,7 @@ watch(
       <div class="merge-toolbar">
         <div>
           <strong>{{ $t('ui.textMerge') }}</strong>
-          <span>{{ $t('ui.fourWayMergeWorkspace') }}</span>
+          <span>{{ $t('ui.textMergeWorkspaceHint') }}</span>
         </div>
         <span
           class="status-chip"
@@ -1023,9 +1059,11 @@ watch(
               v-model="leftPath"
               class="output-path-input path-input"
               data-testid="merge-left-path"
-              :title="leftPath"
+              :title="leftPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
               type="text"
               :aria-label="$t('ui.leftPath')"
+              @keydown.enter.prevent="onMergePathEnter"
             />
             <SessionPathActions
               browse-test-id="merge-browse-left"
@@ -1043,9 +1081,11 @@ watch(
               v-model="centerPath"
               class="output-path-input path-input"
               data-testid="merge-center-path"
-              :title="centerPath"
+              :title="centerPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
               type="text"
               :aria-label="$t('ui.base')"
+              @keydown.enter.prevent="onMergePathEnter"
             />
             <SessionPathActions
               browse-test-id="merge-browse-center"
@@ -1063,9 +1103,11 @@ watch(
               v-model="rightPath"
               class="output-path-input path-input"
               data-testid="merge-right-path"
-              :title="rightPath"
+              :title="rightPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
               type="text"
               :aria-label="$t('ui.rightPath')"
+              @keydown.enter.prevent="onMergePathEnter"
             />
             <SessionPathActions
               browse-test-id="merge-browse-right"
@@ -1111,7 +1153,8 @@ watch(
               v-model="outputPath"
               class="output-path-input path-input"
               data-testid="merge-output-path"
-              :title="outputPath"
+              :title="outputPath || $t('ui.textPathPlaceholder')"
+              :placeholder="$t('ui.textPathPlaceholder')"
               type="text"
               :disabled="mergeTargetLocked"
               :aria-label="$t('ui.mergeOutputPath')"
@@ -1148,9 +1191,9 @@ watch(
           type="button"
           class="bc-path-load"
           data-testid="load-text-merge"
-          :disabled="loading || !leftPath || !rightPath"
+          :disabled="loading || mergeNeedsBothPaths"
           :aria-label="$t('ui.loadFiles')"
-          :title="$t('ui.loadFiles')"
+          :title="mergeNeedsBothPaths ? $t('ui.loadFilesNeedsBothPaths') : $t('ui.loadFiles')"
           @click="loadMerge"
         >
           {{ $t('ui.loadFiles') }}
@@ -1188,11 +1231,18 @@ watch(
       </div>
 
       <p
-        v-if="!leftPath && !rightPath && outputLines.length === 0"
+        v-if="showMergeEmptyHint"
         class="empty"
         data-testid="text-merge-empty-hint"
       >
-        {{ $t('ui.emptyCompareHint') }}
+        {{ mergeEmptyStateMessage }}
+      </p>
+      <p
+        v-if="mergeError"
+        class="empty merge-error"
+        data-testid="text-merge-error"
+      >
+        {{ mergeError }}
       </p>
       <div
         class="merge-grid"
@@ -1265,6 +1315,13 @@ watch(
           <h2>{{ $t('ui.conflicts') }}</h2>
           <span>{{ conflictStatus }}</span>
         </header>
+        <p
+          v-if="mergeLoadedCurrent && unresolvedConflicts.length === 0"
+          class="empty merge-no-conflicts"
+          data-testid="text-merge-no-conflicts"
+        >
+          {{ $t('ui.textMergeNoConflictsHint') }}
+        </p>
         <ul
           class="conflict-list"
           data-testid="merge-conflict-list"
@@ -1791,5 +1848,13 @@ watch(
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
+}
+
+.merge-error {
+  color: var(--error-color, #b42318);
+}
+
+.merge-no-conflicts {
+  margin: 0.5rem 0;
 }
 </style>

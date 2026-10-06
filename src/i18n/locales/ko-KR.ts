@@ -912,6 +912,11 @@ export const koKR: LanguagePack = {
       '동기화할 항목이 없습니다. 폴더가 이미 같거나 필터가 모두 숨겼습니다.',
     'ui.folderSyncNeedsBothFolders': '왼쪽과 오른쪽 폴더를 먼저 선택하세요.',
     'ui.folderSyncNeedsPreview': '지금 동기화 전에 미리보기로 계획을 확인하세요.',
+    'ui.textMergeEmptyCompareHint':
+      '찾아보기로 왼쪽·오른쪽 파일을 선택하고(기준은 선택), 파일 불러오기를 클릭하세요.',
+    'ui.textMergeEmptyReadyHint': 'Enter를 누르거나 파일 불러오기를 클릭해 병합하세요.',
+    'ui.textMergeNoConflictsHint': '충돌이 없습니다. 출력을 확인한 뒤 출력 저장을 클릭하세요.',
+    'ui.textMergeWorkspaceHint': '왼쪽·오른쪽과 선택적 기준을 하나의 파일로 병합',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

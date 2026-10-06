@@ -975,6 +975,19 @@ export const frFR: LanguagePack = {
     'ui.textEditEmptyReadyHint':
       'Appuyez sur Entrée ou cliquez sur Ouvrir pour charger ce fichier.',
     'ui.textEditNeedsPath': "Choisissez d'abord un chemin de fichier.",
+    'ui.textPatchEmptyHint':
+      'Collez un diff unifié ou ouvrez un fichier .patch/.diff, puis cliquez sur Analyser le correctif.',
+    'ui.textPatchEmptyReadyHint':
+      'Cliquez sur Analyser le correctif pour prévisualiser les modifications.',
+    'ui.textPatchEmptyParsedHint': "Ce correctif n'a aucune section de fichier à afficher.",
+    'ui.textPatchNeedsPatch': "Collez ou ouvrez d'abord un correctif.",
+    'ui.textPatchNeedsSource': "Choisissez d'abord un fichier source.",
+    'ui.textPatchSourceTextPlaceholder':
+      "Collez le texte du fichier d'origine pour Appliquer le correctif",
+    'ui.applyPatchHint': "Prévisualise le texte corrigé en mémoire (n'écrit pas de fichier).",
+    'ui.applyToFileHint':
+      'Écrit le résultat dans le fichier cible (ou la source si la cible est vide).',
+    'ui.openPatchFile': 'Ouvrir le correctif…',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

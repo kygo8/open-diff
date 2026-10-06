@@ -321,6 +321,7 @@ export const enUS: LanguagePack = {
     'ui.openAll': 'Open All',
     'ui.openATextFileToBeginEditing': 'Browse or paste a path, then Open to begin editing',
     'ui.openClipboard': 'Open Clipboard',
+    'ui.openPatchFile': 'Open Patch…',
     'ui.openSuggestedView': 'Open Suggested View',
     'ui.openTextMerge': 'Open Text Merge',
     'ui.openWith': 'Open With',
@@ -549,7 +550,8 @@ export const enUS: LanguagePack = {
     'ui.totalSessions': 'Total Sessions',
     'ui.untitled': 'Untitled',
     'ui.unsavedPatchText': 'Unsaved patch text',
-    'ui.unifiedDiffEmptyState': 'Paste a unified diff or open a .patch/.diff file.',
+    'ui.unifiedDiffEmptyState':
+      'Paste a unified diff or open a .patch/.diff file, then click Parse Patch.',
     'ui.twoMinsAgo': '2 mins ago',
     'ui.workspaceInspector': 'Workspace inspector',
     'ui.workspaceProperties': 'Workspace Properties',
@@ -948,6 +950,16 @@ export const enUS: LanguagePack = {
     'ui.textEditEmptyHint': 'Choose a file with Browse (or paste a path), then click Open.',
     'ui.textEditEmptyReadyHint': 'Press Enter or click Open to load this file.',
     'ui.textEditNeedsPath': 'Choose a file path first.',
+    'ui.textPatchEmptyHint':
+      'Paste a unified diff or open a .patch/.diff file, then click Parse Patch.',
+    'ui.textPatchEmptyReadyHint': 'Click Parse Patch to preview the changes.',
+    'ui.textPatchEmptyParsedHint': 'This patch has no file sections to show.',
+    'ui.textPatchNeedsPatch': 'Paste or open a patch first.',
+    'ui.textPatchNeedsSource': 'Choose a source file first.',
+    'ui.textPatchSourceTextPlaceholder': 'Paste the original file text for Apply Patch',
+    'ui.applyPatchHint': 'Preview the patched text in memory (does not write a file).',
+    'ui.applyToFileHint':
+      'Write the patched result to the target file (or source if target is empty).',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

@@ -46,6 +46,7 @@ const patchedText = ref('')
 const applyStatus = ref('')
 const sourceEncoding = ref('UTF-8')
 const sourceLineEnding = ref('LF')
+const patchDisplayPath = ref('')
 
 async function browsePatchPath(side: 'source' | 'target'): Promise<void> {
   const selected = await pickNativePath({ directory: false })
@@ -56,9 +57,52 @@ async function browsePatchPath(side: 'source' | 'target'): Promise<void> {
 
   if (side === 'source') {
     sourcePath.value = selected
+    void loadSourceFileForApply(selected)
   } else {
     targetPath.value = selected
   }
+}
+
+async function browseAndOpenPatchFile(): Promise<void> {
+  const selected = await pickNativePath({ directory: false })
+
+  if (!selected) {
+    return
+  }
+
+  await loadAndParsePatchFile(selected)
+}
+
+async function loadSourceFileForApply(path: string): Promise<void> {
+  loading.value = true
+  error.value = ''
+
+  try {
+    const file = await readTextFile(path)
+
+    sourceText.value = file.text
+    sourcePath.value = file.path
+  } catch (event) {
+    error.value = formatCompareError(event, t)
+  } finally {
+    loading.value = false
+  }
+}
+
+function onSourcePathEnter(): void {
+  const path = sourcePath.value.trim()
+
+  if (!path || loading.value) {
+    return
+  }
+
+  if (/\.(patch|diff)$/i.test(path) && !patchInput.value.trim()) {
+    void loadAndParsePatchFile(path)
+
+    return
+  }
+
+  void loadSourceFileForApply(path)
 }
 
 const statusBar = useStatusBarStore()
@@ -75,6 +119,38 @@ const fileCount = computed(() => result.value?.files.length ?? 0)
 const hunkCount = computed(
   () => result.value?.files.reduce((total, file) => total + file.hunks.length, 0) ?? 0,
 )
+const hasPatchText = computed(() => Boolean(patchInput.value.trim()))
+const parseNeedsPatch = computed(() => !hasPatchText.value)
+const applyNeedsPatch = computed(() => !hasPatchText.value)
+const applyToFileNeedsSetup = computed(() => !hasPatchText.value || !sourcePath.value.trim())
+const textPatchEmptyStateMessage = computed(() => {
+  if (result.value?.files.length === 0) {
+    return t('ui.textPatchEmptyParsedHint')
+  }
+
+  if (hasPatchText.value) {
+    return t('ui.textPatchEmptyReadyHint')
+  }
+
+  return t('ui.textPatchEmptyHint')
+})
+const parsePatchTip = computed(() =>
+  parseNeedsPatch.value ? t('ui.textPatchNeedsPatch') : t('ui.parsePatch'),
+)
+const applyPatchTip = computed(() =>
+  applyNeedsPatch.value ? t('ui.textPatchNeedsPatch') : t('ui.applyPatchHint'),
+)
+const applyToFileTip = computed(() => {
+  if (!hasPatchText.value) {
+    return t('ui.textPatchNeedsPatch')
+  }
+
+  if (!sourcePath.value.trim()) {
+    return t('ui.textPatchNeedsSource')
+  }
+
+  return t('ui.applyToFileHint')
+})
 const patchSections = computed(() => flattenPatchSections(result.value?.files ?? []))
 const currentSection = computed(() => {
   const sections = patchSections.value
@@ -189,7 +265,7 @@ onMounted(() => {
     return
   }
 
-  sourcePath.value = patchLocation.displayName ?? patchLocation.uri
+  patchDisplayPath.value = patchLocation.displayName ?? patchLocation.uri
 
   if (launch.autoRun) {
     void loadAndParsePatchFile(patchLocation.uri)
@@ -206,7 +282,7 @@ async function loadAndParsePatchFile(path: string): Promise<void> {
     const file = await readTextFile(path)
 
     patchInput.value = file.text
-    sourcePath.value = file.path
+    patchDisplayPath.value = file.path
     sourceEncoding.value = file.encoding
     sourceLineEnding.value = file.lineEnding
     sourceFileStamp.value = file.fileStamp
@@ -224,7 +300,13 @@ async function applyPatchToTargetFile(): Promise<void> {
   const source = sourcePath.value.trim()
 
   if (!source) {
-    error.value = t('ui.sourceFile')
+    error.value = t('ui.textPatchNeedsSource')
+
+    return
+  }
+
+  if (!patchInput.value.trim()) {
+    error.value = t('ui.textPatchNeedsPatch')
 
     return
   }
@@ -287,6 +369,10 @@ async function openPatchedInTextCompare(): Promise<void> {
 }
 
 async function applyCurrentPatch(): Promise<void> {
+  if (!patchInput.value.trim()) {
+    return
+  }
+
   loading.value = true
   error.value = ''
   applyStatus.value = ''
@@ -307,6 +393,10 @@ async function applyCurrentPatch(): Promise<void> {
 }
 
 async function parseCurrentPatch(): Promise<void> {
+  if (!patchInput.value.trim()) {
+    return
+  }
+
   const startedAt = performance.now()
 
   loading.value = true
@@ -560,7 +650,7 @@ function lineNumber(value: number | null): string {
         class="status-chip"
         data-testid="patch-source-path"
       >
-        {{ sourcePath || $t('ui.unsavedPatchText') }}
+        {{ patchDisplayPath || sourcePath || $t('ui.unsavedPatchText') }}
       </span>
       <span class="status-chip">{{ comparisonStatus }}</span>
     </template>
@@ -571,6 +661,8 @@ function lineNumber(value: number | null): string {
           size="small"
           type="primary"
           :loading="loading"
+          :disabled="loading || parseNeedsPatch"
+          :title="parsePatchTip"
           data-testid="parse-text-patch"
           @click="parseCurrentPatch"
         >
@@ -579,6 +671,8 @@ function lineNumber(value: number | null): string {
         <NButton
           size="small"
           :loading="loading"
+          :disabled="loading || applyNeedsPatch"
+          :title="applyPatchTip"
           data-testid="apply-text-patch"
           @click="applyCurrentPatch"
         >
@@ -587,6 +681,8 @@ function lineNumber(value: number | null): string {
         <NButton
           size="small"
           :loading="loading"
+          :disabled="loading || applyToFileNeedsSetup"
+          :title="applyToFileTip"
           data-testid="apply-text-patch-to-file"
           @click="applyPatchToTargetFile"
         >
@@ -642,9 +738,19 @@ function lineNumber(value: number | null): string {
 
     <section class="patch-workbench-main">
       <section class="patch-input-pane">
-        <header>
+        <header class="patch-input-header">
           <strong>{{ $t('ui.patchInput') }}</strong>
           <span>{{ sourceEncoding }} | {{ sourceLineEnding }}</span>
+          <button
+            type="button"
+            class="bc-path-load"
+            data-testid="open-patch-file"
+            :disabled="loading"
+            :title="$t('ui.openPatchFile')"
+            @click="browseAndOpenPatchFile"
+          >
+            {{ $t('ui.openPatchFile') }}
+          </button>
         </header>
         <NInput
           :value="patchInput"
@@ -661,7 +767,9 @@ function lineNumber(value: number | null): string {
               type="text"
               class="path-input"
               data-testid="patch-source-file"
-              :title="sourcePath"
+              :title="sourcePath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
+              @keydown.enter.prevent="onSourcePathEnter"
             />
             <SessionPathActions
               browse-test-id="patch-browse-source"
@@ -678,7 +786,8 @@ function lineNumber(value: number | null): string {
               type="text"
               class="path-input"
               data-testid="patch-target-file"
-              :title="targetPath"
+              :title="targetPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
             />
             <SessionPathActions
               browse-test-id="patch-browse-target"
@@ -709,7 +818,7 @@ function lineNumber(value: number | null): string {
           :value="sourceText"
           type="textarea"
           data-testid="patch-source-text"
-          :placeholder="$t('ui.sourceFile')"
+          :placeholder="$t('ui.textPatchSourceTextPlaceholder')"
           @update:value="sourceText = $event"
         />
         <NInput
@@ -793,7 +902,7 @@ function lineNumber(value: number | null): string {
       </section>
 
       <section
-        v-if="result"
+        v-if="result && result.files.length > 0"
         class="patch-result"
         data-testid="text-patch-result"
       >
@@ -854,10 +963,11 @@ function lineNumber(value: number | null): string {
       </section>
 
       <div
-        v-else
+        v-else-if="!error"
         class="empty"
+        data-testid="text-patch-empty-hint"
       >
-        {{ $t('ui.unifiedDiffEmptyState') }}
+        {{ textPatchEmptyStateMessage }}
       </div>
     </section>
 
@@ -976,13 +1086,30 @@ function lineNumber(value: number | null): string {
 .patch-input-pane header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 4px;
   padding: 0 4px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-surface-low);
   color: var(--app-text-muted);
   font-size: 11px;
+}
+
+.patch-input-pane header .bc-path-load {
+  margin-left: auto;
+  height: 18px;
+  padding: 0 5px;
+  border: 1px solid var(--app-border, #334155);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.patch-input-pane header .bc-path-load:disabled {
+  cursor: default;
+  opacity: 0.55;
 }
 
 .patch-input-pane strong {

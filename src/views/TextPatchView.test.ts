@@ -5,6 +5,7 @@ import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import TextPatchView from './TextPatchView.vue'
 import { applyTextPatch, applyTextPatchToFile, parseTextPatch, readTextFile } from '@/api/diff'
+import { pickNativePath } from '@/app/filePicker'
 import { createAppI18n, installI18n } from '@/i18n'
 import { useSessionLaunchStore } from '@/stores/sessionLaunch'
 import { useViewActionsStore } from '@/stores/viewActions'
@@ -13,6 +14,10 @@ const push = vi.fn()
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
+}))
+
+vi.mock('@/app/filePicker', () => ({
+  pickNativePath: vi.fn(),
 }))
 
 vi.mock('@/api/diff', () => ({
@@ -93,9 +98,16 @@ function mountTextPatchView(): VueWrapper {
       stubs: {
         NAlert: { template: '<div><slot /></div>' },
         NButton: {
-          props: ['loading'],
+          props: {
+            loading: { type: Boolean, default: false },
+            disabled: { type: Boolean, default: false },
+            title: { type: String, default: undefined },
+            type: { type: String, default: undefined },
+            size: { type: String, default: undefined },
+          },
           emits: ['click'],
-          template: '<button @click="$emit(\'click\')"><slot /></button>',
+          template:
+            '<button :disabled="disabled" :title="title" @click="$emit(\'click\')"><slot /></button>',
         },
         NInput: NInputStub,
       },
@@ -110,7 +122,86 @@ describe('TextPatchView', () => {
     vi.mocked(readTextFile).mockClear()
     vi.mocked(applyTextPatch).mockClear()
     vi.mocked(applyTextPatchToFile).mockClear()
+    vi.mocked(pickNativePath).mockReset()
     push.mockClear()
+  })
+
+  it('shows a friendly empty state, path placeholders, and disabled parse tip', async () => {
+    const wrapper = mountTextPatchView()
+
+    expect(wrapper.find('[data-testid="text-patch-empty-hint"]').text()).toContain('Parse Patch')
+    expect(wrapper.find('[data-testid="patch-source-file"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="patch-target-file"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="parse-text-patch"]').attributes('title')).toContain(
+      'patch first',
+    )
+    expect(wrapper.find('[data-testid="parse-text-patch"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-testid="open-patch-file"]').exists()).toBe(true)
+
+    wrapper
+      .findComponent(NInputStub)
+      .vm.$emit('update:value', 'diff --git a/src/main.ts b/src/main.ts')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="text-patch-empty-hint"]').text()).toContain('Parse Patch')
+    expect(wrapper.find('[data-testid="parse-text-patch"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('opens a patch file from Open Patch and parses it', async () => {
+    vi.mocked(pickNativePath).mockResolvedValueOnce('C:/work/change.patch')
+
+    const wrapper = mountTextPatchView()
+
+    await wrapper.find('[data-testid="open-patch-file"]').trigger('click')
+    await flushPromises()
+
+    expect(pickNativePath).toHaveBeenCalledWith({ directory: false })
+    expect(readTextFile).toHaveBeenCalledWith('C:/work/change.patch')
+    expect(parseTextPatch).toHaveBeenCalledWith('diff --git a/src/main.ts b/src/main.ts')
+    expect(wrapper.find('[data-testid="patch-source-path"]').text()).toContain('change.patch')
+    expect(wrapper.find('[data-testid="text-patch-empty-hint"]').exists()).toBe(false)
+  })
+
+  it('loads a source file on Enter for Apply Patch', async () => {
+    vi.mocked(readTextFile).mockResolvedValueOnce({
+      path: 'C:/work/main.ts',
+      text: 'const a = 1\nold\n',
+      encoding: 'UTF-8',
+      lineEnding: 'LF',
+      fileStamp: { size: 12, modifiedAtMs: 2 },
+    })
+
+    const wrapper = mountTextPatchView()
+
+    await wrapper.find('[data-testid="patch-source-file"]').setValue('C:/work/main.ts')
+    await wrapper.find('[data-testid="patch-source-file"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(readTextFile).toHaveBeenCalledWith('C:/work/main.ts')
+
+    const inputs = wrapper.findAllComponents(NInputStub)
+
+    expect(inputs[1]?.props('value')).toContain('const a = 1')
+  })
+
+  it('asks for a source file before Apply to File', async () => {
+    const wrapper = mountTextPatchView()
+
+    wrapper
+      .findComponent(NInputStub)
+      .vm.$emit('update:value', 'diff --git a/src/main.ts b/src/main.ts')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="apply-text-patch-to-file"]').attributes('title')).toContain(
+      'source file first',
+    )
+    expect(
+      wrapper.find('[data-testid="apply-text-patch-to-file"]').attributes('disabled'),
+    ).toBeDefined()
   })
 
   it('parses pasted unified patch text and renders files, hunks, and lines', async () => {

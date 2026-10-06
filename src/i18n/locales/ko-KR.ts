@@ -941,6 +941,16 @@ export const koKR: LanguagePack = {
     'ui.textEditEmptyHint': '찾아보기로 파일을 선택하거나 경로를 붙여넣은 다음 열기를 클릭하세요.',
     'ui.textEditEmptyReadyHint': 'Enter를 누르거나 열기를 클릭해 이 파일을 불러오세요.',
     'ui.textEditNeedsPath': '먼저 파일 경로를 선택하세요.',
+    'ui.textPatchEmptyHint':
+      '통합 diff를 붙여넣거나 .patch/.diff 파일을 연 다음 패치 구문을 클릭하세요.',
+    'ui.textPatchEmptyReadyHint': '패치 구문을 클릭하여 변경 내용을 미리 보세요.',
+    'ui.textPatchEmptyParsedHint': '이 패치에 표시할 파일 구간이 없습니다.',
+    'ui.textPatchNeedsPatch': '먼저 패치를 붙여넣거나 여세요.',
+    'ui.textPatchNeedsSource': '먼저 원본 파일을 선택하세요.',
+    'ui.textPatchSourceTextPlaceholder': '패치 적용을 위해 원본 파일 텍스트를 붙여넣으세요',
+    'ui.applyPatchHint': '메모리에서 패치된 텍스트를 미리 봅니다(파일에 쓰지 않음).',
+    'ui.applyToFileHint': '패치 결과를 대상 파일에 씁니다(대상이 비어 있으면 원본에 씀).',
+    'ui.openPatchFile': '패치 열기…',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

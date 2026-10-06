@@ -134,6 +134,7 @@ onBeforeUnmount(() => {
     data-path-meta-eol="capture-1to1-residual"
     data-path-meta-gap="capture-1to1-residual"
     :data-testid="testId"
+    :title="isMuted ? t('status.pathMetaEmptyHint') : undefined"
   >
     <template v-if="meta">
       <span

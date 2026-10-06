@@ -791,7 +791,7 @@ export const commandRegistry: AppCommand[] = [
     keywords: ['help', 'about'],
     enabled: true,
     visibility: 'global',
-    defaultShortcut: { keys: ['Ctrl', 'Shift', 'B'], scope: 'global' },
+    defaultShortcut: { keys: [], scope: 'global' },
     placements: ['command-palette', 'menu'],
     action: { type: 'view-action', name: 'about' },
   },

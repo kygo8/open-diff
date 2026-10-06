@@ -13,7 +13,7 @@ export const esES: LanguagePack = {
     'command.planned': 'Planificado',
     'command.previousDifference': 'Diferencia anterior',
     'command.ready': 'Disponible',
-    'command.searchPlaceholder': 'Comandos de búsqueda',
+    'command.searchPlaceholder': 'Buscar menús y comandos',
     'command.toggleTheme': 'Alternar tema',
     'command.toggleMinor': 'Alternar menores',
     'command.expandAll': 'Expandir todo',
@@ -176,8 +176,8 @@ export const esES: LanguagePack = {
     'ui.hexCompare': 'Comparación hexadecimal',
     'ui.hexDetails': 'Detalles hexagonales',
     'ui.help': 'Ayuda',
-    'ui.helpContents': 'Contenido',
-    'ui.contextHelp': 'Ayuda contextual',
+    'ui.helpContents': 'Documentación',
+    'ui.contextHelp': 'Ayuda de esta vista',
     'ui.contextHelpTopic': 'Ayuda: {topic}',
     'ui.about': 'Acerca de Open Diff',
     'ui.checkForUpdates': 'Buscar actualizaciones',
@@ -188,8 +188,10 @@ export const esES: LanguagePack = {
     'ui.aboutTitle': 'Acerca de Open Diff',
     'ui.aboutVersion': 'Versión {version}',
     'ui.aboutLicense': 'Licencia Apache-2.0',
-    'ui.aboutHomepage': 'Página del proyecto',
+    'ui.aboutHomepage': 'Documentación e inicio',
     'ui.aboutClose': 'Cerrar',
+    'ui.aboutHint':
+      'Open Diff compara archivos y carpetas. Guías en Ayuda → Documentación; preguntas en Soporte.',
     'ui.updatesCheckOpened': 'Se abrió la página de versiones para buscar actualizaciones.',
     'ui.updatesCheckDisabled':
       'Las comprobaciones de actualización están deshabilitadas por directiva.',
@@ -486,7 +488,7 @@ export const esES: LanguagePack = {
     'status.unimportantDifference': 'Diferencia no importante',
     'status.importantUnimportantCounts': '{important} importantes, {unimportant} no importantes',
     'ui.conflict': 'Conflicto',
-    'status.differenceSectionUnknown': '≠ -',
+    'status.differenceSectionUnknown': 'Diferencias: —',
     'status.differenceSections': '≠ {count} secciones de diferencias',
     'status.differenceSection': '≠ {count} sección de diferencias',
     'status.insertMode': 'Insertar',
@@ -497,6 +499,7 @@ export const esES: LanguagePack = {
     'status.filesSelectedBytesWithDate':
       '{count} archivo(s) seleccionado(s), {bytes} bytes, {modified}',
     'status.panePlaceholder': '—',
+    'status.pathMetaEmptyHint': 'Elija una ruta para ver tamaño y fecha',
     'status.readyIdle': 'Listo',
     'status.filesAndFoldersSelectedBytes':
       '{files} archivo(s), {folders} carpeta(s) seleccionada(s), {bytes} bytes',

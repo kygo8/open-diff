@@ -45,14 +45,14 @@ describe('statusBarPhrases', () => {
   })
 
   it('formats text difference section phrases', () => {
-    expect(formatDifferenceCountPhrase(null, 'text-compare')).toBe('≠ -')
+    expect(formatDifferenceCountPhrase(null, 'text-compare')).toBe('Differences: —')
     expect(formatDifferenceCountPhrase(1, 'text-compare')).toBe('≠ 1 difference section')
     expect(formatDifferenceCountPhrase(3, 'text-merge')).toBe('≠ 3 difference sections')
     expect(formatDifferenceCountPhrase(2, 'folder-compare')).toBe('Differences: 2')
     expect(formatDifferenceCountPhrase(0, 'hex-compare')).toBe('≠ Same')
     expect(formatDifferenceCountPhrase(3, 'hex-compare')).toBe('≠ Binary differences')
     expect(isHexSessionStatusSource('hex-compare')).toBe(true)
-    expect(formatDifferenceCountPhrase(null, 'picture-compare')).toBe('≠ -')
+    expect(formatDifferenceCountPhrase(null, 'picture-compare')).toBe('Differences: —')
     expect(formatDifferenceCountPhrase(0, 'picture-compare')).toBe('≠ Same')
     expect(formatDifferenceCountPhrase(1, 'picture-compare')).toBe('≠ 1 pixel')
     expect(formatDifferenceCountPhrase(4, 'picture-compare')).toBe('≠ 4 pixels')

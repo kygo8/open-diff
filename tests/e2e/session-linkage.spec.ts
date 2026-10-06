@@ -177,8 +177,11 @@ test('text edit CTA issues read_text_file', async ({ page }) => {
 test('text patch CTA issues apply_text_patch', async ({ page }) => {
   await page.goto('/patch/text')
   await expect(page.getByTestId('apply-text-patch')).toBeVisible()
-  await page.getByTestId('text-patch-input').fill('diff --git a/left.txt b/left.txt\n')
-  await page.getByTestId('patch-source-text').fill('hello\n')
+  await page
+    .getByTestId('text-patch-input')
+    .locator('textarea')
+    .fill('diff --git a/left.txt b/left.txt\n')
+  await page.getByTestId('patch-source-text').locator('textarea').fill('hello\n')
   await expect(page.getByTestId('apply-text-patch')).toBeEnabled()
   await page.getByTestId('apply-text-patch').click()
   await expect

@@ -135,6 +135,9 @@ test('picture compare CTA issues compare_picture_files without a fake overlay fi
 test('registry compare CTA issues compare_registry_exports', async ({ page }) => {
   await page.goto('/compare/registry')
   await expect(page.getByTestId('run-registry-compare')).toBeVisible()
+  await page.getByTestId('registry-left-export').fill('Windows Registry Editor Version 5.00\n')
+  await page.getByTestId('registry-right-export').fill('Windows Registry Editor Version 5.00\n')
+  await expect(page.getByTestId('run-registry-compare')).toBeEnabled()
   await page.getByTestId('run-registry-compare').click()
   await expect
     .poll(async () => (await lastInvoke(page, 'compare_registry_exports'))?.command)

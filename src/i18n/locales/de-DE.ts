@@ -1010,6 +1010,14 @@ export const deDE: LanguagePack = {
       'Drücken Sie Enter oder klicken Sie auf Vergleichen, um diese Mediendateien zu vergleichen.',
     'ui.mediaIdenticalHint':
       'Diese Mediendateien stimmen überein. Keine Metadatenunterschiede anzuzeigen.',
+    'ui.registryEmptyCompareHint':
+      'Fügen Sie linke und rechte .reg-Exporte ein (oder vergleichen Sie unten Hive-Dateien / Live-Schlüssel), dann auf Vergleichen klicken.',
+    'ui.registryEmptyReadyHint':
+      'Drücken Sie Strg+Enter oder klicken Sie auf Vergleichen, um diese Registry-Exporte zu vergleichen.',
+    'ui.registryIdenticalHint':
+      'Diese Registry-Exporte stimmen überein. Keine Schlüssel- oder Wertunterschiede anzuzeigen.',
+    'ui.registryNeedsBothExports': 'Fügen Sie zuerst beide .reg-Exporte (links und rechts) ein.',
+    'ui.registryExportPlaceholder': 'Hier einen .reg-Export einfügen',
     'ui.textPatchSourceTextPlaceholder': 'Originaltextdatei für „Patch anwenden“ einfügen',
     'ui.applyPatchHint': 'Zeigt den gepatchten Text im Speicher an (schreibt keine Datei).',
     'ui.applyToFileHint': 'Schreibt das Ergebnis in die Zieldatei (oder Quelle, wenn Ziel leer).',

@@ -187,6 +187,99 @@ describe('RegistryCompareView', () => {
     expect(wrapper.find('[data-testid="registry-summary-modified"]').text()).toContain('0')
     expect(wrapper.find('[data-testid="registry-key-HKCU/Software/OpenDiff"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="registry-maturity-note"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="registry-empty-hint"]').text()).toContain('.reg')
+    expect(
+      wrapper.find('[data-testid="registry-left-export"]').attributes('placeholder'),
+    ).toContain('.reg')
+    expect(wrapper.find('[data-testid="run-registry-compare"]').attributes('title')).toContain(
+      'both left and right',
+    )
+    expect(
+      wrapper.find('[data-testid="run-registry-compare"]').attributes('disabled'),
+    ).toBeDefined()
+    expect(
+      wrapper.find('[data-testid="registry-hive-left-path"]').attributes('placeholder'),
+    ).toContain('Browse or paste a file path')
+  })
+
+  it('shows a ready hint after both exports are pasted', async () => {
+    const wrapper = mount(RegistryCompareView)
+
+    await wrapper.find('[data-testid="registry-left-export"]').setValue('Windows Registry Editor')
+    await wrapper.find('[data-testid="registry-right-export"]').setValue('Windows Registry Editor')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="registry-empty-hint"]').text()).toContain('Compare')
+    expect(
+      wrapper.find('[data-testid="run-registry-compare"]').attributes('disabled'),
+    ).toBeUndefined()
+  })
+
+  it('compares registry exports on Ctrl+Enter', async () => {
+    const wrapper = mount(RegistryCompareView)
+
+    await wrapper.find('[data-testid="registry-left-export"]').setValue('left export')
+    await wrapper.find('[data-testid="registry-right-export"]').setValue('right export')
+    await wrapper.find('[data-testid="registry-right-export"]').trigger('keydown.ctrl.enter')
+    await flushPromises()
+
+    expect(compareRegistryExports).toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="registry-empty-hint"]').exists()).toBe(false)
+  })
+
+  it('shows an identical hint when registry exports match', async () => {
+    vi.mocked(compareRegistryExports).mockResolvedValueOnce({
+      leftName: 'same-left.reg',
+      rightName: 'same-right.reg',
+      tree: [
+        {
+          path: 'HKCU/Software/OpenDiff',
+          label: 'OpenDiff',
+          status: 'unchanged',
+          values: [
+            {
+              keyPath: 'HKCU/Software/OpenDiff',
+              name: 'Theme',
+              status: 'unchanged',
+              left: { kind: 'REG_SZ', data: 'dark' },
+              right: { kind: 'REG_SZ', data: 'dark' },
+            },
+          ],
+          children: [],
+        },
+      ],
+      summary: { added: 0, removed: 0, modified: 0, unchanged: 1 },
+    })
+
+    const wrapper = mount(RegistryCompareView)
+
+    await wrapper.find('[data-testid="registry-left-export"]').setValue('left export')
+    await wrapper.find('[data-testid="registry-right-export"]').setValue('right export')
+    await wrapper.find('[data-testid="run-registry-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="registry-identical-hint"]').text()).toContain('match')
+  })
+
+  it('maps registry parse failures to a plain suggestion', async () => {
+    vi.mocked(compareRegistryExports).mockRejectedValueOnce({
+      code: 'app.unknown',
+      messageKey: 'error.registry.parseFailed.message',
+      suggestionKey: 'error.registry.parseFailed.suggestion',
+      params: {},
+      debugMessage: 'parse boom',
+    })
+
+    const wrapper = mount(RegistryCompareView)
+
+    await wrapper.find('[data-testid="registry-left-export"]').setValue('bad')
+    await wrapper.find('[data-testid="registry-right-export"]').setValue('bad')
+    await wrapper.find('[data-testid="run-registry-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="registry-compare-error"]').text()).toContain(
+      'Could not parse',
+    )
   })
 
   it('filters diffs, applies right value in the workspace, and probes live query honesty', async () => {

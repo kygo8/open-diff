@@ -72,6 +72,7 @@ describe('HexCompareView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     useSettingsStore().setShowSessionsInToolbar(true)
+    localStorage.clear()
     vi.mocked(compareHexFiles).mockReset()
     vi.mocked(pathFileStamp).mockReset()
     vi.mocked(pathFileStamp).mockResolvedValue({
@@ -126,6 +127,111 @@ describe('HexCompareView', () => {
     expect((wrapper.find('[data-testid="hex-left-path"]').element as HTMLInputElement).value).toBe(
       '',
     )
+  })
+
+  it('shows a friendly empty state and path placeholders before compare', async () => {
+    const wrapper = mount(HexCompareView)
+
+    expect(wrapper.find('[data-testid="hex-empty-hint"]').text()).toContain(
+      'Choose left and right files',
+    )
+    expect(wrapper.find('[data-testid="hex-left-path"]').attributes('placeholder')).toContain(
+      'Browse or paste a file path',
+    )
+    expect(wrapper.find('[data-testid="run-hex-compare"]').attributes('title')).toContain(
+      'both left and right files',
+    )
+
+    await wrapper.find('[data-testid="hex-left-path"]').setValue('C:/bin/left.bin')
+    await wrapper.find('[data-testid="hex-right-path"]').setValue('C:/bin/right.bin')
+    expect(wrapper.find('[data-testid="hex-empty-hint"]').text()).toContain('Compare')
+    expect(wrapper.find('[data-testid="run-hex-compare"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('compares on Enter when both file paths are set', async () => {
+    const wrapper = mount(HexCompareView)
+
+    await wrapper.find('[data-testid="hex-left-path"]').setValue('C:/bin/left.bin')
+    await wrapper.find('[data-testid="hex-right-path"]').setValue('C:/bin/right.bin')
+    await wrapper.find('[data-testid="hex-left-path"]').trigger('keydown.enter')
+    await flushPromises()
+
+    expect(compareHexFiles).toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="hex-row"]').exists()).toBe(true)
+  })
+
+  it('explains when compared files have no byte differences', async () => {
+    vi.mocked(compareHexFiles).mockResolvedValueOnce({
+      left: {
+        path: 'C:/bin/left.bin',
+        totalLen: 2,
+        cells: [
+          { offset: 0, byte: 65, hex: '41', ascii: 'A', different: false },
+          { offset: 1, byte: 66, hex: '42', ascii: 'B', different: false },
+        ],
+      },
+      right: {
+        path: 'C:/bin/right.bin',
+        totalLen: 2,
+        cells: [
+          { offset: 0, byte: 65, hex: '41', ascii: 'A', different: false },
+          { offset: 1, byte: 66, hex: '42', ascii: 'B', different: false },
+        ],
+      },
+      diffRanges: [],
+      summary: {
+        leftBytes: 2,
+        rightBytes: 2,
+        differentRanges: 0,
+      },
+    })
+
+    const wrapper = mount(HexCompareView)
+
+    await wrapper.find('[data-testid="hex-left-path"]').setValue('C:/bin/left.bin')
+    await wrapper.find('[data-testid="hex-right-path"]').setValue('C:/bin/right.bin')
+    await wrapper.find('[data-testid="run-hex-compare"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="hex-identical-hint"]').text()).toContain('These files match')
+  })
+
+  it('explains an empty diffs-only view instead of the start hint', async () => {
+    vi.mocked(compareHexFiles).mockResolvedValueOnce({
+      left: {
+        path: 'C:/bin/left.bin',
+        totalLen: 2,
+        cells: [
+          { offset: 0, byte: 65, hex: '41', ascii: 'A', different: false },
+          { offset: 1, byte: 66, hex: '42', ascii: 'B', different: false },
+        ],
+      },
+      right: {
+        path: 'C:/bin/right.bin',
+        totalLen: 2,
+        cells: [
+          { offset: 0, byte: 65, hex: '41', ascii: 'A', different: false },
+          { offset: 1, byte: 66, hex: '42', ascii: 'B', different: false },
+        ],
+      },
+      diffRanges: [],
+      summary: {
+        leftBytes: 2,
+        rightBytes: 2,
+        differentRanges: 0,
+      },
+    })
+
+    const wrapper = mount(HexCompareView)
+
+    await wrapper.find('[data-testid="hex-left-path"]').setValue('C:/bin/left.bin')
+    await wrapper.find('[data-testid="hex-right-path"]').setValue('C:/bin/right.bin')
+    await wrapper.find('[data-testid="run-hex-compare"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-testid="hex-diff-only-toggle"]').setValue(true)
+
+    // Identical + diffs-only still shows identical hint (preferred over filtered empty)
+    expect(wrapper.find('[data-testid="hex-identical-hint"]').exists()).toBe(true)
   })
 
   it('renders the Hex Compare session toolbar order', () => {

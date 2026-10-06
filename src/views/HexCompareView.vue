@@ -115,6 +115,7 @@ const loading = ref(false)
 const loadTimeSeconds = ref<number | null>(null)
 const statusBar = useStatusBarStore()
 const error = ref('')
+const hexCompared = ref(false)
 const sessionLaunch = useSessionLaunchStore()
 const tabs = useTabsStore()
 const settings = useSettingsStore()
@@ -145,6 +146,47 @@ const visiblePairedHexRows = computed(() => {
 const loadedBytesLabel = computed(
   () => `${String(leftTotalLen.value)} / ${String(rightTotalLen.value)}`,
 )
+
+const compareNeedsBothFiles = computed(() => !leftPath.value.trim() || !rightPath.value.trim())
+
+const hexHasResult = computed(
+  () =>
+    hexCompared.value ||
+    leftCells.value.length > 0 ||
+    rightCells.value.length > 0 ||
+    leftTotalLen.value > 0,
+)
+
+const hexFilesAreIdentical = computed(() => hexCompared.value && diffRangeCount.value === 0)
+
+const hexEmptyStateMessage = computed(() => {
+  if (hexHasResult.value && visiblePairedHexRows.value.length === 0 && diffOnly.value) {
+    return t('ui.hexFilteredEmptyHint')
+  }
+
+  if (leftPath.value.trim() && rightPath.value.trim()) {
+    return t('ui.hexEmptyReadyHint')
+  }
+
+  return t('ui.hexEmptyCompareHint')
+})
+
+const showHexEmptyHint = computed(
+  () =>
+    !loading.value &&
+    !error.value &&
+    visiblePairedHexRows.value.length === 0 &&
+    !hexFilesAreIdentical.value,
+)
+
+function onHexPathEnter(): void {
+  if (compareNeedsBothFiles.value || loading.value) {
+    return
+  }
+
+  void runHexCompare()
+}
+
 const hexFileTotal = computed(() => Math.max(leftTotalLen.value, rightTotalLen.value))
 const hexWindowEndExclusive = computed(() => {
   if (hexFileTotal.value <= 0) {
@@ -418,6 +460,7 @@ function syncHexScroll(source: 'left' | 'right', event: Event): void {
 }
 
 function applyHexResult(result: HexCompareResponse, preserveNavigationRanges = false): void {
+  hexCompared.value = true
   leftPath.value = result.left.path
   rightPath.value = result.right.path
   leftCells.value = result.left.cells
@@ -594,6 +637,10 @@ watchEffect(() => {
 })
 
 async function runHexCompare(options?: { preserveNavigationRanges?: boolean }): Promise<void> {
+  if (compareNeedsBothFiles.value) {
+    return
+  }
+
   const startedAt = performance.now()
 
   loading.value = true
@@ -611,6 +658,7 @@ async function runHexCompare(options?: { preserveNavigationRanges?: boolean }): 
     loadTimeSeconds.value = elapsedSecondsSince(startedAt)
   } catch (event) {
     error.value = formatCompareError(event, t)
+    hexCompared.value = false
   } finally {
     loading.value = false
   }
@@ -901,8 +949,10 @@ async function runHexSave(): Promise<void> {
               type="text"
               class="path-input"
               data-testid="hex-left-path"
-              :title="leftPath"
+              :title="leftPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
               :aria-label="$t('ui.left') + ' ' + $t('ui.path')"
+              @keydown.enter.prevent="onHexPathEnter"
             />
             <SessionPathActions
               browse-test-id="hex-browse-left"
@@ -917,8 +967,10 @@ async function runHexSave(): Promise<void> {
               type="text"
               class="path-input"
               data-testid="hex-right-path"
-              :title="rightPath"
+              :title="rightPath || $t('ui.remoteUriHint')"
+              :placeholder="$t('ui.textPathPlaceholder')"
               :aria-label="$t('ui.right') + ' ' + $t('ui.path')"
+              @keydown.enter.prevent="onHexPathEnter"
             />
             <SessionPathActions
               browse-test-id="hex-browse-right"
@@ -948,7 +1000,8 @@ async function runHexSave(): Promise<void> {
           type="button"
           class="hex-run-diff"
           data-testid="run-hex-compare"
-          :disabled="loading"
+          :disabled="loading || compareNeedsBothFiles"
+          :title="compareNeedsBothFiles ? $t('ui.compareNeedsBothFiles') : $t('ui.runDiff')"
           @click="runHexCompare()"
         >
           {{ $t('ui.runDiff') }}
@@ -1153,11 +1206,18 @@ async function runHexSave(): Promise<void> {
         {{ error }}
       </p>
       <p
-        v-else-if="visiblePairedHexRows.length === 0"
+        v-else-if="hexFilesAreIdentical"
+        class="empty"
+        data-testid="hex-identical-hint"
+      >
+        {{ $t('ui.hexIdenticalHint') }}
+      </p>
+      <p
+        v-else-if="showHexEmptyHint"
         class="empty"
         data-testid="hex-empty-hint"
       >
-        {{ $t('ui.emptyCompareHint') }}
+        {{ hexEmptyStateMessage }}
       </p>
 
       <section

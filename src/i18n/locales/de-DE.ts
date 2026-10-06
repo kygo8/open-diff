@@ -964,6 +964,14 @@ export const deDE: LanguagePack = {
     'ui.tableEmptyReadyHint':
       'Drücken Sie Enter oder klicken Sie auf Vergleichen, um zu laden und zu vergleichen.',
     'ui.tableIdenticalHint': 'Diese Tabellen stimmen überein. Keine Zellunterschiede.',
+    'ui.hexEmptyCompareHint':
+      'Wählen Sie linke und rechte Dateien mit Durchsuchen (oder fügen Sie Pfade ein), dann auf Vergleichen klicken.',
+    'ui.hexEmptyReadyHint':
+      'Drücken Sie Enter oder klicken Sie auf Vergleichen, um byteweise zu vergleichen.',
+    'ui.hexIdenticalHint':
+      'Diese Dateien stimmen in diesem Fenster überein. Keine Byte-Unterschiede.',
+    'ui.hexFilteredEmptyHint':
+      'Keine unterschiedlichen Bytes in dieser Ansicht. Deaktivieren Sie Nur Unterschiede, um übereinstimmende Bytes zu sehen.',
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

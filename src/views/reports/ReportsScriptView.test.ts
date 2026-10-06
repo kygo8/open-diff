@@ -140,7 +140,7 @@ describe('ReportsScriptView', () => {
       source: 'load left.txt\nload right.txt\ncompare\ntext-report out.txt\n',
       path: 'C:/work/job.open-diff-script',
     })
-    expect(wrapper.find('[data-testid="script-result"]').text()).toContain('reports=1')
+    expect(wrapper.find('[data-testid="script-result"]').text()).toContain('Reports written: 1')
     expect(wrapper.find('[data-testid="script-result"]').text()).toContain('wrote report.txt')
     expect(wrapper.find('[data-testid="script-run-log"]').text()).toContain('wrote report.txt')
   })
@@ -197,13 +197,55 @@ describe('ReportsScriptView', () => {
     expect(wrapper.find('[data-testid="script-supported-commands"]').text()).toContain('ATTRIB')
     expect(wrapper.find('[data-testid="script-supported-commands"]').text()).toContain('MOVETO')
     expect(wrapper.find('[data-testid="script-supported-commands"]').text()).toContain('CRITERIA')
-    expect(wrapper.find('[data-testid="script-unsupported-commands"]').text()).not.toContain(
-      'CRITERIA',
-    )
-    expect(wrapper.find('[data-testid="script-unsupported-commands"]').text()).not.toContain(
-      'MEDIA-REPORT',
-    )
+    expect(wrapper.find('[data-testid="script-unsupported-commands"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="script-docs-hint"]').text()).toContain('Samples show')
     expect(wrapper.text()).not.toMatch(/Beyond Compare|\bBC5?\b|Scooter/i)
+  })
+
+  it('guides first-time Script users with empty hint, placeholders, and gated Run', async () => {
+    const wrapper = mount(ReportsScriptView)
+
+    expect(wrapper.find('[data-testid="script-empty-hint"]').text()).toContain(
+      'Pick a sample script',
+    )
+    expect(wrapper.find('[data-testid="script-path"]').attributes('placeholder')).toContain(
+      'Optional path',
+    )
+    expect(wrapper.find('[data-testid="script-source"]').attributes('placeholder')).toContain(
+      'LOAD',
+    )
+    expect(wrapper.find('[data-testid="run-script"]').attributes('title')).toContain('Run Script')
+
+    await wrapper.find('[data-testid="script-source"]').setValue('   ')
+    await wrapper.vm.$nextTick()
+
+    expect((wrapper.find('[data-testid="run-script"]').element as HTMLButtonElement).disabled).toBe(
+      true,
+    )
+    expect(wrapper.find('[data-testid="run-script"]').attributes('title')).toContain(
+      'Enter or load a script first',
+    )
+  })
+
+  it('labels the export action Save Report instead of Compare', () => {
+    const wrapper = mount(ReportsScriptView)
+
+    expect(wrapper.find('[data-testid="run-report-export"]').text()).toContain('Save Report')
+  })
+
+  it('surfaces plain script errors instead of raw invoke noise', async () => {
+    vi.mocked(runScript).mockRejectedValueOnce(
+      new Error('ENOENT: no such file or directory, open script.txt'),
+    )
+    const wrapper = mount(ReportsScriptView)
+
+    await wrapper.find('[data-testid="run-script"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="report-export-error"]').text()).toContain(
+      'could not be found',
+    )
+    expect(wrapper.find('[data-testid="report-export-error"]').text()).not.toContain('ENOENT')
   })
 
   it('offers csv as a report export format', () => {

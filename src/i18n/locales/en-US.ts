@@ -104,7 +104,7 @@ export const enUS: LanguagePack = {
     'ui.clipboardText': 'Clipboard text',
     'ui.clipboardEntryTitle': 'Clipboard {index}',
     'ui.cli': 'CLI',
-    'ui.cliReportsAndRepeatableComparisonJobs': 'CLI, reports, and repeatable comparison jobs',
+    'ui.cliReportsAndRepeatableComparisonJobs': 'Export reports or run automation scripts',
     'ui.close': 'Close',
     'ui.closeAll': 'Close All',
     'ui.closeOthers': 'Close Others',
@@ -458,7 +458,7 @@ export const enUS: LanguagePack = {
     'ui.size': 'Size',
     'ui.source': 'Source',
     'ui.sources': 'Sources',
-    'ui.scriptCli': 'Script / CLI',
+    'ui.scriptCli': 'Script',
     'ui.state': 'State',
     'ui.status': 'Status',
     'ui.strategy': 'Strategy',
@@ -757,7 +757,7 @@ export const enUS: LanguagePack = {
     'session.summary.versionCompare': 'Compare version info inside program files',
     'session.summary.archiveCompare':
       'Compare ZIP, TAR, or 7z archives and copy files out into a folder',
-    'session.summary.script': 'Run automation scripts to load, compare, report, and stop a session',
+    'session.summary.script': 'Run a script to load files, compare, write reports, and stop',
     'ui.archiveCompare': 'Archive Compare',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
@@ -824,7 +824,18 @@ export const enUS: LanguagePack = {
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
-      'Full legacy scripting is not implemented. Supported commands run; known gaps fail as unsupported.',
+      'Pick a sample script (or edit the commands), then click Run Script.',
+    'ui.scriptEmptyHint': 'Pick a sample script (or paste commands), then click Run Script.',
+    'ui.scriptPathPlaceholder': 'Optional path to a script file',
+    'ui.scriptSourcePlaceholder':
+      'Script commands such as LOAD, COMPARE, and TEXT-REPORT — or choose a sample above',
+    'ui.runScriptNeedsSource': 'Enter or load a script first.',
+    'ui.scriptCommandDocsHint':
+      'Commands you can use below. Samples show common LOAD → COMPARE → REPORT flows.',
+    'ui.scriptLogExecuted': 'Commands run: {count}',
+    'ui.scriptLogCompared': 'Compared: {count}',
+    'ui.scriptLogDifferent': 'Different: {count}',
+    'ui.scriptLogReports': 'Reports written: {count}',
     'ui.scriptingSupported':
       'Supported commands: LOAD, FILTER, COMPARE, REPORT, FILE-REPORT, HEX-REPORT, TABLE-REPORT, PICTURE-REPORT, VERSION-REPORT, REGISTRY-REPORT, MEDIA-REPORT, LOG, BEEP, OPTION, SELECT, COPY, COPYTO, MOVE, MOVETO, DELETE, RENAME, TOUCH, ATTRIB, EXPAND, COLLAPSE, SNAPSHOT, SYNC, CRITERIA, TEXT-REPORT, FOLDER-REPORT.',
     'ui.scriptingUnsupported': 'None.',

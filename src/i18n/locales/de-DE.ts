@@ -535,7 +535,7 @@ export const deDE: LanguagePack = {
     'ui.automation': 'Automatisierung',
     'ui.cli': 'CLI',
     'ui.cliReportsAndRepeatableComparisonJobs':
-      'CLI, Berichte und wiederholbare Vergleichsaufträge',
+      'Berichte exportieren oder Automatisierungsskripte ausführen',
     'ui.commonAncestor': 'Gemeinsamer Vorgänger',
     'ui.directory': 'Verzeichnis',
     'ui.draft': 'Entwurf',
@@ -579,7 +579,7 @@ export const deDE: LanguagePack = {
     'ui.same': 'Gleich',
     'ui.settingsInspector': 'Einstellungsinspektor',
     'ui.shell': 'Shell',
-    'ui.scriptCli': 'Skript / CLI',
+    'ui.scriptCli': 'Skript',
     'ui.tableCompareInspector': 'Tabellenvergleich-Inspektor',
     'ui.textCompareInspector': 'Textvergleich-Inspektor',
     'ui.textMergeInspector': 'Textzusammenführung-Inspektor',
@@ -770,7 +770,8 @@ export const deDE: LanguagePack = {
     'ui.sheetSelectionSummary':
       '{leftCount} left / {rightCount} right · {leftSheet} vs {rightSheet}',
     'session.summary.archiveCompare': 'Compare ZIP/TAR/7z sides and copy files out into a folder',
-    'session.summary.script': 'Run automation scripts to load, compare, report, and stop a session',
+    'session.summary.script':
+      'Skript ausführen: laden, vergleichen, Berichte schreiben und beenden',
     'ui.archiveCompare': 'Archivvergleich',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
@@ -838,7 +839,19 @@ export const deDE: LanguagePack = {
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
-      'Die vollständige Legacy-Skriptsprache ist nicht implementiert. Unterstützte Befehle laufen; bekannte Lücken liefern unsupported.',
+      'Beispielskript wählen (oder Befehle bearbeiten), dann Skript ausführen.',
+    'ui.scriptEmptyHint':
+      'Beispielskript wählen (oder Befehle einfügen), dann auf Skript ausführen klicken.',
+    'ui.scriptPathPlaceholder': 'Optionaler Pfad zu einer Skriptdatei',
+    'ui.scriptSourcePlaceholder':
+      'Skriptbefehle wie LOAD, COMPARE und TEXT-REPORT — oder oben ein Beispiel wählen',
+    'ui.runScriptNeedsSource': 'Zuerst ein Skript eingeben oder laden.',
+    'ui.scriptCommandDocsHint':
+      'Befehle unten. Beispiele zeigen typische LOAD → COMPARE → REPORT-Abläufe.',
+    'ui.scriptLogExecuted': 'Befehle ausgeführt: {count}',
+    'ui.scriptLogCompared': 'Verglichen: {count}',
+    'ui.scriptLogDifferent': 'Unterschiedlich: {count}',
+    'ui.scriptLogReports': 'Berichte geschrieben: {count}',
     'ui.scriptingSupported':
       'Unterstützt: LOAD, FILTER, COMPARE, REPORT, FILE-REPORT, HEX-REPORT, TABLE-REPORT, PICTURE-REPORT, VERSION-REPORT, REGISTRY-REPORT, MEDIA-REPORT, LOG, BEEP, OPTION, SELECT, COPY, COPYTO, MOVE, MOVETO, DELETE, RENAME, TOUCH, ATTRIB, EXPAND, COLLAPSE, SNAPSHOT, SYNC, CRITERIA, TEXT-REPORT, FOLDER-REPORT.',
     'ui.scriptingUnsupported': 'Keine.',

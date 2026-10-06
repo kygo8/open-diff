@@ -530,7 +530,7 @@ export const frFR: LanguagePack = {
     'ui.added': 'Ajouté',
     'ui.automation': 'Automatisation',
     'ui.cli': 'CLI',
-    'ui.cliReportsAndRepeatableComparisonJobs': 'CLI, rapports et tâches de comparaison répétables',
+    'ui.cliReportsAndRepeatableComparisonJobs': 'Exporter des rapports ou exécuter des scripts',
     'ui.commonAncestor': 'Ancêtre commun',
     'ui.directory': 'Dossier',
     'ui.draft': 'Brouillon',
@@ -574,7 +574,7 @@ export const frFR: LanguagePack = {
     'ui.same': 'Identique',
     'ui.settingsInspector': 'Inspecteur des paramètres',
     'ui.shell': 'Shell',
-    'ui.scriptCli': 'Script / CLI',
+    'ui.scriptCli': 'Script',
     'ui.tableCompareInspector': 'Inspecteur de comparaison de tableaux',
     'ui.textCompareInspector': 'Inspecteur de comparaison de texte',
     'ui.textMergeInspector': 'Inspecteur de fusion de texte',
@@ -766,7 +766,8 @@ export const frFR: LanguagePack = {
     'ui.sheetSelectionSummary':
       '{leftCount} left / {rightCount} right · {leftSheet} vs {rightSheet}',
     'session.summary.archiveCompare': 'Compare ZIP/TAR/7z sides and copy files out into a folder',
-    'session.summary.script': 'Run automation scripts to load, compare, report, and stop a session',
+    'session.summary.script':
+      'Exécuter un script pour charger, comparer, écrire des rapports et arrêter',
     'ui.archiveCompare': 'Comparaison d’archives',
     'ui.archivePathHint':
       'Folders or ZIP/TAR/7z archives. Snapshot JSON or sftp://profile/id/path, webdav://profile/id/path, s3://profile/id/path, dropbox://profile/id/path, onedrive://profile/id/path, and svn://profile/id/path also work.',
@@ -834,7 +835,19 @@ export const frFR: LanguagePack = {
     'ui.scriptPromptTitle': 'Script prompt',
     'ui.scriptPromptAnswer': 'Answer',
     'ui.scriptingNotImplemented':
-      'Le langage de script hérité complet n’est pas implémenté. Les commandes prises en charge s’exécutent ; les lacunes connues renvoient unsupported.',
+      'Choisissez un exemple (ou modifiez les commandes), puis cliquez sur Exécuter le script.',
+    'ui.scriptEmptyHint':
+      'Choisissez un exemple (ou collez des commandes), puis cliquez sur Exécuter le script.',
+    'ui.scriptPathPlaceholder': 'Chemin facultatif vers un fichier script',
+    'ui.scriptSourcePlaceholder':
+      'Commandes telles que LOAD, COMPARE et TEXT-REPORT — ou choisissez un exemple ci-dessus',
+    'ui.runScriptNeedsSource': "Saisissez ou chargez d'abord un script.",
+    'ui.scriptCommandDocsHint':
+      'Commandes disponibles ci-dessous. Les exemples montrent LOAD → COMPARE → REPORT.',
+    'ui.scriptLogExecuted': 'Commandes exécutées : {count}',
+    'ui.scriptLogCompared': 'Comparé : {count}',
+    'ui.scriptLogDifferent': 'Différent : {count}',
+    'ui.scriptLogReports': 'Rapports écrits : {count}',
     'ui.scriptingSupported':
       'Commandes prises en charge : LOAD, FILTER, COMPARE, REPORT, FILE-REPORT, HEX-REPORT, TABLE-REPORT, PICTURE-REPORT, VERSION-REPORT, REGISTRY-REPORT, MEDIA-REPORT, LOG, BEEP, OPTION, SELECT, COPY, COPYTO, MOVE, MOVETO, DELETE, RENAME, TOUCH, ATTRIB, EXPAND, COLLAPSE, SNAPSHOT, SYNC, CRITERIA, TEXT-REPORT, FOLDER-REPORT.',
     'ui.scriptingUnsupported': 'Aucun.',

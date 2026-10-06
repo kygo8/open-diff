@@ -189,8 +189,7 @@ export const sessionCatalog: SessionCatalogEntry[] = [
     type: 'script',
     title: 'Script',
     titleKey: 'ui.script',
-    summary:
-      'Run automation scripts with LOAD/COMPARE/REPORT, file ops, IF/ELSE, CALL/INCLUDE, samples, run log, and Stop',
+    summary: 'Run a script to load files, compare, write reports, and stop',
     summaryKey: 'session.summary.script',
     priority: 'P2',
     implemented: true,

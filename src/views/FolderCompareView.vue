@@ -586,6 +586,25 @@ const enabledExternalApplications = computed(() =>
 const differenceRows = computed(() =>
   visibleRows.value.filter((row) => row.status !== 'Same' && !isSuppressed(row)),
 )
+const folderEmptyStateMessage = computed(() => {
+  const left = leftRoot.value.trim()
+  const right = rightRoot.value.trim()
+  const comparedCurrent =
+    Boolean(alignmentRootKey.value) && alignmentRootKey.value === `${left}|${right}`
+
+  if (comparedCurrent) {
+    return t('ui.folderCompareNoItems')
+  }
+
+  if (left && right) {
+    return t('ui.folderEmptyReadyHint')
+  }
+
+  return t('ui.folderEmptyCompareHint')
+})
+
+const compareNeedsBothFolders = computed(() => !leftRoot.value.trim() || !rightRoot.value.trim())
+
 const visibleRows = computed(() =>
   rows.value.filter(
     (row) =>
@@ -3277,6 +3296,7 @@ onUnmounted(() => {
         <label
           v-for="option in displayStatusOptions"
           :key="option.testId"
+          :title="option.testId === 'orphans' ? $t('ui.orphansHint') : undefined"
         >
           <input
             :data-testid="`toggle-status-${option.testId}`"
@@ -3316,7 +3336,8 @@ onUnmounted(() => {
                 list="folder-path-mru"
                 autocomplete="off"
                 spellcheck="false"
-                :title="leftRoot"
+                :placeholder="$t('ui.folderPathPlaceholder')"
+                :title="leftRoot || $t('ui.folderPathPlaceholder')"
                 @focus="focusedPathSide = 'left'"
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'left')"
@@ -3361,7 +3382,8 @@ onUnmounted(() => {
                 list="folder-path-mru"
                 autocomplete="off"
                 spellcheck="false"
-                :title="rightRoot"
+                :placeholder="$t('ui.folderPathPlaceholder')"
+                :title="rightRoot || $t('ui.folderPathPlaceholder')"
                 @focus="focusedPathSide = 'right'"
                 @dragover.prevent
                 @drop="handlePathFieldDrop($event, 'right')"
@@ -3576,6 +3598,7 @@ onUnmounted(() => {
             data-testid="run-folder-compare"
             :disabled="folderCompareLoading || !leftRoot || !rightRoot"
             :loading="folderCompareLoading"
+            :title="compareNeedsBothFolders ? $t('ui.compareNeedsBothFolders') : $t('ui.compare')"
             @click="runFolderCompare"
             >{{ $t('ui.compare') }}</NButton
           >
@@ -4160,7 +4183,7 @@ onUnmounted(() => {
         </div>
         <div>
           <strong>{{ summary.orphans }}</strong>
-          <span>{{ $t('ui.orphans') }}</span>
+          <span :title="$t('ui.orphansHint')">{{ $t('ui.orphans') }}</span>
         </div>
       </section>
 
@@ -4618,7 +4641,7 @@ onUnmounted(() => {
           class="folder-empty-state"
           data-testid="folder-empty-state"
         >
-          {{ $t('ui.emptyCompareHint') }}
+          {{ folderEmptyStateMessage }}
         </div>
         <div
           v-else-if="rows.length > 0 && visibleRows.length === 0"

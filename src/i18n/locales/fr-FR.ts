@@ -276,7 +276,8 @@ export const frFR: LanguagePack = {
     'ui.openSuggestedView': 'Ouvrir la vue suggérée',
     'ui.openTextMerge': 'Ouvrir la fusion de texte',
     'ui.openWith': 'Ouvrir avec',
-    'ui.orphans': 'Orphelins',
+    'ui.orphans': "D'un seul côté",
+    'ui.orphansHint': 'Fichiers ou dossiers présents seulement à gauche ou seulement à droite',
     'ui.outputFolder': 'Dossier de sortie',
     'ui.outputHasConflictMarkers': 'La sortie comporte des marqueurs de conflit',
     'ui.overlay': 'Recouvrir',
@@ -912,6 +913,13 @@ export const frFR: LanguagePack = {
       'Cliquez sur un type de comparaison ci-dessous pour commencer, ou ouvrez une session enregistrée.',
     'ui.sessionHistoryEmpty': 'No recent sessions. Choose a comparison type to begin.',
     'ui.emptyCompareHint': 'Choose left and right paths, then click Compare.',
+    'ui.folderPathPlaceholder': 'Parcourir ou coller un chemin de dossier',
+    'ui.folderEmptyCompareHint':
+      'Choisissez les dossiers gauche et droit avec le bouton dossier (ou collez des chemins), puis cliquez sur Comparer.',
+    'ui.folderEmptyReadyHint': 'Cliquez sur Comparer pour analyser ces dossiers.',
+    'ui.folderCompareNoItems':
+      'Aucun fichier ou dossier à afficher. Les deux côtés peuvent être vides, ou des filtres ont tout masqué.',
+    'ui.compareNeedsBothFolders': "Choisissez d'abord les dossiers gauche et droit.",
     'ui.registryExportHint':
       'Compare exported .reg files, offline REGF hive files (SYSTEM/SOFTWARE/NTUSER.DAT), or live HKLM/HKCU keys on Windows.',
     'ui.nextConflict': 'Next Conflict',

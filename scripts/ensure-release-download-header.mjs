@@ -10,6 +10,8 @@
  */
 import { readFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
+import process from 'node:process'
+import console from 'node:console'
 
 const tag = process.argv[2]
 if (!tag) {

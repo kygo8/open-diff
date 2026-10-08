@@ -2284,7 +2284,9 @@ const sourceSessionTypes = new Set<SessionType>([
   left: 0;
   z-index: 90;
   display: grid;
-  width: 240px;
+  width: max-content;
+  min-width: 280px;
+  max-width: min(420px, calc(100vw - 16px));
   max-height: calc(100vh - 72px);
   padding: 2px;
   overflow: auto;
@@ -2297,13 +2299,13 @@ const sourceSessionTypes = new Set<SessionType>([
 .menu-panel button,
 .menu-panel .menu-command {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: max-content auto;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   min-width: 0;
-  min-height: 21.5px;
-  padding: 0 8px;
-  overflow: hidden;
+  min-height: 22px;
+  padding: 0 10px;
+  overflow: visible;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -2317,9 +2319,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .menu-command-label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
   white-space: nowrap;
 }
 
@@ -2455,6 +2455,7 @@ const sourceSessionTypes = new Set<SessionType>([
 .menu-group {
   position: relative;
   z-index: 70;
+  overflow: visible;
 }
 
 .menus button,

@@ -194,6 +194,8 @@ Download Open Diff for Windows, macOS, and Linux from
 Do **not** download Source code zip/tar.gz unless you plan to build from source.
 There is no 32-bit Windows or Linux ARM package in the current release.
 
+Linux Wayland (KDE Plasma): see [docs/linux-wayland.md](docs/linux-wayland.md) if chrome looks crushed or menus clip; the app prefers XWayland automatically.
+
 ## Development
 
 Requirements:

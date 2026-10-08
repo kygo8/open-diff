@@ -1206,7 +1206,8 @@ describe('AppLayout command palette', () => {
     expect(menusButton?.[0]).toContain('height: 21.5px')
     expect(menusButton?.[0]).toContain('font-size: 12px')
     expect(menusButton?.[0]).not.toContain('height: 15px')
-    expect(menuCommand?.[0]).toContain('min-height: 21.5px')
+    expect(menuCommand?.[0]).toContain('min-height: 22px')
+    expect(source).toMatch(/\.menu-panel\s*\{[\s\S]*?min-width:\s*280px/)
     expect(menuCommand?.[0]).toContain('font-size: 12px')
   })
 

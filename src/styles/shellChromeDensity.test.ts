@@ -31,8 +31,8 @@ describe('shell chrome density', () => {
     expect(source).toMatch(/data-menu-density="capture-1to1"/)
     expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?background:\s*#f0f0f0/)
     expect(source).toMatch(/\.menu-panel\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(source).toMatch(/\.menu-panel button,[\s\S]*?min-height:\s*22px/)
-    expect(source).toMatch(/\.menu-panel button,[\s\S]*?font-size:\s*12px/)
+    expect(source).toMatch(/\.menu-panel \.menu-command\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(source).toMatch(/\.menu-panel \.menu-command\s*\{[\s\S]*?font-size:\s*12px/)
     expect(source).toMatch(/\.menus\s*\{[\s\S]*?border-top:\s*1px solid #d0d0d0/)
     expect(source).toMatch(/\.tab-context-menu\s*\{[\s\S]*?border-radius:\s*0/)
     expect(source).toMatch(/\.dirty-tab-prompt\s*\{[\s\S]*?min-height:\s*22px/)
@@ -103,9 +103,11 @@ describe('shell chrome density', () => {
     expect(source).toMatch(/data-menu-sep="capture-1to1-residual"/)
     expect(source).toMatch(/\.menu-separator\s*\{[\s\S]*?margin:\s*2px 4px/)
     expect(source).toMatch(
-      /data-menu-chrome='capture-1to1-residual'\] \.menus button\s*\{[\s\S]*?height:\s*21\.5px/,
+      /data-menu-chrome='capture-1to1-residual'\] \.menus > \.menu-group > button\s*\{[\s\S]*?height:\s*21\.5px/,
     )
-    expect(source).toMatch(/menus button\.active\s*\{[\s\S]*?background:\s*#c8e4ff/)
+    expect(source).toMatch(
+      /menus > \.menu-group > button\.active\s*\{[\s\S]*?background:\s*#c8e4ff/,
+    )
   })
 
   it('keeps tab strip and sole-session frame residual capture chrome', () => {

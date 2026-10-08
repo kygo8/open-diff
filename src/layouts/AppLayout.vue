@@ -1802,6 +1802,7 @@ const sourceSessionTypes = new Set<SessionType>([
                 :data-enabled="entry.command.enabled ? 'true' : 'false'"
                 :data-testid="`menu-command-${entry.command.id}`"
                 :data-shortcut="menuShortcutLabel(entry.command)"
+                :title="t(entry.command.titleKey)"
                 @click="executeCommand(entry.command.id)"
               >
                 <span class="menu-command-label">{{ t(entry.command.titleKey) }}</span>
@@ -2284,25 +2285,32 @@ const sourceSessionTypes = new Set<SessionType>([
   left: 0;
   z-index: 90;
   display: grid;
-  width: 240px;
+  box-sizing: border-box;
+  width: max-content;
+  min-width: 24rem;
+  max-width: min(36rem, calc(100vw - 24px));
   max-height: calc(100vh - 72px);
   padding: 2px;
-  overflow: auto;
+  overflow: hidden auto;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-canvas);
   box-shadow: 0 4px 12px rgb(25 28 30 / 0.16);
 }
 
-.menu-panel button,
+/* Do not inherit .menus > button max-width: 9em — that crushed panel labels (#624). */
 .menu-panel .menu-command {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 0;
-  min-height: 21.5px;
-  padding: 0 8px;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: max-content;
+  min-width: 100%;
+  max-width: 100%;
+  height: auto;
+  min-height: 22px;
+  max-height: none;
+  padding: 0 10px;
   overflow: hidden;
   border: 0;
   border-radius: 0;
@@ -2310,24 +2318,31 @@ const sourceSessionTypes = new Set<SessionType>([
   color: #000000;
   font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
   font-size: 12px;
+  font-weight: 400;
   line-height: 20px;
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
+  box-sizing: border-box;
+  text-overflow: clip;
 }
 
 .menu-command-label {
+  flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
+  font-weight: 400;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .menu-command-shortcut {
+  flex: 0 0 auto;
   color: var(--app-text-muted);
   font-size: 12px;
   line-height: 20px;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .menu-panel button:hover {
@@ -2349,14 +2364,14 @@ const sourceSessionTypes = new Set<SessionType>([
   background: #c0c0c0;
 }
 
-.menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button {
+.menu-bar[data-menu-chrome='capture-1to1-residual'] .menus > .menu-group > button {
   height: 21.5px;
   color: #000000;
   font-size: 12px;
   font-weight: 400;
 }
 
-.menu-bar[data-menu-chrome='capture-1to1-residual'] .menus button.active {
+.menu-bar[data-menu-chrome='capture-1to1-residual'] .menus > .menu-group > button.active {
   background: #c8e4ff;
   color: #000000;
   box-shadow: inset 0 0 0 1px #89bdea;
@@ -2455,15 +2470,16 @@ const sourceSessionTypes = new Set<SessionType>([
 .menu-group {
   position: relative;
   z-index: 70;
+  overflow: visible;
 }
 
-.menus button,
+.menus > .menu-group > button,
 .chrome-button,
 .nav-item {
   font: inherit;
 }
 
-.menus button,
+.menus > .menu-group > button,
 .chrome-button {
   height: 21.5px;
   border: 0;
@@ -2473,7 +2489,7 @@ const sourceSessionTypes = new Set<SessionType>([
   cursor: pointer;
 }
 
-.menus button {
+.menus > .menu-group > button {
   max-width: 9em;
   height: 21.5px;
   padding: 0 8px;
@@ -2484,8 +2500,8 @@ const sourceSessionTypes = new Set<SessionType>([
   white-space: nowrap;
 }
 
-.menus button:hover,
-.menus button.active,
+.menus > .menu-group > button:hover,
+.menus > .menu-group > button.active,
 .chrome-button:hover {
   background: #eef4ff;
 }
@@ -3289,7 +3305,7 @@ html[data-show-sidebar='1'] .sidebar {
   background: #ffffff;
 }
 
-.app-shell-dense-chrome .menus button {
+.app-shell-dense-chrome .menus > .menu-group > button {
   height: 21.5px;
   padding: 0 8px;
   font-size: 12px;

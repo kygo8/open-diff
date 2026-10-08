@@ -665,7 +665,7 @@ onMounted(() => {
             class="bc-tree-row expanded"
           >
             <span>▾</span>
-            <FolderOpen :size="14" />
+            <FolderOpen :size="16" />
             <strong>{{ $t('ui.new') }}</strong>
           </button>
           <button
@@ -679,7 +679,7 @@ onMounted(() => {
             <span></span>
             <component
               :is="entry.icon"
-              :size="14"
+              :size="16"
             />
             <strong>{{ $t(entry.titleKey) }}</strong>
           </button>
@@ -689,7 +689,7 @@ onMounted(() => {
             data-testid="home-tree-auto-saved"
           >
             <span>▾</span>
-            <FolderOpen :size="14" />
+            <FolderOpen :size="16" />
             <strong>{{ $t('ui.autoSaved') }}</strong>
           </button>
           <button
@@ -703,7 +703,7 @@ onMounted(() => {
             @dblclick="openSavedSession(session)"
           >
             <span></span>
-            <FolderOpen :size="13" />
+            <FolderOpen :size="16" />
             <strong>{{ session.name }}</strong>
           </button>
           <button
@@ -712,7 +712,7 @@ onMounted(() => {
             data-testid="home-tree-today"
           >
             <span>▾</span>
-            <FolderOpen :size="14" />
+            <FolderOpen :size="16" />
             <strong>{{ $t('ui.today') }}</strong>
           </button>
           <button
@@ -726,7 +726,7 @@ onMounted(() => {
             @dblclick="openSavedSession(session)"
           >
             <span></span>
-            <FolderOpen :size="13" />
+            <FolderOpen :size="16" />
             <strong>{{ session.name }}</strong>
           </button>
         </section>
@@ -1211,12 +1211,13 @@ onMounted(() => {
 
 .bc-tree-row {
   display: grid;
-  grid-template-columns: 12px 16px minmax(0, 1fr);
+  grid-template-columns: 12px 18px minmax(0, 1fr);
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   width: 100%;
-  min-height: 17px;
-  padding: 0 2px;
+  height: auto;
+  min-height: 20px;
+  padding: 1px 2px;
   border: 0;
   background: transparent;
   color: #111827;

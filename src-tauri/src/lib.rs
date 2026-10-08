@@ -2,11 +2,16 @@ pub use shell_startup::{prepare_shell_startup, ShellStartupDecision};
 
 mod commands;
 #[cfg(target_os = "linux")]
+mod linux_display_env;
+#[cfg(target_os = "linux")]
 mod linux_dnd;
 mod shell_startup;
 mod sources;
 
 pub fn run() {
+    #[cfg(target_os = "linux")]
+    linux_display_env::apply_linux_display_env();
+
     tauri::Builder::default()
         .setup(|_app| {
             #[cfg(target_os = "linux")]

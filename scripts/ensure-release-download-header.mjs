@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Prepend .github/release-download-header.md to a GitHub Release body
- * when it is missing, so every release pins the download guide at the top.
+ * Ensure .github/release-download-header.md is pinned at the top of a
+ * GitHub Release body (insert or refresh the download-guide block).
  *
  * Usage:
  *   node scripts/ensure-release-download-header.mjs <tag>
@@ -39,30 +39,41 @@ function gh(args) {
   return result.stdout
 }
 
-const body = gh(['release', 'view', tag, '--repo', repo, '--json', 'body', '--jq', '.body // ""'])
-const trimmed = body.replace(/^\uFEFF/, '')
+const body = gh([
+  'release',
+  'view',
+  tag,
+  '--repo',
+  repo,
+  '--json',
+  'body',
+  '--jq',
+  '.body // ""',
+]).replace(/^\uFEFF/, '')
 
-if (trimmed.trimStart().startsWith(marker)) {
-  console.log(`Release ${tag} already starts with download guide; leaving body unchanged.`)
+let rest = body
+if (rest.trimStart().startsWith(marker)) {
+  // Drop the existing pinned block through its trailing --- so we can refresh.
+  rest = rest.trimStart().replace(/^## 下载说明 \/ Which file to download[\s\S]*?\n---\s*/, '')
+} else {
+  rest = rest.replace(
+    /^See the assets below to download and install OpenDiff for your platform\.\s*/i,
+    '',
+  )
+}
+
+const nextBody = `${header}${rest.trimStart()}`
+if (nextBody === body || nextBody === `${body}\n`) {
+  console.log(`Release ${tag} download guide already up to date.`)
   process.exit(0)
 }
 
-let rest = trimmed.replace(
-  /^See the assets below to download and install OpenDiff for your platform\.\s*/i,
-  '',
-)
-
-const nextBody = `${header}${rest.trimStart()}`
-const edit = spawnSync(
-  'gh',
-  ['release', 'edit', tag, '--repo', repo, '--notes', nextBody],
-  {
-    encoding: 'utf8',
-    env: { ...process.env, GH_TOKEN: token },
-  },
-)
+const edit = spawnSync('gh', ['release', 'edit', tag, '--repo', repo, '--notes', nextBody], {
+  encoding: 'utf8',
+  env: { ...process.env, GH_TOKEN: token },
+})
 if (edit.status !== 0) {
   console.error(edit.stderr || edit.stdout)
   process.exit(edit.status || 1)
 }
-console.log(`Pinned download guide at top of release ${tag}.`)
+console.log(`Pinned/refreshed download guide at top of release ${tag}.`)

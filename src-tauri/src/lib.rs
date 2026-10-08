@@ -2,9 +2,9 @@ pub use shell_startup::{prepare_shell_startup, ShellStartupDecision};
 
 mod commands;
 #[cfg(target_os = "linux")]
-mod linux_dnd;
-#[cfg(target_os = "linux")]
 mod linux_display_env;
+#[cfg(target_os = "linux")]
+mod linux_dnd;
 mod shell_startup;
 mod sources;
 

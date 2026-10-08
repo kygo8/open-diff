@@ -1194,10 +1194,8 @@ describe('AppLayout command palette', () => {
       resolve(dirname(fileURLToPath(import.meta.url)), './AppLayout.vue'),
       'utf8',
     )
-    const menusButton = /\.menus button \{[^}]+\}/.exec(source)
-    const menuCommand = /\.menu-panel button,[\s\S]*?\.menu-panel \.menu-command \{[^}]+\}/.exec(
-      source,
-    )
+    const menusButton = /\.menus > \.menu-group > button \{[^}]+\}/.exec(source)
+    const menuCommand = /\.menu-panel \.menu-command \{[^}]+\}/.exec(source)
 
     expect(source).toContain('grid-template-rows: 48px minmax(0, 1fr) 24px')
     expect(source).toContain('grid-template-rows: 24px 24px')
@@ -1207,8 +1205,22 @@ describe('AppLayout command palette', () => {
     expect(menusButton?.[0]).toContain('font-size: 12px')
     expect(menusButton?.[0]).not.toContain('height: 15px')
     expect(menuCommand?.[0]).toContain('min-height: 22px')
-    expect(source).toMatch(/\.menu-panel\s*\{[\s\S]*?min-width:\s*280px/)
+    expect(source).toMatch(/\.menu-panel\s*\{[\s\S]*?min-width:\s*24rem/)
+    expect(source).toMatch(/\.menus > \.menu-group > button\s*\{[\s\S]*?max-width:\s*9em/)
+    expect(source).toMatch(/\.menu-panel \.menu-command\s*\{[\s\S]*?max-width:\s*100%/)
+    expect(source).toMatch(/\.menu-command-label\s*\{[\s\S]*?text-overflow:\s*ellipsis/)
     expect(menuCommand?.[0]).toContain('font-size: 12px')
+  })
+
+  it('exposes full menu labels via title for hover tooltips', async () => {
+    const wrapper = mountAppLayout()
+
+    await wrapper.find('[data-testid="menu-session"]').trigger('click')
+    const command = wrapper.find('[data-testid="menu-command-open.clipboardCompare"]')
+
+    expect(command.exists()).toBe(true)
+    expect(command.attributes('title')).toBeTruthy()
+    expect((command.attributes('title') ?? '').length).toBeGreaterThan(1)
   })
 
   it('shows tab context menu actions and closes others', async () => {

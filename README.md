@@ -176,11 +176,23 @@ Localized overviews with common search phrases for each language:
 
 ## Installation
 
-Download this free open-source compare tool for Windows, macOS, and Linux from the
-[GitHub Releases](https://github.com/kygo8/open-diff/releases) page.
+Download Open Diff for Windows, macOS, and Linux from
+[GitHub Releases](https://github.com/kygo8/open-diff/releases/latest).
 
-Release assets are published for supported desktop platforms through the Tauri
-release workflow.
+**Which file should I download?** See the full guide (中文主文):
+[docs/下载说明.md](docs/下载说明.md) ([English index](docs/download-guide.md)).
+
+| Your device                         | Download this asset                                 | Notes                                 |
+| ----------------------------------- | --------------------------------------------------- | ------------------------------------- |
+| Windows 64-bit                      | `*_windows_x64.msi` or `*_windows_x64_portable.zip` | MSI = installer; zip = portable       |
+| Mac Apple Silicon (M1/M2/M3/M4/M5…) | `*_darwin_aarch64.dmg` (or `.app.tar.gz`)           | Apple menu → About This Mac → chip    |
+| Mac Intel                           | `*_darwin_x64.dmg` (or `.app.tar.gz`)               | Do not pick `aarch64`                 |
+| Linux Debian/Ubuntu                 | `*_linux_amd64.deb`                                 | Or AppImage to try without installing |
+| Linux Fedora/RHEL/openSUSE          | `*_linux_x86_64.rpm`                                | Or AppImage                           |
+| Any x86_64 Linux (no install)       | `*_linux_amd64.AppImage`                            | `chmod +x` then run                   |
+
+Do **not** download Source code zip/tar.gz unless you plan to build from source.
+There is no 32-bit Windows or Linux ARM package in the current release.
 
 ## Development
 

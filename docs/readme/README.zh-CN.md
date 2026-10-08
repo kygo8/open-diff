@@ -99,6 +99,23 @@ Linux 冒烟截图（Home / Text / Table / Image / Hex / Folder）：
 - CSV 或表格数据对比。
 - 图片和二进制文件差异检查。
 
+## 下载与安装
+
+请从 [GitHub Releases（Latest）](https://github.com/kygo8/open-diff/releases/latest) 下载对应系统的安装包。
+
+**详细对照（什么样的设备该下什么样的文件）：** [下载说明](../下载说明.md)
+
+| 你的设备                          | 下载文件                                            | 说明                       |
+| --------------------------------- | --------------------------------------------------- | -------------------------- |
+| Windows 64 位                     | `*_windows_x64.msi` 或 `*_windows_x64_portable.zip` | MSI 安装版；zip 绿色便携版 |
+| Mac Apple 芯片（M1/M2/M3/M4/M5…） | `*_darwin_aarch64.dmg`（或 `.app.tar.gz`）          | 苹果菜单 → 关于本机 → 芯片 |
+| Mac Intel                         | `*_darwin_x64.dmg`（或 `.app.tar.gz`）              | 不要选 `aarch64`           |
+| Linux Debian/Ubuntu 系            | `*_linux_amd64.deb`                                 | 也可用 AppImage 免安装试用 |
+| Linux Fedora/RHEL/openSUSE 系     | `*_linux_x86_64.rpm`                                | 也可用 AppImage            |
+| 任意 x86_64 Linux（免安装）       | `*_linux_amd64.AppImage`                            | 先 `chmod +x` 再运行       |
+
+请勿下载 Source code（源码包），除非你要自己编译。当前没有 32 位 Windows 或 Linux ARM 预编译包。
+
 ## 项目状态
 
 Open Diff 已在 v1.1.1 发布安装包，并提供可用的桌面比较、合并、同步、压缩包、远程和脚本功能。未完成的功能会禁用或标明「未实现」，不会假装成功。安装包请从 GitHub Releases 下载。

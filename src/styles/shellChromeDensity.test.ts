@@ -105,7 +105,9 @@ describe('shell chrome density', () => {
     expect(source).toMatch(
       /data-menu-chrome='capture-1to1-residual'\] \.menus > \.menu-group > button\s*\{[\s\S]*?height:\s*21\.5px/,
     )
-    expect(source).toMatch(/menus > \.menu-group > button\.active\s*\{[\s\S]*?background:\s*#c8e4ff/)
+    expect(source).toMatch(
+      /menus > \.menu-group > button\.active\s*\{[\s\S]*?background:\s*#c8e4ff/,
+    )
   })
 
   it('keeps tab strip and sole-session frame residual capture chrome', () => {

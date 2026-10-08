@@ -1215,8 +1215,8 @@ onMounted(() => {
   align-items: center;
   gap: 4px;
   width: 100%;
-  min-height: 20px;
   height: auto;
+  min-height: 20px;
   padding: 1px 2px;
   border: 0;
   background: transparent;

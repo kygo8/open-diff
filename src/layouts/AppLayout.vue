@@ -2291,8 +2291,7 @@ const sourceSessionTypes = new Set<SessionType>([
   max-width: min(36rem, calc(100vw - 24px));
   max-height: calc(100vh - 72px);
   padding: 2px;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-canvas);
@@ -2305,12 +2304,11 @@ const sourceSessionTypes = new Set<SessionType>([
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  box-sizing: border-box;
   width: max-content;
   min-width: 100%;
   max-width: 100%;
-  min-height: 22px;
   height: auto;
+  min-height: 22px;
   max-height: none;
   padding: 0 10px;
   overflow: hidden;
@@ -2323,9 +2321,10 @@ const sourceSessionTypes = new Set<SessionType>([
   font-weight: 400;
   line-height: 20px;
   text-align: left;
-  text-overflow: clip;
   white-space: nowrap;
   cursor: pointer;
+  box-sizing: border-box;
+  text-overflow: clip;
 }
 
 .menu-command-label {

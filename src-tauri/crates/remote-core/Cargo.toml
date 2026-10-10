@@ -6,13 +6,13 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
-hmac = "0.12"
+hmac = "0.13"
 logging-core = { path = "../logging-core" }
 serde.workspace = true
 serde_json.workspace = true
-sha2 = "0.10"
-suppaftp = { version = "6.3.0", default-features = false, features = ["native-tls", "deprecated"] }
-ureq = "2.12.1"
+sha2 = "0.11"
+suppaftp = { version = "12.1.1", default-features = false, features = ["native-tls", "deprecated"] }
+ureq = "3.4.2"
 
 # macOS release DMGs must not depend on Homebrew libssl via libssh2.
 [target.'cfg(target_os = "macos")'.dependencies]

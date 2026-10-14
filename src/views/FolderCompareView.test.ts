@@ -510,7 +510,7 @@ describe('FolderCompareView', () => {
     expect(wrapper.find('[data-testid="folder-filter-strip-peek"]').exists()).toBe(true)
     expect(
       wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
-    ).not.toContain('display: none')
+    ).toContain('display: none')
     expect(strip.text()).toContain('Filters')
     expect((pattern.element as HTMLInputElement).value).toBe('*.*')
 
@@ -573,7 +573,7 @@ describe('FolderCompareView', () => {
 
     expect(
       wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
-    ).not.toContain('display: none')
+    ).toContain('display: none')
     expect(wrapper.find('[data-testid="folder-peek-panel"]').attributes('style') ?? '').toContain(
       'display: none',
     )
@@ -581,13 +581,13 @@ describe('FolderCompareView', () => {
     await wrapper.find('[data-testid="folder-filter-strip-filters"]').trigger('click')
     expect(
       wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
-    ).toContain('display: none')
+    ).not.toContain('display: none')
     expect(wrapper.find('[data-testid="folder-filter-strip"]').exists()).toBe(true)
 
     await wrapper.find('[data-testid="folder-filter-strip-filters"]').trigger('click')
     expect(
       wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
-    ).not.toContain('display: none')
+    ).toContain('display: none')
 
     await wrapper.find('[data-testid="folder-filter-strip-peek"]').trigger('click')
     expect(
@@ -602,31 +602,31 @@ describe('FolderCompareView', () => {
   it('toggles rules and filters panels from the session toolbar', async () => {
     const wrapper = mountFolderCompareView()
 
-    expect(wrapper.find('[data-testid="folder-criteria"]').attributes('style') ?? '').not.toContain(
-      'display: none',
-    )
-    expect(
-      wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
-    ).not.toContain('display: none')
-
-    await wrapper.find('[data-testid="folder-session-toolbar-rules"]').trigger('click')
     expect(wrapper.find('[data-testid="folder-criteria"]').attributes('style') ?? '').toContain(
       'display: none',
     )
-
-    await wrapper.find('[data-testid="folder-session-toolbar-filters"]').trigger('click')
     expect(
       wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
     ).toContain('display: none')
 
     await wrapper.find('[data-testid="folder-session-toolbar-rules"]').trigger('click')
-    await wrapper.find('[data-testid="folder-session-toolbar-filters"]').trigger('click')
     expect(wrapper.find('[data-testid="folder-criteria"]').attributes('style') ?? '').not.toContain(
+      'display: none',
+    )
+
+    await wrapper.find('[data-testid="folder-session-toolbar-filters"]').trigger('click')
+    expect(
+      wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
+    ).not.toContain('display: none')
+
+    await wrapper.find('[data-testid="folder-session-toolbar-rules"]').trigger('click')
+    await wrapper.find('[data-testid="folder-session-toolbar-filters"]').trigger('click')
+    expect(wrapper.find('[data-testid="folder-criteria"]').attributes('style') ?? '').toContain(
       'display: none',
     )
     expect(
       wrapper.find('[data-testid="folder-display-filters"]').attributes('style') ?? '',
-    ).not.toContain('display: none')
+    ).toContain('display: none')
   })
 
   it('filters the folder tree to files only from the session toolbar', async () => {

@@ -5295,8 +5295,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 /* ---- HTML demo simplify: tuck non-demo chrome (handlers stay in DOM) ---- */
 
-/* Extra action docks / hints not in the HTML demo chrome */
-.folder-actions,
+/* Extra action docks / hints not in the HTML demo chrome.
+   Keep primary Compare / Run controls visible for session CTAs. */
 .folder-root-summary,
 .archive-path-hint,
 .folder-compare-view .folder-toolbar > button[data-testid='open-folder-session-settings'],
@@ -5305,9 +5305,6 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .format-header .eyebrow,
 .profile-header .eyebrow,
 .file-format-view .format-io-panel,
-.workbench-toolbar.compare-toolbar,
-.text-compare-view .compare-toolbar,
-.folder-merge-view .folder-actions,
 .folder-status-legend-slot,
 .hex-header,
 .picture-header,
@@ -5323,15 +5320,34 @@ html[data-show-path-bars='0'] .path-pair-bar {
 .version-report-panel,
 .table-report-actions,
 .hex-summary,
-.hex-run-diff,
 button[data-testid='open-hex-session-settings'],
 button[data-testid='open-picture-session-settings'],
 button[data-testid='open-table-session-settings'],
 button[data-testid='open-media-session-settings'],
 button[data-testid='open-registry-session-settings'],
 button[data-testid='open-version-session-settings'],
-button[data-testid='open-text-session-settings'] {
+button[data-testid='open-text-session-settings'],
+.folder-actions button[data-testid^='export-'],
+.folder-actions .n-button[data-testid^='export-'],
+.compare-toolbar button[data-testid^='export-'],
+.compare-toolbar .toolbar-button[data-testid^='export-'] {
   display: none !important;
+}
+
+/* Aux text toolbar: keep Run/Undo/Copy; densify instead of removing */
+.workbench-toolbar.compare-toolbar,
+.text-compare-view .compare-toolbar {
+  flex-wrap: wrap !important;
+  gap: 2px !important;
+  min-height: 28px !important;
+  max-height: none !important;
+  padding: 2px 4px !important;
+}
+
+.folder-actions,
+.folder-merge-view .folder-actions {
+  gap: 4px !important;
+  padding: 2px 4px !important;
 }
 
 /* Specialty path meta strips — demo dual-paths are bare */

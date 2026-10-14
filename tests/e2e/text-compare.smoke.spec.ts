@@ -104,6 +104,8 @@ test('opens the home page and runs a text comparison', async ({ page }) => {
   await expect(page.getByTestId('run-diff')).toBeVisible()
   await expect(page.locator('body')).not.toContainText('generated-120.log')
 
+  await page.getByTestId('text-session-toolbar-rules').click()
+  await expect(page.getByTestId('text-rules-panel')).toBeVisible()
   await page.getByTestId('ignore-whitespace').check()
   await page.getByTestId('run-diff').click()
 

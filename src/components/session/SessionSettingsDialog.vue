@@ -875,23 +875,34 @@ function applySettings(): void {
 
 .session-settings-dialog {
   display: grid;
-  gap: 4px;
-  width: min(520px, 100%);
-  padding: 4px 6px;
+  grid-template-columns: 1fr;
+  gap: 0;
+  width: min(640px, 100%);
+  min-height: 360px;
+  padding: 0;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: var(--app-surface, #ffffff);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 16px;
+}
+
+.session-settings-dialog:has(.settings-tabs) {
+  grid-template-columns: 160px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 header,
 footer {
   display: flex;
+  grid-column: 1 / -1;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  min-height: 20px;
+  min-height: 26px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #c8c8c8;
+  background: #f0f0f0;
 }
 
 header {
@@ -900,13 +911,13 @@ header {
 }
 
 header button {
-  height: 18px;
-  min-height: 18px;
+  height: 28px;
+  min-height: 28px;
   padding: 0 8px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 16px;
 }
 
@@ -918,44 +929,67 @@ h2 {
 
 .settings-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  min-height: 20px;
-  padding: 2px 0;
-  background: #f0f0f0;
+  grid-column: 1;
+  grid-row: 2;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  padding: 8px 0;
+  overflow: auto;
+  border-right: 1px solid #c8c8c8;
+  background: #f5f5f5;
 }
 
 .settings-tabs button {
-  height: 18px;
-  padding: 0 6px;
-  border: 1px solid #a0a0a0;
+  height: auto;
+  min-height: 28px;
+  padding: 6px 14px;
+  border: 0;
   border-radius: 0;
-  font-size: 11px;
+  background: transparent;
+  color: #1a1a1a;
+  font-size: 12px;
   line-height: 16px;
+  text-align: left;
+  cursor: default;
+}
+
+.settings-tabs button:hover {
+  background: #e8f4ff;
 }
 
 .settings-tabs button.active {
-  border-color: #89bdea;
-  background: #c8e4ff;
+  border-color: transparent;
+  background: #cce8ff;
   color: #1a1a1a;
-  box-shadow: inset 0 0 0 1px #89bdea;
+  font-weight: 600;
+  box-shadow: none;
 }
 
 .settings-body {
   display: grid;
-  gap: 4px;
-  padding: 4px 6px;
-  border: 1px solid #a0a0a0;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  gap: 10px;
+  min-height: 0;
+  padding: 16px 20px;
+  overflow: auto;
+  border: 0;
   border-radius: 0;
-  background: var(--app-surface-low, #ffffff);
+  background: #ffffff;
+  align-content: start;
+}
+
+.session-settings-dialog:has(.settings-tabs) .settings-body {
+  grid-column: 2;
 }
 
 .settings-body label {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-height: 18px;
-  font-size: 11px;
+  min-height: 28px;
+  font-size: 12px;
   line-height: 16px;
 }
 
@@ -966,12 +1000,12 @@ h2 {
 
 .settings-body input:not([type='checkbox']),
 .settings-body select {
-  height: 20px;
-  min-height: 20px;
+  height: 26px;
+  min-height: 26px;
   padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 16px;
 }
 
@@ -984,7 +1018,7 @@ h2 {
   background: var(--app-surface-low, #ffffff);
   color: var(--app-text);
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 16px;
   resize: vertical;
 }
@@ -992,20 +1026,22 @@ h2 {
 footer {
   justify-content: flex-end;
   gap: 6px;
-  padding-top: 2px;
-  border-top: 1px solid #c0c0c0;
+  padding-top: 6px;
+  border-top: 1px solid #c8c8c8;
+  border-bottom: 0;
+  background: #f5f5f5;
 }
 
 footer button {
   min-width: 72px;
-  height: 18px;
-  min-height: 18px;
+  height: 28px;
+  min-height: 28px;
   padding: 0 10px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
   background: #ffffff;
   color: #111111;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 16px;
   cursor: default;
 }

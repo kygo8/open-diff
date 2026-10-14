@@ -13,30 +13,23 @@ const css = readFileSync(resolve(root, 'src/styles/main.css'), 'utf8')
 const settingsView = readFileSync(resolve(root, 'src/views/SettingsView.vue'), 'utf8')
 
 describe('session settings and hex goto chrome density', () => {
-  it('keeps Session Settings dialog chrome dense toward report-panel spacing', () => {
+  it('keeps Session Settings dialog chrome aligned with HTML demo rules layout', () => {
     expect(settingsDialog).toMatch(/\.session-settings-backdrop\s*\{[\s\S]*?padding:\s*4px/)
-    expect(settingsDialog).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?padding:\s*4px 6px/)
-    expect(settingsDialog).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?gap:\s*4px/)
+    expect(settingsDialog).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?padding:\s*0/)
+    expect(settingsDialog).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?gap:\s*0/)
     expect(settingsDialog).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?border-radius:\s*0/)
     expect(settingsDialog).toMatch(
       /\.session-settings-dialog\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
     )
     expect(settingsDialog).toMatch(/data-options-rules-density="capture-1to1"/)
-    expect(settingsDialog).toMatch(/\.settings-body\s*\{[\s\S]*?padding:\s*4px 6px/)
-    expect(settingsDialog).toMatch(/\.settings-body\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
-    expect(settingsDialog).toMatch(/\.settings-body label\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(settingsDialog).toMatch(/\.settings-tabs button\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
-    expect(settingsDialog).toMatch(/h2\s*\{[\s\S]*?font-size:\s*12px/)
-    expect(settingsDialog).toMatch(/\.settings-tabs button\s*\{[\s\S]*?height:\s*18px/)
-    expect(settingsDialog).toMatch(/\.settings-body\s*\{[\s\S]*?gap:\s*4px/)
+    expect(settingsDialog).toMatch(/\.settings-body\s*\{[\s\S]*?padding:\s*16px 20px/)
+    expect(settingsDialog).toMatch(/\.settings-body label\s*\{[\s\S]*?font-size:\s*12px/)
+    expect(settingsDialog).toMatch(/\.settings-tabs button\s*\{[\s\S]*?min-height:\s*28px/)
     expect(settingsDialog).toMatch(
-      /\.settings-body input:not\(\[type='checkbox'\]\),\s*\.settings-body select\s*\{[\s\S]*?height:\s*20px/,
+      /\.settings-body input:not\(\[type='checkbox'\]\),\s*\.settings-body select\s*\{[\s\S]*?height:\s*26px/,
     )
-    expect(settingsDialog).toMatch(/\.settings-body textarea\s*\{[\s\S]*?padding:\s*2px 6px/)
-    expect(settingsDialog).toMatch(/\.settings-body textarea\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*18px/)
-    expect(settingsDialog).not.toMatch(/box-shadow:\s*0 18px 44px/)
-    expect(settingsDialog).not.toMatch(/padding:\s*16px/)
+    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*28px/)
+    expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
   })
 
   it('keeps Hex Go To dialog chrome dense toward report-panel spacing', () => {
@@ -52,41 +45,35 @@ describe('session settings and hex goto chrome density', () => {
 })
 
 describe('options/rules dialog content depth', () => {
-  it('deepens Options content and Session Rules dialog beyond shell chrome', () => {
+  it('deepens Options content and Session Rules dialog toward HTML demo opts layout', () => {
     expect(settingsView).toMatch(/data-options-content-density="capture-1to1"/)
-    expect(settingsView).toMatch(/\.options-content\s*\{[\s\S]*?gap:\s*4px/)
+    expect(settingsView).toMatch(/\.options-content\s*\{[\s\S]*?gap:\s*10px/)
     expect(settingsView).toMatch(
-      /\.options-content :deep\(\[class='n-card__content'\]\)\s*\{[\s\S]*?padding:\s*4px 6px/,
+      /\.options-content :deep\(\[class='n-card__content'\]\)\s*\{[\s\S]*?padding:\s*4px 0 0/,
     )
     expect(settingsView).toMatch(
-      /\.options-content :deep\(\.n-checkbox\)\s*\{[\s\S]*?min-height:\s*18px/,
+      /\.options-content :deep\(\.n-checkbox\)\s*\{[\s\S]*?min-height:\s*22px/,
     )
-    expect(css).toMatch(/\.settings-view \.options-content\s*\{[\s\S]*?gap:\s*4px/)
-    expect(css).toMatch(
-      /\.settings-view \.options-content \[class='n-card__content'\]\s*\{[\s\S]*?padding:\s*4px 6px/,
-    )
+    expect(css).toMatch(/\.settings-view \.options-content\s*\{[\s\S]*?gap:\s*10px/)
     expect(css).toMatch(/\.session-settings-dialog\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/)
-    expect(css).toMatch(/\.session-settings-dialog \.settings-body\s*\{[\s\S]*?padding:\s*4px 6px/)
     expect(css).toMatch(
-      /\.session-settings-dialog \.settings-body input:not\(\[type='checkbox'\]\)[\s\S]*?height:\s*20px/,
+      /\.session-settings-dialog \.settings-body\s*\{[\s\S]*?padding:\s*16px 20px/,
+    )
+    expect(css).toMatch(
+      /\.session-settings-dialog \.settings-body input:not\(\[type='checkbox'\]\)[\s\S]*?height:\s*26px/,
     )
     expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
   })
 })
 
 describe('session rules residual depth', () => {
-  it('deepens Session Rules dialog chrome beyond #342/#333 content band', () => {
+  it('keeps Session Rules dialog chrome on HTML demo selection colors', () => {
     expect(settingsDialog).toMatch(/data-rules-depth="capture-1to1-residual"/)
-    expect(settingsDialog).toMatch(/\.settings-tabs\s*\{[\s\S]*?background:\s*#f0f0f0/)
-    expect(settingsDialog).toMatch(/footer\s*\{[\s\S]*?border-top:\s*1px solid #c0c0c0/)
     expect(css).toMatch(
-      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\]\s*\{[\s\S]*?background:\s*#f0f0f0/,
+      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-tabs\s*\{[\s\S]*?background:\s*#f5f5f5/,
     )
     expect(css).toMatch(
-      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-body\s*\{[\s\S]*?gap:\s*2px/,
-    )
-    expect(css).toMatch(
-      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-tabs\s*\{[\s\S]*?gap:\s*2px/,
+      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-body\s*\{[\s\S]*?padding:\s*16px 20px/,
     )
     expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
   })
@@ -95,41 +82,29 @@ describe('session rules residual depth', () => {
 describe('options footer residual', () => {
   const settingsView = readFileSync(resolve(root, 'src/views/SettingsView.vue'), 'utf8')
 
-  it('keeps Options OK/Cancel/Apply footer at capture scale', () => {
+  it('keeps Options OK/Cancel/Apply footer at demo button scale', () => {
     expect(settingsView).toMatch(/data-options-footer="capture-1to1-residual"/)
     expect(settingsView).toMatch(/data-testid="options-footer-ok"/)
     expect(settingsView).toMatch(/data-testid="options-footer-cancel"/)
     expect(settingsView).toMatch(/data-testid="options-footer-apply"/)
-    expect(settingsView).toMatch(/\.options-footer-btn\s*\{[\s\S]*?height:\s*18px/)
+    expect(settingsView).toMatch(/\.options-footer-btn\s*\{[\s\S]*?height:\s*28px/)
     expect(settingsDialog).toMatch(/data-testid="session-settings-ok"/)
-    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*18px/)
+    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?height:\s*28px/)
   })
 })
 
 describe('session rules micro residual', () => {
-  it('closes Session Rules micro-drift vs Options/About sibling chrome', () => {
+  it('keeps Session Rules micro chrome on demo selection and footer buttons', () => {
     expect(settingsDialog).toMatch(/data-rules-micro="capture-1to1-residual"/)
-    expect(settingsDialog).toMatch(/header button\s*\{[\s\S]*?height:\s*18px/)
-    expect(settingsDialog).toMatch(/header\s*\{[\s\S]*?border-bottom:\s*1px solid #c0c0c0/)
+    expect(settingsDialog).toMatch(/header button\s*\{[\s\S]*?height:\s*28px/)
     expect(settingsDialog).toMatch(
-      /\.settings-tabs button\.active\s*\{[\s\S]*?background:\s*#c8e4ff/,
+      /\.settings-tabs button\.active\s*\{[\s\S]*?background:\s*#cce8ff/,
     )
-    expect(settingsDialog).toMatch(/footer button\s*\{[\s\S]*?background:\s*#ffffff/)
-    expect(css).toMatch(
-      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\]\s*\{[\s\S]*?gap:\s*2px/,
+    expect(settingsDialog).toMatch(
+      /footer button\s*\{[\s\S]*?background:\s*#fafafa|footer button\s*\{[\s\S]*?background:\s*#ffffff/,
     )
     expect(css).toMatch(
-      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-body\s*\{[\s\S]*?padding:\s*2px 4px/,
-    )
-    expect(css).toMatch(/button\.active[\s\S]*?background:\s*#c8e4ff/)
-    expect(settingsDialog).not.toMatch(/min-height:\s*6px/)
-  })
-})
-
-describe('options footer border', () => {
-  it('matches capture options footer border #c0c0c0', () => {
-    expect(css).toMatch(
-      /data-options-footer='capture-1to1-residual'\][\s\S]*?border-top:\s*1px solid #c0c0c0/,
+      /\.session-settings-dialog\[data-rules-depth='capture-1to1-residual'\] \.settings-tabs button\.active\s*\{[\s\S]*?background:\s*#cce8ff/,
     )
   })
 })

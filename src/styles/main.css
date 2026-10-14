@@ -4982,3 +4982,314 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
   font-size: 11px !important;
 }
+
+/* stylelint-disable no-duplicate-selectors -- HTML demo chrome overrides for Options/Formats/Scripts/session stubs */
+.settings-view {
+  display: grid !important;
+  grid-template-columns: 220px minmax(0, 1fr) !important;
+  gap: 0 !important;
+  height: 100% !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+
+.settings-view .options-section-nav {
+  gap: 0 !important;
+  height: 100% !important;
+  max-height: none !important;
+  padding: 8px 0 !important;
+  overflow: auto !important;
+  border: 0 !important;
+  border-right: 1px solid #c8c8c8 !important;
+  border-radius: 0 !important;
+  background: #f5f5f5 !important;
+}
+
+.settings-view .options-tree-group-label {
+  padding: 10px 14px 4px !important;
+  color: #666666 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+.settings-view .options-section-button {
+  min-height: 28px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  box-shadow: none !important;
+}
+
+.settings-view .options-section-button:hover {
+  background: #e8f4ff !important;
+}
+
+.settings-view .options-section-button.active {
+  background: #cce8ff !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.settings-view .options-content {
+  gap: 10px !important;
+  height: 100% !important;
+  padding: 16px 20px !important;
+  overflow: auto !important;
+  background: #ffffff !important;
+}
+
+.settings-view .options-content [class='n-card__content'] {
+  gap: 10px !important;
+  padding: 4px 0 0 !important;
+}
+
+.settings-view .options-content .n-checkbox {
+  min-height: 22px !important;
+  font-size: 12px !important;
+}
+
+.settings-view .n-card-header {
+  min-height: 28px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.settings-view .stack-row input,
+.settings-view .stack-row select,
+.settings-view .open-with-draft input,
+.settings-view .n-input,
+.settings-view .n-base-selection,
+.settings-view .n-input-number,
+.settings-view .n-button {
+  --n-height: 26px !important;
+
+  height: 26px !important;
+  min-height: 26px !important;
+  border-radius: 2px !important;
+  font-size: 12px !important;
+}
+
+.settings-view .options-footer-btn,
+.options-footer-btn {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 16px !important;
+  border: 1px solid #c8c8c8 !important;
+  border-radius: 3px !important;
+  background: #fafafa !important;
+  font-size: 12px !important;
+}
+
+.file-format-view,
+.remote-profile-view {
+  gap: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+}
+
+.file-format-view .format-workspace,
+.remote-profile-view .profile-workspace {
+  grid-template-columns: 220px minmax(0, 1fr) !important;
+  gap: 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+.file-format-view .format-list-panel,
+.remote-profile-view .profile-list-panel {
+  padding: 8px 0 !important;
+  border: 0 !important;
+  border-right: 1px solid #c8c8c8 !important;
+  background: #f5f5f5 !important;
+}
+
+.file-format-view .format-detail-panel,
+.remote-profile-view .profile-detail-panel {
+  padding: 16px 20px !important;
+  border: 0 !important;
+  background: #ffffff !important;
+}
+
+.file-format-view .format-row,
+.remote-profile-view .profile-row {
+  min-height: 28px !important;
+  padding: 6px 14px !important;
+}
+
+.file-format-view .format-row.active,
+.remote-profile-view .profile-row.active {
+  background: #cce8ff !important;
+  border-color: transparent !important;
+  font-weight: 600 !important;
+}
+
+.file-format-view button,
+.remote-profile-view button {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 16px !important;
+  border-radius: 3px !important;
+}
+
+.file-format-view input:not([type='checkbox']),
+.file-format-view select,
+.remote-profile-view input:not([type='checkbox']),
+.remote-profile-view select {
+  height: 26px !important;
+  min-height: 26px !important;
+}
+
+.file-format-view textarea {
+  min-height: 96px !important;
+}
+
+.reports-script-view {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.reports-script-view .report-panel,
+.reports-script-view .script-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  border: 0 !important;
+  border-right: 1px solid #c8c8c8 !important;
+}
+
+.reports-script-view .script-panel {
+  border-right: 0 !important;
+}
+
+.reports-script-view .split-pane-header,
+.reports-script-view .report-panel > header,
+.reports-script-view .script-panel > header {
+  min-height: 28px !important;
+  padding: 6px 10px !important;
+  border-bottom: 1px solid #c8c8c8 !important;
+  background: #f0f0f0 !important;
+  font-weight: 600 !important;
+}
+
+.reports-script-view .script-panel textarea,
+.reports-script-view .script-panel pre {
+  flex: 1 1 auto !important;
+  padding: 10px !important;
+  border: 0 !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+}
+
+.session-settings-dialog {
+  gap: 0 !important;
+  padding: 0 !important;
+  background: #ffffff !important;
+  box-shadow: 2px 2px 8px rgb(0 0 0 / 0.18) !important;
+}
+
+.session-settings-dialog .settings-body,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-body {
+  gap: 10px !important;
+  padding: 16px 20px !important;
+  border: 0 !important;
+  background: #ffffff !important;
+}
+
+.session-settings-dialog .settings-tabs,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-tabs {
+  gap: 0 !important;
+  padding: 8px 0 !important;
+  background: #f5f5f5 !important;
+}
+
+.session-settings-dialog .settings-tabs button,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-tabs button {
+  height: auto !important;
+  min-height: 28px !important;
+  padding: 6px 14px !important;
+  border: 0 !important;
+  text-align: left !important;
+}
+
+.session-settings-dialog .settings-tabs button.active,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-tabs button.active {
+  background: #cce8ff !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.session-settings-dialog .settings-body input:not([type='checkbox']),
+.session-settings-dialog .settings-body select {
+  height: 26px !important;
+  min-height: 26px !important;
+}
+
+.session-settings-dialog header button,
+.session-settings-dialog footer button,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] header button,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] footer button {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 16px !important;
+  border-radius: 3px !important;
+}
+
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] {
+  gap: 0 !important;
+  background: #ffffff !important;
+}
+
+.empty-hint,
+.session-empty-hint,
+.compare-empty-hint,
+.folder-empty-state,
+.text-empty-state,
+.clipboard-compare-view .empty.empty-hint {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 120px !important;
+  padding: 24px !important;
+  background: #f9f9f9 !important;
+  color: #666666 !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  text-align: center !important;
+}
+
+.chip {
+  height: 22px;
+  padding: 0 10px;
+  border: 1px solid #c8c8c8;
+  border-radius: 11px;
+  background: #ffffff;
+  font-size: 11px;
+}
+
+.chip.on,
+.chip.active,
+.chip[aria-pressed='true'] {
+  border-color: #7ab0e0;
+  background: #cce8ff;
+  color: #055a9e;
+}
+
+.pane-head,
+.split-pane-header,
+.metadata-header,
+.diff-header {
+  min-height: 24px !important;
+  border-bottom: 1px solid #c8c8c8 !important;
+  background: #f0f0f0 !important;
+  color: #333333 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+/* stylelint-enable no-duplicate-selectors */

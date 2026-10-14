@@ -490,7 +490,10 @@ function fillFromLastCompare(): void {
       </WorkbenchToolbar>
     </template>
 
-    <section class="reports-script-view">
+    <section
+      class="reports-script-view"
+      data-scripts-density="html-demo"
+    >
       <section class="report-panel">
         <header class="split-pane-header active">
           <strong>{{ $t('ui.recentExports') }}</strong>
@@ -756,22 +759,29 @@ function fillFromLastCompare(): void {
 <style scoped>
 .reports-script-view {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) minmax(220px, 0.7fr);
-  gap: 4px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
   height: 100%;
   min-height: 0;
-  padding: 2px 4px;
+  padding: 0;
   overflow: hidden;
+  background: #ffffff;
 }
 
 .report-panel,
 .script-panel {
-  display: grid;
-  grid-template-rows: 22px auto minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid var(--app-border);
-  background: var(--app-canvas);
+  border: 0;
+  border-right: 1px solid #c8c8c8;
+  background: #ffffff;
+}
+
+.script-panel {
+  border-right: 0;
 }
 
 .report-export-form {
@@ -794,7 +804,7 @@ function fillFromLastCompare(): void {
 
 .report-export-form input,
 .report-export-form select {
-  height: 20px;
+  height: 26px;
   padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 2px;

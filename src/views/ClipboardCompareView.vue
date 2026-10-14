@@ -406,7 +406,7 @@ watch(
         <section class="diff-pane">
           <p
             v-if="clipboardsAreIdentical"
-            class="empty"
+            class="empty empty-hint"
             data-testid="clipboard-identical-hint"
           >
             {{ $t('ui.clipboardIdenticalHint') }}
@@ -417,7 +417,7 @@ watch(
           />
           <div
             v-else-if="!error"
-            class="empty"
+            class="empty empty-hint"
             data-testid="clipboard-empty-hint"
           >
             {{ clipboardEmptyStateMessage }}
@@ -583,5 +583,19 @@ watch(
   .clipboard-layout {
     grid-template-columns: 1fr;
   }
+}
+
+.empty.empty-hint {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 24px;
+  background: #f9f9f9;
+  color: #666666;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
 }
 </style>

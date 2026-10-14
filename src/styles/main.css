@@ -1,37 +1,42 @@
 :root {
   color-scheme: light;
 
+  /* Aligned with standalone HTML demo chrome tokens (css/demo.css). */
   --app-bg: #ffffff;
   --app-canvas: #ffffff;
   --app-surface: #f0f0f0;
   --app-surface-low: #ececec;
   --app-surface-muted: #e6e6e6;
-  --app-surface-container: #eeeeee;
+  --app-surface-container: #f9f9f9;
   --app-surface-high: #dedede;
-  --app-surface-highest: #c7dff6;
-  --app-border: #c0c0c0;
-  --app-border-soft: rgb(176 182 190 / 0.62);
-  --app-text: #111111;
-  --app-text-muted: #3f3f46;
-  --app-text-faint: #737373;
-  --app-primary: #2b75bd;
-  --app-primary-strong: #66b9ff;
-  --app-primary-soft: #c8e4ff;
-  --app-status: #f0f0f0;
-  --app-status-text: #111111;
+  --app-surface-highest: #cce8ff;
+  --app-border: #c8c8c8;
+  --app-border-soft: #dcdcdc;
+  --app-text: #1a1a1a;
+  --app-text-muted: #666666;
+  --app-text-faint: #888888;
+  --app-primary: #0078d4;
+  --app-primary-strong: #0563c1;
+  --app-primary-soft: #cce8ff;
+  --app-status: #d4d4d4;
+  --app-status-text: #1a1a1a;
+  --app-menu: #f0f3f9;
+  --app-title: #f1f3f9;
+  --app-sidebar: #f5f5f5;
+  --app-row-hover: #f0f7ff;
+  --app-row-sel: #cce8ff;
   --diff-added-bg: #f4fff4;
   --diff-added-fg: #005f18;
   --diff-deleted-bg: #ffe3e3;
-  --diff-deleted-fg: #e00000;
+  --diff-deleted-fg: #c00000;
   --diff-modified-bg: #ffe3e3;
-  --diff-modified-fg: #e00000;
+  --diff-modified-fg: #c00000;
   --diff-conflict-bg: #f0ddff;
   --diff-conflict-fg: #8a158a;
   --diff-gutter-bg: #efefef;
-  --font-mono: 'JetBrains Mono', 'Cascadia Mono', consolas, monospace;
-  --app-font-family:
-    'Segoe UI', 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif;
-  --app-font-size: 18px;
+  --font-mono: 'Consolas', 'Cascadia Mono', 'Menlo', monospace;
+  --app-font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', system-ui, sans-serif;
+  --app-font-size: 13px;
 }
 
 html[data-theme='dark'] {
@@ -148,8 +153,8 @@ select {
 }
 
 .workbench-shell-single-session .bc-session-toolbar {
-  min-height: 39.5px;
-  border-bottom: 1px solid #a0a0a0;
+  min-height: 56px;
+  border-bottom: 1px solid #c8c8c8;
   background: #f0f0f0;
 }
 
@@ -158,18 +163,18 @@ select {
 }
 
 .workbench-shell-single-session .bc-toolbar-command {
-  min-width: 59px;
-  height: 37.5px;
-  padding: 1px 2px 2px;
+  min-width: 52px;
+  height: 48px;
+  padding: 2px 6px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact {
-  min-height: 32px;
+  min-height: 40px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact .bc-toolbar-command {
-  min-width: 40px;
-  height: 32px;
+  min-width: 44px;
+  height: 36px;
 }
 
 .app-shell-single-session .tab-strip {
@@ -189,9 +194,9 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair {
   gap: 0 !important;
-  min-height: 20px !important;
-  padding: 0 1px !important;
-  border-bottom: 1px solid #a0a0a0 !important;
+  min-height: 28px !important;
+  padding: 4px 8px !important;
+  border-bottom: 1px solid #c8c8c8 !important;
   background: #f0f0f0 !important;
 }
 
@@ -210,8 +215,8 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > input,
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
 }
@@ -322,15 +327,15 @@ select {
 .bc-session-toolbar {
   display: flex;
   align-items: stretch;
-  gap: 0;
+  gap: 2px;
   min-width: 0;
-  min-height: 39.5px;
-  padding: 1px 2px;
+  min-height: 56px;
+  padding: 4px 8px;
   overflow: auto hidden;
-  border-bottom: 1px solid #a0a0a0;
+  border-bottom: 1px solid #c8c8c8;
 
-  /* Capture MainBar band is white, not app-surface gray */
-  background: #ffffff;
+  /* Demo toolbar band */
+  background: #f0f0f0;
 }
 
 /* Text Merge capture MainBar wraps to ~2×38px (~83px CSS at DPR≈2) instead of horizontal-only scroll. */
@@ -423,25 +428,26 @@ select {
 
 .bc-toolbar-command {
   display: grid;
-  grid-template-rows: 20px auto;
-  align-content: center;
-  justify-items: center;
-  box-sizing: border-box;
+  grid-template-rows: 22px auto;
   flex: 0 0 auto;
+  gap: 2px;
   width: auto;
-  min-width: 59px;
+  min-width: 52px;
   max-width: 88px;
-  height: 37.5px;
-  padding: 1px 2px 2px;
+  height: 48px;
+  padding: 2px 6px;
   overflow: hidden;
-  border: 0;
-  border-right: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
   background: transparent;
   color: #1a1a1a;
   font-size: 11px;
   line-height: 12px;
   white-space: nowrap;
   cursor: default;
+  align-content: center;
+  justify-items: center;
+  box-sizing: border-box;
 }
 
 .bc-toolbar-command > span,
@@ -456,14 +462,16 @@ select {
 
 /* Capture MainBar active: ~#cce8ff fill, ~#a5c7f7 edge */
 .bc-toolbar-command-active {
-  border-radius: 2px;
+  border-radius: 3px;
+  border-color: #99c9ef;
   background: #cce8ff;
-  box-shadow: inset 0 0 0 1px #a5c7f7;
+  box-shadow: none;
 }
 
 .bc-toolbar-command:hover:not(:disabled) {
-  border-radius: 2px;
-  background: #e5f2fc;
+  border-radius: 3px;
+  border-color: #c8c8c8;
+  background: #e8e8e8;
 }
 
 .bc-toolbar-command-active:hover:not(:disabled) {
@@ -491,15 +499,15 @@ select {
 }
 
 .bc-session-toolbar-compact {
-  min-height: 39.5px;
+  min-height: 40px;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-command {
-  grid-template-rows: 20px auto;
-  min-width: 48px;
+  grid-template-rows: 18px auto;
+  min-width: 44px;
   max-width: 80px;
-  height: 37.5px;
-  padding: 1px 2px;
+  height: 36px;
+  padding: 1px 4px;
   font-size: 10px;
   line-height: 11px;
 }
@@ -1172,8 +1180,8 @@ select {
   flex: 1 1 auto !important;
   width: auto !important;
   min-width: 0 !important;
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   overflow: hidden !important;
   font-size: 12px !important;
@@ -1470,7 +1478,7 @@ select {
 }
 
 .folder-filter-pattern {
-  height: 16.5px !important;
+  height: 24px !important;
   padding: 0 6px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
@@ -1490,15 +1498,15 @@ select {
 
 .folder-filter-strip-btn {
   display: grid !important;
-  grid-template-rows: 20px auto !important;
+  grid-template-rows: 22px auto !important;
   align-content: center !important;
   justify-items: center !important;
   box-sizing: border-box !important;
-  width: 59px !important;
-  min-width: 59px !important;
-  max-width: 59px !important;
-  height: 37.5px !important;
-  padding: 1px 2px 2px !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 72px !important;
+  height: 48px !important;
+  padding: 2px 6px !important;
   border: 0 !important;
   border-right: 1px solid #c0c0c0 !important;
   background: transparent !important;
@@ -1624,7 +1632,7 @@ select {
 .split-pane-header,
 .pane-header,
 .metadata-header {
-  min-height: 16.5px !important;
+  min-height: 24px !important;
   padding: 1px 3px !important;
   border-color: #c7cbd1 !important;
   border-radius: 0 !important;
@@ -1964,7 +1972,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-compare-view .tree-row.selected {
-  background: #a8cdf1 !important;
+  background: #cce8ff !important;
   outline: 0 !important;
 }
 
@@ -2049,7 +2057,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-sync-view .sync-row-selected {
-  background: #a8cdf1 !important;
+  background: #cce8ff !important;
 }
 
 .folder-sync-view .folder-session-log {
@@ -2093,7 +2101,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-merge-view .merge-plan-row.selected {
   outline: 0 !important;
-  background: #a8cdf1 !important;
+  background: #cce8ff !important;
 }
 
 .folder-merge-view .folder-session-log {
@@ -2411,8 +2419,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .picture-path-panel input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   font-size: 12px !important;
 }
@@ -2724,8 +2732,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .media-compare-view .media-path-panel input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
@@ -2958,8 +2966,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .version-compare-view .version-path-panel input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 6px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
@@ -3167,8 +3175,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .registry-compare-view .path-field-row .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
 }
 
 .registry-compare-view .registry-input-panel textarea {
@@ -3672,7 +3680,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-compare-view .bc-path-row input {
-  height: 16.5px !important;
+  height: 24px !important;
   padding: 0 4px !important;
   font-size: 12px !important;
 }
@@ -3825,7 +3833,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-merge-view .output-path-input {
-  height: 16.5px !important;
+  height: 24px !important;
   padding: 0 4px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
@@ -3954,8 +3962,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-sync-view .path-field-row .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
 }
 
 .folder-sync-view .sync-setting-actions {
@@ -4088,26 +4096,26 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .folder-filter-chrome[data-filters-align='capture-1to1-residual'] {
   gap: 4px 6px !important;
-  min-height: 37.5px !important;
+  min-height: 48px !important;
 }
 
 .folder-sync-view .folder-filter-chrome {
-  min-height: 37.5px !important;
+  min-height: 48px !important;
   padding: 0 4px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   background: #f0f0f0 !important;
 }
 
 .folder-sync-view .folder-filter-chrome[data-sync-filters-place='capture-1to1-residual'] {
-  min-height: 37.5px !important;
+  min-height: 48px !important;
   background: #f0f0f0 !important;
 }
 
 .folder-sync-view
   .sync-filter-pattern-field
   .folder-filter-pattern[data-sync-pattern-place='capture-1to1-residual'] {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 6px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
@@ -4128,8 +4136,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .merge-paths input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
@@ -4146,8 +4154,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-merge-view .merge-to-chrome .path-input,
 .folder-merge-view .merge-to-chrome input[type='text'] {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }
@@ -4184,8 +4192,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
   .n-button[data-testid='folder-merge-same-ok'] {
   width: 64.5px !important;
   min-width: 64.5px !important;
-  height: 37.5px !important;
-  min-height: 37.5px !important;
+  height: 48px !important;
+  min-height: 48px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }
@@ -4195,8 +4203,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
   .n-button[data-testid='folder-merge-peek'] {
   width: 59px !important;
   min-width: 59px !important;
-  height: 37.5px !important;
-  min-height: 37.5px !important;
+  height: 48px !important;
+  min-height: 48px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }
@@ -4478,8 +4486,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-edit-view .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
 }
 
 .text-edit-view .toolbar-button {
@@ -4547,8 +4555,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .text-patch-view .path-field-row input,
 .text-patch-view .path-field-row .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
@@ -4974,3 +4982,480 @@ html[data-show-path-bars='0'] .path-pair-bar {
   border-radius: 0 !important;
   font-size: 11px !important;
 }
+
+/* stylelint-disable no-duplicate-selectors -- HTML demo chrome overrides for Options/Formats/Scripts/session stubs */
+.settings-view {
+  display: grid !important;
+  grid-template-columns: 220px minmax(0, 1fr) !important;
+  gap: 0 !important;
+  height: 100% !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+
+.settings-view .options-section-nav {
+  gap: 0 !important;
+  height: 100% !important;
+  max-height: none !important;
+  padding: 8px 0 !important;
+  overflow: auto !important;
+  border: 0 !important;
+  border-right: 1px solid #c8c8c8 !important;
+  border-radius: 0 !important;
+  background: #f5f5f5 !important;
+}
+
+.settings-view .options-tree-group-label {
+  padding: 10px 14px 4px !important;
+  color: #666666 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+.settings-view .options-section-button {
+  min-height: 28px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  box-shadow: none !important;
+}
+
+.settings-view .options-section-button:hover {
+  background: #e8f4ff !important;
+}
+
+.settings-view .options-section-button.active {
+  background: #cce8ff !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.settings-view .options-content {
+  gap: 10px !important;
+  height: 100% !important;
+  padding: 16px 20px !important;
+  overflow: auto !important;
+  background: #ffffff !important;
+}
+
+.settings-view .options-content [class='n-card__content'] {
+  gap: 10px !important;
+  padding: 4px 0 0 !important;
+}
+
+.settings-view .options-content .n-checkbox {
+  min-height: 22px !important;
+  font-size: 12px !important;
+}
+
+.settings-view .n-card-header {
+  min-height: 28px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.settings-view .stack-row input,
+.settings-view .stack-row select,
+.settings-view .open-with-draft input,
+.settings-view .n-input,
+.settings-view .n-base-selection,
+.settings-view .n-input-number,
+.settings-view .n-button {
+  --n-height: 26px !important;
+
+  height: 26px !important;
+  min-height: 26px !important;
+  border-radius: 2px !important;
+  font-size: 12px !important;
+}
+
+.settings-view .options-footer-btn,
+.options-footer-btn {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 16px !important;
+  border: 1px solid #c8c8c8 !important;
+  border-radius: 3px !important;
+  background: #fafafa !important;
+  font-size: 12px !important;
+}
+
+.file-format-view,
+.remote-profile-view {
+  gap: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+}
+
+.file-format-view .format-workspace,
+.remote-profile-view .profile-workspace {
+  grid-template-columns: 220px minmax(0, 1fr) !important;
+  gap: 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+.file-format-view .format-list-panel,
+.remote-profile-view .profile-list-panel {
+  padding: 8px 0 !important;
+  border: 0 !important;
+  border-right: 1px solid #c8c8c8 !important;
+  background: #f5f5f5 !important;
+}
+
+.file-format-view .format-detail-panel,
+.remote-profile-view .profile-detail-panel {
+  padding: 16px 20px !important;
+  border: 0 !important;
+  background: #ffffff !important;
+}
+
+.file-format-view .format-row,
+.remote-profile-view .profile-row {
+  min-height: 28px !important;
+  padding: 6px 14px !important;
+}
+
+.file-format-view .format-row.active,
+.remote-profile-view .profile-row.active {
+  background: #cce8ff !important;
+  border-color: transparent !important;
+  font-weight: 600 !important;
+}
+
+.file-format-view button,
+.remote-profile-view button {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 16px !important;
+  border-radius: 3px !important;
+}
+
+.file-format-view input:not([type='checkbox']),
+.file-format-view select,
+.remote-profile-view input:not([type='checkbox']),
+.remote-profile-view select {
+  height: 26px !important;
+  min-height: 26px !important;
+}
+
+.file-format-view textarea {
+  min-height: 96px !important;
+}
+
+.reports-script-view {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.reports-script-view .report-panel,
+.reports-script-view .script-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  border: 0 !important;
+  border-right: 1px solid #c8c8c8 !important;
+}
+
+.reports-script-view .script-panel {
+  border-right: 0 !important;
+}
+
+.reports-script-view .split-pane-header,
+.reports-script-view .report-panel > header,
+.reports-script-view .script-panel > header {
+  min-height: 28px !important;
+  padding: 6px 10px !important;
+  border-bottom: 1px solid #c8c8c8 !important;
+  background: #f0f0f0 !important;
+  font-weight: 600 !important;
+}
+
+.reports-script-view .script-panel textarea,
+.reports-script-view .script-panel pre {
+  flex: 1 1 auto !important;
+  padding: 10px !important;
+  border: 0 !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+}
+
+.session-settings-dialog {
+  gap: 0 !important;
+  padding: 0 !important;
+  background: #ffffff !important;
+  box-shadow: 2px 2px 8px rgb(0 0 0 / 0.18) !important;
+}
+
+.session-settings-dialog .settings-body,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-body {
+  gap: 10px !important;
+  padding: 16px 20px !important;
+  border: 0 !important;
+  background: #ffffff !important;
+}
+
+.session-settings-dialog .settings-tabs,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-tabs {
+  gap: 0 !important;
+  padding: 8px 0 !important;
+  background: #f5f5f5 !important;
+}
+
+.session-settings-dialog .settings-tabs button,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-tabs button {
+  height: auto !important;
+  min-height: 28px !important;
+  padding: 6px 14px !important;
+  border: 0 !important;
+  text-align: left !important;
+}
+
+.session-settings-dialog .settings-tabs button.active,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] .settings-tabs button.active {
+  background: #cce8ff !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.session-settings-dialog .settings-body input:not([type='checkbox']),
+.session-settings-dialog .settings-body select {
+  height: 26px !important;
+  min-height: 26px !important;
+}
+
+.session-settings-dialog header button,
+.session-settings-dialog footer button,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] header button,
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] footer button {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 16px !important;
+  border-radius: 3px !important;
+}
+
+.session-settings-dialog[data-rules-depth='capture-1to1-residual'] {
+  gap: 0 !important;
+  background: #ffffff !important;
+}
+
+.empty-hint,
+.session-empty-hint,
+.compare-empty-hint,
+.folder-empty-state,
+.text-empty-state,
+.clipboard-compare-view .empty.empty-hint {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 120px !important;
+  padding: 24px !important;
+  background: #f9f9f9 !important;
+  color: #666666 !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  text-align: center !important;
+}
+
+.chip {
+  height: 22px;
+  padding: 0 10px;
+  border: 1px solid #c8c8c8;
+  border-radius: 11px;
+  background: #ffffff;
+  font-size: 11px;
+}
+
+.chip.on,
+.chip.active,
+.chip[aria-pressed='true'] {
+  border-color: #7ab0e0;
+  background: #cce8ff;
+  color: #055a9e;
+}
+
+.pane-head,
+.split-pane-header,
+.metadata-header,
+.diff-header {
+  min-height: 24px !important;
+  border-bottom: 1px solid #c8c8c8 !important;
+  background: #f0f0f0 !important;
+  color: #333333 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+/* ---- HTML demo simplify: tuck non-demo chrome (handlers stay in DOM) ---- */
+
+/* Extra action docks / hints not in the HTML demo chrome.
+   Keep primary Compare / Run controls visible for session CTAs. */
+.folder-root-summary,
+.archive-path-hint,
+.folder-compare-view .folder-toolbar > button[data-testid='open-folder-session-settings'],
+.options-hint,
+.options-cluster-hint,
+.format-header .eyebrow,
+.profile-header .eyebrow,
+.file-format-view .format-io-panel,
+.folder-status-legend-slot,
+.hex-header,
+.picture-header,
+.media-header,
+.registry-header,
+.version-header,
+.text-edit-view > header,
+.text-edit-view .eyebrow,
+.hex-report-panel,
+.picture-report-panel,
+.media-report-panel,
+.registry-report-panel,
+.version-report-panel,
+.table-report-actions,
+.hex-summary,
+button[data-testid='open-hex-session-settings'],
+button[data-testid='open-picture-session-settings'],
+button[data-testid='open-table-session-settings'],
+button[data-testid='open-media-session-settings'],
+button[data-testid='open-registry-session-settings'],
+button[data-testid='open-version-session-settings'],
+button[data-testid='open-text-session-settings'],
+.folder-actions button[data-testid^='export-'],
+.folder-actions .n-button[data-testid^='export-'],
+.compare-toolbar button[data-testid^='export-'],
+.compare-toolbar .toolbar-button[data-testid^='export-'] {
+  display: none !important;
+}
+
+/* Aux text toolbar: keep Run/Undo/Copy; densify instead of removing */
+.workbench-toolbar.compare-toolbar,
+.text-compare-view .compare-toolbar {
+  flex-wrap: wrap !important;
+  gap: 2px !important;
+  min-height: 28px !important;
+  max-height: none !important;
+  padding: 2px 4px !important;
+}
+
+.folder-actions,
+.folder-merge-view .folder-actions {
+  gap: 4px !important;
+  padding: 2px 4px !important;
+}
+
+/* Specialty path meta strips — demo dual-paths are bare */
+.hex-path-meta-strip,
+.picture-compare-view .path-meta-footer,
+.media-compare-view .path-meta-footer,
+.registry-compare-view .path-meta-footer,
+.version-compare-view .path-meta-footer,
+.table-compare-view .path-meta-footer {
+  display: none !important;
+}
+
+/* Keep path/profile pickers usable when profiles exist — just denser */
+.remote-profile-pair {
+  gap: 4px !important;
+  min-height: 24px !important;
+  padding: 2px 4px !important;
+}
+
+/* Patch keeps Parse/Apply (demo sync-ops), but single dense row */
+.workbench-toolbar.patch-toolbar {
+  min-height: 28px !important;
+  padding: 2px 6px !important;
+}
+
+/* Path bars: demo is bare inputs + browse — drop side labels */
+.folder-toolbar .path-pair > label > span:first-child,
+.folder-merge-view .path-pair > label > span:first-child,
+.folder-sync-view .path-field-row > span:first-of-type {
+  display: none !important;
+}
+
+/* Folder path meta under inputs — demo folder has none (text uses meta-bar) */
+.folder-compare-view .path-meta-footer,
+.folder-merge-view .path-meta-footer,
+.folder-sync-view .path-meta-footer {
+  display: none !important;
+}
+
+/* Formats / Profiles: drop marketing header; keep list+detail */
+.file-format-view .format-header,
+.remote-profile-view .profile-header {
+  display: none !important;
+}
+
+/* Options: denser body, no hint stack */
+.settings-view .options-content {
+  gap: 8px !important;
+}
+
+.settings-view .options-content .n-card {
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Merge / Sync: drop page headers; keep path/ops (demo sync-ops / dual-paths) */
+.merge-header,
+.merge-summary {
+  display: none !important;
+}
+
+.merge-actions-bar .merge-actions button[data-testid^='export-'],
+.sync-setting-actions button[data-testid^='export-'],
+.sync-setting-actions button[data-testid='folder-sync-apply-to-all'],
+.sync-setting-actions button[data-testid='folder-sync-skip-remaining'] {
+  display: none !important;
+}
+
+.sync-settings > label > span {
+  display: none !important;
+}
+
+/* Session log: demo is a thin strip, not a tool dock */
+.folder-session-log-gutter {
+  display: none !important;
+}
+
+.folder-session-log {
+  min-height: 22px !important;
+  max-height: 48px !important;
+}
+
+/* Empty states: one quiet line like demo .empty-hint */
+.empty-hint,
+.session-empty-hint,
+.compare-empty-hint,
+.folder-empty-state,
+.text-empty-state,
+.folder-sync-empty-state,
+.clipboard-compare-view .empty.empty-hint {
+  min-height: 80px !important;
+  padding: 16px !important;
+  background: #f9f9f9 !important;
+  color: #666666 !important;
+  font-size: 12px !important;
+}
+
+/* Home: quieter cards / less stacked chrome */
+.home-view .session-edit-panel,
+.home-view .session-save-panel {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Sync/Merge action rows: keep essential ops, flatten */
+.folder-sync-header,
+.folder-merge-view header {
+  gap: 4px !important;
+}
+
+/* stylelint-enable no-duplicate-selectors */

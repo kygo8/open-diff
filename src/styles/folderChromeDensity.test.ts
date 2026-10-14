@@ -31,7 +31,7 @@ describe('folder chrome density', () => {
     expect(folderView).toMatch(/folder-right-path-footer/)
     expect(css).toMatch(/\.folder-compare-view \.path-meta-footer[\s\S]*?min-height:\s*18px/)
     expect(css).toMatch(/\.folder-compare-view \.path-meta-footer[\s\S]*?font-size:\s*11px/)
-    expect(folderView).toMatch(/\.path-pair input\s*\{[\s\S]*?height:\s*16\.5px/)
+    expect(folderView).toMatch(/\.path-pair input\s*\{[\s\S]*?height:\s*24px/)
     expect(folderView).toMatch(/\.path-pair input\s*\{[\s\S]*?border-radius:\s*0/)
     expect(folderView).toMatch(/\.folder-toolbar\s*\{[\s\S]*?gap:\s*2px/)
     expect(folderView).toMatch(/\.folder-criteria\s*\{[\s\S]*?gap:\s*1px 4px/)
@@ -60,9 +60,9 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(css).toMatch(/\.folder-filter-strip\s*\{/)
   expect(css).toMatch(/\.folder-filter-pattern\s*\{/)
   expect(css).toMatch(/\.folder-filter-strip-btn\s*\{/)
-  expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
-  expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*20px auto/)
-  expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*16\.5px/)
+  expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*48px/)
+  expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*22px auto/)
+  expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*24px/)
   expect(css).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?border-radius:\s*0/)
   expect(css).toMatch(
     /\.folder-filter-chrome\[data-mainbar-row2='capture-1to1-residual'\][\s\S]*?min-height:\s*43\.5px/,
@@ -81,12 +81,12 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(folderView).toMatch(/data-mainbar-row2="capture-1to1-residual"/)
   expect(folderView).toMatch(/<template #toolbar>/)
   expect(folderView).toMatch(/showFiltersPanel:/)
-  expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?width:\s*59px/)
-  expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
+  expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?width:\s*52px/)
+  expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*48px/)
   expect(folderView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*43\.5px/)
   expect(folderView).toMatch(/background:\s*#ffffff/)
-  expect(folderView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
-  expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*16\.5px/)
+  expect(folderView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*48px/)
+  expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?height:\s*24px/)
   expect(folderView).toMatch(/\.folder-filter-pattern\s*\{[\s\S]*?border-radius:\s*0/)
   expect(folderView).toMatch(/:size="14"/)
   expect(syncView).toMatch(/data-testid="folder-sync-filter-strip"/)
@@ -96,11 +96,11 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(syncView).toMatch(/data-sync-pattern-place="capture-1to1-residual"/)
   expect(syncView).toMatch(/data-testid="folder-sync-filter-pattern"/)
   expect(syncView).toMatch(/data-filters-density="capture-1to1"/)
-  expect(syncView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*37\.5px/)
+  expect(syncView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*48px/)
   expect(syncView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?background:\s*#f0f0f0/)
-  expect(syncView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
+  expect(syncView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*48px/)
   expect(syncView).toMatch(
-    /\.sync-filter-pattern-field \.folder-filter-pattern\s*\{[\s\S]*?height:\s*16\.5px/,
+    /\.sync-filter-pattern-field \.folder-filter-pattern\s*\{[\s\S]*?height:\s*24px/,
   )
   expect(mergeView).toMatch(/data-testid="folder-merge-filter-strip"/)
   expect(mergeView).toMatch(/data-testid="folder-merge-filter-pattern"/)
@@ -110,7 +110,7 @@ it('surfaces Filters/Peek strip at capture CSS scale', () => {
   expect(mergeView).toMatch(/data-mainbar-row2="capture-1to1-residual"/)
   expect(mergeView).toMatch(/<template #toolbar>/)
   expect(mergeView).toMatch(/\.folder-filter-chrome\s*\{[\s\S]*?min-height:\s*43\.5px/)
-  expect(mergeView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*37\.5px/)
+  expect(mergeView).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?height:\s*48px/)
 })
 
 describe('folder compare tree chrome density', () => {
@@ -119,7 +119,7 @@ describe('folder compare tree chrome density', () => {
     expect(css).toMatch(/\.folder-compare-view \.tree-row\s*\{[\s\S]*?min-height:\s*16px/)
     expect(css).toMatch(/\.folder-compare-view \.tree-head\s*\{[\s\S]*?font-weight:\s*400/)
     expect(css).toMatch(
-      /\.folder-compare-view \.tree-row\.selected\s*\{[\s\S]*?background:\s*#a8cdf1/,
+      /\.folder-compare-view \.tree-row\.selected\s*\{[\s\S]*?background:\s*#cce8ff/,
     )
     expect(css).toMatch(/\.folder-compare-view \.tree-head span,[\s\S]*?padding:\s*1px 6px/)
     expect(css).toMatch(/\.folder-compare-view \.tree-head span,[\s\S]*?font-size:\s*11px/)
@@ -200,7 +200,7 @@ describe('folder sync Filters/Peek placement residual', () => {
       /\.folder-sync-view \.folder-filter-chrome\[data-sync-filters-place='capture-1to1-residual'\][\s\S]*?background:\s*#f0f0f0/,
     )
     expect(css).toMatch(
-      /\.folder-filter-pattern\[data-sync-pattern-place='capture-1to1-residual'\][\s\S]*?height:\s*16\.5px/,
+      /\.folder-filter-pattern\[data-sync-pattern-place='capture-1to1-residual'\][\s\S]*?height:\s*24px/,
     )
     expect(syncView).not.toMatch(/data-mainbar-row2="capture-1to1-residual"/)
     expect(syncView).not.toMatch(/data-testid="folder-sync-filter-strip-peek"/)

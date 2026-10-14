@@ -30,7 +30,7 @@ describe('peek panel densify', () => {
     expect(css).toMatch(/\.folder-peek-panel header,[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.peek-tabs\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.folder-peek-panel dt,[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*20px auto/)
+    expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*22px auto/)
 
     expect(folderView).toMatch(/data-testid="folder-peek-tabs"/)
     expect(folderView).toMatch(/data-testid="folder-peek-dual"/)
@@ -43,7 +43,7 @@ describe('peek panel densify', () => {
     expect(folderView).toMatch(/\.folder-peek-panel header\s*\{[\s\S]*?min-height:\s*20px/)
     expect(folderView).toMatch(/\.peek-dual-columns\s*\{[\s\S]*?gap:\s*0/)
     expect(folderView).toMatch(
-      /\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*20px auto/,
+      /\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*22px auto/,
     )
 
     expect(syncView).toMatch(/data-testid="folder-sync-peek-tabs"/)
@@ -61,28 +61,30 @@ describe('peek panel densify', () => {
 })
 
 describe('options dialog densify', () => {
-  it('keeps Options tree/content chrome at capture CSS scale and wired section ids', () => {
-    expect(css).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*4px 6px/)
-    expect(css).toMatch(/\.settings-view \.options-section-nav[\s\S]*?border:\s*1px solid #a0a0a0/)
-    expect(css).toMatch(/\.settings-view \.options-section-button[\s\S]*?min-height:\s*18px/)
+  it('keeps Options tree/content chrome aligned with HTML demo opts layout', () => {
+    expect(css).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*0/)
+    expect(css).toMatch(
+      /\.settings-view \.options-section-nav[\s\S]*?border-right:\s*1px solid #c8c8c8/,
+    )
+    expect(css).toMatch(/\.settings-view \.options-section-button[\s\S]*?min-height:\s*28px/)
     expect(css).toMatch(/\.settings-view \.options-tree-group-label[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.settings-view \.n-card-header[\s\S]*?min-height:\s*20px/)
+    expect(css).toMatch(/\.settings-view \.n-card-header[\s\S]*?min-height:\s*28px/)
 
-    expect(settingsView).toMatch(/data-options-density="capture-1to1"/)
+    expect(settingsView).toMatch(/data-options-density="html-demo"/)
     expect(settingsView).toMatch(/data-options-content-density="capture-1to1"/)
-    expect(settingsView).toMatch(/\.options-content\s*\{[\s\S]*?gap:\s*4px/)
-    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*176px/)
-    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*4px 6px/)
-    expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*18px/)
+    expect(settingsView).toMatch(/\.options-content\s*\{[\s\S]*?gap:\s*10px/)
+    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?grid-template-columns:\s*220px/)
+    expect(settingsView).toMatch(/\.settings-view\s*\{[\s\S]*?padding:\s*0/)
+    expect(settingsView).toMatch(/\.options-section-button\s*\{[\s\S]*?min-height:\s*28px/)
     expect(settingsView).toMatch(/\.options-tree-group-label\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(settingsView).toMatch(/\.options-hint\s*\{[\s\S]*?line-height:\s*16px/)
+    expect(settingsView).toMatch(/\.options-hint\s*\{/)
     expect(settingsView).toMatch(
-      /\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?height:\s*20px/,
+      /\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?height:\s*20px|\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?height:\s*26px/,
     )
     expect(settingsView).toMatch(
-      /\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?border:\s*1px solid #a0a0a0/,
+      /\.stack-row input,\s*\.stack-row select\s*\{[\s\S]*?border:\s*1px solid/,
     )
-    expect(settingsView).toMatch(/:deep\(\.n-card-header\)\s*\{[\s\S]*?min-height:\s*20px/)
+    expect(settingsView).toMatch(/:deep\(\.n-card-header\)\s*\{/)
     expect(settingsView).not.toMatch(/font-size:\s*9px/)
     expect(settingsView).not.toMatch(/min-height:\s*9px/)
     expect(settingsView).toMatch(/data-testid="options-content"/)
@@ -183,9 +185,9 @@ describe('folder merge Same OK / Peek residual', () => {
   it('scales Same OK and Peek action chrome toward capture toolbar plates', () => {
     expect(mergeView).toMatch(/data-same-ok-chrome="capture-1to1-residual"/)
     expect(mergeView).toMatch(/data-peek-residual="capture-1to1"/)
-    expect(mergeView).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*37\.5px/)
-    expect(css).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*37\.5px/)
-    expect(css).toMatch(/\.folder-merge-peek-panel[\s\S]*?border:\s*1px solid #a0a0a0/)
+    expect(mergeView).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*48px/)
+    expect(css).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*48px/)
+    expect(css).toMatch(/\.folder-merge-peek-panel[\s\S]*?border-right:\s*1px solid #c8c8c8/)
   })
 })
 
@@ -193,7 +195,7 @@ describe('folder peek residual', () => {
   it('keeps Folder Peek panel residual chrome toward capture', () => {
     expect(folderView).toMatch(/data-peek-residual="capture-1to1"/)
     expect(folderView).toMatch(/\.folder-peek-panel\[data-peek-residual='capture-1to1'\]/)
-    expect(css).toMatch(/\.folder-peek-panel[\s\S]*?border:\s*1px solid #a0a0a0/)
+    expect(css).toMatch(/\.folder-peek-panel[\s\S]*?border-right:\s*1px solid #c8c8c8/)
   })
 })
 

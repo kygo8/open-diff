@@ -2273,10 +2273,10 @@ const sourceSessionTypes = new Set<SessionType>([
   min-width: 0;
   padding: 0;
   overflow: visible;
-  border-bottom: 1px solid #a0a0a0;
+  border-bottom: 1px solid #dcdcdc;
 
-  /* Capture title band ~#f0f0f0; menu row paints white over row 2. */
-  background: #f0f0f0;
+  /* HTML demo menu band */
+  background: #f0f3f9;
 }
 
 .menu-panel {
@@ -2287,15 +2287,15 @@ const sourceSessionTypes = new Set<SessionType>([
   display: grid;
   box-sizing: border-box;
   width: max-content;
-  min-width: 24rem;
-  max-width: min(36rem, calc(100vw - 24px));
+  min-width: 280px;
+  max-width: min(360px, calc(100vw - 24px));
   max-height: calc(100vh - 72px);
-  padding: 2px;
+  padding: 4px 0;
   overflow: hidden auto;
   border: 1px solid #a0a0a0;
   border-radius: 0;
-  background: var(--app-canvas);
-  box-shadow: 0 4px 12px rgb(25 28 30 / 0.16);
+  background: #f2f2f2;
+  box-shadow: 2px 2px 8px rgb(0 0 0 / 0.18);
 }
 
 /* Do not inherit .menus > button max-width: 9em — that crushed panel labels (#624). */
@@ -2346,7 +2346,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .menu-panel button:hover {
-  background: var(--app-primary-soft);
+  background: #cce8ff;
 }
 
 .menu-panel button:disabled,
@@ -2372,9 +2372,9 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .menu-bar[data-menu-chrome='capture-1to1-residual'] .menus > .menu-group > button.active {
-  background: #c8e4ff;
+  background: #cce8ff;
   color: #000000;
-  box-shadow: inset 0 0 0 1px #89bdea;
+  box-shadow: inset 0 0 0 1px #99c9ef;
 }
 
 .menu-bar[data-menu-sep='capture-1to1-residual'] .menu-separator {
@@ -2461,10 +2461,10 @@ const sourceSessionTypes = new Set<SessionType>([
   gap: 0;
   min-width: 0;
   height: 24px;
-  padding: 0 2px;
+  padding: 0 4px;
   overflow: visible;
-  border-top: 1px solid #d0d0d0;
-  background: #ffffff;
+  border-top: 1px solid #dcdcdc;
+  background: #f0f3f9;
 }
 
 .menu-group {
@@ -2503,7 +2503,7 @@ const sourceSessionTypes = new Set<SessionType>([
 .menus > .menu-group > button:hover,
 .menus > .menu-group > button.active,
 .chrome-button:hover {
-  background: #eef4ff;
+  background: #dce8f8;
 }
 
 .top-actions {
@@ -2708,7 +2708,7 @@ const sourceSessionTypes = new Set<SessionType>([
 }
 
 .tab-strip[data-tab-strip-density='capture-1to1-residual'] {
-  background: #f0f0f0;
+  background: #f0f3f9;
 }
 
 .tab-strip[data-tab-strip-density='capture-1to1-residual'] .tab-chip {
@@ -2888,15 +2888,15 @@ const sourceSessionTypes = new Set<SessionType>([
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: stretch;
   min-width: 0;
-  height: 19.5px;
-  min-height: 19.5px;
+  height: 26px;
+  min-height: 26px;
   padding: 0;
-  border-top: 1px solid #a0a0a0;
-  background: #f0f0f0;
-  color: #000000;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  border-top: 1px solid #b8b8b8;
+  background: #d4d4d4;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
   font-size: 11px;
-  line-height: 18px;
+  line-height: 24px;
 }
 
 .status-bar[data-status-band='capture-1to1-residual'] .status-bar-pane {
@@ -2911,10 +2911,10 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='folder-pair'] {
   /* Capture Folder Compare panes (DPR≈2): 222 | 131 | 222.5 | 39 | 222 | 131 | fr */
   grid-template-columns: 222px 131px 222.5px 39px 222px 131px minmax(0, 1fr);
-  height: 19.5px;
-  min-height: 19.5px;
+  height: 26px;
+  min-height: 26px;
   font-size: 11px;
-  line-height: 18px;
+  line-height: 24px;
 }
 
 .status-bar[data-chrome-kind='folder-pair'] .status-bar-pane {
@@ -2933,10 +2933,10 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='folder-sync'] {
   /* Capture Folder Sync panes (DPR≈2): 266.5 | 268.5 | 118 | 268 | fr */
   grid-template-columns: 266.5px 268.5px 118px 268px minmax(0, 1fr);
-  height: 19.5px;
-  min-height: 19.5px;
+  height: 26px;
+  min-height: 26px;
   font-size: 11px;
-  line-height: 18px;
+  line-height: 24px;
 }
 
 .status-bar[data-chrome-kind='folder-sync'] .status-bar-pane {
@@ -2958,10 +2958,10 @@ const sourceSessionTypes = new Set<SessionType>([
       0,
       1fr
     );
-  height: 19.5px;
-  min-height: 19.5px;
+  height: 26px;
+  min-height: 26px;
   font-size: 11px;
-  line-height: 18px;
+  line-height: 24px;
 }
 
 .status-bar[data-chrome-kind='folder-merge'] .status-bar-pane {
@@ -2986,10 +2986,10 @@ const sourceSessionTypes = new Set<SessionType>([
 .status-bar[data-chrome-kind='table-session'],
 .status-bar[data-chrome-kind='registry-session'],
 .status-bar[data-chrome-kind='clipboard-session'] {
-  height: 19.5px;
-  min-height: 19.5px;
+  height: 26px;
+  min-height: 26px;
   font-size: 11px;
-  line-height: 18px;
+  line-height: 24px;
 }
 
 .status-bar[data-chrome-kind='text-session'] .status-bar-pane,
@@ -3037,10 +3037,10 @@ const sourceSessionTypes = new Set<SessionType>([
 
 .status-bar[data-chrome-kind='text-edit-session'] {
   grid-template-columns: 91.5px minmax(0, 1fr);
-  height: 19.5px;
-  min-height: 19.5px;
+  height: 26px;
+  min-height: 26px;
   font-size: 11px;
-  line-height: 18px;
+  line-height: 24px;
 }
 
 .status-bar[data-chrome-kind='text-edit-session'] .status-bar-pane {
@@ -3275,15 +3275,15 @@ html[data-show-sidebar='1'] .sidebar {
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-sync']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind='folder-merge']),
 .app-shell-dense-chrome:has(.status-bar[data-chrome-kind$='-session']) {
-  /* Single capture menu row; status track toward capture ~19.5px (DPR≈2). */
-  grid-template-rows: 23.5px minmax(0, 1fr) 19.5px;
+  /* Dense menu row; status track matches HTML demo ~26px. */
+  grid-template-rows: 23.5px minmax(0, 1fr) 26px;
 }
 
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-pair']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-sync']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind='folder-merge']),
 .app-shell:not(.app-shell-dense-chrome):has(.status-bar[data-chrome-kind$='-session']) {
-  grid-template-rows: 48px minmax(0, 1fr) 19.5px;
+  grid-template-rows: 48px minmax(0, 1fr) 26px;
 }
 
 .app-shell-dense-chrome .menu-bar {

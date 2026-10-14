@@ -1277,7 +1277,7 @@ function runMediaToolbarCommand(commandId: string): void {
 .media-path-field .path-input {
   flex: 1 1 auto;
   min-width: 0;
-  height: 16.5px;
+  height: 24px;
   padding: 0 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;

@@ -11,7 +11,7 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('registry compare chrome density', () => {
   it('keeps Registry Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.registry-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(registryView).toMatch(/\.path-field-row \.path-input\s*\{[\s\S]*?height:\s*16\.5px/)
+    expect(registryView).toMatch(/\.path-field-row \.path-input\s*\{[\s\S]*?height:\s*24px/)
     expect(css).toMatch(
       /\.registry-compare-view \.registry-input-panel\s*\{[\s\S]*?min-height:\s*22px/,
     )
@@ -37,8 +37,8 @@ describe('registry compare chrome density', () => {
     expect(registryView).not.toMatch(/font-size:\s*9px/)
     expect(registryView).not.toMatch(/min-height:\s*9px/)
 
-    expect(layout).toMatch(/data-chrome-kind='registry-session'[\s\S]*?height:\s*19\.5px/)
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
+    expect(layout).toMatch(/data-chrome-kind='registry-session'[\s\S]*?height:\s*26px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*56px/)
   })
 
   it('keeps Registry summary/pane/row chrome on capture band', () => {

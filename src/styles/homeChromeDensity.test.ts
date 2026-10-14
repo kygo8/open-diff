@@ -11,30 +11,30 @@ const workspaceManager = readFileSync(
 )
 
 describe('home chrome density', () => {
-  it('keeps Home chrome metrics aligned with home.png CSS px', () => {
-    expect(homeView).toMatch(/data-home-density="capture-1to1"/)
+  it('keeps Home chrome metrics aligned with HTML demo Home chrome', () => {
+    expect(homeView).toMatch(/data-home-density="html-demo"/)
     expect(homeView).toMatch(/data-home-chrome="minimal"/)
     expect(homeView).toMatch(
-      /\.bc-home-workspace\s*\{[\s\S]*?grid-template-columns:\s*minmax\(220px, 248px\)/,
+      /\.bc-home-workspace\s*\{[\s\S]*?grid-template-columns:\s*minmax\(240px, 260px\)/,
     )
     expect(homeView).toMatch(
-      /\.bc-session-tree\s*\{[\s\S]*?grid-template-rows:\s*28px minmax\(0, 1fr\) 32px/,
+      /\.bc-session-tree\s*\{[\s\S]*?grid-template-rows:\s*auto minmax\(0, 1fr\) auto/,
     )
-    expect(homeView).toMatch(/\.bc-session-tree header\s*\{[\s\S]*?font-size:\s*12px/)
-    expect(homeView).toMatch(/\.bc-tree-row\s*\{[\s\S]*?min-height:\s*20px/)
-    expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*28px/)
-    expect(homeView).toMatch(/\.bc-tree-footer input\s*\{[\s\S]*?height:\s*22px/)
-    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?width:\s*95.5px/)
-    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?height:\s*30px/)
+    expect(homeView).toMatch(/\.bc-session-tree header\s*\{[\s\S]*?font-size:\s*13px/)
+    expect(homeView).toMatch(/\.bc-tree-row\s*\{[\s\S]*?min-height:\s*22px/)
+    expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*24px/)
+    expect(homeView).toMatch(/\.bc-tree-footer input\s*\{[\s\S]*?height:\s*24px/)
+    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?min-width:\s*80px/)
+    expect(homeView).toMatch(/\.bc-selected-actions button\s*\{[\s\S]*?height:\s*28px/)
     expect(homeView).toMatch(
-      /\.new-session-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3, minmax\(140px, 157px\)\)/,
+      /\.new-session-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3, minmax\(180px, 220px\)\)/,
     )
-    expect(homeView).toMatch(/\.session-card-icon\s*\{[\s\S]*?width:\s*48px/)
+    expect(homeView).toMatch(/\.session-card-icon\s*\{[\s\S]*?width:\s*56px/)
     expect(homeView).toMatch(
-      /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?min-height:\s*131px/,
+      /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?min-height:\s*110px/,
     )
-    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?border-radius:\s*0/)
-    expect(homeView).toMatch(/:size="48"/)
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?border-radius:\s*6px/)
+    expect(homeView).toMatch(/:size="52"/)
     expect(homeView).not.toMatch(/min-height:\s*7px/)
     expect(homeView).not.toMatch(/height:\s*6px/)
     expect(homeView).not.toMatch(/height:\s*7px/)
@@ -75,19 +75,19 @@ describe('home chrome density', () => {
 })
 
 describe('home launch card band residual', () => {
-  it('keeps Home New tree / launch cards / instruction metrics on capture bands', () => {
+  it('keeps Home New tree / launch cards / instruction metrics on demo card bands', () => {
     expect(homeView).toMatch(/data-card-band/)
     expect(homeView).toMatch(/homeCardBand/)
     expect(homeView).toMatch(
-      /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?min-height:\s*131px/,
+      /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?min-height:\s*110px/,
     )
     expect(homeView).toMatch(
-      /\.new-session-card\[data-card-band='short'\]\s*\{[\s\S]*?min-height:\s*91\.5px/,
+      /\.new-session-card\[data-card-band='short'\]\s*\{[\s\S]*?min-height:\s*110px/,
     )
-    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*91\.5px/)
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?min-height:\s*110px/)
     expect(homeView).toMatch(/\.bc-home-instructions\s*\{[\s\S]*?min-height:\s*20px/)
     expect(homeView).toMatch(/\.bc-home-instructions\s*\{[\s\S]*?font-size:\s*12px/)
-    expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*28px/)
+    expect(homeView).toMatch(/\.bc-tree-footer button\s*\{[\s\S]*?height:\s*24px/)
     expect(homeView).not.toMatch(/min-height:\s*6px/)
   })
 })
@@ -100,20 +100,20 @@ describe('home main fill', () => {
 })
 
 describe('home tree fill', () => {
-  it('matches capture home session-tree fill #e3e7ed', () => {
-    expect(homeView).toMatch(/\.bc-session-tree\s*\{[\s\S]*?background:\s*#e3e7ed/)
+  it('matches demo session-tree fill #f5f5f5', () => {
+    expect(homeView).toMatch(/\.bc-session-tree\s*\{[\s\S]*?background:\s*#f5f5f5/)
   })
 })
 
 describe('home session-tree header fill', () => {
-  it('matches capture session-tree header fill #ededed', () => {
-    expect(homeView).toMatch(/\.bc-session-tree header\s*\{[\s\S]*?background:\s*#ededed/)
+  it('matches demo session-tree header fill #f5f5f5', () => {
+    expect(homeView).toMatch(/\.bc-session-tree header\s*\{[\s\S]*?background:\s*#f5f5f5/)
   })
 })
 
 describe('home session-tree footer fill', () => {
-  it('matches capture session-tree footer fill #fdfdfd', () => {
-    expect(homeView).toMatch(/\.bc-tree-footer\s*\{[\s\S]*?background:\s*#fdfdfd/)
+  it('matches demo session-tree footer fill #f5f5f5', () => {
+    expect(homeView).toMatch(/\.bc-tree-footer\s*\{[\s\S]*?background:\s*#f5f5f5/)
   })
 })
 
@@ -135,16 +135,16 @@ describe('home launch cream', () => {
 })
 
 describe('home launch card band height lock', () => {
-  it('locks Home launch card bands to capture heights without inherited line-box stretch', () => {
-    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?height:\s*91\.5px/)
+  it('locks Home launch card bands to demo card heights without inherited line-box stretch', () => {
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?height:\s*110px/)
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?line-height:\s*1/)
-    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?font-size:\s*12px/)
+    expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?font-size:\s*13px/)
     expect(homeView).toMatch(/\.new-session-card\s*\{[\s\S]*?align-self:\s*start/)
     expect(homeView).toMatch(
-      /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?height:\s*131px/,
+      /\.new-session-card\[data-card-band='tall'\]\s*\{[\s\S]*?height:\s*110px/,
     )
     expect(homeView).toMatch(
-      /\.new-session-card\[data-card-band='short'\]\s*\{[\s\S]*?height:\s*91\.5px/,
+      /\.new-session-card\[data-card-band='short'\]\s*\{[\s\S]*?height:\s*110px/,
     )
   })
 })

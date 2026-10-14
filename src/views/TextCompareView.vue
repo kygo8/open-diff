@@ -68,7 +68,7 @@ const ignoreWhitespace = ref(initialTextSessionOptions.ignoreWhitespace)
 const ignoreCase = ref(initialTextSessionOptions.ignoreCase)
 const ignoreLineEndings = ref(initialTextSessionOptions.ignoreLineEndings)
 const ignoreRegexInput = ref(initialTextSessionOptions.ignoreRegexes.join(', '))
-const showTextRules = ref(true)
+const showTextRules = ref(false)
 const showContextPanel = ref(false)
 const goToMenuOpen = ref(false)
 const goToLineInput = ref('1')
@@ -2240,8 +2240,8 @@ function onVisibilityForDiskChange(): void {
 .text-path-field .path-input {
   flex: 1 1 auto;
   min-width: 0;
-  height: 16.5px;
-  min-height: 16.5px;
+  height: 24px;
+  min-height: 24px;
 }
 
 .text-path-trailing {

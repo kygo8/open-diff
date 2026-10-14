@@ -312,7 +312,10 @@ function setImportStatus(key: string, params: Record<string, string | number> = 
 </script>
 
 <template>
-  <section class="file-format-view">
+  <section
+    class="file-format-view"
+    data-formats-density="html-demo"
+  >
     <header class="format-header">
       <div>
         <p class="eyebrow">{{ $t('ui.options') }}</p>
@@ -524,10 +527,12 @@ function setImportStatus(key: string, params: Record<string, string | number> = 
 <style scoped>
 .file-format-view {
   display: grid;
-  gap: 4px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0;
   height: 100%;
-  padding: 2px 4px;
-  overflow: auto;
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
 }
 
 .format-header {
@@ -589,19 +594,31 @@ h2 {
 
 .format-workspace {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 4px;
-  min-height: 360px;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 0;
+  height: 100%;
+  min-height: 0;
 }
 
 .format-list-panel,
 .format-detail-panel,
 .format-io-panel {
   min-width: 0;
-  padding: 2px 4px;
-  border: 1px solid var(--app-border);
+  padding: 8px 0;
+  border: 0;
   border-radius: 0;
-  background: var(--app-surface);
+  background: #f5f5f5;
+}
+
+.format-detail-panel {
+  padding: 16px 20px;
+  overflow: auto;
+  background: #ffffff;
+}
+
+.format-list-panel {
+  overflow: auto;
+  border-right: 1px solid #c8c8c8;
 }
 
 .format-list-panel,
@@ -619,14 +636,15 @@ h2 {
 }
 
 button {
-  min-height: 18px;
-  padding: 0 6px;
-  border: 1px solid var(--app-border);
-  border-radius: 0;
-  background: var(--app-bg);
-  color: var(--app-text);
+  height: 28px;
+  min-height: 28px;
+  padding: 0 16px;
+  border: 1px solid #c8c8c8;
+  border-radius: 3px;
+  background: #fafafa;
+  color: #1a1a1a;
   font: inherit;
-  cursor: pointer;
+  cursor: default;
 }
 
 button:hover {
@@ -643,14 +661,20 @@ button:hover {
   justify-items: start;
   gap: 1px;
   width: 100%;
-  min-height: 22px;
-  padding: 1px 4px;
+  min-height: 28px;
+  padding: 6px 14px;
+  border: 0;
   text-align: left;
 }
 
+.format-row:hover {
+  background: #e8f4ff;
+}
+
 .format-row.active {
-  border-color: #2563eb;
-  background: rgb(37 99 235 / 0.1);
+  border-color: transparent;
+  background: #cce8ff;
+  font-weight: 600;
 }
 
 .format-row span {
@@ -705,12 +729,12 @@ textarea {
 
 input,
 select {
-  height: 20px;
+  height: 26px;
   padding: 0 4px;
 }
 
 textarea {
-  min-height: 64px;
+  min-height: 96px;
   padding: 2px 4px;
   resize: vertical;
   font-family: var(--font-mono);

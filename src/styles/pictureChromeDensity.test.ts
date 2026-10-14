@@ -11,12 +11,12 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 describe('picture compare chrome density', () => {
   it('keeps Picture Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.picture-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/)
+    expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*24px/)
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-path-panel\s*\{[\s\S]*?min-height:\s*19\.5px/,
+      /\.picture-compare-view \.picture-path-panel\s*\{[\s\S]*?min-height:\s*26px/,
     )
     expect(css).toMatch(
-      /\.picture-compare-view \.picture-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/,
+      /\.picture-compare-view \.picture-path-panel input\s*\{[\s\S]*?height:\s*24px/,
     )
     expect(css).toMatch(
       /\.picture-compare-view \.picture-path-panel button\s*\{[\s\S]*?height:\s*20px/,
@@ -29,13 +29,13 @@ describe('picture compare chrome density', () => {
     expect(pictureView).toMatch(/\.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
     expect(pictureView).toMatch(/SessionPathActions/)
     expect(pictureView).toMatch(/PathMetaFooter/)
-    expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/)
+    expect(pictureView).toMatch(/\.picture-path-panel input\s*\{[\s\S]*?height:\s*24px/)
     expect(pictureView).toMatch(/chromeKind:\s*'picture-session'/)
     expect(pictureView).not.toMatch(/font-size:\s*9px/)
     expect(pictureView).not.toMatch(/min-height:\s*9px/)
 
-    expect(layout).toMatch(/data-chrome-kind='picture-session'[\s\S]*?height:\s*19\.5px/)
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
+    expect(layout).toMatch(/data-chrome-kind='picture-session'[\s\S]*?height:\s*26px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*56px/)
   })
 
   it('keeps Picture Meta/Blend/Tol chrome on capture band', () => {

@@ -22,7 +22,7 @@ export function defaultFolderDisplayFilters(): FolderDisplayFiltersState {
     showSuppressed: false,
     filesOnly: false,
     alwaysShowFolders: true,
-    showFiltersPanel: true,
+    showFiltersPanel: false,
     showPeekPanel: false,
   }
 }
@@ -63,7 +63,7 @@ export function loadFolderDisplayFilters(
       showSuppressed: Boolean(parsed.showSuppressed),
       filesOnly: Boolean(parsed.filesOnly),
       alwaysShowFolders: parsed.alwaysShowFolders !== false,
-      showFiltersPanel: parsed.showFiltersPanel !== false,
+      showFiltersPanel: parsed.showFiltersPanel === true,
       showPeekPanel: Boolean(parsed.showPeekPanel),
     }
   } catch {

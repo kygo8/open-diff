@@ -18,9 +18,9 @@ describe('folder sync/merge chrome density', () => {
     )
     expect(css).toMatch(/\.folder-merge-view \.merge-paths\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-to-chrome\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(mergeView).toMatch(/\.merge-to-path input\s*\{[\s\S]*?height:\s*16\.5px/)
-    expect(mergeView).toMatch(/\.merge-paths input\s*\{[\s\S]*?height:\s*16\.5px/)
-    expect(css).toMatch(/\.folder-merge-view \.merge-paths input\s*\{[\s\S]*?height:\s*16\.5px/)
+    expect(mergeView).toMatch(/\.merge-to-path input\s*\{[\s\S]*?height:\s*24px/)
+    expect(mergeView).toMatch(/\.merge-paths input\s*\{[\s\S]*?height:\s*24px/)
+    expect(css).toMatch(/\.folder-merge-view \.merge-paths input\s*\{[\s\S]*?height:\s*24px/)
     expect(css).toMatch(
       /\.folder-merge-view \.merge-actions \.n-button\[data-testid='folder-merge-execute-plan'\][\s\S]*?height:\s*36px/,
     )
@@ -29,7 +29,7 @@ describe('folder sync/merge chrome density', () => {
     expect(css).toMatch(/\.folder-merge-view \.merge-actions \.n-button[\s\S]*?height:\s*30px/)
 
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?padding:\s*2px 4px/)
-    expect(syncView).toMatch(/\.path-field-row \.path-input\s*\{[\s\S]*?height:\s*16\.5px/)
+    expect(syncView).toMatch(/\.path-field-row \.path-input\s*\{[\s\S]*?height:\s*24px/)
     expect(syncView).toMatch(/\.sync-settings\s*\{[\s\S]*?min-height:\s*22px/)
     expect(syncView).toMatch(/grid-template-columns:[\s\S]*?326\.5px/)
     expect(syncView).toMatch(/\.sync-settings input,[\s\S]*?height:\s*20px/)
@@ -63,12 +63,8 @@ describe('folder sync/merge chrome density', () => {
     expect(mergeView).toMatch(/centerFreeSpace:/)
     expect(mergeView).toMatch(/refreshMergeFreeSpace/)
 
-    expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*19\.5px/,
-    )
-    expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?height:\s*19\.5px/,
-    )
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*26px/)
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?height:\s*26px/)
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='folder-merge'\]\[data-pane-count='12'\]/,
     )
@@ -121,7 +117,7 @@ describe('folder sync tree and session log chrome density', () => {
     expect(syncView).toMatch(/data-log-density="capture-1to1"/)
     expect(syncView).toMatch(/\.sync-preview-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(syncView).toMatch(/\.sync-preview-head\s*\{[\s\S]*?font-weight:\s*400/)
-    expect(syncView).toMatch(/\.sync-row-selected\s*\{[\s\S]*?background:\s*#a8cdf1/)
+    expect(syncView).toMatch(/\.sync-row-selected\s*\{[\s\S]*?background:\s*#cce8ff/)
     expect(syncView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*98px/)
     expect(syncView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/)
     expect(syncView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?line-height:\s*14px/)
@@ -142,7 +138,7 @@ describe('folder merge tree and session log chrome density', () => {
     expect(mergeView).toMatch(/data-log-density="capture-1to1"/)
     expect(mergeView).toMatch(/\.merge-plan-row\s*\{[\s\S]*?min-height:\s*20px/)
     expect(mergeView).toMatch(/\.merge-plan-head\s*\{[\s\S]*?font-weight:\s*400/)
-    expect(mergeView).toMatch(/\.merge-plan-row\.selected\s*\{[\s\S]*?background:\s*#a8cdf1/)
+    expect(mergeView).toMatch(/\.merge-plan-row\.selected\s*\{[\s\S]*?background:\s*#cce8ff/)
     expect(mergeView).toMatch(/\.folder-session-log\s*\{[\s\S]*?height:\s*98px/)
     expect(mergeView).toMatch(/\.folder-session-log-body\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.folder-merge-view \.merge-plan-row\s*\{[\s\S]*?min-height:\s*20px/)

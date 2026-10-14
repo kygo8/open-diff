@@ -1675,8 +1675,8 @@ h2 {
 }
 
 .picture-path-panel input {
-  height: 16.5px;
-  min-height: 16.5px;
+  height: 24px;
+  min-height: 24px;
   padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;

@@ -1378,8 +1378,8 @@ function lineNumber(value: number | null): string {
 .path-field-row .path-input {
   flex: 1;
   min-width: 0;
-  height: 16.5px;
-  min-height: 16.5px;
+  height: 24px;
+  min-height: 24px;
   padding: 0 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;

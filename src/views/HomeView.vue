@@ -651,7 +651,7 @@ onMounted(() => {
     <section
       class="home-workspace bc-home-workspace"
       data-testid="home-layout"
-      data-home-density="capture-1to1"
+      data-home-density="html-demo"
       data-home-chrome="minimal"
     >
       <aside
@@ -858,7 +858,7 @@ onMounted(() => {
               <span class="session-card-icon">
                 <component
                   :is="entry.icon"
-                  :size="48"
+                  :size="52"
                 />
               </span>
               <h3>{{ $t(entry.titleKey) }}</h3>
@@ -1172,31 +1172,31 @@ onMounted(() => {
 .bc-home-workspace {
   display: grid;
 
-  /* home.png tree ~241 CSS px at DPR 2; avoid prior 140–170 crush. */
-  grid-template-columns: minmax(220px, 248px) minmax(0, 1fr);
+  /* HTML demo sidebar ~260px */
+  grid-template-columns: minmax(240px, 260px) minmax(0, 1fr);
   background: #f9f9f9;
 }
 
 .bc-session-tree {
   display: grid;
-  grid-template-rows: 28px minmax(0, 1fr) 32px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   min-width: 0;
   min-height: 0;
-  border-right: 1px solid #b9bec7;
-  background: #e3e7ed;
+  border-right: 1px solid #c8c8c8;
+  background: #f5f5f5;
 }
 
 .bc-session-tree header {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 8px;
+  padding: 10px 12px 6px;
   overflow: hidden;
-  border-bottom: 1px solid #c6ccd5;
-  background: #ededed;
-  color: #111827;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-  font-size: 12px;
+  border-bottom: 1px solid #dcdcdc;
+  background: #f5f5f5;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1;
   text-overflow: ellipsis;
@@ -1213,19 +1213,19 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 12px 18px minmax(0, 1fr);
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   width: 100%;
   height: auto;
-  min-height: 20px;
-  padding: 1px 2px;
+  min-height: 22px;
+  padding: 4px 12px 4px 18px;
   border: 0;
   background: transparent;
-  color: #111827;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
   font-size: 12px;
   line-height: 16px;
   text-align: left;
-  cursor: pointer;
+  cursor: default;
 }
 
 .bc-tree-row.child {
@@ -1241,7 +1241,11 @@ onMounted(() => {
 .bc-tree-row:hover,
 .bc-tree-row:focus-visible {
   outline: 0;
-  background: #c7dcf6;
+  background: #f0f7ff;
+}
+
+.bc-tree-row.selected {
+  background: #cce8ff;
 }
 
 .bc-tree-row strong {
@@ -1253,35 +1257,37 @@ onMounted(() => {
 
 .bc-tree-footer {
   display: grid;
-  grid-template-columns: 30px 30px minmax(0, 1fr);
+  grid-template-columns: 24px 24px minmax(0, 1fr);
   align-items: center;
-  gap: 3px;
-  padding: 2px 4px;
-  border-top: 1px solid #c6ccd5;
-  background: #fdfdfd;
+  gap: 4px;
+  padding: 6px 8px;
+  border-top: 1px solid #dcdcdc;
+  background: #f5f5f5;
 }
 
 .bc-tree-footer button {
-  height: 28px;
-  border: 1px solid #c6ccd5;
-  border-radius: 0;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #c8c8c8;
+  border-radius: 3px;
   background: #ffffff;
   color: #2f343a;
   font-size: 14px;
   line-height: 1;
+  cursor: default;
 }
 
 .bc-tree-footer input {
   width: 100%;
   min-width: 0;
-  height: 22px;
-  padding: 0 6px;
+  height: 24px;
+  padding: 0 8px;
   overflow: hidden;
-  border: 1px solid #c6ccd5;
-  border-radius: 0;
+  border: 1px solid #c8c8c8;
+  border-radius: 3px;
   background: #ffffff;
-  color: #111827;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
   font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1300,7 +1306,7 @@ onMounted(() => {
 .bc-selected-session {
   display: grid;
   gap: 8px;
-  padding: 12px 16px 8px;
+  padding: 16px 24px 8px;
 }
 
 .bc-selected-title {
@@ -1327,43 +1333,50 @@ onMounted(() => {
 }
 
 .bc-selected-title strong {
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-  font-size: 20px;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.15;
 }
 
 .bc-selected-title span {
-  color: #374151;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-  font-size: 13px;
-  line-height: 1.2;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .bc-selected-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .bc-selected-actions button {
-  width: 95.5px;
+  width: auto;
+  min-width: 80px;
   max-width: 100%;
-  height: 30px;
+  height: 28px;
+  padding: 0 16px;
   overflow: hidden;
-  border: 1px solid #c7cdd6;
-  border-radius: 2px;
-  background: #ffffff;
-  color: #111827;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  border: 1px solid #c8c8c8;
+  border-radius: 3px;
+  background: #fafafa;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
   font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
-  cursor: pointer;
+  cursor: default;
 }
 
 .bc-selected-actions button:first-child {
-  border-color: #4aa3ff;
-  color: #1d4f91;
+  background: #ffffff;
+  color: #0563c1;
+  border-color: #5b9bd5;
+}
+
+.bc-selected-actions button:first-child:hover {
+  background: #e8f3fc;
 }
 
 .bc-selected-actions button:last-child {
@@ -1378,7 +1391,7 @@ onMounted(() => {
 }
 
 .new-session-panel {
-  padding: 4px 12px 16px;
+  padding: 4px 24px 24px;
 }
 
 .new-session-panel h2,
@@ -1390,23 +1403,24 @@ onMounted(() => {
 
 .new-session-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(140px, 157px));
-  justify-content: center;
-  gap: 8px 12px;
-  width: min(500px, calc(100% - 24px));
-  margin: 4px auto 8px;
+  grid-template-columns: repeat(3, minmax(180px, 220px));
+  justify-content: start;
+  gap: 18px 28px;
+  width: min(760px, 100%);
+  max-width: 760px;
+  margin: 4px 0 8px;
 }
 
 .bc-home-instructions {
   display: grid;
   gap: 2px;
   min-height: 20px;
-  margin: 0 0 6px;
-  color: #111827;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  margin: 0 0 14px;
+  color: #666666;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
   font-size: 12px;
   line-height: 16px;
-  justify-items: center;
+  justify-items: start;
 }
 
 .bc-home-instructions strong {
@@ -1416,46 +1430,51 @@ onMounted(() => {
 
 .new-session-card {
   display: grid;
-  gap: 4px;
+  gap: 10px;
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  height: 91.5px;
-  min-height: 91.5px;
-  padding: 8px 4px 6px;
+  height: 110px;
+  min-height: 110px;
+  padding: 12px;
   overflow: hidden;
-  border: 0;
-  border-radius: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
   background: transparent;
-  color: #111827;
-  font-size: 12px;
+  color: #1a1a1a;
+  font-size: 13px;
   line-height: 1;
   cursor: pointer;
   justify-items: center;
-  align-content: start;
+  align-content: center;
   align-self: start;
   box-sizing: border-box;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
 }
 
 .new-session-card[data-card-band='tall'] {
-  height: 131px;
-  min-height: 131px;
+  height: 110px;
+  min-height: 110px;
 }
 
 .new-session-card[data-card-band='short'] {
-  height: 91.5px;
-  min-height: 91.5px;
+  height: 110px;
+  min-height: 110px;
 }
 
 .new-session-card:hover,
 .new-session-card:focus {
   outline: 0;
-  background: #eaf4ff;
+  background: #ffffff;
+  border-color: #b8d4f0;
+  box-shadow: 0 1px 4px rgb(0 90 180 / 0.12);
 }
 
 .session-card-icon {
   display: inline-grid;
-  width: 48px;
+  width: 56px;
   height: 48px;
   color: #2f353d;
   place-items: center;
@@ -1474,8 +1493,8 @@ onMounted(() => {
   max-width: 100%;
   margin: 0;
   overflow: hidden;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-  font-size: 12px;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
+  font-size: 13px;
   font-weight: 400;
   line-height: 16px;
   text-align: center;
@@ -1800,15 +1819,6 @@ tr:hover .row-actions,
 
 .session-maturity[data-maturity='limited'] {
   background: color-mix(in srgb, #b45309 18%, transparent);
-}
-
-.bc-tree-row.selected {
-  background: #0078d4;
-  color: #ffffff;
-}
-
-.bc-tree-row.selected strong {
-  color: #ffffff;
 }
 
 .session-edit-panel {

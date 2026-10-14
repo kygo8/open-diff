@@ -1468,7 +1468,7 @@ function parseShortcutText(value: string): string[] {
   >
     <section
       class="settings-view"
-      data-options-density="capture-1to1"
+      data-options-density="html-demo"
     >
       <nav
         class="options-section-nav options-section-tree"
@@ -3717,35 +3717,39 @@ function parseShortcutText(value: string): string[] {
 <style scoped>
 .settings-view {
   display: grid;
-  grid-template-columns: 176px minmax(0, 1fr);
-  align-content: start;
-  align-items: start;
-  gap: 6px;
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-content: stretch;
+  align-items: stretch;
+  gap: 0;
   height: 100%;
-  padding: 4px 6px;
-  overflow: auto;
-  font-size: 11px;
-  line-height: 16px;
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .options-content {
   display: grid;
-  gap: 4px;
+  gap: 10px;
   align-content: start;
   min-width: 0;
-  padding: 0;
+  height: 100%;
+  padding: 16px 20px;
+  overflow: auto;
+  background: #ffffff;
 }
 
 .options-content :deep([class='n-card__content']) {
   display: grid;
-  gap: 4px;
-  padding: 4px 6px;
+  gap: 10px;
+  padding: 4px 0 0;
 }
 
 .options-content :deep(.n-checkbox) {
-  min-height: 18px;
-  font-size: 11px;
-  line-height: 16px;
+  min-height: 22px;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .options-content :deep(.n-form-item) {
@@ -3766,13 +3770,15 @@ function parseShortcutText(value: string): string[] {
 
 .options-section-nav {
   display: grid;
-  gap: 4px;
-  max-height: calc(100vh - 120px);
-  padding: 2px 4px;
+  gap: 0;
+  height: 100%;
+  max-height: none;
+  padding: 8px 0;
   overflow: auto;
-  border: 1px solid #a0a0a0;
+  border: 0;
+  border-right: 1px solid #c8c8c8;
   border-radius: 0;
-  background: var(--app-surface);
+  background: #f5f5f5;
   align-content: start;
 }
 
@@ -3798,11 +3804,11 @@ function parseShortcutText(value: string): string[] {
 .options-tree-group-label {
   min-width: 0;
   margin: 0;
-  padding: 4px 6px 2px;
-  color: var(--app-text-muted);
+  padding: 10px 14px 4px;
+  color: #666666;
   font-size: 11px;
-  font-weight: 700;
-  line-height: 16px;
+  font-weight: 600;
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
@@ -3855,25 +3861,26 @@ function parseShortcutText(value: string): string[] {
 .options-section-button {
   box-sizing: border-box;
   width: 100%;
-  min-height: 18px;
-  padding: 2px 6px;
+  min-height: 28px;
+  padding: 6px 14px;
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--app-text);
-  font-size: 11px;
-  line-height: 16px;
+  color: #1a1a1a;
+  font-size: 12px;
+  line-height: 1.2;
   text-align: left;
-  cursor: pointer;
+  cursor: default;
 }
 
 .options-section-button:hover {
-  background: #dceeff;
+  background: #e8f4ff;
 }
 
 .options-section-button.active {
-  background: #c8e4ff;
-  box-shadow: inset 0 0 0 1px #89bdea;
+  background: #cce8ff;
+  font-weight: 600;
+  box-shadow: none;
 }
 
 .auto-save-limit-input,
@@ -3908,8 +3915,8 @@ function parseShortcutText(value: string): string[] {
 .stack-row input,
 .stack-row select {
   min-width: 0;
-  height: 20px;
-  min-height: 20px;
+  height: 26px;
+  min-height: 26px;
   padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -4215,14 +4222,14 @@ h1 {
 
 .options-footer-btn {
   min-width: 72px;
-  height: 18px;
-  min-height: 18px;
-  padding: 0 10px;
-  border: 1px solid #a0a0a0;
-  border-radius: 0;
-  background: #ffffff;
-  color: #111111;
-  font-size: 11px;
+  height: 28px;
+  min-height: 28px;
+  padding: 0 16px;
+  border: 1px solid #c8c8c8;
+  border-radius: 3px;
+  background: #fafafa;
+  color: #1a1a1a;
+  font-size: 12px;
   line-height: 16px;
   cursor: default;
 }

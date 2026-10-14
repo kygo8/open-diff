@@ -1627,8 +1627,8 @@ h2 {
 .hex-wrap-controls button {
   width: 100%;
   min-width: 0;
-  height: 16.5px;
-  min-height: 16.5px;
+  height: 24px;
+  min-height: 24px;
   padding: 0 6px;
   border: 1px solid #a0a0a0;
   border-radius: 0;
@@ -2008,7 +2008,7 @@ h2 {
 .hex-path-field .path-input {
   flex: 1 1 auto;
   min-width: 0;
-  height: 16.5px;
+  height: 24px;
   padding: 0 4px;
   border: 1px solid #a0a0a0;
   border-radius: 0;

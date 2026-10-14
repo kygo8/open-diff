@@ -994,7 +994,7 @@ function credentialKindLabel(kind: CredentialReferenceKind): string {
   display: grid;
   gap: 4px;
   height: 100%;
-  padding: 2px 4px;
+  padding: 0;
   overflow: auto;
 }
 
@@ -1050,7 +1050,7 @@ h2 {
 
 .profile-workspace {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: 220px minmax(0, 1fr);
   gap: 4px;
   min-height: 380px;
 }
@@ -1061,7 +1061,7 @@ h2 {
   align-content: start;
   gap: 4px;
   min-width: 0;
-  padding: 2px 4px;
+  padding: 8px 0;
   border: 1px solid var(--app-border);
   border-radius: 0;
   background: var(--app-surface);
@@ -1081,7 +1081,7 @@ h2 {
 }
 
 button {
-  min-height: 18px;
+  min-height: 28px;
   padding: 0 6px;
   border: 1px solid var(--app-border);
   border-radius: 0;
@@ -1118,14 +1118,14 @@ button:hover:not(:disabled) {
   justify-items: start;
   gap: 1px;
   width: 100%;
-  min-height: 22px;
-  padding: 1px 4px;
+  min-height: 28px;
+  padding: 6px 14px;
   text-align: left;
 }
 
 .profile-row.active {
-  border-color: #2563eb;
-  background: rgb(37 99 235 / 0.1);
+  border-color: transparent;
+  background: #cce8ff;
 }
 
 .profile-row span {
@@ -1187,7 +1187,7 @@ input,
 select {
   width: 100%;
   min-width: 0;
-  height: 20px;
+  height: 26px;
   padding: 0 4px;
   border: 1px solid var(--app-border);
   border-radius: 0;

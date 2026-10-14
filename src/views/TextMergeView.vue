@@ -1510,7 +1510,7 @@ watch(
   width: 220px;
   min-width: 0;
   max-width: 100%;
-  height: 16.5px;
+  height: 24px;
   padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);

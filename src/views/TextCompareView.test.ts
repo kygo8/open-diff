@@ -176,7 +176,7 @@ describe('TextCompareView', () => {
     )
     expect(
       wrapper.find('[data-testid="text-session-toolbar-rules"]').attributes('data-active'),
-    ).toBe('true')
+    ).toBe('false')
     expect(
       wrapper.find('[data-testid="text-session-toolbar-bar"]').attributes('data-large-buttons'),
     ).toBe('true')
@@ -204,13 +204,6 @@ describe('TextCompareView', () => {
   it('toggles the text rules panel from the session toolbar', async () => {
     const wrapper = mountTextCompareView()
 
-    expect(
-      wrapper.find('[data-testid="text-rules-panel"]').attributes('style') ?? '',
-    ).not.toContain('display: none')
-    expect(
-      wrapper.find('[data-testid="text-session-toolbar-rules"]').attributes('data-active'),
-    ).toBe('true')
-    await wrapper.find('[data-testid="text-session-toolbar-rules"]').trigger('click')
     expect(wrapper.find('[data-testid="text-rules-panel"]').attributes('style') ?? '').toContain(
       'display: none',
     )
@@ -221,6 +214,13 @@ describe('TextCompareView', () => {
     expect(
       wrapper.find('[data-testid="text-rules-panel"]').attributes('style') ?? '',
     ).not.toContain('display: none')
+    expect(
+      wrapper.find('[data-testid="text-session-toolbar-rules"]').attributes('data-active'),
+    ).toBe('true')
+    await wrapper.find('[data-testid="text-session-toolbar-rules"]').trigger('click')
+    expect(wrapper.find('[data-testid="text-rules-panel"]').attributes('style') ?? '').toContain(
+      'display: none',
+    )
   })
 
   it('opens context chrome and adjusts surrounding lines from the session toolbar', async () => {

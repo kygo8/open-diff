@@ -68,7 +68,7 @@ describe('HomeView', () => {
     const layout = wrapper.find('[data-testid="home-layout"]')
 
     expect(layout.exists()).toBe(true)
-    expect(layout.attributes('data-home-density')).toBe('capture-1to1')
+    expect(layout.attributes('data-home-density')).toBe('html-demo')
     expect(layout.attributes('data-home-chrome')).toBe('minimal')
     expect(wrapper.find('.workbench-shell').attributes('data-compact')).toBe('true')
     expect(wrapper.find('.bc-home-workspace').classes()).toContain('bc-home-workspace')
@@ -77,18 +77,20 @@ describe('HomeView', () => {
     expect(wrapper.findAll('[data-testid="home-new-session-card"]')).toHaveLength(12)
   })
 
-  it('keeps Home chrome metrics aligned with home.png CSS px', () => {
+  it('keeps Home chrome metrics aligned with HTML demo Home chrome', () => {
     const source = readFileSync(
       resolve(dirname(fileURLToPath(import.meta.url)), './HomeView.vue'),
       'utf8',
     )
 
-    expect(source).toContain('grid-template-columns: minmax(220px, 248px) minmax(0, 1fr)')
-    expect(source).toContain('grid-template-rows: 28px minmax(0, 1fr) 32px')
-    expect(source).toContain('min-height: 20px')
-    expect(source).toContain('width: 95.5px')
-    expect(source).toContain('height: 30px')
-    expect(source).toContain('grid-template-columns: repeat(3, minmax(140px, 157px))')
+    expect(source).toContain('grid-template-columns: minmax(240px, 260px) minmax(0, 1fr)')
+    expect(source).toContain('grid-template-rows: auto minmax(0, 1fr) auto')
+    expect(source).toContain('min-height: 22px')
+    expect(source).toContain('min-width: 80px')
+    expect(source).toContain('height: 28px')
+    expect(source).toContain('grid-template-columns: repeat(3, minmax(180px, 220px))')
+    expect(source).toContain('height: 110px')
+    expect(source).toContain('border-radius: 6px')
     expect(source).not.toContain('min-height: 7px')
     expect(source).not.toContain('height: 6px')
     expect(source).not.toContain('height: 7px')

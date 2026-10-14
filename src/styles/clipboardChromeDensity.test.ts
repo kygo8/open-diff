@@ -34,8 +34,8 @@ describe('clipboard compare chrome density', () => {
     expect(clipboardView).not.toMatch(/font-size:\s*9px/)
     expect(clipboardView).not.toMatch(/min-height:\s*9px/)
 
-    expect(layout).toMatch(/data-chrome-kind='clipboard-session'[\s\S]*?height:\s*19\.5px/)
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
+    expect(layout).toMatch(/data-chrome-kind='clipboard-session'[\s\S]*?height:\s*26px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*56px/)
   })
 
   it('keeps Clipboard history pane/entry chrome on capture band', () => {

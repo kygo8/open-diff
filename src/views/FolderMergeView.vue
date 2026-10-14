@@ -2990,8 +2990,8 @@ h1 {
 
 .merge-paths input {
   width: 100%;
-  height: 16.5px;
-  min-height: 16.5px;
+  height: 24px;
+  min-height: 24px;
   padding: 0 4px;
   overflow: hidden;
   border: 1px solid var(--app-border);
@@ -3041,8 +3041,8 @@ h1 {
 
 .merge-to-path .path-input,
 .merge-to-path input {
-  height: 16.5px;
-  min-height: 16.5px;
+  height: 24px;
+  min-height: 24px;
   padding: 0 4px;
   font-size: 11px;
 }
@@ -3051,8 +3051,8 @@ h1 {
   :deep(.n-button[data-testid='folder-merge-same-ok']) {
   width: 64.5px;
   min-width: 64.5px;
-  height: 37.5px;
-  min-height: 37.5px;
+  height: 48px;
+  min-height: 48px;
   padding: 0 4px;
   border-radius: 0;
   font-size: 11px;
@@ -3062,8 +3062,8 @@ h1 {
   :deep(.n-button[data-testid='folder-merge-peek']) {
   width: 59px;
   min-width: 59px;
-  height: 37.5px;
-  min-height: 37.5px;
+  height: 48px;
+  min-height: 48px;
   padding: 0 4px;
   border-radius: 0;
   font-size: 11px;
@@ -3387,7 +3387,7 @@ h1 {
 
 .merge-plan-row.selected {
   outline: 0;
-  background: #a8cdf1;
+  background: #cce8ff;
 }
 
 .folder-session-log {
@@ -3508,14 +3508,14 @@ h1 {
 
 .folder-filter-strip-btn {
   display: grid;
-  grid-template-rows: 20px auto;
+  grid-template-rows: 22px auto;
   align-content: center;
   justify-items: center;
   box-sizing: border-box;
-  width: 59px;
-  min-width: 59px;
-  max-width: 59px;
-  height: 37.5px;
+  width: 52px;
+  min-width: 52px;
+  max-width: 72px;
+  height: 48px;
   padding: 1px 4px 2px;
   border: 0;
   border-right: 1px solid #c0c0c0;
@@ -3558,7 +3558,7 @@ h1 {
 .folder-filter-pattern {
   flex: 1 1 auto;
   min-width: 0;
-  height: 16.5px;
+  height: 24px;
   padding: 0 6px;
   border: 1px solid #c0c0c0;
   border-radius: 0;

@@ -1332,8 +1332,8 @@ h1 {
 
 .path-input {
   flex: 1;
-  height: 16.5px;
-  min-height: 16.5px;
+  height: 24px;
+  min-height: 24px;
   font-family: var(--font-mono);
 }
 

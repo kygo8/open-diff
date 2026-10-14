@@ -1,37 +1,42 @@
 :root {
   color-scheme: light;
 
+  /* Aligned with standalone HTML demo chrome tokens (css/demo.css). */
   --app-bg: #ffffff;
   --app-canvas: #ffffff;
   --app-surface: #f0f0f0;
   --app-surface-low: #ececec;
   --app-surface-muted: #e6e6e6;
-  --app-surface-container: #eeeeee;
+  --app-surface-container: #f9f9f9;
   --app-surface-high: #dedede;
-  --app-surface-highest: #c7dff6;
-  --app-border: #c0c0c0;
-  --app-border-soft: rgb(176 182 190 / 0.62);
-  --app-text: #111111;
-  --app-text-muted: #3f3f46;
-  --app-text-faint: #737373;
-  --app-primary: #2b75bd;
-  --app-primary-strong: #66b9ff;
-  --app-primary-soft: #c8e4ff;
-  --app-status: #f0f0f0;
-  --app-status-text: #111111;
+  --app-surface-highest: #cce8ff;
+  --app-border: #c8c8c8;
+  --app-border-soft: #dcdcdc;
+  --app-text: #1a1a1a;
+  --app-text-muted: #666666;
+  --app-text-faint: #888888;
+  --app-primary: #0078d4;
+  --app-primary-strong: #0563c1;
+  --app-primary-soft: #cce8ff;
+  --app-status: #d4d4d4;
+  --app-status-text: #1a1a1a;
+  --app-menu: #f0f3f9;
+  --app-title: #f1f3f9;
+  --app-sidebar: #f5f5f5;
+  --app-row-hover: #f0f7ff;
+  --app-row-sel: #cce8ff;
   --diff-added-bg: #f4fff4;
   --diff-added-fg: #005f18;
   --diff-deleted-bg: #ffe3e3;
-  --diff-deleted-fg: #e00000;
+  --diff-deleted-fg: #c00000;
   --diff-modified-bg: #ffe3e3;
-  --diff-modified-fg: #e00000;
+  --diff-modified-fg: #c00000;
   --diff-conflict-bg: #f0ddff;
   --diff-conflict-fg: #8a158a;
   --diff-gutter-bg: #efefef;
-  --font-mono: 'JetBrains Mono', 'Cascadia Mono', consolas, monospace;
-  --app-font-family:
-    'Segoe UI', 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif;
-  --app-font-size: 18px;
+  --font-mono: 'Consolas', 'Cascadia Mono', 'Menlo', monospace;
+  --app-font-family: 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', system-ui, sans-serif;
+  --app-font-size: 13px;
 }
 
 html[data-theme='dark'] {
@@ -148,8 +153,8 @@ select {
 }
 
 .workbench-shell-single-session .bc-session-toolbar {
-  min-height: 39.5px;
-  border-bottom: 1px solid #a0a0a0;
+  min-height: 56px;
+  border-bottom: 1px solid #c8c8c8;
   background: #f0f0f0;
 }
 
@@ -158,18 +163,18 @@ select {
 }
 
 .workbench-shell-single-session .bc-toolbar-command {
-  min-width: 59px;
-  height: 37.5px;
-  padding: 1px 2px 2px;
+  min-width: 52px;
+  height: 48px;
+  padding: 2px 6px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact {
-  min-height: 32px;
+  min-height: 40px;
 }
 
 .workbench-shell-single-session .bc-session-toolbar-compact .bc-toolbar-command {
-  min-width: 40px;
-  height: 32px;
+  min-width: 44px;
+  height: 36px;
 }
 
 .app-shell-single-session .tab-strip {
@@ -189,9 +194,9 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair {
   gap: 0 !important;
-  min-height: 20px !important;
-  padding: 0 1px !important;
-  border-bottom: 1px solid #a0a0a0 !important;
+  min-height: 28px !important;
+  padding: 4px 8px !important;
+  border-bottom: 1px solid #c8c8c8 !important;
   background: #f0f0f0 !important;
 }
 
@@ -210,8 +215,8 @@ select {
 
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > input,
 .app-shell-single-session .folder-toolbar .path-pair .path-field-row > .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
 }
@@ -322,15 +327,15 @@ select {
 .bc-session-toolbar {
   display: flex;
   align-items: stretch;
-  gap: 0;
+  gap: 2px;
   min-width: 0;
-  min-height: 39.5px;
-  padding: 1px 2px;
+  min-height: 56px;
+  padding: 4px 8px;
   overflow: auto hidden;
-  border-bottom: 1px solid #a0a0a0;
+  border-bottom: 1px solid #c8c8c8;
 
-  /* Capture MainBar band is white, not app-surface gray */
-  background: #ffffff;
+  /* Demo toolbar band */
+  background: #f0f0f0;
 }
 
 /* Text Merge capture MainBar wraps to ~2×38px (~83px CSS at DPR≈2) instead of horizontal-only scroll. */
@@ -423,25 +428,26 @@ select {
 
 .bc-toolbar-command {
   display: grid;
-  grid-template-rows: 20px auto;
-  align-content: center;
-  justify-items: center;
-  box-sizing: border-box;
+  grid-template-rows: 22px auto;
   flex: 0 0 auto;
+  gap: 2px;
   width: auto;
-  min-width: 59px;
+  min-width: 52px;
   max-width: 88px;
-  height: 37.5px;
-  padding: 1px 2px 2px;
+  height: 48px;
+  padding: 2px 6px;
   overflow: hidden;
-  border: 0;
-  border-right: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
   background: transparent;
   color: #1a1a1a;
   font-size: 11px;
   line-height: 12px;
   white-space: nowrap;
   cursor: default;
+  align-content: center;
+  justify-items: center;
+  box-sizing: border-box;
 }
 
 .bc-toolbar-command > span,
@@ -456,14 +462,16 @@ select {
 
 /* Capture MainBar active: ~#cce8ff fill, ~#a5c7f7 edge */
 .bc-toolbar-command-active {
-  border-radius: 2px;
+  border-radius: 3px;
+  border-color: #99c9ef;
   background: #cce8ff;
-  box-shadow: inset 0 0 0 1px #a5c7f7;
+  box-shadow: none;
 }
 
 .bc-toolbar-command:hover:not(:disabled) {
-  border-radius: 2px;
-  background: #e5f2fc;
+  border-radius: 3px;
+  border-color: #c8c8c8;
+  background: #e8e8e8;
 }
 
 .bc-toolbar-command-active:hover:not(:disabled) {
@@ -491,15 +499,15 @@ select {
 }
 
 .bc-session-toolbar-compact {
-  min-height: 39.5px;
+  min-height: 40px;
 }
 
 .bc-session-toolbar-compact .bc-toolbar-command {
-  grid-template-rows: 20px auto;
-  min-width: 48px;
+  grid-template-rows: 18px auto;
+  min-width: 44px;
   max-width: 80px;
-  height: 37.5px;
-  padding: 1px 2px;
+  height: 36px;
+  padding: 1px 4px;
   font-size: 10px;
   line-height: 11px;
 }
@@ -1172,8 +1180,8 @@ select {
   flex: 1 1 auto !important;
   width: auto !important;
   min-width: 0 !important;
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   overflow: hidden !important;
   font-size: 12px !important;
@@ -1470,7 +1478,7 @@ select {
 }
 
 .folder-filter-pattern {
-  height: 16.5px !important;
+  height: 24px !important;
   padding: 0 6px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
@@ -1490,15 +1498,15 @@ select {
 
 .folder-filter-strip-btn {
   display: grid !important;
-  grid-template-rows: 20px auto !important;
+  grid-template-rows: 22px auto !important;
   align-content: center !important;
   justify-items: center !important;
   box-sizing: border-box !important;
-  width: 59px !important;
-  min-width: 59px !important;
-  max-width: 59px !important;
-  height: 37.5px !important;
-  padding: 1px 2px 2px !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 72px !important;
+  height: 48px !important;
+  padding: 2px 6px !important;
   border: 0 !important;
   border-right: 1px solid #c0c0c0 !important;
   background: transparent !important;
@@ -1624,7 +1632,7 @@ select {
 .split-pane-header,
 .pane-header,
 .metadata-header {
-  min-height: 16.5px !important;
+  min-height: 24px !important;
   padding: 1px 3px !important;
   border-color: #c7cbd1 !important;
   border-radius: 0 !important;
@@ -1964,7 +1972,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-compare-view .tree-row.selected {
-  background: #a8cdf1 !important;
+  background: #cce8ff !important;
   outline: 0 !important;
 }
 
@@ -2049,7 +2057,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-sync-view .sync-row-selected {
-  background: #a8cdf1 !important;
+  background: #cce8ff !important;
 }
 
 .folder-sync-view .folder-session-log {
@@ -2093,7 +2101,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-merge-view .merge-plan-row.selected {
   outline: 0 !important;
-  background: #a8cdf1 !important;
+  background: #cce8ff !important;
 }
 
 .folder-merge-view .folder-session-log {
@@ -2411,8 +2419,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .picture-compare-view .picture-path-panel input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   font-size: 12px !important;
 }
@@ -2724,8 +2732,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .media-compare-view .media-path-panel input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
@@ -2958,8 +2966,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .version-compare-view .version-path-panel input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 6px !important;
   border: 1px solid #a0a0a0 !important;
   border-radius: 0 !important;
@@ -3167,8 +3175,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .registry-compare-view .path-field-row .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
 }
 
 .registry-compare-view .registry-input-panel textarea {
@@ -3672,7 +3680,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-compare-view .bc-path-row input {
-  height: 16.5px !important;
+  height: 24px !important;
   padding: 0 4px !important;
   font-size: 12px !important;
 }
@@ -3825,7 +3833,7 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-merge-view .output-path-input {
-  height: 16.5px !important;
+  height: 24px !important;
   padding: 0 4px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
@@ -3954,8 +3962,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-sync-view .path-field-row .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
 }
 
 .folder-sync-view .sync-setting-actions {
@@ -4088,26 +4096,26 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-sync-view .folder-filter-chrome[data-filters-align='capture-1to1-residual'] {
   gap: 4px 6px !important;
-  min-height: 37.5px !important;
+  min-height: 48px !important;
 }
 
 .folder-sync-view .folder-filter-chrome {
-  min-height: 37.5px !important;
+  min-height: 48px !important;
   padding: 0 4px !important;
   border-bottom: 1px solid #a0a0a0 !important;
   background: #f0f0f0 !important;
 }
 
 .folder-sync-view .folder-filter-chrome[data-sync-filters-place='capture-1to1-residual'] {
-  min-height: 37.5px !important;
+  min-height: 48px !important;
   background: #f0f0f0 !important;
 }
 
 .folder-sync-view
   .sync-filter-pattern-field
   .folder-filter-pattern[data-sync-pattern-place='capture-1to1-residual'] {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 6px !important;
   border-radius: 0 !important;
   font-size: 12px !important;
@@ -4128,8 +4136,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .folder-merge-view .merge-paths input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   border-radius: 2px !important;
   font-size: 11px !important;
@@ -4146,8 +4154,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .folder-merge-view .merge-to-chrome .path-input,
 .folder-merge-view .merge-to-chrome input[type='text'] {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }
@@ -4184,8 +4192,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
   .n-button[data-testid='folder-merge-same-ok'] {
   width: 64.5px !important;
   min-width: 64.5px !important;
-  height: 37.5px !important;
-  min-height: 37.5px !important;
+  height: 48px !important;
+  min-height: 48px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }
@@ -4195,8 +4203,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
   .n-button[data-testid='folder-merge-peek'] {
   width: 59px !important;
   min-width: 59px !important;
-  height: 37.5px !important;
-  min-height: 37.5px !important;
+  height: 48px !important;
+  min-height: 48px !important;
   padding: 0 4px !important;
   font-size: 11px !important;
 }
@@ -4478,8 +4486,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 }
 
 .text-edit-view .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
 }
 
 .text-edit-view .toolbar-button {
@@ -4547,8 +4555,8 @@ html[data-show-path-bars='0'] .path-pair-bar {
 
 .text-patch-view .path-field-row input,
 .text-patch-view .path-field-row .path-input {
-  height: 16.5px !important;
-  min-height: 16.5px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   padding: 0 4px !important;
   border-radius: 0 !important;
   font-size: 12px !important;

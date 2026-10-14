@@ -51,7 +51,7 @@ describe('folderDisplayFilters', () => {
       showSuppressed: false,
       filesOnly: false,
       alwaysShowFolders: true,
-      showFiltersPanel: true,
+      showFiltersPanel: false,
       showPeekPanel: false,
     })
   })

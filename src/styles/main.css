@@ -5292,4 +5292,154 @@ html[data-show-path-bars='0'] .path-pair-bar {
   font-size: 12px !important;
   font-weight: 600 !important;
 }
+
+/* ---- HTML demo simplify: tuck non-demo chrome (handlers stay in DOM) ---- */
+
+/* Extra action docks / hints not in the HTML demo chrome */
+.folder-actions,
+.folder-root-summary,
+.archive-path-hint,
+.folder-compare-view .folder-toolbar > button[data-testid='open-folder-session-settings'],
+.options-hint,
+.options-cluster-hint,
+.format-header .eyebrow,
+.profile-header .eyebrow,
+.file-format-view .format-io-panel,
+.workbench-toolbar.compare-toolbar,
+.text-compare-view .compare-toolbar,
+.folder-merge-view .folder-actions,
+.folder-status-legend-slot,
+.hex-header,
+.picture-header,
+.media-header,
+.registry-header,
+.version-header,
+.text-edit-view > header,
+.text-edit-view .eyebrow,
+.hex-report-panel,
+.picture-report-panel,
+.media-report-panel,
+.registry-report-panel,
+.version-report-panel,
+.table-report-actions,
+.hex-summary,
+.hex-run-diff,
+button[data-testid='open-hex-session-settings'],
+button[data-testid='open-picture-session-settings'],
+button[data-testid='open-table-session-settings'],
+button[data-testid='open-media-session-settings'],
+button[data-testid='open-registry-session-settings'],
+button[data-testid='open-version-session-settings'],
+button[data-testid='open-text-session-settings'] {
+  display: none !important;
+}
+
+/* Specialty path meta strips — demo dual-paths are bare */
+.hex-path-meta-strip,
+.picture-compare-view .path-meta-footer,
+.media-compare-view .path-meta-footer,
+.registry-compare-view .path-meta-footer,
+.version-compare-view .path-meta-footer,
+.table-compare-view .path-meta-footer {
+  display: none !important;
+}
+
+/* Keep path/profile pickers usable when profiles exist — just denser */
+.remote-profile-pair {
+  gap: 4px !important;
+  min-height: 24px !important;
+  padding: 2px 4px !important;
+}
+
+/* Patch keeps Parse/Apply (demo sync-ops), but single dense row */
+.workbench-toolbar.patch-toolbar {
+  min-height: 28px !important;
+  padding: 2px 6px !important;
+}
+
+/* Path bars: demo is bare inputs + browse — drop side labels */
+.folder-toolbar .path-pair > label > span:first-child,
+.folder-merge-view .path-pair > label > span:first-child,
+.folder-sync-view .path-field-row > span:first-of-type {
+  display: none !important;
+}
+
+/* Folder path meta under inputs — demo folder has none (text uses meta-bar) */
+.folder-compare-view .path-meta-footer,
+.folder-merge-view .path-meta-footer,
+.folder-sync-view .path-meta-footer {
+  display: none !important;
+}
+
+/* Formats / Profiles: drop marketing header; keep list+detail */
+.file-format-view .format-header,
+.remote-profile-view .profile-header {
+  display: none !important;
+}
+
+/* Options: denser body, no hint stack */
+.settings-view .options-content {
+  gap: 8px !important;
+}
+
+.settings-view .options-content .n-card {
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Merge / Sync: drop page headers; keep path/ops (demo sync-ops / dual-paths) */
+.merge-header,
+.merge-summary {
+  display: none !important;
+}
+
+.merge-actions-bar .merge-actions button[data-testid^='export-'],
+.sync-setting-actions button[data-testid^='export-'],
+.sync-setting-actions button[data-testid='folder-sync-apply-to-all'],
+.sync-setting-actions button[data-testid='folder-sync-skip-remaining'] {
+  display: none !important;
+}
+
+.sync-settings > label > span {
+  display: none !important;
+}
+
+/* Session log: demo is a thin strip, not a tool dock */
+.folder-session-log-gutter {
+  display: none !important;
+}
+
+.folder-session-log {
+  min-height: 22px !important;
+  max-height: 48px !important;
+}
+
+/* Empty states: one quiet line like demo .empty-hint */
+.empty-hint,
+.session-empty-hint,
+.compare-empty-hint,
+.folder-empty-state,
+.text-empty-state,
+.folder-sync-empty-state,
+.clipboard-compare-view .empty.empty-hint {
+  min-height: 80px !important;
+  padding: 16px !important;
+  background: #f9f9f9 !important;
+  color: #666666 !important;
+  font-size: 12px !important;
+}
+
+/* Home: quieter cards / less stacked chrome */
+.home-view .session-edit-panel,
+.home-view .session-save-panel {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Sync/Merge action rows: keep essential ops, flatten */
+.folder-sync-header,
+.folder-merge-view header {
+  gap: 4px !important;
+}
+
 /* stylelint-enable no-duplicate-selectors */

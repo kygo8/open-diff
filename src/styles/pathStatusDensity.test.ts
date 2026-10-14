@@ -79,15 +79,11 @@ describe('path/status strip density', () => {
     expect(css).toMatch(/\.bc-path-footers \.path-meta-chip[\s\S]*?height:\s*16px/)
   })
 
-  it('keeps shared status strip near capture ~19.5px CSS height', () => {
+  it('keeps shared status strip near capture ~26px CSS height', () => {
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*26px/)
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*26px/)
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*19\.5px/,
-    )
-    expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*19\.5px/,
-    )
-    expect(layout).toMatch(
-      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*23\.5px minmax\(0, 1fr\) 19\.5px/,
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*23\.5px minmax\(0, 1fr\) 26px/,
     )
   })
 

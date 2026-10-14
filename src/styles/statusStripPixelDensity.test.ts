@@ -8,11 +8,9 @@ const layout = readFileSync(resolve(root, 'src/layouts/AppLayout.vue'), 'utf8')
 
 describe('status strip pixel density', () => {
   it('keeps folder-pair 7-segment strip at 20px with capture-like separators', () => {
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*26px/)
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?height:\s*19\.5px/,
-    )
-    expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?line-height:\s*18px/,
+      /\.status-bar\[data-chrome-kind='folder-pair'\][\s\S]*?line-height:\s*24px/,
     )
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='folder-pair'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 4px/,
@@ -38,13 +36,11 @@ describe('status strip pixel density', () => {
     expect(layout).toMatch(/data-chrome-kind='folder-pair'\]\[data-pane-count='7'\]/)
   })
 
-  it('keeps session status bars at 19.5px with shared typography', () => {
-    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?background:\s*#f0f0f0/)
-    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?color:\s*#000000/)
+  it('keeps session status bars at 26px with shared typography', () => {
+    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?background:\s*#d4d4d4/)
+    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?color:\s*#1a1a1a/)
     expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?font-size:\s*11px/)
-    expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*19\.5px/,
-    )
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='text-session'\][\s\S]*?height:\s*26px/)
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='text-session'\]\s*\{[\s\S]*?grid-template-columns:\s*294px minmax\(0, 392\.5px\) 91\.5px minmax\(0, 1fr\)/,
     )
@@ -52,19 +48,17 @@ describe('status strip pixel density', () => {
       /\.status-bar\[data-chrome-kind='text-session'\] \.status-bar-pane[\s\S]*?padding:\s*0 4px/,
     )
     expect(layout).toMatch(
-      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?19\.5px/,
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?26px/,
     )
     expect(layout).toMatch(
-      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind\$='-session'\]\)[\s\S]*?19\.5px/,
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind\$='-session'\]\)[\s\S]*?26px/,
     )
   })
 
   it('keeps folder-merge 12-segment strip at capture height with column dividers', () => {
+    expect(layout).toMatch(/\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?height:\s*26px/)
     expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?height:\s*19\.5px/,
-    )
-    expect(layout).toMatch(
-      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?line-height:\s*18px/,
+      /\.status-bar\[data-chrome-kind='folder-merge'\][\s\S]*?line-height:\s*24px/,
     )
     expect(layout).toMatch(
       /\.status-bar\[data-chrome-kind='folder-merge'\] \.status-bar-pane\s*\{[\s\S]*?padding:\s*0 4px/,
@@ -82,10 +76,10 @@ describe('status strip pixel density', () => {
 })
 
 describe('status strip band residual', () => {
-  it('keeps 19.5px band content chrome residual toward capture', () => {
+  it('keeps 26px band content chrome residual toward capture', () => {
     expect(layout).toMatch(/data-status-band="capture-1to1-residual"/)
-    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?border-top:\s*1px solid #a0a0a0/)
-    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?height:\s*19\.5px/)
+    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?border-top:\s*1px solid #b8b8b8/)
+    expect(layout).toMatch(/\.status-bar\s*\{[\s\S]*?height:\s*26px/)
     expect(layout).toMatch(
       /\.status-bar\[data-status-band='capture-1to1-residual'\] \.status-bar-pane\s*\{[\s\S]*?text-overflow:\s*ellipsis/,
     )
@@ -163,7 +157,7 @@ describe('clipboard status strip columns residual', () => {
 describe('app-status fill', () => {
   const css = readFileSync(resolve(root, 'src/styles/main.css'), 'utf8')
 
-  it('matches capture status token fill #f0f0f0', () => {
-    expect(css).toMatch(/--app-status:\s*#f0f0f0/)
+  it('matches demo status token fill #d4d4d4', () => {
+    expect(css).toMatch(/--app-status:\s*#d4d4d4/)
   })
 })

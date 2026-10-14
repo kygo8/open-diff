@@ -30,7 +30,7 @@ describe('peek panel densify', () => {
     expect(css).toMatch(/\.folder-peek-panel header,[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.peek-tabs\s*\{[\s\S]*?min-height:\s*20px/)
     expect(css).toMatch(/\.folder-peek-panel dt,[\s\S]*?font-size:\s*11px/)
-    expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*20px auto/)
+    expect(css).toMatch(/\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*22px auto/)
 
     expect(folderView).toMatch(/data-testid="folder-peek-tabs"/)
     expect(folderView).toMatch(/data-testid="folder-peek-dual"/)
@@ -43,7 +43,7 @@ describe('peek panel densify', () => {
     expect(folderView).toMatch(/\.folder-peek-panel header\s*\{[\s\S]*?min-height:\s*20px/)
     expect(folderView).toMatch(/\.peek-dual-columns\s*\{[\s\S]*?gap:\s*0/)
     expect(folderView).toMatch(
-      /\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*20px auto/,
+      /\.folder-filter-strip-btn\s*\{[\s\S]*?grid-template-rows:\s*22px auto/,
     )
 
     expect(syncView).toMatch(/data-testid="folder-sync-peek-tabs"/)
@@ -183,8 +183,8 @@ describe('folder merge Same OK / Peek residual', () => {
   it('scales Same OK and Peek action chrome toward capture toolbar plates', () => {
     expect(mergeView).toMatch(/data-same-ok-chrome="capture-1to1-residual"/)
     expect(mergeView).toMatch(/data-peek-residual="capture-1to1"/)
-    expect(mergeView).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*37\.5px/)
-    expect(css).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*37\.5px/)
+    expect(mergeView).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*48px/)
+    expect(css).toMatch(/folder-merge-same-ok[\s\S]*?height:\s*48px/)
     expect(css).toMatch(/\.folder-merge-peek-panel[\s\S]*?border:\s*1px solid #a0a0a0/)
   })
 })

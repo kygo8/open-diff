@@ -17,7 +17,7 @@ describe('shell chrome density', () => {
     )
     expect(source).toMatch(/\.app-shell-dense-chrome \.brand\s*\{[\s\S]*?display:\s*none/)
     expect(source).toMatch(
-      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*23\.5px minmax\(0, 1fr\) 19\.5px/,
+      /\.app-shell-dense-chrome:has\(\.status-bar\[data-chrome-kind='folder-pair'\]\)[\s\S]*?grid-template-rows:\s*23\.5px minmax\(0, 1fr\) 26px/,
     )
   })
 
@@ -29,14 +29,14 @@ describe('shell chrome density', () => {
     expect(source).toMatch(/\.tab-chip button\s*\{[\s\S]*?height:\s*22px/)
     expect(source).toMatch(/\.tab-chip button\s*\{[\s\S]*?font-size:\s*11px/)
     expect(source).toMatch(/data-menu-density="capture-1to1"/)
-    expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?background:\s*#f0f0f0/)
+    expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?background:\s*#f0f3f9/)
     expect(source).toMatch(/\.menu-panel\s*\{[\s\S]*?border-radius:\s*0/)
     expect(source).toMatch(/\.menu-panel \.menu-command\s*\{[\s\S]*?min-height:\s*22px/)
     expect(source).toMatch(/\.menu-panel \.menu-command\s*\{[\s\S]*?font-size:\s*12px/)
-    expect(source).toMatch(/\.menus\s*\{[\s\S]*?border-top:\s*1px solid #d0d0d0/)
+    expect(source).toMatch(/\.menus\s*\{[\s\S]*?border-top:\s*1px solid #dcdcdc/)
     expect(source).toMatch(/\.tab-context-menu\s*\{[\s\S]*?border-radius:\s*0/)
     expect(source).toMatch(/\.dirty-tab-prompt\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
+    expect(source).toMatch(/\.menu-bar\s*\{[\s\S]*?border-bottom:\s*1px solid #dcdcdc/)
     expect(source).toMatch(/\.language-panel\s*\{[\s\S]*?border-radius:\s*0/)
     expect(source).toMatch(/\.language-option\s*\{[\s\S]*?min-height:\s*20px/)
     expect(source).toMatch(/\.command-palette\s*\{[\s\S]*?border-radius:\s*0/)
@@ -59,11 +59,11 @@ describe('shell chrome density', () => {
 
   it('keeps WorkbenchShell session toolbar/content frame denser', () => {
     expect(mainCss).toMatch(
-      /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/,
+      /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*56px/,
     )
     expect(mainCss).toMatch(/\.workbench-titlebar\s*\{[\s\S]*?height:\s*22px/)
-    expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
-    expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?border-bottom:\s*1px solid #a0a0a0/)
+    expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*56px/)
+    expect(mainCss).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?border-bottom:\s*1px solid #c8c8c8/)
     expect(mainCss).toMatch(/\.workbench-inspector-stack\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(mainCss).toMatch(/\.workbench-inspector-section\s*\{[\s\S]*?border-radius:\s*0/)
     expect(mainCss).toMatch(/\.workbench-inspector-section h2\s*\{[\s\S]*?height:\s*16px/)
@@ -106,14 +106,14 @@ describe('shell chrome density', () => {
       /data-menu-chrome='capture-1to1-residual'\] \.menus > \.menu-group > button\s*\{[\s\S]*?height:\s*21\.5px/,
     )
     expect(source).toMatch(
-      /menus > \.menu-group > button\.active\s*\{[\s\S]*?background:\s*#c8e4ff/,
+      /menus > \.menu-group > button\.active\s*\{[\s\S]*?background:\s*#cce8ff/,
     )
   })
 
   it('keeps tab strip and sole-session frame residual capture chrome', () => {
     expect(source).toMatch(/data-tab-strip-density="capture-1to1-residual"/)
     expect(source).toMatch(
-      /\.tab-strip\[data-tab-strip-density='capture-1to1-residual'\]\s*\{[\s\S]*?background:\s*#f0f0f0/,
+      /\.tab-strip\[data-tab-strip-density='capture-1to1-residual'\]\s*\{[\s\S]*?background:\s*#f0f3f9/,
     )
     expect(mainCss).toMatch(
       /\.workbench-shell-single-session \.bc-session-toolbar\s*\{[\s\S]*?background:\s*#f0f0f0/,
@@ -206,8 +206,8 @@ describe('pane-header fill', () => {
 describe('app-border token', () => {
   const mainCss = readFileSync(resolve(__dirname, './main.css'), 'utf8')
 
-  it('matches capture border token #c0c0c0', () => {
-    expect(mainCss).toMatch(/--app-border:\s*#c0c0c0/)
+  it('matches demo border token #c8c8c8', () => {
+    expect(mainCss).toMatch(/--app-border:\s*#c8c8c8/)
   })
 })
 

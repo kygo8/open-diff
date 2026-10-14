@@ -12,10 +12,8 @@ describe('media compare chrome density', () => {
   it('keeps Media Compare path/status/toolbar/footer chrome at capture CSS scale', () => {
     expect(css).toMatch(/\.media-compare-view\s*\{[\s\S]*?padding:\s*2px 4px/)
     expect(css).toMatch(/\.media-compare-view \.media-path-panel\s*\{[\s\S]*?min-height:\s*22px/)
-    expect(mediaView).toMatch(/\.media-path-field \.path-input\s*\{[\s\S]*?height:\s*16\.5px/)
-    expect(css).toMatch(
-      /\.media-compare-view \.media-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/,
-    )
+    expect(mediaView).toMatch(/\.media-path-field \.path-input\s*\{[\s\S]*?height:\s*24px/)
+    expect(css).toMatch(/\.media-compare-view \.media-path-panel input\s*\{[\s\S]*?height:\s*24px/)
     expect(css).toMatch(/\.media-compare-view \.media-path-panel button\s*\{[\s\S]*?height:\s*20px/)
     expect(css).toMatch(/\.media-compare-view \.path-side-footer\s*\{[\s\S]*?font-size:\s*11px/)
     expect(css).toMatch(/\.media-compare-view \.path-side-footer\s*\{[\s\S]*?min-height:\s*18px/)
@@ -34,8 +32,8 @@ describe('media compare chrome density', () => {
     expect(mediaView).not.toMatch(/font-size:\s*9px/)
     expect(mediaView).not.toMatch(/min-height:\s*9px/)
 
-    expect(layout).toMatch(/data-chrome-kind='media-session'[\s\S]*?height:\s*19\.5px/)
-    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*39\.5px/)
+    expect(layout).toMatch(/data-chrome-kind='media-session'[\s\S]*?height:\s*26px/)
+    expect(css).toMatch(/\.bc-session-toolbar\s*\{[\s\S]*?min-height:\s*56px/)
   })
 
   it('keeps Media scrub/footer chrome on capture band', () => {
@@ -103,9 +101,7 @@ describe('media path scrub chrome residual', () => {
     expect(css).toMatch(
       /\.media-compare-view \.media-path-meta-strip[\s\S]*?border:\s*1px solid #c0c0c0/,
     )
-    expect(css).toMatch(
-      /\.media-compare-view \.media-path-panel input\s*\{[\s\S]*?height:\s*16\.5px/,
-    )
+    expect(css).toMatch(/\.media-compare-view \.media-path-panel input\s*\{[\s\S]*?height:\s*24px/)
     expect(mediaView).toMatch(/\.media-player-card > span\s*\{[\s\S]*?display:\s*none/)
     expect(mediaView).toMatch(/\.media-playback-header\s*\{[\s\S]*?display:\s*none/)
     expect(mediaView).toMatch(/\.media-playback-hint\s*\{[\s\S]*?display:\s*none/)

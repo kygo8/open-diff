@@ -11,5 +11,5 @@ serde.workspace = true
 regf-rs = "0.1.1"
 
 [target.'cfg(windows)'.dependencies]
-winreg = "0.52"
+winreg = "0.55"
 

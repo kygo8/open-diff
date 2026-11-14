@@ -6,8 +6,8 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
-calamine = "0.36.0"
+calamine = "0.38.0"
 serde.workspace = true
 
 [dev-dependencies]
-rust_xlsxwriter = "0.96.0"
+rust_xlsxwriter = "0.102.0"
